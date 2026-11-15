@@ -539,7 +539,7 @@ object_type_06_state_05:
 	stz	hdma_preset
 	stz	$24,x
 	stx	zp_FC
-	ldx	#.loword(data_059FBA)
+	ldx	#.loword(load_list_059FBA)
 	jsl	f:load_data_list
 	ldx	zp_FC
 	rtl

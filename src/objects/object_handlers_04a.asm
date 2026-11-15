@@ -914,7 +914,7 @@ stage3_boss_state_0B:
 	sta	OBJ_HITBOX_H,x
 	stz	OBJ_FLAGS,x
 	phx
-	ldx	#.loword(data_05EB45)
+	ldx	#.loword(load_list_05EB45)
 	jsl	f:load_data_list
 	plx
 	lda	#$0004
@@ -1828,7 +1828,7 @@ loc_048E0D:
 
 stage4_controller_state_0B:
 	phx
-	ldx	#.loword(data_05ECD9)
+	ldx	#.loword(load_list_05ECD9)
 	jsl	f:load_data_list
 	plx
 	lda	#$FFFC
@@ -1943,7 +1943,7 @@ stage4_controller_state_0E:
 	lda	#$0100
 	sta	OBJ_TIMER,x
 	phx
-	ldx	#.loword(data_05ECD0)
+	ldx	#.loword(load_list_05ECD0)
 	jsl	f:load_data_list
 	plx
 loc_048F1D:
@@ -2140,7 +2140,7 @@ stage4_controller_state_17:
 	lda	#$0050
 	jsl	f:queue_sound
 	phx
-	ldx	#.loword(data_05ECD0)
+	ldx	#.loword(load_list_05ECD0)
 	jsl	f:load_data_list
 	plx
 loc_0490DE:
@@ -6319,7 +6319,7 @@ loc_04B0E7:
 	lda	#$0081
 	jsl	f:queue_sound
 	phx
-	ldx	#.loword(data_059EC9)
+	ldx	#.loword(load_list_059EC9)
 	jsl	f:load_data_list
 	plx
 	lda	#$0080
@@ -10681,7 +10681,7 @@ helicopter_rope_state_00:
 	lda	#$01C0
 	sta	OBJ_TIMER,x
 	phx
-	ldx	#.loword(data_05F286)
+	ldx	#.loword(load_list_05F286)
 	jsl	f:load_data_list
 	plx
 @return:

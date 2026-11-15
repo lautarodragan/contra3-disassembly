@@ -46,7 +46,7 @@ tbl_opening_states:
 opening_cinematic_init:
 	lda	#$0061
 	jsl	f:queue_sound
-	ldx	#.loword(data_05A84B)
+	ldx	#.loword(load_list_05A84B)
 	jsl	f:load_data_list
 	ldy	#.loword(palette_05A815)
 	jsl	f:start_palette_task

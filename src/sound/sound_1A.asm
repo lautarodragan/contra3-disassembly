@@ -4,9 +4,15 @@
 ; Data uploaded to the sound CPU (read by upload_spc_raw_block, see
 ; sound/spc_upload.asm) and compressed graphics (decompress_chunk).
 ;
-; Data only (no labels, no code). Each block starts at a CDL comment.
+; Data only (no code). The labels name the compressed streams and blocks that
+; the data lists in data/tables_05.asm point to; "; ASSET:" marks a block whose
+; bounds are exact and that holds no pointers (a candidate for a binary file).
+; Other blocks start at a CDL comment.
 
-	.byte	$00, $2E, $EA, $25, $83, $5F, $96, $08, $7F, $BE, $7C, $02, $7C, $23, $7C, $44
+	.byte	$00, $2E
+spc_data_1A8002:
+	; ASSET: compressed sound CPU data, $1A:8002-$1A:A5EB (from its length word), loaded by load_list_05F55B
+	.byte	$EA, $25, $83, $5F, $96, $08, $7F, $BE, $7C, $02, $7C, $23, $7C, $44
 	.byte	$7C, $65, $7C, $86, $7C, $A7, $7C, $C8, $7C, $E9, $7D, $0A, $7D, $2B, $7D, $4C
 	.byte	$7D, $6D, $7D, $8E, $F3, $81, $40, $C0, $01, $82, $37, $1B, $05, $C5, $81, $5B
 	.byte	$09, $C9, $81, $7E, $01, $CE, $83, $02, $01, $A1, $01, $D3, $83, $05, $01, $CE
@@ -612,7 +618,10 @@
 	.byte	$19, $05, $F4, $81, $E3, $08, $15, $83, $AA, $18, $AA, $11, $62, $0B, $1B, $81
 	.byte	$08, $0B, $71, $81, $1A, $0B, $76, $FD, $7F, $A9, $7F, $CA, $7F, $EB, $7C, $0C
 	.byte	$7C, $2D, $7C, $4E, $7C, $6F, $7C, $90, $7C, $B1, $7C, $D2, $7C, $F3, $7D, $14
-	.byte	$7D, $35, $7D, $56, $7D, $77, $7D, $98, $7D, $B9, $09, $DA, $00, $20, $DA, $02
+	.byte	$7D, $35, $7D, $56, $7D, $77, $7D, $98, $7D, $B9, $09, $DA, $00, $20
+spc_data_1AA5EE:
+	; ASSET: compressed sound CPU data, $1A:A5EE-$1A:A8C7 (from its length word), loaded by song_set_05F537
+	.byte	$DA, $02
 	.byte	$9F, $10, $30, $2A, $30, $44, $30, $5E, $30, $8E, $30, $A2, $30, $C5, $30, $EF
 	.byte	$30, $EA, $56, $EE, $0A, $E2, $00, $FA, $8C, $0D, $00, $F2, $04, $E0, $18, $FE
 	.byte	$8B, $12, $31, $E6, $FE, $2D, $31, $E7, $06, $FA, $00, $FF, $07, $EF, $81, $0C
@@ -659,6 +668,8 @@
 	.byte	$7D, $64, $7D, $85, $7D, $A6, $7D, $C7, $7D, $E8, $7E, $09, $7E, $2A, $7E, $4B
 	.byte	$7E, $6C, $7E, $8D, $7E, $AE, $7E, $CF, $7E, $F0, $7F, $11, $7F, $32, $7F, $53
 	.byte	$7F, $74, $7F, $95, $7F, $B6, $17, $D7, $00, $01
+spc_block_1AA8CA:
+	; ASSET: sound CPU data (uncompressed), $1A:A8CA-$1A:A9C9, uploaded by load_list_05F55B
 	.byte	$00, $51, $3F, $51, $7E, $51, $CF, $51, $0E, $52, $56, $52, $7A, $52, $C2, $52
 	.byte	$E6, $52, $2E, $53, $52, $53, $9A, $53, $C7, $53, $E2, $53, $EB, $53, $06, $54
 	.byte	$21, $54, $3C, $54, $57, $54, $72, $54, $D5, $54, $F0, $54, $0B, $55, $26, $55
@@ -675,7 +686,10 @@
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$D8, $12, $0C, $30, $02, $33, $9F, $35, $5C, $38, $B1, $3A, $C0, $3C, $F4, $33
+	.byte	$D8, $12
+spc_block_1AA9CC:
+	; ASSET: sound CPU data (uncompressed), $1A:A9CC-$1A:BCA3, uploaded by song_set_05F46B
+	.byte	$0C, $30, $02, $33, $9F, $35, $5C, $38, $B1, $3A, $C0, $3C, $F4, $33
 	.byte	$50, $50, $F5, $05, $46, $02, $EA, $6E, $F2, $F8, $E2, $0D, $EE, $03, $E3, $10
 	.byte	$FA, $96, $D2, $50, $EF, $C0, $28, $50, $C0, $65, $4B, $EF, $C0, $7F, $EA, $69
 	.byte	$E1, $30, $65, $EA, $64, $E1, $30, $65, $EA, $62, $E1, $30, $65, $EA, $60, $E1
@@ -977,6 +991,8 @@
 	.byte	$FF, $60, $02, $18, $63, $5F, $01, $0C, $BC, $01, $18, $94, $01, $0C, $8F, $02
 	.byte	$18, $DF, $81, $94, $81, $CB, $82, $DF, $01, $0C, $BC, $01, $18, $94, $01, $0C
 	.byte	$94, $02, $18, $DF, $81, $CB, $E3, $15, $FF, $00, $32, $02
+spc_data_1ABCA6:
+	; ASSET: compressed sound CPU data, $1A:BCA6-$1A:BE81 (from its length word), loaded by song_set_05F4EF
 	.byte	$DC, $01, $9F, $0C, $30, $6F, $30, $E0, $30, $24, $31, $7B, $31, $BF, $31, $F4
 	.byte	$5D, $46, $50, $F5, $05, $28, $02, $EA, $70, $E2, $0D, $EE, $4B, $F2, $01, $E3
 	.byte	$07, $F2, $8B, $FC, $FA, $82, $D2, $00, $40, $0C, $64, $55, $C0, $D5, $00, $07
@@ -1006,7 +1022,10 @@
 	.byte	$05, $40, $82, $9D, $78, $09, $45, $87, $45, $0C, $B6, $C7, $B6, $CA, $B6, $05
 	.byte	$D2, $81, $14, $00, $71, $89, $02, $03, $4C, $90, $3C, $37, $FF, $C2, $D5, $09
 	.byte	$ED, $00, $43, $81, $FF, $00, $50, $15, $42, $81, $2D, $04, $5D, $84, $AF, $C4
-	.byte	$B2, $C4, $09, $51, $81, $28, $01, $E9, $01, $58, $81, $00, $28, $02, $07, $02
+	.byte	$B2, $C4, $09, $51, $81, $28, $01, $E9, $01, $58, $81, $00, $28, $02
+spc_data_1ABE84:
+	; ASSET: compressed sound CPU data, $1A:BE84-$1A:C08A (from its length word), loaded by song_set_05F513
+	.byte	$07, $02
 	.byte	$9F, $0C, $30, $57, $30, $B8, $30, $26, $31, $6F, $31, $BF, $31, $F4, $3F, $3C
 	.byte	$50, $F5, $05, $3C, $02, $EA, $44, $E2, $0D, $EE, $64, $FA, $96, $D2, $78, $43
 	.byte	$88, $0C, $46, $47, $C3, $CD, $E0, $0C, $C6, $03, $FF, $00, $03, $84, $43, $18
@@ -1702,6 +1721,8 @@
 	.byte	$94, $D0, $94, $DA, $94, $63, $64, $60, $FF, $EA, $49, $E2, $16, $EE, $7F, $E3
 	.byte	$09, $FA, $96, $D2, $00, $FF
 	; CDL: read by decompress_chunk
+gfx_1AE9C9:
+	; ASSET: compressed graphics (VRAM), $1A:E9C9-$1A:F381 (from its length word), loaded by load_list_058976
 	.byte	$B9, $09, $81, $0F, $A0, $8F, $8E, $87, $01, $1C, $03, $19, $07, $33, $0F, $03
 	.byte	$E9, $82, $61, $1F, $EE, $91, $96, $77, $2C, $EF, $6D, $EE, $D9, $DE, $DB, $DC
 	.byte	$F3, $FC, $F7, $F8, $E7, $F8, $08, $A6, $10, $10, $20, $20, $00, $00, $00, $20

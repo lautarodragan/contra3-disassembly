@@ -9,7 +9,7 @@
 ; (scrolled by stage1_boss_set_bg2_scroll, bent by HDMA tables at $7E:A000);
 ; the sprite objects are its hitboxes and parts. States: 0 boss music
 ; (song_change_*), 1 waits for bg1_scroll_mode 4 and loads the graphics
-; (data_05AA1F), 2-4 the wall breaks (type $22 chunks, type $23 debris),
+; (load_list_05AA1F), 2-4 the wall breaks (type $22 chunks, type $23 debris),
 ; 5 spawns the parts (spawn_stage1_boss_parts: body type $29 with HP 352,
 ; head type $1F, shell type $20), 6-8 attacks (stage1_boss_run_attack) and
 ; the slam. Field $32 counts down after the boss dies (explosions), then
@@ -79,7 +79,7 @@ stage1_boss_controller_state_01:
 	lda	#$0080
 	sta	OBJ_TIMER,x
 	stx	zp_FC
-	ldx	#.loword(data_05AA1F)
+	ldx	#.loword(load_list_05AA1F)
 	jsl	f:load_data_list
 	ldy	#.loword(palette_05AA28)
 	jsl	f:start_palette_task

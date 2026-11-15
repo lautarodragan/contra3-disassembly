@@ -3617,7 +3617,7 @@ stage3_spiked_climber_state_02:
 	lda	#$0060
 	sta	OBJ_TIMER,x
 	phx
-	ldx	#.loword(data_059E95)
+	ldx	#.loword(load_list_059E95)
 	jsl	f:load_data_list
 	plx
 @return:
@@ -4604,7 +4604,7 @@ stage3_spiked_climber_state_12:
 	sta	f:wram_7E3821
 	sta	f:wram_7E382A
 	phx
-	ldx	#.loword(data_059EB1)
+	ldx	#.loword(load_list_059EB1)
 	jsl	f:load_data_list
 	plx
 	inc	$12,x

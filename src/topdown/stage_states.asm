@@ -1382,12 +1382,12 @@ set_intro_scroll:
 	sta	a:p2_m7_vofs
 	rts
 
-; Runs the loader lists data_05CF33 and data_05CF41.
+; Runs the loader lists load_list_05CF33 and load_list_05CF41.
 load_topdown_common_assets:
-	ldx	#.loword(data_05CF33)
+	ldx	#.loword(load_list_05CF33)
 	jsl	f:load_data_list
 	jsl	f:init_hud
-	ldx	#.loword(data_05CF41)
+	ldx	#.loword(load_list_05CF41)
 	jsl	f:load_data_list
 	jsl	f:run_vram_queue
 	rts
@@ -1506,9 +1506,9 @@ reset_m7_block_patches:
 	sta	a:wram_1826
 	rts
 
-; Loads stage 2's graphics (loader list data_05CF2A) and palettes.
+; Loads stage 2's graphics (loader list load_list_05CF2A) and palettes.
 load_stage2_assets:
-	ldx	#.loword(data_05CF2A)
+	ldx	#.loword(load_list_05CF2A)
 	jsl	f:load_data_list
 	ldy	#.loword(palette_05CFB2)
 	jsl	f:start_palette_task
@@ -1517,7 +1517,7 @@ load_stage2_assets:
 
 ; Loads stage 5's graphics and palettes.
 load_stage5_assets:
-	ldx	#.loword(data_05D01F)
+	ldx	#.loword(load_list_05D01F)
 	jsl	f:load_data_list
 	ldy	#.loword(palette_05D056)
 	jsl	f:start_palette_task
@@ -1528,9 +1528,9 @@ load_stage5_assets:
 load_stage2_boss_assets:
 	ldx	#.loword(song_set_05F46B)
 	jsl	f:load_song_set
-	ldx	#.loword(data_05CFCF)
+	ldx	#.loword(load_list_05CFCF)
 	jsl	f:load_data_list
-	ldx	#.loword(data_05CFD8)
+	ldx	#.loword(load_list_05CFD8)
 	jsl	f:load_data_list
 	ldy	#.loword(palette_05D006)
 	jsl	f:start_palette_task
@@ -1541,9 +1541,9 @@ load_stage2_boss_assets:
 load_stage5_boss_assets:
 	ldx	#.loword(song_set_05F46B)
 	jsl	f:load_song_set
-	ldx	#.loword(data_05D073)
+	ldx	#.loword(load_list_05D073)
 	jsl	f:load_data_list
-	ldx	#.loword(data_05D07C)
+	ldx	#.loword(load_list_05D07C)
 	jsl	f:load_data_list
 	ldy	#.loword(palette_05D0AA)
 	jsl	f:start_palette_task

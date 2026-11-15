@@ -28,7 +28,7 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 
 | type | handler | what it is |
 |---|---|---|
-| $01 | `update_stage1_boss_controller` | the stage 1 boss (the giant turtle bursting through the wall), invisible controller in slot `$0900`: boss music (`song_change_set`), graphics (`data_05AA1F`), the wall breaking (types `$22`, `$23`), then spawns the parts (`spawn_stage1_boss_parts`) and runs the attacks (`tbl_stage1_boss_attacks`) and the slam; the turtle itself is drawn on BG2 and bent by HDMA. Checked in the emulator |
+| $01 | `update_stage1_boss_controller` | the stage 1 boss (the giant turtle bursting through the wall), invisible controller in slot `$0900`: boss music (`song_change_set`), graphics (`load_list_05AA1F`), the wall breaking (types `$22`, `$23`), then spawns the parts (`spawn_stage1_boss_parts`) and runs the attacks (`tbl_stage1_boss_attacks`) and the slam; the turtle itself is drawn on BG2 and bent by HDMA. Checked in the emulator |
 | $02 | `update_object_type_02` | seen once in stage 1 (section 8); sets `OBJ_HP` to $100 in state 0 and runs 11 states. Not identified |
 | $03 | `update_bg2_scroll_mode_trigger` | stage trigger: sets `bg2_map_offset` from field `$3A`, waits for `bg2_screen_drawn`, then sets `bg2_scroll_mode` |
 | $04, $54 | `update_object_type_04` | seen in stage 1 (section 4, a red soldier on a building ledge, probably). Not identified with certainty |

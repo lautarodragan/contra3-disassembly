@@ -4,7 +4,10 @@
 ; Data uploaded to the sound CPU (read by upload_spc_raw_block, see
 ; sound/spc_upload.asm) and compressed graphics (decompress_chunk).
 ;
-; Data only (no labels, no code). Each block starts at a CDL comment.
+; Data only (no code). The labels name the compressed streams and blocks that
+; the data lists in data/tables_05.asm point to; "; ASSET:" marks a block whose
+; bounds are exact and that holds no pointers (a candidate for a binary file).
+; Other blocks start at a CDL comment.
 
 	.byte	$44, $25, $00, $00, $00, $00, $00, $00, $00, $00, $00, $C0, $00, $00, $02, $3B
 	.byte	$C0, $3D, $E1, $ED, $C4, $20, $F0, $11, $F0, $42, $C3, $F0, $3C, $C0, $35, $24
@@ -1679,6 +1682,8 @@
 	.byte	$CF, $44, $1E, $EF, $EC, $A4, $AB, $DE, $CB, $F5, $45, $1D, $FB, $34, $40, $42
 	.byte	$33, $10, $01
 	; CDL: read by decompress_chunk
+gfx_1FE855:
+	; ASSET: compressed graphics (VRAM), $1F:E855-$1F:FFB1 (from its length word), loaded by load_list_058976
 	.byte	$5D, $17, $FE, $81, $3F, $AF, $3F, $30, $30, $30, $30, $3F, $3F, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $FC, $FC, $AF, $00, $00, $00, $00, $C0, $C0, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $03, $03, $00, $F9, $81, $F0, $AF, $F0, $C0, $C0

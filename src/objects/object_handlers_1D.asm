@@ -444,7 +444,7 @@ ending_sequence_state_10:
 	bpl	loc_1DB2F1
 	inc	OBJ_STATE,x
 	phx
-	ldx	#.loword(data_05F8C3)
+	ldx	#.loword(load_list_05F8C3)
 	jsl	f:load_data_list
 	ldy	#.loword(palette_05F8DA)
 	jsl	f:start_palette_task
@@ -1286,7 +1286,7 @@ update_enemy_type_97:
 	jsl	f:start_palette_task
 	plx
 	phx
-	ldx	#.loword(data_05F8D1)
+	ldx	#.loword(load_list_05F8D1)
 	jsl	f:load_data_list
 	plx
 loc_1DB98C:
@@ -1508,7 +1508,7 @@ loc_1DBB47:
 	jsl	f:queue_sound
 	ldy	#.loword(palette_05FEC7)
 	jsl	f:start_palette_task
-	ldx	#.loword(data_05FEDF)
+	ldx	#.loword(load_list_05FEDF)
 	jsl	f:load_data_list
 	plx
 	lda	#$0013
@@ -2029,7 +2029,7 @@ brain_boss_state_00:
 	sta	OBJ_X,x
 	stz	a:boss_work_1
 	phx
-	ldx	#.loword(data_05FF27)
+	ldx	#.loword(load_list_05FF27)
 	jsl	f:load_data_list
 	plx
 	stz	a:boss_work_6
@@ -2275,7 +2275,7 @@ brain_boss_state_08:
 	lda	#$0006
 	sta	OBJ_STATE,x
 	phx
-	ldx	#.loword(data_05FF30)
+	ldx	#.loword(load_list_05FF30)
 	jsl	f:load_data_list
 	plx
 loc_1DC13D:

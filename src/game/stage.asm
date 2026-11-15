@@ -159,9 +159,9 @@ stage_setup_video:
 	sta	a:tm_shadow
 	lda	#$0002
 	sta	a:ts_shadow
-	ldx	#.loword(data_058ADD)
+	ldx	#.loword(load_list_058ADD)
 	jsl	f:load_data_list
-	ldx	#.loword(data_058AD4)
+	ldx	#.loword(load_list_058AD4)
 	jsl	f:load_data_list
 	ldy	a:stage_layout
 	ldx	a:data_058A0D,y

@@ -4,9 +4,14 @@
 ; Compressed graphics (decompress_chunk) and data read or DMA'd by the top-down
 ; streaming code (stream_topdown_sprite_gfx).
 ;
-; Data only (no labels, no code). Each block starts at a CDL comment.
+; Data only (no code). The labels name the compressed streams and blocks that
+; the data lists in data/tables_05.asm point to; "; ASSET:" marks a block whose
+; bounds are exact and that holds no pointers (a candidate for a binary file).
+; Other blocks start at a CDL comment.
 
 	; CDL: read by decompress_chunk
+gfx_148000:
+	; ASSET: compressed graphics (VRAM), $14:8000-$14:97EF (from its length word), loaded by load_list_05CFCF
 	.byte	$F0, $17, $DD, $28, $7F, $FD, $7C, $1E, $7C, $3F, $CB, $28, $81, $D8, $14, $68
 	.byte	$81, $DB, $14, $6F, $81, $DC, $14, $77, $81, $DD, $10, $80, $82, $D9, $DE, $0C
 	.byte	$88, $00, $75, $81, $DF, $08, $91, $C2, $D8, $34, $66, $82, $28, $DA, $14, $A7
@@ -390,6 +395,9 @@
 	.byte	$0A, $81, $E9, $0F, $FE, $04, $02, $81, $EE, $5B, $C7, $58, $1F, $14, $38, $81
 	.byte	$28, $27, $58, $0C, $1A, $7C, $5F, $0C, $80, $81, $ED, $10, $0E, $07, $FA, $C6
 	.byte	$28, $18, $57, $78, $9F, $82, $EE, $ED, $10, $C1, $20, $95, $10, $D8, $81, $00
+packed_1497F0:
+	; Compressed data for WRAM $7E:C000, $14:97F0-$14:9C92 (from its length word), loaded by load_list_05CFD8.
+	; Not an ASSET yet: what it decompresses to is not checked for pointers.
 	.byte	$A3, $04, $DD, $28, $7F, $FD, $CD, $28, $81, $D8, $14, $28, $81, $DB, $14, $2F
 	.byte	$81, $DC, $14, $37, $81, $DD, $10, $40, $82, $D9, $DE, $0C, $48, $00, $35, $81
 	.byte	$DF, $08, $51, $C2, $D8, $34, $26, $82, $28, $DA, $14, $67, $81, $DB, $38, $70
@@ -464,7 +472,11 @@
 	.byte	$04, $15, $3B, $0D, $41, $C3, $E7, $05, $4B, $C4, $E7, $05, $54, $15, $18, $19
 	.byte	$5E, $10, $F9, $0D, $6D, $0D, $71, $10, $7F, $11, $7D, $09, $82, $3B, $4F, $15
 	.byte	$57, $11, $9E, $07, $6C, $0D, $A8, $11, $08, $0D, $39, $15, $40, $05, $2E, $53
-	.byte	$FE, $81, $00, $DA, $0B, $E1, $81, $01, $03, $E1, $82, $04, $05, $1B, $E5, $03
+	.byte	$FE, $81, $00
+packed_149C93:
+	; Compressed data for WRAM $7E:A000, $14:9C93-$14:A86C (from its length word), loaded by load_list_05CFD8.
+	; Not an ASSET yet: what it decompresses to is not checked for pointers.
+	.byte	$DA, $0B, $E1, $81, $01, $03, $E1, $82, $04, $05, $1B, $E5, $03
 	.byte	$E3, $86, $01, $02, $03, $04, $03, $08, $1B, $F5, $E2, $C0, $40, $81, $60, $1C
 	.byte	$04, $81, $00, $C0, $80, $85, $40, $80, $20, $80, $10, $18, $15, $82, $01, $03
 	.byte	$00, $1F, $03, $ED, $18, $1F, $00, $26, $81, $07, $03, $FE, $81, $0C, $03, $FD
@@ -653,7 +665,10 @@
 	.byte	$98, $45, $D6, $03, $93, $81, $01, $0F, $31, $20, $6D, $00, $BB, $18, $B1, $21
 	.byte	$C9, $84, $30, $C0, $B4, $68, $23, $F1, $81, $50, $0D, $06, $14, $34, $08, $EC
 	.byte	$0C, $7D, $10, $F9, $09, $33, $08, $BB, $E0, $84, $B1, $5F, $D0, $93, $0C, $47
-	.byte	$14, $59, $81, $EC, $A6, $8F, $10, $00, $00, $00, $00, $00, $00, $F5, $13, $E0
+	.byte	$14, $59, $81, $EC, $A6, $8F, $10, $00, $00, $00, $00, $00, $00
+gfx_14A86D:
+	; ASSET: compressed graphics (VRAM), $14:A86D-$14:BC61 (from its length word), loaded by load_list_05CF33
+	.byte	$F5, $13, $E0
 	.byte	$86, $18, $00, $3C, $18, $66, $3C, $03, $E5, $03, $E3, $03, $E1, $13, $DD, $81
 	.byte	$24, $A4, $42, $42, $24, $18, $00, $10, $83, $01, $02, $80, $E1, $81, $01, $08
 	.byte	$02, $03, $F7, $82, $08, $81, $A9, $00, $10, $40, $02, $40, $00, $08, $00, $00
@@ -1488,6 +1503,8 @@
 	.byte	$A0, $A0, $60, $E0, $A0, $60, $E0, $E0, $7C, $FC, $5A, $D6, $AD, $2B, $4A, $69
 	.byte	$E0, $E0, $E0, $60, $E0, $20, $E0, $E0, $FC, $7C, $DE, $72, $EF, $39, $AF, $18
 	; CDL: read by stream_topdown_sprite_gfx
+gfx_14DC62:
+	; ASSET: compressed graphics (VRAM), $14:DC62-$14:F0F7 (from its length word), loaded by load_list_05FDCF
 	.byte	$96, $14, $DE, $FF, $93, $CD, $C2, $9E, $80, $34, $08, $69, $11, $52, $23, $A4
 	.byte	$47, $88, $4E, $D0, $19, $3F, $FF, $7F, $C1, $FF, $94, $FE, $FF, $FC, $FF, $F8
 	.byte	$FF, $F1, $FF, $E7, $FF, $B8, $3F, $61, $7F, $8E, $FE, $38, $F8, $73, $F3, $00
@@ -1818,7 +1835,10 @@
 	.byte	$05, $28, $03, $F3, $03, $CD, $00, $15, $0A, $53, $C2, $FF, $8E, $85, $3E, $EA
 	.byte	$D4, $14, $F8, $C8, $F0, $31, $C1, $E3, $03, $C7, $07, $C0, $0F, $82, $CF, $FF
 	.byte	$03, $41, $00, $2F, $02, $6F, $0B, $B9, $03, $D3, $03, $BD, $DF, $FF, $DF, $FF
-	.byte	$DF, $FF, $DF, $FF, $DA, $FF, $FF, $09, $DE, $FF, $81, $1B, $37, $FE, $A6, $FF
+	.byte	$DF, $FF, $DF, $FF, $DA, $FF
+gfx_14F0F8:
+	; ASSET: compressed graphics (VRAM), $14:F0F8-$14:FAF6 (from its length word), loaded by load_list_05FDE1
+	.byte	$FF, $09, $DE, $FF, $81, $1B, $37, $FE, $A6, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $81, $F7, $34, $1E, $38, $0F, $CE, $FE, $82
 	.byte	$01, $FF, $30, $4F, $CE, $FD, $82, $02, $FF, $30, $6F, $CE, $F7, $82, $08, $FF
 	.byte	$30, $8F, $CE, $66, $82, $99, $FF, $30, $AF, $82, $33, $0F, $18, $BF, $86, $03

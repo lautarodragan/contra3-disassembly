@@ -3,7 +3,9 @@
 ;
 ; Sound data uploaded to the sound CPU (read by upload_spc_raw_block).
 ;
-; Data only (no labels, no code).
+; Data only (no code). The labels name the compressed streams and blocks that
+; the data lists in data/tables_05.asm point to; "; ASSET:" marks a block whose
+; bounds are exact and that holds no pointers (a candidate for a binary file).
 
 	.byte	$00, $01, $00, $51, $3F, $51, $7E, $51, $CF, $51, $0E, $52, $56, $52, $7A, $52
 	.byte	$C2, $52, $E6, $52, $2E, $53, $52, $53, $9A, $53, $C7, $53, $E2, $53, $EB, $53
@@ -101,7 +103,10 @@
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $00, $51
+	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01
+spc_block_1D860E:
+	; ASSET: sound CPU data (uncompressed), $1D:860E-$1D:870D, uploaded by song_set_05F46B
+	.byte	$00, $51
 	.byte	$3F, $51, $7E, $51, $CF, $51, $0E, $52, $56, $52, $7A, $52, $C2, $52, $E6, $52
 	.byte	$2E, $53, $52, $53, $9A, $53, $C7, $53, $E2, $53, $EB, $53, $06, $54, $21, $54
 	.byte	$3C, $54, $57, $54, $72, $54, $D5, $54, $F0, $54, $0B, $55, $26, $55, $20, $5B
@@ -119,6 +124,8 @@
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $90, $24
 	; CDL: read by upload_spc_raw_block
+spc_block_1D8710:
+	; ASSET: sound CPU data (uncompressed), $1D:8710-$1D:AB9F, uploaded by song_set_05F46B
 	.byte	$02, $00, $00, $00, $00, $00, $00, $00, $00, $C2, $00, $00, $FE, $F4, $3E, $F1
 	.byte	$14, $2C, $C2, $D1, $12, $1C, $D1, $0F, $FC, $E3, $1D, $C2, $DC, $E3, $1C, $DE
 	.byte	$F3, $2D, $E0, $02, $C2, $1C, $E3, $33, $2E, $05, $42, $1E, $06, $C2, $40, $0F

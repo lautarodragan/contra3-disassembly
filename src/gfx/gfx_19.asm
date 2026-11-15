@@ -4,9 +4,14 @@
 ; Graphics compressed for the decompressor (decompress_chunk, see
 ; engine/decompress.asm).
 ;
-; Data only (no labels, no code). Each block starts at a CDL comment.
+; Data only (no code). The labels name the compressed streams and blocks that
+; the data lists in data/tables_05.asm point to; "; ASSET:" marks a block whose
+; bounds are exact and that holds no pointers (a candidate for a binary file).
+; Other blocks start at a CDL comment.
 
 	; CDL: read by decompress_chunk
+gfx_198000:
+	; ASSET: compressed graphics (VRAM), $19:8000-$19:9AB0 (from its length word), loaded by load_list_058850
 	.byte	$B1, $1A, $FF, $E7, $85, $30, $00, $58, $30, $FF, $EB, $81, $10, $E1, $93, $D6
 	.byte	$1B, $BF, $7D, $FF, $41, $6B, $0D, $6F, $1C, $76, $1C, $3F, $0E, $3B, $0E, $00
 	.byte	$20, $3D, $A0, $41, $01, $82, $10, $04, $AF, $14, $0A, $0A, $80, $80, $80, $80
@@ -434,7 +439,10 @@
 	.byte	$C0, $40, $C0, $C0, $C0, $0F, $A2, $03, $83, $03, $58, $31, $B1, $41, $D1, $03
 	.byte	$A6, $09, $E3, $EE, $8A, $91, $71, $B1, $70, $B3, $70, $62, $E1, $64, $E3, $03
 	.byte	$C7, $81, $F8, $00, $7D, $82, $DE, $0E, $A6, $0F, $0F, $1F, $1F, $1F, $1F, $3F
-	.byte	$7B, $8F, $10, $90, $C6, $FF, $E2, $7F, $2B, $F7, $09, $E7, $6D, $8B, $4C, $8B
+	.byte	$7B
+gfx_199AB1:
+	; ASSET: compressed graphics (VRAM), $19:9AB1-$19:AB3F (from its length word), loaded by load_list_058850
+	.byte	$8F, $10, $90, $C6, $FF, $E2, $7F, $2B, $F7, $09, $E7, $6D, $8B, $4C, $8B
 	.byte	$CE, $0D, $C6, $85, $E0, $81, $80, $A5, $C0, $F0, $F0, $F0, $F0, $78, $EF, $85
 	.byte	$10, $F7, $08, $7F, $80, $00, $03, $85, $7E, $80, $7C, $80, $FC, $A8, $F8, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $99, $8F, $7E, $A2, $7D, $CC, $33, $F9, $07
@@ -699,6 +707,8 @@
 	.byte	$3F, $F3, $03, $28, $81, $83, $02, $E3, $04, $3E, $85, $F8, $0E, $F1, $3E, $C1
 	.byte	$03, $39, $33, $CD, $83, $EC, $F8, $98, $C0, $F0, $81, $E0, $01, $06, $86, $20
 	.byte	$C0, $60, $80, $40, $80, $00, $9D, $00, $AD, $63, $A5, $FF, $FF, $FF, $FF, $EE
+gfx_19AB40:
+	; ASSET: compressed graphics (VRAM), $19:AB40-$19:AF8B (from its length word), loaded by load_list_058850
 	.byte	$4C, $04, $AF, $0C, $0C, $0C, $0C, $0C, $0C, $0C, $0C, $0C, $0C, $0C, $0C, $0C
 	.byte	$0C, $0C, $0C, $0C, $AF, $0C, $08, $08, $08, $08, $08, $08, $08, $08, $0C, $0C
 	.byte	$0C, $0C, $0C, $0C, $0C, $0C, $7C, $21, $7C, $04, $08, $63, $81, $01, $18, $60
@@ -767,7 +777,10 @@
 	.byte	$A2, $56, $56, $88, $30, $11, $31, $11, $32, $11, $26, $50, $02, $AB, $8F, $33
 	.byte	$11, $34, $11, $35, $11, $36, $0D, $A3, $0D, $A4, $0D, $A5, $0D, $A6, $1E, $96
 	.byte	$87, $A7, $0D, $A8, $0D, $A9, $0D, $AA, $56, $96, $46, $EB, $4F, $96, $61, $55
-	.byte	$7E, $EF, $7F, $10, $7F, $31, $7F, $52, $7F, $73, $27, $D2, $2D, $1B, $FF, $E7
+	.byte	$7E, $EF, $7F, $10, $7F, $31, $7F, $52, $7F, $73, $27, $D2
+gfx_19AF8C:
+	; ASSET: compressed graphics (VRAM), $19:AF8C-$19:CAB8 (from its length word), loaded by load_list_058868
+	.byte	$2D, $1B, $FF, $E7
 	.byte	$C0, $03, $C0, $07, $C0, $1F, $33, $FD, $C0, $06, $E0, $C0, $01, $82, $0F, $07
 	.byte	$C0, $3F, $88, $FE, $FD, $F9, $FE, $F4, $CF, $DA, $27, $E4, $C0, $07, $C0, $3C
 	.byte	$C0, $F0, $82, $84, $8C, $A0, $04, $00, $84, $9A, $D8, $FC, $FF, $00, $2B, $88
@@ -1202,7 +1215,10 @@
 	.byte	$01, $0B, $90, $81, $0F, $03, $95, $86, $10, $0F, $30, $0F, $60, $0F, $02, $AD
 	.byte	$8D, $E9, $06, $69, $06, $79, $06, $3D, $06, $3C, $07, $3E, $07, $1B, $02, $F3
 	.byte	$CD, $FF, $87, $39, $38, $33, $30, $86, $01, $8C, $01, $C7, $86, $03, $FA, $07
-	.byte	$04, $FF, $78, $01, $45, $06, $B4, $CA, $FF, $C0, $0C, $90, $DE, $3F, $3C, $FF
+	.byte	$04, $FF, $78, $01, $45, $06, $B4, $CA, $FF
+gfx_19CAB9:
+	; ASSET: compressed graphics (VRAM), $19:CAB9-$19:D778 (from its length word), loaded by load_list_058868
+	.byte	$C0, $0C, $90, $DE, $3F, $3C, $FF
 	.byte	$70, $FF, $E1, $FE, $83, $FC, $08, $F7, $20, $DF, $40, $BF, $CE, $FF, $90, $0F
 	.byte	$F0, $3F, $C0, $7C, $83, $C1, $3E, $03, $FC, $07, $F8, $0C, $F0, $18, $E0, $CE
 	.byte	$FF, $84, $F2, $03, $E7, $07, $00, $21, $82, $CF, $0F, $C0, $1C, $C0, $31, $C0
@@ -1406,7 +1422,10 @@
 	.byte	$CF, $84, $C1, $FE, $C0, $FF, $00, $C1, $84, $E0, $FF, $70, $7F, $00, $C7, $81
 	.byte	$78, $04, $CA, $23, $D7, $10, $D7, $83, $F2, $0C, $FD, $03, $6B, $00, $7C, $81
 	.byte	$80, $03, $25, $00, $E7, $01, $AC, $03, $29, $F0, $0B, $7F, $0B, $81, $0A, $51
-	.byte	$01, $0B, $FF, $FF, $FF, $FF, $FF, $FF, $E8, $A7, $03, $AF, $0C, $0C, $0C, $0C
+	.byte	$01, $0B, $FF, $FF, $FF, $FF, $FF, $FF, $E8
+gfx_19D779:
+	; ASSET: compressed graphics (VRAM), $19:D779-$19:DB1F (from its length word), loaded by load_list_058868
+	.byte	$A7, $03, $AF, $0C, $0C, $0C, $0C
 	.byte	$0C, $0C, $0C, $0C, $08, $08, $08, $08, $08, $08, $08, $08, $0C, $7F, $FF, $7F
 	.byte	$E2, $7C, $41, $7C, $24, $48, $83, $81, $58, $5C, $5A, $89, $01, $08, $02, $08
 	.byte	$03, $08, $04, $08, $05, $5C, $7C, $87, $59, $0C, $5A, $0C, $5B, $0C, $5C, $4C
@@ -1465,6 +1484,9 @@
 	.byte	$2A, $0D, $2B, $0D, $2C, $0D, $7E, $0D, $7F, $0D, $80, $0D, $81, $0D, $82, $0D
 	.byte	$83, $0D, $84, $0D, $85, $0D, $86, $0D, $87, $84, $0D, $88, $0D, $89, $7D, $4C
 	.byte	$7E, $F5, $7F, $16, $7F, $37, $7F, $58, $7F, $79, $7F, $9A, $7F, $BB, $81, $0C
+packed_19DB20:
+	; Compressed data for WRAM $7E:5000, $19:DB20-$19:EF61 (from its length word), loaded by load_list_058C6F.
+	; Not an ASSET yet: what it decompresses to is not checked for pointers.
 	.byte	$42, $14, $9F, $44, $17, $45, $17, $35, $17, $36, $17, $46, $17, $47, $17, $39
 	.byte	$17, $3A, $17, $48, $17, $49, $17, $3D, $17, $3E, $17, $4A, $17, $40, $17, $41
 	.byte	$17, $42, $85, $17, $34, $57, $33, $57, $A0, $14, $14, $83, $38, $57, $37, $0C
@@ -1789,7 +1811,10 @@
 	.byte	$1B, $5D, $1B, $5E, $1B, $5F, $1B, $60, $1B, $6D, $1B, $6E, $1B, $6F, $1B, $70
 	.byte	$1B, $41, $1B, $42, $1B, $43, $1B, $44, $1B, $51, $1B, $52, $1B, $53, $93, $1B
 	.byte	$54, $1B, $61, $1B, $62, $1B, $63, $1B, $64, $1B, $71, $1B, $72, $1B, $73, $1B
-	.byte	$74, $1B, $83, $0F, $DE, $FF, $A2, $FF, $FF, $FF, $FF, $08, $02, $0C, $05, $47
+	.byte	$74, $1B
+gfx_19EF62:
+	; ASSET: compressed graphics (VRAM), $19:EF62-$19:FEE4 (from its length word), loaded by load_list_05FDEA
+	.byte	$83, $0F, $DE, $FF, $A2, $FF, $FF, $FF, $FF, $08, $02, $0C, $05, $47
 	.byte	$EF, $10, $05, $0C, $1F, $78, $0E, $81, $01, $CC, $FF, $81, $FE, $14, $3E, $8A
 	.byte	$F0, $0C, $E3, $10, $8E, $61, $5C, $C3, $BC, $83, $C2, $FF, $8B, $FC, $FF, $F3
 	.byte	$FF, $EF, $FF, $9F, $FF, $3F, $FF, $7F, $04, $5E, $82, $C0, $3F, $08, $80, $88

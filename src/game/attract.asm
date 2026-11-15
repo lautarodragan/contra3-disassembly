@@ -451,13 +451,13 @@ load_title_graphics:
 	jsl	f:start_palette_task_at
 	ldy	#.loword(palette_05854B)
 	jsl	f:start_palette_task
-	ldx	#.loword(data_058527)
+	ldx	#.loword(load_list_058527)
 	jsl	f:load_data_list
-	ldx	#.loword(data_058530)
+	ldx	#.loword(load_list_058530)
 	jsl	f:load_data_list
-	ldx	#.loword(data_058539)
+	ldx	#.loword(load_list_058539)
 	jsl	f:load_data_list
-	ldx	#.loword(data_058542)
+	ldx	#.loword(load_list_058542)
 	jsl	f:load_data_list
 	rts
 
@@ -1000,7 +1000,7 @@ konami_logo_init:
 	lda	#$0009
 	sta	a:bgmode_shadow
 	lda	#$0001
-	ldx	#.loword(data_0587AB)
+	ldx	#.loword(load_list_0587AB)
 	jsl	f:load_data_list
 	ldy	#.loword(palette_0587C3)
 	jsl	f:start_palette_task

@@ -1843,6 +1843,8 @@ stage2_arena_debris_streams:
 	.byte	$04, $FC, $FE, $F8, $00, $FC, $F6, $E8, $00, $00, $F8, $EC, $01, $F0, $F8, $EA
 	.byte	$01
 	; CDL: read by decompress_chunk
+gfx_07E9FE:
+	; ASSET: compressed graphics (VRAM), $07:E9FE-$07:F551 (from its length word), loaded by load_list_0587AB
 	.byte	$54, $0B, $FF, $FD, $86, $E0, $7F, $FF, $1F, $F8, $07, $08, $23, $84, $FF, $07
 	.byte	$F0, $0F, $00, $2B, $81, $80, $A1, $E0, $F8, $FF, $04, $28, $04, $37, $81, $0F
 	.byte	$00, $3B, $81, $03, $AE, $03, $03, $03, $03, $07, $07, $07, $03, $03, $07, $07
@@ -2024,7 +2026,11 @@ stage2_arena_debris_streams:
 	.byte	$FC, $05, $45, $27, $54, $85, $D8, $C8, $CC, $22, $3E, $C0, $03, $0F, $66, $0C
 	.byte	$0B, $85, $3F, $E1, $1F, $3E, $01, $02, $13, $1B, $A7, $01, $8D, $01, $49, $03
 	.byte	$83, $03, $91, $01, $43, $C1, $30, $0F, $0C, $01, $59, $01, $57, $01, $55, $01
-	.byte	$53, $09, $4F, $E0, $3C, $02, $7F, $DE, $7F, $FF, $7C, $20, $7C, $41, $EE, $81
+	.byte	$53, $09, $4F, $E0
+packed_07F552:
+	; Compressed data for WRAM $7E:9000, $07:F552-$07:F78D (from its length word), loaded by load_list_05A84B.
+	; Not an ASSET yet: what it decompresses to is not checked for pointers.
+	.byte	$3C, $02, $7F, $DE, $7F, $FF, $7C, $20, $7C, $41, $EE, $81
 	.byte	$20, $AF, $20, $60, $80, $00, $00, $00, $00, $00, $40, $00, $A0, $00, $00, $00
 	.byte	$00, $00, $40, $A2, $00, $C0, $E0, $00, $81, $01, $2C, $7F, $83, $02, $A0, $02
 	.byte	$E4, $82, $E0, $06, $E1, $85, $07, $20, $07, $C0, $04, $7C, $52, $F7, $85, $60
@@ -2060,6 +2066,8 @@ stage2_arena_debris_streams:
 	.byte	$7C, $E0, $7D, $01, $7D, $22, $7D, $43, $7D, $64, $7D, $85, $7D, $A6, $7D, $C7
 	.byte	$7D, $E8, $7E, $09, $7E, $2A, $7E, $4B, $7E, $6C, $7E, $8D, $7E, $AE, $7E, $CF
 	.byte	$7E, $F0, $7F, $11, $7F, $32, $7F, $53, $7F, $74, $7F, $95, $7F, $B6, $17, $D7
+gfx_07F78E:
+	; ASSET: compressed graphics (VRAM), $07:F78E-$07:F902 (from its length word), loaded by load_list_05FDB3
 	.byte	$75, $01, $7F, $DE, $7F, $FF, $7C, $20, $7C, $41, $7C, $62, $7C, $83, $7C, $A4
 	.byte	$7C, $C5, $7C, $E6, $7D, $07, $7D, $28, $7D, $49, $7D, $6A, $7D, $8B, $7D, $AC
 	.byte	$7D, $CD, $7D, $EE, $7E, $0F, $7E, $30, $7E, $51, $7E, $72, $7E, $93, $7E, $B4

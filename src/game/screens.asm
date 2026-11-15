@@ -463,7 +463,7 @@ tbl_options_steps:
 	.addr	options_fade_out
 
 options_init:
-	ldx	#.loword(data_05CF41)
+	ldx	#.loword(load_list_05CF41)
 	jsl	f:load_data_list
 	ldy	#.loword(palette_058412)
 	jsl	f:start_palette_task
@@ -812,7 +812,7 @@ final_score_init:
 	plp
 	lda	#$0005
 	sta	a:tm_shadow
-	ldx	#.loword(data_058976)
+	ldx	#.loword(load_list_058976)
 	jsl	f:load_data_list
 	ldy	#.loword(palette_05898E)
 	jsl	f:start_palette_task

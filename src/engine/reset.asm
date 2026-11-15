@@ -5,7 +5,7 @@
 ; If boot_signature is not in RAM ($1E0A, ">JIN L<" + $0400), it is a cold
 ; boot: $1E00-$1FFF is cleared, the signature written and the option
 ; defaults set ($1E3C = 3 lives, $1E3E = 2 normal difficulty, ...). Either
-; way the sound driver is uploaded (loader list data_05F55B, type 2) and
+; way the sound driver is uploaded (loader list load_list_05F55B, type 2) and
 ; warm_boot follows.
 ;
 ; warm_boot (also the target of the soft reset in read_joypads): clears VRAM,
@@ -92,7 +92,7 @@ reset:
 	lda	#$0002
 	sta	a:option_level
 @upload_sound_driver:
-	ldx	#.loword(data_05F55B)
+	ldx	#.loword(load_list_05F55B)
 	jsl	f:load_data_list
 warm_boot:
 	sei

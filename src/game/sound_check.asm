@@ -26,7 +26,7 @@ tbl_sound_check_steps:
 
 sound_check_init:
 	; (not executed in the CDL traces)
-	ldx	#.loword(data_05CF41)
+	ldx	#.loword(load_list_05CF41)
 	jsl	f:load_data_list
 	ldy	#.loword(palette_058412)
 	jsl	f:start_palette_task

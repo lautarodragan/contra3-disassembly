@@ -524,7 +524,7 @@ game_mode_stage_select:
 	sta	a:INIDISP
 	rep	#$20
 	.a16
-	ldx	#.loword(data_05CF41)
+	ldx	#.loword(load_list_05CF41)
 	jsl	f:load_data_list
 	ldy	#.loword(palette_058412)
 	jsl	f:start_palette_task
@@ -625,7 +625,7 @@ game_mode_stage_card:
 	sta	a:INIDISP
 	rep	#$20
 	.a16
-	ldx	#.loword(data_05CF41)
+	ldx	#.loword(load_list_05CF41)
 	jsl	f:load_data_list
 	ldy	#.loword(palette_058412)
 	jsl	f:start_palette_task
@@ -795,7 +795,7 @@ game_over_init:
 	sta	a:INIDISP
 	rep	#$20
 	.a16
-	ldx	#.loword(data_05CF41)
+	ldx	#.loword(load_list_05CF41)
 	jsl	f:load_data_list
 	ldy	#.loword(palette_058412)
 	jsl	f:start_palette_task

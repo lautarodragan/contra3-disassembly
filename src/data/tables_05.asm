@@ -165,18 +165,26 @@ data_05851D:
 data_05851F:
 	; CDL: read by draw_title_menu_cursor
 	.byte	$00, $24, $00, $20, $00, $20, $00, $20
-data_058527:
+load_list_058527:
 	; CDL: read by load_data_list, dma_ring_to_vram, decompress_chunk
-	.byte	$03, $00, $00, $00, $49, $92, $08, $FF, $FF
-data_058530:
+	load_list	$03, $00
+	load_vram	$0000, gfx_089249
+	load_end
+load_list_058530:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk
-	.byte	$00, $00, $00, $60, $28, $EB, $11, $FF, $FF
-data_058539:
+	load_list	$00, $00
+	load_vram	$6000, gfx_11EB28
+	load_end
+load_list_058539:
 	; CDL: read by load_data_list, dma_ring_to_vram, decompress_chunk
-	.byte	$03, $01, $00, $00, $DF, $FA, $06, $FF, $FF
-data_058542:
+	load_list	$03, $01
+	load_vram	$0000, gfx_06FADF
+	load_end
+load_list_058542:
 	; CDL: read by draw_text, load_data_list, run_pending_loads (+3 more)
-	.byte	$00, $00, $00, $50, $7E, $9D, $08, $FF, $FF
+	load_list	$00, $00
+	load_vram	$5000, gfx_089D7E
+	load_end
 palette_05854B:
 	.byte	$01, $00, $00, $AA, $80, $00, $22
 	.byte	$F6, $8A, $80, $23, $00, $00
@@ -199,33 +207,62 @@ text_0585B4:
 text_0585C2:
 	.byte	$EC, $5A, $4A, $0B, $4E, $44, $4A, $49, $FF
 ptrs_0585CB:
-	.addr	data_0585D1
-	.addr	data_058623
-	.addr	data_058687
-data_0585D1:
+	.addr	load_list_0585D1
+	.addr	load_list_058623
+	.addr	load_list_058687
+load_list_0585D1:
 	; CDL: read by load_data_list, init_loader_context, decompress_chunk
-	.byte	$01, $01, $00, $00, $7F, $00, $80, $0B, $00, $20, $7F, $5C, $93, $0B, $00, $40
-	.byte	$7F, $9C, $AA, $0B, $00, $60, $7F, $FD, $BC, $0B, $00, $80, $7F, $A1, $C6, $0B
-	.byte	$00, $A0, $7F, $8C, $D8, $0B, $00, $C0, $7F, $EA, $CD, $11, $00, $E0, $7F, $75
-	.byte	$DF, $11, $00, $50, $7E, $64, $B0, $0A, $00, $90, $7E, $71, $D8, $0A, $00, $B0
-	.byte	$7E, $3B, $C1, $0A, $00, $70, $7E, $BC, $CD, $0A, $00, $F0, $7E, $6D, $DE, $0A
-	.byte	$FF, $FF
-data_058623:
+	load_list	$01, $01
+	load_wram	$7F0000, packed_0B8000
+	load_wram	$7F2000, packed_0B935C
+	load_wram	$7F4000, packed_0BAA9C
+	load_wram	$7F6000, packed_0BBCFD
+	load_wram	$7F8000, packed_0BC6A1
+	load_wram	$7FA000, packed_0BD88C
+	load_wram	$7FC000, packed_11CDEA
+	load_wram	$7FE000, packed_11DF75
+	load_wram	$7E5000, packed_0AB064
+	load_wram	$7E9000, packed_0AD871
+	load_wram	$7EB000, packed_0AC13B
+	load_wram	$7E7000, packed_0ACDBC
+	load_wram	$7EF000, packed_0ADE6D
+	load_end
+load_list_058623:
 	; CDL: read by load_data_list, init_loader_context, decompress_chunk
-	.byte	$01, $01, $00, $00, $7F, $00, $80, $12, $00, $20, $7F, $17, $94, $12, $00, $40
-	.byte	$7F, $E8, $A7, $12, $00, $60, $7F, $16, $BC, $12, $00, $80, $7F, $EE, $CF, $12
-	.byte	$00, $A0, $7F, $0A, $E6, $12, $00, $C0, $7F, $00, $80, $13, $00, $E0, $7F, $67
-	.byte	$95, $13, $00, $80, $7E, $20, $E4, $13, $00, $90, $7E, $3A, $ED, $13, $00, $94
-	.byte	$7E, $4E, $EE, $13, $00, $98, $7E, $62, $EF, $13, $00, $9C, $7E, $76, $F0, $13
-	.byte	$00, $A0, $7E, $00, $80, $17, $00, $C0, $7E, $AD, $98, $17, $00, $E0, $7E, $DA
-	.byte	$AF, $17, $FF, $FF
-data_058687:
+	load_list	$01, $01
+	load_wram	$7F0000, packed_128000
+	load_wram	$7F2000, packed_129417
+	load_wram	$7F4000, packed_12A7E8
+	load_wram	$7F6000, packed_12BC16
+	load_wram	$7F8000, packed_12CFEE
+	load_wram	$7FA000, packed_12E60A
+	load_wram	$7FC000, packed_138000
+	load_wram	$7FE000, packed_139567
+	load_wram	$7E8000, packed_13E420
+	load_wram	$7E9000, packed_13ED3A
+	load_wram	$7E9400, packed_13EE4E
+	load_wram	$7E9800, packed_13EF62
+	load_wram	$7E9C00, packed_13F076
+	load_wram	$7EA000, packed_178000
+	load_wram	$7EC000, packed_1798AD
+	load_wram	$7EE000, packed_17AFDA
+	load_end
+load_list_058687:
 	; CDL: read by load_data_list, init_loader_context, decompress_chunk
-	.byte	$01, $01, $00, $00, $7F, $00, $80, $0B, $00, $20, $7F, $5C, $93, $0B, $00, $40
-	.byte	$7F, $9C, $AA, $0B, $00, $60, $7F, $FD, $BC, $0B, $00, $80, $7F, $A1, $C6, $0B
-	.byte	$00, $A0, $7F, $8C, $D8, $0B, $00, $C0, $7F, $EA, $CD, $11, $00, $E0, $7F, $75
-	.byte	$DF, $11, $00, $50, $7E, $EA, $ED, $0F, $00, $90, $7E, $66, $F3, $0E, $00, $B0
-	.byte	$7E, $3B, $F8, $0F, $00, $F0, $7E, $B7, $FD, $0F, $FF, $FF
+	load_list	$01, $01
+	load_wram	$7F0000, packed_0B8000
+	load_wram	$7F2000, packed_0B935C
+	load_wram	$7F4000, packed_0BAA9C
+	load_wram	$7F6000, packed_0BBCFD
+	load_wram	$7F8000, packed_0BC6A1
+	load_wram	$7FA000, packed_0BD88C
+	load_wram	$7FC000, packed_11CDEA
+	load_wram	$7FE000, packed_11DF75
+	load_wram	$7E5000, packed_0FEDEA
+	load_wram	$7E9000, packed_0EF366
+	load_wram	$7EB000, packed_0FF83B
+	load_wram	$7EF000, packed_0FFDB7
+	load_end
 data_0586D3:
 	; CDL: not accessed
 	.byte	$00, $01, $00, $04, $00, $05
@@ -250,10 +287,14 @@ data_058793:
 	; CDL: read by draw_text, konami_logo_sweep
 	.byte	$9B, $87, $9F, $87, $A3, $87, $A7, $87, $30, $00, $88, $FF, $30, $00, $8A, $FF
 	.byte	$30, $00, $8C, $FF, $30, $00, $8E, $FF
-data_0587AB:
+load_list_0587AB:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk (+2 more)
-	.byte	$00, $00, $00, $20, $FE, $E9, $07, $00, $10, $D4, $8F, $08, $00, $00, $DE, $91
-	.byte	$08, $00, $01, $25, $92, $08, $FF, $FF
+	load_list	$00, $00
+	load_vram	$2000, gfx_07E9FE
+	load_vram	$1000, gfx_088FD4
+	load_vram	$0000, gfx_0891DE
+	load_vram	$0100, gfx_089225
+	load_end
 palette_0587C3:
 	.byte	$01, $00, $00, $00, $80, $60, $22, $22
 	.byte	$80, $00, $22, $22, $80, $20, $22, $22, $80, $40, $22, $00, $00
@@ -268,14 +309,42 @@ palette_0587EA:
 data_0587F1:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk (+3 more); partly not accessed
 	.byte	$00, $00, $08, $88, $20, $88, $38, $88, $50, $88, $68, $88, $22, $BE, $8D, $00
-	.byte	$A2, $08, $88, $22, $A8, $90, $00, $00, $00, $00, $20, $00, $80, $18, $00, $30
-	.byte	$A4, $99, $18, $00, $00, $E3, $AA, $18, $00, $50, $7E, $9D, $08, $FF, $FF, $00
-	.byte	$00, $00, $20, $20, $AF, $18, $00, $30, $96, $C8, $18, $00, $00, $5B, $D1, $18
-	.byte	$00, $50, $7E, $9D, $08, $FF, $FF, $00, $00, $00, $20, $E3, $D4, $18, $00, $30
-	.byte	$DF, $E9, $18, $00, $00, $F5, $FA, $18, $00, $50, $7E, $9D, $08, $FF, $FF, $00
-	.byte	$00, $00, $20, $00, $80, $19, $00, $30, $B1, $9A, $19, $00, $00, $40, $AB, $19
-	.byte	$00, $50, $7E, $9D, $08, $FF, $FF, $00, $00, $00, $20, $8C, $AF, $19, $00, $30
-	.byte	$B9, $CA, $19, $00, $00, $79, $D7, $19, $00, $50, $7E, $9D, $08, $FF, $FF
+	.byte	$A2, $08, $88, $22, $A8, $90, $00
+load_list_058808:
+	load_list	$00, $00
+	load_vram	$2000, gfx_188000
+	load_vram	$3000, gfx_1899A4
+	load_vram	$0000, gfx_18AAE3
+	load_vram	$5000, gfx_089D7E
+	load_end
+load_list_058820:
+	load_list	$00, $00
+	load_vram	$2000, gfx_18AF20
+	load_vram	$3000, gfx_18C896
+	load_vram	$0000, gfx_18D15B
+	load_vram	$5000, gfx_089D7E
+	load_end
+load_list_058838:
+	load_list	$00, $00
+	load_vram	$2000, gfx_18D4E3
+	load_vram	$3000, gfx_18E9DF
+	load_vram	$0000, gfx_18FAF5
+	load_vram	$5000, gfx_089D7E
+	load_end
+load_list_058850:
+	load_list	$00, $00
+	load_vram	$2000, gfx_198000
+	load_vram	$3000, gfx_199AB1
+	load_vram	$0000, gfx_19AB40
+	load_vram	$5000, gfx_089D7E
+	load_end
+load_list_058868:
+	load_list	$00, $00
+	load_vram	$2000, gfx_19AF8C
+	load_vram	$3000, gfx_19CAB9
+	load_vram	$0000, gfx_19D779
+	load_vram	$5000, gfx_089D7E
+	load_end
 palette_058880:
 	.byte	$01
 	.byte	$00, $00, $2C, $88, $00, $22, $00, $00
@@ -300,19 +369,19 @@ text_0588C7:
 	.byte	$3C, $4C, $FE, $6B, $5A, $3E, $47, $40, $3C, $4C, $00, $3D, $4A, $49, $4F
 ptrs_0588E1:
 	.addr	data_05FF4D
-	.addr	data_058A93
-	.addr	data_05CF4A
-	.addr	data_058A93
-	.addr	data_058A93
-	.addr	data_05CF4A
+	.addr	load_list_058A93
+	.addr	load_list_05CF4A
+	.addr	load_list_058A93
+	.addr	load_list_058A93
+	.addr	load_list_05CF4A
 ptrs_0588ED:
-	.addr	data_058A93
-	.addr	data_058AE6
-	.addr	data_05CF7E
-	.addr	data_058B5D
-	.addr	data_058BF8
-	.addr	data_05D028
-	.addr	data_058C6F
+	.addr	load_list_058A93
+	.addr	load_list_058AE6
+	.addr	load_list_05CF7E
+	.addr	load_list_058B5D
+	.addr	load_list_058BF8
+	.addr	load_list_05D028
+	.addr	load_list_058C6F
 lives_options:
 	; CDL: read by options_store_lives; partly not accessed
 	.byte	$03, $00, $05, $00, $07, $00, $1E, $00
@@ -341,10 +410,14 @@ text_058967:
 	.byte	$FF
 text_05896F:
 	.byte	$4A, $5A, $40, $52, $44, $4E, $FF
-data_058976:
+load_list_058976:
 	; CDL: read by draw_text, load_data_list, run_pending_loads (+3 more)
-	.byte	$00, $00, $00, $20, $55, $E8, $1F, $00, $30, $C9, $E9, $1A, $00, $00, $D0, $EB
-	.byte	$1E, $00, $50, $7E, $9D, $08, $FF, $FF
+	load_list	$00, $00
+	load_vram	$2000, gfx_1FE855
+	load_vram	$3000, gfx_1AE9C9
+	load_vram	$0000, gfx_1EEBD0
+	load_vram	$5000, gfx_089D7E
+	load_end
 palette_05898E:
 	.byte	$01, $00, $00, $7A, $8B, $00, $22, $00
 	.byte	$00
@@ -380,8 +453,9 @@ data_058A03:
 	.byte	$2B, $8A, $45, $8A, $5F, $8A, $79, $8A, $5F, $8A
 data_058A0D:
 	; CDL: read by stage_setup_video; partly not accessed
-	.byte	$08, $8B, $85, $8B, $14, $8C, $97, $8C, $08, $8B, $2F, $8B, $B6, $8B, $3B, $8C
-	.byte	$97, $8C, $08, $8B
+	.addr	load_list_058B08, load_list_058B85, load_list_058C14, load_list_058C97
+	.addr	load_list_058B08, load_list_058B2F, load_list_058BB6, load_list_058C3B
+	.addr	load_list_058C97, load_list_058B08
 data_058A21:
 	; CDL: read by stage_init, load_stage_dp_params; partly not accessed
 	.byte	$4C, $8B, $E7, $8B, $62, $8C, $CD, $8C, $4C, $8B, $91, $03, $ED, $03, $F4, $03
@@ -392,65 +466,152 @@ data_058A21:
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $B5, $03, $EA, $03, $F2, $03, $F8, $03
 	.byte	$00, $04, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00
-data_058A93:
+load_list_058A93:
 	; CDL: read by load_data_list, init_loader_context, load_wram_stream (+3 more)
-	.byte	$01, $00, $00, $00, $7F, $00, $80, $0B, $00, $20, $7F, $5C, $93, $0B, $00, $40
-	.byte	$7F, $9C, $AA, $0B, $00, $60, $7F, $FD, $BC, $0B, $00, $80, $7F, $A1, $C6, $0B
-	.byte	$00, $A0, $7F, $8C, $D8, $0B, $00, $C0, $7F, $EA, $CD, $11, $00, $E0, $7F, $75
-	.byte	$DF, $11, $FF, $FF
+	load_list	$01, $00
+	load_wram	$7F0000, packed_0B8000
+	load_wram	$7F2000, packed_0B935C
+	load_wram	$7F4000, packed_0BAA9C
+	load_wram	$7F6000, packed_0BBCFD
+	load_wram	$7F8000, packed_0BC6A1
+	load_wram	$7FA000, packed_0BD88C
+	load_wram	$7FC000, packed_11CDEA
+	load_wram	$7FE000, packed_11DF75
+	load_end
 palette_058AC7:
 	.byte	$01, $00, $00, $B6, $82, $00, $23, $54, $82, $A0, $23, $00
 	.byte	$00
-data_058AD4:
+load_list_058AD4:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk
-	.byte	$00, $00, $00, $60, $28, $A7, $0D, $FF, $FF
-data_058ADD:
+	load_list	$00, $00
+	load_vram	$6000, gfx_0DA728
+	load_end
+load_list_058ADD:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk
-	.byte	$00, $00, $00, $50, $7E, $9D, $08, $FF, $FF
-data_058AE6:
+	load_list	$00, $00
+	load_vram	$5000, gfx_089D7E
+	load_end
+load_list_058AE6:
 	; CDL: read by load_data_list, run_pending_loads, init_loader_context (+4 more)
-	.byte	$01, $00, $00, $50, $7E, $64, $B0, $0A, $00, $90, $7E, $71, $D8, $0A, $00, $B0
-	.byte	$7E, $3B, $C1, $0A, $00, $70, $7E, $BC, $CD, $0A, $00, $F0, $7E, $6D, $DE, $0A
-	.byte	$FF, $FF, $00, $00, $00, $00, $00, $80, $09, $00, $10, $8E, $99, $09, $00, $20
-	.byte	$2D, $B3, $09, $00, $30, $49, $CD, $09, $00, $70, $EB, $BC, $0D, $00, $74, $FE
-	.byte	$C2, $0D, $00, $78, $0C, $C9, $0D, $FF, $FF, $00, $00, $00, $00, $00, $80, $09
-	.byte	$00, $10, $8E, $99, $09, $00, $20, $2D, $B3, $09, $00, $30, $49, $CD, $09, $00
-	.byte	$70, $88, $DD, $0E, $FF, $FF, $01, $00, $00, $50, $81, $40, $22, $92, $8F, $00
+	load_list	$01, $00
+	load_wram	$7E5000, packed_0AB064
+	load_wram	$7E9000, packed_0AD871
+	load_wram	$7EB000, packed_0AC13B
+	load_wram	$7E7000, packed_0ACDBC
+	load_wram	$7EF000, packed_0ADE6D
+	load_end
+load_list_058B08:
+	load_list	$00, $00
+	load_vram	$0000, gfx_098000
+	load_vram	$1000, gfx_09998E
+	load_vram	$2000, gfx_09B32D
+	load_vram	$3000, gfx_09CD49
+	load_vram	$7000, gfx_0DBCEB
+	load_vram	$7400, gfx_0DC2FE
+	load_vram	$7800, gfx_0DC90C
+	load_end
+load_list_058B2F:
+	load_list	$00, $00
+	load_vram	$0000, gfx_098000
+	load_vram	$1000, gfx_09998E
+	load_vram	$2000, gfx_09B32D
+	load_vram	$3000, gfx_09CD49
+	load_vram	$7000, gfx_0EDD88
+	load_end
+	.byte	$01, $00, $00, $50, $81, $40, $22, $92, $8F, $00
 	.byte	$22, $BA, $83, $40, $23, $00, $00
-data_058B5D:
+load_list_058B5D:
 	; CDL: read by load_data_list, run_pending_loads, init_loader_context (+2 more)
-	.byte	$01, $00, $00, $50, $7E, $C4, $8C, $0D, $00, $90, $7E, $A2, $F5, $0E, $00, $B0
-	.byte	$7E, $00, $80, $0D, $00, $70, $7E, $9E, $9C, $0D, $00, $F0, $7E, $E5, $A5, $0D
-	.byte	$00, $A0, $7E, $B1, $E8, $0E, $FF, $FF, $00, $00, $00, $00, $00, $80, $0C, $00
-	.byte	$10, $A2, $98, $0C, $00, $20, $BF, $AF, $0C, $00, $30, $5E, $C6, $0C, $00, $70
-	.byte	$00, $80, $0E, $00, $72, $07, $83, $0E, $00, $74, $FE, $C2, $0D, $00, $78, $D3
-	.byte	$D6, $0D, $00, $7C, $51, $86, $0E, $FF, $FF
+	load_list	$01, $00
+	load_wram	$7E5000, packed_0D8CC4
+	load_wram	$7E9000, packed_0EF5A2
+	load_wram	$7EB000, packed_0D8000
+	load_wram	$7E7000, packed_0D9C9E
+	load_wram	$7EF000, packed_0DA5E5
+	load_wram	$7EA000, packed_0EE8B1
+	load_end
+load_list_058B85:
+	load_list	$00, $00
+	load_vram	$0000, gfx_0C8000
+	load_vram	$1000, gfx_0C98A2
+	load_vram	$2000, gfx_0CAFBF
+	load_vram	$3000, gfx_0CC65E
+	load_vram	$7000, gfx_0E8000
+	load_vram	$7200, gfx_0E8307
+	load_vram	$7400, gfx_0DC2FE
+	load_vram	$7800, gfx_0DD6D3
+	load_vram	$7C00, gfx_0E8651
+	load_end
 	; CDL: read by start_palette_task_at, palette_task_animate; partly not accessed
-	.byte	$00, $00, $00, $00, $00, $80, $0C, $00, $10, $A2, $98, $0C, $00, $20, $BF, $AF
-	.byte	$0C, $00, $30, $5E, $C6, $0C, $00, $70, $00, $80, $0E, $00, $72, $89, $8C, $0E
-	.byte	$00, $74, $FE, $C2, $0D, $00, $78, $D3, $D6, $0D, $00, $7C, $5B, $8F, $0E, $FF
-	.byte	$FF, $01, $00, $00, $F8, $82, $40, $22, $92, $8F, $00, $22, $02, $86, $40, $23
+load_list_058BB6:
+	load_list	$00, $00
+	load_vram	$0000, gfx_0C8000
+	load_vram	$1000, gfx_0C98A2
+	load_vram	$2000, gfx_0CAFBF
+	load_vram	$3000, gfx_0CC65E
+	load_vram	$7000, gfx_0E8000
+	load_vram	$7200, gfx_0E8C89
+	load_vram	$7400, gfx_0DC2FE
+	load_vram	$7800, gfx_0DD6D3
+	load_vram	$7C00, gfx_0E8F5B
+	load_end
+	.byte	$01, $00, $00, $F8, $82, $40, $22, $92, $8F, $00, $22, $02, $86, $40, $23
 	.byte	$00, $00
-data_058BF8:
+load_list_058BF8:
 	; CDL: read by load_data_list, run_pending_loads, init_loader_context (+2 more)
-	.byte	$01, $00, $00, $50, $7E, $EA, $ED, $0F, $00, $90, $7E, $66, $F3, $0E, $00, $B0
-	.byte	$7E, $3B, $F8, $0F, $00, $F0, $7E, $B7, $FD, $0F, $FF, $FF, $00, $00, $00, $00
-	.byte	$00, $80, $0F, $00, $10, $60, $94, $0F, $00, $20, $90, $AC, $0F, $00, $30, $E5
-	.byte	$C8, $0F, $00, $76, $4E, $DA, $0E, $00, $70, $84, $95, $0E, $00, $78, $88, $EF
-	.byte	$0D, $FF, $FF
+	load_list	$01, $00
+	load_wram	$7E5000, packed_0FEDEA
+	load_wram	$7E9000, packed_0EF366
+	load_wram	$7EB000, packed_0FF83B
+	load_wram	$7EF000, packed_0FFDB7
+	load_end
+load_list_058C14:
+	load_list	$00, $00
+	load_vram	$0000, gfx_0F8000
+	load_vram	$1000, gfx_0F9460
+	load_vram	$2000, gfx_0FAC90
+	load_vram	$3000, gfx_0FC8E5
+	load_vram	$7600, gfx_0EDA4E
+	load_vram	$7000, gfx_0E9584
+	load_vram	$7800, gfx_0DEF88
+	load_end
 	; CDL: read by start_palette_task_at, palette_task_animate; partly not accessed
-	.byte	$00, $00, $00, $00, $00, $80, $0F, $00, $10, $60, $94, $0F, $00, $20, $90, $AC
-	.byte	$0F, $00, $30, $47, $D1, $0F, $00, $76, $4E, $DA, $0E, $00, $70, $84, $95, $0E
-	.byte	$00, $78, $88, $EF, $0D, $FF, $FF, $01, $00, $00, $3E, $84, $00, $22, $64, $86
+load_list_058C3B:
+	load_list	$00, $00
+	load_vram	$0000, gfx_0F8000
+	load_vram	$1000, gfx_0F9460
+	load_vram	$2000, gfx_0FAC90
+	load_vram	$3000, gfx_0FD147
+	load_vram	$7600, gfx_0EDA4E
+	load_vram	$7000, gfx_0E9584
+	load_vram	$7800, gfx_0DEF88
+	load_end
+	.byte	$01, $00, $00, $3E, $84, $00, $22, $64, $86
 	.byte	$40, $23, $00, $00
-data_058C6F:
+load_list_058C6F:
 	; CDL: read by load_data_list, run_pending_loads, init_loader_context (+4 more)
-	.byte	$01, $00, $00, $50, $7E, $20, $DB, $19, $00, $70, $7E, $34, $FA, $09, $00, $90
-	.byte	$7E, $FE, $F1, $10, $00, $B0, $7E, $52, $DF, $16, $00, $F0, $7E, $31, $F7, $10
-	.byte	$00, $A0, $7E, $AF, $B7, $11, $FF, $FF, $00, $00, $00, $00, $00, $80, $10, $00
-	.byte	$10, $17, $9C, $10, $00, $20, $27, $B9, $10, $00, $30, $A2, $D5, $10, $00, $70
-	.byte	$00, $80, $0E, $00, $72, $89, $8C, $0E, $00, $74, $FE, $C2, $0D, $00, $78, $D3
-	.byte	$D6, $0D, $00, $7C, $5B, $8F, $0E, $00, $70, $4B, $A3, $0E, $FF, $FF, $01, $00
+	load_list	$01, $00
+	load_wram	$7E5000, packed_19DB20
+	load_wram	$7E7000, packed_09FA34
+	load_wram	$7E9000, packed_10F1FE
+	load_wram	$7EB000, packed_16DF52
+	load_wram	$7EF000, packed_10F731
+	load_wram	$7EA000, packed_11B7AF
+	load_end
+load_list_058C97:
+	load_list	$00, $00
+	load_vram	$0000, gfx_108000
+	load_vram	$1000, gfx_109C17
+	load_vram	$2000, gfx_10B927
+	load_vram	$3000, gfx_10D5A2
+	load_vram	$7000, gfx_0E8000
+	load_vram	$7200, gfx_0E8C89
+	load_vram	$7400, gfx_0DC2FE
+	load_vram	$7800, gfx_0DD6D3
+	load_vram	$7C00, gfx_0E8F5B
+	load_vram	$7000, gfx_0EA34B
+	load_end
+	.byte	$01, $00
 	.byte	$00, $40, $85, $40, $22, $92, $8F, $00, $22, $C6, $86, $40, $23, $00, $00
 data_058CDE:
 	; CDL: read by player_autopilot_mode1; partly not accessed
@@ -796,25 +957,71 @@ data_059E42:
 	.byte	$00, $A0, $00, $A4, $00, $A8, $00, $A4
 data_059E4A:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk (+1 more); partly not accessed
-	.byte	$79, $9E, $8C, $9E, $62, $9E, $70, $9E, $95, $9E, $9E, $9E, $B1, $9E, $C9, $9E
-	.byte	$DC, $9E, $EA, $9E, $F3, $9E, $FC, $9E, $00, $01, $00, $78, $D3, $D6, $0D, $00
-	.byte	$7C, $20, $DC, $0D, $FF, $FF, $00, $01, $00, $70, $88, $DD, $0E, $FF, $FF, $00
-	.byte	$01, $00, $00, $00, $80, $0A, $00, $10, $BA, $EB, $09, $00, $70, $18, $E2, $0D
-	.byte	$FF, $FF, $00, $01, $00, $08, $7C, $A3, $0A, $FF, $FF
-data_059E95:
+	.addr	load_list_059E79, load_list_059E8C, load_list_059E62, load_list_059E70
+	.addr	load_list_059E95, load_list_059E9E, load_list_059EB1, load_list_059EC9
+	.addr	load_list_059EDC, load_list_059EEA, load_list_059EF3, load_list_059EFC
+load_list_059E62:
+	load_list	$00, $01
+	load_vram	$7800, gfx_0DD6D3
+	load_vram	$7C00, gfx_0DDC20
+	load_end
+load_list_059E70:
+	load_list	$00, $01
+	load_vram	$7000, gfx_0EDD88
+	load_end
+load_list_059E79:
+	load_list	$00, $01
+	load_vram	$0000, gfx_0A8000
+	load_vram	$1000, gfx_09EBBA
+	load_vram	$7000, gfx_0DE218
+	load_end
+load_list_059E8C:
+	load_list	$00, $01
+	load_vram	$0800, gfx_0AA37C
+	load_end
+load_list_059E95:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
-	.byte	$00, $01, $00, $72, $86, $C3, $11, $FF, $FF, $00, $01, $00, $70, $24, $C0, $0E
-	.byte	$00, $00, $2D, $DB, $0C, $00, $10, $BD, $F4, $0C, $FF, $FF
-data_059EB1:
+	load_list	$00, $01
+	load_vram	$7200, gfx_11C386
+	load_end
+load_list_059E9E:
+	load_list	$00, $01
+	load_vram	$7000, gfx_0EC024
+	load_vram	$0000, gfx_0CDB2D
+	load_vram	$1000, gfx_0CF4BD
+	load_end
+load_list_059EB1:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
-	.byte	$00, $01, $00, $72, $89, $8C, $0E, $00, $74, $FE, $C2, $0D, $00, $78, $D3, $D6
-	.byte	$0D, $00, $7C, $5B, $8F, $0E, $FF, $FF
-data_059EC9:
+	load_list	$00, $01
+	load_vram	$7200, gfx_0E8C89
+	load_vram	$7400, gfx_0DC2FE
+	load_vram	$7800, gfx_0DD6D3
+	load_vram	$7C00, gfx_0E8F5B
+	load_end
+load_list_059EC9:
 	; CDL: read by load_data_list, step_vram_loader, init_loader_context (+1 more); partly not accessed
-	.byte	$00, $01, $00, $00, $00, $80, $11, $00, $10, $0E, $9D, $11, $00, $20, $27, $B9
-	.byte	$10, $FF, $FF, $00, $01, $00, $00, $00, $80, $0F, $00, $20, $38, $A5, $08, $FF
-	.byte	$FF, $00, $01, $00, $30, $D9, $DC, $15, $FF, $FF, $00, $01, $00, $78, $5E, $9F
-	.byte	$0E, $FF, $FF, $01, $01, $00, $A0, $7E, $38, $E6, $09, $FF, $FF
+	load_list	$00, $01
+	load_vram	$0000, gfx_118000
+	load_vram	$1000, gfx_119D0E
+	load_vram	$2000, gfx_10B927
+	load_end
+load_list_059EDC:
+	load_list	$00, $01
+	load_vram	$0000, gfx_0F8000
+	load_vram	$2000, gfx_08A538
+	load_end
+load_list_059EEA:
+	load_list	$00, $01
+	load_vram	$3000, gfx_15DCD9
+	load_end
+load_list_059EF3:
+	load_list	$00, $01
+	load_vram	$7800, gfx_0E9F5E
+	load_end
+load_list_059EFC:
+	load_list	$01, $01
+	load_wram	$7EA000, packed_09E638
+	load_end
 data_059F06:
 	; CDL: not accessed
 	.byte	$04, $00
@@ -848,9 +1055,12 @@ data_059FAA:
 data_059FB2:
 	; CDL: read by update_object_type_3C
 	.byte	$00, $A0, $00, $A3, $00, $A6, $00, $A9
-data_059FBA:
+load_list_059FBA:
 	; CDL: read by load_data_list, init_loader_context, decompress_chunk (+1 more); DMA / HDMA; partly not accessed
-	.byte	$01, $01, $00, $A0, $7E, $C6, $9B, $0A, $FF, $FF, $7F, $20, $21, $20, $80, $02
+	load_list	$01, $01
+	load_wram	$7EA000, packed_0A9BC6
+	load_end
+	.byte	$7F, $20, $21, $20, $80, $02
 	.byte	$00, $7F, $49, $20, $49, $80, $48, $00, $70, $43, $00, $05, $40, $38, $7E, $7E
 	.byte	$60, $43, $02, $0D, $00, $38, $7E, $7E, $50, $43, $02, $0E, $20, $38, $7E, $7E
 	.byte	$FF, $FF, $E0, $70, $43, $00, $30, $C4, $9F, $05, $05, $60, $43, $00, $08, $CB
@@ -1213,27 +1423,37 @@ type_scores:
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $25
 ptrs_05A7AF:
-	.addr	data_05A7DB
-	.addr	data_05A7DB
-	.addr	data_05A7DB
-	.addr	data_05A7DB
-	.addr	data_05A807
-	.addr	data_05A807
-	.addr	data_05A807
+	.addr	load_list_05A7DB
+	.addr	load_list_05A7DB
+	.addr	load_list_05A7DB
+	.addr	load_list_05A7DB
+	.addr	load_list_05A807
+	.addr	load_list_05A807
+	.addr	load_list_05A807
 opening_scene_durations:
 	; CDL: read by opening_scene_run
 	.byte	$B4, $00, $DD, $02, $3C, $00, $EC, $01, $15, $02, $82, $00, $B2, $00
 opening_scene_next_states:
 	; CDL: read by opening_next_scene_unused; partly not accessed
 	.byte	$01, $00, $03, $00, $03, $00, $03, $00, $01, $00, $01, $00, $03, $00, $05, $00
-data_05A7DB:
+load_list_05A7DB:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk
-	.byte	$00, $00, $00, $00, $A7, $D6, $06, $00, $10, $78, $C0, $08, $00, $20, $AF, $D8
-	.byte	$08, $00, $30, $4D, $CE, $17, $00, $40, $5C, $EF, $06, $00, $44, $94, $EC, $06
-	.byte	$00, $48, $84, $F1, $06, $00, $70, $53, $B9, $17, $FF, $FF
-data_05A807:
+	load_list	$00, $00
+	load_vram	$0000, gfx_06D6A7
+	load_vram	$1000, gfx_08C078
+	load_vram	$2000, gfx_08D8AF
+	load_vram	$3000, gfx_17CE4D
+	load_vram	$4000, gfx_06EF5C
+	load_vram	$4400, gfx_06EC94
+	load_vram	$4800, gfx_06F184
+	load_vram	$7000, gfx_17B953
+	load_end
+load_list_05A807:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk (+4 more)
-	.byte	$00, $00, $00, $40, $13, $F3, $06, $00, $48, $8F, $F6, $06, $FF, $FF
+	load_list	$00, $00
+	load_vram	$4000, gfx_06F313
+	load_vram	$4800, gfx_06F68F
+	load_end
 palette_05A815:
 	.byte	$01, $00
 	.byte	$00, $F0, $89, $00, $22, $B6, $82, $00, $23, $54, $82, $A0, $23, $F6, $8A, $80
@@ -1250,9 +1470,12 @@ palette_05A83C:
 palette_05A845:
 	.byte	$03, $08
 	.byte	$F2, $8A, $50, $22
-data_05A84B:
+load_list_05A84B:
 	; CDL: read by load_data_list, init_loader_context, load_wram_stream (+1 more)
-	.byte	$01, $00, $00, $90, $7E, $52, $F5, $07, $00, $50, $7E, $0A, $D8, $15, $FF, $FF
+	load_list	$01, $00
+	load_wram	$7E9000, packed_07F552
+	load_wram	$7E5000, packed_15D80A
+	load_end
 data_05A85B:
 	; CDL: read by opening_city_init
 	.byte	$20, $00, $00, $08, $00, $00, $08, $00, $00, $08, $00, $00, $08, $00, $00, $08
@@ -1347,9 +1570,11 @@ data_05AA03:
 	; CDL: read by build_wave_table, opening_init_ruins_wave
 	.byte	$50, $10, $A4, $EE, $20, $A4, $30, $10, $A4, $00, $80, $13, $00, $00, $70, $00
 	.byte	$20, $A0, $7E, $98, $13, $00, $00, $70, $00, $20, $A4, $7E
-data_05AA1F:
+load_list_05AA1F:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk (+4 more); DMA / HDMA; partly not accessed
-	.byte	$00, $01, $00, $70, $18, $E2, $0D, $FF, $FF
+	load_list	$00, $01
+	load_vram	$7000, gfx_0DE218
+	load_end
 palette_05AA28:
 	.byte	$01, $00, $00, $1C, $84, $80, $23
 	.byte	$00, $00, $70, $43, $00, $05, $44, $AA, $05, $05, $60, $43, $02, $12, $49, $AA
@@ -2699,63 +2924,106 @@ data_05CF26:
 data_05CF28:
 	; CDL: read by spawn_stage5_boss
 	.byte	$00, $00
-data_05CF2A:
+load_list_05CF2A:
 	; CDL: read by load_data_list, dma_ring_to_vram, decompress_chunk
-	.byte	$03, $00, $00, $00, $02, $CC, $13, $FF, $FF
-data_05CF33:
+	load_list	$03, $00
+	load_vram	$0000, gfx_13CC02
+	load_end
+load_list_05CF33:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk
-	.byte	$00, $00, $00, $60, $6D, $A8, $14, $00, $70, $91, $BE, $16, $FF, $FF
-data_05CF41:
+	load_list	$00, $00
+	load_vram	$6000, gfx_14A86D
+	load_vram	$7000, gfx_16BE91
+	load_end
+load_list_05CF41:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk
-	.byte	$00, $00, $00, $50, $7E, $9D, $08, $FF, $FF
-data_05CF4A:
+	load_list	$00, $00
+	load_vram	$5000, gfx_089D7E
+	load_end
+load_list_05CF4A:
 	; CDL: read by load_data_list, init_loader_context, load_wram_stream (+1 more)
-	.byte	$01, $00, $00, $00, $7F, $00, $80, $12, $00, $20, $7F, $17, $94, $12, $00, $40
-	.byte	$7F, $E8, $A7, $12, $00, $60, $7F, $16, $BC, $12, $00, $80, $7F, $EE, $CF, $12
-	.byte	$00, $A0, $7F, $0A, $E6, $12, $00, $C0, $7F, $00, $80, $13, $00, $E0, $7F, $67
-	.byte	$95, $13, $FF, $FF
-data_05CF7E:
+	load_list	$01, $00
+	load_wram	$7F0000, packed_128000
+	load_wram	$7F2000, packed_129417
+	load_wram	$7F4000, packed_12A7E8
+	load_wram	$7F6000, packed_12BC16
+	load_wram	$7F8000, packed_12CFEE
+	load_wram	$7FA000, packed_12E60A
+	load_wram	$7FC000, packed_138000
+	load_wram	$7FE000, packed_139567
+	load_end
+load_list_05CF7E:
 	; CDL: read by load_data_list, init_loader_context, load_wram_stream (+3 more)
-	.byte	$01, $00, $00, $80, $7E, $20, $E4, $13, $00, $90, $7E, $3A, $ED, $13, $00, $94
-	.byte	$7E, $4E, $EE, $13, $00, $98, $7E, $62, $EF, $13, $00, $9C, $7E, $76, $F0, $13
-	.byte	$00, $A0, $7E, $00, $80, $17, $00, $C0, $7E, $AD, $98, $17, $00, $E0, $7E, $DA
-	.byte	$AF, $17, $FF, $FF
+	load_list	$01, $00
+	load_wram	$7E8000, packed_13E420
+	load_wram	$7E9000, packed_13ED3A
+	load_wram	$7E9400, packed_13EE4E
+	load_wram	$7E9800, packed_13EF62
+	load_wram	$7E9C00, packed_13F076
+	load_wram	$7EA000, packed_178000
+	load_wram	$7EC000, packed_1798AD
+	load_wram	$7EE000, packed_17AFDA
+	load_end
 palette_05CFB2:
 	.byte	$01, $00, $00, $3E, $8C, $40, $22, $92, $8F, $00, $22, $50
 	.byte	$8F, $00, $23, $2E, $8F, $40, $23, $0C, $8F, $60, $23, $E0, $8C, $80, $23, $00
 	.byte	$00
-data_05CFCF:
+load_list_05CFCF:
 	; CDL: read by load_data_list, dma_ring_to_vram, decompress_chunk
-	.byte	$03, $00, $00, $00, $00, $80, $14, $FF, $FF
-data_05CFD8:
+	load_list	$03, $00
+	load_vram	$0000, gfx_148000
+	load_end
+load_list_05CFD8:
 	; CDL: read by load_data_list, init_loader_context, load_wram_stream (+3 more)
-	.byte	$01, $00, $00, $80, $7E, $8A, $F1, $13, $00, $90, $7E, $A5, $F4, $13, $00, $94
-	.byte	$7E, $EF, $F4, $13, $00, $98, $7E, $45, $F5, $13, $00, $9C, $7E, $69, $F5, $13
-	.byte	$00, $A0, $7E, $93, $9C, $14, $00, $C0, $7E, $F0, $97, $14, $FF, $FF
+	load_list	$01, $00
+	load_wram	$7E8000, packed_13F18A
+	load_wram	$7E9000, packed_13F4A5
+	load_wram	$7E9400, packed_13F4EF
+	load_wram	$7E9800, packed_13F545
+	load_wram	$7E9C00, packed_13F569
+	load_wram	$7EA000, packed_149C93
+	load_wram	$7EC000, packed_1497F0
+	load_end
 palette_05D006:
 	.byte	$01, $00
 	.byte	$00, $3E, $8C, $40, $22, $92, $8F, $00, $22, $82, $8D, $00, $23, $0C, $8F, $60
 	.byte	$23, $E0, $8C, $80, $23, $00, $00
-data_05D01F:
+load_list_05D01F:
 	; CDL: read by load_data_list, dma_ring_to_vram, decompress_chunk
-	.byte	$03, $00, $00, $00, $00, $80, $15, $FF, $FF
-data_05D028:
+	load_list	$03, $00
+	load_vram	$0000, gfx_158000
+	load_end
+load_list_05D028:
 	; CDL: read by load_data_list, init_loader_context, load_wram_stream (+3 more)
-	.byte	$01, $00, $00, $80, $7E, $77, $A4, $15, $00, $90, $7E, $EA, $A9, $15, $00, $94
-	.byte	$7E, $FE, $AA, $15, $00, $98, $7E, $12, $AC, $15, $00, $9C, $7E, $26, $AD, $15
-	.byte	$00, $A0, $7E, $2E, $AE, $15, $00, $C0, $7E, $B3, $C2, $15, $FF, $FF
+	load_list	$01, $00
+	load_wram	$7E8000, packed_15A477
+	load_wram	$7E9000, packed_15A9EA
+	load_wram	$7E9400, packed_15AAFE
+	load_wram	$7E9800, packed_15AC12
+	load_wram	$7E9C00, packed_15AD26
+	load_wram	$7EA000, packed_15AE2E
+	load_wram	$7EC000, packed_15C2B3
+	load_end
 palette_05D056:
 	.byte	$01, $00
 	.byte	$00, $A4, $8D, $40, $22, $92, $8F, $00, $22, $CA, $8E, $00, $23, $2E, $8F, $40
 	.byte	$23, $0C, $8F, $60, $23, $E0, $8C, $80, $23, $00, $00
-data_05D073:
+load_list_05D073:
 	; CDL: read by load_data_list, dma_ring_to_vram, decompress_chunk
-	.byte	$03, $00, $00, $00, $00, $80, $16, $FF, $FF
-data_05D07C:
+	load_list	$03, $00
+	load_vram	$0000, gfx_168000
+	load_end
+load_list_05D07C:
 	; CDL: read by load_data_list, init_loader_context, load_wram_stream (+3 more); partly not accessed
-	.byte	$01, $00, $00, $80, $7E, $FE, $A8, $16, $00, $90, $7E, $8B, $AE, $16, $00, $94
-	.byte	$7E, $F6, $AE, $16, $00, $98, $7E, $04, $B0, $16, $00, $9C, $7E, $15, $B1, $16
-	.byte	$00, $A0, $7E, $23, $B6, $16, $00, $C0, $7E, $74, $B1, $16, $FF, $FF
+	load_list	$01, $00
+	load_wram	$7E8000, packed_16A8FE
+	load_wram	$7E9000, packed_16AE8B
+	load_wram	$7E9400, packed_16AEF6
+	load_wram	$7E9800, packed_16B004
+	load_wram	$7E9C00, packed_16B115
+	load_wram	$7EA000, packed_16B623
+	load_wram	$7EC000, packed_16B174
+	load_end
 palette_05D0AA:
 	.byte	$01, $00
 	.byte	$00, $A4, $8D, $40, $22, $92, $8F, $00, $22, $46, $8E, $00, $23, $0C, $8F, $60
@@ -3813,9 +4081,11 @@ anim_05EB37:
 	anim_frame	$0002, metasprite_06AECF, metasprite_06AECF
 	anim_frame	$0002, metasprite_06AF11, metasprite_06AF11
 	anim_goto	anim_05EB37
-data_05EB45:
+load_list_05EB45:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
-	.byte	$00, $01, $00, $70, $33, $E0, $0A, $FF, $FF
+	load_list	$00, $01
+	load_vram	$7000, gfx_0AE033
+	load_end
 data_05EB4E:
 	; CDL: read by stage3_boss_state_0E
 	.byte	$00, $01, $40, $01, $00, $06
@@ -3918,12 +4188,16 @@ data_05ECBE:
 	; CDL: read by queue_vram_blocks_at_x, stage4_spawn_hoverbike_rider; partly not accessed
 	.byte	$38, $00, $30, $00, $28, $00, $A0, $51, $80, $51, $E0, $5B, $E0, $5F, $E0, $5F
 	.byte	$00, $60
-data_05ECD0:
+load_list_05ECD0:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
-	.byte	$00, $01, $00, $78, $5E, $9F, $0E, $FF, $FF
-data_05ECD9:
+	load_list	$00, $01
+	load_vram	$7800, gfx_0E9F5E
+	load_end
+load_list_05ECD9:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
-	.byte	$00, $01, $00, $30, $47, $D1, $0F, $FF, $FF
+	load_list	$00, $01
+	load_vram	$3000, gfx_0FD147
+	load_end
 ; OBJ_HP of winged_alien by difficulty (easy, normal, hard)
 winged_alien_hp:
 	; CDL: read by winged_alien_state_01; partly not accessed
@@ -4348,9 +4622,11 @@ anim_05F278:
 	anim_frame	$0001, metasprite_06AFD9, $3200
 	anim_frame	$0004, metasprite_06AEA5, $3E00
 	anim_goto	anim_05F278
-data_05F286:
+load_list_05F286:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
-	.byte	$00, $01, $00, $70, $A2, $E4, $0A, $FF, $FF
+	load_list	$00, $01
+	load_vram	$7000, gfx_0AE4A2
+	load_end
 data_05F28F:
 	; CDL: read by sub_04D6E7
 	.byte	$08, $00, $F8, $FF
@@ -4428,34 +4704,49 @@ song_start_commands:
 	.byte	$01, $FE, $FF, $8E, $B0, $10, $87, $1D, $90, $24, $00, $30, $BD, $E6, $1C, $FF
 	.byte	$FF
 song_set_05F46B:
-	.byte	$02, $00, $FE, $FF, $00, $50, $0E, $86, $1D, $00, $01, $FE, $FF, $8E, $B0
-	.byte	$10, $87, $1D, $90, $24, $FE, $FF, $00, $30, $CC, $A9, $1A, $D8, $12, $FF, $FF
+	load_list	$02, $00
+	load_spc_raw	$5000, spc_block_1D860E, $0100
+	load_spc_raw	$B08E, spc_block_1D8710, $2490
+	load_spc_raw	$3000, spc_block_1AA9CC, $12D8
+	load_end
 	.byte	$02, $00, $FE, $FF, $00, $30, $CC, $A9, $1A, $D8, $12, $FF, $FF, $02, $00, $FE
 	.byte	$FF, $00, $30, $23, $CA, $1A, $A6, $1F, $FF, $FF, $02, $00, $FE, $FF, $00, $50
 	.byte	$0E, $86, $1D, $00, $01, $FE, $FF, $8E, $B0, $10, $87, $1D, $90, $24, $FE, $FF
 	.byte	$00, $30, $23, $CA, $1A, $A6, $1F, $FF, $FF
 song_set_05F4C3:
-	.byte	$02, $00, $FE, $FF, $00, $30, $92
-	.byte	$DF, $1B, $DC, $1D, $FF, $FF, $02, $00, $FE, $FF, $00, $50, $0E, $86, $1D, $00
+	load_list	$02, $00
+	load_spc_raw	$3000, spc_block_1BDF92, $1DDC
+	load_end
+	.byte	$02, $00, $FE, $FF, $00, $50, $0E, $86, $1D, $00
 	.byte	$01, $FE, $FF, $8E, $B0, $10, $87, $1D, $90, $24, $FE, $FF, $00, $30, $92, $DF
 	.byte	$1B, $DC, $1D, $FF, $FF
 song_set_05F4EF:
-	.byte	$02, $00, $00, $30, $A6, $BC, $1A, $FF, $FF, $02, $00
+	load_list	$02, $00
+	load_spc	$3000, spc_data_1ABCA6
+	load_end
+	.byte	$02, $00
 	.byte	$FE, $FF, $00, $50, $04, $81, $1D, $00, $01, $FE, $FF, $8E, $B0, $9A, $9E, $1E
 	.byte	$37, $26, $00, $30, $A6, $BC, $1A, $FF, $FF
 song_set_05F513:
-	.byte	$02, $00, $00, $30, $84, $BE, $1A
-	.byte	$FF, $FF, $02, $00, $FE, $FF, $00, $50, $04, $81, $1D, $00, $01, $FE, $FF, $8E
+	load_list	$02, $00
+	load_spc	$3000, spc_data_1ABE84
+	load_end
+	.byte	$02, $00, $FE, $FF, $00, $50, $04, $81, $1D, $00, $01, $FE, $FF, $8E
 	.byte	$B0, $9A, $9E, $1E, $37, $26, $00, $30, $84, $BE, $1A, $FF, $FF
 song_set_05F537:
-	.byte	$02, $00, $00
-	.byte	$30, $EE, $A5, $1A, $FF, $FF, $02, $00, $FE, $FF, $00, $50, $04, $81, $1D, $00
+	load_list	$02, $00
+	load_spc	$3000, spc_data_1AA5EE
+	load_end
+	.byte	$02, $00, $FE, $FF, $00, $50, $04, $81, $1D, $00
 	.byte	$01, $FE, $FF, $8E, $B0, $9A, $9E, $1E, $37, $26, $00, $30, $EE, $A5, $1A, $FF
 	.byte	$FF
-data_05F55B:
+load_list_05F55B:
 	; CDL: read by load_data_list, load_spc_list, upload_ring_to_spc (+5 more)
-	.byte	$02, $00, $FE, $FF, $00, $50, $CA, $A8, $1A, $00, $01, $FE, $FF, $00, $51, $02
-	.byte	$80, $1B, $8E, $5F, $00, $02, $02, $80, $1A, $FF, $FF
+	load_list	$02, $00
+	load_spc_raw	$5000, spc_block_1AA8CA, $0100
+	load_spc_raw	$5100, spc_block_1B8002, $5F8E
+	load_spc	$0200, spc_data_1A8002
+	load_end
 palette_05F576:
 	.byte	$04, $08, $62, $8D, $8A
 	.byte	$22
@@ -4597,12 +4888,17 @@ data_05F8B3:
 data_05F8BB:
 	; CDL: read by ending_creature_swing; partly not accessed
 	.byte	$04, $00, $08, $00, $02, $00, $FE, $FF
-data_05F8C3:
+load_list_05F8C3:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
-	.byte	$00, $01, $00, $00, $00, $80, $0F, $00, $20, $38, $A5, $08, $FF, $FF
-data_05F8D1:
+	load_list	$00, $01
+	load_vram	$0000, gfx_0F8000
+	load_vram	$2000, gfx_08A538
+	load_end
+load_list_05F8D1:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk (+2 more)
-	.byte	$00, $01, $00, $30, $D9, $DC, $15, $FF, $FF
+	load_list	$00, $01
+	load_vram	$3000, gfx_15DCD9
+	load_end
 palette_05F8DA:
 	.byte	$01, $00, $00, $8A, $87, $40, $22
 	.byte	$00, $00
@@ -4702,30 +4998,50 @@ data_05FA52:
 	.byte	$00
 data_05FD9B:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk (+1 more); partly not accessed
-	.byte	$A1, $FD, $AA, $FD, $B3, $FD, $00, $01, $00, $5C, $4C, $F8, $06, $FF, $FF, $00
-	.byte	$01, $00, $5C, $96, $F9, $06, $FF, $FF, $00, $01, $00, $5C, $8E, $F7, $07, $FF
-	.byte	$FF
+	.addr	load_list_05FDA1, load_list_05FDAA, load_list_05FDB3
+load_list_05FDA1:
+	load_list	$00, $01
+	load_vram	$5C00, gfx_06F84C
+	load_end
+load_list_05FDAA:
+	load_list	$00, $01
+	load_vram	$5C00, gfx_06F996
+	load_end
+load_list_05FDB3:
+	load_list	$00, $01
+	load_vram	$5C00, gfx_07F78E
+	load_end
 ptrs_05FDBC:
-	.addr	data_05FDC6
-	.addr	data_05FDCF
-	.addr	data_05FDD8
-	.addr	data_05FDE1
-	.addr	data_05FDEA
-data_05FDC6:
+	.addr	load_list_05FDC6
+	.addr	load_list_05FDCF
+	.addr	load_list_05FDD8
+	.addr	load_list_05FDE1
+	.addr	load_list_05FDEA
+load_list_05FDC6:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
-	.byte	$00, $01, $00, $30, $99, $E5, $17, $FF, $FF
-data_05FDCF:
+	load_list	$00, $01
+	load_vram	$3000, gfx_17E599
+	load_end
+load_list_05FDCF:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
-	.byte	$00, $01, $00, $30, $62, $DC, $14, $FF, $FF
-data_05FDD8:
+	load_list	$00, $01
+	load_vram	$3000, gfx_14DC62
+	load_end
+load_list_05FDD8:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
-	.byte	$00, $01, $00, $30, $0E, $D2, $17, $FF, $FF
-data_05FDE1:
+	load_list	$00, $01
+	load_vram	$3000, gfx_17D20E
+	load_end
+load_list_05FDE1:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
-	.byte	$00, $01, $00, $30, $F8, $F0, $14, $FF, $FF
-data_05FDEA:
+	load_list	$00, $01
+	load_vram	$3000, gfx_14F0F8
+	load_end
+load_list_05FDEA:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
-	.byte	$00, $01, $00, $30, $62, $EF, $19, $FF, $FF
+	load_list	$00, $01
+	load_vram	$3000, gfx_19EF62
+	load_end
 data_05FDF3:
 	; CDL: read by ending_sequence_state_1B
 	.byte	$00, $00, $10, $00
@@ -4757,9 +5073,11 @@ palette_05FED3:
 palette_05FED9:
 	.byte	$04, $12
 	.byte	$0C, $F0, $B4, $22
-data_05FEDF:
+load_list_05FEDF:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk (+2 more)
-	.byte	$00, $01, $00, $70, $6E, $E8, $0B, $FF, $FF
+	load_list	$00, $01
+	load_vram	$7000, gfx_0BE86E
+	load_end
 palette_05FEE8:
 	.byte	$01, $00, $00, $18, $8B, $40, $23
 	.byte	$00, $00
@@ -4782,12 +5100,17 @@ data_05FF1F:
 data_05FF23:
 	; CDL: read by update_brain_boss_rolling_eye
 	.byte	$10, $00, $20, $00
-data_05FF27:
+load_list_05FF27:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
-	.byte	$00, $01, $00, $70, $F7, $B8, $0E, $FF, $FF
-data_05FF30:
+	load_list	$00, $01
+	load_vram	$7000, gfx_0EB8F7
+	load_end
+load_list_05FF30:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
-	.byte	$00, $01, $00, $10, $60, $94, $0F, $00, $20, $0E, $9D, $11, $FF, $FF
+	load_list	$00, $01
+	load_vram	$1000, gfx_0F9460
+	load_vram	$2000, gfx_119D0E
+	load_end
 data_05FF3E:
 	; CDL: read by brain_boss_init_minion
 	.byte	$1C, $00, $3D, $40, $00, $40, $3F, $40, $3D, $40, $3D, $40, $1F, $00, $3F

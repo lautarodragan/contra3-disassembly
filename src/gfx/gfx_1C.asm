@@ -4,7 +4,10 @@
 ; Graphics compressed for the decompressor (decompress_chunk, see
 ; engine/decompress.asm).
 ;
-; Data only (no labels, no code). Each block starts at a CDL comment.
+; Data only (no code). The labels name the compressed streams and blocks that
+; the data lists in data/tables_05.asm point to; "; ASSET:" marks a block whose
+; bounds are exact and that holds no pointers (a candidate for a binary file).
+; Other blocks start at a CDL comment.
 
 	.byte	$C6, $1B, $77, $17, $9F, $0C, $30, $B2, $34, $8C, $39, $0B, $3E, $89, $41, $BB
 	.byte	$44, $F4, $0F, $3C, $50, $F5, $05, $46, $02, $EA, $78, $E2, $10, $EE, $28, $F2
