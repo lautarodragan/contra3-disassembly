@@ -143,10 +143,10 @@ class Cdl:
                             sum(1 for k in self.flows if k[0] == op))
                 for op in sorted({k[0] for k in self.flows}))))
         lines.append("  WRAM code bytes %d" % sum(1 for v in self.wram if v))
-        lines.append("bank  code   data   both   unknown")
+        lines.append("bank (ROM offset >> 15; CPU bank $00-$1F)  code   data   both   unknown")
         for i, c in enumerate(banks):
             lines.append("$%02X  %5.1f%% %5.1f%% %5.1f%% %5.1f%%" % (
-                i | 0x80, *(100.0 * c[k] / 0x8000 for k in ("code", "data", "both", "unknown"))))
+                i, *(100.0 * c[k] / 0x8000 for k in ("code", "data", "both", "unknown"))))
         return "\n".join(lines)
 
     # -- files ----------------------------------------------------------------

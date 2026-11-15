@@ -88,13 +88,20 @@ Inputs are random but seeded, so runs are reproducible. Scenarios:
 * `attract` — 42000 frames of attract mode (intro, title, demos of stages 1, 2, 4).
 * `title_menu` — menu cursor, OPTION screen.
 * `stageN` — start at stage N (poke `$86`), random play with infinite lives
-  (poke `$1F8A`) for 80000 frames; the random player clears stages on its
-  own, so later stages, bosses and stage transitions get covered too.
+  and bombs (poke `$1F8A`, `$1F8C`) for 120000 frames (400000 for the
+  top-down stages 2 and 5). When the section counter `$13BD` stops moving
+  (a boss) the player switches to aiming everywhere and bombing. The random
+  player clears side-view stages on its own, so bosses, stage transitions and
+  the end of stage 6 get covered.
+* `stageN_hard`, `stageN_easy` — same after setting LEVEL in OPTION through
+  the menu (stage 6 on HARD runs 200000 frames, aiming at the full ending).
 * `stageN_2p`, `stage1_2pb`, `stage3_2pb` — two-player modes A and B, both pads random.
 * `gameover` — no cheats: game over, CONTINUE, game over, END.
 * `pause` — pause/unpause.
 
-Add scenarios in `tools/trace.py` (`SCENARIOS`).
+Add scenarios in `tools/trace.py` (`SCENARIOS`). Set `C3_TRACE_SHOTS=dir` to
+get a screenshot of stage scenarios every 4000 frames (to see where the
+random player gets stuck).
 
 ## Using the driver
 
@@ -119,6 +126,10 @@ log = c.cdl_snapshot(); log.save("out/my.cdl")
 | `$0070` | attract demo stage (0-based) |
 | `$1E48` | attract demo index (0, 1, 2) |
 | `$1F8A` / `$1FCA` | lives ("REST") of player 1 / 2; decremented by `DEC $1D8A,X` at `$01:9B91` with X=`$0200`/`$0240` |
+| `$1F8C` / `$1FCC` | smart bombs of player 1 / 2 (A button) |
+| `$1F80` | player 1 active weapon slot (0 / 2; X swaps) |
+| `$0084` | difficulty in game, x2: 0 EASY, 2 NORMAL, 4 HARD (set from OPTION > LEVEL) |
+| `$1E02` | title menu cursor: 0 1 PLAYER, 1 2 PLAYERS A, 2 2 PLAYERS B, 3 OPTION |
 | `$1F88` / `$1FC8` | barrier (invincibility power-up) timer of player 1 / 2; keep at `$80` to stay invincible |
 | `$13BD` | stage progress/section counter (increments as the stage scrolls; 0-14 in stage 1) |
 | `$0200+` | player 1 object (`$0212` state: 7/8 respawn, $0E dying; `$020A`/`$020E` probably X/Y position); player 2 at `$0240` |

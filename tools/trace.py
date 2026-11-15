@@ -24,6 +24,8 @@ from tools.c3emu.rom import rom_path
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "cdl", "contra3.cdl")
+# Debugging: a directory where stage scenarios drop a screenshot every 4000 frames.
+SHOTS = os.environ.get("C3_TRACE_SHOTS")
 
 SIDE_MOVES = [("right",), ("right", "y"), ("right", "y"), ("right", "b"),
               ("right", "jump", "y"), ("right", "jump", "y"), ("jump", "y"),
@@ -31,6 +33,11 @@ SIDE_MOVES = [("right",), ("right", "y"), ("right", "y"), ("right", "b"),
               ("right", "b", "y"), ("y",), ("up", "y"), ("down", "y"),
               ("right", "up", "y"), ("down", "b"), ("left", "y"), ("left",),
               ("x",), ("a",), ("l", "y"), ("r", "y"), ("l", "r", "y")]
+# Used when the stage stops progressing (usually a boss): aim everywhere, bomb.
+BOSS_MOVES = [("up", "y"), ("right", "up", "y"), ("left", "up", "y"), ("y",),
+              ("right", "y"), ("left", "y"), ("jump", "y"), ("jump", "up", "y"),
+              ("a",), ("down", "y"), ("right", "jump", "y"), ("left", "jump", "y"),
+              ("l", "up", "y"), ("r", "right", "up", "y"), ("x",)]
 TOP_MOVES = [("up", "y"), ("up",), ("down", "y"), ("left", "y"), ("right", "y"),
              ("up", "left", "y"), ("up", "right", "y"), ("down", "left", "y"),
              ("down", "right", "y"), ("l",), ("r",), ("l", "y"), ("r", "y"),
@@ -61,8 +68,10 @@ class Player:
                 # Only for players in the game: poking player 2's lives in a
                 # 1P game spawns a second soldier that blocks scrolling.
                 c.write_ram(game.LIVES_P1, 5)
+                c.write_ram(game.BOMBS_P1, 2)
                 if len(self.ports) > 1:
                     c.write_ram(game.LIVES_P2, 5)
+                    c.write_ram(game.BOMBS_P2, 2)
             if self.barrier:
                 c.write_ram(game.BARRIER_P1, 0x80)
                 if len(self.ports) > 1:
@@ -111,22 +120,42 @@ def sc_title_menu(c):
     c.run(3000)
 
 
-def _stage(stage, seed, frames=80000, moves=None, ports=(0,), menu=0, barrier=False):
+def _stage(stage, seed, frames=120000, moves=None, ports=(0,), menu=0, barrier=False,
+           level=None):
+    """level: None keeps NORMAL; else Right presses on OPTION/LEVEL (1 HARD, 2 EASY)."""
     def run(c):
+        if level is not None:
+            game.set_options(c, level_rights=level)
         game.start_game(c, stage=stage, menu_downs=menu)
         c.run(300)
         p = Player(c, seed, lives=True, ports=ports, barrier=barrier)
         left = frames
         seen = []
+        last_prog, still = None, 0
         while left > 0:
             cur = c.peek(game.STAGE)
             if not seen or seen[-1] != cur:
                 seen.append(cur)
-            p.moves = moves or (TOP_MOVES if cur in (2, 5) else SIDE_MOVES)
+            prog = c.peek(game.PROGRESS)
+            if prog != last_prog or cur != seen[-1]:
+                last_prog, still = prog, 0
+            else:
+                still += 1
+            if moves:
+                p.moves = moves
+            elif cur in (2, 5):
+                p.moves = TOP_MOVES + [("a",)] * (2 if still > 5 else 0)
+            else:
+                p.moves = BOSS_MOVES if still > 5 and still % 10 < 7 else SIDE_MOVES
             p.play(min(left, 1000))
             left -= 1000
+            if SHOTS and (frames - left) % 4000 == 0:
+                c.image().save(os.path.join(SHOTS, "%s-%07d-s%d-p%d.png" % (
+                    run.__name__, c.frame_count, cur, prog)))
         return "stages seen %s" % seen
-    run.__doc__ = "Stage %d onwards, random play, infinite lives, ports %s" % (stage, ports)
+    run.__name__ = "stage%d" % stage
+    run.__doc__ = "Stage %d onwards, %d frames random play, infinite lives, ports %s%s" % (
+        stage, frames, ports, {None: "", 1: ", HARD", 2: ", EASY"}[level])
     return run
 
 
@@ -166,7 +195,10 @@ def sc_pause(c):
 SCENARIOS = {"attract": sc_attract, "title_menu": sc_title_menu,
              "gameover": sc_gameover, "pause": sc_pause}
 for _s in range(1, 7):
-    SCENARIOS["stage%d" % _s] = _stage(_s, 100 + _s)
+    # Top-down stages need long wandering to find their targets.
+    SCENARIOS["stage%d" % _s] = _stage(_s, 100 + _s, frames=400000 if _s in (2, 5) else 120000)
+    SCENARIOS["stage%d_hard" % _s] = _stage(_s, 400 + _s, frames=200000 if _s == 6 else 60000, level=1)
+    SCENARIOS["stage%d_easy" % _s] = _stage(_s, 500 + _s, frames=30000, level=2)
     SCENARIOS["stage%d_2p" % _s] = _stage(_s, 200 + _s, frames=20000, ports=(0, 1), menu=1)
 SCENARIOS["stage1_2pb"] = _stage(1, 301, frames=20000, ports=(0, 1), menu=2)
 SCENARIOS["stage3_2pb"] = _stage(3, 303, frames=20000, ports=(0, 1), menu=2)

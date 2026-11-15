@@ -15,8 +15,14 @@ STAGE = 0x0086         # current stage, 1-6. Writing it right after Start is
 DEMO_STAGE = 0x0070    # 0-based stage of the attract-mode demo (0, 1, 3 seen)
 LIVES_P1 = 0x1F8A      # "REST" on the stage card; DEC $1D8A,X (X=$200) at $01:9B91
 LIVES_P2 = 0x1FCA      # player 2 (player blocks are $40 apart)
+BOMBS_P1 = 0x1F8C      # smart bombs (A button by default); player 2 at $1FCC
+BOMBS_P2 = 0x1FCC
+WEAPON_SLOT_P1 = 0x1F80  # 0/2: which of the two weapon slots is active (X swaps)
+PROGRESS = 0x13BD      # stage section counter, grows as the stage advances
 BARRIER_P1 = 0x1F88    # barrier (invincibility power-up) timer; poking $80
 BARRIER_P2 = 0x1FC8    # every few frames keeps the player invincible
+TITLE_CURSOR = 0x1E02  # title menu cursor: 0 1P, 1 2P-A, 2 2P-B, 3 OPTION
+LEVEL = 0x0084         # in game: difficulty x2 (0 EASY, 2 NORMAL, 4 HARD)
 DEMO_INDEX = 0x1E48    # attract demo counter (0, 1, 2 for stages 1, 2, 4)
 
 # --- timeline from power-on, no input --------------------------------------
@@ -45,3 +51,26 @@ def start_game(c, stage=1, menu_downs=0):
     c.run(20)
     if stage != 1:
         c.write_ram(STAGE, stage)
+
+
+def set_options(c, level_rights=1, lives_rights=0):
+    """From power-on: open OPTION on the title, press Right `lives_rights`
+    times on PLAYER (3, 5, ...) and `level_rights` times on LEVEL (NORMAL ->
+    HARD; it wraps), then EXIT back to the title with the cursor on 1 PLAYER."""
+    if c.frame_count < TITLE_READY:
+        c.run(TITLE_READY - c.frame_count)
+    for _ in range(3):
+        c.press("down", frames=2, after=10)
+    c.press("start", frames=3, after=120)
+    for _ in range(lives_rights):
+        c.press("right", frames=2, after=20)
+    c.press("down", frames=2, after=20)
+    for _ in range(level_rights):
+        c.press("right", frames=2, after=20)
+    c.press("down", frames=2, after=20)
+    c.press("down", frames=2, after=20)
+    c.press("start", frames=3, after=120)
+    for _ in range(8):
+        if c.peek(TITLE_CURSOR) == 0:
+            break
+        c.press("up", frames=2, after=10)
