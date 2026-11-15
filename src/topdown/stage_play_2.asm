@@ -1229,7 +1229,7 @@ tbl_stage5_boss_states:
 
 stage5_boss_state_0:
 	ldy	difficulty
-	lda	a:data_05E670,y
+	lda	a:stage5_boss_hp,y
 	sta	$06,x
 	stz	$16,x
 	stz	$2E,x
@@ -1268,7 +1268,7 @@ stage5_boss_state_2:
 	rtl
 loc_02F015:
 	ldy	difficulty
-	lda	a:data_05E670,y
+	lda	a:stage5_boss_hp,y
 	lsr	a
 	cmp	$06,x
 	bcc	loc_02F031
@@ -1516,7 +1516,7 @@ stage5_boss_palette_step_1:
 	cmp	#$0008
 	bcs	loc_02F1EB
 	ldy	difficulty
-	lda	a:data_05E670,y
+	lda	a:stage5_boss_hp,y
 	lsr	a
 	cmp	$06,x
 	bcs	loc_02F1EC
@@ -1686,7 +1686,7 @@ loc_02F335:
 stage5_boss_spawn_spit:
 	phx
 	tax
-	lda	#$000B
+	lda	#TDS_BOSS_SPIT
 	sta	$10,x
 	stz	$12,x
 	lda	#$2000
@@ -1790,11 +1790,11 @@ stage5_boss_spawn_arm:
 	sta	a:wram_0B4A
 	lda	a:data_05E6AE,y
 	sta	a:wram_0B4E
-	lda	#$000A
+	lda	#TDT_STAGE5_BOSS_CLAW
 	sta	a:wram_0B50
-	lda	#$0013
+	lda	#TDT_STAGE5_BOSS_ARM_BASE
 	sta	a:wram_0B90
-	lda	#$000B
+	lda	#TDT_STAGE5_BOSS_ARM_SEGMENT
 	sta	a:wram_0BD0
 	sta	a:wram_0C10
 	sta	a:wram_0C50
@@ -1899,7 +1899,7 @@ tbl_stage5_boss_claw_states:
 
 stage5_boss_claw_state_0:
 	ldy	difficulty
-	lda	a:data_05E6B6,y
+	lda	a:stage5_boss_claw_hp,y
 	sta	$06,x
 	stz	$16,x
 	stz	$2E,x
@@ -2383,7 +2383,7 @@ stage5_boss_claw_fire:
 	beq	loc_02F8D3
 	jsl	f:td_find_free_enemy_shot_slot
 	bcs	loc_02F8D3
-	lda	#$000E
+	lda	#TDS_HOMING_ORB
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -2446,7 +2446,7 @@ tbl_td_nest_states:
 
 td_nest_state_0:
 	ldy	difficulty
-	lda	a:data_05E6CC,y
+	lda	a:td_nest_hp,y
 	sta	$06,x
 	stz	$2E,x
 	stz	$24,x
@@ -2473,7 +2473,7 @@ loc_02F920:
 loc_02F921:
 	jsl	f:td_get_hatch_enemy_slot
 	bcs	loc_02F920
-	lda	#$0006
+	lda	#TDT_NEST_CRAWLER
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -2602,7 +2602,7 @@ tbl_gun_hatch_aim_states:
 
 gun_hatch_state_0:
 	ldy	difficulty
-	lda	a:data_05E6D2,y
+	lda	a:gun_hatch_hp,y
 	sta	$06,x
 	stz	$2E,x
 	stz	$28,x
@@ -2628,7 +2628,7 @@ loc_02FA3A:
 loc_02FA43:
 	rtl
 loc_02FA44:
-	lda	#$0010
+	lda	#TDT_HATCH_TURRET_AIM
 	jsr	a:gun_hatch_spawn_turret
 	bcs	loc_02FA43
 	lda	a:$0004,y
@@ -2739,7 +2739,7 @@ loc_02FB04:
 loc_02FB0D:
 	rtl
 loc_02FB0E:
-	lda	#$0009
+	lda	#TDT_HATCH_TURRET_SPIN
 	jsr	a:gun_hatch_spawn_turret
 	bcs	loc_02FB0D
 	lda	a:$0004,y
@@ -2791,7 +2791,7 @@ loc_02FB5A:
 loc_02FB63:
 	rtl
 loc_02FB64:
-	lda	#$0011
+	lda	#TDT_HATCH_TURRET_SWEEP
 	jsr	a:gun_hatch_spawn_turret
 	bcs	loc_02FB63
 	lda	#$005B
@@ -2848,7 +2848,7 @@ loc_02FBB1:
 	lda	a:$152C,y
 	bit	#$4000
 	bne	loc_02FBB0
-	lda	#$0010
+	lda	#TDT_HATCH_TURRET_AIM
 	jsr	a:gun_hatch_spawn_turret
 	bcs	loc_02FBB0
 	lda	#$005B
@@ -2919,7 +2919,7 @@ loc_02FC25:
 	adc	#$0040
 	bit	#$0080
 	bne	loc_02FC24
-	lda	#$0010
+	lda	#TDT_HATCH_TURRET_AIM
 	jsr	a:gun_hatch_spawn_turret
 	bcs	loc_02FC24
 	lda	#$005B

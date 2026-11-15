@@ -1306,7 +1306,7 @@ loc_029751:
 loc_029760:
 	lda	#$0000
 	sta	a:$0012,y
-	lda	#$0002
+	lda	#TDS_DEFAULT
 	sta	a:$0010,y
 	lda	zp_1A
 	sta	a:$0004,y
@@ -1336,7 +1336,7 @@ loc_02979A:
 loc_02979F:
 	lda	#$0000
 	sta	a:$0012,y
-	lda	#$0003
+	lda	#TDS_SPREAD
 	sta	a:$0010,y
 	lda	zp_1C
 	sta	a:$000A,y
@@ -1375,7 +1375,7 @@ loc_0297E7:
 	jsl	f:queue_sound
 	lda	#$0000
 	sta	a:$0012,y
-	lda	#$0005
+	lda	#TDS_HOMING
 	sta	a:$0010,y
 	lda	zp_1A
 	sta	a:$0004,y
@@ -1398,7 +1398,7 @@ loc_029811:
 loc_029820:
 	lda	#$0000
 	sta	a:$0012,y
-	lda	#$0006
+	lda	#TDS_LASER
 	sta	a:$0010,y
 	lda	zp_1A
 	sta	a:$0004,y
@@ -1419,7 +1419,7 @@ loc_029849:
 	jsr	a:td_play_flame_sound
 	lda	#$0000
 	sta	a:$0012,y
-	lda	#$0007
+	lda	#TDS_FLAME
 	sta	a:$0010,y
 loc_029858:
 	jsr	a:td_play_flame_sound
@@ -1454,7 +1454,7 @@ loc_02988A:
 	lda	#$0000
 	sta	a:$0012,y
 	sta	a:$0000,y
-	lda	#$0008
+	lda	#TDS_CRUSH
 	sta	a:$0010,y
 	lda	zp_1A
 	sta	a:$0004,y
@@ -1466,14 +1466,14 @@ loc_02988A:
 	sta	a:$001A,y
 	phy
 	tay
-	lda	#$FFFF
+	lda	#TDS_HIDDEN
 	sta	a:$0010,y
 	ply
 	lda	zp_04
 	sta	a:$001E,y
 	phy
 	tay
-	lda	#$FFFF
+	lda	#TDS_HIDDEN
 	sta	a:$0010,y
 	ply
 	rtl
@@ -1622,12 +1622,12 @@ loc_0299B2:
 	bcs	loc_0299B1
 	ldy	difficulty
 	lda	rng_lo
-	and	a:data_05D1CC,y
+	and	a:td_spawn_type_masks,y
 	beq	loc_0299C3
 	lda	#$0002
 loc_0299C3:
 	tay
-	lda	a:data_05D1D2,y
+	lda	a:stage2_spawn_types,y
 	sta	$10,x
 	stz	$00,x
 	stz	$2E,x
@@ -1636,7 +1636,7 @@ loc_0299CE:
 	ldx	#$0DC0
 	jsr	a:td_place_enemy_near_player
 	bcs	loc_0299DF
-	lda	#$000F
+	lda	#TDT_CENTIPEDE
 	sta	$10,x
 	stz	$00,x
 	stz	$2E,x
@@ -1661,12 +1661,12 @@ loc_0299F5:
 	bcs	loc_0299F4
 	ldy	difficulty
 	lda	rng_lo
-	and	a:data_05D1CC,y
+	and	a:td_spawn_type_masks,y
 	beq	loc_029A06
 	lda	#$0002
 loc_029A06:
 	tay
-	lda	a:data_05D1D6,y
+	lda	a:stage5_spawn_types,y
 	sta	$10,x
 	stz	$00,x
 	stz	$2E,x
@@ -1675,7 +1675,7 @@ loc_029A11:
 	ldx	#$0DC0
 	jsr	a:td_place_enemy_near_player
 	bcs	loc_029A22
-	lda	#$000C
+	lda	#TDT_BUG_CENTIPEDE
 	sta	$10,x
 	stz	$00,x
 	stz	$2E,x
@@ -1690,11 +1690,11 @@ td_place_enemy_near_player:
 	and	#$00FF
 	asl	a
 	tay
-	lda	a:data_05D25A,y
+	lda	a:td_spawn_offsets_x,y
 	clc
 	adc	zp_FC
 	sta	$0A,x
-	lda	a:data_05D1DA,y
+	lda	a:td_spawn_offsets_y,y
 	clc
 	adc	zp_FE
 	sta	$0E,x
@@ -2172,7 +2172,7 @@ tbl_td_explosion_states:
 	.addr	td_explosion_state_1
 
 td_start_explosion:
-	lda	#$0008
+	lda	#TDT_EXPLOSION
 	sta	$10,x
 	lda	#$0009
 	sta	$00,x
@@ -2368,7 +2368,7 @@ td_fire_enemy_bullet:
 	pla
 	bcs	loc_029EA3
 	pha
-	lda	#$0004
+	lda	#TDS_ENEMY_BULLET
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -2454,7 +2454,7 @@ td_runner_state_2:
 	lda	$00,x
 	bne	loc_029F0A
 	ldy	difficulty
-	lda	a:data_05D4A2,y
+	lda	a:td_runner_hp,y
 	sta	$06,x
 	lda	#$0006
 	sta	$00,x
@@ -2519,7 +2519,7 @@ td_gunner_state_2:
 	lda	$00,x
 	bne	loc_029F80
 	ldy	difficulty
-	lda	a:data_05D4C2,y
+	lda	a:td_gunner_hp,y
 	sta	$06,x
 	lda	#$0006
 	sta	$00,x
@@ -2571,7 +2571,7 @@ loc_029FC8:
 	sta	$20,x
 	stz	$28,x
 	ldy	difficulty
-	lda	a:data_05D4C8,y
+	lda	a:td_gunner_fire_delays,y
 	sta	$24,x
 	inc	$12,x
 
@@ -2590,11 +2590,11 @@ loc_029FE2:
 	cmp	$04,x
 	bne	loc_029F93
 	ldy	difficulty
-	lda	a:data_05D4C8,y
+	lda	a:td_gunner_fire_delays,y
 	sta	$24,x
 loc_029FFB:
 	ldy	difficulty
-	lda	a:data_05D4C8,y
+	lda	a:td_gunner_fire_delays,y
 	lsr	a
 	cmp	$24,x
 	bne	loc_02A011
@@ -2667,7 +2667,7 @@ loc_02A077:
 	cmp	#$0002
 	beq	hatch_turret_aim_state_2
 	ldy	difficulty
-	lda	a:data_05D4DA,y
+	lda	a:hatch_turret_hp,y
 	sta	$06,x
 	lda	#$A000
 	sta	$16,x
@@ -2694,7 +2694,7 @@ hatch_turret_aim_state_2:
 loc_02A0B5:
 	ldy	difficulty
 	lda	stage_frame_counter
-	and	a:data_05D506,y
+	and	a:hatch_turret_aim_fire_masks,y
 	bne	loc_02A0C2
 	jsl	f:td_fire_gun_bullet
 loc_02A0C2:
@@ -2763,7 +2763,7 @@ loc_02A12A:
 	cmp	#$0002
 	beq	hatch_turret_spin_state_2
 	ldy	difficulty
-	lda	a:data_05D4DA,y
+	lda	a:hatch_turret_hp,y
 	sta	$06,x
 	lda	#$A000
 	sta	$16,x
@@ -2783,7 +2783,7 @@ hatch_turret_spin_state_2:
 	sta	$04,x
 	ldy	difficulty
 	lda	stage_frame_counter
-	and	a:data_05D512,y
+	and	a:hatch_turret_spin_fire_masks,y
 	bne	loc_02A166
 	jsl	f:td_fire_gun_bullet
 loc_02A166:
@@ -2831,7 +2831,7 @@ loc_02A1AC:
 	cmp	#$0002
 	beq	hatch_turret_sweep_state_2
 	ldy	difficulty
-	lda	a:data_05D4DA,y
+	lda	a:hatch_turret_hp,y
 	sta	$06,x
 	lda	#$A000
 	sta	$16,x
@@ -2852,7 +2852,7 @@ hatch_turret_sweep_state_2:
 	sta	$24,x
 	ldy	difficulty
 	lda	stage_frame_counter
-	and	a:data_05D524,y
+	and	a:hatch_turret_sweep_fire_masks,y
 	bne	loc_02A1EA
 	jsl	f:td_fire_gun_bullet
 loc_02A1EA:
@@ -2889,7 +2889,7 @@ td_fire_gun_bullet:
 	beq	loc_02A27D
 	jsl	f:td_find_free_enemy_shot_slot
 	bcs	loc_02A27D
-	lda	#$0004
+	lda	#TDS_ENEMY_BULLET
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -2949,9 +2949,9 @@ td_centipede_unused_state_2:
 	lda	$00,x
 	bne	loc_02A2BB
 	ldy	difficulty
-	lda	a:data_05D52A,y
+	lda	a:td_centipede_unused_hp,y
 	sta	$06,x
-	lda	#$0004
+	lda	#TDT_CENTIPEDE_SEGMENT
 	sta	a:wram_0E10
 	sta	a:wram_0E50
 	sta	a:wram_0E90
@@ -3197,9 +3197,9 @@ td_bug_centipede_state_2:
 	lda	$00,x
 	bne	loc_02A4AB
 	ldy	difficulty
-	lda	a:data_05D53E,y
+	lda	a:td_bug_centipede_hp,y
 	sta	$06,x
-	lda	#$000D
+	lda	#TDT_BUG_CENTIPEDE_SEGMENT
 	sta	a:wram_0E10
 	sta	a:wram_0E50
 	sta	a:wram_0E90
@@ -3269,7 +3269,7 @@ loc_02A4F7:
 loc_02A505:
 	lda	#$0030
 	jsl	f:queue_sound
-	lda	#$000E
+	lda	#TDT_CENTIPEDE_BUG
 	sta	a:wram_0DD0
 	sta	a:wram_0E10
 	sta	a:wram_0E50
@@ -3366,7 +3366,7 @@ tbl_td_centipede_bug_states:
 
 td_centipede_bug_state_0:
 	ldy	difficulty
-	lda	a:data_05D552,y
+	lda	a:td_centipede_bug_hp,y
 	sta	$06,x
 	stz	$3E,x
 	stz	$3C,x
@@ -3478,9 +3478,9 @@ td_centipede_state_2:
 	lda	$00,x
 	bne	loc_02A6E5
 	ldy	difficulty
-	lda	a:data_05D55E,y
+	lda	a:td_centipede_hp,y
 	sta	$06,x
-	lda	#$0004
+	lda	#TDT_CENTIPEDE_SEGMENT
 	sta	a:wram_0E10
 	sta	a:wram_0E50
 	sta	a:wram_0E90
@@ -3560,7 +3560,7 @@ loc_02A73C:
 	bcc	loc_02A6FB
 	ldy	difficulty
 	lda	stage_frame_counter
-	and	a:data_05D564,y
+	and	a:td_centipede_fire_masks,y
 	bne	loc_02A763
 	ldy	#$0010
 	jsl	f:td_fire_enemy_bullet
@@ -3628,7 +3628,7 @@ tbl_td_nest_crawler_states:
 
 td_nest_crawler_state_0:
 	ldy	difficulty
-	lda	a:data_05D56A,y
+	lda	a:td_nest_crawler_hp,y
 	sta	$06,x
 	stz	$3C,x
 	stz	$08,x
@@ -3729,7 +3729,7 @@ td_crawler_state_2:
 	lda	$00,x
 	bne	loc_02A8AC
 	ldy	difficulty
-	lda	a:data_05D590,y
+	lda	a:td_crawler_hp,y
 	sta	$06,x
 	lda	#$0005
 	sta	$00,x
@@ -3790,7 +3790,7 @@ td_spitter_state_2:
 	lda	$00,x
 	bne	loc_02A91D
 	ldy	difficulty
-	lda	a:data_05D5B0,y
+	lda	a:td_spitter_hp,y
 	sta	$06,x
 	lda	#$0005
 	sta	$00,x
@@ -3839,7 +3839,7 @@ loc_02A95E:
 	rtl
 loc_02A963:
 	ldy	difficulty
-	lda	a:data_05D5B6,y
+	lda	a:td_spitter_fire_delays,y
 	sta	$24,x
 	inc	$12,x
 
@@ -3860,11 +3860,11 @@ loc_02A97D:
 	cmp	$04,x
 	bne	loc_02A930
 	ldy	difficulty
-	lda	a:data_05D5B6,y
+	lda	a:td_spitter_fire_delays,y
 	sta	$24,x
 loc_02A992:
 	ldy	difficulty
-	lda	a:data_05D5B6,y
+	lda	a:td_spitter_fire_delays,y
 	lsr	a
 	cmp	$24,x
 	bne	loc_02A9A5
@@ -3880,7 +3880,7 @@ td_fire_enemy_orb:
 	beq	loc_02A9F7
 	jsl	f:td_find_free_enemy_shot_slot
 	bcs	loc_02A9F7
-	lda	#$000D
+	lda	#TDS_ENEMY_ORB
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -4298,7 +4298,7 @@ tbl_map_object_types:
 td_spawn_explosion_effect:
 	jsl	f:td_find_free_item_slot
 	bcs	loc_02AC8E
-	lda	#$0002
+	lda	#TDI_EXPLOSION
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -4321,7 +4321,7 @@ td_spawn_item_drop:
 	asl	a
 	phy
 	tay
-	lda	a:data_05D78C,y
+	lda	a:td_item_drop_kinds,y
 	ply
 	sta	a:$0014,y
 	cmp	#$0000
@@ -4329,7 +4329,7 @@ td_spawn_item_drop:
 	asl	a
 	phy
 	tay
-	lda	a:data_05D7A2,y
+	lda	a:td_item_kind_types,y
 	ply
 	sta	a:$0010,y
 	lda	#$0000
@@ -4581,7 +4581,7 @@ loc_02AE9A:
 
 stage2_boss_state_07:
 	ldy	difficulty
-	lda	a:data_05D7CE,y
+	lda	a:stage2_boss_core_hp,y
 	lsr	a
 	cmp	a:wram_0B46
 	bcs	loc_02AEB5
@@ -5266,7 +5266,7 @@ tbl_stage2_boss_core_states:
 
 stage2_boss_core_state_0:
 	ldy	difficulty
-	lda	a:data_05D7CE,y
+	lda	a:stage2_boss_core_hp,y
 	sta	$06,x
 	stz	$20,x
 	stz	$28,x
@@ -5400,7 +5400,7 @@ tbl_stage2_boss_pod_states:
 
 stage2_boss_pod_state_0:
 	ldy	difficulty
-	lda	a:data_05D7D4,y
+	lda	a:stage2_boss_pod_hp,y
 	sta	$06,x
 	lda	#$2000
 	sta	$02,x
@@ -5515,7 +5515,7 @@ stage2_boss_pod_drop_item:
 	asl	a
 	phy
 	tay
-	lda	a:data_05D7DA,y
+	lda	a:stage2_boss_pod_drop_kinds,y
 	ply
 	sta	a:$0014,y
 	cmp	#$0000
@@ -5523,7 +5523,7 @@ stage2_boss_pod_drop_item:
 	asl	a
 	phy
 	tay
-	lda	a:data_05D808,y
+	lda	a:stage2_boss_pod_item_types,y
 	ply
 	sta	a:$0010,y
 	lda	#$0000
@@ -5607,7 +5607,7 @@ tbl_stage2_boss_cannon_states:
 
 stage2_boss_cannon_state_0:
 	ldy	difficulty
-	lda	a:data_05D818,y
+	lda	a:stage2_boss_cannon_hp,y
 	sta	$06,x
 	jsr	a:stage2_boss_cannon_close
 	stz	$2E,x
@@ -5766,7 +5766,7 @@ stage2_boss_cannon_fire:
 	cpy	#$0004
 	bcs	loc_02B734
 	lda	stage_frame_counter
-	and	a:data_05D822,y
+	and	a:stage2_boss_cannon_fire_masks,y
 	bne	loc_02B733
 	ldy	#$001C
 	jsl	f:td_fire_enemy_bullet
@@ -5782,7 +5782,7 @@ loc_02B734:
 	lda	#$0014
 	jsl	f:queue_sound
 loc_02B748:
-	lda	#$000C
+	lda	#TDS_CANNON_FLAME
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -5999,19 +5999,19 @@ td_shot_type_none:
 
 td_end_shot:
 	lda	$10,x
-	cmp	#$0007
+	cmp	#TDS_FLAME
 	beq	loc_02B913
-	cmp	#$0008
+	cmp	#TDS_CRUSH
 	bne	loc_02B8E1
 	brl	loc_02BC8B
 loc_02B8E1:
-	cmp	#$0009
+	cmp	#TDS_CRUSH_BLAST
 	beq	loc_02B913
-	cmp	#$000A
+	cmp	#TDS_CRUSH_BLAST_PART
 	beq	loc_02B913
-	cmp	#$000B
+	cmp	#TDS_BOSS_SPIT
 	beq	loc_02B913
-	lda	#$FFFE
+	lda	#TDS_IMPACT
 	sta	$10,x
 	lda	#$FFFF
 	sta	$04,x
@@ -6480,7 +6480,7 @@ loc_02BC6D:
 	rtl
 loc_02BC8B:
 	stz	$12,x
-	lda	#$0009
+	lda	#TDS_CRUSH_BLAST
 	sta	$10,x
 	rtl
 
@@ -6546,7 +6546,7 @@ loc_02BCF4:
 loc_02BD12:
 	lda	#$0000
 	sta	a:$0012,y
-	lda	#$000A
+	lda	#TDS_CRUSH_BLAST_PART
 	sta	a:$0010,y
 	stx	$1A,y
 	rtl
@@ -6588,7 +6588,7 @@ loc_02BD6D:
 	dec	$12,x
 	bne	loc_02BD77
 	; (not executed in the CDL traces)
-	lda	#$FFFF
+	lda	#TDS_HIDDEN
 	sta	$10,x
 	rtl
 loc_02BD77:
@@ -6891,13 +6891,13 @@ td_shot_tile_effect:
 	lda	f:$7E4000,x
 	and	#$00FF
 	beq	loc_02BFE1
-	bit	#$0080
+	bit	#TDA_SPECIAL
 	bne	loc_02BFE4
 	plx
-	bit	#$0010
+	bit	#TDA_SET_PRIORITY
 	beq	loc_02BFDA
 	ldy	#$0002
-	bit	#$0008
+	bit	#TDA_PRIORITY_HIGH
 	beq	loc_02BFCE
 	ldy	#$0000
 loc_02BFCE:
@@ -6908,7 +6908,7 @@ loc_02BFCE:
 	sta	$02,x
 	pla
 loc_02BFDA:
-	and	#$0007
+	and	#TDA_WALL_MASK
 	beq	loc_02BFE2
 loc_02BFDF:
 	sec
@@ -6920,7 +6920,7 @@ loc_02BFE2:
 	rts
 loc_02BFE4:
 	plx
-	cmp	#$00FC
+	cmp	#TDA_MAP_OBJECT
 	bne	loc_02BFE2
 	lda	a:topdown_map
 	cmp	#TD_MAP_STAGE5_BOSS
@@ -6983,7 +6983,7 @@ td_enemy_shot_tile_effect:
 	lda	f:$7E4000,x
 	and	#$00FF
 	beq	loc_02C05F
-	bit	#$0080
+	bit	#TDA_SPECIAL
 	beq	loc_02C062
 loc_02C05F:
 	plx
@@ -6992,10 +6992,10 @@ loc_02C060:
 	rts
 loc_02C062:
 	plx
-	bit	#$0010
+	bit	#TDA_SET_PRIORITY
 	beq	loc_02C07F
 	ldy	#$0000
-	bit	#$0008
+	bit	#TDA_PRIORITY_HIGH
 	beq	loc_02C073
 	ldy	#$0002
 loc_02C073:
@@ -7006,7 +7006,7 @@ loc_02C073:
 	sta	$02,x
 	pla
 loc_02C07F:
-	and	#$0007
+	and	#TDA_WALL_MASK
 	beq	loc_02C060
 	sec
 	rts
@@ -7034,7 +7034,7 @@ loc_02C09D:
 	bmi	loc_02C09B
 	lda	zp_04
 	beq	td_tile_no_effect
-	bit	#$0080
+	bit	#TDA_SPECIAL
 	beq	loc_02C105
 	eor	#$00FF
 	phx
@@ -7090,10 +7090,10 @@ loc_02C103:
 loc_02C104:
 	rts
 loc_02C105:
-	bit	#$0010
+	bit	#TDA_SET_PRIORITY
 	beq	loc_02C11F
 	ldy	#$0002
-	bit	#$0008
+	bit	#TDA_PRIORITY_HIGH
 	beq	loc_02C115
 	ldy	#$0000
 loc_02C115:
@@ -7318,14 +7318,14 @@ loc_02C2C2:
 	rts
 
 td_enemy_tile_wall_shape:
-	bit	#$0080
+	bit	#TDA_SPECIAL
 	bne	loc_02C2CD
-	and	#$0007
+	and	#TDA_WALL_MASK
 	rts
 loc_02C2CD:
-	cmp	#$00FF
+	cmp	#TDA_HOLE
 	beq	loc_02C2DB
-	cmp	#$00F5
+	cmp	#TDA_PUSH_RIGHT
 	bcc	loc_02C2DB
 	lda	#$0000
 	rts
@@ -7394,16 +7394,16 @@ loc_02C33B:
 td_player_tile_effect:
 	lda	zp_04
 	beq	loc_02C372
-	cmp	#$00F9
+	cmp	#TDA_SAND_PIT
 	beq	loc_02C351
 	stz	a:$0672,x
 loc_02C351:
-	bit	#$0080
+	bit	#TDA_SPECIAL
 	bne	loc_02C377
-	bit	#$0010
+	bit	#TDA_SET_PRIORITY
 	beq	loc_02C370
 	ldy	#$0002
-	bit	#$0008
+	bit	#TDA_PRIORITY_HIGH
 	beq	loc_02C366
 	ldy	#$0000
 loc_02C366:
@@ -7531,7 +7531,7 @@ td_tile_sand_pit:
 	cmp	#$0008
 	bcs	loc_02C440
 	ldy	difficulty
-	lda	a:data_05E670,y
+	lda	a:stage5_boss_hp,y
 	lsr	a
 	cmp	a:wram_0AC6
 	bcs	loc_02C445
@@ -7916,9 +7916,9 @@ loc_02C710:
 	rts
 
 td_player_tile_wall_shape:
-	bit	#$0080
+	bit	#TDA_SPECIAL
 	bne	loc_02C71B
-	and	#$0007
+	and	#TDA_WALL_MASK
 	rts
 loc_02C71B:
 	lda	#$0000
@@ -8946,7 +8946,7 @@ loc_02CE77:
 	lda	#$0012
 	jsl	f:queue_sound
 	lda	$14,x
-	cmp	#$0006
+	cmp	#TDIK_BARRIER
 	bcs	loc_02CE8D
 	ldy	a:p1_weapon_select
 	sta	a:$1F84,y
@@ -9957,7 +9957,7 @@ loc_02D669:
 	lda	#$0012
 	jsl	f:queue_sound
 	lda	$14,x
-	cmp	#$0006
+	cmp	#TDIK_BARRIER
 	bcs	loc_02D67F
 	ldy	a:p2_weapon_select
 	sta	a:$1FC4,y
@@ -10761,7 +10761,7 @@ loc_02DCCB:
 	pla
 	jsl	f:td_find_free_item_slot
 	bcs	loc_02DD01
-	lda	#$0001
+	lda	#TDI_BLAST
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -10862,7 +10862,7 @@ td_switch_event_explosion:
 	bne	loc_02DDC5
 	jsl	f:td_find_free_item_slot
 	bcs	loc_02DDC5
-	lda	#$0002
+	lda	#TDI_EXPLOSION
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y

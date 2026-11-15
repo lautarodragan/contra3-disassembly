@@ -2632,16 +2632,16 @@ data_05D1AA:
 	.byte	$04, $00, $F0, $FF, $10, $00, $F8, $FF, $08, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $10, $00, $F0, $FF, $08, $00, $F8, $FF, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00
-data_05D1CC:
+td_spawn_type_masks:
 	; CDL: read by spawn_stage2_enemies
 	.byte	$FF, $00, $03, $00, $01, $00
-data_05D1D2:
+stage2_spawn_types:
 	; CDL: read by spawn_stage2_enemies
 	.byte	$01, $00, $02, $00
-data_05D1D6:
+stage5_spawn_types:
 	; CDL: read by spawn_stage5_enemies
 	.byte	$12, $00, $05, $00
-data_05D1DA:
+td_spawn_offsets_y:
 	; CDL: read by td_place_enemy_near_player
 	.byte	$40, $FF, $41, $FF, $41, $FF, $41, $FF, $41, $FF, $42, $FF, $43, $FF, $43, $FF
 	.byte	$44, $FF, $45, $FF, $46, $FF, $47, $FF, $49, $FF, $4A, $FF, $4C, $FF, $4D, $FF
@@ -2651,7 +2651,7 @@ data_05D1DA:
 	.byte	$96, $FF, $9A, $FF, $9E, $FF, $A2, $FF, $A6, $FF, $AA, $FF, $AE, $FF, $B3, $FF
 	.byte	$B7, $FF, $BB, $FF, $C0, $FF, $C4, $FF, $C9, $FF, $CD, $FF, $D2, $FF, $D6, $FF
 	.byte	$DB, $FF, $E0, $FF, $E4, $FF, $E9, $FF, $EE, $FF, $F2, $FF, $F7, $FF, $FC, $FF
-data_05D25A:
+td_spawn_offsets_x:
 	; CDL: read by td_place_enemy_near_player
 	.byte	$00, $00, $04, $00, $09, $00, $0E, $00, $12, $00, $17, $00, $1C, $00, $20, $00
 	.byte	$25, $00, $2A, $00, $2E, $00, $33, $00, $37, $00, $3C, $00, $40, $00, $45, $00
@@ -2691,18 +2691,18 @@ data_05D25A:
 	.byte	$05, $00, $00, $0E, $02, $00, $06, $00, $00, $0E, $02, $00, $07, $00, $00, $0E
 	.byte	$02, $00, $08, $00, $00, $0E, $02, $00, $09, $00, $00, $0E, $02, $00, $0A, $00
 	.byte	$00, $0E, $00, $00, $0A, $00, $00, $0E
-data_05D4A2:
+td_runner_hp:
 	; CDL: read by td_animate_enemy, td_runner_state_2
 	.byte	$00, $00, $02, $00, $04, $00, $08, $00, $00, $00, $00, $00, $08, $00, $01, $00
 	.byte	$00, $00, $08, $00, $00, $00, $00, $00, $08, $00, $02, $00, $00, $00, $A8, $D4
-data_05D4C2:
+td_gunner_hp:
 	; CDL: read by td_gunner_state_2
 	.byte	$00, $00, $02, $00, $04, $00
-data_05D4C8:
+td_gunner_fire_delays:
 	; CDL: read by td_animate_enemy, td_gunner_state_3; partly not accessed
 	.byte	$40, $00, $20, $00, $10, $00, $02, $00, $00, $00, $00, $02, $00, $00, $01, $00
 	.byte	$00, $02
-data_05D4DA:
+hatch_turret_hp:
 	; CDL: read by td_animate_enemy, hatch_turret_state_1, update_hatch_turret_sweep
 	.byte	$10, $00, $20, $00, $40, $00, $08, $00, $00, $00, $00, $02, $08, $00, $01, $00
 	.byte	$00, $02, $08, $00, $00, $00, $00, $02, $08, $00, $02, $00, $00, $02, $E0, $D4
@@ -2712,13 +2712,13 @@ data_05D4FA:
 data_05D500:
 	; CDL: read by hatch_turret_aim_state_2
 	.byte	$01, $00, $02, $00, $04, $00
-data_05D506:
+hatch_turret_aim_fire_masks:
 	; CDL: read by hatch_turret_aim_state_2
 	.byte	$1F, $00, $0F, $00, $07, $00
 data_05D50C:
 	; CDL: read by hatch_turret_spin_state_2; partly not accessed
 	.byte	$04, $00, $08, $00, $10, $00
-data_05D512:
+hatch_turret_spin_fire_masks:
 	; CDL: read by hatch_turret_spin_state_2; partly not accessed
 	.byte	$07, $00, $01, $00, $00, $00
 data_05D518:
@@ -2727,44 +2727,44 @@ data_05D518:
 data_05D51E:
 	; CDL: read by hatch_turret_sweep_turn; partly not accessed
 	.byte	$02, $00, $02, $00, $08, $00
-data_05D524:
+hatch_turret_sweep_fire_masks:
 	; CDL: read by hatch_turret_sweep_state_2; partly not accessed
 	.byte	$03, $00, $03, $00, $01, $00
-data_05D52A:
+td_centipede_unused_hp:
 	; CDL: read by td_animate_enemy; partly not accessed
 	.byte	$10, $00, $40, $00, $80, $00, $04, $00, $00, $00, $00, $04, $04, $00, $01, $00
 	.byte	$00, $04, $30, $D5
-data_05D53E:
+td_bug_centipede_hp:
 	; CDL: read by td_animate_enemy, td_bug_centipede_state_2
 	.byte	$10, $00, $40, $00, $80, $00, $03, $00, $00, $00, $00, $0E, $03, $00, $01, $00
 	.byte	$00, $0E, $44, $D5
-data_05D552:
+td_centipede_bug_hp:
 	; CDL: read by td_centipede_bug_state_0
 	.byte	$02, $00, $04, $00, $08, $00
 data_05D558:
 	; CDL: read by td_centipede_bug_state_2
 	.byte	$80, $00, $40, $00, $20, $00
-data_05D55E:
+td_centipede_hp:
 	; CDL: read by td_centipede_state_2
 	.byte	$10, $00, $40, $00, $80, $00
-data_05D564:
+td_centipede_fire_masks:
 	; CDL: read by td_centipede_state_4
 	.byte	$FF, $FF, $01, $00, $00, $00
-data_05D56A:
+td_nest_crawler_hp:
 	; CDL: read by td_animate_enemy, td_nest_crawler_state_0
 	.byte	$02, $00, $10, $00, $20, $00, $08, $00, $00, $00, $00, $00, $08, $00, $01, $00
 	.byte	$00, $00, $08, $00, $00, $00, $00, $00, $08, $00, $02, $00, $00, $00, $70, $D5
 data_05D58A:
 	; CDL: read by td_nest_crawler_state_2
 	.byte	$00, $01, $80, $00, $20, $00
-data_05D590:
+td_crawler_hp:
 	; CDL: read by td_animate_enemy, td_crawler_state_2
 	.byte	$02, $00, $04, $00, $08, $00, $08, $00, $00, $00, $00, $02, $08, $00, $01, $00
 	.byte	$00, $02, $08, $00, $00, $00, $00, $02, $08, $00, $02, $00, $00, $02, $96, $D5
-data_05D5B0:
+td_spitter_hp:
 	; CDL: read by td_spitter_state_2; partly not accessed
 	.byte	$02, $00, $04, $00, $08, $00
-data_05D5B6:
+td_spitter_fire_delays:
 	; CDL: read by td_spitter_state_3, animate_td_item; partly not accessed
 	.byte	$40, $00, $20, $00, $10, $00, $03, $00, $67, $E9, $00, $2C, $03, $00, $FB, $E8
 	.byte	$00, $2C, $03, $00, $00, $E9, $00, $2C, $03, $00, $B7, $E8, $00, $2C, $03, $00
@@ -2816,11 +2816,11 @@ data_05D67C:
 	.byte	$00, $01, $71, $E9, $00, $1C, $02, $00, $00, $00, $00, $1C, $02, $00, $71, $E9
 	.byte	$00, $1C, $70, $D7, $02, $00, $82, $E9, $00, $1E, $02, $00, $82, $E9, $00, $16
 	.byte	$7E, $D7
-data_05D78C:
+td_item_drop_kinds:
 	; CDL: read by td_spawn_item_drop; partly not accessed
 	.byte	$01, $00, $02, $00, $03, $00, $07, $00, $04, $00, $04, $00, $05, $00, $05, $00
 	.byte	$06, $00, $06, $00, $06, $00
-data_05D7A2:
+td_item_kind_types:
 	; CDL: read by td_spawn_item_drop
 	.byte	$07, $00, $03, $00, $04, $00, $05, $00, $06, $00, $07, $00, $08, $00, $09, $00
 data_05D7B2:
@@ -2838,27 +2838,27 @@ data_05D7C2:
 data_05D7C8:
 	; CDL: read by stage2_boss_aim_jump; partly not accessed
 	.byte	$30, $00, $40, $00, $60, $00
-data_05D7CE:
+stage2_boss_core_hp:
 	; CDL: read by stage2_boss_core_state_0; partly not accessed
 	.byte	$00, $01, $80, $01, $00, $02
-data_05D7D4:
+stage2_boss_pod_hp:
 	; CDL: read by stage2_boss_pod_state_0; partly not accessed
 	.byte	$20, $00, $40, $00, $80, $00
-data_05D7DA:
+stage2_boss_pod_drop_kinds:
 	; CDL: read by stage2_boss_pod_drop_item; partly not accessed
 	.byte	$01, $00, $02, $00, $03, $00, $07, $00, $04, $00, $04, $00, $05, $00, $05, $00
 	.byte	$06, $00, $06, $00, $06, $00, $07, $00, $01, $00, $02, $00, $03, $00, $07, $00
 	.byte	$04, $00, $04, $00, $05, $00, $05, $00, $06, $00, $06, $00, $06, $00
-data_05D808:
+stage2_boss_pod_item_types:
 	; CDL: read by stage2_boss_pod_drop_item; partly not accessed
 	.byte	$07, $00, $03, $00, $04, $00, $05, $00, $06, $00, $07, $00, $08, $00, $09, $00
-data_05D818:
+stage2_boss_cannon_hp:
 	; CDL: read by stage2_boss_cannon_state_0; partly not accessed
 	.byte	$80, $00, $C0, $00, $00, $01
 data_05D81E:
 	; CDL: read by stage2_boss_cannon_state_3
 	.byte	$04, $00, $FC, $FF
-data_05D822:
+stage2_boss_cannon_fire_masks:
 	; CDL: read by stage2_boss_cannon_fire; partly not accessed
 	.byte	$03, $00, $01, $00, $00, $00
 data_05D828:
@@ -3312,7 +3312,7 @@ cosine_table:
 	.byte	$6D, $6A, $24, $6C, $CA, $6D, $5F, $6F, $E2, $70, $55, $72, $B5, $73, $04, $75
 	.byte	$41, $76, $6C, $77, $84, $78, $8A, $79, $7D, $7A, $5D, $7B, $29, $7C, $E3, $7C
 	.byte	$8A, $7D, $1D, $7E, $9D, $7E, $09, $7F, $62, $7F, $A7, $7F, $D8, $7F, $F6, $7F
-data_05E670:
+stage5_boss_hp:
 	; CDL: read by stage5_boss_state_0; partly not accessed
 	.byte	$00, $02, $00, $04, $00, $08
 data_05E676:
@@ -3336,7 +3336,7 @@ data_05E6A6:
 data_05E6AE:
 	; CDL: read by stage5_boss_spawn_arm
 	.byte	$CC, $01, $00, $02, $30, $02, $00, $02
-data_05E6B6:
+stage5_boss_claw_hp:
 	; CDL: read by stage5_boss_claw_state_0; partly not accessed
 	.byte	$20, $00, $80, $00, $00, $01
 data_05E6BC:
@@ -3345,10 +3345,10 @@ data_05E6BC:
 data_05E6C4:
 	; CDL: read by stage5_boss_arm_segment_state_4
 	.byte	$00, $2C, $00, $2C, $00, $2C, $00, $2A
-data_05E6CC:
+td_nest_hp:
 	; CDL: read by td_nest_state_0
 	.byte	$20, $00, $50, $00, $80, $00
-data_05E6D2:
+gun_hatch_hp:
 	; CDL: read by gun_hatch_state_0
 	.byte	$20, $00, $50, $00, $80, $00
 data_05E6D8:

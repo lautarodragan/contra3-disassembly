@@ -1354,6 +1354,37 @@ TD_MAP_STAGE5_BOSS  = $0006	; stage 5 boss map
 ; Mode 7 scale (p1_m7_scale_x/y): texels per pixel, 8.8 fixed point.
 M7_SCALE_1X         = $0100	; 1:1, normal play
 M7_SCALE_MAP        = $0500	; zoomed out to the whole map (intro and map view)
+;
+; Tile attributes: one byte per Mode 7 tile in the map at $7E:4000
+; (build_tile_attr_rows, tables tile_attrs_stage2 ...). Below $80, bits
+; 0-2 are a wall shape and bit 4 changes the object's sprite priority;
+; from $ED up, special tiles whose handler is entry $FF - attribute of
+; tbl_td_player_special_tiles (and of tbl_td_enemy_special_tiles, where
+; most of them kill the enemy).
+TDA_FLOOR           = $00	; walkable
+TDA_WALL_MASK       = $07	; wall shape: 1 solid; 3, 4, 5 seen too (td_push_out_of_walls pushes along them)
+TDA_PRIORITY_HIGH   = $08	; with TDA_SET_PRIORITY: priority $2000, else $1000 (the other way round for enemy shots)
+TDA_SET_PRIORITY    = $10	; sets the priority bits ($3000) of +$02 of who walks on it (passing under or over a structure)
+TDA_SPECIAL         = $80	; special tile, the values below
+TDA_FALL_DOWN_RIGHT = $ED	; stage 5 slopes, $ED-$F4: the player slides that way and falls (td_tile_fall_*)
+TDA_FALL_DOWN_LEFT  = $EE
+TDA_FALL_UP_RIGHT   = $EF
+TDA_FALL_UP_LEFT    = $F0
+TDA_FALL_UP         = $F1
+TDA_FALL_DOWN       = $F2
+TDA_FALL_RIGHT      = $F3
+TDA_FALL_LEFT       = $F4
+TDA_PUSH_RIGHT      = $F5	; stage 5 sand currents, $F5-$F8: move the player (and enemies) by td_push_speed a frame
+TDA_PUSH_LEFT       = $F6
+TDA_PUSH_UP         = $F7
+TDA_PUSH_DOWN       = $F8
+TDA_SAND_PIT        = $F9	; stage 5 boss: the funnel; pulls the player in a spiral to the centre (td_spiral_into_sand_pit)
+TDA_WHIRL           = $FA	; stage 5: whirlpool; turns the player (enemies lose HP) around the centre of its 32x32 cell
+TDA_SWITCH          = $FB	; stage 5: Y or A here starts a switch event (td_trigger_switch_event)
+TDA_MAP_OBJECT      = $FC	; part of a map object (target, boss): blocks shots, which hit the object (td_get_map_object_at)
+TDA_TRAP            = $FD	; stage 2: 500 points, then a TDI_BLAST explodes there (td_trigger_trap)
+TDA_BLOCK_ANIM      = $FE	; stage 2: shakes the screen and animates map blocks (td_trigger_block_anim)
+TDA_HOLE            = $FF	; hole: the player falls (td_player_state_falling), an enemy dies
 ; ---- engine and sound constants ----
 
 ; nmi_mode values (frame handler, tbl_nmi_frame_handlers)

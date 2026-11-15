@@ -120,4 +120,77 @@ SHOTT_SPARK_RADIAL              = $18
 SHOTT_SPARK_RADIAL_FAST         = $19
 SHOTT_SPARK_RANDOM_B            = $1A
 
+; ---- top-down stages (src/topdown/) ----
+; Their objects have their own type numbers (see Top-down stages in the
+; book for the slots). HP values are easy / normal / hard; an object dies
+; when its HP (+$06) goes negative.
+;
+; Enemy types (+$10 of the slots $0D40-$0EBF, and of the stage 5 boss arm
+; in $0B40-$0EBF; handlers in tbl_td_enemy_types).
+TDT_NONE                        = $00	; also $07: no handler
+TDT_GUNNER                      = $01	; stage 2: walks to the nearest player, turns to face it and fires bullets; HP 0/2/4
+TDT_RUNNER                      = $02	; stage 2: walks to the nearest player; HP 0/2/4
+TDT_CENTIPEDE_UNUSED            = $03	; head of a 4-part centipede like TDT_CENTIPEDE (never spawned)
+TDT_CENTIPEDE_SEGMENT           = $04	; body segment of TDT_CENTIPEDE / TDT_CENTIPEDE_UNUSED (follows the head's trail)
+TDT_CRAWLER                     = $05	; stage 5: walks to the nearest player; HP 2/4/8
+TDT_NEST_CRAWLER                = $06	; stage 5: comes out of a nest (TDMT_NEST), fires orbs; HP 2/16/32
+TDT_EXPLOSION                   = $08	; an enemy's explosion (td_start_explosion)
+TDT_HATCH_TURRET_SPIN           = $09	; stage 2: turret of TDMT_GUN_HATCH_SPIN, turns all the time; HP 16/32/64
+TDT_STAGE5_BOSS_CLAW            = $0A	; stage 5 boss: claw at the end of the arm; HP 32/128/256, shared by the whole arm
+TDT_STAGE5_BOSS_ARM_SEGMENT     = $0B	; stage 5 boss: 12 arm segments (follow the claw's trail)
+TDT_BUG_CENTIPEDE               = $0C	; stage 5: centipede head, 3 segments; HP 16/64/128 (whole body); splits into 4 TDT_CENTIPEDE_BUG
+TDT_BUG_CENTIPEDE_SEGMENT       = $0D	; body segment of TDT_BUG_CENTIPEDE
+TDT_CENTIPEDE_BUG               = $0E	; stage 5: bug left by a TDT_BUG_CENTIPEDE, fires orbs; HP 2/4/8
+TDT_CENTIPEDE                   = $0F	; stage 2: centipede head with 3 TDT_CENTIPEDE_SEGMENT; HP 16/64/128 (whole body)
+TDT_HATCH_TURRET_AIM            = $10	; stage 2: turret of a gun hatch, aims at the nearest player; HP 16/32/64
+TDT_HATCH_TURRET_SWEEP          = $11	; stage 2: turret of TDMT_GUN_HATCH_SWEEP, sweeps left and right; HP 16/32/64
+TDT_SPITTER                     = $12	; stage 5: walks, turns to face the nearest player and fires orbs; HP 2/4/8
+TDT_STAGE5_BOSS_ARM_BASE        = $13	; stage 5 boss: base of the arm
+;
+; Map object types (+$10 of the slots $0AC0-$0D3F; tbl_map_object_types).
+TDMT_GUN_HATCH_AIM              = $01	; stage 2 target: a hatch in the floor that opens near a player and lets out TDT_HATCH_TURRET_AIM; HP 32/80/128
+TDMT_NEST                       = $02	; stage 5 target: a nest that lets out TDT_NEST_CRAWLER; HP 32/80/128
+TDMT_STAGE2_BOSS                = $03	; stage 2 boss: the body (a Mode 7 layer): drops from above, walks, jumps on the player
+TDMT_STAGE2_BOSS_CORE           = $04	; stage 2 boss: its weak point, HP 256/384/512; the boss dies with it
+TDMT_STAGE2_BOSS_CANNON         = $05	; stage 2 boss: cannon turning around the body, HP 128/192/256
+TDMT_STAGE2_BOSS_POD            = $06	; stage 2 boss: one of 6 spiked pods that fire, HP 32/64/128
+TDMT_GUN_HATCH_SPIN             = $07	; stage 2 target: hatch with TDT_HATCH_TURRET_SPIN; HP 32/80/128
+TDMT_STAGE5_BOSS                = $08	; stage 5 boss: the creature in the sand pit (a Mode 7 layer), HP 512/1024/2048
+TDMT_GUN_HATCH_SWEEP            = $0C	; stage 2 target: hatch with TDT_HATCH_TURRET_SWEEP; HP 32/80/128
+TDMT_GUN_HATCH_NO_FIRE          = $0D	; stage 2 target: opens only while the nearest player does not hold fire
+TDMT_GUN_HATCH_BEHIND           = $0E	; stage 2 target: opens only behind the nearest player's back
+;
+; Item and effect types (+$10 of the slots $0980-$0ABF; tbl_td_item_types).
+; Items carry their kind in +$14: 1-5 the weapon (WEAPON_SPREAD ...), then
+; TDIK_BARRIER and TDIK_BOMB.
+TDI_BLAST                       = $01	; blast that hurts players and enemies (damage 16), set off by the stage 2 traps
+TDI_EXPLOSION                   = $02	; explosion effect, no collision (td_spawn_explosion_effect)
+TDI_SPREAD                      = $03	; weapon item S
+TDI_CRUSH                       = $04	; weapon item C
+TDI_HOMING                      = $05	; weapon item H
+TDI_FLAME                       = $06	; weapon item F
+TDI_LASER                       = $07	; weapon item L
+TDI_BARRIER                     = $08	; barrier: invincible for $200 frames
+TDI_BOMB                        = $09	; one more smart bomb (up to 9)
+TDIK_BARRIER                    = 6	; item kind (+$14) of TDI_BARRIER
+TDIK_BOMB                       = 7	; item kind of TDI_BOMB
+;
+; Shot types (+$10 of the slots $0300-$097F; tbl_topdown_shot_types is
+; indexed by type + 8). Damage is +$06.
+TDS_IMPACT                      = $FFFE	; a shot that hit something: spark, then the slot is freed (td_end_shot)
+TDS_HIDDEN                      = $FFFF	; no sprite
+TDS_DEFAULT                     = $02	; default gun, damage 2
+TDS_SPREAD                      = $03	; spread gun, damage 2
+TDS_ENEMY_BULLET                = $04	; enemy bullet
+TDS_HOMING                      = $05	; homing missile, damage 2
+TDS_LASER                       = $06	; laser, damage 4
+TDS_FLAME                       = $07	; flame, damage 1
+TDS_CRUSH                       = $08	; crush missile, damage 2; becomes TDS_CRUSH_BLAST
+TDS_CRUSH_BLAST                 = $09	; crush blast, damage 1 for $40 frames
+TDS_CRUSH_BLAST_PART            = $0A	; the two outer parts of a crush blast
+TDS_BOSS_SPIT                   = $0B	; stage 5 boss: shots spat from the pit's edge
+TDS_CANNON_FLAME                = $0C	; stage 2 boss cannon on HARD: flame
+TDS_ENEMY_ORB                   = $0D	; enemy orb (td_fire_enemy_orb)
+TDS_HOMING_ORB                  = $0E	; stage 5 boss claw: orb that steers towards a player
+
 .endif
