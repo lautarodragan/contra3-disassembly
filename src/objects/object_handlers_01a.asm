@@ -233,7 +233,7 @@ loc_01B35D:
 object_type_02_state_04:
 	lda	OBJ_TIMER,x
 	bne	loc_01B383
-	ldy	#$ACB7
+	ldy	#.loword(vram_blocks_05ACB7)
 	inc	OBJ_STATE,x
 	lda	#$4D88
 	pha
@@ -675,10 +675,10 @@ loc_01B6D1:
 	lda	#$0140
 	sbc	$0A,x
 	sta	a:bg1_x
-	lda	#$C5B8
+	lda	#.loword(anim_05C5B8)
 	bra	loc_01B6E9
 loc_01B6E3:
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	stz	a:bg1_x
 loc_01B6E9:
 	pha
@@ -882,7 +882,7 @@ loc_01B861:
 	lda	#$0030
 	sta	zp_08
 	lda	#$4E8C
-	ldy	#$AF55
+	ldy	#.loword(vram_blocks_05AF55)
 	bra	loc_01B895
 loc_01B87F:
 	ldy	$3A,x
@@ -1559,10 +1559,10 @@ foot_soldier_state_04:
 	lda	#$FFFE
 	sta	OBJ_Y_VEL,x
 	inc	OBJ_STATE,x
-	ldy	#$B16D
+	ldy	#.loword(metasprite_06B16D)
 	lda	OBJ_FACING,x
 	beq	loc_01BD8A
-	ldy	#$B427
+	ldy	#.loword(metasprite_06B427)
 loc_01BD8A:
 	sty	$00,x
 loc_01BD8C:

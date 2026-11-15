@@ -1918,7 +1918,7 @@ sub_1DBE61:
 	lda	stage_frame_counter
 	bit	#$0010
 	bne	loc_1DBE6F
-	ldx	#$FF0A
+	ldx	#.loword(text_05FF0A)
 loc_1DBE6F:
 	lda	#$0400
 	jsl	f:draw_text_attr
@@ -3029,7 +3029,7 @@ brain_boss_chain_state_00:
 	lda	#$0000
 	sta	$34,x
 	stz	$36,x
-	lda	#$C569
+	lda	#.loword(metasprite_06C569)
 	sta	zp_08
 	lda	#$3E00
 	sta	zp_0A
@@ -3196,7 +3196,7 @@ loc_1DC817:
 	lda	stage_frame_odd
 	beq	loc_1DC81E
 loc_1DC81B:
-	lda	#$C536
+	lda	#.loword(metasprite_06C536)
 loc_1DC81E:
 	sta	OBJ_SPRITE,x
 	bra	loc_1DC847

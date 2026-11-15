@@ -2056,7 +2056,7 @@ stage4_controller_state_15:
 	lda	a:wram_0910
 	cmp	#$0084
 	beq	loc_049017
-	lda	#$C558
+	lda	#.loword(anim_05C558)
 	sta	a:boss_work_0
 	inc	OBJ_STATE,x
 loc_049017:
@@ -3284,7 +3284,7 @@ sub_0499AB:
 	sta	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	stz	$30,x
-	lda	#$C606
+	lda	#.loword(anim_05C606)
 	sta	a:boss_work_0
 	phx
 	ldy	#$0000
@@ -8124,12 +8124,12 @@ face_boss_side_head_state_02:
 	jsr	a:sub_04C137
 	bcc	loc_04BED0
 loc_04BEB5:
-	ldy	#$C4BC
+	ldy	#.loword(metasprite_06C4BC)
 	lda	$3A,x
 	dec	a
 	bpl	loc_04BEC3
 	lda	#$0000
-	ldy	#$C49F
+	ldy	#.loword(metasprite_06C49F)
 loc_04BEC3:
 	sty	OBJ_SPRITE,x
 	sta	$3A,x
@@ -10376,10 +10376,10 @@ loc_04D087:
 	rtl
 
 spiked_mine_state_02:
-	lda	#$C81D
+	lda	#.loword(metasprite_06C81D)
 	ldy	$34,x
 	beq	loc_04D0BB
-	lda	#$C82E
+	lda	#.loword(metasprite_06C82E)
 loc_04D0BB:
 	sta	OBJ_SPRITE,x
 	lda	#$3E00
@@ -10840,10 +10840,10 @@ loc_04D46F:
 	lda	#$0000
 	ldy	a:boss_work_4
 	bne	loc_04D488
-	lda	#$CB77
+	lda	#.loword(metasprite_06CB77)
 	ldy	stage_frame_bit1
 	bne	loc_04D483
-	lda	#$CB72
+	lda	#.loword(metasprite_06CB72)
 loc_04D483:
 	ldy	#$0000
 	sty	OBJ_FLAGS,x

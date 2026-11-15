@@ -3811,10 +3811,10 @@ loc_01EBB7:
 
 ; Object type $3F: stage 3 spiked climber, spike arm.
 update_object_type_3F:
-	ldy	#$B8B6
+	ldy	#.loword(metasprite_06B8B6)
 	lda	stage_frame_bit1
 	bne	loc_01EBC8
-	ldy	#$B8C3
+	ldy	#.loword(metasprite_06B8C3)
 loc_01EBC8:
 	sty	$00,x
 	jsr	a:object_type_3F_move_spikes

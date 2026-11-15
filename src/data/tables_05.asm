@@ -2053,6 +2053,7 @@ data_05AC87:
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FD, $FF, $FE, $FF, $FD, $FF, $FE, $FF, $FD, $FF
 	.byte	$00, $B7, $20, $B7, $40, $B7, $60, $B7, $80, $B7, $A0, $B7, $C0, $B7, $E0, $B7
 	.byte	$60, $BF, $80, $C0, $A0, $C0, $C0, $C0, $00, $C0, $20, $C0, $40, $C0, $60, $C0
+vram_blocks_05ACB7:
 	.byte	$00, $B5, $A0, $B5, $C0, $B5, $E0, $B5, $00, $B6, $20, $B6, $40, $B6, $60, $B6
 	.byte	$80, $B6, $A0, $B6, $C0, $B6, $E0, $B6, $80, $B6, $A0, $B6, $C0, $B6, $E0, $B6
 	.byte	$80, $BF, $A0, $BF, $C0, $BF, $E0, $BF, $00, $62, $20, $62, $40, $62, $60, $62
@@ -2101,7 +2102,9 @@ data_05AF31:
 data_05AF37:
 	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, player_tank_state_02; partly not accessed
 	.byte	$00, $04, $04, $04, $00, $04, $00, $C9, $20, $C9, $40, $C9, $80, $C9, $A0, $C9
-	.byte	$C0, $C9, $60, $C9, $E0, $C9, $00, $CA, $20, $CA, $40, $CA, $60, $CA, $60, $C8
+	.byte	$C0, $C9, $60, $C9, $E0, $C9, $00, $CA, $20, $CA, $40, $CA, $60, $CA
+vram_blocks_05AF55:
+	.byte	$60, $C8
 	.byte	$E0, $C8, $80, $CA, $20, $CA, $40, $CA, $60, $CA
 hdma_list_05AF61:
 	hdma_channel_ind	$4370, $02, $0F, $7E3800, $7E

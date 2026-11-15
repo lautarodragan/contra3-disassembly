@@ -2111,6 +2111,7 @@ metasprite_06B8A1:
 	.byte	$08, $3E, $41
 metasprite_06B8B6:
 	.byte	$03, $FC, $F0, $22, $21, $FC, $E0, $22, $21, $FC, $D0, $20, $21
+metasprite_06B8C3:
 	.byte	$03, $FC, $F0, $26, $21, $FC, $E0, $26, $21, $FC, $D0, $24, $21
 metasprite_06B8D0:
 	.byte	$0A, $20, $E8
@@ -2625,7 +2626,9 @@ metasprite_06C80C:
 	.byte	$20, $61
 metasprite_06C81D:
 	.byte	$04, $10, $F0, $04, $E1, $00, $F0, $04, $A1, $10, $E0, $04, $61, $00
-	.byte	$E0, $04, $21, $04, $10, $F0, $2A, $61, $10, $E0, $06, $61, $00, $F0, $2A, $21
+	.byte	$E0, $04, $21
+metasprite_06C82E:
+	.byte	$04, $10, $F0, $2A, $61, $10, $E0, $06, $61, $00, $F0, $2A, $21
 	.byte	$00, $E0, $06, $21
 metasprite_06C83F:
 	.byte	$01, $00, $F0, $A8, $21
