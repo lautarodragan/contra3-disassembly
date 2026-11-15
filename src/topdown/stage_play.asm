@@ -4,6 +4,8 @@
 ; Players, objects and map handling of the top-down stages, reached from the
 ; state handlers in topdown/stage_states.asm.
 
+; Copies each joypad into its player's block (p1_td_joy_held ...) and
+; runs update_topdown_player for $0EC0 and $0F00.
 update_topdown_players:
 	lda	joy1_held
 	sta	a:p1_td_joy_held
@@ -17,6 +19,8 @@ update_topdown_players:
 	sta	a:p2_td_joy_pressed
 	ldx	#$0F00
 
+; Player X ($0EC0 / $0F00): state from tbl_topdown_player_states, chosen
+; from the buttons (L+R, fire, D-pad) unless an action runs (+$0640).
 update_topdown_player:
 	lda	$12,x
 	bne	loc_028E58

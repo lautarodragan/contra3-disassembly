@@ -19,6 +19,8 @@
 ; A shot with SHOT_DAMAGE 0 hits nothing.  Each player's shots are tested
 ; every other frame only: player 1's ($0AC0-$0D3F) when stage_frame_odd = 1,
 ; player 2's when stage_frame_odd = 0.
+; Runs the shots: player 1's ($0480-$06FF), player 2's ($0700-$097F) and the
+; others ($0300-$047F), by type + 8 (tbl_shot_types).
 update_shots:
 	ldx	#$0AC0
 loc_00E1BB:
