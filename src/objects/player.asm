@@ -8,9 +8,11 @@
 ; handler (run_player_state, tbl_player_states; most handlers are in
 ; objects/player_weapons.asm) and the player's frame (set_player_frame).
 ; Also the generic movement (move_player), the hanging and spin-stance
-; states and the BG-collision cascade for hanging (sub_01AF72).
+; states and the BG-collision cascade for hanging (check_ceiling_at_offset).
 
-sub_01A548:
+; State $09 (stage 1, seen in the emulator): dropping into the tank; lands
+; at y = $C8, then state $0A.
+player_state_enter_tank:
 	jsr	a:set_player_box_jumping
 	lda	OBJ_Y,x
 	cmp	#$00C8
@@ -37,7 +39,9 @@ loc_01A564:
 	inc	OBJ_STATE,x
 	rtl
 
-sub_01A57D:
+; State $0A (stage 1, seen in the emulator): driving the tank (body box 40
+; pixels wide; input_tank moves it, jump leaves it).
+player_state_tank:
 	lda	OBJ_Y,x
 	sta	PLAYER_HITBOX_BOTTOM,x
 	adc	#$FFDA
@@ -231,29 +235,31 @@ tbl_player_input:
 	.addr	input_air
 	.addr	input_air
 	.addr	input_climb
-	.addr	sub_01A806
+	.addr	input_free_move
 	.addr	move_player
 	.addr	move_player
 	.addr	move_player
-	.addr	sub_01A851
+	.addr	input_tank
 	.addr	move_player_unless_locked
 	.addr	input_air
 	.addr	input_hang
 	.addr	move_player
 	.addr	move_player
-	.addr	sub_01A7B9
-	.addr	sub_01A757
-	.addr	sub_01A719
+	.addr	input_hang_object
+	.addr	input_bike
+	.addr	input_bike_intro
 	.addr	move_player_unless_locked
 	.addr	move_player_unless_locked
 
-sub_01A719:
+; Input of state $12: the bike drives in; when PLAYER_INVULN_TIMER reaches
+; 1, 64 more frames of it and state $11.
+input_bike_intro:
 	lda	PLAYER_INVULN_TIMER,x
 	cmp	#$0001
 	bne	loc_01A72A
 	lda	#$0040
 	sta	PLAYER_INVULN_TIMER,x
-	lda	#$0011
+	lda	#PLAYER_STATE_BIKE
 	sta	OBJ_STATE,x
 loc_01A72A:
 	stz	PLAYER_AIM,x
@@ -278,7 +284,8 @@ loc_01A745:
 	sta	OBJ_X_VEL,x
 	brl	move_player_unless_locked
 
-sub_01A757:
+; Input of state $11 (hover bike): up/down aim, right accelerates.
+input_bike:
 	stz	OBJ_FACING,x
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
@@ -327,7 +334,8 @@ loc_01A7B1:
 	sta	OBJ_X_VEL,x
 	brl	move_player_unless_locked
 
-sub_01A7B9:
+; Input of state $10 (hanging from a moving object).
+input_hang_object:
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	lda	PLAYER_JOY_HELD,x
@@ -366,7 +374,9 @@ loc_01A7FC:
 	sta	PLAYER_AIM,x
 	brl	move_player_unless_locked
 
-sub_01A806:
+; Input of state 6: moves freely in 8 directions (never run in the CDL
+; traces; state 6 itself is respawn_on_missile).
+input_free_move:
 	; (not executed in the CDL traces)
 	stz	OBJ_X_VEL,x
 	stz	OBJ_X_VEL_SUB,x
@@ -406,7 +416,9 @@ loc_01A84C:
 loc_01A84E:
 	brl	move_player
 
-sub_01A851:
+; Input of state $0A (the tank): left/right drive (sound $1E), jump leaves
+; the tank (sound $1F, state 3).
+input_tank:
 	lda	#$0040
 	sta	a:wram_09D6
 	stz	a:wram_09F4
@@ -747,21 +759,21 @@ tbl_player_states:
 	.addr	player_state_jump
 	.addr	player_state_fall
 	.addr	player_state_climb_left
-	.addr	sub_019C18
+	.addr	respawn_on_missile
 	.addr	player_state_dying
 	.addr	player_state_dead
-	.addr	sub_01A548
-	.addr	sub_01A57D
+	.addr	player_state_enter_tank
+	.addr	player_state_tank
 	.addr	player_state_spin_stance
 	.addr	player_state_jump
-	.addr	sub_01AD83
+	.addr	player_state_hang_climb
 	.addr	player_state_out
 	.addr	player_state_respawn
-	.addr	sub_019125
-	.addr	sub_01B0E7
-	.addr	sub_01B104
-	.addr	sub_01ABFF
-	.addr	sub_01AC28
+	.addr	player_state_hang_object
+	.addr	player_state_bike
+	.addr	player_state_bike_intro
+	.addr	player_state_ending
+	.addr	player_state_ending_wave
 
 ; While PLAYER_BOMB_RADIUS is non-zero: grows it by PLAYER_BOMB_SPEED (which
 ; accelerates by $0800 a frame) up to 255, then 0 = finished; calls
@@ -916,7 +928,9 @@ loc_01ABEB:
 loc_01ABFE:
 	rts
 
-sub_01ABFF:
+; State $13 (set by the ending sequence for each player still in the game):
+; pose animation (data_05ABC1), then state $14.
+player_state_ending:
 	dec	$34,x
 	bpl	loc_01AC1A
 	inc	OBJ_STATE,x
@@ -939,7 +953,9 @@ loc_01AC1A:
 	sta	PLAYER_POSE,x
 	rtl
 
-sub_01AC28:
+; State $14: replays the pose sequence data_05ABC9 while Y is held (probably
+; waving).
+player_state_ending_wave:
 	lda	$34,x
 	bmi	loc_01AC2F
 	dec	$34,x
@@ -1074,7 +1090,9 @@ loc_01AD09:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01AD11:
+; No caller: a copy of the spin jump firing (both weapons around), never
+; run.
+player_state_spin_jump_unused:
 	; (not executed in the CDL traces)
 	jsr	a:set_player_box_jumping
 	lda	PLAYER_CONTACT,x
@@ -1118,20 +1136,23 @@ loc_01AD5E:
 	sta	OBJ_Y_VEL,x
 loc_01AD6D:
 	bpl	loc_01AD79
-	jsl	f:sub_019D76
+	jsl	f:dying_check_ceiling_walls
 loc_01AD73:
 	lda	#$000C
 	sta	OBJ_STATE,x
 	rtl
 loc_01AD79:
-	jsl	f:sub_019DAB
+	jsl	f:dying_check_floor_walls
 	lda	OBJ_STATE,x
 	bne	loc_01AD73
 	rtl
 loc_01AD82:
 	rtl
 
-sub_01AD83:
+; State $0D (seen in stage 6): hanging like state 1, but a wall at either
+; side (hang_climb_check_walls) switches to climbing (states 2 / 5); aims
+; through tbl_hang_climb_aim (the same entries as tbl_hang_aim).
+player_state_hang_climb:
 	lda	PLAYER_CONTACT,x
 	bit	#$0004
 	beq	loc_01AD8E
@@ -1139,7 +1160,7 @@ sub_01AD83:
 loc_01AD8E:
 	jsr	a:set_player_box_hanging
 	jsl	f:check_bomb_button
-	jsl	f:sub_01AF3C
+	jsl	f:hang_climb_check_walls
 	lda	OBJ_STATE,x
 	cmp	#$000D
 	bne	loc_01AD82
@@ -1160,40 +1181,40 @@ loc_01ADB7:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01ADC8,x
+	lda	f:tbl_hang_climb_aim,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01ADC8:
-	.addr	sub_01ADE2
-	.addr	sub_01ADEE
-	.addr	sub_01AE10
-	.addr	sub_01AE2F
-	.addr	sub_01AE51
-	.addr	sub_01ADE2
-	.addr	sub_01AE73
-	.addr	sub_01ADE2
-	.addr	sub_01AE95
-	.addr	sub_01AEB4
-	.addr	sub_01ADE2
-	.addr	sub_01ADE2
-	.addr	sub_01AED6
+tbl_hang_climb_aim:
+	.addr	hang_aim_none
+	.addr	hang_aim_right
+	.addr	hang_aim_up
+	.addr	hang_aim_up_right
+	.addr	hang_aim_left
+	.addr	hang_aim_none
+	.addr	hang_aim_up_left
+	.addr	hang_aim_none
+	.addr	hang_aim_down
+	.addr	hang_aim_down_right
+	.addr	hang_aim_none
+	.addr	hang_aim_none
+	.addr	hang_aim_down_left
 
-sub_01ADE2:
+hang_aim_none:
 	lda	#$004A
 	sta	PLAYER_POSE,x
 	lda	OBJ_FACING,x
 	beq	loc_01ADFD
 	brl	loc_01AE60
 
-sub_01ADEE:
+hang_aim_right:
 	lda	PLAYER_LOCKED,x
 	beq	loc_01ADF9
 	lda	#$004A
 	sta	PLAYER_POSE,x
 	bra	loc_01ADFD
 loc_01ADF9:
-	jsl	f:sub_01AEF8
+	jsl	f:animate_hang_move_right
 loc_01ADFD:
 	lda	#$0020
 	sta	zp_12
@@ -1203,7 +1224,7 @@ loc_01ADFD:
 	sta	zp_16
 	jml	f:fire_weapon
 
-sub_01AE10:
+hang_aim_up:
 	lda	#$0052
 	sta	PLAYER_POSE,x
 	lda	#$0000
@@ -1218,14 +1239,14 @@ loc_01AE24:
 	sta	zp_16
 	jml	f:fire_weapon
 
-sub_01AE2F:
+hang_aim_up_right:
 	lda	PLAYER_LOCKED,x
 	beq	loc_01AE3A
 	lda	#$004C
 	sta	PLAYER_POSE,x
 	bra	loc_01AE3E
 loc_01AE3A:
-	jsl	f:sub_01AEF8
+	jsl	f:animate_hang_move_right
 loc_01AE3E:
 	lda	#$0010
 	sta	zp_12
@@ -1235,14 +1256,14 @@ loc_01AE3E:
 	sta	zp_16
 	jml	f:fire_weapon
 
-sub_01AE51:
+hang_aim_left:
 	lda	PLAYER_LOCKED,x
 	beq	loc_01AE5C
 	lda	#$004A
 	sta	PLAYER_POSE,x
 	bra	loc_01AE60
 loc_01AE5C:
-	jsl	f:sub_01AF0F
+	jsl	f:animate_hang_move_left
 loc_01AE60:
 	lda	#$0060
 	sta	zp_12
@@ -1252,7 +1273,7 @@ loc_01AE60:
 	sta	zp_16
 	jml	f:fire_weapon
 
-sub_01AE73:
+hang_aim_up_left:
 	lda	PLAYER_LOCKED,x
 	beq	loc_01AE7E
 	lda	#$004C
@@ -1260,7 +1281,7 @@ sub_01AE73:
 	bra	loc_01AE82
 loc_01AE7E:
 	; (not executed in the CDL traces)
-	jsl	f:sub_01AF0F
+	jsl	f:animate_hang_move_left
 loc_01AE82:
 	lda	#$0070
 	sta	zp_12
@@ -1270,7 +1291,7 @@ loc_01AE82:
 	sta	zp_16
 	jml	f:fire_weapon
 
-sub_01AE95:
+hang_aim_down:
 	lda	#$0050
 	sta	PLAYER_POSE,x
 	lda	#$0040
@@ -1285,7 +1306,7 @@ loc_01AEA9:
 	sta	zp_16
 	jml	f:fire_weapon
 
-sub_01AEB4:
+hang_aim_down_right:
 	lda	PLAYER_LOCKED,x
 	beq	loc_01AEBF
 	lda	#$004E
@@ -1293,7 +1314,7 @@ sub_01AEB4:
 	bra	loc_01AEC3
 loc_01AEBF:
 	; (not executed in the CDL traces)
-	jsl	f:sub_01AEF8
+	jsl	f:animate_hang_move_right
 loc_01AEC3:
 	lda	#$0030
 	sta	zp_12
@@ -1303,7 +1324,7 @@ loc_01AEC3:
 	sta	zp_16
 	jml	f:fire_weapon
 
-sub_01AED6:
+hang_aim_down_left:
 	; (not executed in the CDL traces)
 	lda	PLAYER_LOCKED,x
 	beq	loc_01AEE1
@@ -1311,7 +1332,7 @@ sub_01AED6:
 	sta	PLAYER_POSE,x
 	bra	loc_01AEE5
 loc_01AEE1:
-	jsl	f:sub_01AF0F
+	jsl	f:animate_hang_move_left
 loc_01AEE5:
 	lda	#$0050
 	sta	zp_12
@@ -1321,7 +1342,9 @@ loc_01AEE5:
 	sta	zp_16
 	jml	f:fire_weapon
 
-sub_01AEF8:
+; Hand-over-hand animation while moving along a bar (PLAYER_POSE_ADD from
+; the bar class in zp_C4).
+animate_hang_move_right:
 	lda	zp_C4
 	ldy	#$0000
 	bit	#$0018
@@ -1332,7 +1355,7 @@ sub_01AEF8:
 	ldy	#$0008
 	bra	loc_01AF24
 
-sub_01AF0F:
+animate_hang_move_left:
 	lda	zp_C4
 	ldy	#$0000
 	bit	#$0018
@@ -1357,7 +1380,9 @@ loc_01AF32:
 loc_01AF3B:
 	rtl
 
-sub_01AF3C:
+; Wall tiles (collision bit 1) 32 pixels above the feet at x and x+6: climb
+; (state 5 / 2) and snap to the tile.
+hang_climb_check_walls:
 	stz	zp_00
 	lda	#$FFE0
 	sta	zp_02
@@ -1374,15 +1399,17 @@ loc_01AF54:
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$0002
-	beq	sub_01AF6F
+	beq	check_ceiling_hang_height
 	lda	#$0002
 	sta	OBJ_STATE,x
 	brl	snap_x_left_to_tile
 
-sub_01AF6F:
+check_ceiling_hang_height:
 	lda	#$FFD0
 
-sub_01AF72:
+; Classifies the collision tiles at y + A (x and x+6) like check_hang_bar
+; but with the solid bits ($0182); sets zp_C4 and snaps (bumping a ceiling).
+check_ceiling_at_offset:
 	sta	zp_02
 	stz	zp_00
 	jsl	f:get_bg_tile_at_object
@@ -1600,7 +1627,10 @@ set_player_box_hanging:
 	sta	a:PLAYER_CENTER_Y,x
 	rts
 
-sub_01B0E7:
+; State $11 (stage 4, seen in the emulator): riding the hover bike (bobs
+; between y $B2 and $BA); jump leaves it. Falls into
+; player_state_bike_intro.
+player_state_bike:
 	jsl	f:check_bomb_button
 	lda	PLAYER_CONTACT,x
 	bit	#$0004
@@ -1609,12 +1639,14 @@ sub_01B0E7:
 loc_01B0F6:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	sub_01B104
+	beq	player_state_bike_intro
 	lda	#$0002
 	sta	$34,x
 	brl	loc_0182FD
 
-sub_01B104:
+; State $12: on the bike without the kill and jump checks (driving in at the
+; start of stage 4); aims and fires from data_05ABF9...
+player_state_bike_intro:
 	lda	OBJ_X,x
 	sta	PLAYER_HITBOX_LEFT,x
 	adc	#$0006

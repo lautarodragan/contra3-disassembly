@@ -251,7 +251,7 @@ ending_sequence_state_08:
 	jsl	f:queue_sound
 	stz	a:wram_1636
 	lda	#$0010
-	sta	a:wram_1638
+	sta	a:stage1_boss_head_pos
 	inc	OBJ_STATE,x
 	jsr	a:sub_1DB81A
 	stz	$30,x
@@ -427,7 +427,7 @@ ending_sequence_state_14:
 	lda	#$6000
 	sta	a:wram_1636
 	lda	#$FFFF
-	sta	a:wram_1638
+	sta	a:stage1_boss_head_pos
 	jsl	f:ending_sequence_state_15
 	lda	a:bg2_y
 	sta	a:wram_13E2
@@ -485,7 +485,7 @@ ending_sequence_state_15:
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
 	stz	a:wram_163A
-	stz	a:wram_163C
+	stz	a:stage1_boss_height
 loc_1DB337:
 	rtl
 
@@ -496,7 +496,7 @@ ending_sequence_state_20:
 	cmp	#$0046
 	bcc	loc_1DB360
 	stz	a:wram_163A
-	stz	a:wram_163C
+	stz	a:stage1_boss_height
 	inc	OBJ_STATE,x
 	lda	#$0006
 	sta	a:bg1_scroll_mode
@@ -558,7 +558,7 @@ ending_sequence_state_22:
 	inc	OBJ_STATE,x
 	lda	a:p1_lives
 	beq	loc_1DB3E2
-	lda	#$0013
+	lda	#PLAYER_STATE_ENDING
 	sta	a:player1_state
 	lda	#$0040
 	sta	a:wram_0234
@@ -566,7 +566,7 @@ loc_1DB3E2:
 	lda	a:p2_lives
 	beq	loc_1DB3F3
 	; (not executed in the CDL traces)
-	lda	#$0013
+	lda	#PLAYER_STATE_ENDING
 	sta	a:player2_state
 	lda	#$0040
 	sta	a:wram_0274
@@ -642,7 +642,7 @@ sub_1DB472:
 	bmi	loc_1DB43E
 	cpy	#$0014
 	bcs	loc_1DB43E
-	dec	a:wram_1638
+	dec	a:stage1_boss_head_pos
 	bpl	loc_1DB43E
 	lda	stage_frame_odd
 	beq	loc_1DB43E
@@ -667,7 +667,7 @@ sub_1DB472:
 	adc	#$0006
 	sta	zp_FE
 	lda	zp_FC
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	lda	#$0001
 	sta	zp_02
 	lda	#$0030
@@ -675,7 +675,7 @@ sub_1DB472:
 	ldy	zp_FE
 	lda	zp_FA
 	ldx	#$0018
-	jsl	f:sub_00FEAA
+	jsl	f:queue_vram_blocks_at_x
 	plx
 	ldy	a:wram_1636
 	lda	a:data_05F8EC,y
@@ -684,7 +684,7 @@ sub_1DB472:
 	lsr	a
 	lsr	a
 	lsr	a
-	sta	a:wram_1638
+	sta	a:stage1_boss_head_pos
 	inc	a:wram_1636
 	rts
 
@@ -875,25 +875,25 @@ sub_1DB642:
 	sta	OBJ_Y_VEL_SUB,x
 	lda	#$FFFF
 	sta	a:wram_029E
-	sta	a:wram_163C
+	sta	a:stage1_boss_height
 	sta	OBJ_Y_VEL,x
 	rts
 
 sub_1DB668:
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	cmp	#$0003
 	bcs	loc_1DB6A2
 	clc
 	lda	a:wram_163A
 	adc	#$1800
 	sta	a:wram_163A
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	adc	#$0000
-	sta	a:wram_163C
+	sta	a:stage1_boss_height
 	bra	loc_1DB6A2
 
 sub_1DB685:
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	bpl	loc_1DB68F
 	cmp	#$FFFA
 	bcc	loc_1DB6A2
@@ -902,34 +902,34 @@ loc_1DB68F:
 	lda	a:wram_163A
 	sbc	#$1000
 	sta	a:wram_163A
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	sbc	#$0000
-	sta	a:wram_163C
+	sta	a:stage1_boss_height
 loc_1DB6A2:
 	clc
 	lda	a:wram_139C
 	adc	a:wram_163A
 	sta	a:wram_139C
 	lda	a:bg1_y
-	adc	a:wram_163C
+	adc	a:stage1_boss_height
 	sta	a:bg1_y
 	rts
 
 sub_1DB6B6:
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	cmp	#$FFFF
 	bcs	loc_1DB6A2
 	clc
 	lda	a:wram_163A
 	adc	#$1000
 	sta	a:wram_163A
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	adc	#$0000
-	sta	a:wram_163C
+	sta	a:stage1_boss_height
 	bra	loc_1DB6A2
 
 sub_1DB6D3:
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	bpl	loc_1DB6DD
 	cmp	#$FFFF
 	bcc	loc_1DB70E
@@ -938,13 +938,13 @@ loc_1DB6DD:
 	lda	a:wram_1636
 	sbc	#$C800
 	sta	a:wram_1636
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	sbc	#$0000
-	sta	a:wram_1638
+	sta	a:stage1_boss_head_pos
 	rts
 
 sub_1DB6F1:
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	cmp	#$0006
 	bmi	loc_1DB6FB
 	bcs	loc_1DB70E
@@ -953,9 +953,9 @@ loc_1DB6FB:
 	lda	a:wram_1636
 	adc	#$1000
 	sta	a:wram_1636
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	adc	#$0000
-	sta	a:wram_1638
+	sta	a:stage1_boss_head_pos
 loc_1DB70E:
 	rts
 
@@ -1075,7 +1075,7 @@ sub_1DB7DE:
 	ldx	#$0006
 	lda	a:wram_1636
 	sta	zp_00
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	sta	zp_02
 loc_1DB7F8:
 	clc
@@ -1567,7 +1567,7 @@ loc_1DBBA8:
 	sta	zp_08
 	pla
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 loc_1DBBD9:
 	rtl
@@ -1649,7 +1649,7 @@ ending_sequence_state_25:
 	ldy	#$946A
 	lda	#$4C0C
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	inc	OBJ_STATE,x
 	jsr	a:sub_1DB642
@@ -1849,7 +1849,7 @@ loc_1DBDE5:
 	dec	zp_FC
 	bpl	loc_1DBDB3
 loc_1DBDF6:
-	jsl	f:sub_00FD8D
+	jsl	f:queue_sound_6E_throttled
 	rts
 
 ending_sequence_state_29:
@@ -1948,7 +1948,7 @@ loc_1DBEA5:
 	lda	#$0002
 	sta	a:wram_1688
 	lda	#$0002
-	sta	a:wram_1638
+	sta	a:stage1_boss_head_pos
 	lda	#$0008
 	sta	OBJ_STATE,x
 	lda	#$0030
@@ -2020,7 +2020,7 @@ brain_boss_state_00:
 	sta	OBJ_Y,x
 	lda	#$0060
 	sta	OBJ_X,x
-	stz	a:wram_1638
+	stz	a:stage1_boss_head_pos
 	phx
 	ldx	#.loword(data_05FF27)
 	jsl	f:load_data_list
@@ -2061,7 +2061,7 @@ brain_boss_state_03:
 	and	#$00FF
 	sta	a:wram_163A
 	lda	#$0001
-	sta	a:wram_163C
+	sta	a:stage1_boss_height
 	stz	a:wram_163E
 	inc	OBJ_STATE,x
 	rtl
@@ -2077,12 +2077,12 @@ brain_boss_state_04:
 loc_1DBFB5:
 	lda	#$0001
 	sta	a:shake_continuous
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	cmp	#$0030
 	bcs	loc_1DBFCA
 	lda	stage_frame_odd
 	bne	loc_1DBFCA
-	inc	a:wram_163C
+	inc	a:stage1_boss_height
 loc_1DBFCA:
 	clc
 	lda	a:wram_163A
@@ -2232,7 +2232,7 @@ loc_1DC0E1:
 	inc	$3A,x
 	lda	#$0060
 	sta	OBJ_X,x
-	ldy	a:wram_1638
+	ldy	a:stage1_boss_head_pos
 	lda	a:data_05FF1B,y
 	sta	OBJ_Y,x
 	ldy	#$FF59
@@ -2245,7 +2245,7 @@ loc_1DC106:
 loc_1DC10A:
 	cmp	#$014B
 	bcc	loc_1DC119
-	ldy	a:wram_1638
+	ldy	a:stage1_boss_head_pos
 	lda	a:data_05FF1F,y
 	sta	OBJ_STATE,x
 	stz	hdma_preset
@@ -2268,7 +2268,7 @@ brain_boss_state_08:
 	jsl	f:load_data_list
 	plx
 loc_1DC13D:
-	jsl	f:sub_00FD92
+	jsl	f:queue_sound_41_throttled
 	jml	f:loc_01D83E
 
 brain_boss_state_09:
@@ -2306,7 +2306,7 @@ loc_1DC182:
 	lda	OBJ_TIMER,x
 	cmp	#$0180
 	bcs	loc_1DC18D
-	jsl	f:sub_00FD8D
+	jsl	f:queue_sound_6E_throttled
 loc_1DC18D:
 	lda	#$0004
 	sta	a:shake_timer
@@ -2365,7 +2365,7 @@ loc_1DC1E5:
 	inc	a
 	sta	$38,x
 loc_1DC208:
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	cmp	#$0024
 	bcc	loc_1DC217
 	lda	#$FFFF
@@ -2378,9 +2378,9 @@ loc_1DC217:
 	sta	$38,x
 loc_1DC221:
 	clc
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	adc	$38,x
-	sta	a:wram_163C
+	sta	a:stage1_boss_height
 	lda	a:wram_163E
 	cmp	#$FFE8
 	bcc	loc_1DC23C
@@ -2520,7 +2520,7 @@ sub_1DC31B:
 	lda	#$0040
 	sta	zp_02
 	jsr	a:sub_1DCBD1
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	cmp	#$00F0
 	bcs	loc_1DC34E
 	lda	stage_frame_counter
@@ -2538,7 +2538,7 @@ loc_1DC341:
 loc_1DC34E:
 	lda	stage_frame_odd
 	bne	loc_1DC359
-	dec	a:wram_163C
+	dec	a:stage1_boss_height
 	bpl	loc_1DC359
 	inc	OBJ_STATE,x
 loc_1DC359:
@@ -2663,8 +2663,8 @@ sub_1DC42E:
 	bcs	loc_1DC437
 	inc	OBJ_Y,x
 loc_1DC437:
-	inc	a:wram_163C
-	lda	a:wram_163C
+	inc	a:stage1_boss_height
+	lda	a:stage1_boss_height
 	cmp	#$0014
 	bcc	loc_1DC44B
 	inc	a:wram_1642
@@ -2827,7 +2827,7 @@ sub_1DC559:
 	stz	$32,x
 	stz	$34,x
 	lda	#$0001
-	sta	a:wram_163C
+	sta	a:stage1_boss_height
 	lda	#$FFFC
 	sta	a:wram_163E
 	rtl
@@ -2853,7 +2853,7 @@ sub_1DC586:
 	sta	$38,x
 	stz	$36,x
 	lda	#$0120
-	sta	a:wram_163C
+	sta	a:stage1_boss_height
 	rtl
 
 sub_1DC5A7:
@@ -2891,7 +2891,7 @@ sub_1DC5C9:
 	sta	a:wram_163E
 	lda	#$00D0
 	sta	$3E,x
-	stz	a:wram_163C
+	stz	a:stage1_boss_height
 	lda	a:wram_1644
 	adc	#$0060
 	sta	a:wram_1644
@@ -2912,7 +2912,7 @@ update_brain_boss_orb_cluster:
 	lda	a:wram_163E
 	cmp	#$0002
 	beq	loc_1DC62E
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	cmp	#$0030
 	bcc	loc_1DC62C
 	lda	OBJ_HIT,x
@@ -2921,7 +2921,7 @@ update_brain_boss_orb_cluster:
 	sta	a:wram_163E
 	sta	OBJ_HP,x
 loc_1DC629:
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 loc_1DC62C:
 	bra	loc_1DC687
 loc_1DC62E:
@@ -2963,7 +2963,7 @@ loc_1DC65C:
 	txy
 	jml	f:make_effect_object
 loc_1DC674:
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	cpx	#$0500
 	bcc	loc_1DC687
 	clc
@@ -3174,7 +3174,7 @@ loc_1DC7F1:
 update_enemy_type_8F:
 	lda	a:wram_1688
 	bne	loc_1DC835
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	cmp	#$00F0
 	bcc	loc_1DC822
 	bne	loc_1DC817
@@ -3207,7 +3207,7 @@ loc_1DC835:
 	jml	f:make_effect_object
 loc_1DC847:
 	jsr	a:sub_1DCAE9
-	ldy	a:wram_163C
+	ldy	a:stage1_boss_height
 	cpy	#$0040
 	bcc	loc_1DC855
 	ldy	#$0040
@@ -3393,7 +3393,7 @@ loc_1DC9A5:
 	clc
 	adc	#$0010
 	sta	a:wram_163A
-	ldy	a:wram_163C
+	ldy	a:stage1_boss_height
 	jsl	f:polar_to_xy
 	txa
 	clc
@@ -3758,7 +3758,7 @@ sub_1DCC1C:
 	sta	zp_08
 	lda	#$4C0C
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rts
 

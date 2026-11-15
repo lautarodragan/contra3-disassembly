@@ -484,7 +484,7 @@ data_058F1A:
 	.byte	$00, $00, $42, $08, $C6, $18, $29, $25, $8C, $31, $31, $46, $B5, $56, $18, $63
 	.byte	$9C, $73, $FF, $7F, $06, $00, $6A, $18, $8C, $2C, $12, $31, $B5, $39, $5A, $5A
 data_0591AA:
-	; CDL: read by sub_00F871
+	; CDL: read by stage1_boss_move_up
 	.byte	$01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $01, $00
 	.byte	$01, $00, $01, $00, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
@@ -493,7 +493,7 @@ data_0591AA:
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 data_05921A:
-	; CDL: read by sub_00F871
+	; CDL: read by stage1_boss_move_up
 	.byte	$D8, $FF, $26, $FC, $8F, $F3, $28, $E6, $13, $D4, $7C, $BD, $9A, $A2, $B0, $83
 	.byte	$0B, $61, $FF, $3A, $EB, $11, $33, $E6, $44, $B8, $8E, $88, $88, $57, $AA, $25
 	.byte	$00, $13, $00, $13, $00, $15, $00, $18, $00, $1C, $00, $21, $00, $27, $00, $2E
@@ -537,7 +537,7 @@ data_05941A:
 	; CDL: read by sub_01CFC5
 	.byte	$00, $00, $C2, $0E, $76, $3A, $6F, $81, $F2, $E0, $53, $55, $1A, $DA, $2C, $6A
 data_05942A:
-	; CDL: read by sub_00FEAA, sub_01CFC5
+	; CDL: read by queue_vram_blocks_at_x, sub_01CFC5
 	.byte	$00, $00, $D4, $95, $E6, $25, $AD, $AA, $0E, $1F, $91, $7E, $8A, $C5, $3E, $F1
 	.byte	$00, $00, $3E, $F1, $8A, $C5, $91, $7E, $0E, $1F, $AD, $AA, $E6, $25, $D4, $95
 	.byte	$00, $00, $2C, $6A, $1A, $DA, $53, $55, $F2, $E0, $6F, $81, $76, $3A, $C2, $0E
@@ -665,13 +665,13 @@ data_05947A:
 	.byte	$05, $AC, $9C, $00, $00, $00, $00, $00, $00, $FF, $00, $00, $08, $AC, $9C, $00
 	.byte	$00, $00, $00, $00, $00, $FF, $00, $FF, $00
 data_059BC8:
-	; CDL: read by sub_00CF0C
+	; CDL: read by scroll_bg1_by_velocity_and_spawn
 	.byte	$27, $09
 data_059BCA:
-	; CDL: read by sub_00CF0C
+	; CDL: read by scroll_bg1_by_velocity_and_spawn
 	.byte	$7A, $68
 data_059BCC:
-	; CDL: read by sub_00CF0C; partly not accessed
+	; CDL: read by scroll_bg1_by_velocity_and_spawn; partly not accessed
 	.byte	$00, $00, $E7, $08, $7A, $68, $02, $00, $C0, $08, $0F, $60, $03, $00, $68, $08
 	.byte	$0F, $60, $04, $00, $5F, $08, $7C, $50, $04, $00, $1F, $08, $7C, $50, $00, $00
 	.byte	$DF, $07, $7C, $50, $02, $00, $7F, $07, $7D, $68, $00, $00, $10, $06, $7E, $48
@@ -944,7 +944,7 @@ data_05A3AA:
 	.byte	$11, $00, $10, $00, $0F, $00, $0E, $00, $0D, $00, $0B, $00, $09, $00, $06, $00
 tbl_object_types:
 	.faraddr	$000000
-	.faraddr	update_object_type_01
+	.faraddr	update_stage1_boss_controller
 	.faraddr	update_object_type_02
 	.faraddr	update_bg2_scroll_mode_trigger
 	.faraddr	update_object_type_04
@@ -974,10 +974,10 @@ tbl_object_types:
 	.faraddr	update_object_type_1C
 	.faraddr	update_effect
 	.faraddr	update_alien_dog
-	.faraddr	update_object_type_1F
+	.faraddr	update_stage1_boss_head
 	.faraddr	update_stage1_boss_part
 	.faraddr	update_face_boss_larva
-	.faraddr	update_object_type_22
+	.faraddr	update_stage1_boss_wall_chunk
 	.faraddr	update_falling_debris
 	.faraddr	update_object_type_24
 	.faraddr	update_winged_alien_tail_segment
@@ -1020,7 +1020,7 @@ tbl_object_types:
 	.faraddr	update_rolling_mine
 	.faraddr	update_debris_spark
 	.faraddr	update_countdown_bomb
-	.faraddr	update_object_type_4D
+	.faraddr	update_song_change_trigger
 	.faraddr	update_object_type_4E
 	.faraddr	update_stage3_winged_bug
 	.faraddr	update_wall_hatch
@@ -1052,7 +1052,7 @@ tbl_object_types:
 	.faraddr	update_stage4_boss_pod
 	.faraddr	sub_01A276
 	.faraddr	sub_01A28A
-	.faraddr	sub_018207
+	.faraddr	update_player_bike
 	.faraddr	update_stage4_tank
 	.faraddr	update_brain_boss
 	.faraddr	update_enemy_type_70
@@ -1194,7 +1194,7 @@ data_05A911:
 	; CDL: read by opening_draw_caption_part
 	.byte	$6C, $42, $6C, $42, $0E, $49, $0E, $49
 data_05A919:
-	; CDL: read by update_objects, opening_draw_caption_part, sub_00FEAA; partly not accessed
+	; CDL: read by update_objects, opening_draw_caption_part, queue_vram_blocks_at_x; partly not accessed
 	.byte	$21, $A9, $25, $A9, $29, $A9, $2B, $A9, $00, $68, $20, $68, $40, $68, $60, $68
 	.byte	$E0, $67, $80, $68, $02, $00, $C1, $D3, $C1, $D3, $02, $00, $C6, $D3, $C6, $D3
 	.byte	$02, $00, $CB, $D3, $CB, $D3, $02, $00, $D0, $D3, $D0, $D3, $02, $00, $D5, $D3
@@ -1225,55 +1225,55 @@ data_05AA1F:
 	.byte	$05, $05, $FF, $FF, $C0, $18, $09, $80, $0A, $00, $18, $00, $00, $80, $80, $00
 	.byte	$00
 data_05AA50:
-	; CDL: read by sub_00F514
+	; CDL: read by spawn_stage1_boss_wall_chunks
 	.byte	$6C, $01, $8C, $01, $8C, $01, $8C, $01
 data_05AA58:
-	; CDL: read by sub_00F514
+	; CDL: read by spawn_stage1_boss_wall_chunks
 	.byte	$A4, $00, $B0, $00, $BC, $00, $C8, $00
 data_05AA60:
-	; CDL: read by sub_00F514
+	; CDL: read by spawn_stage1_boss_wall_chunks
 	.byte	$0A, $00, $05, $00, $00, $00, $00, $00
 data_05AA68:
-	; CDL: read by sub_00F9C5; DMA / HDMA
+	; CDL: read by spawn_stage1_boss_falling_debris; DMA / HDMA
 	.byte	$10, $00, $40, $00, $50, $00, $60, $00, $70, $00, $80, $00, $90, $00, $A0, $00
 	.byte	$B0, $00, $C0, $00, $20, $00, $30, $00
 data_05AA80:
-	; CDL: read by sub_00F9C5
+	; CDL: read by spawn_stage1_boss_falling_debris
 	.byte	$F8, $B6, $F8, $B6, $E7, $B6, $E7, $B6, $F8, $B6, $E7, $B6, $F8, $B6, $F8, $B6
 	.byte	$E7, $B6, $F8, $B6, $F8, $B6, $E7, $B6
 data_05AA98:
-	; CDL: read by sub_00F9C5
+	; CDL: read by spawn_stage1_boss_falling_debris
 	.byte	$FC, $FF, $FD, $FF, $FD, $FF, $FE, $FF, $FF, $FF, $FD, $FF, $FF, $FF, $FC, $FF
 	.byte	$FD, $FF, $FE, $FF, $FE, $FF, $FF, $FF
 data_05AAB0:
-	; CDL: read by update_object_type_22, sub_00FEAA
+	; CDL: read by update_stage1_boss_wall_chunk, queue_vram_blocks_at_x
 	.byte	$99, $B6, $88, $B6, $73, $B6, $FD, $B6, $00, $80, $20, $80, $80, $80, $A0, $80
 	.byte	$00, $81, $20, $81, $80, $81, $A0, $81, $40, $80, $60, $80, $C0, $80, $E0, $80
 	.byte	$40, $81, $60, $81
 data_05AAD4:
-	; CDL: read by sub_00F907
+	; CDL: read by spawn_stage1_boss_parts
 	.byte	$10, $00, $3C, $00, $10, $00
 data_05AADA:
-	; CDL: read by sub_00F907
+	; CDL: read by spawn_stage1_boss_parts
 	.byte	$29, $00, $1F, $00, $20, $00
 data_05AAE0:
-	; CDL: read by sub_00F907
+	; CDL: read by spawn_stage1_boss_parts
 	.byte	$1E, $00, $40, $00, $20, $00
 data_05AAE6:
-	; CDL: read by sub_00F907
+	; CDL: read by spawn_stage1_boss_parts
 	.byte	$F0, $FF, $E0, $FF, $E0, $FF
 data_05AAEC:
-	; CDL: read by sub_00F907
+	; CDL: read by spawn_stage1_boss_parts
 	.byte	$98, $00, $60, $00, $98, $00
 data_05AAF2:
-	; CDL: read by update_objects, sub_00FA55, sub_00FEAA (+1 more); DMA / HDMA
+	; CDL: read by update_objects, stage1_boss_fire_falling_shot, queue_vram_blocks_at_x (+1 more); DMA / HDMA
 	.byte	$00, $20, $00, $30, $00, $50, $00, $40, $04, $00, $CC, $B6, $B8, $B6, $04, $00
 	.byte	$D5, $B6, $BD, $B6, $04, $00, $DE, $B6, $C2, $B6, $04, $00, $D5, $B6, $C7, $B6
 	.byte	$FA, $AA, $02, $00, $AA, $B6, $EA, $AF, $02, $00, $AF, $B6, $D9, $AF, $14, $AB
 	.byte	$80, $00, $D9, $AF, $00, $3E, $20, $C4, $40, $C4, $A0, $C4, $C0, $C4, $00, $C5
 	.byte	$20, $C5, $80, $C5, $A0, $C5, $00, $B5, $60, $C4, $00, $B5, $E0, $C4
-data_05AB40:
-	; CDL: read by sub_00F907; DMA / HDMA
+stage1_boss_shell_hp:
+	; CDL: read by spawn_stage1_boss_parts; DMA / HDMA
 	.byte	$80, $00, $00, $01, $FF, $7F
 data_05AB46:
 	; CDL: read by update_stage1_boss_tracking_shot; DMA / HDMA
@@ -1282,10 +1282,10 @@ data_05AB4C:
 	; CDL: read by update_stage1_boss; partly not accessed
 	.byte	$00, $01, $C0, $00, $08, $00
 data_05AB52:
-	; CDL: read by sub_00F69D; partly not accessed
+	; CDL: read by stage1_boss_attack_fire; partly not accessed
 	.byte	$40, $00, $80, $00, $00, $01
 data_05AB58:
-	; CDL: read by sub_00FDD2; partly not accessed
+	; CDL: read by song_change_state_00; partly not accessed
 	.byte	$00, $00, $00, $00, $80, $00, $00, $00, $03, $00, $04, $00
 data_05AB64:
 	; CDL: not accessed
@@ -1294,10 +1294,10 @@ data_05AB68:
 	; CDL: not accessed
 	.byte	$00, $40, $00, $48
 data_05AB6C:
-	; CDL: read by sub_018207
+	; CDL: read by update_player_bike
 	.byte	$00, $02, $40, $02
 data_05AB70:
-	; CDL: read by sub_018230
+	; CDL: read by player_bike_state_00
 	.byte	$00, $3A, $00, $3C
 data_05AB74:
 	; CDL: read by set_player_box_jumping
@@ -1333,10 +1333,10 @@ data_05ABBD:
 	; CDL: read by sub_01A310
 	.byte	$00, $00, $06, $00
 data_05ABC1:
-	; CDL: read by sub_01ABFF
+	; CDL: read by player_state_ending
 	.byte	$10, $01, $11, $01, $12, $01, $10, $01
 data_05ABC9:
-	; CDL: read by sub_01AC28; partly not accessed
+	; CDL: read by player_state_ending_wave; partly not accessed
 	.byte	$17, $01, $16, $01, $13, $01, $14, $01, $15, $01, $18, $01, $15, $01, $15, $01
 	.byte	$14, $01, $17, $01, $16, $01, $19, $01
 data_05ABE1:
@@ -1352,19 +1352,19 @@ data_05ABF5:
 	; CDL: read by set_player_box_hanging
 	.byte	$F4, $FF, $FA, $FF
 data_05ABF9:
-	; CDL: read by sub_01B104; partly not accessed
+	; CDL: read by player_state_bike_intro; partly not accessed
 	.byte	$20, $00, $20, $00, $00, $00, $10, $00, $60, $00, $00, $00, $70, $00, $00, $00
 	.byte	$40, $00, $30, $00, $00, $00, $00, $00, $50, $00
 data_05AC13:
-	; CDL: read by sub_01B104; partly not accessed
+	; CDL: read by player_state_bike_intro; partly not accessed
 	.byte	$F0, $00, $F0, $00, $00, $01, $F8, $00, $F4, $00, $00, $00, $FC, $00, $00, $00
 	.byte	$04, $01, $08, $01, $00, $00, $00, $00, $0C, $01
 data_05AC2D:
-	; CDL: read by sub_01B104; partly not accessed
+	; CDL: read by player_state_bike_intro; partly not accessed
 	.byte	$18, $00, $18, $00, $04, $00, $14, $00, $D8, $FF, $00, $00, $EA, $FF, $00, $00
 	.byte	$02, $00, $12, $00, $00, $00, $00, $00, $E2, $FF
 data_05AC47:
-	; CDL: read by sub_01B104; partly not accessed
+	; CDL: read by player_state_bike_intro; partly not accessed
 	.byte	$DC, $FF, $DC, $FF, $BE, $FF, $C8, $FF, $D9, $FF, $00, $00, $CC, $FF, $00, $00
 	.byte	$00, $00, $F0, $FF, $00, $00, $00, $00, $F0, $FF
 data_05AC61:
@@ -1377,7 +1377,7 @@ data_05AC77:
 	; CDL: read by object_type_02_state_07; partly not accessed
 	.byte	$00, $80, $00, $40, $00, $40, $00, $50, $00, $70, $00, $20, $00, $60, $00, $30
 data_05AC87:
-	; CDL: read by sub_00FEAA, object_type_02_state_07; partly not accessed
+	; CDL: read by queue_vram_blocks_at_x, object_type_02_state_07; partly not accessed
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FD, $FF, $FE, $FF, $FD, $FF, $FE, $FF, $FD, $FF
 	.byte	$00, $B7, $20, $B7, $40, $B7, $60, $B7, $80, $B7, $A0, $B7, $C0, $B7, $E0, $B7
 	.byte	$60, $BF, $80, $C0, $A0, $C0, $C0, $C0, $00, $C0, $20, $C0, $40, $C0, $60, $C0
@@ -1425,7 +1425,7 @@ data_05AF31:
 	; CDL: read by object_type_09_state_02
 	.byte	$00, $02, $00, $02, $04, $02
 data_05AF37:
-	; CDL: read by setup_stage_hdma, sub_00FEAA, object_type_09_state_02; partly not accessed
+	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, object_type_09_state_02; partly not accessed
 	.byte	$00, $04, $04, $04, $00, $04, $00, $C9, $20, $C9, $40, $C9, $80, $C9, $A0, $C9
 	.byte	$C0, $C9, $60, $C9, $E0, $C9, $00, $CA, $20, $CA, $40, $CA, $60, $CA, $60, $C8
 	.byte	$E0, $C8, $80, $CA, $20, $CA, $40, $CA, $60, $CA, $70, $43, $02, $0F, $00, $38
@@ -1440,7 +1440,7 @@ data_05AF84:
 	; CDL: read by object_type_35_state_02
 	.byte	$00, $A0, $00, $60, $00, $C0, $00, $40, $00, $E0, $00, $20
 data_05AF90:
-	; CDL: read by update_objects, sub_00FEAA, object_type_35_state_02; partly not accessed
+	; CDL: read by update_objects, queue_vram_blocks_at_x, object_type_35_state_02; partly not accessed
 	.byte	$FF, $FF, $00, $00, $FF, $FF, $00, $00, $FF, $FF, $00, $00, $06, $00, $58, $B1
 	.byte	$12, $B4, $08, $00, $6D, $B1, $27, $B4, $06, $00, $82, $B1, $3C, $B4, $08, $00
 	.byte	$6D, $B1, $27, $B4, $9C, $AF, $0C, $00, $97, $B1, $51, $B4, $06, $00, $AC, $B1
@@ -1478,7 +1478,7 @@ data_05B02E:
 	; CDL: read by object_type_7E_state_01
 	.byte	$18, $00, $58, $00, $98, $00, $D8, $00
 data_05B036:
-	; CDL: read by sub_00FEAA, sub_01C302
+	; CDL: read by queue_vram_blocks_at_x, sub_01C302
 	.byte	$9C, $42, $9C, $46, $80, $46, $88, $46, $18, $42, $00, $46, $0C, $42, $18, $42
 	.byte	$00, $51, $60, $83, $80, $83, $A0, $83, $C0, $83, $E0, $83, $20, $84, $40, $84
 	.byte	$00, $51, $00, $84
@@ -1502,11 +1502,11 @@ data_05B08A:
 	; CDL: read by wall_hatch_state_03; partly not accessed
 	.byte	$E4, $FF, $EA, $FF, $F6, $FF, $02, $00, $00, $00, $00, $00, $F6, $FF, $EA, $FF
 data_05B09A:
-	; CDL: read by sub_00FEAA, wall_hatch_state_03; partly not accessed
+	; CDL: read by queue_vram_blocks_at_x, wall_hatch_state_03; partly not accessed
 	.byte	$03, $00, $01, $00, $00, $00, $00, $50, $40, $76, $60, $76, $A0, $76, $C0, $76
 	.byte	$E0, $76, $20, $77, $40, $77, $60, $77, $A0, $77, $C0, $77, $E0, $77, $60, $74
 	.byte	$00, $77, $80, $77
-	; CDL: read by update_objects, sub_00FEAA; partly not accessed
+	; CDL: read by update_objects, queue_vram_blocks_at_x; partly not accessed
 	.byte	$00, $50, $00, $50, $00, $50, $00, $78, $20, $78, $40, $74, $80, $78, $20, $76
 	.byte	$C0, $74, $00, $79, $A0, $78, $40, $75, $60, $74, $20, $79, $C0, $74, $00, $50
 	.byte	$00, $50, $00, $50, $00, $50, $00, $78, $60, $76, $40, $78, $C0, $76, $E0, $76
@@ -1532,7 +1532,7 @@ data_05B1A8:
 	; CDL: read by object_type_11_state_01; partly not accessed
 	.byte	$FD, $FF, $FC, $FF, $FA, $FF, $FB, $FF, $FD, $FF, $FC, $FF
 data_05B1B4:
-	; CDL: read by sub_00FEAA, object_type_11_state_01; partly not accessed
+	; CDL: read by queue_vram_blocks_at_x, object_type_11_state_01; partly not accessed
 	.byte	$03, $00, $02, $00, $01, $00, $FF, $FF, $FE, $FF, $FD, $FF, $A0, $63, $60, $63
 	.byte	$E0, $63, $80, $65
 ; OBJ_HP of update_object_type_12 by difficulty (easy, normal, hard)
@@ -2006,7 +2006,7 @@ data_05C828:
 	; CDL: read by sub_01D831
 	.byte	$04, $00, $FF, $FF, $01, $00, $FE, $FF, $02, $00, $FC, $FF, $03, $00, $FD, $FF
 data_05C838:
-	; CDL: read by sub_00FEAA, sub_01D831
+	; CDL: read by queue_vram_blocks_at_x, sub_01D831
 	.byte	$00, $20, $00, $40, $00, $60, $00, $80, $00, $A0, $00, $C0, $00, $E0, $00, $80
 	.byte	$00, $50, $00, $50, $00, $50, $00, $50, $80, $57, $A0, $57, $00, $50, $00, $50
 	.byte	$00, $50, $00, $50, $C0, $57, $00, $50
@@ -2080,7 +2080,7 @@ data_05C9F8:
 	; CDL: read by object_type_4E_state_05
 	.byte	$0C, $CA, $1C, $CA, $2C, $CA, $3C, $CA, $4C, $CA
 data_05CA02:
-	; CDL: read by sub_00FEAA, object_type_4E_state_05
+	; CDL: read by queue_vram_blocks_at_x, object_type_4E_state_05
 	.byte	$00, $41, $80, $41, $00, $42, $80, $42, $00, $43, $40, $61, $60, $61, $00, $50
 	.byte	$00, $61, $40, $61, $60, $61, $00, $50, $80, $61, $C0, $61, $E0, $61, $00, $61
 	.byte	$80, $61, $C0, $61, $E0, $61, $00, $61, $80, $61, $C0, $61, $E0, $61, $80, $61
@@ -2092,7 +2092,7 @@ data_05CA5C:
 	.byte	$6D, $08, $A0, $E0, $00, $A1, $00, $00
 ; OBJ_HP of update_object_type_4E (the first 3 words; other data follows) by difficulty (easy, normal, hard)
 object_type_4E_hp:
-	; CDL: read by update_objects, sub_00FEAA, object_type_4E_state_09; DMA / HDMA; partly not accessed
+	; CDL: read by update_objects, queue_vram_blocks_at_x, object_type_4E_state_09; DMA / HDMA; partly not accessed
 	.byte	$40, $00, $48, $00, $50, $00, $58, $00, $60, $B8, $80, $B8, $E0, $B8, $00, $B9
 	.byte	$20, $B9, $40, $B9, $A0, $B7, $C0, $B7, $80, $C2, $80, $C2, $80, $C2, $80, $C2
 	.byte	$00, $00, $FF, $FF, $E0, $B7, $20, $B8, $00, $B8, $40, $B8, $6D, $20, $60, $02
@@ -2214,7 +2214,7 @@ data_05CC81:
 	.byte	$43, $B9, $F7, $B9, $BE, $B9, $02, $00, $F7, $B9, $BE, $B9, $02, $00, $10, $BA
 	.byte	$CF, $B9, $87, $CC, $02, $00, $29, $BA, $00, $00, $02, $00, $5A, $BA, $00, $00
 	.byte	$95, $CC
-	; CDL: read by sub_00FEAA
+	; CDL: read by queue_vram_blocks_at_x
 	.byte	$00, $5B, $00, $5B, $00, $5B, $00, $5B, $40, $5C, $60, $5C, $80, $5B, $80, $5B
 	.byte	$80, $5B, $80, $5B, $00, $75, $20, $75, $00, $50, $00, $50, $00, $50, $00, $50
 	.byte	$00, $50, $00, $50
@@ -3267,7 +3267,7 @@ data_05E8F5:
 	; CDL: read by sub_04893E
 	.byte	$0C, $41, $08, $41, $04, $41
 data_05E8FB:
-	; CDL: read by sub_00FEAA, sub_04893E
+	; CDL: read by queue_vram_blocks_at_x, sub_04893E
 	.byte	$10, $41, $14, $41, $18, $41, $60, $6F, $20, $60, $A0, $62, $E0, $72, $00, $70
 	.byte	$20, $61, $40, $75, $80, $71, $40, $76, $00, $77, $C0, $77, $80, $78, $60, $76
 	.byte	$20, $77, $E0, $77, $A0, $78, $40, $79, $00, $7A, $C0, $7A, $80, $7B, $60, $79
@@ -3298,7 +3298,7 @@ data_05EA91:
 	; CDL: read by sub_048A5C
 	.byte	$D9, $EA, $F1, $EA, $09, $EB, $F1, $EA, $D9, $EA, $C1, $EA, $A9, $EA, $C1, $EA
 data_05EAA1:
-	; CDL: read by sub_00FEAA, sub_0489DC
+	; CDL: read by queue_vram_blocks_at_x, sub_0489DC
 	.byte	$78, $7C, $80, $7C, $78, $74, $70, $74, $00, $BE, $20, $BE, $80, $BE, $A0, $BE
 	.byte	$00, $BF, $20, $BF, $80, $BF, $A0, $BF, $40, $BE, $60, $BE, $C0, $BE, $E0, $BE
 	.byte	$00, $BD, $20, $BD, $80, $BD, $A0, $BD, $40, $BC, $60, $BC, $C0, $BC, $E0, $BC
@@ -3342,7 +3342,7 @@ data_05EBA2:
 	; CDL: read by rideable_missile_state_07
 	.byte	$00, $28, $00, $28, $00, $88
 data_05EBA8:
-	; CDL: read by sub_00FEAA, update_stage4_boss_pod
+	; CDL: read by queue_vram_blocks_at_x, update_stage4_boss_pod
 	.byte	$AC, $EB, $B0, $EB, $A0, $B5, $C0, $B5, $00, $B7, $E0, $B5
 data_05EBB4:
 	; CDL: read by update_objects, update_stage4_boss_pod; partly not accessed
@@ -3353,7 +3353,7 @@ data_05EBC6:
 	.byte	$CA, $EB, $D8, $EB, $01, $00, $87, $AF, $00, $32, $01, $00, $87, $AF, $00, $3E
 	.byte	$CA, $EB, $01, $00, $91, $AF, $00, $32, $01, $00, $91, $AF, $00, $3E, $D8, $EB
 data_05EBE6:
-	; CDL: read by sub_00FEAA, sub_049A54; partly not accessed
+	; CDL: read by queue_vram_blocks_at_x, sub_049A54; partly not accessed
 	.byte	$03, $00, $FD, $FF, $02, $EC, $0C, $EC, $1A, $EC, $26, $EC, $05, $00, $07, $00
 	.byte	$06, $00, $07, $00, $04, $40, $80, $40, $04, $41, $80, $41, $60, $53, $80, $53
 	.byte	$A0, $53, $C0, $53, $E0, $53, $80, $55, $A0, $55, $00, $52, $20, $52, $40, $52
@@ -3361,13 +3361,13 @@ data_05EBE6:
 	.byte	$00, $50, $00, $50, $40, $51, $60, $51, $C0, $51, $E0, $51, $00, $50, $00, $50
 	.byte	$00, $50, $00, $50, $00, $50
 data_05EC3C:
-	; CDL: read by sub_00FEAA, rideable_missile_state_01
+	; CDL: read by queue_vram_blocks_at_x, rideable_missile_state_01
 	.byte	$44, $EC, $50, $EC, $5C, $EC, $68, $EC, $60, $53, $80, $53, $A0, $53, $C0, $53
 	.byte	$E0, $53, $00, $50, $00, $50, $60, $53, $00, $54, $20, $54, $40, $54, $60, $54
 	.byte	$00, $50, $00, $50, $80, $54, $A0, $54, $80, $53, $C0, $54, $00, $50, $E0, $54
 	.byte	$00, $55, $20, $55, $C0, $54, $00, $50
 data_05EC74:
-	; CDL: read by sub_00FEAA, rideable_missile_state_01
+	; CDL: read by queue_vram_blocks_at_x, rideable_missile_state_01
 	.byte	$7A, $EC, $7E, $EC, $82, $EC, $40, $55, $60, $55, $80, $55, $A0, $55, $C0, $55
 	.byte	$E0, $55
 data_05EC86:
@@ -3393,7 +3393,7 @@ data_05ECB6:
 	; CDL: read by rideable_missile_state_06
 	.byte	$F9, $FF, $FA, $FF, $FB, $FF, $FC, $FF
 data_05ECBE:
-	; CDL: read by sub_00FEAA, sub_049AF5; partly not accessed
+	; CDL: read by queue_vram_blocks_at_x, sub_049AF5; partly not accessed
 	.byte	$38, $00, $30, $00, $28, $00, $A0, $51, $80, $51, $E0, $5B, $E0, $5F, $E0, $5F
 	.byte	$00, $60
 data_05ECD0:
@@ -3427,7 +3427,7 @@ data_05ED24:
 	; CDL: read by winged_alien_tail_tip_state_00
 	.byte	$77, $C4, $7C, $C4, $81, $C4, $86, $C4, $8B, $C4, $90, $C4, $95, $C4, $9A, $C4
 data_05ED34:
-	; CDL: read by sub_00FEAA, sub_04A298
+	; CDL: read by queue_vram_blocks_at_x, sub_04A298
 	.byte	$3A, $ED, $46, $ED, $52, $ED, $00, $B0, $00, $B0, $00, $B0, $C0, $BD, $E0, $BD
 	.byte	$00, $BE, $80, $BC, $A0, $BC, $C0, $BC, $E0, $BC, $00, $BD, $20, $BD, $00, $B0
 	.byte	$20, $BE, $40, $BE, $00, $B0, $60, $BE, $80, $BE
@@ -3457,21 +3457,21 @@ data_05ED94:
 	; CDL: read by sub_04A90D
 	.byte	$00, $C0, $00, $C2, $C0, $C1, $80, $C1
 data_05ED9C:
-	; CDL: read by sub_00FEAA, sub_04A93B
+	; CDL: read by queue_vram_blocks_at_x, sub_04A93B
 	.byte	$A0, $ED, $A8, $ED, $60, $C0, $80, $C0, $A0, $C0, $C0, $C0, $E0, $C0, $00, $C1
 	.byte	$20, $C1
 data_05EDAE:
-	; CDL: read by sub_00FEAA, sub_04A95D
+	; CDL: read by queue_vram_blocks_at_x, sub_04A95D
 	.byte	$40, $C1, $08, $4C, $88, $4C, $08, $4D
 data_05EDB6:
-	; CDL: read by sub_00FEAA, sub_04A95D
+	; CDL: read by queue_vram_blocks_at_x, sub_04A95D
 	.byte	$88, $4D, $C0, $ED, $C8, $ED, $D0, $ED, $D0, $ED, $00, $B4, $20, $C2, $40, $C2
 	.byte	$E0, $B3, $00, $B0, $60, $C2, $A0, $BE, $00, $B0, $00, $B0, $00, $B0, $00, $B0
 data_05EDD6:
-	; CDL: read by sub_00FEAA, sub_04A97A
+	; CDL: read by queue_vram_blocks_at_x, sub_04A97A
 	.byte	$00, $B0, $00, $4C, $80, $4C
 data_05EDDC:
-	; CDL: read by sub_00FEAA, sub_04A97A
+	; CDL: read by queue_vram_blocks_at_x, sub_04A97A
 	.byte	$00, $4D, $E4, $ED, $F4, $ED, $04, $EE, $00, $B0, $00, $B0, $00, $B0, $A0, $B3
 	.byte	$C0, $B3, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $60, $C2
 	.byte	$A0, $BE, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0
@@ -3481,7 +3481,7 @@ floor_mouth_hp:
 	; CDL: read by floor_mouth_state_00; partly not accessed
 	.byte	$20, $00, $28, $00, $30, $00, $38, $00
 data_05EE1C:
-	; CDL: read by sub_00FEAA, sub_04ABA3
+	; CDL: read by queue_vram_blocks_at_x, sub_04ABA3
 	.byte	$22, $EE, $24, $EE, $26, $EE, $A0, $62, $20, $70, $00, $70
 data_05EE28:
 	; CDL: read by floor_mouth_state_01; partly not accessed
@@ -3552,17 +3552,17 @@ data_05EEFE:
 	; CDL: read by heart_boss_state_00, sub_04B12E
 	.byte	$80, $01, $90, $4C, $90, $4D
 data_05EF04:
-	; CDL: read by sub_00FEAA, sub_04B12E
+	; CDL: read by queue_vram_blocks_at_x, sub_04B12E
 	.byte	$10, $4E, $0C, $EF, $1C, $EF, $2C, $EF, $20, $BC, $00, $B0, $20, $BC, $00, $B0
 	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0
 	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0
 	.byte	$60, $BC, $00, $B0, $60, $BC, $00, $B0
 data_05EF3C:
-	; CDL: read by sub_00FEAA, sub_04B14B
+	; CDL: read by queue_vram_blocks_at_x, sub_04B14B
 	.byte	$40, $EF, $4C, $EF, $80, $B0, $A0, $B0, $C0, $B0, $00, $BA, $20, $BA, $40, $BA
 	.byte	$A0, $BA, $C0, $BA, $E0, $BA, $20, $BB, $40, $BB
 data_05EF56:
-	; CDL: read by sub_00FEAA, sub_04B1C3
+	; CDL: read by queue_vram_blocks_at_x, sub_04B1C3
 	.byte	$60, $BB, $00, $01, $40, $01, $00, $01
 data_05EF5E:
 	; CDL: read by sub_04B1C3
@@ -3597,7 +3597,7 @@ wall_worm_hp:
 	; CDL: read by wall_worm_state_00
 	.byte	$40, $00, $80, $00, $00, $01
 data_05EFD4:
-	; CDL: read by sub_00FEAA, sub_04B403
+	; CDL: read by queue_vram_blocks_at_x, sub_04B403
 	.byte	$E0, $EF, $D8, $EF, $60, $51, $80, $51, $A0, $51, $C0, $51, $40, $72, $60, $72
 	.byte	$60, $50, $60, $50
 data_05EFE8:
@@ -3610,13 +3610,13 @@ data_05EFF0:
 	; CDL: read by sub_04B403
 	.byte	$80, $00, $90, $00
 data_05EFF4:
-	; CDL: read by sub_00FEAA, sub_04B447
+	; CDL: read by queue_vram_blocks_at_x, sub_04B447
 	.byte	$F8, $EF, $FA, $EF, $80, $72
 data_05EFFA:
-	; CDL: read by sub_00FEAA, sub_04B469
+	; CDL: read by queue_vram_blocks_at_x, sub_04B469
 	.byte	$20, $5A, $90, $44, $10, $45, $90, $45
 data_05F002:
-	; CDL: read by sub_00FEAA, sub_04B469
+	; CDL: read by queue_vram_blocks_at_x, sub_04B469
 	.byte	$10, $46, $0C, $F0, $12, $F0, $18, $F0, $1E, $F0, $60, $50, $20, $52, $40, $52
 	.byte	$60, $50, $60, $50, $60, $50, $60, $50, $60, $50, $60, $50, $60, $50, $60, $50
 	.byte	$60, $50
@@ -3651,7 +3651,7 @@ data_05F074:
 	.byte	$94, $4D, $94, $4D, $94, $4D, $14, $4E, $14, $4E, $14, $4E, $14, $4E, $90, $4E
 	.byte	$90, $4E, $98, $4E, $98, $4E
 data_05F08A:
-	; CDL: read by sub_00FEAA, sub_04BC10
+	; CDL: read by queue_vram_blocks_at_x, sub_04BC10
 	.byte	$A0, $F0, $A2, $F0, $A4, $F0, $A6, $F0, $A8, $F0, $AA, $F0, $AC, $F0, $AE, $F0
 	.byte	$B2, $F0, $B6, $F0, $BE, $F0, $80, $BB, $C0, $B6, $E0, $B6, $E0, $BB, $20, $B4
 	.byte	$00, $B7, $20, $B7, $40, $B6, $60, $B6, $40, $B7, $60, $B7, $80, $B6, $A0, $B6
@@ -3994,7 +3994,7 @@ data_05F8EC:
 	.byte	$10, $10, $00, $14, $00, $24, $00, $04, $58, $00, $04, $A8, $04, $08, $FC, $04
 	.byte	$08, $6C, $08, $6C
 data_05F900:
-	; CDL: read by setup_stage_hdma, sub_00FEAA, sub_1DB472; DMA / HDMA; partly not accessed
+	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, sub_1DB472; DMA / HDMA; partly not accessed
 	.byte	$00, $0C, $18, $24, $30, $3C, $48, $54, $00, $60, $30, $3C, $6C, $18, $78, $60
 	.byte	$84, $90, $60, $60, $A0, $B5, $40, $C4, $40, $B4, $C0, $B5, $60, $C4, $60, $B4
 	.byte	$C0, $C2, $80, $C2, $A0, $C3, $E0, $C2, $A0, $C2, $C0, $C3, $80, $B5, $A0, $B4
@@ -4161,7 +4161,7 @@ data_05FF3E:
 	; CDL: read by sub_1DCA7D
 	.byte	$1C, $00, $3D, $40, $00, $40, $3F, $40, $3D, $40, $3D, $40, $1F, $00, $3F
 data_05FF4D:
-	; CDL: read by setup_stage_hdma, sub_00FEAA, sub_1DCA7D; partly not accessed
+	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, sub_1DCA7D; partly not accessed
 	.byte	$40, $70, $43, $42, $10, $00, $EA, $7E, $7E, $FF, $FF, $80, $A0, $B3, $C0, $B3
 	.byte	$C0, $BE, $E0, $BE
 data_05FF61:

@@ -113,6 +113,6 @@ reserved ones).
 
 Before the CDL pass a generated label, `data_00FFF6`, sat inside the vector
 table: the generator had taken `ldy #$FFF6` and `lda #$0000` in
-`sub_01AE95` for the two halves of a pointer. The CDL showed that the code
+`hang_aim_down` for the two halves of a pointer. The CDL showed that the code
 runs but nothing ever reads `$00:FFF6` as data, so it is a number (most
 likely -10) and the label is gone.

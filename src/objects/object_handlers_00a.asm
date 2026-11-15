@@ -4,7 +4,7 @@
 ; Handlers of object types dispatched through tbl_object_types (see
 ; objects/object_loop.asm) and helpers they share.
 
-sub_00CF0C:
+scroll_bg1_by_velocity_and_spawn:
 	clc
 	lda	a:wram_168C
 	adc	a:bg1_x_sub
@@ -246,17 +246,18 @@ update_object_type_42:
 	sta	$16,x
 	rtl
 
-; Object type $4D: invisible stage trigger: wram_1680 / wram_1682 from
+; Object type $4D: stage trigger: starts a song change (update_song_change):
+; song_change_mode / song_change_set from
 ; data_059F06; never run in the CDL traces.
-update_object_type_4D:
+update_song_change_trigger:
 	; (not executed in the CDL traces)
 	lda	#$8000
 	sta	$16,x
 	ldy	$3A,x
 	lda	a:data_059F06,y
-	sta	a:wram_1680
+	sta	a:song_change_mode
 	lda	a:data_059F08,y
-	sta	a:wram_1682
+	sta	a:song_change_set
 	rtl
 
 ; Object type $06: stage 1 scripted scene (section 9): BG/HDMA effect with 9
@@ -857,7 +858,7 @@ loc_00D5AA:
 	sta	zp_0A
 	lda	a:wram_13D2
 
-sub_00D5B4:
+add_line_scroll_ramp:
 	sta	zp_02
 	stz	zp_00
 	sep	#$20
@@ -914,7 +915,7 @@ loc_00D5FD:
 	adc	#$0000
 	sta	a:bg2_y
 
-sub_00D610:
+update_stage4_line_scroll:
 	lda	#$0002
 	sta	a:scroll_split_pattern
 	clc
@@ -937,7 +938,7 @@ loc_00D630:
 	lda	#$0001
 	sta	zp_0A
 	lda	#$000C
-	jsl	f:sub_00D5B4
+	jsl	f:add_line_scroll_ramp
 	ldy	#$0012
 	lda	#$6000
 	sta	zp_08

@@ -1,13 +1,20 @@
 ; objects/object_handlers_00c.asm -- Object handlers (bank $00, part 3)
 ; Bank $00, $00:F27C-$00:FD8C. Included by main.asm in segment BANK00.
 ;
-; Object type 1 (update_object_type_01) with its sub-states and helpers, and other
-; handlers dispatched through tbl_object_types.
+; The stage 1 boss (type 1, update_stage1_boss_controller) with its attacks
+; and parts (types $1F, $20, $22, $23, $26, $27, $29, $38).
 
-; Object type $01: stage controller seen near the end of stage 1 (sections
-; 13-14, before the boss) and in stage 2; loads graphics and palettes
-; (data_05AA1F), not drawn. Not identified.
-update_object_type_01:
+; Object type $01: the stage 1 boss (the giant turtle bursting through the
+; wall), invisible controller in slot $0900. The turtle is drawn on BG2
+; (scrolled by stage1_boss_set_bg2_scroll, bent by HDMA tables at $7E:A000);
+; the sprite objects are its hitboxes and parts. States: 0 boss music
+; (song_change_*), 1 waits for bg1_scroll_mode 4 and loads the graphics
+; (data_05AA1F), 2-4 the wall breaks (type $22 chunks, type $23 debris),
+; 5 spawns the parts (spawn_stage1_boss_parts: body type $29 with HP 352,
+; head type $1F, shell type $20), 6-8 attacks (stage1_boss_run_attack) and
+; the slam. Field $32 counts down after the boss dies (explosions), then
+; stage_exit_request. Checked in the emulator (o2s1 captures).
+update_stage1_boss_controller:
 	lda	$32,x
 	beq	loc_00F290
 	dec	a
@@ -31,28 +38,28 @@ loc_00F2A0:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_01_states,x
+	lda	f:tbl_stage1_boss_controller_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_01_states:
-	.addr	object_type_01_state_00
-	.addr	object_type_01_state_01
-	.addr	object_type_01_state_02
-	.addr	object_type_01_state_03
-	.addr	object_type_01_state_04
-	.addr	object_type_01_state_05
-	.addr	object_type_01_state_06
-	.addr	object_type_01_state_07
-	.addr	object_type_01_state_08
+tbl_stage1_boss_controller_states:
+	.addr	stage1_boss_controller_state_00
+	.addr	stage1_boss_controller_state_01
+	.addr	stage1_boss_controller_state_02
+	.addr	stage1_boss_controller_state_03
+	.addr	stage1_boss_controller_state_04
+	.addr	stage1_boss_controller_state_05
+	.addr	stage1_boss_controller_state_06
+	.addr	stage1_boss_controller_state_07
+	.addr	stage1_boss_controller_state_08
 
-object_type_01_state_00:
+stage1_boss_controller_state_00:
 	lda	#$0002
 	jsl	f:start_palette_anim
 	lda	#$F48A
-	sta	a:wram_1682
+	sta	a:song_change_set
 	lda	#$0004
-	sta	a:wram_1680
+	sta	a:song_change_mode
 	stz	$32,x
 	inc	$12,x
 	lda	#$0040
@@ -63,7 +70,7 @@ object_type_01_state_00:
 	lda	#$0018
 	jml	f:update_object_type_28
 
-object_type_01_state_01:
+stage1_boss_controller_state_01:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	loc_00F319
@@ -78,17 +85,17 @@ object_type_01_state_01:
 	jsl	f:start_palette_task
 	ldx	zp_FC
 	jsl	f:sub_00FF30
-	jsr	a:sub_00F65E
+	jsr	a:stage1_boss_init_hdma_table
 loc_00F319:
 	rtl
 
-object_type_01_state_02:
+stage1_boss_controller_state_02:
 	lda	$24,x
 	bmi	loc_00F322
 	dec	$24,x
 	bpl	loc_00F34B
 loc_00F322:
-	lda	a:wram_1678
+	lda	a:song_change_state
 	bne	loc_00F34B
 	lda	#$0068
 	jsl	f:queue_sound
@@ -97,19 +104,19 @@ loc_00F322:
 	lda	#$0002
 	sta	$24,x
 	inc	$12,x
-	jsr	a:sub_00F514
+	jsr	a:spawn_stage1_boss_wall_chunks
 	stz	a:wram_163A
 	lda	#$0020
-	sta	a:wram_163C
+	sta	a:stage1_boss_height
 	sta	a:wram_1640
 loc_00F34B:
 	rtl
 
-object_type_01_state_03:
+stage1_boss_controller_state_03:
 	dec	$24,x
 	beq	loc_00F362
 	phx
-	jsr	a:sub_00F9C5
+	jsr	a:spawn_stage1_boss_falling_debris
 	plx
 	ldy	#$AAB8
 	lda	#$4018
@@ -144,23 +151,23 @@ loc_00F395:
 	sta	zp_02
 	phx
 	lda	zp_0C
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rtl
 
-object_type_01_state_04:
-	jsr	a:sub_00F559
+stage1_boss_controller_state_04:
+	jsr	a:stage1_boss_push_wall
 	lda	$34,x
 	bne	loc_00F3B1
 	inc	$12,x
 	lda	#$0010
 	sta	$24,x
 loc_00F3B1:
-	jsr	a:sub_00F5D9
-	jsr	a:sub_00F8E2
+	jsr	a:stage1_boss_place_middle_chunks
+	jsr	a:stage1_boss_set_bg2_scroll
 	rtl
 
-object_type_01_state_05:
+stage1_boss_controller_state_05:
 	dec	$24,x
 	bne	loc_00F3DF
 	lda	#$0006
@@ -174,16 +181,16 @@ object_type_01_state_05:
 	lda	#$0080
 	sta	a:wram_0474
 	lda	#$0100
-	sta	a:wram_1638
-	jsr	a:sub_00F907
+	sta	a:stage1_boss_head_pos
+	jsr	a:spawn_stage1_boss_parts
 loc_00F3DF:
 	dec	a:wram_030E
-	jsr	a:sub_00F5D9
-	jsr	a:sub_00F8E2
+	jsr	a:stage1_boss_place_middle_chunks
+	jsr	a:stage1_boss_set_bg2_scroll
 	rtl
 
-object_type_01_state_06:
-	lda	a:wram_163C
+stage1_boss_controller_state_06:
+	lda	a:stage1_boss_height
 	cmp	#$0020
 	bne	loc_00F405
 	lda	$32,x
@@ -200,12 +207,12 @@ loc_00F405:
 	lda	#$2000
 	sta	zp_00
 	stz	zp_02
-	jsr	a:sub_00F850
-	jsr	a:sub_00F672
+	jsr	a:stage1_boss_sway
+	jsr	a:stage1_boss_run_attack
 	brl	loc_00F46D
 
-object_type_01_state_07:
-	lda	a:wram_163C
+stage1_boss_controller_state_07:
+	lda	a:stage1_boss_height
 	cmp	#$0007
 	bcs	loc_00F42D
 	lda	#$0056
@@ -218,12 +225,12 @@ loc_00F42D:
 	stz	zp_00
 	lda	#$0002
 	sta	zp_02
-	jsr	a:sub_00F85A
-	jsr	a:sub_00F672
+	jsr	a:stage1_boss_move_down
+	jsr	a:stage1_boss_run_attack
 	brl	loc_00F46D
 
-object_type_01_state_08:
-	lda	a:wram_163C
+stage1_boss_controller_state_08:
+	lda	a:stage1_boss_height
 	cmp	#$0020
 	bcc	loc_00F45D
 	dec	a:wram_163E
@@ -242,23 +249,25 @@ loc_00F45D:
 	stz	zp_00
 	lda	#$0002
 	sta	zp_02
-	jsr	a:sub_00F871
-	jsr	a:sub_00F672
+	jsr	a:stage1_boss_move_up
+	jsr	a:stage1_boss_run_attack
 	brl	loc_00F46D
 loc_00F46D:
-	jsr	a:sub_00F8D0
-	jsl	f:sub_00F4DA
-	jsr	a:sub_00F5D9
-	jsr	a:sub_00F98E
-	jsr	a:sub_00F949
-	jsr	a:sub_00F4B7
-	jsr	a:sub_00F484
+	jsr	a:stage1_boss_add_height
+	jsl	f:stage1_boss_queue_bg_block
+	jsr	a:stage1_boss_place_middle_chunks
+	jsr	a:stage1_boss_place_parts
+	jsr	a:stage1_boss_build_head_hdma
+	jsr	a:stage1_boss_queue_face_tiles
+	jsr	a:stage1_boss_death_explosions
 	rtl
 
-sub_00F484:
+; While the dying countdown (field $32) runs: sound $6E and explosions at
+; random around the boss.
+stage1_boss_death_explosions:
 	lda	$32,x
 	beq	loc_00F4B6
-	jsl	f:sub_00FD8D
+	jsl	f:queue_sound_6E_throttled
 	lda	$0A,x
 	adc	#$FFE0
 	sta	zp_00
@@ -278,7 +287,7 @@ sub_00F484:
 loc_00F4B6:
 	rts
 
-sub_00F4B7:
+stage1_boss_queue_face_tiles:
 	ldy	#$AB28
 	lda	$3E,x
 	beq	loc_00F4C3
@@ -292,11 +301,11 @@ loc_00F4C3:
 	lda	#$4D8C
 	phx
 	ldx	#$0020
-	jsl	f:sub_00FEAA
+	jsl	f:queue_vram_blocks_at_x
 	plx
 	rts
 
-sub_00F4DA:
+stage1_boss_queue_bg_block:
 	lda	#$A000
 	sta	zp_00
 	lda	#$0020
@@ -323,7 +332,7 @@ loc_00F4EB:
 	sta	zp_B6
 	rtl
 
-sub_00F514:
+spawn_stage1_boss_wall_chunks:
 	phx
 	ldx	#$0300
 	ldy	#$0000
@@ -358,7 +367,9 @@ loc_00F51B:
 	sta	$34,x
 	rts
 
-sub_00F559:
+; States 2-4: every $20 frames one of the end chunks ($0300 / $03C0,
+; alternately) is thrown, the shake and sound $56; $34 counts the pushes.
+stage1_boss_push_wall:
 	lda	$24,x
 	beq	loc_00F572
 	dec	$24,x
@@ -417,7 +428,9 @@ loc_00F5BE:
 	plx
 	rts
 
-sub_00F5D9:
+; Places the chunks $0340 / $0380 at 1/3 and 2/3 of the way between $0300
+; and $03C0.
+stage1_boss_place_middle_chunks:
 	stz	zp_00
 	sec
 	lda	a:wram_030A
@@ -491,7 +504,7 @@ loc_00F64C:
 	sta	a:wram_038E
 	rts
 
-sub_00F65E:
+stage1_boss_init_hdma_table:
 	phx
 	ldx	#$0000
 	lda	#$0008
@@ -504,25 +517,27 @@ loc_00F665:
 	plx
 	rts
 
-sub_00F672:
+; Runs the attack in field $36 (tbl_stage1_boss_attacks; $38 = its timer);
+; attack 0 picks the next one at random.
+stage1_boss_run_attack:
 	lda	$36,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00F681,x
+	lda	f:tbl_stage1_boss_attacks,x
 	plx
 	sta	zp_0C
 	jmp	(zp_0C)
-tbl_00F681:
-	.addr	sub_00F7AE
-	.addr	sub_00F6E3
-	.addr	sub_00F71B
-	.addr	sub_00F757
-	.addr	sub_00F69D
-	.addr	sub_00F6C7
-	.addr	sub_00F68F
+tbl_stage1_boss_attacks:
+	.addr	stage1_boss_attack_choose
+	.addr	stage1_boss_attack_falling_shots
+	.addr	stage1_boss_attack_tracking_shots
+	.addr	stage1_boss_attack_03
+	.addr	stage1_boss_attack_fire
+	.addr	stage1_boss_attack_fire_stream
+	.addr	stage1_boss_attack_06
 
-sub_00F68F:
+stage1_boss_attack_06:
 	ldy	a:wram_1640
 	cpy	#$002C
 	bcs	loc_00F69A
@@ -530,7 +545,7 @@ sub_00F68F:
 loc_00F69A:
 	brl	loc_00F88A
 
-sub_00F69D:
+stage1_boss_attack_fire:
 	lda	#$0002
 	sta	$3E,x
 	dec	$38,x
@@ -542,7 +557,7 @@ sub_00F69D:
 	lda	a:data_05AB52,y
 	sta	$38,x
 loc_00F6B6:
-	jsr	a:sub_00FB71
+	jsr	a:stage1_boss_spawn_fire
 	ldy	a:wram_1640
 	cpy	#$001C
 	bcs	loc_00F6C4
@@ -550,7 +565,7 @@ loc_00F6B6:
 loc_00F6C4:
 	brl	loc_00F88A
 
-sub_00F6C7:
+stage1_boss_attack_fire_stream:
 	lda	#$0002
 	sta	$3E,x
 	lda	#$0001
@@ -561,10 +576,10 @@ sub_00F6C7:
 	lda	#$0100
 	sta	$38,x
 loc_00F6DD:
-	jsr	a:sub_00FBAB
+	jsr	a:stage1_boss_spawn_fire_stream_shot
 	brl	loc_00F828
 
-sub_00F6E3:
+stage1_boss_attack_falling_shots:
 	lda	stage_frame_mod8
 	bne	loc_00F6EC
 	lda	#$0004
@@ -576,7 +591,7 @@ loc_00F6EC:
 	lda	#$0080
 	sta	$38,x
 loc_00F6F7:
-	jsr	a:sub_00FA55
+	jsr	a:stage1_boss_fire_falling_shot
 	ldy	a:wram_1640
 	lda	a:wram_1636
 	and	#$0010
@@ -595,7 +610,7 @@ loc_00F718:
 	; (not executed in the CDL traces)
 	brl	loc_00F882
 
-sub_00F71B:
+stage1_boss_attack_tracking_shots:
 	lda	a:wram_1636
 	and	#$0040
 	beq	loc_00F728
@@ -608,7 +623,7 @@ loc_00F728:
 	lda	#$0040
 	sta	$38,x
 loc_00F733:
-	jsr	a:sub_00F9FD
+	jsr	a:stage1_boss_fire_tracking_shot
 	ldy	a:wram_1640
 	lda	a:wram_1636
 	and	#$0020
@@ -625,7 +640,7 @@ loc_00F74C:
 loc_00F754:
 	brl	loc_00F882
 
-sub_00F757:
+stage1_boss_attack_03:
 	lda	stage_frame_counter
 	bit	#$001F
 	bne	loc_00F763
@@ -672,7 +687,7 @@ loc_00F7AB:
 	; (not executed in the CDL traces)
 	brl	loc_00F882
 
-sub_00F7AE:
+stage1_boss_attack_choose:
 	dec	$38,x
 	bne	loc_00F80A
 	lda	rng_lo
@@ -746,13 +761,16 @@ loc_00F82C:
 	plx
 	rts
 
-sub_00F850:
+; Probably: moves the body (HDMA lines) up or down by zp_00/zp_02, the
+; direction by bit 6 of wram_1636 (stage1_boss_move_down negates the step,
+; stage1_boss_move_up as is).
+stage1_boss_sway:
 	lda	a:wram_1636
 	and	#$0040
-	bne	sub_00F85A
-	bra	sub_00F871
+	bne	stage1_boss_move_down
+	bra	stage1_boss_move_up
 
-sub_00F85A:
+stage1_boss_move_down:
 	lda	zp_00
 	eor	#$FFFF
 	clc
@@ -764,7 +782,7 @@ sub_00F85A:
 	sta	zp_02
 	bra	loc_00F876
 
-sub_00F871:
+stage1_boss_move_up:
 	ldy	#$0020
 	bra	loc_00F879
 loc_00F876:
@@ -814,17 +832,17 @@ loc_00F899:
 	plx
 	rts
 
-sub_00F8D0:
+stage1_boss_add_height:
 	clc
 	lda	a:wram_163A
 	adc	zp_00
 	sta	a:wram_163A
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	adc	zp_02
-	sta	a:wram_163C
+	sta	a:stage1_boss_height
 	rts
 
-sub_00F8E2:
+stage1_boss_set_bg2_scroll:
 	sec
 	lda	#$01C0
 	sbc	a:wram_030A
@@ -842,7 +860,11 @@ loc_00F8F6:
 	sta	$0E,x
 	rts
 
-sub_00F907:
+; The boss's hitbox objects, slots $0400-$0480: type $29 (body, OBJ_HP 352
+; on every difficulty), $1F (head), $20 (shell, HP stage1_boss_shell_hp:
+; 128, 256, and $7FFF on hard, so on hard the shell can't really be
+; destroyed).
+spawn_stage1_boss_parts:
 	phx
 	ldx	#$0400
 	ldy	#$0000
@@ -870,13 +892,13 @@ loc_00F90E:
 	ldy	difficulty
 	lda	#$0160
 	sta	a:wram_0406
-	lda	a:data_05AB40,y
+	lda	a:stage1_boss_shell_hp,y
 	sta	a:wram_0486
 	plx
 	rts
 
-sub_00F949:
-	lda	a:wram_1638
+stage1_boss_build_head_hdma:
+	lda	a:stage1_boss_head_pos
 	and	#$01F8
 	ora	#$4000
 	phx
@@ -887,7 +909,7 @@ loc_00F956:
 	inx
 	cpx	#$0020
 	bcc	loc_00F956
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	bit	#$0100
 	beq	loc_00F98C
 	and	#$00F8
@@ -913,7 +935,9 @@ loc_00F98C:
 	plx
 	rts
 
-sub_00F98E:
+; Keeps the hitbox objects ($0400 body, $0440 head, $0300) where the HDMA
+; tables put the BG drawing.
+stage1_boss_place_parts:
 	sep	#$20
 	.a8
 	sec
@@ -928,7 +952,7 @@ sub_00F98E:
 	stz	a:wram_044F
 	sec
 	lda	#$60
-	sbc	a:wram_1638
+	sbc	a:stage1_boss_head_pos
 	sta	a:wram_044A
 	stz	a:wram_044B
 	sec
@@ -939,7 +963,7 @@ sub_00F98E:
 	.a16
 	brl	loc_00F8F6
 
-sub_00F9C5:
+spawn_stage1_boss_falling_debris:
 	ldy	#$0018
 	ldx	#$0600
 loc_00F9CB:
@@ -969,7 +993,7 @@ loc_00F9F5:
 	tax
 	bra	loc_00F9CB
 
-sub_00F9FD:
+stage1_boss_fire_tracking_shot:
 	lda	stage_frame_counter
 	bit	#$0040
 	beq	loc_00FA54
@@ -1005,7 +1029,7 @@ sub_00F9FD:
 loc_00FA54:
 	rts
 
-sub_00FA55:
+stage1_boss_fire_falling_shot:
 	lda	stage_frame_counter
 	bit	#$000F
 	bne	loc_00FA54
@@ -1143,7 +1167,7 @@ loc_00FB6B:
 	beq	loc_00FB54
 	rtl
 
-sub_00FB71:
+stage1_boss_spawn_fire:
 	lda	$3A,x
 	bne	loc_00FBAA
 	inc	$3A,x
@@ -1167,7 +1191,7 @@ sub_00FB71:
 loc_00FBAA:
 	rts
 
-sub_00FBAB:
+stage1_boss_spawn_fire_stream_shot:
 	lda	#$AB22
 	ldy	#$0500
 	jsl	f:spawn_effect
@@ -1189,31 +1213,33 @@ sub_00FBAB:
 loc_00FBE1:
 	rts
 
-; Object type $1F: stage 1 boss fight: moves wram_1638 depending on whether
-; it is hit. Not identified.
-update_object_type_1F:
+; Object type $1F: stage 1 boss, the head (invulnerable target in slot $0440;
+; seen in the emulator): pushed back while it is hit (stage1_boss_head_pos
+; down to $E0), else it comes out again (up to $100, or $130 while
+; OBJ_TIMER is set).
+update_stage1_boss_head:
 	lda	$14,x
 	bne	loc_00FC0B
 	ldy	#$0130
 	lda	$24,x
 	bne	loc_00FBF8
 	ldy	#$0100
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	cmp	#$0100
 	bcs	loc_00FC11
 loc_00FBF8:
 	sty	zp_00
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	clc
 	adc	#$0004
 	cmp	zp_00
 	bcc	loc_00FC07
 	lda	zp_00
 loc_00FC07:
-	sta	a:wram_1638
+	sta	a:stage1_boss_head_pos
 	rtl
 loc_00FC0B:
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	ldy	#$00E0
 loc_00FC11:
 	sty	zp_00
@@ -1223,7 +1249,7 @@ loc_00FC11:
 	bcs	loc_00FC1D
 	lda	zp_00
 loc_00FC1D:
-	sta	a:wram_1638
+	sta	a:stage1_boss_head_pos
 	rtl
 
 ; Object type $29: stage 1 boss (the giant turtle), main body with HP $160
@@ -1337,8 +1363,9 @@ loc_00FCD2:
 loc_00FD11:
 	rtl
 
-; Object type $22: stage 1 boss fight, sprite blinking. Not identified.
-update_object_type_22:
+; Object type $22: stage 1 boss, chunks of the metal wall it bursts through
+; (slots $0300-$03C0, spawn_stage1_boss_wall_chunks; seen in the emulator).
+update_stage1_boss_wall_chunk:
 	lda	$30,x
 	beq	loc_00FD25
 	clc
@@ -1390,7 +1417,7 @@ loc_00FD5A:
 	rtl
 
 ; Object type $38: stage 1 boss fire breath (spawned near the boss by
-; sub_00FB71).
+; stage1_boss_spawn_fire).
 update_stage1_boss_fire:
 	dec	$24,x
 	bne	loc_00FD73

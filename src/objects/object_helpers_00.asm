@@ -1,25 +1,25 @@
 ; objects/object_helpers_00.asm -- Object helpers (bank $00)
 ; Bank $00, $00:FD8D-$00:FFBF. Included by main.asm in segment BANK00.
 ;
-; Small routines shared by object handlers in all banks (sub_00FD8D,
-; sub_00FE76, sub_00FEA3, sub_00FEAA...), and vector_length (multiplication, ends
+; Small routines shared by object handlers in all banks (queue_sound_6E_throttled,
+; queue_vram_block, queue_vram_blocks, queue_vram_blocks_at_x...), and vector_length (multiplication, ends
 ; at $00:FFB1 inside the unused extended-header area), followed by $FF padding
 ; up to the header.
 
-sub_00FD8D:
+queue_sound_6E_throttled:
 	lda	#$006E
 	bra	queue_sound_throttled
 
-sub_00FD92:
+queue_sound_41_throttled:
 	lda	#$0041
 	bra	queue_sound_throttled
 
-sub_00FD97:
+queue_sound_30_throttled:
 	lda	#$0030
 
 ; Queues sound A (queue_sound) only when the countdown wram_16B0 has run
-; out, then restarts it at 12-19 frames: for repeated sounds (sub_00FD8D,
-; sub_00FD92, sub_00FD97 are this with sounds $6E, $41, $30).
+; out, then restarts it at 12-19 frames: for repeated sounds (queue_sound_6E_throttled,
+; queue_sound_41_throttled, queue_sound_30_throttled are this with sounds $6E, $41, $30).
 queue_sound_throttled:
 	ldy	a:wram_16B0
 	bpl	loc_00FDB0
@@ -34,69 +34,69 @@ loc_00FDB0:
 	dec	a:wram_16B0
 	rtl
 
-sub_00FDB4:
-	lda	a:wram_1678
+update_song_change:
+	lda	a:song_change_state
 	bne	loc_00FDBE
-	ldy	a:wram_1680
+	ldy	a:song_change_mode
 	beq	loc_00FDD1
 loc_00FDBE:
 	asl	a
 	tax
-	lda	f:tbl_00FDC9,x
+	lda	f:tbl_song_change_states,x
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00FDC9:
-	.addr	sub_00FDD2
-	.addr	sub_00FDE7
-	.addr	sub_00FDFC
-	.addr	sub_00FE0F
+tbl_song_change_states:
+	.addr	song_change_state_00
+	.addr	song_change_state_01
+	.addr	song_change_state_02
+	.addr	song_change_state_03
 loc_00FDD1:
 	rtl
 
-sub_00FDD2:
+song_change_state_00:
 	cpy	#$0002
 	beq	loc_00FDEC
 	lda	a:data_05AB58,y
-	sta	a:wram_1680
-	inc	a:wram_1678
+	sta	a:song_change_mode
+	inc	a:song_change_state
 	lda	#$0081
 	jml	f:queue_sound
 
-sub_00FDE7:
-	dec	a:wram_1680
+song_change_state_01:
+	dec	a:song_change_mode
 	bpl	loc_00FDD1
 loc_00FDEC:
 	lda	#$0002
-	sta	a:wram_1678
-	stz	a:wram_1680
+	sta	a:song_change_state
+	stz	a:song_change_mode
 	lda	#$0084
 	jml	f:queue_sound
 
-sub_00FDFC:
-	ldx	a:wram_1682
-	inc	a:wram_1678
-	stz	a:wram_1682
+song_change_state_02:
+	ldx	a:song_change_set
+	inc	a:song_change_state
+	stz	a:song_change_set
 	lda	#$0040
-	sta	a:wram_167A
+	sta	a:song_change_wait
 	jml	f:request_song_set
 
-sub_00FE0F:
-	lda	a:wram_167A
+song_change_state_03:
+	lda	a:song_change_wait
 	bmi	loc_00FE19
-	dec	a:wram_167A
+	dec	a:song_change_wait
 	bpl	loc_00FE23
 loc_00FE19:
 	lda	apu_pending_cmd
 	cmp	#$00FF
 	beq	loc_00FE23
-	stz	a:wram_1678
+	stz	a:song_change_state
 loc_00FE23:
 	rtl
 
 ; Never executed in the CDL traces (found by the unreferenced-routine heuristic).
 ; DB is assumed to be $05, the game's usual data bank (hint).
 ; (no caller found; decoded because it follows the end of a routine)
-sub_00FE24:
+queue_vram_block_at_map_position:
 	; (not executed in the CDL traces)
 	sta	zp_00
 	phx
@@ -147,7 +147,7 @@ sub_00FE24:
 	adc	zp_08
 	plx
 
-sub_00FE76:
+queue_vram_block:
 	ldy	zp_B6
 	cpy	#$0040
 	bcs	loc_00FEA2
@@ -171,12 +171,12 @@ loc_00FE7D:
 loc_00FEA2:
 	rtl
 
-sub_00FEA3:
+queue_vram_blocks:
 	ldx	zp_B6
 	cpx	#$0040
 	bcs	loc_00FEA2
 
-sub_00FEAA:
+queue_vram_blocks_at_x:
 	sta	zp_00
 	lda	zp_02
 	sta	zp_04

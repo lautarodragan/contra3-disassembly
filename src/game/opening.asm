@@ -679,7 +679,7 @@ opening_scene_heroes:
 @return2:
 	rts
 
-; A = entry: queues a strip of caption tiles (data_05A901...) with sub_00FEA3.
+; A = entry: queues a strip of caption tiles (data_05A901...) with queue_vram_blocks.
 opening_draw_caption_part:
 	asl	a
 	tay
@@ -693,7 +693,7 @@ opening_draw_caption_part:
 	tay
 	pla
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rts
 

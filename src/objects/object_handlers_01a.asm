@@ -28,15 +28,15 @@ update_object_type_02:
 	lda	#$B540
 	sta	zp_00
 	lda	#$4D8C
-	jsl	f:sub_00FE76
+	jsl	f:queue_vram_block
 	lda	#$B520
 	sta	zp_00
 	lda	#$4E0C
-	jsl	f:sub_00FE76
+	jsl	f:queue_vram_block
 	lda	#$B560
 	sta	zp_00
 	lda	#$4D90
-	jml	f:sub_00FE76
+	jml	f:queue_vram_block
 loc_01B1E0:
 	lda	$26,x
 	beq	loc_01B1EE
@@ -165,7 +165,7 @@ loc_01B2D8:
 	clc
 	lda	#$4010
 	adc	zp_0C
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	ldx	zp_FA
 	lda	$24,x
 	cmp	#$0002
@@ -226,7 +226,7 @@ loc_01B35D:
 	sta	zp_08
 	lda	#$4E08
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rtl
 
@@ -251,7 +251,7 @@ loc_01B38F:
 	sta	zp_02
 	pla
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rtl
 
@@ -311,12 +311,12 @@ loc_01B3FE:
 	sta	zp_02
 	pla
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	lda	zp_FC
 	sta	zp_00
 	lda	#$4E08
-	jsl	f:sub_00FE76
+	jsl	f:queue_vram_block
 	lda	$38,x
 	bne	loc_01B459
 	rtl
@@ -409,10 +409,10 @@ loc_01B4D5:
 loc_01B4D8:
 	sta	zp_00
 	lda	#$4D8C
-	jml	f:sub_00FE76
+	jml	f:queue_vram_block
 
 object_type_02_state_08:
-	jsl	f:sub_00FD92
+	jsl	f:queue_sound_41_throttled
 	dec	$24,x
 	bne	loc_01B4FB
 	inc	$12,x
@@ -543,7 +543,7 @@ stage4_tank_state_00:
 	ldy	#$AF1F
 	lda	#$4608
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	lda	#$0008
 	sta	a:bg1_y
@@ -647,7 +647,7 @@ loc_01B69E:
 loc_01B6A1:
 	lda	#$4688
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rtl
 
@@ -665,7 +665,7 @@ stage4_tank_state_03:
 	ldy	#$946A
 	lda	#$4608
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	bra	loc_01B6E3
 loc_01B6D1:
@@ -682,7 +682,7 @@ loc_01B6E3:
 	stz	a:bg1_x
 loc_01B6E9:
 	pha
-	jsl	f:sub_00FD92
+	jsl	f:queue_sound_41_throttled
 	lda	$0A,x
 	sta	zp_00
 	lda	#$00B4
@@ -892,7 +892,7 @@ loc_01B88D:
 	lda	#$4F0C
 loc_01B895:
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 loc_01B89B:
 	rtl
@@ -2284,7 +2284,7 @@ sub_01C302:
 	lda	a:data_05B036,y
 	ldy	$32,x
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	stz	$34,x
 loc_01C31B:
@@ -2338,7 +2338,7 @@ update_wall_hatch:
 	lda	#$69C0
 	sta	zp_00
 	lda	$3A,x
-	jml	f:sub_00FE76
+	jml	f:queue_vram_block
 loc_01C385:
 	lda	$12,x
 	phx
@@ -2426,7 +2426,7 @@ loc_01C418:
 loc_01C41B:
 	sta	zp_00
 	lda	$3A,x
-	jsl	f:sub_00FE76
+	jsl	f:queue_vram_block
 loc_01C423:
 	rtl
 
@@ -2498,7 +2498,7 @@ loc_01C48F:
 	sta	zp_00
 	lda	$3A,x
 	sty	zp_FE
-	jsl	f:sub_00FE76
+	jsl	f:queue_vram_block
 	lda	$34,x
 	and	#$007F
 	bne	loc_01C4C7
@@ -2758,7 +2758,7 @@ loc_01C6B2:
 	clc
 	lda	#$4114
 	adc	zp_0C
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	ldx	zp_FA
 	lda	stage_frame_counter
 	and	#$000F
@@ -2875,7 +2875,7 @@ loc_01C756:
 loc_01C7AD:
 	sta	zp_00
 	lda	$30,x
-	jsl	f:sub_00FE76
+	jsl	f:queue_vram_block
 loc_01C7B5:
 	rtl
 
@@ -3443,7 +3443,7 @@ loc_01CBBD:
 	adc	#$411C
 	ldy	#$B1C0
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	lda	#$8000
 	sta	$16,x

@@ -28,7 +28,7 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 
 | type | handler | what it is |
 |---|---|---|
-| $01 | `update_object_type_01` | stage controller seen near the end of stage 1 (sections 13-14, before the boss) and in stage 2; loads graphics and palettes (`data_05AA1F`), not drawn. Not identified |
+| $01 | `update_stage1_boss_controller` | stage controller seen near the end of stage 1 (sections 13-14, before the boss) and in stage 2; loads graphics and palettes (`data_05AA1F`), not drawn. Not identified |
 | $02 | `update_object_type_02` | seen once in stage 1 (section 8); sets `OBJ_HP` to $100 in state 0 and runs 11 states. Not identified |
 | $03 | `update_bg2_scroll_mode_trigger` | stage trigger: sets `bg2_map_offset` from field `$3A`, waits for `bg2_screen_drawn`, then sets `bg2_scroll_mode` |
 | $04, $54 | `update_object_type_04` | seen in stage 1 (section 4, a red soldier on a building ledge, probably). Not identified with certainty |
@@ -58,9 +58,9 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $1C | `update_object_type_1C` | falling fragment (sprite by vertical speed) that explodes on the floor or when shot (stage 1 section 9). Not identified |
 | $1D | `update_effect` | effect (explosion, spark, fire): plays `OBJ_ANIM` and frees itself when the script ends (`make_effect_object`) |
 | $1E | `update_alien_dog` | alien dog that jumps out at the player (stage 1 sections 2-3; seen in the emulator) |
-| $1F | `update_object_type_1F` | stage 1 boss fight: moves `wram_1638` depending on whether it is hit. Not identified |
+| $1F | `update_stage1_boss_head` | stage 1 boss fight: moves `stage1_boss_head_pos` depending on whether it is hit. Not identified |
 | $20 | `update_stage1_boss_part` | stage 1 boss (the giant turtle), a part with HP 256: explodes when destroyed or when the boss dies (`wram_0932`) |
-| $22 | `update_object_type_22` | stage 1 boss fight, sprite blinking. Not identified |
+| $22 | `update_stage1_boss_wall_chunk` | stage 1 boss fight, sprite blinking. Not identified |
 | $23 | `update_falling_debris` | falling wall debris (stage 1 boss, the turtle breaking through the wall); explodes at y >= $C8 |
 | $24 | `update_object_type_24` | stage 6 alien soldier (seen in the emulator) |
 | $26 | `update_stage1_boss_tracking_shot` | stage 1 boss projectile that follows the player's height (speed `data_05AB46` by difficulty) |
@@ -79,7 +79,7 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $33 | `update_object_type_33` | stage 1 section 10. Not identified |
 | $34 | `update_object_type_34` | stage 1 section 2. Not identified |
 | $35 | `update_object_type_35` | stage 1 (the cafe front), HP 1. Not identified |
-| $38 | `update_stage1_boss_fire` | stage 1 boss fire breath (spawned near the boss by `sub_00FB71`) |
+| $38 | `update_stage1_boss_fire` | stage 1 boss fire breath (spawned near the boss by `stage1_boss_spawn_fire`) |
 | $39 | `update_object_type_39` | stage 3. Not identified |
 | $3A | `update_object_type_3A` | stage 3. Not identified |
 | $3B | `update_scroll_modes_trigger` | stage trigger: sets `bg2_scroll_mode` from field `$3B`, then as type `$0E` |
@@ -95,7 +95,7 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $49 | `update_object_type_49` | stage 3 section 10: green shielded soldiers. Not identified exactly |
 | $4A | `update_rolling_mine` | stage 3: rolling disc (HP 6; seen in the emulator) |
 | $4B | `update_debris_spark` | becomes a type $1D effect flying in a random direction (stage 3 boss) |
-| $4D | `update_object_type_4D` | invisible stage trigger: `wram_1680` / `wram_1682` from `data_059F06`; never run in the CDL traces |
+| $4D | `update_song_change_trigger` | invisible stage trigger: `song_change_mode` / `song_change_set` from `data_059F06`; never run in the CDL traces |
 | $4E | `update_object_type_4E` | stage 3 section 7, 27 states (a mid-boss, probably). Not identified |
 | $4F | `update_stage3_winged_bug` | stage 3: winged alien bug (HP 8; seen in the emulator) |
 | $50 | `update_wall_hatch` | stage 3: wall hatch (HP 8; seen in the emulator) |

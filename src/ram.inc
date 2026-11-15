@@ -706,9 +706,9 @@ wram_1622           = $1622
 wram_1628           = $1628
 wram_162C           = $162C
 wram_1636           = $1636
-wram_1638           = $1638
+stage1_boss_head_pos = $1638	; stage 1 boss: how far the head is pushed out ($E0-$130; update_stage1_boss_head moves it back when shot); builds the head HDMA (stage1_boss_build_head_hdma)
 wram_163A           = $163A
-wram_163C           = $163C
+stage1_boss_height  = $163C	; stage 1 boss: height of the body; the slam attack (controller states 6-8) raises it to $20 and drops it below 7 (shake, sound $56)
 wram_163E           = $163E
 wram_1640           = $1640
 wram_1642           = $1642
@@ -728,12 +728,12 @@ wram_1672           = $1672
 wram_1673           = $1673
 scroll_split_y      = $1674	; vertical position the scroll-split HDMA table is built for (build_scroll_split_hdma)
 scroll_split_pattern = $1676	; scroll-split pattern, 1-based index into data_05A25A; 0 = off
-wram_1678           = $1678
-wram_167A           = $167A
+song_change_state   = $1678	; state of update_song_change (stage_frame): 0 idle, 1 delay, 2 stop the music (sound $84), 3 wait for the upload of song_change_set
+song_change_wait    = $167A	; update_song_change: frames to wait after requesting the song set
 wram_167C           = $167C
 wram_167E           = $167E
-wram_1680           = $1680
-wram_1682           = $1682
+song_change_mode    = $1680	; non-zero starts a song change (update_song_change): index into data_05AB58 (delay after sound $81); 2 = stop at once
+song_change_set     = $1682	; song set list to load when the song changes (request_song_set); $F48A: the boss music
 stage_exit_request           = $1686	; set by objects (end of the stage); stage_play then moves to STAGE_STATE_EXIT
 wram_1688           = $1688
 wram_168A           = $168A
@@ -1299,12 +1299,21 @@ PLAYER_SPIN         = $1D8E	; 1 while L and R are both held or in the spin jump 
 PLAYER_STATE_GROUND = $00	; standing / walking / crouching
 PLAYER_STATE_JUMP   = $03	; jumping (player_state_jump)
 PLAYER_STATE_FALL   = $04	; falling (player_state_fall)
+PLAYER_STATE_WAIT_MISSILE = $06	; respawning in the stage 4 sky: waits for a rideable missile (type $65) to be placed on (respawn_on_missile)
 PLAYER_STATE_DYING  = $07	; hit: thrown back (player_state_dying), entered at kill_player
 PLAYER_STATE_DEAD   = $08	; lying dead; when the countdown at +$30 ends, takes a life (player_state_dead)
+PLAYER_STATE_ENTER_TANK = $09	; stage 1: dropping into the tank (player_state_enter_tank)
+PLAYER_STATE_TANK   = $0A	; stage 1: driving the tank (player_state_tank, input_tank)
 PLAYER_STATE_SPIN_STANCE = $0B	; L+R held on the ground (player_state_spin_stance)
 PLAYER_STATE_SPIN_JUMP = $0C	; spin jump: fire pressed during PLAYER_STATE_SPIN_STANCE
+PLAYER_STATE_HANG_CLIMB = $0D	; hanging, can grab a wall and climb (player_state_hang_climb; seen in stage 6)
 PLAYER_STATE_OUT    = $0E	; waiting to respawn (player_state_out: needs lives left)
 PLAYER_STATE_RESPAWN = $0F	; respawning (player_state_respawn)
+PLAYER_STATE_HANG_OBJECT = $10	; hanging from a moving object (stage 3; player_state_hang_object)
+PLAYER_STATE_BIKE   = $11	; stage 4: riding the hover bike (player_state_bike; the bike is type $6D)
+PLAYER_STATE_BIKE_INTRO = $12	; stage 4: driving in on the bike, invulnerable (player_state_bike_intro)
+PLAYER_STATE_ENDING = $13	; ending: posing on the helicopter (player_state_ending, set by the ending sequence)
+PLAYER_STATE_ENDING_WAVE = $14	; ending: pose animation replayed while Y is held (player_state_ending_wave)
 ;
 ; Weapons (PLAYER_WEAPON_1 / PLAYER_WEAPON_2, p1_weapon_1...): index of the
 ; shot spawners tbl_spin_fire_1 / tbl_spin_fire_2 / tbl_fire_weapon and of weapon_fire_delays

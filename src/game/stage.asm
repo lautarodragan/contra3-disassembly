@@ -121,10 +121,10 @@ stage_init:
 	sta	a:wram_1646
 	stz	a:wram_16B2
 	stz	a:scroll_split_pattern
-	stz	a:wram_167A
+	stz	a:song_change_wait
 	stz	a:wram_167C
 	stz	a:wram_167E
-	stz	a:wram_1678
+	stz	a:song_change_state
 	rtl
 
 ; STAGE_STATE_SETUP: BG modes and maps, graphics, stage_layout_init.
@@ -338,7 +338,7 @@ stage_frame:
 	bra	@loop2
 @sprites_done:
 	jsl	f:update_shake_side_view
-	jsl	f:sub_00FDB4
+	jsl	f:update_song_change
 	jsl	f:update_palette_anim
 	rtl
 
@@ -541,7 +541,7 @@ stage_cinematic:
 	bra	@loop2
 @sprites_done:
 	jsl	f:update_shake_side_view
-	jsl	f:sub_00FDB4
+	jsl	f:update_song_change
 	rtl
 player_autopilot_off:
 	rtl

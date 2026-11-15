@@ -8,6 +8,7 @@
 .ifndef OBJECT_TYPES_INC
 OBJECT_TYPES_INC = 1
 
+OBJT_STAGE1_BOSS_CONTROLLER     = $01	; stage 1 boss (giant turtle): invisible controller (update_stage1_boss_controller)
 OBJT_FOOT_SOLDIER               = $0A	; running foot soldier (update_foot_soldier)
 OBJT_BOMBER_BOMB                = $0C	; bomb of the stage 1 bomber plane
 OBJT_POPUP_TURRET               = $0D	; gun turret rising from the rubble (stage 1)
@@ -20,8 +21,10 @@ OBJT_GRENADE_BLAST              = $1A	; explosion of a grenade
 OBJT_DYING_SOLDIER              = $1B	; killed soldier thrown back (start_dying_soldier)
 OBJT_EFFECT                     = $1D	; animation effect: explosion, spark, fire (make_effect_object)
 OBJT_ALIEN_DOG                  = $1E	; alien dog (stage 1)
+OBJT_STAGE1_BOSS_HEAD           = $1F	; stage 1 boss: the head (invulnerable target)
 OBJT_STAGE1_BOSS_PART           = $20	; stage 1 boss (giant turtle), part with HP 256
 OBJT_FACE_BOSS_LARVA            = $21
+OBJT_STAGE1_BOSS_WALL_CHUNK     = $22	; stage 1 boss: chunk of the wall it bursts through
 OBJT_FALLING_DEBRIS             = $23	; wall debris falling in the stage 1 boss fight
 OBJT_WINGED_ALIEN_TAIL_SEGMENT  = $25
 OBJT_STAGE1_BOSS_TRACKING_SHOT  = $26	; stage 1 boss projectile following the player's height
@@ -37,6 +40,7 @@ OBJT_DEBRIS_EXPLOSION           = $46	; explosion on a solid BG tile
 OBJT_ROLLING_MINE               = $4A	; rolling disc (stage 3)
 OBJT_DEBRIS_SPARK               = $4B	; effect flying in a random direction
 OBJT_COUNTDOWN_BOMB             = $4C
+OBJT_SONG_CHANGE_TRIGGER        = $4D	; stage trigger: song change (update_song_change_trigger)
 OBJT_STAGE3_WINGED_BUG          = $4F	; winged alien bug (stage 3)
 OBJT_WALL_HATCH                 = $50	; wall hatch (stage 3)
 OBJT_HEART_BOSS                 = $58
@@ -53,6 +57,7 @@ OBJT_CAVE_ROCK                  = $66
 OBJT_HEART_BOSS_BUG             = $67
 OBJT_STAGE4_BOSS                = $69
 OBJT_STAGE4_BOSS_POD            = $6A
+OBJT_PLAYER_BIKE                = $6D	; stage 4: a player's hover bike (slots $0280/$02C0)
 OBJT_STAGE4_TANK                = $6E	; tank at the start of stage 4, HP 315
 OBJT_CAVE_BEAST_FIREBALL        = $71
 OBJT_CAVE_BEAST_BEAM            = $72

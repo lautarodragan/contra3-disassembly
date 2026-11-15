@@ -1136,7 +1136,7 @@ sub_01D7E2:
 	ldy	$32,x
 	lda	$30,x
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	lda	#$C854
 	sta	$32,x
@@ -1461,7 +1461,7 @@ loc_01DA5F:
 	bcc	loc_01DA6F
 loc_01DA67:
 	ldx	zp_FE
-	jsl	f:sub_0182C3
+	jsl	f:start_player_drop
 	stz	$3E,x
 loc_01DA6F:
 	ldx	zp_FC
@@ -2215,7 +2215,7 @@ object_type_4E_state_05:
 	tay
 	pla
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	inc	$38,x
 	lda	$38,x
@@ -2341,7 +2341,7 @@ sub_01E0B8:
 	ldy	#$CA6C
 	lda	#$4D8C
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	inc	$12,x
 	rtl
@@ -2354,7 +2354,7 @@ sub_01E0D1:
 	ldy	#$CA78
 	lda	#$4D8C
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	inc	$12,x
 	rtl
@@ -2509,7 +2509,7 @@ loc_01E202:
 	ldy	#$CA88
 	lda	#$4C8C
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	inc	$12,x
 	rtl
@@ -2622,7 +2622,7 @@ object_type_4E_state_15:
 	ldy	#$CA95
 	lda	#$4C8C
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	stz	$24,x
 	stz	$36,x
@@ -2825,7 +2825,7 @@ object_type_4E_state_18:
 	ldy	#$CA9D
 	lda	#$4D0C
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	lda	#$0001
 	sta	$16,x
@@ -2848,7 +2848,7 @@ object_type_4E_state_18:
 
 object_type_4E_state_1A:
 	jsr	a:sub_01E01E
-	jsl	f:sub_00FD92
+	jsl	f:queue_sound_41_throttled
 	lda	$0A,x
 	adc	#$FFE0
 	sta	zp_00
@@ -3616,7 +3616,7 @@ stage3_spiked_climber_state_00:
 	sta	a:wram_163A
 	stz	a:wram_163E
 	stz	a:wram_1640
-	stz	a:wram_1638
+	stz	a:stage1_boss_head_pos
 	stz	a:wram_1642
 loc_01EA58:
 	rtl
@@ -3683,15 +3683,15 @@ loc_01EAC9:
 	sta	$38,x
 	bra	loc_01EB07
 loc_01EADD:
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	beq	loc_01EAE7
-	dec	a:wram_1638
+	dec	a:stage1_boss_head_pos
 	bra	loc_01EB0A
 loc_01EAE7:
 	dec	a:wram_163A
 	bpl	loc_01EB07
 	lda	#$0040
-	sta	a:wram_1638
+	sta	a:stage1_boss_head_pos
 	ldy	difficulty
 	lda	rng_lo
 	and	#$00FF
@@ -3985,7 +3985,7 @@ loc_01ED3E:
 	lda	$1E,x
 	adc	#$0000
 	sta	$1E,x
-	jsl	f:sub_00FD97
+	jsl	f:queue_sound_30_throttled
 	lda	$0A,x
 	adc	#$FFF0
 	sta	zp_00
@@ -4056,7 +4056,7 @@ loc_01ED84:
 	stz	$32,x
 	stz	$24,x
 	stz	a:wram_1636
-	stz	a:wram_1638
+	stz	a:stage1_boss_head_pos
 	stz	a:wram_163A
 	ldx	zp_FC
 	stz	$30,x
@@ -4111,7 +4111,7 @@ loc_01EE53:
 	lda	$24,x
 	beq	loc_01EE7D
 	dec	$24,x
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	beq	loc_01EE7C
 	ldy	$36,x
 	lda	a:data_05CB99,y
@@ -4122,7 +4122,7 @@ loc_01EE53:
 	sta	a:$0032,y
 	inc	$36,x
 	inc	$36,x
-	dec	a:wram_1638
+	dec	a:stage1_boss_head_pos
 loc_01EE7C:
 	rtl
 loc_01EE7D:
@@ -4151,7 +4151,7 @@ loc_01EE7D:
 	lda	#$000A
 	sta	zp_02
 	inc	a
-	sta	a:wram_1638
+	sta	a:stage1_boss_head_pos
 	lda	$30,x
 	eor	#$0016
 	sta	$30,x
@@ -4556,7 +4556,7 @@ stage3_spiked_climber_state_11:
 	stz	$00,x
 	rtl
 loc_01F1EF:
-	jsl	f:sub_00FD92
+	jsl	f:queue_sound_41_throttled
 	lda	#$0002
 	sta	a:shake_timer
 	lda	$0A,x
@@ -4662,7 +4662,7 @@ sub_01F2B0:
 	sta	zp_08
 	pla
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rts
 

@@ -3,7 +3,7 @@
 ;
 ; Handlers of the player shots (tbl_shot_types, see
 ; objects/secondary_objects.asm) and helpers: find_free_shot_slot_up_to and
-; sub_00E134 find a free shot slot, get_bg_tile_at_object reads the BG map
+; find_free_homing_shot_slot find a free shot slot, get_bg_tile_at_object reads the BG map
 ; under an object.
 ;
 ; Shot types by weapon (spawners in objects/player_shots.asm; SHOT_DAMAGE
@@ -537,7 +537,7 @@ loc_00E132:
 	clc
 	rtl
 
-sub_00E134:
+find_free_homing_shot_slot:
 	txa
 	clc
 	adc	#$0080

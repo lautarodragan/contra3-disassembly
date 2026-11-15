@@ -445,7 +445,7 @@ stage3_robot_state_07:
 	rtl
 loc_04834A:
 	jsr	a:sub_048669
-	jsl	f:sub_00FD97
+	jsl	f:queue_sound_30_throttled
 	lda	stage_frame_odd
 	bne	loc_048381
 	lda	OBJ_X,x
@@ -651,7 +651,7 @@ loc_0484B8:
 	adc	#$4200
 	ldy	$30,x
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	clc
 	lda	$30,x
@@ -693,7 +693,7 @@ loc_048501:
 	adc	#$4090
 	ldy	$30,x
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	clc
 	lda	$30,x
@@ -877,9 +877,9 @@ stage3_boss_state_0A:
 	dec	OBJ_TIMER,x
 	bne	loc_048699
 	lda	#$F48A
-	sta	a:wram_1682
+	sta	a:song_change_set
 	lda	#$0004
-	sta	a:wram_1680
+	sta	a:song_change_mode
 	lda	#$0004
 	sta	a:shake_timer
 	inc	OBJ_STATE,x
@@ -887,15 +887,15 @@ loc_048699:
 	rtl
 
 stage3_boss_state_0B:
-	lda	a:wram_1678
+	lda	a:song_change_state
 	bne	loc_048699
 	lda	#$0068
 	jsl	f:queue_sound
 	inc	OBJ_STATE,x
 	lda	#$0100
 	sta	a:bg2_y
-	stz	a:wram_163C
-	stz	a:wram_1638
+	stz	a:stage1_boss_height
+	stz	a:stage1_boss_head_pos
 	lda	#$0002
 	sta	a:wram_163A
 	lda	#$00A2
@@ -955,7 +955,7 @@ loc_048704:
 	adc	a:data_05E8BF,y
 	ply
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	lda	#$004D
 	jsl	f:queue_sound
@@ -999,7 +999,7 @@ stage3_boss_state_17:
 stage3_boss_state_18:
 	stz	a:wram_163A
 	jsr	a:sub_04893E
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	bne	loc_0487A1
 	lda	#$0083
 	jsl	f:queue_sound
@@ -1041,7 +1041,7 @@ loc_0487C2:
 	jml	f:loc_01D83E
 
 stage3_boss_state_16:
-	jsl	f:sub_00FD8D
+	jsl	f:queue_sound_6E_throttled
 	lda	#$0003
 	sta	a:shake_timer
 	lda	#$00C0
@@ -1204,7 +1204,7 @@ loc_048923:
 	stz	a:wram_163A
 	jsr	a:sub_04893E
 loc_048929:
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	cmp	#$0004
 	bne	loc_04893D
 	phx
@@ -1219,10 +1219,10 @@ sub_04893E:
 	lda	#$0003
 	sta	a:shake_timer
 	phx
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	asl	a
 	tay
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	cmp	#$0003
 	bcs	loc_0489A1
 	cpy	#$000E
@@ -1257,33 +1257,33 @@ loc_04895C:
 	pla
 	clc
 	adc	a:data_05E8F5,x
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	ldx	#$0001
 	stx	zp_02
 	ldx	#$0040
 	stx	zp_08
 	lda	zp_FC
 	ldy	zp_FE
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 loc_0489A1:
-	inc	a:wram_163C
+	inc	a:stage1_boss_height
 	ldy	a:wram_163A
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	cmp	a:data_05E8E7,y
 	bcc	loc_0489CB
-	stz	a:wram_163C
+	stz	a:stage1_boss_height
 	clc
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	adc	a:data_05E8EB,y
 	bpl	loc_0489C0
-	stz	a:wram_1638
+	stz	a:stage1_boss_head_pos
 	bra	loc_0489CB
 loc_0489C0:
 	cmp	#$0008
 	bcc	loc_0489C8
 	lda	#$0008
 loc_0489C8:
-	sta	a:wram_1638
+	sta	a:stage1_boss_head_pos
 loc_0489CB:
 	plx
 	rts
@@ -1374,7 +1374,7 @@ sub_048A5C:
 	tay
 	lda	#$4D0C
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rts
 
@@ -1744,7 +1744,7 @@ stage4_controller_state_05:
 	lda	#$51A0
 	sta	zp_00
 	lda	#$4018
-	jsl	f:sub_00FE76
+	jsl	f:queue_vram_block
 	lda	#$0001
 	sta	zp_02
 	lda	#$0030
@@ -1752,7 +1752,7 @@ stage4_controller_state_05:
 	lda	#$401C
 	ldy	#$ECC6
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	inc	OBJ_STATE,x
 	lda	#$0010
@@ -1786,7 +1786,7 @@ stage4_controller_state_07:
 	lda	$34,x
 	ldy	#$946A
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	clc
 	lda	$34,x
@@ -1921,7 +1921,7 @@ loc_048ED4:
 	adc	#$0000
 	sta	a:wram_1692
 loc_048EE7:
-	jsl	f:sub_00CF0C
+	jsl	f:scroll_bg1_by_velocity_and_spawn
 	jml	f:loc_00D5ED
 
 stage4_controller_state_0D:
@@ -1980,7 +1980,7 @@ stage4_controller_state_10:
 	lda	#$FF80
 	sta	a:$000A,y
 	stz	a:bg1_y
-	jml	f:sub_00D610
+	jml	f:update_stage4_line_scroll
 
 stage4_controller_state_11:
 	sec
@@ -2021,10 +2021,10 @@ loc_048FB4:
 	sta	a:bg2_scroll_mode
 	stz	$30,x
 loc_048FC7:
-	jml	f:sub_00D610
+	jml	f:update_stage4_line_scroll
 
 stage4_controller_state_13:
-	jsl	f:sub_00D610
+	jsl	f:update_stage4_line_scroll
 	bra	loc_048FE1
 
 stage4_controller_state_14:
@@ -2172,7 +2172,7 @@ loc_049105:
 	ldy	#$EC34
 	lda	#$4588
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	jsr	a:sub_049878
 loc_04911E:
@@ -2460,7 +2460,7 @@ loc_049365:
 	tay
 	pla
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	ldy	zp_FC
 	lda	#$0002
 	sta	zp_02
@@ -2479,7 +2479,7 @@ loc_04938B:
 	tay
 	pla
 	ldx	#$0030
-	jsl	f:sub_00FEAA
+	jsl	f:queue_vram_blocks_at_x
 	plx
 loc_04939A:
 	rtl
@@ -2662,7 +2662,7 @@ stage4_boss_state_00:
 	ldy	#$0002
 	jsr	a:sub_049A30
 	plx
-	stz	a:wram_1638
+	stz	a:stage1_boss_head_pos
 	rtl
 
 stage4_boss_state_01:
@@ -2693,15 +2693,15 @@ loc_04953B:
 	jsr	a:sub_0498AF
 	lda	a:wram_0796
 	beq	loc_0495A1
-	inc	a:wram_1638
-	lda	a:wram_1638
+	inc	a:stage1_boss_head_pos
+	lda	a:stage1_boss_head_pos
 	cmp	#$0070
 	bcc	loc_0495A0
 	bit	#$0007
 	bne	loc_0495A0
 	cmp	#$0090
 	bcc	loc_049564
-	stz	a:wram_1638
+	stz	a:stage1_boss_head_pos
 	lda	a:wram_163A
 	eor	#$0002
 	sta	a:wram_163A
@@ -2756,7 +2756,7 @@ stage4_boss_state_03:
 	inc	OBJ_STATE,x
 
 stage4_boss_state_04:
-	jsl	f:sub_00FD8D
+	jsl	f:queue_sound_6E_throttled
 	lda	OBJ_X,x
 	sta	zp_00
 	lda	#$00FF
@@ -2790,7 +2790,7 @@ update_stage4_boss_pod:
 	sta	zp_08
 	ldy	a:data_05EBA8,x
 	lda	a:data_05EBB4,x
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	lda	#$0041
 	jsl	f:queue_sound
@@ -3098,7 +3098,7 @@ sub_049864:
 	sty	zp_08
 	ldy	#$EC26
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rts
 
@@ -3336,7 +3336,7 @@ sub_049A54:
 	bcs	loc_049AC0
 	lda	difficulty
 	beq	loc_049AC0
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	cmp	#$0020
 	bcc	loc_049AC0
 	cmp	#$0032
@@ -4111,7 +4111,7 @@ loc_04A047:
 	lda	OBJ_Y_VEL,x
 	adc	#$0000
 	sta	OBJ_Y_VEL,x
-	jsl	f:sub_00FD92
+	jsl	f:queue_sound_41_throttled
 	lda	OBJ_X,x
 	adc	#$FFE0
 	sta	zp_00
@@ -4411,7 +4411,7 @@ sub_04A298:
 	sta	zp_08
 	lda	#$4D0C
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rts
 
@@ -4862,7 +4862,7 @@ loc_04A626:
 face_boss_state_07:
 	dec	OBJ_TIMER,x
 	bmi	loc_04A681
-	jsl	f:sub_00FD92
+	jsl	f:queue_sound_41_throttled
 	lda	#$0004
 	sta	a:shake_timer
 	lda	#$0040
@@ -5201,7 +5201,7 @@ sub_04A90D:
 	lda	a:data_05ED8C,y
 	sta	zp_00
 	lda	#$4C8C
-	jsl	f:sub_00FE76
+	jsl	f:queue_vram_block
 loc_04A923:
 	rts
 loc_04A924:
@@ -5213,7 +5213,7 @@ loc_04A924:
 	lda	a:data_05ED94,y
 	sta	zp_00
 	lda	#$4C90
-	jsl	f:sub_00FE76
+	jsl	f:queue_vram_block
 loc_04A93A:
 	rts
 
@@ -5231,7 +5231,7 @@ sub_04A93B:
 	sta	zp_08
 	lda	#$4D0C
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 loc_04A95C:
 	rts
@@ -5249,7 +5249,7 @@ sub_04A95D:
 	lda	a:data_05EDAE,y
 	ply
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rts
 
@@ -5266,7 +5266,7 @@ sub_04A97A:
 	lda	a:data_05EDD6,y
 	ply
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rts
 
@@ -5573,7 +5573,7 @@ sub_04ABA3:
 	tay
 	jsr	a:sub_04AB6A
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rts
 
@@ -6352,7 +6352,7 @@ sub_04B12E:
 	lda	a:data_05EEFE,y
 	ply
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rts
 
@@ -6380,7 +6380,7 @@ loc_04B15E:
 	sta	zp_08
 	lda	#$4D90
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 loc_04B17B:
 	rts
@@ -6616,7 +6616,7 @@ loc_04B32A:
 sub_04B32B:
 	sta	zp_00
 	lda	$32,x
-	jml	f:sub_00FE76
+	jml	f:queue_vram_block
 
 ; Object type $5B. Stage 6: the giant worm that bursts out of the wall at the
 ; start of the stage. HP by difficulty: 64/128/256 (wall_worm_hp).
@@ -6752,7 +6752,7 @@ sub_04B403:
 	sta	zp_08
 	lda	#$4590
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 loc_04B433:
 	rts
@@ -6784,7 +6784,7 @@ sub_04B447:
 	sta	zp_08
 	lda	#$4598
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 loc_04B468:
 	rts
@@ -6802,7 +6802,7 @@ sub_04B469:
 	lda	a:data_05EFFA,y
 	ply
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rts
 
@@ -7624,7 +7624,7 @@ cave_beast_state_26:
 	jmp	a:loc_04B674
 
 cave_beast_state_27:
-	jsl	f:sub_00FD92
+	jsl	f:queue_sound_41_throttled
 	lda	OBJ_X,x
 	adc	#$FFE0
 	sta	zp_00
@@ -7749,7 +7749,7 @@ sub_04BC10:
 	tay
 	pla
 	phx
-	jsl	f:sub_00FEA3
+	jsl	f:queue_vram_blocks
 	plx
 	rts
 
@@ -10043,13 +10043,13 @@ sub_04CE28:
 	ldy	$3A,x
 	lda	a:data_05F234,y
 	sta	zp_FC
-	jsl	f:sub_00FE76
+	jsl	f:queue_vram_block
 	pla
 	sta	zp_00
 	clc
 	lda	zp_FC
 	adc	#$0080
-	jsl	f:sub_00FE76
+	jsl	f:queue_vram_block
 	rts
 
 ; Object type $7A. Stage 4, under the alien airship: hanging emitters that
@@ -10070,13 +10070,13 @@ update_lightning_pylon:
 	sta	zp_00
 	lda	a:data_05F23A,y
 	sta	zp_FC
-	jsl	f:sub_00FE76
+	jsl	f:queue_vram_block
 	lda	#$5000
 	sta	zp_00
 	clc
 	lda	zp_FC
 	adc	#$0080
-	jml	f:sub_00FE76
+	jml	f:queue_vram_block
 loc_04CE80:
 	lda	OBJ_STATE,x
 	bne	loc_04CE9F
@@ -10475,7 +10475,7 @@ update_airship_gun_arm:
 	lda	#$4100
 	phx
 	ldx	#$0000
-	jsl	f:sub_00FEAA
+	jsl	f:queue_vram_blocks_at_x
 	lda	#$0001
 	sta	zp_02
 	lda	#$0030
@@ -10483,7 +10483,7 @@ update_airship_gun_arm:
 	ldy	#$F272
 	lda	#$451C
 	ldx	#$0018
-	jsl	f:sub_00FEAA
+	jsl	f:queue_vram_blocks_at_x
 	plx
 loc_04D1A6:
 	lda	$12,x
@@ -10577,7 +10577,7 @@ loc_04D247:
 	sta	a:$000E,y
 	bra	loc_04D2AC
 loc_04D26C:
-	jsl	f:sub_00FD92
+	jsl	f:queue_sound_41_throttled
 	lda	#$001F
 	sta	zp_04
 	lda	#$0007
@@ -10781,7 +10781,7 @@ loc_04D3D8:
 	stz	$16,x
 loc_04D421:
 	plx
-	stz	a:wram_1638
+	stz	a:stage1_boss_head_pos
 	lda	#$0004
 	sta	a:wram_1640
 	rtl
@@ -10835,7 +10835,7 @@ loc_04D483:
 	sty	OBJ_FLAGS,x
 loc_04D488:
 	sta	OBJ_SPRITE,x
-	lda	a:wram_1638
+	lda	a:stage1_boss_head_pos
 	beq	loc_04D4F6
 	lda	#$CB72
 	sta	OBJ_SPRITE,x
@@ -10848,7 +10848,7 @@ loc_04D488:
 	jsr	a:sub_04D701
 	lda	a:wram_163A
 	bne	loc_04D4F5
-	ldy	a:wram_163C
+	ldy	a:stage1_boss_height
 	lda	OBJ_X,x
 	cmp	#$0084
 	bcc	loc_04D4C8
@@ -10870,7 +10870,7 @@ loc_04D4C8:
 	lda	#$0001
 loc_04D4DA:
 	sta	a:wram_091A
-	stz	a:wram_1638
+	stz	a:stage1_boss_head_pos
 	lda	#$0004
 	sta	a:wram_1640
 	lda	#$0006
@@ -10901,7 +10901,7 @@ loc_04D513:
 	sta	OBJ_FACING,x
 	lda	#$01C2
 loc_04D51E:
-	sta	a:wram_163C
+	sta	a:stage1_boss_height
 	stz	a:wram_1642
 	stz	a:wram_1644
 	lda	#$F2F3
@@ -10940,7 +10940,7 @@ loc_04D56A:
 	brl	helicopter_rope_state_03
 
 helicopter_rope_state_08:
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	cmp	#$00FD
 	bcc	loc_04D56A
 	cmp	#$0103
@@ -10955,7 +10955,7 @@ helicopter_rope_state_09:
 	cmp	#$0004
 	bcc	loc_04D5C0
 	lda	#$0100
-	sta	a:wram_163C
+	sta	a:stage1_boss_height
 	lda	#$7FFF
 	sta	a:wram_163E
 	stz	a:wram_1642
@@ -11070,7 +11070,7 @@ loc_04D685:
 
 sub_04D686:
 	phx
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	and	#$01FE
 	tay
 	clc
@@ -11132,7 +11132,7 @@ sub_04D6DD:
 	rts
 
 sub_04D6E7:
-	ldy	a:wram_1638
+	ldy	a:stage1_boss_head_pos
 	clc
 	adc	a:data_05F28F,y
 	clc
@@ -11155,7 +11155,7 @@ sub_04D701:
 
 sub_04D70A:
 	clc
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	adc	#$0020
 	lsr	a
 	lsr	a
@@ -11234,17 +11234,17 @@ loc_04D79B:
 	stz	a:wram_0920
 	stz	a:wram_0922
 	lda	#$0002
-	sta	a:wram_1638
+	sta	a:stage1_boss_head_pos
 	clc
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	adc	#$00FE
 	and	#$01FE
-	sta	a:wram_163C
+	sta	a:stage1_boss_height
 loc_04D7C6:
 	rts
 
 sub_04D7C7:
-	lda	a:wram_163C
+	lda	a:stage1_boss_height
 	ldy	a:wram_1636
 	beq	loc_04D7F3
 	cmp	#$0160
@@ -11289,8 +11289,8 @@ loc_04D817:
 loc_04D82A:
 	clc
 	lda	a:wram_1644
-	adc	a:wram_163C
-	sta	a:wram_163C
+	adc	a:stage1_boss_height
+	sta	a:stage1_boss_height
 	rts
 
 ; Object type $85. Stage 4, helicopter scene: a spinning projectile thrown

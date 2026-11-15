@@ -16,7 +16,7 @@
 See [The cartridge](cartridge.md#vectors) for the vector table.
 
 Every other routine is still named by its address, `sub_` plus six hex
-digits (for example `sub_00FD8D` at `$00:FD8D`). The number of routines and
+digits (for example `queue_sound_6E_throttled` at `$00:FD8D`). The number of routines and
 jump tables found is in [Progress](progress.md).
 
 When you name a routine, add it here with what it does, its inputs and

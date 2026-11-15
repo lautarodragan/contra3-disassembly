@@ -436,7 +436,7 @@ loc_00D8E9:
 	rtl
 
 spin_shot_homing_2:
-	jsl	f:sub_00E134
+	jsl	f:find_free_homing_shot_slot
 	bcc	loc_00D94A
 	tyx
 	rtl
@@ -453,7 +453,7 @@ loc_00D94A:
 
 spin_shot_homing_1:
 	; (not executed in the CDL traces)
-	jsl	f:sub_00E134
+	jsl	f:find_free_homing_shot_slot
 	bcc	loc_00D969
 	tyx
 	rtl
@@ -467,9 +467,9 @@ loc_00D969:
 	bra	loc_00D982
 
 ; WEAPON_HOMING: a homing missile (type 4, damage 2) in a slot found by
-; sub_00E134; sound 8.
+; find_free_homing_shot_slot; sound 8.
 spawn_shot_homing:
-	jsl	f:sub_00E134
+	jsl	f:find_free_homing_shot_slot
 	bcc	loc_00D982
 	tyx
 	rtl
