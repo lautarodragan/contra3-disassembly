@@ -5850,15 +5850,15 @@ sub_04AD84:
 	sep	#$20
 	.a8
 	sec
-	sbc	OBJ_FACING,x
+	sbc	OBJ_ANGLE,x
 	bmi	loc_04ADA7
-	inc	OBJ_FACING,x
+	inc	OBJ_ANGLE,x
 	rep	#$20
 	.a16
 	rts
 loc_04ADA7:
 	.a8
-	dec	OBJ_FACING,x
+	dec	OBJ_ANGLE,x
 	rep	#$20
 	.a16
 	rts
@@ -5971,21 +5971,21 @@ sub_04AE4F:
 	sep	#$20
 	.a8
 	sec
-	sbc	OBJ_FACING,x
+	sbc	OBJ_ANGLE,x
 	bmi	loc_04AE7E
-	lda	OBJ_FACING,x
+	lda	OBJ_ANGLE,x
 	clc
 	adc	zp_00
-	sta	OBJ_FACING,x
+	sta	OBJ_ANGLE,x
 	rep	#$20
 	.a16
 	rts
 loc_04AE7E:
 	.a8
-	lda	OBJ_FACING,x
+	lda	OBJ_ANGLE,x
 	sec
 	sbc	zp_00
-	sta	OBJ_FACING,x
+	sta	OBJ_ANGLE,x
 	rep	#$20
 	.a16
 	rts
@@ -6984,7 +6984,7 @@ cave_beast_state_01:
 cave_beast_state_02:
 	lda	#$0079
 	sta	OBJ_FLAGS,x
-	lda	#$0FFF
+	lda	#HP_UNKILLABLE
 	sta	OBJ_HP,x
 	lda	#$0034
 	sta	OBJ_HITBOX_W,x
@@ -6995,8 +6995,8 @@ cave_beast_state_02:
 	sta	a:$0010,y
 	lda	#$0078
 	sta	a:$0016,y
-	lda	#$0FFF
-	sta	a:$0006,y
+	lda	#HP_UNKILLABLE
+	sta	a:OBJ_HP,y
 	lda	#$0030
 	sta	a:$0028,y
 	lda	#$FFE8
@@ -7020,8 +7020,8 @@ cave_beast_state_02:
 	sta	a:$0010,y
 	lda	#$0078
 	sta	a:$0016,y
-	lda	#$0FFF
-	sta	a:$0006,y
+	lda	#HP_UNKILLABLE
+	sta	a:OBJ_HP,y
 	lda	#$0020
 	sta	a:$0028,y
 	lda	#$FFC0
@@ -8183,21 +8183,21 @@ face_boss_side_head_state_03:
 	jsl	f:calc_angle
 	rep	#$20
 	sec
-	sbc	OBJ_FACING,x
+	sbc	OBJ_ANGLE,x
 	beq	loc_04BF4E
 	bit	#$0080
 	beq	loc_04BF45
-	lda	OBJ_FACING,x
+	lda	OBJ_ANGLE,x
 	dec	a
 	dec	a
 	bra	loc_04BF49
 loc_04BF45:
-	lda	OBJ_FACING,x
+	lda	OBJ_ANGLE,x
 	inc	a
 	inc	a
 loc_04BF49:
 	and	#$00FF
-	sta	OBJ_FACING,x
+	sta	OBJ_ANGLE,x
 loc_04BF4E:
 	lda	#$0020
 	jsl	f:set_velocity_from_angle
@@ -8787,7 +8787,7 @@ snake_robot_state_00:
 	sta	OBJ_Y,x
 	lda	#$0001
 	sta	OBJ_FLAGS,x
-	lda	#$0FFF
+	lda	#HP_UNKILLABLE
 	sta	OBJ_HP,x
 	lda	#$0001
 	sta	OBJ_HITBOX_W,x

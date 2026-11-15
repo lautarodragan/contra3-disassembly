@@ -1208,7 +1208,9 @@ OBJ_SIZE            = $40
 OBJ_SPRITE          = $00	; metasprite pointer (bank $06) drawn by draw_metasprite; 0 = not drawn.  Set from the animation script (OBJ_ANIM) or by the handler
 OBJ_ATTR            = $02	; OAM attribute bits (high byte: flip, priority, palette) ORed into every sprite of the metasprite
 OBJ_FACING          = $04	; 0: an animation frame shows its first sprite, else its second (the mirrored one); players: 0 right, 2 left
+OBJ_ANGLE           = $04	; the same field as OBJ_FACING, used as an 8-bit angle ($00 up, $40 right, $80 down, $C0 left) by objects moved with set_velocity_from_angle (larvae, face boss side heads); with a non-zero angle the animation shows the second sprite
 OBJ_HP              = $06	; hit points: a shot subtracts its SHOT_DAMAGE, the bomb 1, the barrier 1; below 0 = destroyed (add_score_for_player_obj adds type_scores[type] to the score). Negative also means "not a target"
+HP_UNKILLABLE       = $0FFF	; OBJ_HP of bodies that should not die from shots (cave beast, snake robot body; the part that takes damage is another object): 4095 HP, more than 2000 default-gun hits
 OBJ_X_SUB           = $08	; x position, fraction
 OBJ_X               = $0A	; x position, pixels (screen; also the hitbox left edge)
 OBJ_Y_SUB           = $0C	; y position, fraction
