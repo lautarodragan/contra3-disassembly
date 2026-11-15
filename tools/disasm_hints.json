@@ -1,0 +1,18 @@
+{
+  "fastrom": false,
+  "entry_points": [],
+  "labels": {
+    "00:8000": "reset",
+    "00:819B": "nmi",
+    "00:8BE2": "irq"
+  },
+  "comments": {},
+  "data": [],
+  "mx_overrides": {},
+  "call_returns": {},
+  "noreturn": [],
+  "inline_tables": {},
+  "jump_tables": [],
+  "no_auto_table": [],
+  "force_code": []
+}

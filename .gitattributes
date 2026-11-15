@@ -1,0 +1,9 @@
+* text eol=lf
+*.asm text
+*.inc text
+*.cfg text
+*.py text
+*.md text
+*.json text
+*.sha1 text
+*.bin binary diff=hex

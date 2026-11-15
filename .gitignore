@@ -1,0 +1,15 @@
+# build output
+build/
+*.o
+*.map
+*.lbl
+*.dbg
+
+# ROMs (never commit them)
+*.sfc
+*.smc
+*.zip
+
+# python
+__pycache__/
+*.pyc

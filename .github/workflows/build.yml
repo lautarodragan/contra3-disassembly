@@ -1,0 +1,33 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install cc65
+        # Ubuntu's cc65 package (2.19 on ubuntu-24.04) provides ca65/ld65 with
+        # everything the source uses (65816, .faraddr, mvn #src,#dst, ...).
+        run: |
+          sudo apt-get update
+          sudo apt-get install -yq cc65
+          ca65 --version
+
+      - name: Build and compare
+        run: make compare
+
+      - name: Check that the build left the tree clean
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo 'Build modified tracked files:'
+            git status --porcelain
+            exit 1
+          fi
