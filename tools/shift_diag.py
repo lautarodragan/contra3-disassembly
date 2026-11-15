@@ -130,7 +130,7 @@ def build_mapping(out):
     return mapping, a
 
 
-def find_literal(value, srcdir="src", limit=6):
+def find_literal(value, srcdir="src", limit=3):
     """Source lines with the 16-bit value as a literal: an operand or word,
     or two adjacent bytes of a .byte line (little-endian)."""
     import re
@@ -203,7 +203,7 @@ def main(argv):
         desc = ("filler" if first[1] is None else "normal-build $%06X (%s)" % (lorom_addr(first[1]), where(lorom_addr(first[1]))))
         print("  reader %-40s %4d bytes, first at shifted $%06X = %s" % (rname, len(items), lo, desc))
         low = min(lorom_addr(o) for o, _x in items)
-        for h in find_literal(low & 0xFFFF):
+        for h in (find_literal(low & 0xFFFF) if len(items) > 2 and low & 0xFFF0 not in (0x8000, 0xFFF0, 0xFFE0) else []):
             print("      $%04X in %s" % (low & 0xFFFF, h))
     return 1
 
