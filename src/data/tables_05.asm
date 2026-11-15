@@ -4651,20 +4651,26 @@ data_05E8EB:
 	.byte	$FF, $FF, $01, $00
 data_05E8EF:
 	; CDL: read by stage3_boss_break_wall
-	.byte	$01, $E9, $71, $E9, $01, $EA
+	.addr	vram_blocks_05E901
+	.addr	vram_blocks_05E971
+	.addr	vram_blocks_05EA01
 data_05E8F5:
 	; CDL: read by stage3_boss_break_wall
 	.byte	$0C, $41, $08, $41, $04, $41
 data_05E8FB:
 	; CDL: read by queue_vram_blocks_at_x, stage3_boss_break_wall
-	.byte	$10, $41, $14, $41, $18, $41, $60, $6F, $20, $60, $A0, $62, $E0, $72, $00, $70
+	.byte	$10, $41, $14, $41, $18, $41
+vram_blocks_05E901:
+	.byte	$60, $6F, $20, $60, $A0, $62, $E0, $72, $00, $70
 	.byte	$20, $61, $40, $75, $80, $71, $40, $76, $00, $77, $C0, $77, $80, $78, $60, $76
 	.byte	$20, $77, $E0, $77, $A0, $78, $40, $79, $00, $7A, $C0, $7A, $80, $7B, $60, $79
 	.byte	$20, $7A, $E0, $7A, $A0, $7B, $40, $7C, $00, $7D, $C0, $7D, $80, $7E, $60, $7C
 	.byte	$20, $7D, $E0, $7D, $A0, $7E, $80, $75, $00, $7F, $80, $75, $60, $75, $60, $75
 	.byte	$80, $75, $60, $7F, $80, $75, $80, $75, $00, $80, $80, $75, $60, $75, $60, $75
 	.byte	$80, $75, $60, $80, $80, $75, $80, $75, $60, $75, $80, $75, $60, $75, $60, $75
-	.byte	$80, $75, $60, $75, $80, $75, $40, $6F, $C0, $6F, $40, $72, $C0, $72, $20, $70
+	.byte	$80, $75, $60, $75, $80, $75
+vram_blocks_05E971:
+	.byte	$40, $6F, $C0, $6F, $40, $72, $C0, $72, $20, $70
 	.byte	$A0, $70, $20, $71, $A0, $71, $20, $76, $E0, $76, $A0, $77, $60, $78, $80, $76
 	.byte	$40, $77, $00, $78, $C0, $78, $20, $79, $E0, $79, $A0, $7A, $60, $7B, $80, $79
 	.byte	$40, $7A, $00, $7B, $C0, $7B, $20, $7C, $E0, $7C, $A0, $7D, $60, $7E, $80, $7C
@@ -4673,7 +4679,9 @@ data_05E8FB:
 	.byte	$20, $80, $E0, $77, $C0, $80, $00, $81, $00, $7A, $60, $75, $60, $81, $20, $81
 	.byte	$60, $75, $E0, $7A, $80, $81, $C0, $81, $00, $82, $60, $75, $A0, $64, $E0, $81
 	.byte	$60, $75, $A0, $65, $60, $64, $60, $75, $C0, $63, $60, $75, $80, $75, $80, $75
-	.byte	$60, $75, $60, $5D, $60, $75, $20, $6F, $A0, $6F, $20, $72, $A0, $72, $40, $70
+	.byte	$60, $75, $60, $5D, $60, $75
+vram_blocks_05EA01:
+	.byte	$20, $6F, $A0, $6F, $20, $72, $A0, $72, $40, $70
 	.byte	$C0, $70, $40, $71, $C0, $71, $00, $76, $C0, $76, $80, $77, $40, $78, $A0, $76
 	.byte	$60, $77, $20, $78, $E0, $78, $00, $79, $C0, $79, $80, $7A, $40, $7B, $A0, $79
 	.byte	$60, $7A, $20, $7B, $E0, $7B, $00, $7C, $C0, $7C, $80, $7D, $40, $7E, $A0, $7C
@@ -4685,16 +4693,31 @@ data_05E8FB:
 	.byte	$40, $63, $40, $75, $C0, $75
 data_05EA91:
 	; CDL: read by stage3_boss_queue_tiles
-	.byte	$D9, $EA, $F1, $EA, $09, $EB, $F1, $EA, $D9, $EA, $C1, $EA, $A9, $EA, $C1, $EA
+	.addr	vram_blocks_05EAD9
+	.addr	vram_blocks_05EAF1
+	.addr	vram_blocks_05EB09
+	.addr	vram_blocks_05EAF1
+	.addr	vram_blocks_05EAD9
+	.addr	vram_blocks_05EAC1
+	.addr	vram_blocks_05EAA9
+	.addr	vram_blocks_05EAC1
 data_05EAA1:
 	; CDL: read by queue_vram_blocks_at_x, stage3_boss_spawn_debris_sparks
-	.byte	$78, $7C, $80, $7C, $78, $74, $70, $74, $00, $BE, $20, $BE, $80, $BE, $A0, $BE
+	.byte	$78, $7C, $80, $7C, $78, $74, $70, $74
+vram_blocks_05EAA9:
+	.byte	$00, $BE, $20, $BE, $80, $BE, $A0, $BE
 	.byte	$00, $BF, $20, $BF, $80, $BF, $A0, $BF, $40, $BE, $60, $BE, $C0, $BE, $E0, $BE
+vram_blocks_05EAC1:
 	.byte	$00, $BD, $20, $BD, $80, $BD, $A0, $BD, $40, $BC, $60, $BC, $C0, $BC, $E0, $BC
-	.byte	$40, $BD, $60, $BD, $C0, $BD, $E0, $BD, $80, $B9, $A0, $B9, $20, $BA, $40, $BA
+	.byte	$40, $BD, $60, $BD, $C0, $BD, $E0, $BD
+vram_blocks_05EAD9:
+	.byte	$80, $B9, $A0, $B9, $20, $BA, $40, $BA
 	.byte	$00, $BB, $20, $BB, $C0, $BB, $E0, $BB, $00, $BC, $20, $BC, $80, $BC, $A0, $BC
+vram_blocks_05EAF1:
 	.byte	$40, $BF, $60, $BF, $C0, $BF, $E0, $BF, $00, $C0, $20, $C0, $80, $C0, $A0, $C0
-	.byte	$00, $C1, $20, $C1, $80, $C1, $A0, $C1, $40, $C0, $60, $C0, $C0, $C0, $E0, $C0
+	.byte	$00, $C1, $20, $C1, $80, $C1, $A0, $C1
+vram_blocks_05EB09:
+	.byte	$40, $C0, $60, $C0, $C0, $C0, $E0, $C0
 	.byte	$40, $C1, $60, $C1, $C0, $C1, $E0, $C1, $00, $C2, $20, $C2, $40, $C2, $60, $C2
 vram_blocks_05EB21:
 	.byte	$20, $60, $20, $61, $E0, $6F, $E0, $5C, $A0, $62, $40, $75, $A0, $5F, $00, $71
@@ -4767,10 +4790,21 @@ anim_05EBD8:
 	anim_goto	anim_05EBD8
 data_05EBE6:
 	; CDL: read by queue_vram_blocks_at_x, sub_049A54; partly not accessed
-	.byte	$03, $00, $FD, $FF, $02, $EC, $0C, $EC, $1A, $EC, $26, $EC, $05, $00, $07, $00
-	.byte	$06, $00, $07, $00, $04, $40, $80, $40, $04, $41, $80, $41, $60, $53, $80, $53
-	.byte	$A0, $53, $C0, $53, $E0, $53, $80, $55, $A0, $55, $00, $52, $20, $52, $40, $52
-	.byte	$60, $52, $40, $53, $00, $53, $80, $52, $A0, $52, $C0, $52, $E0, $52, $20, $53
+	.byte	$03, $00, $FD, $FF
+	.addr	vram_blocks_05EC02
+	.addr	vram_blocks_05EC0C
+	.addr	vram_blocks_05EC1A
+	.addr	vram_blocks_05EC26
+	.byte	$05, $00, $07, $00
+	.byte	$06, $00, $07, $00, $04, $40, $80, $40, $04, $41, $80, $41
+vram_blocks_05EC02:
+	.byte	$60, $53, $80, $53
+	.byte	$A0, $53, $C0, $53, $E0, $53
+vram_blocks_05EC0C:
+	.byte	$80, $55, $A0, $55, $00, $52, $20, $52, $40, $52
+	.byte	$60, $52, $40, $53
+vram_blocks_05EC1A:
+	.byte	$00, $53, $80, $52, $A0, $52, $C0, $52, $E0, $52, $20, $53
 vram_blocks_05EC26:
 	.byte	$00, $50, $00, $50, $40, $51, $60, $51, $C0, $51, $E0, $51, $00, $50
 vram_blocks_05EC34:
@@ -4919,16 +4953,35 @@ data_05EDAE:
 	.byte	$40, $C1, $08, $4C, $88, $4C, $08, $4D
 data_05EDB6:
 	; CDL: read by queue_vram_blocks_at_x, sub_04A95D
-	.byte	$88, $4D, $C0, $ED, $C8, $ED, $D0, $ED, $D0, $ED, $00, $B4, $20, $C2, $40, $C2
-	.byte	$E0, $B3, $00, $B0, $60, $C2, $A0, $BE, $00, $B0, $00, $B0, $00, $B0, $00, $B0
+	.byte	$88, $4D
+	.addr	vram_blocks_05EDC0
+	.addr	vram_blocks_05EDC8
+	.addr	vram_blocks_05EDD0
+	.addr	vram_blocks_05EDD0
+vram_blocks_05EDC0:
+	.byte	$00, $B4, $20, $C2, $40, $C2
+	.byte	$E0, $B3
+vram_blocks_05EDC8:
+	.byte	$00, $B0, $60, $C2, $A0, $BE, $00, $B0
+vram_blocks_05EDD0:
+	.byte	$00, $B0, $00, $B0, $00, $B0
 data_05EDD6:
 	; CDL: read by queue_vram_blocks_at_x, sub_04A97A
 	.byte	$00, $B0, $00, $4C, $80, $4C
 data_05EDDC:
 	; CDL: read by queue_vram_blocks_at_x, sub_04A97A
-	.byte	$00, $4D, $E4, $ED, $F4, $ED, $04, $EE, $00, $B0, $00, $B0, $00, $B0, $A0, $B3
-	.byte	$C0, $B3, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $60, $C2
-	.byte	$A0, $BE, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0
+	.byte	$00, $4D
+	.addr	vram_blocks_05EDE4
+	.addr	vram_blocks_05EDF4
+	.addr	vram_blocks_05EE04
+vram_blocks_05EDE4:
+	.byte	$00, $B0, $00, $B0, $00, $B0, $A0, $B3
+	.byte	$C0, $B3, $00, $B0, $00, $B0, $00, $B0
+vram_blocks_05EDF4:
+	.byte	$00, $B0, $00, $B0, $00, $B0, $60, $C2
+	.byte	$A0, $BE, $00, $B0, $00, $B0, $00, $B0
+vram_blocks_05EE04:
+	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0
 	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0
 ; OBJ_HP of floor_mouth by difficulty (easy, normal, hard; a 4th word unused)
 floor_mouth_hp:
@@ -5035,9 +5088,18 @@ data_05EEFE:
 	.byte	$80, $01, $90, $4C, $90, $4D
 data_05EF04:
 	; CDL: read by queue_vram_blocks_at_x, sub_04B12E
-	.byte	$10, $4E, $0C, $EF, $1C, $EF, $2C, $EF, $20, $BC, $00, $B0, $20, $BC, $00, $B0
-	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0
-	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0
+	.byte	$10, $4E
+	.addr	vram_blocks_05EF0C
+	.addr	vram_blocks_05EF1C
+	.addr	vram_blocks_05EF2C
+vram_blocks_05EF0C:
+	.byte	$20, $BC, $00, $B0, $20, $BC, $00, $B0
+	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0
+vram_blocks_05EF1C:
+	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0
+	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0
+vram_blocks_05EF2C:
+	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0
 	.byte	$60, $BC, $00, $B0, $60, $BC, $00, $B0
 data_05EF3C:
 	; CDL: read by queue_vram_blocks_at_x, sub_04B14B
@@ -5713,66 +5775,203 @@ data_05F9D0:
 	.byte	$14, $16, $18, $FE, $02, $04, $06, $FF, $12, $14, $16, $10, $FE, $00, $02, $04
 	.byte	$06, $FF, $12, $14, $16, $FE, $02, $04, $06, $08, $FE, $18, $12, $14, $16, $10
 	.byte	$FE, $04, $FF, $14, $FE, $02, $04, $FF, $FF, $FF
-data_05FA1A:
+ptrs_ending_text_a:
 	; CDL: read by sub_1DB98D
-	.byte	$8A, $FA, $F5, $FA, $08, $FB, $2E, $FB, $54, $FB, $99, $FA, $AB, $FA, $C8, $FA
-	.byte	$E0, $FA, $70, $FB, $82, $FB, $A7, $FB, $C8, $FB, $EB, $FB, $0F, $FC, $31, $FC
-	.byte	$53, $FC, $71, $FC, $82, $FC, $A3, $FC, $C5, $FC, $A7, $FA, $A7, $FA, $A7, $FA
-	.byte	$22, $FD, $33, $FD, $4E, $FD, $6E, $FD
-data_05FA52:
+	.addr	text_05FA8A
+	.addr	text_05FAF5
+	.addr	text_05FB08
+	.addr	text_05FB2E
+	.addr	text_05FB54
+	.addr	text_05FA99
+	.addr	text_05FAAB
+	.addr	text_05FAC8
+	.addr	text_05FAE0
+	.addr	text_05FB70
+	.addr	text_05FB82
+	.addr	text_05FBA7
+	.addr	text_05FBC8
+	.addr	text_05FBEB
+	.addr	text_05FC0F
+	.addr	text_05FC31
+	.addr	text_05FC53
+	.addr	text_05FC71
+	.addr	text_05FC82
+	.addr	text_05FCA3
+	.addr	text_05FCC5
+	.addr	text_05FAA7
+	.addr	text_05FAA7
+	.addr	text_05FAA7
+	.addr	text_05FD22
+	.addr	text_05FD33
+	.addr	text_05FD4E
+	.addr	text_05FD6E
+ptrs_ending_text_b:
 	; CDL: read by sub_1DB98D
-	.byte	$A7, $FA, $A7, $FA, $1C, $FB, $42, $FB, $5D, $FB, $A7, $FA, $BF, $FA, $D4, $FA
-	.byte	$EB, $FA, $A7, $FA, $97, $FB, $B6, $FB, $D7, $FB, $FA, $FB, $1F, $FC, $41, $FC
-	.byte	$63, $FC, $A7, $FA, $96, $FC, $B4, $FC, $D6, $FC, $E6, $FC, $FA, $FC, $0E, $FD
-	.byte	$A7, $FA, $3E, $FD, $A7, $FA, $A7, $FA
+	.addr	text_05FAA7
+	.addr	text_05FAA7
+	.addr	text_05FB1C
+	.addr	text_05FB42
+	.addr	text_05FB5D
+	.addr	text_05FAA7
+	.addr	text_05FABF
+	.addr	text_05FAD4
+	.addr	text_05FAEB
+	.addr	text_05FAA7
+	.addr	text_05FB97
+	.addr	text_05FBB6
+	.addr	text_05FBD7
+	.addr	text_05FBFA
+	.addr	text_05FC1F
+	.addr	text_05FC41
+	.addr	text_05FC63
+	.addr	text_05FAA7
+	.addr	text_05FC96
+	.addr	text_05FCB4
+	.addr	text_05FCD6
+	.addr	text_05FCE6
+	.addr	text_05FCFA
+	.addr	text_05FD0E
+	.addr	text_05FAA7
+	.addr	text_05FD3E
+	.addr	text_05FAA7
+	.addr	text_05FAA7
 	; CDL: read by draw_text, setup_stage_hdma; DMA / HDMA; partly not accessed
-	.byte	$AA, $5D, $32, $00, $4E, $40, $3C, $48, $31, $FA, $FB, $FC, $00, $32, $FF, $AB
-	.byte	$5C, $0B, $4C, $4A, $42, $4C, $3C, $48, $48, $40, $4C, $4D, $FF, $F0, $5C, $00
-	.byte	$FF, $23, $5D, $48, $3C, $44, $49, $00, $3C, $49, $3F, $00, $4E, $4A, $0B, $31
-	.byte	$50, $44, $40, $51, $FF, $68, $5D, $53, $3C, $44, $0B, $4A, $49, $FF, $B1, $5D
-	.byte	$4D, $44, $3F, $40, $31, $50, $44, $40, $51, $FF, $F1, $5D, $02, $0A, $0A, $02
-	.byte	$30, $49, $3C, $48, $44, $FF, $27, $5E, $43, $40, $47, $0B, $31, $48, $3C, $49
-	.byte	$FF, $68, $5E, $46, $2E, $43, $4A, $4C, $44, $4A, $FF, $A8, $5C, $50, $44, $4D
-	.byte	$4F, $3C, $47, $00, $3F, $40, $4D, $44, $42, $49, $40, $4C, $4D, $FF, $23, $5D
+text_05FA8A:
+	.byte	$AA, $5D, $32, $00, $4E, $40, $3C, $48, $31, $FA, $FB, $FC, $00, $32, $FF
+text_05FA99:
+	.byte	$AB
+	.byte	$5C, $0B, $4C, $4A, $42, $4C, $3C, $48, $48, $40, $4C, $4D, $FF
+text_05FAA7:
+	.byte	$F0, $5C, $00
+	.byte	$FF
+text_05FAAB:
+	.byte	$23, $5D, $48, $3C, $44, $49, $00, $3C, $49, $3F, $00, $4E, $4A, $0B, $31
+	.byte	$50, $44, $40, $51, $FF
+text_05FABF:
+	.byte	$68, $5D, $53, $3C, $44, $0B, $4A, $49, $FF
+text_05FAC8:
+	.byte	$B1, $5D
+	.byte	$4D, $44, $3F, $40, $31, $50, $44, $40, $51, $FF
+text_05FAD4:
+	.byte	$F1, $5D, $02, $0A, $0A, $02
+	.byte	$30, $49, $3C, $48, $44, $FF
+text_05FAE0:
+	.byte	$27, $5E, $43, $40, $47, $0B, $31, $48, $3C, $49
+	.byte	$FF
+text_05FAEB:
+	.byte	$68, $5E, $46, $2E, $43, $4A, $4C, $44, $4A, $FF
+text_05FAF5:
+	.byte	$A8, $5C, $50, $44, $4D
+	.byte	$4F, $3C, $47, $00, $3F, $40, $4D, $44, $42, $49, $40, $4C, $4D, $FF
+text_05FB08:
+	.byte	$23, $5D
 	.byte	$48, $3C, $44, $49, $00, $3C, $49, $3F, $00, $3F, $44, $4C, $40, $3E, $4E, $40
-	.byte	$3F, $FF, $64, $5D, $49, $4A, $3D, $4F, $53, $3C, $00, $49, $3C, $46, $3C, $54
-	.byte	$3C, $4E, $4A, $FF, $AD, $5D, $0B, $47, $3C, $53, $40, $4C, $4D, $00, $3E, $43
-	.byte	$3C, $4C, $3C, $3E, $4E, $40, $4C, $FF, $EE, $5D, $48, $3C, $4D, $3C, $53, $4F
-	.byte	$46, $44, $00, $4D, $3C, $4C, $4F, $4E, $3C, $FF, $28, $5E, $3C, $4D, $4D, $44
-	.byte	$4D, $4E, $FF, $63, $5E, $49, $4A, $4C, $44, $4E, $4A, $4D, $43, $44, $00, $4D
-	.byte	$3C, $4D, $3C, $46, $44, $FF, $A9, $5C, $4D, $4A, $4F, $49, $3F, $00, $3F, $40
-	.byte	$4D, $44, $42, $49, $40, $4C, $4D, $FF, $22, $5D, $0B, $4C, $4A, $42, $4C, $3C
-	.byte	$48, $00, $3C, $49, $3F, $00, $40, $41, $41, $40, $3E, $4E, $FF, $65, $5D, $3C
-	.byte	$4E, $4D, $4F, $4D, $43, $44, $00, $41, $4F, $45, $44, $4A, $FF, $AF, $5D, $4D
-	.byte	$4A, $4F, $49, $3F, $00, $40, $41, $41, $40, $3E, $4E, $FF, $EE, $5D, $48, $3C
-	.byte	$4D, $3C, $49, $4A, $4C, $44, $00, $4A, $4A, $4F, $3E, $43, $44, $FF, $25, $5E
-	.byte	$4D, $4A, $4F, $49, $3F, $00, $40, $41, $41, $40, $3E, $4E, $FF, $63, $5E, $43
+	.byte	$3F, $FF
+text_05FB1C:
+	.byte	$64, $5D, $49, $4A, $3D, $4F, $53, $3C, $00, $49, $3C, $46, $3C, $54
+	.byte	$3C, $4E, $4A, $FF
+text_05FB2E:
+	.byte	$AD, $5D, $0B, $47, $3C, $53, $40, $4C, $4D, $00, $3E, $43
+	.byte	$3C, $4C, $3C, $3E, $4E, $40, $4C, $FF
+text_05FB42:
+	.byte	$EE, $5D, $48, $3C, $4D, $3C, $53, $4F
+	.byte	$46, $44, $00, $4D, $3C, $4C, $4F, $4E, $3C, $FF
+text_05FB54:
+	.byte	$28, $5E, $3C, $4D, $4D, $44
+	.byte	$4D, $4E, $FF
+text_05FB5D:
+	.byte	$63, $5E, $49, $4A, $4C, $44, $4E, $4A, $4D, $43, $44, $00, $4D
+	.byte	$3C, $4D, $3C, $46, $44, $FF
+text_05FB70:
+	.byte	$A9, $5C, $4D, $4A, $4F, $49, $3F, $00, $3F, $40
+	.byte	$4D, $44, $42, $49, $40, $4C, $4D, $FF
+text_05FB82:
+	.byte	$22, $5D, $0B, $4C, $4A, $42, $4C, $3C
+	.byte	$48, $00, $3C, $49, $3F, $00, $40, $41, $41, $40, $3E, $4E, $FF
+text_05FB97:
+	.byte	$65, $5D, $3C
+	.byte	$4E, $4D, $4F, $4D, $43, $44, $00, $41, $4F, $45, $44, $4A, $FF
+text_05FBA7:
+	.byte	$AF, $5D, $4D
+	.byte	$4A, $4F, $49, $3F, $00, $40, $41, $41, $40, $3E, $4E, $FF
+text_05FBB6:
+	.byte	$EE, $5D, $48, $3C
+	.byte	$4D, $3C, $49, $4A, $4C, $44, $00, $4A, $4A, $4F, $3E, $43, $44, $FF
+text_05FBC8:
+	.byte	$25, $5E
+	.byte	$4D, $4A, $4F, $49, $3F, $00, $40, $41, $41, $40, $3E, $4E, $FF
+text_05FBD7:
+	.byte	$63, $5E, $43
 	.byte	$44, $4C, $4A, $4D, $43, $44, $00, $46, $4A, $3D, $3C, $53, $3C, $4D, $43, $44
-	.byte	$FF, $AF, $5E, $4D, $4A, $4F, $49, $3F, $00, $40, $41, $41, $40, $3E, $4E, $FF
+	.byte	$FF
+text_05FBEB:
+	.byte	$AF, $5E, $4D, $4A, $4F, $49, $3F, $00, $40, $41, $41, $40, $3E, $4E, $FF
+text_05FBFA:
 	.byte	$EC, $5E, $43, $44, $4C, $4A, $41, $4F, $48, $44, $00, $4E, $3C, $49, $44, $42
-	.byte	$4F, $3E, $43, $44, $FF, $2F, $5D, $48, $4F, $4D, $44, $3E, $00, $3E, $4A, $48
-	.byte	$0B, $4A, $4D, $40, $FF, $6E, $5D, $48, $44, $46, $44, $00, $53, $3C, $49, $3C
-	.byte	$42, $44, $4D, $3C, $51, $3C, $FF, $A5, $5D, $48, $4F, $4D, $44, $3E, $00, $3E
-	.byte	$4A, $48, $0B, $4A, $4D, $40, $FF, $E4, $5D, $48, $3C, $4D, $3C, $49, $4A, $4C
-	.byte	$44, $00, $3C, $3F, $3C, $3E, $43, $44, $FF, $2F, $5E, $48, $4F, $4D, $44, $3E
-	.byte	$00, $3E, $4A, $48, $0B, $4A, $4D, $40, $FF, $70, $5E, $4E, $3C, $0B, $0B, $44
-	.byte	$00, $44, $51, $3C, $4D, $40, $FF, $A9, $5C, $4D, $0B, $40, $3E, $44, $3C, $47
-	.byte	$00, $4E, $43, $3C, $49, $46, $4D, $FF, $2D, $5D, $4E, $40, $3E, $43, $49, $44
-	.byte	$3E, $3C, $47, $00, $3C, $3F, $50, $44, $3E, $40, $3F, $FF, $70, $5D, $45, $4F
-	.byte	$49, $00, $41, $4F, $4C, $3C, $49, $4A, $FF, $A4, $5D, $0B, $3C, $3E, $46, $3C
-	.byte	$42, $40, $00, $3F, $40, $4D, $44, $42, $49, $FF, $E4, $5D, $46, $40, $49, $45
-	.byte	$44, $00, $4D, $43, $44, $48, $4A, $44, $3F, $40, $FF, $2E, $5E, $0B, $3C, $3E
-	.byte	$46, $3C, $42, $40, $00, $3F, $40, $4D, $44, $42, $49, $FF, $6F, $5E, $43, $44
-	.byte	$4C, $4A, $48, $44, $00, $4D, $4F, $48, $44, $3F, $3C, $FF, $28, $5D, $3C, $3E
+	.byte	$4F, $3E, $43, $44, $FF
+text_05FC0F:
+	.byte	$2F, $5D, $48, $4F, $4D, $44, $3E, $00, $3E, $4A, $48
+	.byte	$0B, $4A, $4D, $40, $FF
+text_05FC1F:
+	.byte	$6E, $5D, $48, $44, $46, $44, $00, $53, $3C, $49, $3C
+	.byte	$42, $44, $4D, $3C, $51, $3C, $FF
+text_05FC31:
+	.byte	$A5, $5D, $48, $4F, $4D, $44, $3E, $00, $3E
+	.byte	$4A, $48, $0B, $4A, $4D, $40, $FF
+text_05FC41:
+	.byte	$E4, $5D, $48, $3C, $4D, $3C, $49, $4A, $4C
+	.byte	$44, $00, $3C, $3F, $3C, $3E, $43, $44, $FF
+text_05FC53:
+	.byte	$2F, $5E, $48, $4F, $4D, $44, $3E
+	.byte	$00, $3E, $4A, $48, $0B, $4A, $4D, $40, $FF
+text_05FC63:
+	.byte	$70, $5E, $4E, $3C, $0B, $0B, $44
+	.byte	$00, $44, $51, $3C, $4D, $40, $FF
+text_05FC71:
+	.byte	$A9, $5C, $4D, $0B, $40, $3E, $44, $3C, $47
+	.byte	$00, $4E, $43, $3C, $49, $46, $4D, $FF
+text_05FC82:
+	.byte	$2D, $5D, $4E, $40, $3E, $43, $49, $44
+	.byte	$3E, $3C, $47, $00, $3C, $3F, $50, $44, $3E, $40, $3F, $FF
+text_05FC96:
+	.byte	$70, $5D, $45, $4F
+	.byte	$49, $00, $41, $4F, $4C, $3C, $49, $4A, $FF
+text_05FCA3:
+	.byte	$A4, $5D, $0B, $3C, $3E, $46, $3C
+	.byte	$42, $40, $00, $3F, $40, $4D, $44, $42, $49, $FF
+text_05FCB4:
+	.byte	$E4, $5D, $46, $40, $49, $45
+	.byte	$44, $00, $4D, $43, $44, $48, $4A, $44, $3F, $40, $FF
+text_05FCC5:
+	.byte	$2E, $5E, $0B, $3C, $3E
+	.byte	$46, $3C, $42, $40, $00, $3F, $40, $4D, $44, $42, $49, $FF
+text_05FCD6:
+	.byte	$6F, $5E, $43, $44
+	.byte	$4C, $4A, $48, $44, $00, $4D, $4F, $48, $44, $3F, $3C, $FF
+text_05FCE6:
+	.byte	$28, $5D, $3C, $3E
 	.byte	$00, $00, $32, $3E, $4A, $49, $4E, $4C, $3C, $32, $00, $4E, $40, $3C, $48, $FF
+text_05FCFA:
 	.byte	$A8, $5D, $49, $40, $4D, $00, $32, $3E, $4A, $49, $4E, $4C, $3C, $32, $00, $4E
-	.byte	$40, $3C, $48, $FF, $28, $5E, $3F, $48, $42, $00, $32, $3E, $4A, $49, $4E, $4C
-	.byte	$3C, $32, $00, $4E, $40, $3C, $48, $FF, $AE, $5E, $2E, $2E, $2E, $48, $3C, $49
-	.byte	$53, $00, $4E, $43, $3C, $49, $46, $4D, $FF, $AC, $5D, $0B, $4C, $4A, $3F, $4F
-	.byte	$3E, $40, $3F, $FF, $EA, $5D, $46, $3C, $54, $4F, $48, $44, $00, $46, $44, $4E
-	.byte	$3C, $4F, $40, $FF, $22, $5D, $32, $00, $3E, $A0, $9F, $A5, $A3, $92, $00, $44
+	.byte	$40, $3C, $48, $FF
+text_05FD0E:
+	.byte	$28, $5E, $3F, $48, $42, $00, $32, $3E, $4A, $49, $4E, $4C
+	.byte	$3C, $32, $00, $4E, $40, $3C, $48, $FF
+text_05FD22:
+	.byte	$AE, $5E, $2E, $2E, $2E, $48, $3C, $49
+	.byte	$53, $00, $4E, $43, $3C, $49, $46, $4D, $FF
+text_05FD33:
+	.byte	$AC, $5D, $0B, $4C, $4A, $3F, $4F
+	.byte	$3E, $40, $3F, $FF
+text_05FD3E:
+	.byte	$EA, $5D, $46, $3C, $54, $4F, $48, $44, $00, $46, $44, $4E
+	.byte	$3C, $4F, $40, $FF
+text_05FD4E:
+	.byte	$22, $5D, $32, $00, $3E, $A0, $9F, $A5, $A3, $92, $00, $44
 	.byte	$44, $44, $00, $4E, $99, $96, $00, $3C, $9D, $9A, $96, $9F, $00, $51, $92, $A3
-	.byte	$A4, $00, $32, $FF, $A4, $5D, $3C, $00, $0B, $96, $92, $94, $96, $97, $A6, $9D
+	.byte	$A4, $00, $32, $FF
+text_05FD6E:
+	.byte	$A4, $5D, $3C, $00, $0B, $96, $92, $94, $96, $97, $A6, $9D
 	.byte	$00, $4E, $9A, $9E, $96, $00, $51, $9A, $9D, $9D, $00, $3E, $A0, $9E, $96, $AD
 	.byte	$FF
 hdma_list_05FD8B:

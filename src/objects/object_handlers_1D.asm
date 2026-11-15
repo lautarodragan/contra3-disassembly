@@ -1328,9 +1328,9 @@ loc_1DB9C5:
 	bne	loc_1DB9EF
 	tax
 	ldy	a:boss_work_6
-	lda	a:data_05FA1A,y
+	lda	a:ptrs_ending_text_a,y
 	sta	f:$7EE900,x
-	lda	a:data_05FA52,y
+	lda	a:ptrs_ending_text_b,y
 	sta	f:$7EE910,x
 	ldy	#$0000
 loc_1DB9EF:
