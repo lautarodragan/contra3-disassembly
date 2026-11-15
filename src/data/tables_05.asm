@@ -1881,11 +1881,12 @@ anim_05AF9C:
 	anim_frame	$0006, metasprite_06B182, metasprite_06B43C
 	anim_frame	$0008, metasprite_06B16D, metasprite_06B427
 	anim_goto	anim_05AF9C
-	.byte	$0C, $00, $97, $B1, $51, $B4
-	.byte	$06, $00, $AC, $B1, $66, $B4
-	.byte	$0C, $00, $97, $B1, $51, $B4
-	.byte	$00, $00
-	.byte	$97, $B1, $51, $B4, $40, $55
+anim_05AFB6:
+	anim_frame	$000C, metasprite_06B197, metasprite_06B451
+	anim_frame	$0006, metasprite_06B1AC, metasprite_06B466
+	anim_frame	$000C, metasprite_06B197, metasprite_06B451
+	anim_end	metasprite_06B197, metasprite_06B451
+	.byte	$40, $55
 	.byte	$C0, $55
 data_05AFD2:
 	; CDL: read by update_soldier_spawner
@@ -2529,8 +2530,13 @@ data_05C79E:
 	.byte	$FF, $FF, $00, $00
 data_05C7A2:
 	; CDL: read by update_dying_soldier; partly not accessed
-	.byte	$00, $80, $00, $80, $06, $00, $33, $AF, $33, $AF, $04, $00, $E5, $AE, $E5, $AE
-	.byte	$02, $00, $F6, $AE, $F6, $AE, $00, $00, $00, $00, $00, $00, $02, $00, $C5, $AE
+	.byte	$00, $80, $00, $80
+anim_05C7A6:
+	anim_frame	$0006, metasprite_06AF33, metasprite_06AF33
+	anim_frame	$0004, metasprite_06AEE5, metasprite_06AEE5
+	anim_frame	$0002, metasprite_06AEF6, metasprite_06AEF6
+	anim_end	$0000, $0000
+	.byte	$02, $00, $C5, $AE
 	.byte	$C5, $AE, $02, $00, $CA, $AE, $CA, $AE, $02, $00, $33, $AF, $33, $AF, $02, $00
 	.byte	$E5, $AE, $E5, $AE, $02, $00, $F6, $AE, $F6, $AE, $00, $00, $00, $00, $00, $00
 data_05C7E2:
@@ -3273,17 +3279,37 @@ td_spitter_hp:
 	.byte	$02, $00, $04, $00, $08, $00
 td_spitter_fire_delays:
 	; CDL: read by td_spitter_state_3, animate_td_item; partly not accessed
-	.byte	$40, $00, $20, $00, $10, $00, $03, $00, $67, $E9, $00, $2C, $03, $00, $FB, $E8
-	.byte	$00, $2C, $03, $00, $00, $E9, $00, $2C, $03, $00, $B7, $E8, $00, $2C, $03, $00
-	.byte	$C8, $E8, $00, $2C, $03, $00, $D9, $E8, $00, $2C, $03, $00, $EA, $E8, $00, $2C
-	.byte	$03, $00, $05, $E9, $00, $2C, $03, $00, $16, $E9, $00, $2C, $03, $00, $27, $E9
-	.byte	$00, $2C, $03, $00, $38, $E9, $00, $2C, $03, $00, $87, $E9, $00, $2C, $03, $00
-	.byte	$98, $E9, $00, $2C, $00, $00, $00, $00, $00, $00, $02, $00, $67, $E9, $00, $2E
-	.byte	$02, $00, $FB, $E8, $00, $2E, $02, $00, $00, $E9, $00, $2E, $02, $00, $B7, $E8
-	.byte	$00, $2E, $02, $00, $C8, $E8, $00, $2E, $02, $00, $D9, $E8, $00, $2E, $02, $00
-	.byte	$EA, $E8, $00, $2E, $02, $00, $05, $E9, $00, $2E, $02, $00, $16, $E9, $00, $2E
-	.byte	$02, $00, $27, $E9, $00, $2E, $02, $00, $38, $E9, $00, $2E, $02, $00, $87, $E9
-	.byte	$00, $2E, $02, $00, $98, $E9, $00, $2E, $00, $00, $00, $00, $00, $00
+	.byte	$40, $00, $20, $00, $10, $00
+anim_05D5BC:
+	anim_frame	$0003, metasprite_07E967, $2C00
+	anim_frame	$0003, metasprite_07E8FB, $2C00
+	anim_frame	$0003, metasprite_07E900, $2C00
+	anim_frame	$0003, metasprite_07E8B7, $2C00
+	anim_frame	$0003, metasprite_07E8C8, $2C00
+	anim_frame	$0003, metasprite_07E8D9, $2C00
+	anim_frame	$0003, metasprite_07E8EA, $2C00
+	anim_frame	$0003, metasprite_07E905, $2C00
+	anim_frame	$0003, metasprite_07E916, $2C00
+	anim_frame	$0003, metasprite_07E927, $2C00
+	anim_frame	$0003, metasprite_07E938, $2C00
+	anim_frame	$0003, metasprite_07E987, $2C00
+	anim_frame	$0003, metasprite_07E998, $2C00
+	anim_end	$0000, $0000
+anim_05D610:
+	anim_frame	$0002, metasprite_07E967, $2E00
+	anim_frame	$0002, metasprite_07E8FB, $2E00
+	anim_frame	$0002, metasprite_07E900, $2E00
+	anim_frame	$0002, metasprite_07E8B7, $2E00
+	anim_frame	$0002, metasprite_07E8C8, $2E00
+	anim_frame	$0002, metasprite_07E8D9, $2E00
+	anim_frame	$0002, metasprite_07E8EA, $2E00
+	anim_frame	$0002, metasprite_07E905, $2E00
+	anim_frame	$0002, metasprite_07E916, $2E00
+	anim_frame	$0002, metasprite_07E927, $2E00
+	anim_frame	$0002, metasprite_07E938, $2E00
+	anim_frame	$0002, metasprite_07E987, $2E00
+	anim_frame	$0002, metasprite_07E998, $2E00
+	anim_end	$0000, $0000
 data_05D664:
 	; CDL: read by td_item_spread_state_0; partly not accessed
 	.addr	anim_05D680, anim_05D706

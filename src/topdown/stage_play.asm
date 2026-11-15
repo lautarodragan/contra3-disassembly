@@ -4048,7 +4048,7 @@ tbl_td_blast_states:
 	.addr	td_blast_state_1
 
 td_blast_state_0:
-	lda	#$D5BC
+	lda	#.loword(anim_05D5BC)
 	sta	$20,x
 	stz	$22,x
 	lda	#$8000
@@ -4089,7 +4089,7 @@ tbl_td_explosion_effect_states:
 	.addr	td_explosion_effect_state_1
 
 td_explosion_effect_state_0:
-	lda	#$D610
+	lda	#.loword(anim_05D610)
 	sta	$20,x
 	stz	$22,x
 	stz	$16,x

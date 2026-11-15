@@ -1324,7 +1324,7 @@ foot_soldier_state_02:
 	sta	OBJ_TIMER,x
 	lda	$3E,x
 	bne	loc_01BBCE
-	lda	#$AFB6
+	lda	#.loword(anim_05AFB6)
 	sta	OBJ_ANIM,x
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x

@@ -438,7 +438,7 @@ update_object_type_19:
 	sta	OBJ_ATTR,x
 	lda	#$0003
 	sta	OBJ_FLAGS,x
-	lda	#$C7A6
+	lda	#.loword(anim_05C7A6)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	lda	#$0001
