@@ -80,9 +80,9 @@ object_type_02_state_00:
 	sta	a:wram_09D6
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
-	bne	loc_01B266
+	bne	@return
 	lda	a:bg2_screen_drawn
-	beq	loc_01B266
+	beq	@return
 	lda	#$0050
 	sta	$28,x
 	lda	#$FFC0
@@ -101,7 +101,7 @@ object_type_02_state_00:
 	inc	$12,x
 	lda	#$0044
 	jsl	f:queue_sound
-loc_01B266:
+@return:
 	rtl
 
 object_type_02_state_01:
@@ -185,7 +185,7 @@ loc_01B30F:
 
 object_type_02_state_02:
 	dec	$24,x
-	bne	loc_01B338
+	bne	@return
 	inc	$12,x
 	lda	#$0001
 	sta	$16,x
@@ -199,7 +199,7 @@ object_type_02_state_02:
 	sta	$04,x
 	lda	#$001E
 	jsl	f:queue_sound
-loc_01B338:
+@return:
 	rtl
 
 object_type_02_state_03:
@@ -435,10 +435,10 @@ loc_01B4FB:
 	ldy	#$0300
 	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
-	bcs	loc_01B520
+	bcs	@return
 	lda	#$FFFC
 	sta	a:$001E,y
-loc_01B520:
+@return:
 	rtl
 
 object_type_02_state_0A:
@@ -551,7 +551,7 @@ stage4_tank_state_00:
 
 stage4_tank_state_01:
 	dec	$24,x
-	bpl	loc_01B600
+	bpl	@return
 	lda	#$0100
 	sta	$0A,x
 	lda	#$401D
@@ -561,7 +561,7 @@ stage4_tank_state_01:
 	lda	#$0140
 	sta	$06,x
 	inc	$12,x
-loc_01B600:
+@return:
 	rtl
 
 stage4_tank_state_02:
@@ -694,10 +694,10 @@ loc_01B6E9:
 	ldy	#$0500
 	pla
 	jsl	f:spawn_effect_random_offset
-	bcs	loc_01B711
+	bcs	@return
 	lda	#$FFF8
 	sta	a:$001A,y
-loc_01B711:
+@return:
 	rtl
 
 ; Object type $09: the tank the players can drive in stage 1 (sections 4-5;
@@ -906,14 +906,14 @@ loc_01B89B:
 player_tank_state_04:
 	lda	a:bg2_scroll_mode
 	cmp	#$0002
-	bne	loc_01B8B5
+	bne	@return
 	lda	#$0000
 	sta	f:wram_7E3807
 	stz	a:bg2_x
 	stz	hdma_preset
 	lda	#$8000
 	sta	$16,x
-loc_01B8B5:
+@return:
 	rtl
 
 player_tank_state_03:
@@ -1086,13 +1086,13 @@ player_tank_check_boarding:
 loc_01BA08:
 	lda	$0A,x
 	cmp	#$FF80
-	bcs	loc_01BA1B
+	bcs	@return
 	cmp	#$FF00
-	bcc	loc_01BA1B
+	bcc	@return
 	lda	#$0004
 	sta	$12,x
 	stz	$16,x
-loc_01BA1B:
+@return:
 	rts
 loc_01BA1C:
 	sty	a:tank_driver
@@ -1170,10 +1170,10 @@ loc_01BA9E:
 	bcs	loc_01BAC3
 	lda	zp_14
 	cmp	zp_16
-	bcs	loc_01BAC2
+	bcs	@return2
 	; (not executed in the CDL traces)
 	lda	a:$001E,y
-	bmi	loc_01BAC1
+	bmi	@return
 	clc
 	lda	$0E,x
 	adc	$2A,x
@@ -1181,9 +1181,9 @@ loc_01BA9E:
 	lda	zp_04
 	ora	a:$003E,y
 	sta	a:$003E,y
-loc_01BAC1:
+@return:
 	rts
-loc_01BAC2:
+@return2:
 	rts
 loc_01BAC3:
 	lda	zp_10
@@ -1452,9 +1452,9 @@ object_type_35_state_00:
 object_type_35_state_01:
 	lda	$0A,x
 	cmp	#$00D0
-	bcs	loc_01BCAE
+	bcs	@return
 	inc	$12,x
-loc_01BCAE:
+@return:
 	rtl
 
 object_type_35_state_02:
@@ -1516,9 +1516,9 @@ loc_01BCED:
 loc_01BD30:
 	lda	stage_frame_mod4
 	cmp	#$0003
-	bne	loc_01BD3B
+	bne	@return
 	jsl	f:queue_object_tiles
-loc_01BD3B:
+@return:
 	rtl
 
 object_type_35_state_03:
@@ -1782,10 +1782,10 @@ loc_01BF16:
 	adc	#$0000
 	sta	$1E,x
 	lda	stage_frame_odd
-	bne	loc_01BF52
+	bne	@return
 	ldy	#$0700
 	jsl	f:find_free_slot_y_down
-	bcc	loc_01BF52
+	bcc	@return
 	lda	#.loword(anim_05C4CE)
 	jsl	f:make_effect_object
 	lda	$0E,x
@@ -1797,7 +1797,7 @@ loc_01BF16:
 	sta	a:$001A,y
 	lda	#$0002
 	sta	a:$001E,y
-loc_01BF52:
+@return:
 	rtl
 
 object_type_73_state_02:
@@ -1808,9 +1808,9 @@ object_type_73_state_02:
 	lda	$1A,x
 	sbc	#$0000
 	sta	$1A,x
-	bpl	loc_01BF66
+	bpl	@return
 	inc	$12,x
-loc_01BF66:
+@return:
 	rtl
 
 object_type_73_state_03:
@@ -2100,7 +2100,7 @@ object_type_7E_state_04:
 	lda	#$0080
 	sbc	a:bg1_y
 	cmp	$0E,x
-	bcs	loc_01C1B5
+	bcs	@return
 	lda	#$401F
 	sta	$16,x
 	lda	$02,x
@@ -2111,7 +2111,7 @@ object_type_7E_state_04:
 	inc	$12,x
 	stz	$1C,x
 	stz	$1E,x
-loc_01C1B5:
+@return:
 	rtl
 
 object_type_7E_state_05:
@@ -2152,7 +2152,7 @@ object_type_7E_state_06:
 	sta	$1E,x
 	lda	$0E,x
 	cmp	#$00B0
-	bcc	loc_01C21C
+	bcc	@return
 	lda	#$0003
 	sta	$16,x
 	inc	$12,x
@@ -2164,7 +2164,7 @@ object_type_7E_state_06:
 	stz	$1E,x
 	lda	#$FFF8
 	sta	$1A,x
-loc_01C21C:
+@return:
 	rtl
 
 object_type_7E_state_07:
@@ -2224,39 +2224,39 @@ popup_turret_state_00:
 popup_turret_state_01:
 	lda	$0A,x
 	cmp	#$00E8
-	bcs	loc_01C28A
+	bcs	@return
 	lda	#$B046
 	sta	$32,x
 	inc	$12,x
-loc_01C28A:
+@return:
 	rtl
 
 popup_turret_state_02:
 	lda	stage_frame_mod8
 	cmp	#$0001
-	bne	loc_01C2AF
+	bne	@return
 	jsl	f:queue_object_tiles
 	lda	$32,x
 	clc
 	adc	#$0004
 	sta	$32,x
 	cmp	#$B052
-	bcc	loc_01C2AF
+	bcc	@return
 	lda	#$481F
 	sta	$16,x
 	inc	$12,x
 	lda	#$0010
 	sta	$24,x
-loc_01C2AF:
+@return:
 	rtl
 
 popup_turret_state_03:
 	dec	$24,x
-	bne	loc_01C2BB
+	bne	@return
 	lda	#$0021
 	sta	$24,x
 	inc	$12,x
-loc_01C2BB:
+@return:
 	rtl
 
 popup_turret_state_04:
@@ -2324,11 +2324,11 @@ loc_01C324:
 	rtl
 loc_01C32E:
 	lda	stage_frame_mod8
-	bne	loc_01C354
+	bne	@return
 	ldy	#$0300
 	lda	#.loword(anim_05C4CE)
 	jsl	f:spawn_effect
-	bcs	loc_01C354
+	bcs	@return
 	lda	rng_hi
 	and	#$001F
 	adc	$0A,x
@@ -2337,7 +2337,7 @@ loc_01C32E:
 	sta	a:$000E,y
 	lda	#$FFFF
 	sta	a:$001E,y
-loc_01C354:
+@return:
 	rtl
 
 ; Object type $50: stage 3: wall hatch (HP 8; seen in the emulator).
@@ -2523,7 +2523,7 @@ loc_01C48F:
 	jsl	f:queue_vram_block
 	lda	$34,x
 	and	#$007F
-	bne	loc_01C4C7
+	bne	@return
 	ldy	zp_FE
 	clc
 	lda	$0A,x
@@ -2535,7 +2535,7 @@ loc_01C48F:
 	sta	zp_02
 	lda	$30,x
 	jsl	f:spawn_enemy_bullet
-loc_01C4C7:
+@return:
 	rtl
 
 wall_hatch_state_05:
@@ -2587,12 +2587,12 @@ object_type_04_state_01:
 	.a16
 	ldy	#$0000
 	lda	#$2002
-loc_01C515:
+@loop:
 	sta	a:$4670,y
 	iny
 	iny
 	cpy	#$0010
-	bcc	loc_01C515
+	bcc	@loop
 	sep	#$20
 	.a8
 	lda	#^tables_05
@@ -2667,13 +2667,13 @@ loc_01C515:
 object_type_04_state_02:
 	jsl	f:solid_object_vs_players_and_soldiers
 	lda	a:wram_08C6
-	bpl	loc_01C5F8
+	bpl	@return
 	lda	#$8000
 	sta	a:wram_08D6
 	sta	a:wram_0856
 	sta	a:wram_0896
 	inc	$12,x
-loc_01C5F8:
+@return:
 	rtl
 
 object_type_04_state_03:
@@ -2684,7 +2684,7 @@ object_type_04_state_03:
 	jsl	f:queue_sound
 	inc	$12,x
 	ldy	#$0300
-loc_01C60E:
+@loop:
 	lda	a:$0010,y
 	cmp	#$0017
 	beq	loc_01C622
@@ -2693,7 +2693,7 @@ loc_01C60E:
 	adc	#$0040
 	tay
 	cmp	#$0740
-	bcc	loc_01C60E
+	bcc	@loop
 	rtl
 loc_01C622:
 	; (not executed in the CDL traces)
@@ -2705,9 +2705,9 @@ object_type_04_state_04:
 	jsl	f:solid_object_vs_players_and_soldiers
 	lda	stage_frame_counter
 	and	#$000F
-	bne	loc_01C636
+	bne	@return
 	inc	$12,x
-loc_01C636:
+@return:
 	rtl
 
 object_type_04_state_05:
@@ -2804,12 +2804,12 @@ object_type_04_collapse_wait:
 ; (flashes its palette when hit). Not identified exactly.
 update_object_type_14:
 	lda	$26,x
-	beq	loc_01C6FA
+	beq	@return
 	lda	#.loword(palette_05914A)
 	sta	cgram_upload_src
 	lda	#$0050
 	sta	cgram_upload_addr
-loc_01C6FA:
+@return:
 	rtl
 
 ; Object type $15: stage 1 section 4: destructible wall gun, HP 40;
@@ -2818,7 +2818,7 @@ update_object_type_15:
 	lda	$12,x
 	beq	loc_01C731
 	lda	stage_frame_mod4
-	bne	loc_01C730
+	bne	@return
 	lda	$0A,x
 	sta	zp_00
 	lda	$0E,x
@@ -2830,14 +2830,14 @@ update_object_type_15:
 	ldy	#$0300
 	lda	#.loword(anim_05C4CE)
 	jsl	f:spawn_effect_random_offset
-	bcs	loc_01C730
+	bcs	@return
 	lda	#$FFFF
 	sta	a:$001E,y
 	dec	$24,x
-	bne	loc_01C730
+	bne	@return
 	lda	#$8000
 	sta	$16,x
-loc_01C730:
+@return:
 	rtl
 loc_01C731:
 	lda	$06,x
@@ -3476,12 +3476,12 @@ loc_01CBBD:
 	rtl
 loc_01CC13:
 	lda	$26,x
-	beq	loc_01CC21
+	beq	@return
 	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$0030
 	sta	cgram_upload_addr
-loc_01CC21:
+@return:
 	rtl
 
 ; Object type $12: stage 1 soldier variant, HP 6 (seen in the emulator). Not
@@ -3546,9 +3546,9 @@ object_type_12_state_01:
 
 object_type_12_state_02:
 	dec	$24,x
-	bne	loc_01CC96
+	bne	@return
 	inc	$12,x
-loc_01CC96:
+@return:
 	rtl
 
 object_type_12_state_03:
@@ -3711,15 +3711,15 @@ loc_01CDCA:
 	lda	$1C,x
 	adc	#$4000
 	sta	$1C,x
-	bcc	loc_01CDE4
+	bcc	@return
 	inc	$1E,x
 	lda	$1E,x
 	cmp	#$0006
-	bmi	loc_01CDE4
+	bmi	@return
 	lda	#$0006
 	sta	$1E,x
 	stz	$1C,x
-loc_01CDE4:
+@return:
 	rtl
 
 ; Object type $17: sniper in a window (stage 1 and 3, HP 6; seen in the
@@ -3783,9 +3783,9 @@ window_sniper_state_01:
 
 window_sniper_state_02:
 	dec	$24,x
-	bne	loc_01CE57
+	bne	@return
 	inc	$12,x
-loc_01CE57:
+@return:
 	rtl
 
 window_sniper_state_03:
@@ -3814,13 +3814,13 @@ window_sniper_state_03:
 	and	#$003E
 	plx
 	jsl	f:spawn_enemy_bullet
-	bcc	loc_01CE98
+	bcc	@return
 	jsl	f:window_sniper_set_fire_sprite
 	lda	#$0010
 	sta	$24,x
 	lda	#$0004
 	sta	$12,x
-loc_01CE98:
+@return:
 	rtl
 
 ; Picks the nearer player (x distance) and the aim direction to it (field
@@ -3912,7 +3912,7 @@ window_sniper_set_fire_sprite:
 ; slot at Y (often the object itself, txy) into an effect playing animation A.
 spawn_effect:
 	pha
-loc_01CF26:
+@loop:
 	lda	a:$0010,y
 	beq	loc_01CF38
 	tya
@@ -3920,7 +3920,7 @@ loc_01CF26:
 	adc	#$0040
 	tay
 	cmp	#$08C0
-	bcc	loc_01CF26
+	bcc	@loop
 	pla
 	rtl
 loc_01CF38:
@@ -3930,7 +3930,7 @@ loc_01CF38:
 
 spawn_effect_random_offset:
 	pha
-loc_01CF3D:
+@loop:
 	lda	a:$0010,y
 	beq	loc_01CF4F
 	tya
@@ -3938,7 +3938,7 @@ loc_01CF3D:
 	adc	#$0040
 	tay
 	cmp	#$08C0
-	bcc	loc_01CF3D
+	bcc	@loop
 	pla
 	rtl
 loc_01CF4F:

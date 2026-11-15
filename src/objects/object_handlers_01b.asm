@@ -20,7 +20,7 @@ update_debris_explosion:
 	stz	zp_00
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
-	beq	loc_01CFBA
+	beq	@return
 	lda	#.loword(anim_05C59A)
 	sta	$20,x
 	stz	$22,x
@@ -31,7 +31,7 @@ update_debris_explosion:
 	stz	$1A,x
 	lda	#$FFFE
 	sta	$1E,x
-loc_01CFBA:
+@return:
 	rtl
 
 ; Object type $4B: becomes a type $1D effect flying in a random direction
@@ -218,10 +218,10 @@ loc_01D0E8:
 
 alien_dog_state_02:
 	lda	difficulty
-	beq	loc_01D0FC
+	beq	@return
 	jsr	a:alien_dog_check_player_in_range
 	bcc	loc_01D0FD
-loc_01D0FC:
+@return:
 	rtl
 loc_01D0FD:
 	lda	#$081F
@@ -259,11 +259,11 @@ loc_01D13A:
 
 alien_dog_state_04:
 	lda	$3E,x
-	beq	loc_01D148
+	beq	@return
 	; (not executed in the CDL traces)
 	stz	$3E,x
 	bra	loc_01D149
-loc_01D148:
+@return:
 	rtl
 loc_01D149:
 	lda	#$000B
@@ -446,11 +446,11 @@ update_object_type_19:
 	rtl
 loc_01D291:
 	lda	$20,x
-	bne	loc_01D29C
+	bne	@return
 	lda	$16,x
 	ora	#$8000
 	sta	$16,x
-loc_01D29C:
+@return:
 	rtl
 
 ; Object type $1A: explosion of a grenade (type $13): harmful for $20
@@ -514,9 +514,9 @@ loc_01D302:
 	dec	$24,x
 	lda	$24,x
 	bit	#$0007
-	bne	loc_01D353
+	bne	@return
 	jsl	f:find_free_slot_y
-	bcs	loc_01D353
+	bcs	@return
 	lda	#OBJT_EFFECT
 	sta	a:$0010,y
 	lda	#$0001
@@ -543,7 +543,7 @@ loc_01D302:
 	sta	a:$0020,y
 	lda	#$0000
 	sta	a:$0022,y
-loc_01D353:
+@return:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
@@ -552,13 +552,13 @@ sub_01D354:
 	lda	$26,x
 	bne	loc_01D369
 	lda	$14,x
-	beq	loc_01D368
+	beq	@return
 	lda	$02,x
 	sta	$26,x
 	and	#$3000
 	ora	#$0200
 	sta	$02,x
-loc_01D368:
+@return:
 	rtl
 loc_01D369:
 	lda	$26,x
@@ -770,7 +770,7 @@ loc_01D4EF:
 	sta	$02,x
 loc_01D508:
 	dec	$24,x
-	bne	loc_01D52E
+	bne	@return
 	lda	#$001F
 	sta	$16,x
 	inc	$30,x
@@ -786,7 +786,7 @@ loc_01D508:
 	sta	$20,x
 	lda	#$3E00
 	sta	$02,x
-loc_01D52E:
+@return:
 	rtl
 loc_01D52F:
 	lda	$06,x
@@ -1022,10 +1022,10 @@ loc_01D6FE:
 	jsl	f:queue_sound
 loc_01D712:
 	lda	stage_frame_mod4
-	bne	loc_01D752
+	bne	@return
 	ldy	#$0400
 	jsl	f:find_free_slot_from_y
-	bcs	loc_01D752
+	bcs	@return
 	lda	#$00D0
 	sta	a:$000E,y
 	lda	$0A,x
@@ -1044,7 +1044,7 @@ loc_01D712:
 	sta	a:$0028,y
 	lda	#$FFF2
 	sta	a:$002A,y
-loc_01D752:
+@return:
 	rtl
 
 ; Object type $2D: stage 1 burning section: fire. Not identified exactly.
@@ -1090,7 +1090,7 @@ object_type_34_state_00:
 object_type_34_state_01:
 	lda	a:wram_0910
 	cmp	#$0017
-	bne	loc_01D7BA
+	bne	@return
 	lda	a:wram_0906
 	bpl	loc_01D7BB
 	lda	#$001D
@@ -1102,18 +1102,18 @@ object_type_34_state_01:
 	sta	$30,x
 	lda	#$0060
 	sta	$24,x
-loc_01D7BA:
+@return:
 	rtl
 loc_01D7BB:
 	dec	$38,x
-	bne	loc_01D7E1
+	bne	@return
 	lda	zp_EB
 	and	#$003F
 	adc	#$0020
 	sta	$38,x
 	ldy	#$0700
 	jsl	f:find_free_slot_y_down
-	bcc	loc_01D7E1
+	bcc	@return
 	lda	$0A,x
 	adc	#$0018
 	sta	a:$000A,y
@@ -1121,13 +1121,13 @@ loc_01D7BB:
 	tyx
 	jsl	f:init_foot_soldier_running
 	plx
-loc_01D7E1:
+@return:
 	rtl
 
 object_type_34_state_02:
 	lda	stage_frame_mod4
 	cmp	#$0002
-	bne	loc_01D809
+	bne	@return
 	inc	$12,x
 	lda	#$0030
 	sta	zp_08
@@ -1142,12 +1142,12 @@ object_type_34_state_02:
 	sta	$32,x
 	lda	#$4000
 	sta	$30,x
-loc_01D809:
+@return:
 	rtl
 
 object_type_34_state_05:
 	lda	stage_frame_mod8
-	bne	loc_01D830
+	bne	@return
 	lda	$0A,x
 	sta	zp_00
 	lda	$0E,x
@@ -1159,10 +1159,10 @@ object_type_34_state_05:
 	ldy	#$0300
 	lda	#.loword(anim_05C59A)
 	jsl	f:spawn_effect_random_offset
-	bcs	loc_01D830
+	bcs	@return
 	lda	#$FFFE
 	sta	a:$001E,y
-loc_01D830:
+@return:
 	rtl
 
 ; State shared by type $02 (state 9) and type $34: shakes the screen and
@@ -1188,12 +1188,12 @@ loc_01D83E:
 	sta	zp_06
 	ldy	#$0300
 	jsl	f:spawn_effect_random_offset
-	bcs	loc_01D867
+	bcs	@return
 	lda	stage_frame_odd
 	bne	loc_01D868
 	lda	#.loword(anim_05C5EE)
 	sta	a:$0020,y
-loc_01D867:
+@return:
 	rtl
 loc_01D868:
 	phx
@@ -1277,10 +1277,10 @@ loc_01D8F4:
 	sty	zp_FE
 	lda	a:$003E,y
 	cmp	$3E,x
-	bne	loc_01D906
+	bne	@return
 	jsr	a:swing_player_climb
 	jsr	a:swing_carry_player
-loc_01D906:
+@return:
 	rtl
 
 ; Object type $3A: a handle on a swing's arm (pivot in field $34): follows
@@ -1302,9 +1302,9 @@ loc_01D916:
 loc_01D925:
 	ldy	#$0240
 	jsl	f:swing_check_grab
-	bcs	loc_01D931
+	bcs	@return
 	jsr	a:swing_grab_handle
-loc_01D931:
+@return:
 	rtl
 
 init_swing_pivot:
@@ -1333,10 +1333,10 @@ init_swing_pivot:
 	sta	zp_06
 	stx	zp_FC
 	phx
-loc_01D964:
+@loop:
 	lda	#$0010
 	sta	zp_08
-loc_01D969:
+@loop2:
 	ldy	#$0740
 	jsl	f:find_free_slot_y_down
 	bcc	loc_01D9C5
@@ -1363,7 +1363,7 @@ loc_01D969:
 	lda	#$FFF0
 	sta	a:$002A,y
 	dec	zp_00
-	bne	loc_01D969
+	bne	@loop2
 	sec
 	lda	zp_06
 	sbc	#$0080
@@ -1373,7 +1373,7 @@ loc_01D969:
 	sta	zp_00
 	lda	zp_0A
 	sta	zp_04
-	bra	loc_01D964
+	bra	@loop
 loc_01D9C5:
 	plx
 	rts
@@ -1863,16 +1863,16 @@ loc_01DD4F:
 object_type_49_state_02:
 	lda	$32,x
 	cmp	#$0018
-	bcs	loc_01DD68
+	bcs	@return
 	inc	$24,x
 	ldy	difficulty
 	lda	a:data_05C956,y
 	cmp	$24,x
-	bcs	loc_01DD68
+	bcs	@return
 	stz	$30,x
 	stz	$24,x
 	stz	$12,x
-loc_01DD68:
+@return:
 	rtl
 
 ; Object type $4A: stage 3: rolling disc (HP 6; seen in the emulator).
@@ -1999,17 +1999,17 @@ loc_01DE4E:
 
 rolling_mine_state_03:
 	lda	$20,x
-	bne	loc_01DE5C
+	bne	@return
 	lda	#$0040
 	sta	$24,x
 	stz	$30,x
 	inc	$12,x
-loc_01DE5C:
+@return:
 	rtl
 
 rolling_mine_state_05:
 	lda	$20,x
-	bne	loc_01DE81
+	bne	@return
 	lda	#$0080
 	sta	$24,x
 	ldy	$04,x
@@ -2023,7 +2023,7 @@ rolling_mine_state_05:
 	sta	$20,x
 	lda	#$0001
 	sta	$12,x
-loc_01DE81:
+@return:
 	rtl
 
 rolling_mine_state_04:
@@ -2046,7 +2046,7 @@ rolling_mine_state_04:
 	lda	$24,x
 	bmi	loc_01DEC5
 	cmp	#$0010
-	bne	loc_01DEC4
+	bne	@return
 	clc
 	lda	a:data_05C9D8,y
 	adc	$0A,x
@@ -2057,7 +2057,7 @@ rolling_mine_state_04:
 	sta	zp_02
 	lda	zp_FE
 	jsl	f:spawn_enemy_bullet
-loc_01DEC4:
+@return:
 	rtl
 loc_01DEC5:
 	lda	#.loword(anim_05C9B0)
@@ -2102,13 +2102,13 @@ loc_01DF11:
 	stz	zp_00
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
-	beq	loc_01DF28
+	beq	@return
 	stz	$04,x
 	lda	#$7800
 	sta	$18,x
 	lda	#$0001
 	sta	$1A,x
-loc_01DF28:
+@return:
 	rts
 
 ; Object type $4E: stage 3 section 7, 27 states (a mid-boss, probably). Not
@@ -2191,9 +2191,9 @@ object_type_4E_state_00:
 object_type_4E_state_01:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
-	bcc	loc_01DFBC
+	bcc	@return
 	inc	$12,x
-loc_01DFBC:
+@return:
 	rtl
 
 object_type_4E_state_04:
@@ -2229,9 +2229,9 @@ object_type_4E_state_05:
 	inc	$38,x
 	lda	$38,x
 	cmp	#$0005
-	bcc	loc_01DFF9
+	bcc	@return
 	inc	$12,x
-loc_01DFF9:
+@return:
 	rtl
 
 object_type_4E_state_02:
@@ -2248,11 +2248,11 @@ object_type_4E_state_03:
 	jsr	a:object_type_4E_set_bg2_scroll
 	lda	$0E,x
 	cmp	#$0020
-	bcs	loc_01E01D
+	bcs	@return
 	stz	$16,x
 	stz	$1E,x
 	inc	$12,x
-loc_01E01D:
+@return:
 	rtl
 
 object_type_4E_set_bg2_scroll:
@@ -2282,32 +2282,32 @@ object_type_4E_state_07:
 	jsr	a:object_type_4E_set_bg2_scroll
 	lda	$0E,x
 	cmp	#$0043
-	bcc	loc_01E056
+	bcc	@return
 	stz	$16,x
 	stz	$1E,x
 	inc	$12,x
-loc_01E056:
+@return:
 	rtl
 
 object_type_4E_state_08:
 	phx
 	ldx	#$0000
-loc_01E05B:
+@loop:
 	lda	a:data_05CA5C,x
 	sta	f:$7EA000,x
 	inx
 	inx
 	cpx	#$0008
-	bcc	loc_01E05B
+	bcc	@loop
 	lda	a:bg2_x
 	sta	f:wram_7EA008
 	ldx	#$0000
-loc_01E073:
+@loop2:
 	sta	f:$7EA100,x
 	inx
 	inx
 	cpx	#$0078
-	bcc	loc_01E073
+	bcc	@loop2
 	plx
 	inc	$12,x
 	rtl
@@ -2470,13 +2470,13 @@ loc_01E19B:
 	inc	$24,x
 	lda	$24,x
 	cmp	#$00F0
-	bcc	loc_01E1CB
+	bcc	@return
 	stz	$30,x
 	stz	$32,x
 	stz	$24,x
 	stz	$1A,x
 	inc	$12,x
-loc_01E1CB:
+@return:
 	rtl
 
 object_type_4E_state_0F:
@@ -2488,11 +2488,11 @@ object_type_4E_state_0F:
 	inc	$24,x
 	lda	$24,x
 	cmp	#$0078
-	bcc	loc_01E1E9
+	bcc	@return
 	stz	$24,x
 	stz	$1A,x
 	inc	$12,x
-loc_01E1E9:
+@return:
 	rtl
 
 object_type_4E_state_12:
@@ -2672,7 +2672,7 @@ loc_01E334:
 loc_01E33F:
 	ldx	#$0000
 	lda	zp_08
-loc_01E344:
+@loop:
 	sec
 	sbc	zp_0A
 	bcc	loc_01E358
@@ -2680,7 +2680,7 @@ loc_01E344:
 	cmp	zp_0A
 	bcc	loc_01E356
 	cpx	#$0003
-	bcc	loc_01E344
+	bcc	@loop
 	; (not executed in the CDL traces)
 	lda	#$0000
 loc_01E356:
@@ -2894,14 +2894,14 @@ loc_01E4CF:
 loc_01E4DB:
 	lda	$0E,x
 	cmp	#$0140
-	bcc	loc_01E4F2
+	bcc	@return
 	lda	#$8000
 	sta	$16,x
 	stz	$10,x
 	stz	a:bg1_scroll_mode
 	stz	a:bg2_scroll_mode
 	stz	a:bg2_x
-loc_01E4F2:
+@return:
 	rtl
 
 ; Object type $4F: stage 3: winged alien bug (HP 8; seen in the emulator).
@@ -3170,10 +3170,10 @@ stage3_winged_bug_state_00:
 	ldy	difficulty
 	lda	stage_frame_counter
 	and	a:data_05CABF,y
-	bne	loc_01E762
+	bne	@return
 	ldy	#$04C0
 	jsl	f:find_free_slot_y_down
-	bcc	loc_01E762
+	bcc	@return
 	lda	#OBJT_STAGE3_WINGED_BUG
 	sta	a:$0010,y
 	lda	#$001B
@@ -3210,17 +3210,17 @@ stage3_winged_bug_state_00:
 	sta	a:$0024,y
 	lda	#$0003
 	sta	a:$001E,y
-loc_01E762:
+@return:
 	rtl
 
 stage3_winged_bug_count_down:
 	dec	$24,x
-	bpl	loc_01E771
+	bpl	@return
 	lda	#$0003
 	sta	$12,x
 	lda	#.loword(anim_05CAA1)
 	sta	$20,x
-loc_01E771:
+@return:
 	rts
 
 ; Object type $56: stage 6. Not identified.
@@ -3303,7 +3303,7 @@ loc_01E7FE:
 object_type_56_state_01:
 	jsl	f:object_follow_floor
 	lda	zp_FC
-	bne	loc_01E821
+	bne	@return
 	lda	#$FFFD
 	sta	$1E,x
 	lda	$04,x
@@ -3316,7 +3316,7 @@ object_type_56_state_01:
 	sta	$20,x
 	stz	$22,x
 	inc	$12,x
-loc_01E821:
+@return:
 	rtl
 
 object_type_56_state_02:
@@ -3336,7 +3336,7 @@ loc_01E837:
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$807E
-	beq	loc_01E85F
+	beq	@return
 	jsr	a:object_type_56_set_velocity
 	stz	$1C,x
 	stz	$1E,x
@@ -3348,7 +3348,7 @@ loc_01E837:
 	stz	$22,x
 	lda	#$0001
 	sta	$12,x
-loc_01E85F:
+@return:
 	rtl
 
 ; Y = a player slot: $0200 or $0240 at random when both are present (bit 0
@@ -3398,9 +3398,9 @@ loc_01E89A:
 loc_01E8A3:
 	dec	$32,x
 	lda	$32,x
-	bne	loc_01E8AC
+	bne	@return
 	jsr	a:spawn_alien_soldier_left
-loc_01E8AC:
+@return:
 	rtl
 
 spawn_alien_soldier_right:
@@ -3459,7 +3459,7 @@ drop_object_to_floor:
 	sta	zp_05
 	phx
 	tyx
-loc_01E91D:
+@loop:
 	lda	zp_05
 	sta	$0E,x
 	stz	zp_00
@@ -3472,7 +3472,7 @@ loc_01E91D:
 	adc	#$0004
 	sta	zp_05
 	cmp	#$00BC
-	bcc	loc_01E91D
+	bcc	@loop
 	bcs	loc_01E940
 loc_01E93D:
 	txy
@@ -3551,7 +3551,7 @@ loc_01E9A2:
 object_type_24_state_01:
 	jsl	f:object_follow_floor
 	lda	zp_FC
-	bne	loc_01E9D7
+	bne	@return
 	stz	$18,x
 	stz	$1A,x
 	stz	$1C,x
@@ -3560,7 +3560,7 @@ object_type_24_state_01:
 	sta	$20,x
 	stz	$22,x
 	inc	$12,x
-loc_01E9D7:
+@return:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
@@ -3612,7 +3612,7 @@ stage3_spiked_climber_state_01:
 
 stage3_spiked_climber_state_02:
 	dec	$24,x
-	bpl	loc_01EA35
+	bpl	@return
 	inc	$12,x
 	lda	#$0060
 	sta	$24,x
@@ -3620,7 +3620,7 @@ stage3_spiked_climber_state_02:
 	ldx	#.loword(data_059E95)
 	jsl	f:load_data_list
 	plx
-loc_01EA35:
+@return:
 	rtl
 
 stage3_spiked_climber_state_00:
@@ -3742,9 +3742,9 @@ loc_01EB2E:
 
 stage3_spiked_climber_state_06:
 	lda	a:bg1_y
-	bpl	loc_01EB54
+	bpl	@return
 	cmp	#$FF58
-	bcs	loc_01EB54
+	bcs	@return
 	inc	$12,x
 	lda	#$0002
 	sta	a:wram_1672
@@ -3754,7 +3754,7 @@ stage3_spiked_climber_state_06:
 	sta	a:wram_035E
 	lda	#$0048
 	jsl	f:queue_sound
-loc_01EB54:
+@return:
 	rtl
 
 stage3_spiked_climber_state_07:
@@ -4015,10 +4015,10 @@ loc_01ED3E:
 	ldy	#$03C0
 	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
-	bcs	loc_01ED75
+	bcs	@return
 	lda	#$FFFA
 	sta	a:$001E,y
-loc_01ED75:
+@return:
 	rts
 
 ; Object type $59: not seen. Not identified.
@@ -4029,7 +4029,7 @@ update_object_type_59:
 	stz	zp_04
 	stx	zp_FC
 	ldx	#$03C0
-loc_01ED84:
+@loop:
 	lda	#$005A
 	sta	$10,x
 	lda	#.loword(anim_05CC0B)
@@ -4051,7 +4051,7 @@ loc_01ED84:
 	adc	#$0040
 	tax
 	cmp	#$0640
-	bcc	loc_01ED84
+	bcc	@loop
 	lda	#$B9EA
 	sta	a:wram_03C0
 	sta	a:wram_0600
@@ -4188,7 +4188,7 @@ loc_01EEDA:
 loc_01EEE0:
 	sta	zp_00
 	ldy	#$0000
-loc_01EEE5:
+@loop:
 	lda	#$004F
 	sta	$24,x
 	lda	a:data_05CC41,y
@@ -4206,7 +4206,7 @@ loc_01EEE5:
 	iny
 	iny
 	dec	zp_02
-	bne	loc_01EEE5
+	bne	@loop
 	ldx	#$0340
 	lda	#$004F
 	sta	$24,x
@@ -4306,9 +4306,9 @@ loc_01EF9E:
 object_type_5A_state_02:
 	lda	a:wram_060A
 	cmp	$0A,x
-	bcs	loc_01EFB7
+	bcs	@return
 	sta	$0A,x
-loc_01EFB7:
+@return:
 	rtl
 
 ; Object type $52: not seen. Not identified.
@@ -4588,10 +4588,10 @@ loc_01F1EF:
 	ldy	#$0280
 	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
-	bcs	loc_01F21E
+	bcs	@return
 	lda	#$FFFC
 	sta	a:$001A,y
-loc_01F21E:
+@return:
 	rtl
 
 stage3_spiked_climber_state_12:
@@ -4620,14 +4620,14 @@ loc_01F24A:
 
 stage3_spiked_climber_state_13:
 	dec	$24,x
-	bpl	loc_01F26B
+	bpl	@return
 	lda	#$8000
 	sta	$16,x
 	lda	#$0002
 	sta	a:bg1_scroll_mode
 	lda	#$0007
 	sta	hdma_preset
-loc_01F26B:
+@return:
 	rtl
 
 spiked_climber_accel_up:
@@ -4797,7 +4797,7 @@ spiked_climber_spawn_debris:
 	lda	#$0003
 	sta	zp_10
 	ldy	#$08C0
-loc_01F3A2:
+@loop:
 	jsl	f:find_free_slot_y_down
 	bcc	loc_01F3BB
 	tyx
@@ -4809,7 +4809,7 @@ loc_01F3A2:
 	jsl	f:make_debris_effect
 	ply
 	dec	zp_10
-	bpl	loc_01F3A2
+	bpl	@loop
 loc_01F3BB:
 	plx
 	rts
@@ -4821,7 +4821,7 @@ spiked_climber_fire_missile:
 	.byte	$A9, $02, $00
 loc_01F3C5:
 	jsl	f:spawn_homing_missile
-	bcc	loc_01F3E2
+	bcc	@return
 	lda	$0A,x
 	sta	a:$000A,y
 	lda	$0E,x
@@ -4831,7 +4831,7 @@ loc_01F3C5:
 	sta	a:$001A,y
 	lda	zp_FE
 	sta	a:$001E,y
-loc_01F3E2:
+@return:
 	rts
 
 ; Kills the players above y $48 or below y $C4 (kill_players_outside with A
@@ -4953,7 +4953,7 @@ hoverbike_rider_state_04:
 	sta	$16,x
 loc_01F4BA:
 	lda	stage_frame_odd
-	bne	loc_01F4E7
+	bne	@return
 	lda	#$001F
 	sta	zp_06
 	stz	zp_04
@@ -4966,11 +4966,11 @@ loc_01F4BA:
 	ldy	#$0440
 	lda	#.loword(anim_05C4CE)
 	jsl	f:spawn_effect_random_offset
-	bcs	loc_01F4E7
+	bcs	@return
 	lda	rng_lo
 	and	#$0003
 	sta	a:$001A,y
-loc_01F4E7:
+@return:
 	rtl
 
 hoverbike_rider_state_05:
@@ -4981,11 +4981,11 @@ hoverbike_rider_state_05:
 	lda	$1A,x
 	sbc	#$0000
 	sta	$1A,x
-	bne	loc_01F500
+	bne	@return
 	lda	#.loword(anim_05CD0B)
 	sta	$20,x
 	inc	$12,x
-loc_01F500:
+@return:
 	rtl
 
 hoverbike_rider_state_06:
@@ -4999,14 +4999,14 @@ hoverbike_rider_state_06:
 	ldy	#$0400
 	lda	#.loword(anim_05C61E)
 	jsl	f:spawn_effect
-	bcs	loc_01F52C
+	bcs	@return
 	lda	#$FFFC
 	sta	a:$001A,y
 	lda	$0A,x
 	sta	a:$000A,y
 	lda	$0E,x
 	sta	a:$000E,y
-loc_01F52C:
+@return:
 	rtl
 
 hoverbike_rider_keep_in_bounds:
@@ -5071,16 +5071,16 @@ hoverbike_rider_drop_bomb:
 	lda	#$0400
 	jsl	f:pick_target_player
 	lda	$0A,x
-	bmi	loc_01F5E2
+	bmi	@return
 	cmp	a:$000A,y
-	bpl	loc_01F5E2
+	bpl	@return
 	lda	#$0080
 	sta	$32,x
 	lda	#$0001
 	sta	$12,x
 	ldy	#$0440
 	jsl	f:find_free_slot_from_y
-	bcs	loc_01F5E2
+	bcs	@return
 	lda	#$0076
 	sta	a:$0010,y
 	lda	$0A,x
@@ -5092,7 +5092,7 @@ hoverbike_rider_drop_bomb:
 	sta	$20,x
 	lda	#$0016
 	jsl	f:queue_sound
-loc_01F5E2:
+@return:
 	rts
 
 ; Object type $76: stage 4: projectile. Not identified exactly.
@@ -5143,11 +5143,11 @@ loc_01F632:
 	rtl
 loc_01F642:
 	lda	stage_frame_odd
-	bne	loc_01F66A
+	bne	@return
 	ldy	#$0440
 	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect
-	bcs	loc_01F66A
+	bcs	@return
 	lda	$0A,x
 	sta	a:$000A,y
 	lda	$0E,x
@@ -5157,7 +5157,7 @@ loc_01F642:
 	and	#$0003
 	adc	#$FFFC
 	sta	a:$001E,y
-loc_01F66A:
+@return:
 	rtl
 
 ; Object type $78: stage 4: projectile. Not identified exactly.

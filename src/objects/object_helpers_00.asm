@@ -218,10 +218,10 @@ loc_00FEE9:
 	stx	zp_B6
 	lda	zp_06
 	cpx	#$0040
-	bcs	loc_00FF00
+	bcs	@return
 	cpx	zp_08
 	bcc	loc_00FEB2
-loc_00FF00:
+@return:
 	rtl
 
 ; Per frame (side-view stages): shake_bg1_y / shake_bg2_y = shake_timer and
@@ -255,7 +255,7 @@ loc_00FF2B:
 	stz	shake_bg2_y
 	rtl
 
-sub_00FF30:
+clear_hdma_line_buffer:
 	lda	#$0000
 	sta	f:wram_7EA000
 	phx

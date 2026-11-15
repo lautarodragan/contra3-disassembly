@@ -66,7 +66,7 @@ update_object_type_55:
 	lda	stage_frame_counter
 	and	#$0007
 	dec	a
-	bne	loc_00CF9D
+	bne	@return
 	lda	stage_frame_counter
 	lsr	a
 	lsr	a
@@ -78,7 +78,7 @@ update_object_type_55:
 	sta	bg_dma_size
 	lda	#$3A90
 	sta	bg_dma_vram_addr
-loc_00CF9D:
+@return:
 	rtl
 
 ; Object type $57: never run in the CDL traces.
@@ -103,7 +103,7 @@ update_object_type_28:
 	pha
 	plb
 	rep	#$20
-loc_00CFB9:
+@loop:
 	.a16
 	lda	zp_02
 	sta	a:$0000,y
@@ -112,7 +112,7 @@ loc_00CFB9:
 	adc	zp_04
 	tay
 	dex
-	bne	loc_00CFB9
+	bne	@loop
 	sep	#$20
 	.a8
 	lda	#^tables_05
@@ -166,13 +166,13 @@ update_bg2_scroll_mode_trigger:
 	rtl
 loc_00D019:
 	lda	a:bg2_screen_drawn
-	beq	loc_00D02B
+	beq	@return
 	lda	$3A,x
 	and	#$000F
 	sta	a:bg2_scroll_mode
 	lda	#$8000
 	sta	$16,x
-loc_00D02B:
+@return:
 	rtl
 
 ; Object type $05: stage trigger: turns bg1_autoscroll on and deletes itself.
@@ -285,9 +285,9 @@ tbl_object_type_06_states:
 object_type_06_state_00:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
-	bne	loc_00D0E5
+	bne	@return
 	inc	$12,x
-loc_00D0E5:
+@return:
 	rtl
 
 object_type_06_state_01:
@@ -325,7 +325,7 @@ loc_00D11D:
 	clc
 	adc	a:wram_1622
 	tay
-loc_00D12C:
+@loop:
 	lda	a:$5000,y
 	and	#$00FF
 	sta	zp_0A
@@ -343,7 +343,7 @@ loc_00D12C:
 	iny
 	tya
 	and	#$0007
-	bne	loc_00D12C
+	bne	@loop
 	inc	a:wram_161C
 	inc	a:wram_161C
 	lda	a:wram_161C
@@ -390,9 +390,9 @@ loc_00D19D:
 	adc	#$0020
 	sta	a:wram_1620
 	cmp	#$1000
-	bcc	loc_00D1BC
+	bcc	@return
 	inc	$12,x
-loc_00D1BC:
+@return:
 	rtl
 
 object_type_06_state_03:
@@ -497,7 +497,7 @@ loc_00D29A:
 	phx
 	ldy	#$0300
 	ldx	#$0004
-loc_00D2B7:
+@loop:
 	lda	#OBJT_BOMBER_BOMB
 	sta	a:$0010,y
 	lda	#.loword(anim_059F12)
@@ -522,7 +522,7 @@ loc_00D2B7:
 	tay
 	dex
 	dex
-	bne	loc_00D2B7
+	bne	@loop
 	plx
 
 object_type_06_state_05:
@@ -624,10 +624,10 @@ loc_00D3C0:
 	ldy	#$0300
 	lda	#.loword(anim_05C4CE)
 	jsl	f:spawn_effect_random_offset
-	bcs	loc_00D3E6
+	bcs	@return
 	lda	#$FFFC
 	sta	a:$001E,y
-loc_00D3E6:
+@return:
 	rtl
 
 object_type_06_state_08:
@@ -646,7 +646,7 @@ object_type_06_state_08:
 	rep	#$20
 	.a16
 	sep	#$20
-loc_00D401:
+@loop:
 	.a8
 	lda	a:$A000,y
 	ora	f:data_059F2A,x
@@ -681,7 +681,7 @@ loc_00D401:
 	sep	#$20
 	.a8
 	dec	zp_02
-	bne	loc_00D401
+	bne	@loop
 	rep	#$20
 	.a16
 	sep	#$20
@@ -734,7 +734,7 @@ loc_00D48E:
 ; type $2F one. Not identified.
 update_object_type_2A:
 	ldy	#$09C0
-loc_00D4BF:
+@loop:
 	lda	a:$0010,y
 	cmp	#$0006
 	beq	loc_00D4D2
@@ -744,7 +744,7 @@ loc_00D4BF:
 	adc	#$0040
 	tay
 	cmp	#$0AC0
-	bcc	loc_00D4BF
+	bcc	@loop
 loc_00D4D2:
 	lda	a:$0012,y
 	inc	a
@@ -752,13 +752,13 @@ loc_00D4D2:
 	lda	#$8000
 	sta	$16,x
 	ldy	#$0280
-loc_00D4E1:
+@loop:
 	lda	a:$0010,y
 	cmp	#$002F
 	beq	loc_00D4EE
 	; (not executed in the CDL traces)
 	ldy	#$02C0
-	bra	loc_00D4E1
+	bra	@loop
 loc_00D4EE:
 	lda	#$8000
 	sta	a:$0016,y
@@ -867,7 +867,7 @@ add_line_scroll_ramp:
 	pha
 	plb
 	rep	#$20
-loc_00D5C0:
+@loop:
 	.a16
 	clc
 	lda	a:$E800,y
@@ -886,7 +886,7 @@ loc_00D5C0:
 	dey
 	dey
 	cpy	zp_04
-	bne	loc_00D5C0
+	bne	@loop
 	sep	#$20
 	.a8
 	lda	#^tables_05

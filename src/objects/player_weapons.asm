@@ -23,10 +23,10 @@ update_spin_flag:
 	beq	loc_018017
 	lda	PLAYER_JOY_HELD,x
 	and	#$0030
-	beq	loc_018016
+	beq	@return
 	cmp	#$0030
 	beq	loc_018017
-loc_018016:
+@return:
 	rtl
 loc_018017:
 	inc	a:PLAYER_SPIN,x
@@ -38,11 +38,11 @@ loc_018017:
 check_bomb_button:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_bomb
-	beq	loc_01804D
+	beq	@return
 	lda	a:PLAYER_BOMB_RADIUS,x
-	bne	loc_01804D
+	bne	@return
 	lda	a:PLAYER_BOMBS,x
-	beq	loc_01804D
+	beq	@return
 	inc	a:PLAYER_BOMB_RADIUS,x
 	dec	a:PLAYER_BOMBS,x
 	stz	a:PLAYER_BOMB_SPEED_SUB,x
@@ -54,7 +54,7 @@ check_bomb_button:
 	sta	a:PLAYER_BOMB_Y,x
 	lda	#$005A
 	jsl	f:queue_sound
-loc_01804D:
+@return:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
@@ -170,9 +170,9 @@ loc_01810A:
 	rtl
 loc_01811B:
 	bit	#$8000
-	beq	loc_018123
+	beq	@return
 	dec	a:wram_1612
-loc_018123:
+@return:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
@@ -271,7 +271,7 @@ loc_0181E1:
 make_players_invulnerable:
 	phx
 	ldx	#$0200
-loc_0181EC:
+@loop:
 	clc
 	lda	stage_frame_mod4
 	adc	#$FFFC
@@ -282,7 +282,7 @@ loc_0181EC:
 	cpx	#$0240
 	beq	loc_018205
 	ldx	#$0240
-	bra	loc_0181EC
+	bra	@loop
 loc_018205:
 	plx
 	rtl
@@ -340,16 +340,16 @@ loc_01824D:
 	sta	OBJ_Y,x
 	lda	a:$0012,y
 	cmp	#PLAYER_STATE_BIKE
-	beq	loc_018272
+	beq	@return
 	cmp	#PLAYER_STATE_BIKE_INTRO
-	beq	loc_018272
+	beq	@return
 	lda	a:$0016,y
-	beq	loc_018272
-	bmi	loc_018272
+	beq	@return
+	bmi	@return
 	inc	OBJ_STATE,x
 	lda	#.loword(metasprite_06CB8B)
 	sta	OBJ_SPRITE,x
-loc_018272:
+@return:
 	rtl
 
 player_bike_state_02:
@@ -944,11 +944,11 @@ loc_0186D7:
 	; (not executed in the CDL traces)
 	jsl	f:snap_x_right_if_moving_left
 	lda	zp_C4
-	beq	loc_0186E6
-	bmi	loc_0186E6
+	beq	@return
+	bmi	@return
 	lda	#$000D
 	sta	OBJ_STATE,x
-loc_0186E6:
+@return:
 	rtl
 loc_0186E7:
 	lda	#$0006
@@ -959,22 +959,22 @@ loc_0186E7:
 loc_0186F5:
 	jsl	f:snap_x_left_if_moving_right
 	lda	zp_C4
-	beq	loc_018704
+	beq	@return
 	; (not executed in the CDL traces)
-	bmi	loc_018704
+	bmi	@return
 	lda	#$000D
 	sta	OBJ_STATE,x
-loc_018704:
+@return:
 	rtl
 loc_018705:
 	lda	zp_C4
-	beq	loc_018715
+	beq	@return
 	lda	#$000D
 	sta	OBJ_STATE,x
 	lda	zp_C4
-	bpl	loc_018715
+	bpl	@return
 	brl	snap_y_down_to_tile
-loc_018715:
+@return:
 	rtl
 loc_018716:
 	; (not executed in the CDL traces)
@@ -1026,9 +1026,9 @@ loc_018762:
 	sta	OBJ_STATE,x
 	jsl	f:snap_x_left_to_tile
 	lda	zp_C4
-	bpl	loc_01878B
+	bpl	@return
 	brl	snap_y_up_to_tile
-loc_01878B:
+@return:
 	rtl
 loc_01878C:
 	stz	zp_00
@@ -1040,9 +1040,9 @@ loc_01878C:
 	sta	OBJ_STATE,x
 	jsl	f:snap_x_right_to_tile
 	lda	zp_C4
-	bpl	loc_0187A9
+	bpl	@return
 	brl	snap_y_up_to_tile
-loc_0187A9:
+@return:
 	rtl
 loc_0187AA:
 	lda	#$FFF8
@@ -1079,9 +1079,9 @@ loc_0187E6:
 	lda	#$0000
 	sta	OBJ_STATE,x
 	lda	zp_C4
-	bpl	loc_0187F6
+	bpl	@return
 	brl	snap_y_up_to_tile
-loc_0187F6:
+@return:
 	rtl
 loc_0187F7:
 	stz	zp_00
@@ -1109,10 +1109,10 @@ loc_018812:
 loc_01882B:
 	jsl	f:classify_hang_bar_tiles
 	lda	zp_C4
-	beq	loc_018838
+	beq	@return
 	lda	#$0001
 	sta	OBJ_STATE,x
-loc_018838:
+@return:
 	rtl
 
 ; Body box and PLAYER_CENTER_X/Y while jumping (smaller).  RTS.
@@ -1944,9 +1944,9 @@ animate_player_walk:
 loc_018F62:
 	lda	PLAYER_POSE,x
 	cmp	#$000C
-	bcc	loc_018F6B
+	bcc	@return
 	stz	PLAYER_POSE,x
-loc_018F6B:
+@return:
 	rtl
 
 ; Body box (x .. x+6, y-36 .. y) and PLAYER_CENTER_X/Y on the ground.  RTS.
@@ -2505,10 +2505,10 @@ climb_right_check_ceiling:
 	lda	#$FFD0
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	beq	loc_0193AB
+	beq	@return
 	jsl	f:snap_y_down_to_tile
 	lda	#$000E
-loc_0193AB:
+@return:
 	rtl
 
 ; Climbing: a solid tile under the feet (x) lands the player (snap up, A =
@@ -2517,10 +2517,10 @@ climb_right_check_floor:
 	stz	zp_00
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
-	beq	loc_0193BD
+	beq	@return
 	jsl	f:snap_y_up_to_tile
 	lda	#$0001
-loc_0193BD:
+@return:
 	rtl
 
 ; Climbing animation: poses $54-$57, one step every 8 frames.
@@ -3438,11 +3438,11 @@ climb_left_check_ceiling:
 	lda	#$FFD0
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	beq	loc_019A60
+	beq	@return
 	; (not executed in the CDL traces)
 	jsl	f:snap_y_down_to_tile
 	lda	#$000E
-loc_019A60:
+@return:
 	rtl
 
 ; As climb_right_check_floor, at x+6.
@@ -3451,10 +3451,10 @@ climb_left_check_floor:
 	sta	zp_00
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
-	beq	loc_019A75
+	beq	@return
 	jsl	f:snap_y_up_to_tile
 	lda	#$0001
-loc_019A75:
+@return:
 	rtl
 ; Entered (JML) by the state handlers when PLAYER_CONTACT has
 ; PCONTACT_KILLED: death sound ($3F, or $43 when below the screen), thrown
@@ -3614,7 +3614,7 @@ loc_019B9C:
 ; State $0E: if lives remain, resets the player and goes to state $0F.
 player_state_out:
 	lda	a:PLAYER_LIVES,x
-	beq	loc_019BC7
+	beq	@return
 	stz	OBJ_X,x
 	stz	OBJ_Y,x
 	stz	OBJ_SPRITE,x
@@ -3632,7 +3632,7 @@ player_state_out:
 	lda	#$000F
 	sta	OBJ_STATE,x
 	stz	a:PLAYER_BARRIER,x
-loc_019BC7:
+@return:
 	rtl
 
 ; State $0F: places the player by wram_1672 (tbl_respawn_placement) and
@@ -3904,11 +3904,11 @@ loc_019D93:
 	brl	snap_x_right_to_tile
 loc_019DA1:
 	lda	zp_C4
-	beq	loc_019DAA
-	bpl	loc_019DAA
+	beq	@return
+	bpl	@return
 	; (not executed in the CDL traces)
 	brl	snap_y_down_to_tile
-loc_019DAA:
+@return:
 	rtl
 
 ; Thrown back, falling: floor and wall collision; on the floor, state 0
@@ -3939,10 +3939,10 @@ loc_019DB5:
 	beq	loc_019DEE
 	jsl	f:snap_x_left_to_tile
 	lda	zp_C4
-	beq	loc_019DED
-	bmi	loc_019DED
+	beq	@return
+	bmi	@return
 	stz	OBJ_STATE,x
-loc_019DED:
+@return:
 	rtl
 loc_019DEE:
 	stz	zp_00
@@ -3951,19 +3951,19 @@ loc_019DEE:
 	beq	loc_019E06
 	jsl	f:snap_x_right_to_tile
 	lda	zp_C4
-	beq	loc_019E05
-	bmi	loc_019E05
+	beq	@return
+	bmi	@return
 	stz	OBJ_STATE,x
-loc_019E05:
+@return:
 	rtl
 loc_019E06:
 	lda	zp_C4
-	beq	loc_019E13
+	beq	@return
 	stz	OBJ_STATE,x
 	lda	zp_C4
-	bpl	loc_019E13
+	bpl	@return
 	brl	snap_y_up_to_tile
-loc_019E13:
+@return:
 	rtl
 
 ; Sets the state, y velocity and pose of respawn mode wram_1672

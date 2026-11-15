@@ -11,7 +11,7 @@ delete_self_and_linked:
 	sta	OBJ_FLAGS,x
 	txy
 	ldx	#$0280
-loc_019E4D:
+@loop:
 	lda	OBJ_TYPE,x
 	cmp	a:$003A,y
 	beq	loc_019E61
@@ -20,7 +20,7 @@ loc_019E4D:
 	adc	#$0040
 	tax
 	cmp	#$0AC0
-	bcc	loc_019E4D
+	bcc	@loop
 	; (not executed in the CDL traces)
 	tyx
 	rtl
@@ -40,12 +40,12 @@ flash_palette_on_hit:
 	lda	OBJ_SAVED_ATTR,x
 	bne	loc_019E80
 	lda	OBJ_HIT,x
-	beq	loc_019E7F
+	beq	@return
 	inc	OBJ_SAVED_ATTR,x
 	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	sty	cgram_upload_addr
-loc_019E7F:
+@return:
 	rtl
 loc_019E80:
 	; (not executed in the CDL traces)
@@ -160,11 +160,11 @@ loc_019EFE:
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$0002
-	beq	loc_019F19
+	beq	@return
 	lda	#$0004
 	sta	$38,x
 	brl	snap_x_left_to_tile
-loc_019F19:
+@return:
 	rtl
 
 ; Makes the object at X solid for each present player (solid_object_vs_player).
@@ -297,7 +297,7 @@ tbl_solid_push_left:
 ; object, PCONTACT_ON_OBJECT.
 solid_push_player_up:
 	lda	a:OBJ_Y_VEL,y
-	bmi	loc_01A005
+	bmi	@return
 	lda	#$0000
 	sta	a:OBJ_Y_VEL,y
 	sta	a:OBJ_Y_VEL_SUB,y
@@ -305,7 +305,7 @@ solid_push_player_up:
 	lda	#$0080
 	ora	a:PLAYER_CONTACT,y
 	sta	a:PLAYER_CONTACT,y
-loc_01A005:
+@return:
 	rtl
 
 ; The player hit the right side of the object: put it right of it,
@@ -533,10 +533,10 @@ object_follow_floor:
 	pla
 	sta	$0A,x
 	lda	zp_FC
-	beq	loc_01A189
+	beq	@return
 	stz	$1C,x
 	stz	$1E,x
-loc_01A189:
+@return:
 	rtl
 
 object_check_floor_tiles:
@@ -944,7 +944,7 @@ loc_01A438:
 	tax
 	lda	#$0008
 	sta	zp_FC
-loc_01A459:
+@loop:
 	lda	#$0180
 	sta	f:$7EE000,x
 	lda	zp_08
@@ -952,7 +952,7 @@ loc_01A459:
 	dex
 	dex
 	dec	zp_FC
-	bpl	loc_01A459
+	bpl	@loop
 	plx
 	lda	a:trail_buffers_used
 	ora	zp_14
@@ -1055,7 +1055,7 @@ loc_01A50A:
 ; chain (field $3E).
 trail_pass_to_next:
 	ldy	$3E,x
-	beq	loc_01A52B
+	beq	@return
 	lda	$0A,x
 	sta	a:$001C,y
 	lda	$0E,x
@@ -1064,14 +1064,14 @@ trail_pass_to_next:
 	sta	a:$0008,y
 	lda	$02,x
 	sta	a:$001A,y
-loc_01A52B:
+@return:
 	rtl
 
 ; Deletes the segments linked from X and frees their ring buffers
 ; (trail_buffers_used).
 delete_trail_chain:
 	phx
-loc_01A52D:
+@loop:
 	ldy	$3E,x
 	beq	loc_01A546
 	lda	#$8000
@@ -1081,7 +1081,7 @@ loc_01A52D:
 	and	a:trail_buffers_used
 	sta	a:trail_buffers_used
 	tyx
-	bra	loc_01A52D
+	bra	@loop
 loc_01A546:
 	plx
 	rtl

@@ -196,17 +196,17 @@ loc_01A687:
 	jsl	f:set_player_frame
 loc_01A6B0:
 	lda	a:p2_lives
-	beq	loc_01A6CE
+	beq	@return
 	ldx	#$0240
 	jsl	f:run_player_state
 	lda	stage_frame_odd
-	bne	loc_01A6CE
+	bne	@return
 	lda	#$6200
 	sta	zp_B8
 	lda	#$6300
 	sta	zp_BA
 	jsl	f:set_player_frame
-loc_01A6CE:
+@return:
 	rtl
 
 ; In: A = OBJ_ATTR for this frame (palette), X = player.  Clears
@@ -829,7 +829,7 @@ loc_01AB2F:
 	txy
 	ldx	#$159E
 	phx
-loc_01AB54:
+@loop:
 	plx
 	inx
 	inx
@@ -838,31 +838,31 @@ loc_01AB54:
 	phx
 	tax
 	lda	OBJ_HP,x
-	bmi	loc_01AB54
+	bmi	@loop
 	lda	zp_00
 	cmp	OBJ_X,x
-	bmi	loc_01AB54
+	bmi	@loop
 	lda	zp_06
 	cmp	OBJ_Y,x
-	bpl	loc_01AB54
+	bpl	@loop
 	lda	zp_04
 	cmp	OBJ_HITBOX_TOP,x
-	bmi	loc_01AB54
+	bmi	@loop
 	lda	zp_02
 	cmp	OBJ_HITBOX_RIGHT,x
-	bpl	loc_01AB54
+	bpl	@loop
 	lda	#$0100
 	sta	OBJ_HIT,x
 	lda	OBJ_FLAGS,x
 	bit	#$0010
-	beq	loc_01AB54
+	beq	@loop
 	bit	#$0020
-	bne	loc_01AB54
+	bne	@loop
 	sec
 	lda	OBJ_HP,x
 	sbc	#$0001
 	sta	OBJ_HP,x
-	bpl	loc_01AB54
+	bpl	@loop
 	phy
 	lda	OBJ_TYPE,x
 	asl	a
@@ -873,7 +873,7 @@ loc_01AB54:
 	tyx
 	jsl	f:add_score_for_player_obj
 	plx
-	bra	loc_01AB54
+	bra	@loop
 loc_01ABA6:
 	tyx
 loc_01ABA7:
@@ -1068,12 +1068,12 @@ loc_01ACDF:
 	and	#$00FF
 	sta	PLAYER_POSE,x
 	lda	$30,x
-	bne	loc_01AD08
+	bne	@return
 	lda	a:PLAYER_SPIN,x
 	beq	loc_01AD09
 	lda	PLAYER_JOY_HELD,x
 	bit	button_fire
-	beq	loc_01AD08
+	beq	@return
 	lda	#$FFFA
 	sta	OBJ_Y_VEL,x
 	lda	#$070A
@@ -1081,7 +1081,7 @@ loc_01ACDF:
 	stz	$34,x
 	stz	$36,x
 	inc	OBJ_STATE,x
-loc_01AD08:
+@return:
 	rtl
 loc_01AD09:
 	lda	#$0000
@@ -1375,9 +1375,9 @@ loc_01AF24:
 loc_01AF32:
 	lda	PLAYER_POSE,x
 	cmp	#$0004
-	bcc	loc_01AF3B
+	bcc	@return
 	stz	PLAYER_POSE,x
-loc_01AF3B:
+@return:
 	rtl
 
 ; Wall tiles (collision bit 1) 32 pixels above the feet at x and x+6: climb

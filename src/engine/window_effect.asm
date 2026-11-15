@@ -123,7 +123,7 @@ copy_window_hdma_lines:
 	clc
 	adc	#$0010
 	sta	zp_FC
-loc_00E8CC:
+@loop:
 	sep	#$20
 	.a8
 	lda	#$7E
@@ -138,9 +138,9 @@ loc_00E8CC:
 	iny
 	iny
 	cpy	zp_FC
-	bcc	loc_00E8CC
+	bcc	@loop
 	ldx	zp_C6
-loc_00E8E4:
+@loop2:
 	sep	#$20
 	.a8
 	lda	a:$0001,x
@@ -150,7 +150,7 @@ loc_00E8E4:
 	inx
 	inx
 	cpx	zp_FC
-	bcc	loc_00E8E4
+	bcc	@loop2
 	; (not executed in the CDL traces)
 	sep	#$20
 	lda	#^tables_05
@@ -204,7 +204,7 @@ loc_00E927:
 	pha
 	plb
 	rep	#$20
-loc_00E93E:
+@loop:
 	.a16
 	lda	f:data_05A3AA,x
 	and	#$00FF
@@ -218,7 +218,7 @@ loc_00E93E:
 	and	#$007F
 	tax
 	dec	zp_FC
-	bne	loc_00E93E
+	bne	@loop
 	sep	#$20
 	.a8
 	lda	#^tables_05

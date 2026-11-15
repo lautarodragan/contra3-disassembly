@@ -98,7 +98,7 @@ loc_00DE3D:
 	tay
 	adc	#$0040
 	sta	zp_00
-loc_00DE53:
+@loop:
 	lda	a:$0010,y
 	beq	loc_00DE63
 	tya
@@ -106,7 +106,7 @@ loc_00DE53:
 	adc	#$0020
 	tay
 	cmp	zp_00
-	bcc	loc_00DE53
+	bcc	@loop
 	rtl
 loc_00DE63:
 	lda	rng_lo
@@ -247,13 +247,13 @@ loc_00DF38:
 
 update_shot_type_05:
 	dec	$00,x
-	bpl	loc_00DF72
+	bpl	@return
 	lda	#$8000
 	sta	$0A,x
 	lda	#$3F62
 	sta	$02,x
 	stz	$12,x
-loc_00DF72:
+@return:
 	rtl
 
 update_shot_type_06:
@@ -297,7 +297,7 @@ loc_00DFA9:
 	tay
 	adc	#$0100
 	sta	zp_00
-loc_00DFBA:
+@loop:
 	lda	a:$0010,y
 	beq	loc_00DFCA
 	tya
@@ -305,7 +305,7 @@ loc_00DFBA:
 	adc	#$0020
 	tay
 	cmp	zp_00
-	bcc	loc_00DFBA
+	bcc	@loop
 	rtl
 loc_00DFCA:
 	lda	rng_lo
@@ -346,7 +346,7 @@ update_shot_type_07:
 	clc
 	adc	#$0140
 	sta	zp_00
-loc_00E019:
+@loop:
 	lda	$30,x
 	beq	loc_00E029
 	txa
@@ -354,7 +354,7 @@ loc_00E019:
 	adc	#$0020
 	tax
 	cmp	zp_00
-	bcc	loc_00E019
+	bcc	@loop
 	plx
 	rtl
 loc_00E029:
@@ -396,12 +396,12 @@ update_laser_shot:
 	lda	$04,x
 	beq	update_shot_type_09
 	dec	$04,x
-	bne	loc_00E071
+	bne	@return
 	lda	#$0003
 	sta	$06,x
 	lda	$14,x
 	sta	$02,x
-loc_00E071:
+@return:
 	rtl
 
 update_shot_type_09:
@@ -468,10 +468,10 @@ loc_00E0C7:
 update_shot_type_0E:
 	; (not executed in the CDL traces)
 	dec	$04,x
-	bne	loc_00E0DC
+	bne	@return
 	lda	#$8000
 	sta	$0A,x
-loc_00E0DC:
+@return:
 	rtl
 
 update_shot_type_10:
@@ -498,10 +498,10 @@ loc_00E0FC:
 update_shot_type_13:
 	; (not executed in the CDL traces)
 	dec	$04,x
-	bne	loc_00E10B
+	bne	@return
 	lda	#$8000
 	sta	$0A,x
-loc_00E10B:
+@return:
 	rtl
 
 ; Shot type $15: a shot that hit without destroying its target, flying back

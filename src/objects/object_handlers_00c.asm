@@ -73,7 +73,7 @@ stage1_boss_controller_state_00:
 stage1_boss_controller_state_01:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
-	bne	loc_00F319
+	bne	@return
 	stz	hdma_preset
 	inc	$12,x
 	lda	#$0080
@@ -84,9 +84,9 @@ stage1_boss_controller_state_01:
 	ldy	#.loword(palette_05AA28)
 	jsl	f:start_palette_task
 	ldx	zp_FC
-	jsl	f:sub_00FF30
+	jsl	f:clear_hdma_line_buffer
 	jsr	a:stage1_boss_init_hdma_table
-loc_00F319:
+@return:
 	rtl
 
 stage1_boss_controller_state_02:
@@ -266,7 +266,7 @@ loc_00F46D:
 ; random around the boss.
 stage1_boss_death_explosions:
 	lda	$32,x
-	beq	loc_00F4B6
+	beq	@return
 	jsl	f:queue_sound_6E_throttled
 	lda	$0A,x
 	adc	#$FFE0
@@ -281,10 +281,10 @@ stage1_boss_death_explosions:
 	ldy	#$0280
 	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
-	bcs	loc_00F4B6
+	bcs	@return
 	lda	#$FFFD
 	sta	a:$001E,y
-loc_00F4B6:
+@return:
 	rts
 
 stage1_boss_queue_face_tiles:
@@ -336,7 +336,7 @@ spawn_stage1_boss_wall_chunks:
 	phx
 	ldx	#$0300
 	ldy	#$0000
-loc_00F51B:
+@loop:
 	lda	#$0022
 	sta	$10,x
 	lda	#$0001
@@ -361,7 +361,7 @@ loc_00F51B:
 	adc	#$0040
 	tax
 	cmp	#$0400
-	bcc	loc_00F51B
+	bcc	@loop
 	plx
 	lda	#$0008
 	sta	$34,x
@@ -373,18 +373,18 @@ stage1_boss_push_wall:
 	lda	$24,x
 	beq	loc_00F572
 	dec	$24,x
-	bne	loc_00F571
+	bne	@return
 	lda	$30,x
 	eor	#$0002
 	sta	$30,x
 	lda	#$0020
 	sta	a:boss_work_7
 	brl	loc_00F5B1
-loc_00F571:
+@return:
 	rts
 loc_00F572:
 	dec	a:boss_work_7
-	bpl	loc_00F5B0
+	bpl	@return
 	lda	#$0020
 	sta	$24,x
 	stz	a:wram_0318
@@ -404,7 +404,7 @@ loc_00F572:
 	lda	#$0056
 	jsl	f:queue_sound
 	dec	$34,x
-loc_00F5B0:
+@return:
 	rts
 loc_00F5B1:
 	phx
@@ -508,12 +508,12 @@ stage1_boss_init_hdma_table:
 	phx
 	ldx	#$0000
 	lda	#$0008
-loc_00F665:
+@loop:
 	sta	f:$7EA046,x
 	inx
 	inx
 	cpx	#$003A
-	bcc	loc_00F665
+	bcc	@loop
 	plx
 	rts
 
@@ -744,7 +744,7 @@ loc_00F820:
 loc_00F828:
 	phx
 	ldx	#$0000
-loc_00F82C:
+@loop:
 	clc
 	lda	f:$7EA0C6,x
 	adc	zp_00
@@ -757,7 +757,7 @@ loc_00F82C:
 	inx
 	inx
 	cpx	#$0020
-	bcc	loc_00F82C
+	bcc	@loop
 	plx
 	rts
 
@@ -805,7 +805,7 @@ loc_00F890:
 	lda	#$0020
 loc_00F897:
 	sta	zp_08
-loc_00F899:
+@loop:
 	clc
 	lda	f:$7EA0C6,x
 	adc	a:data_05921A,y
@@ -828,7 +828,7 @@ loc_00F899:
 	inx
 	inx
 	cpx	zp_08
-	bcc	loc_00F899
+	bcc	@loop
 	plx
 	rts
 
@@ -868,7 +868,7 @@ spawn_stage1_boss_parts:
 	phx
 	ldx	#$0400
 	ldy	#$0000
-loc_00F90E:
+@loop:
 	lda	a:data_05AADA,y
 	sta	$10,x
 	lda	a:data_05AAD4,y
@@ -888,7 +888,7 @@ loc_00F90E:
 	adc	#$0040
 	tax
 	cpy	#$0006
-	bcc	loc_00F90E
+	bcc	@loop
 	ldy	difficulty
 	lda	#$0160
 	sta	a:wram_0406
@@ -903,12 +903,12 @@ stage1_boss_build_head_hdma:
 	ora	#$4000
 	phx
 	ldx	#$0000
-loc_00F956:
+@loop:
 	sta	f:$7EA006,x
 	inx
 	inx
 	cpx	#$0020
-	bcc	loc_00F956
+	bcc	@loop
 	lda	a:boss_work_1
 	bit	#$0100
 	beq	loc_00F98C
@@ -920,7 +920,7 @@ loc_00F956:
 	lda	#$00F8
 	dex
 	dex
-loc_00F976:
+@loop2:
 	dec	zp_00
 	bmi	loc_00F98C
 	clc
@@ -930,7 +930,7 @@ loc_00F976:
 	sta	f:$7EA006,x
 	dex
 	dex
-	bra	loc_00F976
+	bra	@loop2
 loc_00F98C:
 	plx
 	rts
@@ -1035,7 +1035,7 @@ stage1_boss_fire_falling_shot:
 	bne	loc_00FA54
 	ldy	#$0500
 	jsl	f:find_free_slot_from_y
-	bcs	loc_00FABF
+	bcs	@return
 	phx
 	lda	#OBJT_STAGE1_BOSS_FALLING_SHOT
 	sta	a:$0010,y
@@ -1069,7 +1069,7 @@ stage1_boss_fire_falling_shot:
 	lda	#$FFFF
 	sta	a:$001E,y
 	plx
-loc_00FABF:
+@return:
 	rts
 
 ; Object type $26: stage 1 boss projectile that follows the player's height
@@ -1169,12 +1169,12 @@ loc_00FB6B:
 
 stage1_boss_spawn_fire:
 	lda	$3A,x
-	bne	loc_00FBAA
+	bne	@return
 	inc	$3A,x
 	lda	#.loword(anim_05AB14)
 	ldy	#$0500
 	jsl	f:spawn_effect
-	bcs	loc_00FBAA
+	bcs	@return
 	lda	#OBJT_STAGE1_BOSS_FIRE
 	sta	a:$0010,y
 	lda	#$1200
@@ -1188,14 +1188,14 @@ stage1_boss_spawn_fire:
 	lda	#$0080
 	sta	a:$0024,y
 	sta	a:$0004,y
-loc_00FBAA:
+@return:
 	rts
 
 stage1_boss_spawn_fire_stream_shot:
 	lda	#.loword(anim_05AB22)
 	ldy	#$0500
 	jsl	f:spawn_effect
-	bcs	loc_00FBE1
+	bcs	@return
 	lda	#$000F
 	sta	a:$0016,y
 	lda	a:wram_044A
@@ -1210,7 +1210,7 @@ stage1_boss_spawn_fire_stream_shot:
 	sta	a:$0028,y
 	lda	#$FFF8
 	sta	a:$002A,y
-loc_00FBE1:
+@return:
 	rts
 
 ; Object type $1F: stage 1 boss, the head (invulnerable target in slot $0440;
@@ -1323,10 +1323,10 @@ loc_00FCA0:
 	jml	f:loc_00FE7D
 loc_00FCBD:
 	lda	$14,x
-	beq	loc_00FCC8
+	beq	@return
 	lda	#$000F
 	jml	f:queue_sound
-loc_00FCC8:
+@return:
 	rtl
 loc_00FCC9:
 	dec	$24,x
@@ -1346,7 +1346,7 @@ loc_00FCD2:
 	sta	zp_06
 	ldy	#$0500
 	jsl	f:spawn_effect_random_offset
-	bcs	loc_00FD11
+	bcs	@return
 	lda	#.loword(anim_05C516)
 	sta	a:$0020,y
 	phx
@@ -1360,7 +1360,7 @@ loc_00FCD2:
 	plx
 	lda	#$FFFE
 	sta	a:$001E,y
-loc_00FD11:
+@return:
 	rtl
 
 ; Object type $22: stage 1 boss, chunks of the metal wall it bursts through
