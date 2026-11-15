@@ -6,7 +6,7 @@
 ; is set, with the shape routines in effects/window_shapes.asm.
 
 sub_00E7EF:
-	lda	zp_BC
+	lda	stage_frame_odd
 	asl	a
 	tay
 	lda	a:p2_lives
@@ -173,7 +173,7 @@ sub_00E913:
 	ldy	#$0F20
 loc_00E927:
 	sty	zp_00
-	lda	zp_78
+	lda	stage_frame_counter
 	asl	a
 	asl	a
 	eor	#$FFFF

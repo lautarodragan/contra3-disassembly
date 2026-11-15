@@ -5,12 +5,12 @@
 ; bank $1D.
 
 sub_02FCCB:
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$007F
 	bne	loc_02FD09
 	jsr	a:sub_02FD0E
 	bcs	loc_02FD09
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$0180
 	asl	a
 	xba

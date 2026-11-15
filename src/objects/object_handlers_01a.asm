@@ -214,7 +214,7 @@ sub_01B339:
 	inc	$12,x
 loc_01B353:
 	ldy	#$AC97
-	lda	zp_E4
+	lda	stage_frame_bit1
 	bne	loc_01B35D
 	ldy	#$ACA7
 loc_01B35D:
@@ -288,7 +288,7 @@ loc_01B3CA:
 	sta	$12,x
 	rtl
 loc_01B3E0:
-	lda	zp_E4
+	lda	stage_frame_bit1
 	bne	loc_01B3F2
 	lda	#$B600
 	sta	zp_FC
@@ -350,7 +350,7 @@ loc_01B457:
 	dec	$30,x
 loc_01B459:
 	ldy	difficulty
-	lda	zp_78
+	lda	stage_frame_counter
 	and	a:data_05AC61,y
 	bne	loc_01B4CC
 	jsl	f:sub_019EAB
@@ -447,7 +447,7 @@ sub_01B521:
 	lda	#$0001
 	sta	a:wram_13BA
 	lda	#$0001
-	sta	a:wram_1E40
+	sta	a:stage_checkpoint
 	rtl
 
 sub_01B539:
@@ -611,7 +611,7 @@ loc_01B651:
 	sta	$1A,x
 	bra	loc_01B682
 loc_01B662:
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$007F
 	bne	loc_01B682
 	lda	#$0000
@@ -632,7 +632,7 @@ loc_01B682:
 	sta	zp_02
 	lda	#$0018
 	sta	zp_08
-	lda	zp_E4
+	lda	stage_frame_bit1
 	bne	loc_01B69E
 	ldy	#$AF25
 	bra	loc_01B6A1
@@ -663,7 +663,7 @@ sub_01B6AB:
 	plx
 	bra	loc_01B6E3
 loc_01B6D1:
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_01B6E3
 	sec
 	lda	#$0140
@@ -704,7 +704,7 @@ sub_01B712:
 	bcs	loc_01B74B
 loc_01B723:
 	; (not executed in the CDL traces)
-	lda	zp_C0
+	lda	stage_frame_mod8
 	bne	loc_01B74B
 	lda	$0A,x
 	sta	zp_00
@@ -858,7 +858,7 @@ loc_01B849:
 loc_01B85E:
 	inc	a:shake_continuous
 loc_01B861:
-	lda	zp_BE
+	lda	stage_frame_mod4
 	bne	loc_01B89B
 	lda	#$0003
 	sta	zp_02
@@ -922,7 +922,7 @@ loc_01B8C6:
 loc_01B8D5:
 	lda	a:wram_165A
 	bne	loc_01B861
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_01B8FA
 	lda	$0A,x
 	sta	zp_00
@@ -940,7 +940,7 @@ loc_01B8FA:
 	lda	$24,x
 	cmp	#$0060
 	bcs	loc_01B90D
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_01B90D
 	sta	f:wram_7E3807
 	rtl
@@ -1488,7 +1488,7 @@ loc_01BCED:
 	sta	a:$0032,y
 	bra	loc_01BCD8
 loc_01BD30:
-	lda	zp_BE
+	lda	stage_frame_mod4
 	cmp	#$0003
 	bne	loc_01BD3B
 	jsl	f:sub_01C302
@@ -1748,7 +1748,7 @@ loc_01BF16:
 	lda	$1E,x
 	adc	#$0000
 	sta	$1E,x
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_01BF52
 	ldy	#$0700
 	jsl	f:sub_019EC1
@@ -2196,7 +2196,7 @@ loc_01C28A:
 	rtl
 
 sub_01C28B:
-	lda	zp_C0
+	lda	stage_frame_mod8
 	cmp	#$0001
 	bne	loc_01C2AF
 	jsl	f:sub_01C302
@@ -2255,7 +2255,7 @@ loc_01C2E1:
 	sta	$32,x
 
 sub_01C2FB:
-	lda	zp_BE
+	lda	stage_frame_mod4
 	cmp	#$0001
 	bne	loc_01C31B
 
@@ -2285,7 +2285,7 @@ loc_01C324:
 	sta	$16,x
 	rtl
 loc_01C32E:
-	lda	zp_C0
+	lda	stage_frame_mod8
 	bne	loc_01C354
 	ldy	#$0300
 	lda	#$C4CE
@@ -2436,7 +2436,7 @@ loc_01C441:
 	rtl
 loc_01C44E:
 	ldy	difficulty
-	lda	zp_78
+	lda	stage_frame_counter
 	and	a:data_05B09A,y
 	bne	loc_01C48F
 	lda	#$0800
@@ -2662,7 +2662,7 @@ loc_01C622:
 
 sub_01C629:
 	jsl	f:sub_01B956
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$000F
 	bne	loc_01C636
 	inc	$12,x
@@ -2673,7 +2673,7 @@ sub_01C637:
 	lda	#$0004
 	sta	a:shake_timer
 	jsl	f:sub_01B956
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_01C66B
 	lda	#$00A0
 	sta	zp_00
@@ -2693,7 +2693,7 @@ loc_01C66B:
 	stx	zp_FA
 	lda	#$0030
 	sta	zp_08
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$000F
 	cmp	#$0004
 	bcs	sub_01C6EB
@@ -2741,7 +2741,7 @@ loc_01C6B2:
 	adc	zp_0C
 	jsl	f:sub_00FEA3
 	ldx	zp_FA
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$000F
 	cmp	#$0002
 	bne	sub_01C6EB
@@ -2772,7 +2772,7 @@ loc_01C6FA:
 sub_01C6FB:
 	lda	$12,x
 	beq	loc_01C731
-	lda	zp_BE
+	lda	stage_frame_mod4
 	bne	loc_01C730
 	lda	$0A,x
 	sta	zp_00
@@ -3002,7 +3002,7 @@ loc_01C8C4:
 
 sub_01C8C7:
 	ldy	#$3E00
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_01C8D1
 	ldy	#$3200
 loc_01C8D1:
@@ -3046,7 +3046,7 @@ loc_01C91A:
 	lda	$36,x
 	cmp	#$0030
 	bcs	loc_01C92D
-	lda	zp_BC
+	lda	stage_frame_odd
 	beq	loc_01C929
 	stz	$00,x
 	bra	loc_01C92D
@@ -3267,7 +3267,7 @@ loc_01CA92:
 	rtl
 
 sub_01CAC7:
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_01CAF1
 	lda	$0A,x
 	sta	zp_00
@@ -3285,7 +3285,7 @@ sub_01CAC7:
 	sta	a:$001E,y
 	bra	sub_01CB4A
 loc_01CAF1:
-	lda	zp_C0
+	lda	stage_frame_mod8
 	bne	sub_01CB4A
 	; (not executed in the CDL traces)
 	ldy	#$0740
@@ -3331,7 +3331,7 @@ loc_01CB54:
 	lda	$24,x
 	cmp	#$0010
 	bcs	loc_01CB67
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_01CB63
 	stz	$00,x
 	bra	loc_01CB67

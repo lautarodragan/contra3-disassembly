@@ -3,10 +3,10 @@
 ;
 ; nmi saves the registers and calls one of three frame handlers through
 ; tbl_nmi_frame_handlers, indexed by $42: nmi_frame_default, nmi_frame_side_view (side-view stages) and
-; nmi_frame_top_down (top-down Mode 7 stages, see game/game_modes.asm sub_00AC3F).
+; nmi_frame_top_down (top-down Mode 7 stages, see game/game_modes.asm enter_top_down_stage).
 ; They upload PPU state (scroll, BG/colour-math registers, OAM, CGRAM) and
 ; then run the game logic for the frame (joypads, game mode state machine
-; sub_00A377, palette tasks, loaders, sound queue).
+; run_game_mode, palette tasks, loaders, sound queue).
 
 nmi:
 	.a8
@@ -90,7 +90,7 @@ nmi_frame_default:
 	.a16
 	jsl	f:read_joypads
 	stz	sound_last_queued
-	jsl	f:sub_00A377
+	jsl	f:run_game_mode
 	jsl	f:next_random
 	jsl	f:sub_009995
 	jsl	f:sub_0090C7
@@ -249,7 +249,7 @@ nmi_frame_side_view:
 	jsl	f:sub_00E7EF
 	jsl	f:sub_00E5F7
 	stz	sound_last_queued
-	jsl	f:sub_00A377
+	jsl	f:run_game_mode
 	jsl	f:next_random
 	jsl	f:sub_009995
 	jsl	f:sub_0090C7
@@ -325,7 +325,7 @@ nmi_frame_top_down:
 	jsl	f:sub_02DDDC
 	jsl	f:read_joypads
 	stz	sound_last_queued
-	jsl	f:sub_00A377
+	jsl	f:run_game_mode
 	jsl	f:next_random
 	jsl	f:sub_00E3CD
 	jsl	f:compute_m7_matrix

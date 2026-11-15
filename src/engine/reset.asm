@@ -65,20 +65,20 @@ reset:
 	sta	a:boot_signature+4
 	lda	#$0400
 	sta	a:boot_signature+6
-	stz	a:wram_1FA0
-	stz	a:wram_1FA2
-	stz	a:wram_1FE0
-	stz	a:wram_1FE2
+	stz	a:p1_score
+	stz	a:p1_score_hi
+	stz	a:p2_score
+	stz	a:p2_score_hi
 	lda	#$0000
-	sta	a:wram_1E44
+	sta	a:high_score
 	lda	#$0002
-	sta	a:wram_1E46
+	sta	a:high_score_hi
 	lda	#$0003
-	sta	a:wram_1E3C
+	sta	a:option_lives
 	stz	a:demo_index
-	stz	a:wram_1E4A
+	stz	a:demo_record_mode
 	lda	#$0002
-	sta	a:wram_1E3E
+	sta	a:option_level
 @upload_sound_driver:
 	ldx	#.loword(data_05F55B)
 	jsl	f:sub_0090A8

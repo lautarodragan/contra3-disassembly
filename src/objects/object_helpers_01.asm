@@ -412,7 +412,7 @@ sub_01A0C8:
 	rtl
 
 sub_01A0E9:
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_01A0FA
 	ldy	#$0200
 	lda	a:wram_0216
@@ -468,7 +468,7 @@ loc_01A15B:
 	rtl
 
 sub_01A15D:
-	and	zp_78
+	and	stage_frame_counter
 	bne	loc_01A16C
 	lda	a:wram_0216
 	bmi	loc_01A173
@@ -779,7 +779,7 @@ loc_01A384:
 	sta	zp_04
 loc_01A395:
 	sty	$00,x
-	lda	zp_BE
+	lda	stage_frame_mod4
 	bne	loc_01A3BF
 	ldy	#$0740
 	jsl	f:sub_019EC1
@@ -962,7 +962,7 @@ loc_01A4E5:
 	lda	a:$E100,y
 	sta	$0E,x
 	lda	$18,x
-	and	zp_78
+	and	stage_frame_counter
 	bne	loc_01A508
 	lda	a:$E200,y
 	sta	$00,x

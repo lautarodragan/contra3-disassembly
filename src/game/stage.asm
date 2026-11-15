@@ -1,31 +1,31 @@
 ; game/stage.asm -- Side-view stage state machine
 ; Bank $00, $00:BD40-$00:C282. Included by main.asm in segment BANK00.
 ;
-; sub_00BD40 dispatches the stage sub-mode through tbl_00BD57: stage start
-; effects (sub_00BD61), stage setup (sub_00BE64: video mode, graphics, BG),
-; and the per-frame stage loop (sub_00BF69: players sub_01A624, object lists
+; run_side_view_stage dispatches the stage sub-mode through tbl_stage_states: stage start
+; effects (stage_init), stage setup (stage_setup_video: video mode, graphics, BG),
+; and the per-frame stage loop (stage_play: players sub_01A624, object lists
 ; sub_00E1B8/sub_00E989, HUD...).
 
-sub_00BD40:
+run_side_view_stage:
 	rep	#$30
 	lda	#$0002
-	sta	zp_64
-	lda	a:wram_1600
+	sta	pause_disabled
+	lda	a:stage_state
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00BD57,x
+	lda	f:tbl_stage_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00BD57:
-	.addr	sub_00BD61
-	.addr	sub_00BE64
-	.addr	sub_00BF69
-	.addr	sub_00BF4A
-	.addr	sub_00C16F
+tbl_stage_states:
+	.addr	stage_init
+	.addr	stage_setup_video
+	.addr	stage_play
+	.addr	stage_exit
+	.addr	stage_cinematic
 
-sub_00BD61:
+stage_init:
 	sep	#$20
 	.a8
 	lda	#$05
@@ -33,54 +33,54 @@ sub_00BD61:
 	plb
 	rep	#$20
 	.a16
-	inc	a:wram_1600
+	inc	a:stage_state
 	lda	#$0080
 	sta	a:inidisp_shadow
 	jsl	f:reset_sound_queue
 	ldx	stage_number
-	lda	a:data_0589CC,x
+	lda	a:stage_layouts,x
 	and	#$00FF
-	sta	a:wram_1670
-	sta	a:wram_1698
-	ldy	a:wram_1E40
+	sta	a:stage_layout
+	sta	a:stage_layout_base
+	ldy	a:stage_checkpoint
 	beq	loc_00BD90
 	clc
 	adc	#$000A
-	sta	a:wram_1670
+	sta	a:stage_layout
 loc_00BD90:
 	ldy	#$8AC7
 	jsl	f:sub_009982
-	ldy	a:wram_1670
+	ldy	a:stage_layout
 	lda	a:data_0589D3,y
 	sta	a:wram_13BC
 	lda	a:data_0589E7,y
 	sta	a:wram_13FC
-	ldy	a:wram_1698
+	ldy	a:stage_layout_base
 	ldx	a:data_058A03,y
-	jsl	f:sub_00C132
+	jsl	f:load_stage_dp_params
 	lda	a:data_0589FB,y
 	sta	a:wram_1672
 	stz	shake_bg1_y
 	stz	shake_bg2_y
 	stz	a:shake_continuous
 	stz	a:shake_timer
-	stz	zp_78
+	stz	stage_frame_counter
 	lda	#$000E
 	sta	a:player1_state
 	sta	a:player2_state
 	stz	a:wram_1688
-	stz	a:wram_16B4
+	stz	a:player_autopilot_mode
 	stz	a:wram_16B6
-	stz	a:wram_16BE
-	stz	a:wram_16C0
-	stz	a:wram_1E5E
-	ldy	a:wram_1698
+	stz	a:palette_anim_id
+	stz	a:palette_anim_timer
+	stz	a:life_transfer_disabled
+	ldy	a:stage_layout_base
 	lda	a:data_058A21,y
 	tay
 	ldx	#$1210
 	jsl	f:sub_009985
-	lda	zp_88
-	ora	zp_8E
+	lda	button_fire
+	ora	button_stand_still
 	sta	a:wram_1628
 	lda	#$005F
 	sta	a:wram_16AA
@@ -121,13 +121,13 @@ loc_00BD90:
 	stz	a:wram_1678
 	rtl
 
-sub_00BE64:
+stage_setup_video:
 	lda	stage_number
 	bne	loc_00BE6E
-	inc	a:wram_1600
-	inc	a:wram_1600
+	inc	a:stage_state
+	inc	a:stage_state
 loc_00BE6E:
-	inc	a:wram_1600
+	inc	a:stage_state
 	lda	#$0041
 	sta	a:bg1sc_shadow
 	sta	a:BG1SC
@@ -154,7 +154,7 @@ loc_00BE6E:
 	jsl	f:sub_0090A8
 	ldx	#.loword(data_058AD4)
 	jsl	f:sub_0090A8
-	ldy	a:wram_1670
+	ldy	a:stage_layout
 	ldx	a:data_058A0D,y
 	jsl	f:sub_0090A8
 	ldx	#$1380
@@ -169,14 +169,14 @@ loc_00BE6E:
 	jsl	f:sub_00C575
 loc_00BEEA:
 	jsl	f:sub_00E369
-	jsl	f:sub_00C041
+	jsl	f:stage_layout_init
 	stz	a:wram_168A
 	jsl	f:sub_00CE0A
 	stz	a:inidisp_shadow
-	stz	a:wram_1686
-	stz	a:wram_16BC
+	stz	a:stage_exit_request
+	stz	a:stage_pause_disabled
 
-sub_00BF02:
+reset_vram_update_queues:
 	stz	zp_B0
 	stz	zp_B6
 	stz	a:wram_1800
@@ -193,61 +193,61 @@ sub_00BF02:
 	stz	cgram_upload_addr
 	rtl
 
-sub_00BF28:
-	inc	zp_78
-	lda	zp_78
+update_stage_frame_counters:
+	inc	stage_frame_counter
+	lda	stage_frame_counter
 	and	#$0007
-	sta	zp_C0
+	sta	stage_frame_mod8
 	and	#$0003
-	sta	zp_BE
+	sta	stage_frame_mod4
 	and	#$0001
-	sta	zp_BC
-	lda	zp_78
+	sta	stage_frame_odd
+	lda	stage_frame_counter
 	and	#$0002
-	sta	zp_E4
-	lda	zp_78
+	sta	stage_frame_bit1
+	lda	stage_frame_counter
 	and	#$0004
 	sta	zp_E6
 	rts
 
-sub_00BF4A:
-	lda	zp_78
+stage_exit:
+	lda	stage_frame_counter
 	bit	#$0007
 	bne	loc_00BF89
 	dec	a:inidisp_shadow
 	bne	loc_00BF89
-	stz	a:wram_1E5E
+	stz	a:life_transfer_disabled
 	stz	a:inidisp_shadow
 	stz	hdma_preset
-	stz	a:wram_1600
+	stz	a:stage_state
 	stz	nmi_mode
 	lda	#$0001
-	sta	zp_36
+	sta	mode_result
 	rtl
 
-sub_00BF69:
-	lda	a:wram_1686
+stage_play:
+	lda	a:stage_exit_request
 	beq	loc_00BF72
-	inc	a:wram_1600
+	inc	a:stage_state
 	rtl
 loc_00BF72:
-	lda	a:wram_16BC
+	lda	a:stage_pause_disabled
 	bne	loc_00BF79
-	stz	zp_64
+	stz	pause_disabled
 loc_00BF79:
 	lda	a:inidisp_shadow
 	cmp	#$000F
 	bcs	loc_00BF89
 	inc	a:inidisp_shadow
 	lda	#$0002
-	sta	zp_64
+	sta	pause_disabled
 loc_00BF89:
 	lda	a:p1_lives
 	bne	loc_00BF99
 	lda	a:p2_lives
 	bne	loc_00BF99
 	lda	#$0003
-	sta	a:wram_1600
+	sta	a:stage_state
 loc_00BF99:
 	lda	a:wram_1688
 	beq	loc_00BFA1
@@ -259,8 +259,8 @@ loc_00BFA1:
 	sta	oam_hi_ptr
 	lda	#$8000
 	sta	oam_hi_bits
-	jsl	f:sub_00BF02
-	jsr	a:sub_00BF28
+	jsl	f:reset_vram_update_queues
+	jsr	a:update_stage_frame_counters
 	jsl	f:sub_01A624
 	jsl	f:update_shots
 	stz	a:wram_023C
@@ -271,7 +271,7 @@ loc_00BFA1:
 	bne	loc_00BFD4
 	jsl	f:sub_00CE3A
 loc_00BFD4:
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_00BFE2
 	jsl	f:draw_players
 	jsl	f:update_objects
@@ -322,37 +322,37 @@ loc_00C00C:
 loc_00C034:
 	jsl	f:update_shake_side_view
 	jsl	f:sub_00FDB4
-	jsl	f:sub_01F6B7
+	jsl	f:update_palette_anim
 	rtl
 
-sub_00C041:
-	lda	a:wram_1670
+stage_layout_init:
+	lda	a:stage_layout
 	lsr	a
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00C052,x
+	lda	f:tbl_stage_layout_inits,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00C052:
-	.addr	sub_00C06E
-	.addr	sub_00C098
-	.addr	sub_00C0CA
-	.addr	sub_00C115
-	.addr	sub_00EBC4
-	.addr	sub_00C066
-	.addr	sub_00C08D
-	.addr	sub_00C0B0
-	.addr	sub_00C115
-	.addr	sub_00EBC4
+tbl_stage_layout_inits:
+	.addr	layout_init_stage1
+	.addr	layout_init_stage3
+	.addr	layout_init_stage4
+	.addr	layout_init_stage6
+	.addr	layout_init_opening
+	.addr	layout_init_stage1_checkpoint
+	.addr	layout_init_stage3_checkpoint
+	.addr	layout_init_stage4_checkpoint
+	.addr	layout_init_stage6
+	.addr	layout_init_opening
 
-sub_00C066:
+layout_init_stage1_checkpoint:
 	lda	#$0000
 	sta	a:wram_13FA
 	bra	loc_00C07D
 
-sub_00C06E:
+layout_init_stage1:
 	jsl	f:sub_01B918
 	lda	#$0003
 	sta	hdma_preset
@@ -365,14 +365,14 @@ loc_00C07D:
 	lda	#$0064
 	jml	f:queue_sound
 
-sub_00C08D:
+layout_init_stage3_checkpoint:
 	; (not executed in the CDL traces)
 	stz	a:wram_13FA
 	stz	a:wram_13C0
 	stz	a:wram_13D8
 	bra	loc_00C0A3
 
-sub_00C098:
+layout_init_stage3:
 	lda	#$0007
 	sta	hdma_preset
 	lda	#$003C
@@ -383,7 +383,7 @@ loc_00C0A3:
 	lda	#$0062
 	jml	f:queue_sound
 
-sub_00C0B0:
+layout_init_stage4_checkpoint:
 	; (not executed in the CDL traces)
 	lda	#$0063
 	jsl	f:queue_sound
@@ -395,7 +395,7 @@ sub_00C0B0:
 	sta	a:wram_0978
 	bra	loc_00C0DE
 
-sub_00C0CA:
+layout_init_stage4:
 	lda	#$0084
 	jsl	f:queue_sound
 	lda	#$004F
@@ -423,10 +423,10 @@ loc_00C0DE:
 	sta	a:wram_13FA
 	rtl
 
-sub_00C115:
+layout_init_stage6:
 	lda	#$0006
-	sta	a:wram_16BE
-	jsl	f:sub_01F6AF
+	sta	a:palette_anim_id
+	jsl	f:apply_palette_anim_once
 	lda	#$0055
 	sta	a:wram_08D0
 	lda	#$004A
@@ -434,7 +434,7 @@ sub_00C115:
 	lda	#$0062
 	jml	f:queue_sound
 
-sub_00C132:
+load_stage_dp_params:
 	lda	a:$0000,x
 	sta	zp_C8
 	lda	a:$0002,x
@@ -461,7 +461,7 @@ sub_00C132:
 	sta	zp_DE
 	rtl
 
-sub_00C16F:
+stage_cinematic:
 	lda	a:inidisp_shadow
 	cmp	#$000F
 	bcs	loc_00C17A
@@ -473,11 +473,11 @@ loc_00C17A:
 	sta	oam_hi_ptr
 	lda	#$8000
 	sta	oam_hi_bits
-	jsl	f:sub_00BF02
-	jsr	a:sub_00BF28
+	jsl	f:reset_vram_update_queues
+	jsr	a:update_stage_frame_counters
 	jsl	f:sub_00C67D
 	jsl	f:sub_00C917
-	jsl	f:sub_00EBD7
+	jsl	f:run_opening_cinematic
 	jsl	f:update_objects
 	jsl	f:update_objects_0280
 	ldy	oam_hi_ptr
@@ -525,8 +525,8 @@ loc_00C1EA:
 loc_00C1F3:
 	rtl
 
-sub_00C1F4:
-	lda	a:wram_16B4
+apply_player_autopilot:
+	lda	a:player_autopilot_mode
 	beq	loc_00C1F3
 	ldy	#$0000
 	cpx	#$0200
@@ -539,20 +539,20 @@ loc_00C204:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00C215,x
+	lda	f:tbl_player_autopilot_modes,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00C215:
+tbl_player_autopilot_modes:
 	.addr	$0000
-	.addr	sub_00C21E
-	.addr	sub_00C270
-	.addr	sub_00C21D
+	.addr	player_autopilot_mode1
+	.addr	player_autopilot_mode2
+	.addr	player_autopilot_mode3
 
-sub_00C21D:
+player_autopilot_mode3:
 	rtl
 
-sub_00C21E:
+player_autopilot_mode1:
 	lda	$12,x
 	bne	loc_00C242
 	lda	#$0100
@@ -567,7 +567,7 @@ loc_00C22F:
 	bcc	loc_00C241
 	cmp	#$00D0
 	bcs	loc_00C241
-	lda	zp_8A
+	lda	button_jump
 	sta	$2C,x
 loc_00C241:
 	rtl
@@ -599,13 +599,13 @@ loc_00C265:
 	sta	$22,x
 	rtl
 
-sub_00C270:
+player_autopilot_mode2:
 	lda	$12,x
 	cmp	#$0001
 	bne	loc_00C280
 	lda	#$0400
 	sta	$22,x
-	lda	zp_8A
+	lda	button_jump
 	sta	$2C,x
 loc_00C280:
 	sty	$04,x

@@ -1,23 +1,23 @@
 ; game/attract.asm -- Attract mode: intro, title, demo
 ; Bank $00, $00:AD7C-$00:B678. Included by main.asm in segment BANK00.
 ;
-; Game modes 0, 3 and 4 and their helpers: the intro (sub_00B4DD, sub-modes
-; tbl_00B4F1), the title screen helpers, and the attract demo (sub_00AD7C;
+; Game modes 0, 3 and 4 and their helpers: the intro (run_konami_logo, sub-modes
+; tbl_konami_logo_steps), the title screen helpers, and the attract demo (run_demo;
 ; demo index $1E48; sub_00AECD/sub_00AF11 read data from banks $15/$16,
-; probably the recorded inputs). sub_00B2F3..sub_00B39F (never run in the
+; probably the recorded inputs). check_button_code_unused..sub_00B39F (never run in the
 ; traces) look like button-code checks.
 
-sub_00AD7C:
-	lda	a:wram_1C00
+run_demo:
+	lda	a:mode_step
 	asl	a
 	tax
-	jmp	(.loword(tbl_00AD84),x)
-tbl_00AD84:
-	.addr	sub_00AD8A
-	.addr	sub_00ADD1
-	.addr	sub_00AE15
+	jmp	(.loword(tbl_demo_steps),x)
+tbl_demo_steps:
+	.addr	demo_init
+	.addr	demo_play
+	.addr	demo_end
 
-sub_00AD8A:
+demo_init:
 	rep	#$30
 	phb
 	lda	#$0000
@@ -31,63 +31,63 @@ sub_00AD8A:
 	lda	a:demo_index
 	asl	a
 	tay
-	lda	a:data_0584DA,y
+	lda	a:demo_stages,y
 	sta	stage_number
-	jsr	a:sub_00AF40
+	jsr	a:demo_init_players
 	jsl	f:sub_04D9F1
 	lda	stage_number
 	dec	a
 	sta	stage_index
-	jsr	a:sub_00AFE4
+	jsr	a:demo_init_input
 	stz	zp_E6
 	stz	rng_lo
 	stz	rng_hi
 	stz	frame_counter
-	stz	zp_78
+	stz	stage_frame_counter
 	lda	#$0002
-	sta	zp_4A
+	sta	demo_mode
 	lda	#$0800
-	sta	zp_4C
-	inc	a:wram_1C00
+	sta	demo_timer
+	inc	a:mode_step
 	rtl
 
-sub_00ADD1:
-	dec	zp_4C
+demo_play:
+	dec	demo_timer
 	beq	loc_00ADFF
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#$1000
 	bne	loc_00AE0B
-	jsr	a:sub_00AE39
-	jsl	f:sub_00ABE0
-	lda	a:wram_1E4A
+	jsr	a:demo_update_input
+	jsl	f:run_stage
+	lda	a:demo_record_mode
 	beq	loc_00ADFA
 	; (not executed in the CDL traces)
-	lda	a:wram_1C08
+	lda	a:demo_p1_ptr
 	cmp	#$0400
 	bcs	loc_00ADFF
-	lda	a:wram_1C0B
+	lda	a:demo_p2_ptr
 	cmp	#$0800
 	bcs	loc_00ADFF
 loc_00ADFA:
-	lda	zp_36
+	lda	mode_result
 	bne	loc_00ADFF
 	rtl
 loc_00ADFF:
-	stz	zp_36
+	stz	mode_result
 	lda	#$0001
-	sta	a:wram_1C02
-	inc	a:wram_1C00
+	sta	a:demo_result
+	inc	a:mode_step
 	rtl
 loc_00AE0B:
 	; (not executed in the CDL traces)
 	lda	#$0002
-	sta	a:wram_1C02
-	inc	a:wram_1C00
+	sta	a:demo_result
+	inc	a:mode_step
 	rtl
 
-sub_00AE15:
-	jsl	f:sub_00B031
+demo_end:
+	jsl	f:fade_out_step
 	bcs	loc_00AE38
 	lda	a:demo_index
 	inc	a
@@ -100,160 +100,160 @@ loc_00AE27:
 	stz	nmi_mode
 	lda	#$0002
 	sta	force_blank_frames
-	lda	a:wram_1C02
-	sta	zp_36
+	lda	a:demo_result
+	sta	mode_result
 loc_00AE38:
 	rtl
 
-sub_00AE39:
-	lda	a:wram_1E4A
-	beq	loc_00AEB2
+demo_update_input:
+	lda	a:demo_record_mode
+	beq	demo_playback_input
 	; (not executed in the CDL traces)
-	jsr	a:sub_00AE44
-	jmp	a:loc_00AE7B
+	jsr	a:demo_record_p1
+	jmp	a:demo_record_p2
 
-sub_00AE44:
+demo_record_p1:
 	; (not executed in the CDL traces)
-	inc	a:wram_1C04
+	inc	a:demo_p1_timer
 	lda	joy1_held
-	cmp	a:wram_1C0E
+	cmp	a:demo_p1_input
 	bne	loc_00AE4F
 	rts
 loc_00AE4F:
 	ldy	#$0000
-	lda	a:wram_1C08
+	lda	a:demo_p1_ptr
 	sta	zp_00
-	lda	a:wram_1C09
+	lda	a:demo_p1_ptr+1
 	sta	zp_01
-	lda	a:wram_1C0E
+	lda	a:demo_p1_input
 	sta	[zp_00],y
 	iny
 	iny
-	lda	a:wram_1C04
+	lda	a:demo_p1_timer
 	sta	[zp_00],y
 	lda	joy1_held
-	sta	a:wram_1C0E
-	stz	a:wram_1C04
-	lda	a:wram_1C08
+	sta	a:demo_p1_input
+	stz	a:demo_p1_timer
+	lda	a:demo_p1_ptr
 	clc
 	adc	#$0004
-	sta	a:wram_1C08
+	sta	a:demo_p1_ptr
 	rts
-loc_00AE7B:
-	inc	a:wram_1C06
+demo_record_p2:
+	inc	a:demo_p2_timer
 	lda	joy2_held
-	cmp	a:wram_1C10
+	cmp	a:demo_p2_input
 	bne	loc_00AE86
 	rts
 loc_00AE86:
 	ldy	#$0000
-	lda	a:wram_1C0B
+	lda	a:demo_p2_ptr
 	sta	zp_00
-	lda	a:wram_1C0C
+	lda	a:demo_p2_ptr+1
 	sta	zp_01
-	lda	a:wram_1C10
+	lda	a:demo_p2_input
 	sta	[zp_00],y
 	iny
 	iny
-	lda	a:wram_1C06
+	lda	a:demo_p2_timer
 	sta	[zp_00],y
 	lda	joy2_held
-	sta	a:wram_1C10
-	stz	a:wram_1C06
-	lda	a:wram_1C0B
+	sta	a:demo_p2_input
+	stz	a:demo_p2_timer
+	lda	a:demo_p2_ptr
 	clc
 	adc	#$0004
-	sta	a:wram_1C0B
+	sta	a:demo_p2_ptr
 	rts
-loc_00AEB2:
-	jsr	a:sub_00AEB8
-	jmp	a:loc_00AEFC
+demo_playback_input:
+	jsr	a:demo_playback_p1
+	jmp	a:demo_playback_p2
 
-sub_00AEB8:
-	lda	a:wram_1C04
+demo_playback_p1:
+	lda	a:demo_p1_timer
 	bne	loc_00AEC0
-	jsr	a:sub_00AECD
+	jsr	a:demo_read_p1_event
 loc_00AEC0:
-	dec	a:wram_1C04
-	beq	sub_00AECD
-	lda	a:wram_1C0E
+	dec	a:demo_p1_timer
+	beq	demo_read_p1_event
+	lda	a:demo_p1_input
 	sta	joy1_held
 	stz	joy1_pressed
 	rts
 
-sub_00AECD:
+demo_read_p1_event:
 	ldy	#$0000
-	lda	a:wram_1C08
+	lda	a:demo_p1_ptr
 	sta	zp_00
-	lda	a:wram_1C09
+	lda	a:demo_p1_ptr+1
 	sta	zp_01
 	lda	[zp_00],y
 	sta	joy1_held
-	eor	a:wram_1C0E
+	eor	a:demo_p1_input
 	and	[zp_00],y
 	sta	joy1_pressed
 	lda	[zp_00],y
-	sta	a:wram_1C0E
+	sta	a:demo_p1_input
 	iny
 	iny
 	lda	[zp_00],y
-	sta	a:wram_1C04
-	lda	a:wram_1C08
+	sta	a:demo_p1_timer
+	lda	a:demo_p1_ptr
 	clc
 	adc	#$0004
-	sta	a:wram_1C08
+	sta	a:demo_p1_ptr
 	rts
-loc_00AEFC:
-	lda	a:wram_1C06
+demo_playback_p2:
+	lda	a:demo_p2_timer
 	bne	loc_00AF04
-	jsr	a:sub_00AF11
+	jsr	a:demo_read_p2_event
 loc_00AF04:
-	dec	a:wram_1C06
-	beq	sub_00AF11
-	lda	a:wram_1C10
+	dec	a:demo_p2_timer
+	beq	demo_read_p2_event
+	lda	a:demo_p2_input
 	sta	joy2_held
 	stz	joy2_pressed
 	rts
 
-sub_00AF11:
+demo_read_p2_event:
 	ldy	#$0000
-	lda	a:wram_1C0B
+	lda	a:demo_p2_ptr
 	sta	zp_00
-	lda	a:wram_1C0C
+	lda	a:demo_p2_ptr+1
 	sta	zp_01
 	lda	[zp_00],y
 	sta	joy2_held
-	eor	a:wram_1C10
+	eor	a:demo_p2_input
 	and	[zp_00],y
 	sta	joy2_pressed
 	lda	[zp_00],y
-	sta	a:wram_1C10
+	sta	a:demo_p2_input
 	iny
 	iny
 	lda	[zp_00],y
-	sta	a:wram_1C06
-	lda	a:wram_1C0B
+	sta	a:demo_p2_timer
+	lda	a:demo_p2_ptr
 	clc
 	adc	#$0004
-	sta	a:wram_1C0B
+	sta	a:demo_p2_ptr
 	rts
 
-sub_00AF40:
+demo_init_players:
 	lda	stage_number
 	asl	a
 	tay
-	lda	a:data_0584DE,y
-	sta	a:wram_1E40
-	stz	a:wram_1FA0
-	stz	a:wram_1FA2
-	stz	a:wram_1FE0
-	stz	a:wram_1FE2
+	lda	a:demo_stage_checkpoints,y
+	sta	a:stage_checkpoint
+	stz	a:p1_score
+	stz	a:p1_score_hi
+	stz	a:p2_score
+	stz	a:p2_score_hi
 	lda	#$0000
-	sta	a:wram_1FB6
-	sta	a:wram_1FF6
+	sta	a:p1_next_extend
+	sta	a:p2_next_extend
 	lda	#$0002
-	sta	a:wram_1FB8
-	sta	a:wram_1FF8
+	sta	a:p1_next_extend_hi
+	sta	a:p2_next_extend_hi
 	lda	#$0003
 	sta	a:p1_lives
 	lda	#$0001
@@ -283,41 +283,41 @@ loc_00AF8B:
 	stz	a:p2_barrier_timer
 	stz	a:p1_spin
 	stz	a:p2_spin
-	stz	a:wram_1600
+	stz	a:stage_state
 	stz	a:topdown_state
 	lda	#$0020
 	sta	zp_94
 	lda	#$0010
 	sta	zp_96
 	lda	#$4000
-	sta	zp_88
+	sta	button_fire
 	lda	#$8000
-	sta	zp_8A
+	sta	button_jump
 	lda	#$8000
 	sta	zp_92
 	lda	#$0080
-	sta	zp_8C
+	sta	button_bomb
 	lda	#$0010
-	sta	zp_8E
+	sta	button_stand_still
 	rts
 
-sub_00AFE4:
-	stz	a:wram_1C04
-	stz	a:wram_1C06
-	stz	a:wram_1C0E
-	stz	a:wram_1C10
-	lda	a:wram_1E4A
+demo_init_input:
+	stz	a:demo_p1_timer
+	stz	a:demo_p2_timer
+	stz	a:demo_p1_input
+	stz	a:demo_p2_input
+	lda	a:demo_record_mode
 	beq	loc_00B00F
 	; (not executed in the CDL traces)
 	lda	#$0000
-	sta	a:wram_1C08
+	sta	a:demo_p1_ptr
 	lda	#$0400
-	sta	a:wram_1C0B
+	sta	a:demo_p2_ptr
 	sep	#$20
 	.a8
 	lda	#$70
-	sta	a:wram_1C0A
-	sta	a:wram_1C0D
+	sta	a:demo_p1_ptr+2
+	sta	a:demo_p2_ptr+2
 	rep	#$20
 	.a16
 	bra	loc_00B030
@@ -328,17 +328,17 @@ loc_00B00F:
 	adc	a:demo_index
 	tay
 	lda	a:data_0584EC,y
-	sta	a:wram_1C08
+	sta	a:demo_p1_ptr
 	lda	a:data_0584ED,y
-	sta	a:wram_1C09
+	sta	a:demo_p1_ptr+1
 	lda	a:data_0584F5,y
-	sta	a:wram_1C0B
+	sta	a:demo_p2_ptr
 	lda	a:data_0584F6,y
-	sta	a:wram_1C0C
+	sta	a:demo_p2_ptr+1
 loc_00B030:
 	rts
 
-sub_00B031:
+fade_out_step:
 	lda	stage_number
 	cmp	#$0002
 	beq	loc_00B055
@@ -388,18 +388,18 @@ loc_00B083:
 	clc
 	rtl
 
-sub_00B091:
+opening_load_title_screen:
 	jsl	f:sub_008DBE
-	jsr	a:sub_00B0F7
-	jsr	a:sub_00B0AB
-	jsr	a:sub_00B153
+	jsr	a:load_title_graphics
+	jsr	a:init_title_logo_zoomed_out
+	jsr	a:draw_title_texts
 	lda	#$000F
-	sta	a:wram_1C04
+	sta	a:mode_work+$04
 	lda	#$000F
 	sta	a:inidisp_shadow
 	rtl
 
-sub_00B0AB:
+init_title_logo_zoomed_out:
 	lda	#$000F
 	sta	a:bgmode_shadow
 	lda	#$0000
@@ -418,18 +418,18 @@ sub_00B0AB:
 	stz	a:m7sel_shadow
 	rts
 
-sub_00B0DC:
+load_title_screen:
 	jsl	f:reset_sound_queue
 	jsl	f:sub_008DBE
-	jsr	a:sub_00B0F7
-	jsr	a:sub_00B125
-	jsr	a:sub_00B153
+	jsr	a:load_title_graphics
+	jsr	a:init_title_logo
+	jsr	a:draw_title_texts
 	lda	#$000F
-	sta	a:wram_1C04
+	sta	a:mode_work+$04
 	stz	a:inidisp_shadow
 	rtl
 
-sub_00B0F7:
+load_title_graphics:
 	ldy	#$8558
 	ldx	#$1210
 	jsl	f:sub_009985
@@ -445,7 +445,7 @@ sub_00B0F7:
 	jsl	f:sub_0090A8
 	rts
 
-sub_00B125:
+init_title_logo:
 	lda	#$000F
 	sta	a:bgmode_shadow
 	lda	#$0100
@@ -463,7 +463,7 @@ sub_00B125:
 	stz	a:m7sel_shadow
 	rts
 
-sub_00B153:
+draw_title_texts:
 	ldx	#$8561
 	jsl	f:sub_009024
 	ldx	#$8599
@@ -474,17 +474,17 @@ sub_00B153:
 	jsl	f:sub_009024
 	ldx	#$85C2
 	jsl	f:sub_009024
-	jsl	f:sub_00B285
+	jsl	f:draw_title_menu_cursor
 	rts
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_00B17B:
 	; (not executed in the CDL traces)
 	ldy	#$84FE
-	jsl	f:sub_00B183
+	jsl	f:setup_hdma_from_list
 	rts
 
-sub_00B183:
+setup_hdma_from_list:
 	ldx	a:$0000,y
 	cpx	#$FFFF
 	bcs	loc_00B1A2
@@ -498,7 +498,7 @@ sub_00B183:
 	clc
 	adc	#$0007
 	tay
-	bra	sub_00B183
+	bra	setup_hdma_from_list
 loc_00B1A2:
 	sep	#$20
 	.a8
@@ -508,37 +508,37 @@ loc_00B1A2:
 	.a16
 	rtl
 
-sub_00B1AD:
+run_title_menu:
 	rep	#$20
 	rep	#$10
-	lda	a:wram_1C00
+	lda	a:mode_step
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00B1C1,x
+	lda	f:tbl_title_menu_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00B1C1:
-	.addr	sub_00B1C9
-	.addr	sub_00B1E8
-	.addr	sub_00B209
-	.addr	sub_00B226
+tbl_title_menu_steps:
+	.addr	title_menu_init
+	.addr	title_menu_fade_in
+	.addr	title_menu_input
+	.addr	title_menu_fade_out
 
-sub_00B1C9:
+title_menu_init:
 	lda	#$0300
-	sta	a:wram_1C02
-	stz	a:wram_1C08
-	stz	a:wram_1C0A
-	stz	a:wram_1C0C
-	stz	a:wram_1C0E
-	stz	a:wram_1C10
-	stz	a:wram_1C12
-	stz	a:wram_1E60
-	inc	a:wram_1C00
+	sta	a:title_menu_timeout
+	stz	a:code1_progress
+	stz	a:code1_timer
+	stz	a:code2_progress
+	stz	a:code2_timer
+	stz	a:code3_progress
+	stz	a:code3_timer
+	stz	a:stage_select_enabled
+	inc	a:mode_step
 	rtl
 
-sub_00B1E8:
+title_menu_fade_in:
 	php
 	lda	a:inidisp_shadow
 	bit	#$0080
@@ -554,31 +554,31 @@ loc_00B1F7:
 	rtl
 loc_00B201:
 	plp
-	jsr	a:sub_00B2DD
-	inc	a:wram_1C00
+	jsr	a:load_demo_stage_graphics
+	inc	a:mode_step
 	rtl
 
-sub_00B209:
-	jsl	f:sub_00B246
+title_menu_input:
+	jsl	f:title_menu_update_cursor
 	bcs	loc_00B21A
-	dec	a:wram_1C02
+	dec	a:title_menu_timeout
 	bne	loc_00B21F
 	lda	#$0001
-	sta	zp_36
+	sta	mode_result
 	rtl
 loc_00B21A:
 	lda	#$0002
-	sta	zp_36
+	sta	mode_result
 loc_00B21F:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_00B220:
+title_menu_unused_sound_check:
 	; (not executed in the CDL traces)
 	lda	#$0003
-	sta	a:wram_1C00
+	sta	a:mode_step
 
-sub_00B226:
+title_menu_fade_out:
 	; (not executed in the CDL traces)
 	php
 	rep	#$20
@@ -594,18 +594,18 @@ loc_00B239:
 	sta	a:inidisp_shadow
 	plp
 	lda	#$0003
-	sta	zp_36
+	sta	mode_result
 	rtl
 
-sub_00B246:
+title_menu_update_cursor:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#$1000
 	bne	loc_00B2C3
 	bit	#$2C00
-	beq	sub_00B285
+	beq	draw_title_menu_cursor
 	lda	#$0300
-	sta	a:wram_1C02
+	sta	a:title_menu_timeout
 	lda	#$0001
 	jsl	f:queue_sound
 	lda	joy1_pressed
@@ -613,18 +613,18 @@ sub_00B246:
 	bit	#$2400
 	bne	loc_00B277
 	dec	a:title_menu_cursor
-	bpl	sub_00B285
+	bpl	draw_title_menu_cursor
 	lda	#$0003
 	sta	a:title_menu_cursor
-	bra	sub_00B285
+	bra	draw_title_menu_cursor
 loc_00B277:
 	inc	a:title_menu_cursor
 	lda	a:title_menu_cursor
 	cmp	#$0004
-	bcc	sub_00B285
+	bcc	draw_title_menu_cursor
 	stz	a:title_menu_cursor
 
-sub_00B285:
+draw_title_menu_cursor:
 	lda	a:title_menu_cursor
 	asl	a
 	tay
@@ -665,7 +665,7 @@ loc_00B2D4:
 	sec
 	rtl
 
-sub_00B2DD:
+load_demo_stage_graphics:
 	jsl	f:clear_bg_scroll_state
 	jsl	f:clear_wram_7e4000_7effff
 	lda	a:demo_index
@@ -676,22 +676,22 @@ sub_00B2DD:
 	jsl	f:sub_0090A8
 	rts
 
-; sub_00B2F3, sub_00B346, sub_00B39F: never executed in the CDL traces (found
+; check_button_code_unused, check_30_lives_code, check_stage_select_code: never executed in the CDL traces (found
 ; by the unreferenced-routine heuristic).  Each compares the d-pad bits of the
 ; joypads ($20/$22 & $0F00) with a 3-entry sequence and then checks a button:
 ; probably button-code checks.  DB is assumed to be $05, the game's usual data
 ; bank (hint): the sequences are then d-pad masks at $05:86D3/86D9/86DF.
 ; (no caller found; decoded because it follows the end of a routine)
-sub_00B2F3:
+check_button_code_unused:
 	; (not executed in the CDL traces)
-	lda	a:wram_1C0A
+	lda	a:code1_timer
 	bne	loc_00B300
 	ldy	#$0000
-	sty	a:wram_1C08
+	sty	a:code1_progress
 	bra	loc_00B30B
 loc_00B300:
-	dec	a:wram_1C0A
-	ldy	a:wram_1C08
+	dec	a:code1_timer
+	ldy	a:code1_progress
 	cpy	#$0006
 	bcs	loc_00B332
 loc_00B30B:
@@ -703,15 +703,15 @@ loc_00B30B:
 	cpy	#$0000
 	bne	loc_00B322
 	lda	#$0010
-	sta	a:wram_1C0A
+	sta	a:code1_timer
 loc_00B322:
 	iny
 	iny
-	sty	a:wram_1C08
+	sty	a:code1_progress
 	cpy	#$0006
 	bcc	loc_00B33B
 	lda	#$000C
-	sta	a:wram_1C0A
+	sta	a:code1_timer
 loc_00B332:
 	lda	joy1_pressed
 	ora	joy2_pressed
@@ -727,16 +727,16 @@ loc_00B33D:
 	rts
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_00B346:
+check_30_lives_code:
 	; (not executed in the CDL traces)
-	lda	a:wram_1C0E
+	lda	a:code2_timer
 	bne	loc_00B353
 	ldy	#$0000
-	sty	a:wram_1C0C
+	sty	a:code2_progress
 	bra	loc_00B35E
 loc_00B353:
-	dec	a:wram_1C0E
-	ldy	a:wram_1C0C
+	dec	a:code2_timer
+	ldy	a:code2_progress
 	cpy	#$0006
 	bcs	loc_00B385
 loc_00B35E:
@@ -748,15 +748,15 @@ loc_00B35E:
 	cpy	#$0000
 	bne	loc_00B375
 	lda	#$0010
-	sta	a:wram_1C0E
+	sta	a:code2_timer
 loc_00B375:
 	iny
 	iny
-	sty	a:wram_1C0C
+	sty	a:code2_progress
 	cpy	#$0006
 	bcc	loc_00B38E
 	lda	#$000C
-	sta	a:wram_1C0E
+	sta	a:code2_timer
 loc_00B385:
 	lda	joy1_pressed
 	ora	joy2_pressed
@@ -769,21 +769,21 @@ loc_00B390:
 	lda	#$0043
 	jsl	f:queue_sound
 	lda	#$001E
-	sta	a:wram_1E3C
+	sta	a:option_lives
 	sec
 	rts
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_00B39F:
+check_stage_select_code:
 	; (not executed in the CDL traces)
-	lda	a:wram_1C12
+	lda	a:code3_timer
 	bne	loc_00B3AC
 	ldy	#$0000
-	sty	a:wram_1C10
+	sty	a:code3_progress
 	bra	loc_00B3B7
 loc_00B3AC:
-	dec	a:wram_1C12
-	ldy	a:wram_1C10
+	dec	a:code3_timer
+	ldy	a:code3_progress
 	cpy	#$0006
 	bcs	loc_00B3DE
 loc_00B3B7:
@@ -795,15 +795,15 @@ loc_00B3B7:
 	cpy	#$0000
 	bne	loc_00B3CE
 	lda	#$0010
-	sta	a:wram_1C12
+	sta	a:code3_timer
 loc_00B3CE:
 	iny
 	iny
-	sty	a:wram_1C10
+	sty	a:code3_progress
 	cpy	#$0006
 	bcc	loc_00B3E7
 	lda	#$000C
-	sta	a:wram_1C12
+	sta	a:code3_timer
 loc_00B3DE:
 	lda	joy1_pressed
 	ora	joy2_pressed
@@ -819,17 +819,17 @@ loc_00B3E9:
 	lda	#$0059
 	jsl	f:queue_sound
 	lda	#$0001
-	sta	a:wram_1E60
+	sta	a:stage_select_enabled
 	sec
 	rts
 
-sub_00B400:
+draw_title_word_sprites:
 	ldx	#$0FC0
 	lda	#$11C0
 	sta	zp_12
 	lda	#$8000
 	sta	zp_14
-	lda	a:wram_1E56
+	lda	a:title_the_x
 	sta	zp_FC
 	lda	#$0044
 	sta	zp_FE
@@ -840,8 +840,8 @@ sub_00B400:
 	lda	#$86F5
 	sta	zp_1C
 	ldy	#$000E
-	jsr	a:sub_00B499
-	lda	a:wram_1E58
+	jsr	a:draw_title_sprite_group
+	lda	a:title_alien_x
 	sta	zp_FC
 	lda	#$004C
 	sta	zp_FE
@@ -852,8 +852,8 @@ sub_00B400:
 	lda	#$872D
 	sta	zp_1C
 	ldy	#$0016
-	jsr	a:sub_00B499
-	lda	a:wram_1E5A
+	jsr	a:draw_title_sprite_group
+	lda	a:title_wars_x
 	sta	zp_FC
 	lda	#$006C
 	sta	zp_FE
@@ -864,7 +864,7 @@ sub_00B400:
 	lda	#$876D
 	sta	zp_1C
 	ldy	#$000E
-	jsr	a:sub_00B499
+	jsr	a:draw_title_sprite_group
 	lda	a:wram_1E5C
 	sta	zp_FC
 	lda	#$006C
@@ -876,7 +876,7 @@ sub_00B400:
 	lda	#$878F
 	sta	zp_1C
 	ldy	#$0000
-	jsr	a:sub_00B499
+	jsr	a:draw_title_sprite_group
 loc_00B489:
 	sec
 	ror	zp_14
@@ -888,7 +888,7 @@ loc_00B489:
 	sta	a:$0000,y
 	rtl
 
-sub_00B499:
+draw_title_sprite_group:
 	lda	zp_FE
 	sec
 	sbc	a:wram_1398
@@ -929,34 +929,34 @@ loc_00B4C7:
 	inx
 	dey
 	dey
-	bpl	sub_00B499
+	bpl	draw_title_sprite_group
 	rts
 
-sub_00B4DD:
+run_konami_logo:
 	rep	#$20
 	rep	#$10
-	lda	a:wram_1C60
+	lda	a:konami_logo_step
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00B4F1,x
+	lda	f:tbl_konami_logo_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00B4F1:
-	.addr	sub_00B507
-	.addr	sub_00B551
-	.addr	sub_00B586
-	.addr	sub_00B59C
-	.addr	sub_00B64A
-	.addr	sub_00B5B5
-	.addr	sub_00B5D3
-	.addr	sub_00B64A
-	.addr	sub_00B628
-	.addr	sub_00B64A
-	.addr	sub_00B653
+tbl_konami_logo_steps:
+	.addr	konami_logo_init
+	.addr	konami_logo_sweep
+	.addr	konami_logo_cycle_line
+	.addr	konami_logo_scroll_in
+	.addr	konami_logo_wait
+	.addr	konami_logo_start_shine
+	.addr	konami_logo_shine
+	.addr	konami_logo_wait
+	.addr	konami_logo_whiten
+	.addr	konami_logo_wait
+	.addr	konami_logo_fade_out
 
-sub_00B507:
+konami_logo_init:
 	jsl	f:wait_nmi_and_disable_display
 	jsl	f:disable_display_and_nmi
 	jsl	f:reset_sound_queue
@@ -977,24 +977,24 @@ sub_00B507:
 	lda	#$0019
 	sta	a:bgmode_shadow
 	lda	#$0003
-	sta	a:wram_1C66
-	inc	a:wram_1C60
+	sta	a:konami_logo_count2
+	inc	a:konami_logo_step
 	rtl
 
-sub_00B551:
+konami_logo_sweep:
 	lda	frame_counter
 	and	#$0001
 	bne	loc_00B573
-	lda	a:wram_1C64
+	lda	a:konami_logo_count1
 	asl	a
 	tay
 	ldx	a:data_058793,y
 	lda	#$2C00
 	jsl	f:sub_009015
-	inc	a:wram_1C64
-	lda	a:wram_1C64
+	inc	a:konami_logo_count1
+	lda	a:konami_logo_count1
 	and	#$0003
-	sta	a:wram_1C64
+	sta	a:konami_logo_count1
 loc_00B573:
 	lda	a:wram_1380
 	sec
@@ -1002,23 +1002,23 @@ loc_00B573:
 	sta	a:wram_1380
 	bne	loc_00B585
 	stz	a:wram_13C0
-	inc	a:wram_1C60
+	inc	a:konami_logo_step
 loc_00B585:
 	rtl
 
-sub_00B586:
+konami_logo_cycle_line:
 	lda	frame_counter
 	and	#$0003
 	bne	loc_00B59B
 	ldx	#$2264
-	jsr	a:sub_00B65C
-	dec	a:wram_1C66
+	jsr	a:rotate_palette_row
+	dec	a:konami_logo_count2
 	bne	loc_00B59B
-	inc	a:wram_1C60
+	inc	a:konami_logo_step
 loc_00B59B:
 	rtl
 
-sub_00B59C:
+konami_logo_scroll_in:
 	lda	a:wram_1398
 	sec
 	sbc	#$0002
@@ -1027,63 +1027,63 @@ sub_00B59C:
 	bne	loc_00B5D2
 loc_00B5AB:
 	lda	#$0001
-	sta	a:wram_1C6A
-	inc	a:wram_1C60
+	sta	a:konami_logo_timer
+	inc	a:konami_logo_step
 	rtl
 
-sub_00B5B5:
+konami_logo_start_shine:
 	lda	#$000A
-	sta	a:wram_1C64
-	sta	a:wram_1C66
-	sta	a:wram_1C68
+	sta	a:konami_logo_count1
+	sta	a:konami_logo_count2
+	sta	a:konami_logo_count3
 	ldy	#$87E1
 	jsl	f:sub_009982
 	lda	#$0072
 	jsl	f:queue_sound
-	inc	a:wram_1C60
+	inc	a:konami_logo_step
 loc_00B5D2:
 	rtl
 
-sub_00B5D3:
-	lda	a:wram_1C64
+konami_logo_shine:
+	lda	a:konami_logo_count1
 	beq	loc_00B5ED
 	cmp	#$000A
 	bne	loc_00B5E4
 	ldy	#$87EA
 	jsl	f:sub_009982
 loc_00B5E4:
-	dec	a:wram_1C64
+	dec	a:konami_logo_count1
 	ldx	#$222C
-	jsr	a:sub_00B65C
+	jsr	a:rotate_palette_row
 loc_00B5ED:
-	lda	a:wram_1C66
+	lda	a:konami_logo_count2
 	bmi	loc_00B602
 	ldx	#$224C
-	jsr	a:sub_00B65C
-	dec	a:wram_1C66
+	jsr	a:rotate_palette_row
+	dec	a:konami_logo_count2
 	lda	#$0003
-	sta	a:wram_1C6A
+	sta	a:konami_logo_timer
 	rtl
 loc_00B602:
-	lda	a:wram_1C6A
+	lda	a:konami_logo_timer
 	beq	loc_00B612
-	dec	a:wram_1C6A
+	dec	a:konami_logo_timer
 	bne	loc_00B627
 	ldy	#$87D8
 	jmp	a:sub_009982
 loc_00B612:
-	lda	a:wram_1C68
+	lda	a:konami_logo_count3
 	bmi	loc_00B5AB
 	lda	frame_counter
 	and	#$0001
 	bne	loc_00B627
-	dec	a:wram_1C68
+	dec	a:konami_logo_count3
 	ldx	#$220A
-	jsr	a:sub_00B65C
+	jsr	a:rotate_palette_row
 loc_00B627:
 	rtl
 
-sub_00B628:
+konami_logo_whiten:
 	ldx	#$2200
 	lda	f:$7E0000,x
 	clc
@@ -1093,26 +1093,26 @@ sub_00B628:
 	cmp	#$7FFF
 	bne	loc_00B649
 	lda	#$0100
-	sta	a:wram_1C6A
-	inc	a:wram_1C60
+	sta	a:konami_logo_timer
+	inc	a:konami_logo_step
 loc_00B649:
 	rtl
 
-sub_00B64A:
-	dec	a:wram_1C6A
+konami_logo_wait:
+	dec	a:konami_logo_timer
 	bne	loc_00B652
-	inc	a:wram_1C60
+	inc	a:konami_logo_step
 loc_00B652:
 	rtl
 
-sub_00B653:
+konami_logo_fade_out:
 	dec	a:inidisp_shadow
 	bne	loc_00B65B
-	inc	a:wram_1C62
+	inc	a:konami_logo_done
 loc_00B65B:
 	rtl
 
-sub_00B65C:
+rotate_palette_row:
 	lda	f:$7E0000,x
 	pha
 	inx

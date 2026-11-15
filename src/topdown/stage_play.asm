@@ -379,7 +379,7 @@ loc_0290F2:
 
 sub_0290F3:
 	lda	a:$066E,x
-	bit	zp_88
+	bit	button_fire
 	beq	loc_0290FE
 	stz	a:$0646,x
 	rts
@@ -471,7 +471,7 @@ loc_0291A4:
 
 sub_0291A5:
 	lda	a:$066E,x
-	bit	zp_8C
+	bit	button_bomb
 	beq	loc_0291CA
 	lda	a:$10CC,x
 	beq	loc_0291CA
@@ -541,7 +541,7 @@ loc_029232:
 
 sub_029233:
 	lda	a:$066C,x
-	bit	zp_88
+	bit	button_fire
 	bne	sub_029265
 	lda	#$0001
 	cmp	$12,x
@@ -623,7 +623,7 @@ loc_0292C2:
 	bra	loc_0292D3
 loc_0292CC:
 	lda	a:$066C,x
-	bit	zp_88
+	bit	button_fire
 	bne	sub_0292F2
 loc_0292D3:
 	jsl	f:sub_0292DF
@@ -660,7 +660,7 @@ loc_02930D:
 	jsr	a:sub_029102
 	bcc	loc_029319
 	lda	a:$066C,x
-	bit	zp_88
+	bit	button_fire
 	bne	loc_02931C
 loc_029319:
 	stz	a:$065A,x
@@ -697,7 +697,7 @@ loc_029354:
 
 sub_029355:
 	lda	a:$066C,x
-	bit	zp_88
+	bit	button_fire
 	bne	sub_029376
 	lda	#$0003
 	cmp	$12,x
@@ -1567,7 +1567,7 @@ loc_029991:
 	rtl
 
 sub_02999D:
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0200
 	beq	loc_0299AB
 	jsl	f:sub_029BA9
@@ -1605,7 +1605,7 @@ loc_0299DF:
 	rtl
 
 sub_0299E0:
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0200
 	beq	loc_0299EE
 	jsl	f:sub_029BA9
@@ -1747,7 +1747,7 @@ loc_029AA2:
 	jsl	f:sub_1DAD3C
 	cmp	zp_18
 	bne	loc_029ADE
-	lda	zp_78
+	lda	stage_frame_counter
 	xba
 	lsr	a
 loc_029ADE:
@@ -2195,7 +2195,7 @@ loc_029D74:
 	rtl
 
 sub_029D88:
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0001
 	bne	loc_029DAB
 	lda	$2A,x
@@ -2644,7 +2644,7 @@ sub_02A099:
 	rtl
 loc_02A0B5:
 	ldy	difficulty
-	lda	zp_78
+	lda	stage_frame_counter
 	and	a:data_05D506,y
 	bne	loc_02A0C2
 	jsl	f:sub_02A21A
@@ -2733,7 +2733,7 @@ sub_02A14C:
 	and	#$00FF
 	sta	$04,x
 	ldy	difficulty
-	lda	zp_78
+	lda	stage_frame_counter
 	and	a:data_05D512,y
 	bne	loc_02A166
 	jsl	f:sub_02A21A
@@ -2802,7 +2802,7 @@ sub_02A1D0:
 	and	#$00FF
 	sta	$24,x
 	ldy	difficulty
-	lda	zp_78
+	lda	stage_frame_counter
 	and	a:data_05D524,y
 	bne	loc_02A1EA
 	jsl	f:sub_02A21A
@@ -3510,7 +3510,7 @@ loc_02A73C:
 	cmp	#$0004
 	bcc	loc_02A6FB
 	ldy	difficulty
-	lda	zp_78
+	lda	stage_frame_counter
 	and	a:data_05D564,y
 	bne	loc_02A763
 	ldy	#$0010
@@ -4916,7 +4916,7 @@ loc_02B18B:
 	rts
 
 sub_02B18C:
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$0003
 	bne	loc_02B1A2
 	lda	a:wram_1592
@@ -4981,7 +4981,7 @@ loc_02B1F5:
 	rts
 loc_02B1FE:
 	; (not executed in the CDL traces)
-	lda	zp_78
+	lda	stage_frame_counter
 	xba
 	lsr	a
 	bcc	loc_02B1F5
@@ -5712,7 +5712,7 @@ sub_02B71E:
 	ldy	difficulty
 	cpy	#$0004
 	bcs	loc_02B734
-	lda	zp_78
+	lda	stage_frame_counter
 	and	a:data_05D822,y
 	bne	loc_02B733
 	ldy	#$001C
@@ -5723,7 +5723,7 @@ loc_02B734:
 	; (not executed in the CDL traces)
 	jsl	f:sub_029BC2
 	bcs	loc_02B77C
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$000F
 	bne	loc_02B748
 	lda	#$0014
@@ -6277,7 +6277,7 @@ loc_02BB5F:
 
 sub_02BB68:
 	ldy	#$0000
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0002
 	bne	loc_02BB75
 	ldy	#$0002
@@ -6376,7 +6376,7 @@ sub_02BC1B:
 	bcs	loc_02BC30
 	ldy	#$0020
 loc_02BC30:
-	lda	zp_78
+	lda	stage_frame_counter
 	asl	a
 	and	#$000E
 	sta	zp_00
@@ -6662,7 +6662,7 @@ loc_02BE5D:
 	rtl
 
 sub_02BE62:
-	lda	zp_78
+	lda	stage_frame_counter
 	asl	a
 	and	#$000E
 	tay
@@ -6795,7 +6795,7 @@ sub_02BF5A:
 	bcs	loc_02BF58
 	ldy	#$0030
 loc_02BF77:
-	lda	zp_78
+	lda	stage_frame_counter
 	asl	a
 	and	#$000E
 	sta	zp_00
@@ -7026,7 +7026,7 @@ sub_02C0E7:
 	sta	$04,x
 	tya
 	bne	loc_02C103
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0007
 	bne	loc_02C103
 	dec	$06,x
@@ -8315,7 +8315,7 @@ sub_02C9F8:
 	sta	a:$187E,y
 	phx
 	lda	#$0500
-	jsl	f:sub_00B833
+	jsl	f:add_score_for_topdown_player
 	plx
 loc_02CA1C:
 	rts
@@ -8536,7 +8536,7 @@ loc_02CBC3:
 	and	#$00FF
 	tay
 	beq	loc_02CBD7
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0007
 	bne	loc_02CBD7
 	dey
@@ -9409,7 +9409,7 @@ loc_02D293:
 loc_02D29A:
 	lda	#$FFFF
 	sta	a:targets_left_flag
-	lda	zp_78
+	lda	stage_frame_counter
 	asl	a
 	and	#$000E
 	tay
@@ -10414,7 +10414,7 @@ loc_02DA8C:
 	; (not executed in the CDL traces)
 	lda	#$FFFF
 	sta	a:targets_left_flag
-	lda	zp_78
+	lda	stage_frame_counter
 	asl	a
 	and	#$000E
 	tay

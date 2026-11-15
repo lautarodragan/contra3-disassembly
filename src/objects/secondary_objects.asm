@@ -15,10 +15,10 @@
 ; target OBJ_HIT = SHOT_TYPE and, for an OBJF_TARGET object that is not
 ; OBJF_INVULNERABLE, OBJ_HP -= SHOT_DAMAGE; when OBJ_HP goes negative,
 ; SHOT_HIT = the new HP and the shooter scores type_scores[OBJ_TYPE]
-; (sub_00B829); otherwise SHOT_HIT = 1 (sound $10 if OBJF_CLANG).
+; (add_score_for_player_obj); otherwise SHOT_HIT = 1 (sound $10 if OBJF_CLANG).
 ; A shot with SHOT_DAMAGE 0 hits nothing.  Each player's shots are tested
-; every other frame only: player 1's ($0AC0-$0D3F) when zp_BC = 1,
-; player 2's when zp_BC = 0.
+; every other frame only: player 1's ($0AC0-$0D3F) when stage_frame_odd = 1,
+; player 2's when stage_frame_odd = 0.
 update_shots:
 	ldx	#$0AC0
 loc_00E1BB:
@@ -36,7 +36,7 @@ loc_00E1CB:
 	jsl	f:call_shot_handler
 	lda	a:title_menu_cursor
 	beq	loc_00E1E4
-	lda	zp_BC
+	lda	stage_frame_odd
 	beq	loc_00E1DF
 	cpx	#$0D40
 	bcc	loc_00E1E4
@@ -85,7 +85,7 @@ loc_00E21C:
 loc_00E22A:
 	lda	SHOT_DAMAGE,x
 	beq	loc_00E1BF
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_00E239
 	cpx	#$0D40
 	bcs	loc_00E23E
@@ -151,7 +151,7 @@ loc_00E251:
 	bcc	loc_00E2AC
 	ldx	#$0240
 loc_00E2AC:
-	jsl	f:sub_00B829
+	jsl	f:add_score_for_player_obj
 	plx
 	bra	loc_00E2C7
 loc_00E2B3:

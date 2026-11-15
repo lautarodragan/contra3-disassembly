@@ -61,11 +61,11 @@ loc_00CF7D:
 	rtl
 
 sub_00CF7E:
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$0007
 	dec	a
 	bne	loc_00CF9D
-	lda	zp_78
+	lda	stage_frame_counter
 	lsr	a
 	lsr	a
 	and	#$0006
@@ -139,7 +139,7 @@ sub_00CFF5:
 	lda	#$8000
 	sta	$16,x
 	lda	#$0001
-	sta	a:wram_1E40
+	sta	a:stage_checkpoint
 	rtl
 
 sub_00D001:
@@ -521,7 +521,7 @@ sub_00D2F8:
 loc_00D323:
 	cmp	#$01D0
 	bcs	loc_00D332
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_00D332
 	dec	a:m7b_shadow
 	dec	a:m7c_shadow
@@ -667,7 +667,7 @@ loc_00D401:
 	rep	#$20
 	.a16
 	plx
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_00D47E
 	dec	a:wram_166C
 	bne	loc_00D47E
@@ -738,7 +738,7 @@ loc_00D4EE:
 	rtl
 
 sub_00D4F5:
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_00D530
 	ldy	$20,x
 	lda	a:$0004,y
@@ -789,7 +789,7 @@ loc_00D553:
 	rtl
 
 sub_00D563:
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0007
 	bne	loc_00D57F
 	and	#$0018
@@ -865,7 +865,7 @@ loc_00D5C0:
 	.a16
 	rtl
 loc_00D5ED:
-	lda	zp_78
+	lda	stage_frame_counter
 	lsr	a
 	lsr	a
 	lsr	a

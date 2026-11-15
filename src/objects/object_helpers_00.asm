@@ -222,11 +222,11 @@ loc_00FF00:
 	rtl
 
 update_shake_side_view:
-	lda	zp_E4
+	lda	stage_frame_bit1
 	bne	loc_00FF28
 	lda	a:shake_timer
 	beq	loc_00FF1D
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$000F
 	bne	loc_00FF14
 	dec	a:shake_timer

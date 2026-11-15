@@ -26,7 +26,7 @@ loc_018017:
 
 sub_01801B:
 	lda	$2C,x
-	bit	zp_8C
+	bit	button_bomb
 	beq	loc_01804D
 	lda	a:$1310,x
 	bne	loc_01804D
@@ -53,7 +53,7 @@ sub_01804E:
 	bit	#$4000
 	beq	loc_018062
 	ldy	#$0012
-	lda	zp_BC
+	lda	stage_frame_odd
 	beq	loc_01805F
 	ldy	#$0000
 loc_01805F:
@@ -252,7 +252,7 @@ sub_0181E8:
 	ldx	#$0200
 loc_0181EC:
 	clc
-	lda	zp_BE
+	lda	stage_frame_mod4
 	adc	#$FFFC
 	sta	$24,x
 	lda	$16,x
@@ -717,11 +717,11 @@ loc_01855C:
 loc_018562:
 	lda	$1E,x
 	bpl	loc_01856C
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_018579
 	beq	loc_018570
 loc_01856C:
-	lda	zp_BE
+	lda	stage_frame_mod4
 	bne	loc_018579
 loc_018570:
 	inc	$20,x
@@ -1145,7 +1145,7 @@ loc_0188B3:
 	sta	a:$1314,x
 loc_0188C2:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_0188F3
 	lda	$26,x
 	cmp	#$0008
@@ -1895,7 +1895,7 @@ loc_018F3E:
 	brl	loc_019699
 
 sub_018F5A:
-	lda	zp_C0
+	lda	stage_frame_mod8
 	bne	loc_018F62
 	inc	$20,x
 	inc	$20,x
@@ -1957,7 +1957,7 @@ loc_018FC9:
 	brl	loc_0182C8
 loc_018FD5:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_018FE8
 	lda	$26,x
 	bit	#$0008
@@ -2140,7 +2140,7 @@ loc_019130:
 	jsr	a:sub_01B0C0
 	jsl	f:sub_01801B
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_01914C
 	stz	$3E,x
 	lda	$22,x
@@ -2216,7 +2216,7 @@ tbl_0191BA:
 
 sub_0191D4:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_0191DD
 	brl	loc_0182B5
 loc_0191DD:
@@ -2249,7 +2249,7 @@ loc_01920D:
 	jsl	f:sub_0193BE
 loc_019211:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_01921A
 	brl	loc_0182F7
 loc_01921A:
@@ -2298,7 +2298,7 @@ loc_019265:
 	rtl
 loc_019272:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_019285
 	lda	#$97FF
 	sta	$18,x
@@ -2340,7 +2340,7 @@ loc_0192C1:
 	jsl	f:sub_0193BE
 loc_0192C5:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_0192D8
 	; (not executed in the CDL traces)
 	lda	#$97FF
@@ -2372,7 +2372,7 @@ loc_019300:
 	jsl	f:sub_0193BE
 loc_019304:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_01930D
 	brl	loc_0182B5
 loc_01930D:
@@ -2430,7 +2430,7 @@ loc_01936D:
 	jsl	f:sub_0193BE
 loc_019371:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_019384
 	lda	#$97FF
 	sta	$18,x
@@ -2468,7 +2468,7 @@ loc_0193BD:
 	rtl
 
 sub_0193BE:
-	lda	zp_C0
+	lda	stage_frame_mod8
 	bne	loc_0193C4
 	inc	$20,x
 loc_0193C4:
@@ -3140,7 +3140,7 @@ tbl_01987E:
 
 sub_019898:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_0198A1
 	brl	sub_0182BC
 loc_0198A1:
@@ -3158,7 +3158,7 @@ loc_0198AF:
 	rtl
 loc_0198B5:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_0198C8
 	lda	#$6800
 	sta	$18,x
@@ -3192,7 +3192,7 @@ loc_0198F5:
 	jsl	f:sub_0193BE
 loc_0198F9:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_019902
 	brl	loc_0182FB
 loc_019902:
@@ -3225,7 +3225,7 @@ loc_019932:
 	jsl	f:sub_0193BE
 loc_019936:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_019949
 	lda	#$6800
 	sta	$18,x
@@ -3291,7 +3291,7 @@ loc_0199B5:
 	jsl	f:sub_0193BE
 loc_0199B9:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_0199C3
 	; (not executed in the CDL traces)
 	jsl	f:sub_0182BC
@@ -3325,7 +3325,7 @@ loc_0199F3:
 	jsl	f:sub_0193BE
 loc_0199F7:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_019A0A
 	lda	#$6800
 	sta	$18,x

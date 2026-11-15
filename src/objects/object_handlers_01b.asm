@@ -330,7 +330,7 @@ loc_01D1D2:
 	sta	$16,x
 
 sub_01D1DB:
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$0006
 	tay
 	lda	a:data_05C792,y
@@ -577,7 +577,7 @@ loc_01D395:
 	lda	#$0022
 	jsl	f:queue_sound
 loc_01D3B0:
-	lda	zp_BE
+	lda	stage_frame_mod4
 	bne	loc_01D382
 	lda	#$0001
 	sta	a:shake_continuous
@@ -633,7 +633,7 @@ loc_01D3FE:
 loc_01D42B:
 	sta	$1E,x
 loc_01D42D:
-	lda	zp_BE
+	lda	stage_frame_mod4
 	bne	loc_01D46E
 	ldy	#$08C0
 	jsl	f:sub_019EC1
@@ -771,7 +771,7 @@ loc_01D53D:
 	lda	$1E,x
 	adc	#$0000
 	sta	$1E,x
-	lda	zp_BE
+	lda	stage_frame_mod4
 	bne	loc_01D58A
 	ldy	#$0840
 	jsl	f:sub_019EC1
@@ -875,7 +875,7 @@ loc_01D61C:
 	ldy	#$FFF9
 loc_01D625:
 	sty	$30,x
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_01D5F0
 	ldy	#$0840
 	jsl	f:sub_019EC1
@@ -985,7 +985,7 @@ loc_01D6FE:
 	lda	#$0021
 	jsl	f:queue_sound
 loc_01D712:
-	lda	zp_BE
+	lda	stage_frame_mod4
 	bne	loc_01D752
 	ldy	#$0400
 	jsl	f:sub_019EAE
@@ -1087,7 +1087,7 @@ loc_01D7E1:
 	rtl
 
 sub_01D7E2:
-	lda	zp_BE
+	lda	stage_frame_mod4
 	cmp	#$0002
 	bne	loc_01D809
 	inc	$12,x
@@ -1108,7 +1108,7 @@ loc_01D809:
 	rtl
 
 sub_01D80A:
-	lda	zp_C0
+	lda	stage_frame_mod8
 	bne	loc_01D830
 	lda	$0A,x
 	sta	zp_00
@@ -1148,7 +1148,7 @@ loc_01D83E:
 	ldy	#$0300
 	jsl	f:sub_01CF3C
 	bcs	loc_01D867
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_01D868
 	lda	#$C5EE
 	sta	a:$0020,y
@@ -1164,7 +1164,7 @@ loc_01D868:
 	lda	a:data_05C828,x
 	sta	a:$001E,y
 	lda	rng_hi
-	adc	zp_78
+	adc	stage_frame_counter
 	and	#$000E
 	tax
 	lda	a:data_05C838,x
@@ -1771,7 +1771,7 @@ sub_01DCF2:
 	rtl
 
 sub_01DD00:
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$001F
 	bne	loc_01DD4F
 	jsl	f:sub_019EAB
@@ -2340,12 +2340,12 @@ sub_01E112:
 	jsr	a:sub_01E01E
 	lda	a:wram_13C0
 	sta	f:wram_7EA008
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$000F
 	bne	loc_01E16F
 	jsl	f:sub_019EAB
 	bcs	loc_01E16F
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$0010
 	bne	loc_01E137
 	lda	#$0016
@@ -2477,14 +2477,14 @@ sub_01E222:
 	inc	$12,x
 	rtl
 loc_01E232:
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$001F
 	bne	loc_01E29E
 	jsl	f:sub_019EAB
 	bcs	loc_01E29E
 	lda	#$0051
 	sta	a:$0010,y
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$0020
 	beq	loc_01E257
 	lda	#$0000
@@ -2762,7 +2762,7 @@ loc_01E43E:
 	lda	$0E,x
 	and	#$FFFE
 	sta	zp_00
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$0004
 	lsr	a
 	lsr	a
@@ -2990,7 +2990,7 @@ sub_01E5EB:
 	rtl
 
 sub_01E5FE:
-	lda	zp_C0
+	lda	stage_frame_mod8
 	bne	loc_01E629
 	lda	$0A,x
 	adc	#$FFFE
@@ -3108,7 +3108,7 @@ loc_01E6EF:
 
 sub_01E6F0:
 	ldy	difficulty
-	lda	zp_78
+	lda	stage_frame_counter
 	and	a:data_05CABF,y
 	bne	loc_01E762
 	ldy	#$04C0
@@ -3738,7 +3738,7 @@ loc_01EBB7:
 
 sub_01EBBE:
 	ldy	#$B8B6
-	lda	zp_E4
+	lda	stage_frame_bit1
 	bne	loc_01EBC8
 	ldy	#$B8C3
 loc_01EBC8:
@@ -3775,12 +3775,12 @@ sub_01EBF4:
 	clc
 	adc	#$000C
 	sta	a:wram_038A
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$001F
 	lsr	a
 	lsr	a
 	sta	zp_00
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0020
 	beq	loc_01EC25
 	lda	zp_00
@@ -4040,7 +4040,7 @@ sub_01EE36:
 	inc	a:wram_1636
 	rtl
 loc_01EE44:
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0002
 	beq	loc_01EE50
 	lda	#$0001
@@ -4870,7 +4870,7 @@ sub_01F4B1:
 	lda	#$8000
 	sta	$16,x
 loc_01F4BA:
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_01F4E7
 	lda	#$001F
 	sta	zp_06
@@ -4957,7 +4957,7 @@ loc_01F55D:
 	rts
 
 sub_01F55E:
-	lda	zp_BE
+	lda	stage_frame_mod4
 	bne	loc_01F59F
 	lda	#$0400
 	jsl	f:sub_01A15D
@@ -5059,7 +5059,7 @@ loc_01F632:
 	sta	$1E,x
 	rtl
 loc_01F642:
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_01F66A
 	ldy	#$0440
 	lda	#$C516

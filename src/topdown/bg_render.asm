@@ -856,7 +856,7 @@ loc_03E6CA:
 	sta	zp_06
 	lda	a:p1_start_chosen
 	beq	loc_03E6F4
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0004
 	beq	loc_03E6F4
 	brl	loc_03E79A
@@ -983,7 +983,7 @@ loc_03E7AB:
 	sta	zp_06
 	lda	a:p2_start_chosen
 	beq	loc_03E7D5
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0004
 	bne	loc_03E7D5
 	brl	loc_03E87B
@@ -1158,7 +1158,7 @@ loc_03E8E7:
 
 sub_03E8F3:
 	ldx	#$0000
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0003
 	bne	loc_03E900
 	ldx	#$0002

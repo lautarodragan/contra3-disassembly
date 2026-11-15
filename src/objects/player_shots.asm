@@ -78,7 +78,7 @@ tbl_00D6C2:
 	.addr	sub_00DC3D
 loc_00D6CE:
 	lda	$22,x
-	bit	zp_88
+	bit	button_fire
 	beq	loc_00D740
 	lda	#$000E
 	sta	a:$1300,x
@@ -86,7 +86,7 @@ loc_00D6CE:
 
 sub_00D6DC:
 	lda	$22,x
-	bit	zp_88
+	bit	button_fire
 	beq	loc_00D740
 loc_00D6E2:
 	lda	a:$1D80,x
@@ -178,7 +178,7 @@ sub_00D76B:
 	stz	$16,x
 	phy
 	ldy	#$3F82
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_00D78F
 	ldy	#$3FEC
 loc_00D78F:
@@ -585,7 +585,7 @@ loc_00DA0F:
 	sta	a:$000A,y
 	rtl
 loc_00DA80:
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$000F
 	bne	loc_00DA8E
 	lda	#$000A

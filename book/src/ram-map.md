@@ -77,8 +77,8 @@ the ones in the lead's notes confirmed by the code):
 | `p2_spin` | `$1FCE` | player 2, as `p1_spin` |
 
 `stage_index` (`$70`) had been noted as the attract-demo stage; the code
-sets it to `stage_number - 1` both in normal play (`sub_00A7FE`) and in the
-demo (`sub_00A8E1`), and `tbl_00AC2A` uses it to choose between the
+sets it to `stage_number - 1` both in normal play (`game_mode_stage_card`) and in the
+demo (`game_mode_stage_play`), and `tbl_stage_runners` uses it to choose between the
 side-view and the top-down stage code, so it is the 0-based stage number.
 
 ## Structures

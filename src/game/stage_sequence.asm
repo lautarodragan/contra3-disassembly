@@ -1,11 +1,11 @@
 ; game/stage_sequence.asm -- Scripted stage sequence
 ; Bank $00, $00:EBC4-$00:F27B. Included by main.asm in segment BANK00.
 ;
-; A scripted sequence run from the stage state machine (sub_00EBD7, state in
-; $1C80, table tbl_00EBEF): colour-math fades, graphics loads, and state
+; A scripted sequence run from the stage state machine (run_opening_cinematic, state in
+; $1C80, table tbl_opening_states): colour-math fades, graphics loads, and state
 ; tables at $1C82; it clears both players' lives ($1F8A/$1FCA) at its start.
 
-sub_00EBC4:
+layout_init_opening:
 	lda	#$0005
 	sta	a:wram_13BA
 	lda	#$000C
@@ -14,36 +14,36 @@ sub_00EBC4:
 	sta	a:cgadsub_shadow
 	rtl
 
-sub_00EBD7:
-	jsl	f:sub_00EBDC
+run_opening_cinematic:
+	jsl	f:opening_cinematic_step
 	rtl
 
-sub_00EBDC:
-	inc	a:wram_1C96
-	lda	a:wram_1C80
+opening_cinematic_step:
+	inc	a:opening_frame_counter
+	lda	a:opening_state
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00EBEF,x
+	lda	f:tbl_opening_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00EBEF:
-	.addr	sub_00EBFB
-	.addr	sub_00EC6A
-	.addr	sub_00ECAD
-	.addr	sub_00ECF6
-	.addr	sub_00ED00
-	.addr	sub_00ED30
+tbl_opening_states:
+	.addr	opening_cinematic_init
+	.addr	opening_scene_blank
+	.addr	opening_scene_load
+	.addr	opening_scene_start
+	.addr	opening_scene_run
+	.addr	opening_cinematic_done
 
-sub_00EBFB:
+opening_cinematic_init:
 	lda	#$0061
 	jsl	f:queue_sound
 	ldx	#.loword(data_05A84B)
 	jsl	f:sub_0090A8
 	ldy	#$A815
 	jsl	f:sub_009982
-	stz	a:wram_1C96
+	stz	a:opening_frame_counter
 	lda	#$0020
 	sta	a:CGWSEL
 	sta	a:cgwsel_shadow
@@ -71,11 +71,11 @@ sub_00EBFB:
 	stz	zp_B8
 	stz	a:p1_view_x
 	stz	a:p2_view_x
-	stz	a:wram_1C84
-	inc	a:wram_1C80
+	stz	a:opening_scene
+	inc	a:opening_state
 	rtl
 
-sub_00EC6A:
+opening_scene_blank:
 	lda	#$0080
 	sta	a:INIDISP
 	sta	a:inidisp_shadow
@@ -85,9 +85,9 @@ sub_00EC6A:
 	lda	#$0049
 	sta	a:BG2SC
 	sta	a:bg2sc_shadow
-	stz	a:wram_1C86
-	inc	a:wram_1C80
-	lda	a:wram_1C84
+	stz	a:opening_scene_timer
+	inc	a:opening_state
+	lda	a:opening_scene
 	cmp	#$0004
 	beq	loc_00ECA0
 	lda	#$0004
@@ -102,10 +102,10 @@ loc_00ECA0:
 	sta	a:wram_13FA
 	rtl
 
-sub_00ECAD:
-	jsr	a:sub_00F174
-	jsr	a:sub_00F1A9
-	lda	a:wram_1C84
+opening_scene_load:
+	jsr	a:opening_clear_objects
+	jsr	a:opening_set_layers_normal
+	lda	a:opening_scene
 	cmp	#$0005
 	beq	loc_00ECCE
 	cmp	#$0004
@@ -121,79 +121,79 @@ loc_00ECCE:
 	ldx	#$4400
 	jsl	f:sub_008E4B
 loc_00ECDA:
-	lda	a:wram_1C84
+	lda	a:opening_scene
 	asl	a
 	tay
 	lda	a:ptrs_05A7AF,y
 	tax
 	jsl	f:sub_0090A8
 loc_00ECE7:
-	inc	a:wram_1C80
-	lda	a:wram_1C84
+	inc	a:opening_state
+	lda	a:opening_scene
 	beq	loc_00ECF5
 	lda	#$000F
 	sta	a:inidisp_shadow
 loc_00ECF5:
 	rtl
 
-sub_00ECF6:
-	stz	a:wram_1C86
-	stz	a:wram_1C82
-	inc	a:wram_1C80
+opening_scene_start:
+	stz	a:opening_scene_timer
+	stz	a:opening_step
+	inc	a:opening_state
 	rtl
 
-sub_00ED00:
-	jsr	a:sub_00ED34
-	lda	a:wram_1C84
+opening_scene_run:
+	jsr	a:opening_run_scene
+	lda	a:opening_scene
 	asl	a
 	tay
-	inc	a:wram_1C86
-	lda	a:wram_1C86
-	cmp	a:data_05A7BD,y
+	inc	a:opening_scene_timer
+	lda	a:opening_scene_timer
+	cmp	a:opening_scene_durations,y
 	bcc	loc_00ED2F
-	lda	a:wram_1C84
+	lda	a:opening_scene
 	inc	a
 	bra	loc_00ED21
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_00ED19:
+opening_next_scene_unused:
 	; (not executed in the CDL traces)
 	cmp	#$0007
 	bcc	loc_00ED21
 	lda	#$0000
 loc_00ED21:
-	sta	a:wram_1C84
+	sta	a:opening_scene
 	asl	a
 	tay
-	lda	a:data_05A7CB,y
-	sta	a:wram_1C80
-	stz	a:wram_1C86
+	lda	a:opening_scene_next_states,y
+	sta	a:opening_state
+	stz	a:opening_scene_timer
 loc_00ED2F:
 	rtl
 
-sub_00ED30:
-	inc	a:zp_36
+opening_cinematic_done:
+	inc	a:mode_result
 	rtl
 
-sub_00ED34:
-	lda	a:wram_1C84
+opening_run_scene:
+	lda	a:opening_scene
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00ED44,x
+	lda	f:tbl_opening_scenes,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00ED44:
-	.addr	sub_00ED52
-	.addr	sub_00EDE2
-	.addr	sub_00EE6D
-	.addr	sub_00EF37
-	.addr	sub_00F00B
-	.addr	sub_00F03A
-	.addr	sub_00F09F
+tbl_opening_scenes:
+	.addr	opening_scene_city
+	.addr	opening_scene_vortex
+	.addr	opening_scene_beam
+	.addr	opening_scene_ruins
+	.addr	opening_scene_scrolling_text
+	.addr	opening_scene_hero_face
+	.addr	opening_scene_heroes
 
-sub_00ED52:
+opening_scene_city:
 	lda	a:inidisp_shadow
 	bit	#$0080
 	beq	loc_00ED60
@@ -204,20 +204,20 @@ loc_00ED60:
 	bcs	loc_00ED68
 	inc	a:inidisp_shadow
 loc_00ED68:
-	lda	a:wram_1C82
+	lda	a:opening_step
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00ED78,x
+	lda	f:tbl_opening_city_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00ED78:
-	.addr	sub_00ED7E
-	.addr	sub_00EDCF
-	.addr	sub_00EDDE
+tbl_opening_city_steps:
+	.addr	opening_city_init
+	.addr	opening_city_wait
+	.addr	opening_city_idle
 
-sub_00ED7E:
+opening_city_init:
 	ldx	#$0000
 loc_00ED81:
 	lda	f:data_05A85B,x
@@ -232,7 +232,7 @@ loc_00ED81:
 	sta	a:wram_1380
 	stz	a:wram_13DC
 	stz	a:wram_13D8
-	jsr	a:sub_00F18D
+	jsr	a:opening_set_layers_flash
 	ldy	#$A830
 	jsl	f:sub_009982
 	ldx	#$0300
@@ -246,42 +246,42 @@ loc_00ED81:
 	sta	$02,x
 	lda	#$D12A
 	sta	$00,x
-	inc	a:wram_1C82
-	jsr	a:sub_00F149
+	inc	a:opening_step
+	jsr	a:opening_update_parallax
 	rts
 
-sub_00EDCF:
-	jsr	a:sub_00F13C
-	bcc	sub_00EDDE
+opening_city_wait:
+	jsr	a:opening_is_scene_ending
+	bcc	opening_city_idle
 	ldy	#$A836
 	jsl	f:sub_009982
-	inc	a:wram_1C82
+	inc	a:opening_step
 
-sub_00EDDE:
-	jsr	a:sub_00F149
+opening_city_idle:
+	jsr	a:opening_update_parallax
 	rts
 
-sub_00EDE2:
-	lda	a:wram_1C82
+opening_scene_vortex:
+	lda	a:opening_step
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00EDF2,x
+	lda	f:tbl_opening_vortex_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00EDF2:
-	.addr	sub_00EDFA
-	.addr	sub_00EE01
-	.addr	sub_00EE2C
-	.addr	sub_00EE69
+tbl_opening_vortex_steps:
+	.addr	opening_vortex_init
+	.addr	opening_vortex_scroll
+	.addr	opening_vortex_spawn_objects
+	.addr	opening_vortex_idle
 
-sub_00EDFA:
-	jsr	a:sub_00F149
-	inc	a:wram_1C82
+opening_vortex_init:
+	jsr	a:opening_update_parallax
+	inc	a:opening_step
 	rts
 
-sub_00EE01:
+opening_vortex_scroll:
 	lda	a:wram_13D8
 	and	#$00FF
 	cmp	#$00E0
@@ -293,17 +293,17 @@ sub_00EE01:
 	bcs	loc_00EE1B
 	dec	a:wram_13D8
 loc_00EE1B:
-	jsr	a:sub_00F149
+	jsr	a:opening_update_parallax
 	rts
 loc_00EE1F:
 	ldx	#$0300
 	lda	#$0000
 	sta	$00,x
-	inc	a:wram_1C82
+	inc	a:opening_step
 	bra	loc_00EE1B
 
-sub_00EE2C:
-	jsr	a:sub_00F1A9
+opening_vortex_spawn_objects:
+	jsr	a:opening_set_layers_normal
 	ldy	#$0000
 loc_00EE32:
 	lda	a:data_05A9D9,y
@@ -328,29 +328,29 @@ loc_00EE32:
 	bcc	loc_00EE32
 	ldy	#$A845
 	jsl	f:sub_009982
-	inc	a:wram_1C82
+	inc	a:opening_step
 
-sub_00EE69:
-	jsr	a:sub_00F149
+opening_vortex_idle:
+	jsr	a:opening_update_parallax
 	rts
 
-sub_00EE6D:
-	lda	a:wram_1C82
+opening_scene_beam:
+	lda	a:opening_step
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00EE7D,x
+	lda	f:tbl_opening_beam_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00EE7D:
-	.addr	sub_00EE85
-	.addr	sub_00EEB7
-	.addr	sub_00EEC9
-	.addr	sub_00EEFE
+tbl_opening_beam_steps:
+	.addr	opening_beam_init
+	.addr	opening_beam_wait
+	.addr	opening_beam_start_flash
+	.addr	opening_beam_flash
 
-sub_00EE85:
-	jsr	a:sub_00F174
+opening_beam_init:
+	jsr	a:opening_clear_objects
 	ldx	#$0300
 	lda	#$0053
 	sta	$10,x
@@ -366,27 +366,27 @@ sub_00EE85:
 	lda	#$A95F
 	sta	$20,x
 	stz	$22,x
-	inc	a:wram_1C82
-	stz	a:wram_1C88
-	jsr	a:sub_00F149
+	inc	a:opening_step
+	stz	a:opening_step_timer
+	jsr	a:opening_update_parallax
 	rts
 
-sub_00EEB7:
-	inc	a:wram_1C88
-	lda	a:wram_1C88
+opening_beam_wait:
+	inc	a:opening_step_timer
+	lda	a:opening_step_timer
 	cmp	#$0010
 	bcc	loc_00EEC5
-	inc	a:wram_1C82
+	inc	a:opening_step
 loc_00EEC5:
-	jsr	a:sub_00F149
+	jsr	a:opening_update_parallax
 	rts
 
-sub_00EEC9:
+opening_beam_start_flash:
 	stz	a:title_menu_cursor
 	stz	a:p1_view_x
-	stz	a:wram_1C8A
-	stz	a:wram_1C8C
-	stz	a:wram_1C8E
+	stz	a:opening_flash_accum
+	stz	a:opening_flash_speed_lo
+	stz	a:opening_flash_speed_hi
 	stz	a:wram_16AC
 	lda	#$FFFF
 	sta	a:wram_16AA
@@ -397,27 +397,27 @@ sub_00EEC9:
 	sta	a:wram_155C
 	lda	#$005B
 	jsl	f:queue_sound
-	inc	a:wram_1C82
-	jsr	a:sub_00F149
+	inc	a:opening_step
+	jsr	a:opening_update_parallax
 	rts
 
-sub_00EEFE:
+opening_beam_flash:
 	lda	a:p1_view_x
 	cmp	#$00FE
 	bcs	loc_00EF33
-	lda	a:wram_1C8C
+	lda	a:opening_flash_speed_lo
 	clc
 	adc	#$8000
-	sta	a:wram_1C8C
+	sta	a:opening_flash_speed_lo
 	bcc	loc_00EF15
-	inc	a:wram_1C8E
+	inc	a:opening_flash_speed_hi
 loc_00EF15:
-	lda	a:wram_1C8A
+	lda	a:opening_flash_accum
 	clc
-	adc	a:wram_1C8C
-	sta	a:wram_1C8A
+	adc	a:opening_flash_speed_lo
+	sta	a:opening_flash_accum
 	lda	a:p1_view_x
-	adc	a:wram_1C8E
+	adc	a:opening_flash_speed_hi
 	cmp	#$00FE
 	bcc	loc_00EF2D
 	lda	#$00FE
@@ -425,28 +425,28 @@ loc_00EF2D:
 	sta	a:p1_view_x
 	sta	a:p2_view_x
 loc_00EF33:
-	jsr	a:sub_00F149
+	jsr	a:opening_update_parallax
 	rts
 
-sub_00EF37:
-	jsr	a:sub_00F25A
-	lda	a:wram_1C82
+opening_scene_ruins:
+	jsr	a:opening_update_ruins_wave
+	lda	a:opening_step
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00EF4A,x
+	lda	f:tbl_opening_ruins_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00EF4A:
-	.addr	sub_00EF56
-	.addr	sub_00EF7E
-	.addr	sub_00EF90
-	.addr	sub_00EFB6
-	.addr	sub_00EFF0
-	.addr	sub_00F00A
+tbl_opening_ruins_steps:
+	.addr	opening_ruins_init
+	.addr	opening_ruins_wait
+	.addr	opening_ruins_fade
+	.addr	opening_ruins_spawn_alien
+	.addr	opening_ruins_alien_wait
+	.addr	opening_ruins_idle
 
-sub_00EF56:
+opening_ruins_init:
 	lda	#$0000
 	sta	a:wram_1380
 	lda	#$0040
@@ -454,30 +454,30 @@ sub_00EF56:
 	sta	a:bg1sc_shadow
 	lda	#$000E
 	sta	hdma_preset
-	jsr	a:sub_00F214
+	jsr	a:opening_init_ruins_wave
 	lda	#$0000
 	sta	f:wram_7E2250
-	jsr	a:sub_00F174
-	stz	a:wram_1C88
-	inc	a:wram_1C82
+	jsr	a:opening_clear_objects
+	stz	a:opening_step_timer
+	inc	a:opening_step
 	rts
 
-sub_00EF7E:
-	inc	a:wram_1C88
-	lda	a:wram_1C88
+opening_ruins_wait:
+	inc	a:opening_step_timer
+	lda	a:opening_step_timer
 	cmp	#$001E
 	bcc	loc_00EF8F
-	stz	a:wram_1C88
-	inc	a:wram_1C82
+	stz	a:opening_step_timer
+	inc	a:opening_step
 loc_00EF8F:
 	rts
 
-sub_00EF90:
-	lda	a:wram_1C88
+opening_ruins_fade:
+	lda	a:opening_step_timer
 	cmp	#$003F
 	bcs	loc_00EFAF
-	inc	a:wram_1C88
-	lda	a:wram_1C88
+	inc	a:opening_step_timer
+	lda	a:opening_step_timer
 	lsr	a
 	tay
 	lda	a:data_05A8B1,y
@@ -487,16 +487,16 @@ sub_00EF90:
 	beq	loc_00EFAF
 	rts
 loc_00EFAF:
-	stz	a:wram_1C88
-	inc	a:wram_1C82
+	stz	a:opening_step_timer
+	inc	a:opening_step
 	rts
 
-sub_00EFB6:
-	inc	a:wram_1C88
-	lda	a:wram_1C88
+opening_ruins_spawn_alien:
+	inc	a:opening_step_timer
+	lda	a:opening_step_timer
 	cmp	#$0050
 	bcc	loc_00EFEF
-	jsr	a:sub_00F18D
+	jsr	a:opening_set_layers_flash
 	ldx	#$0300
 	lda	#$0053
 	sta	$10,x
@@ -511,29 +511,29 @@ sub_00EFB6:
 	sta	$00,x
 	ldy	#$A82A
 	jsl	f:sub_009982
-	stz	a:wram_1C88
-	inc	a:wram_1C82
+	stz	a:opening_step_timer
+	inc	a:opening_step
 loc_00EFEF:
 	rts
 
-sub_00EFF0:
-	inc	a:wram_1C88
-	lda	a:wram_1C88
+opening_ruins_alien_wait:
+	inc	a:opening_step_timer
+	lda	a:opening_step_timer
 	cmp	#$003C
 	bcc	loc_00F009
 	ldx	#$0300
 	lda	#$CFF9
 	sta	$00,x
-	stz	a:wram_1C88
-	inc	a:wram_1C82
+	stz	a:opening_step_timer
+	inc	a:opening_step
 loc_00F009:
 	rts
 
-sub_00F00A:
+opening_ruins_idle:
 	rts
 
-sub_00F00B:
-	lda	a:wram_1C82
+opening_scene_scrolling_text:
+	lda	a:opening_step
 	beq	loc_00F015
 	dec	a
 	beq	loc_00F026
@@ -545,7 +545,7 @@ loc_00F015:
 	ldx	#$0300
 	lda	#$0000
 	sta	$00,x
-	inc	a:wram_1C82
+	inc	a:opening_step
 	rts
 loc_00F026:
 	lda	a:wram_1380
@@ -555,36 +555,36 @@ loc_00F026:
 	cmp	#$0900
 	bcc	loc_00F038
 	; (not executed in the CDL traces)
-	inc	a:wram_1C82
+	inc	a:opening_step
 loc_00F038:
 	rts
 loc_00F039:
 	; (not executed in the CDL traces)
 	rts
 
-sub_00F03A:
-	lda	a:wram_1C82
+opening_scene_hero_face:
+	lda	a:opening_step
 	bne	loc_00F04E
 	stz	a:wram_13D8
 	stz	a:wram_1380
-	stz	a:wram_1C90
-	stz	a:wram_1C92
-	inc	a:wram_1C82
+	stz	a:opening_caption_index
+	stz	a:opening_caption_timer
+	inc	a:opening_step
 loc_00F04E:
 	sep	#$20
 	.a8
-	ldy	a:wram_1C90
-	inc	a:wram_1C92
-	lda	a:wram_1C92
+	ldy	a:opening_caption_index
+	inc	a:opening_caption_timer
+	lda	a:opening_caption_timer
 	cmp	a:data_05A8D1,y
 	bcc	loc_00F09C
 	lda	a:data_05A8DB,y
 	rep	#$20
 	.a16
 	and	#$00FF
-	jsr	a:sub_00F120
-	inc	a:wram_1C90
-	lda	a:wram_1C90
+	jsr	a:opening_draw_caption_part
+	inc	a:opening_caption_index
+	lda	a:opening_caption_index
 	cmp	#$0001
 	bne	loc_00F099
 	ldy	#$A83C
@@ -602,13 +602,13 @@ loc_00F04E:
 	lda	#$D16F
 	sta	$00,x
 loc_00F099:
-	stz	a:wram_1C92
+	stz	a:opening_caption_timer
 loc_00F09C:
 	rep	#$20
 	rts
 
-sub_00F09F:
-	lda	a:wram_1C82
+opening_scene_heroes:
+	lda	a:opening_step
 	beq	loc_00F0A9
 	dec	a
 	beq	loc_00F0B5
@@ -617,7 +617,7 @@ loc_00F0A9:
 	ldx	#$0300
 	lda	#$0000
 	sta	$00,x
-	inc	a:wram_1C82
+	inc	a:opening_step
 	rts
 loc_00F0B5:
 	lda	a:wram_1380
@@ -626,26 +626,26 @@ loc_00F0B5:
 	sta	a:wram_1380
 	cmp	#$0080
 	bcc	loc_00F0CD
-	stz	a:wram_1C90
-	stz	a:wram_1C92
-	inc	a:wram_1C82
+	stz	a:opening_caption_index
+	stz	a:opening_caption_timer
+	inc	a:opening_step
 loc_00F0CD:
 	rts
 loc_00F0CE:
 	sep	#$20
 	.a8
-	ldy	a:wram_1C90
-	inc	a:wram_1C92
-	lda	a:wram_1C92
+	ldy	a:opening_caption_index
+	inc	a:opening_caption_timer
+	lda	a:opening_caption_timer
 	cmp	a:data_05A8E5,y
 	bcc	loc_00F115
 	lda	a:data_05A8F3,y
 	rep	#$20
 	.a16
 	and	#$00FF
-	jsr	a:sub_00F120
-	inc	a:wram_1C90
-	lda	a:wram_1C90
+	jsr	a:opening_draw_caption_part
+	inc	a:opening_caption_index
+	lda	a:opening_caption_index
 	cmp	#$0001
 	bne	loc_00F099
 	ldx	#$0300
@@ -660,16 +660,16 @@ loc_00F0CE:
 	sta	$02,x
 	lda	#$D190
 	sta	$00,x
-	stz	a:wram_1C92
+	stz	a:opening_caption_timer
 loc_00F115:
 	rep	#$20
-	jsr	a:sub_00F13C
+	jsr	a:opening_is_scene_ending
 	bcc	loc_00F11F
-	jsr	a:sub_00F174
+	jsr	a:opening_clear_objects
 loc_00F11F:
 	rts
 
-sub_00F120:
+opening_draw_caption_part:
 	asl	a
 	tay
 	lda	a:data_05A901,y
@@ -686,24 +686,24 @@ sub_00F120:
 	plx
 	rts
 
-sub_00F13C:
-	lda	a:wram_1C84
+opening_is_scene_ending:
+	lda	a:opening_scene
 	asl	a
 	tay
-	lda	a:wram_1C86
+	lda	a:opening_scene_timer
 	inc	a
-	cmp	a:data_05A7BD,y
+	cmp	a:opening_scene_durations,y
 	rts
 
-sub_00F149:
+opening_update_parallax:
 	lda	a:wram_1380
 	sta	f:wram_7EA013
-	lda	a:wram_1C96
+	lda	a:opening_frame_counter
 	lsr	a
 	lsr	a
 	eor	#$FFFF
 	sta	f:wram_7EA004
-	lda	a:wram_1C96
+	lda	a:opening_frame_counter
 	lsr	a
 	sta	f:wram_7EA007
 	lsr	a
@@ -714,7 +714,7 @@ sub_00F149:
 	sta	f:wram_7EA010
 	rts
 
-sub_00F174:
+opening_clear_objects:
 	ldy	#$0000
 loc_00F177:
 	lda	a:data_05A9D9,y
@@ -730,7 +730,7 @@ loc_00F177:
 	bcc	loc_00F177
 	rts
 
-sub_00F18D:
+opening_set_layers_flash:
 	lda	#$0003
 	sta	a:tm_shadow
 	sta	a:TM
@@ -742,7 +742,7 @@ sub_00F18D:
 	sta	a:CGWSEL
 	rts
 
-sub_00F1A9:
+opening_set_layers_normal:
 	lda	#$0013
 	sta	a:tm_shadow
 	sta	a:TM
@@ -754,7 +754,7 @@ sub_00F1A9:
 	sta	a:CGWSEL
 	rts
 
-sub_00F1C5:
+build_wave_table:
 	lda	a:$0000,y
 	sta	zp_00
 	lda	a:$0002,y
@@ -803,7 +803,7 @@ loc_00F207:
 	plx
 	rtl
 
-sub_00F214:
+opening_init_ruins_wave:
 	ldy	#$0000
 	ldx	#$0000
 loc_00F21A:
@@ -828,18 +828,18 @@ loc_00F22E:
 	inc	a
 	sta	f:wram_7EA410
 	ldy	#$AA0D
-	jsl	f:sub_00F1C5
+	jsl	f:build_wave_table
 	ldy	#$AA16
-	jsl	f:sub_00F1C5
+	jsl	f:build_wave_table
 	rts
 
-sub_00F25A:
-	lda	a:wram_1C96
+opening_update_ruins_wave:
+	lda	a:opening_frame_counter
 	and	#$007E
 	clc
 	adc	#$A020
 	sta	f:wram_7EA004
-	lda	a:wram_1C96
+	lda	a:opening_frame_counter
 	clc
 	adc	#$0010
 	and	#$003F

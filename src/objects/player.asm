@@ -1,7 +1,7 @@
 ; objects/player.asm -- Players
 ; Bank $01, $01:A548-$01:B193. Included by main.asm in segment BANK01.
 ;
-; sub_01A624 (once per frame from the stage loop sub_00BF69) updates both
+; sub_01A624 (once per frame from the stage loop stage_play) updates both
 ; players (objects at $0200/$0240): joypad state, barrier blinking, the player
 ; state machine (sub_01A6CF), collisions; sub_01AA6A, sub_01ABFF, sub_01B0C0.
 
@@ -46,7 +46,7 @@ sub_01A57D:
 	adc	#$FFE0
 	sta	a:$1312,x
 	lda	$2C,x
-	bit	zp_88
+	bit	button_fire
 	beq	loc_01A60B
 	txy
 	ldx	#$0AC0
@@ -171,7 +171,7 @@ loc_01A687:
 	beq	loc_01A6B0
 	ldx	#$0200
 	jsl	f:sub_01AA6A
-	lda	zp_BC
+	lda	stage_frame_odd
 	beq	loc_01A6B0
 	lda	#$6000
 	sta	zp_B8
@@ -183,7 +183,7 @@ loc_01A6B0:
 	beq	loc_01A6CE
 	ldx	#$0240
 	jsl	f:sub_01AA6A
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_01A6CE
 	lda	#$6200
 	sta	zp_B8
@@ -195,7 +195,7 @@ loc_01A6CE:
 
 sub_01A6CF:
 	sta	$02,x
-	jsl	f:sub_00C1F4
+	jsl	f:apply_player_autopilot
 	jsl	f:sub_018000
 	stz	$2E,x
 	stz	$26,x
@@ -285,7 +285,7 @@ loc_01A775:
 	ora	#$0001
 	sta	$26,x
 	lda	$22,x
-	bit	zp_8E
+	bit	button_stand_still
 	beq	loc_01A78C
 	brl	sub_01AA18
 loc_01A78C:
@@ -303,7 +303,7 @@ loc_01A79C:
 	ora	#$0004
 	sta	$26,x
 	lda	$22,x
-	bit	zp_8E
+	bit	button_stand_still
 	beq	loc_01A7B1
 	brl	sub_01AA18
 loc_01A7B1:
@@ -400,7 +400,7 @@ sub_01A851:
 	lda	a:wram_09C6
 	beq	loc_01A86F
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_01A8A9
 	dec	a:wram_09D2
 loc_01A86F:
@@ -499,7 +499,7 @@ sub_01A938:
 	bra	loc_01A93F
 
 sub_01A93D:
-	lda	zp_8E
+	lda	button_stand_still
 loc_01A93F:
 	sta	zp_00
 	lda	$22,x
@@ -753,7 +753,7 @@ loc_01AB1E:
 	rts
 
 sub_01AB1F:
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_01AB2A
 	cpx	#$0200
 	bne	loc_01ABA7
@@ -819,7 +819,7 @@ loc_01AB54:
 	ply
 	phx
 	tyx
-	jsl	f:sub_00B829
+	jsl	f:add_score_for_player_obj
 	plx
 	bra	loc_01AB54
 loc_01ABA6:
@@ -1009,7 +1009,7 @@ loc_01ACDF:
 	lda	a:$1D8E,x
 	beq	loc_01AD09
 	lda	$22,x
-	bit	zp_88
+	bit	button_fire
 	beq	loc_01AD08
 	lda	#$FFFA
 	sta	$1E,x
@@ -1101,7 +1101,7 @@ loc_01AD8E:
 	brl	loc_0182C8
 loc_01ADA7:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	loc_01ADB7
 	lda	$26,x
 	bit	#$0008
@@ -1299,7 +1299,7 @@ loc_01AF24:
 	clc
 	adc	#$003E
 	sta	a:$1300,x
-	lda	zp_C0
+	lda	stage_frame_mod8
 	bne	loc_01AF32
 	inc	$20,x
 loc_01AF32:
@@ -1560,7 +1560,7 @@ sub_01B0E7:
 	jml	f:loc_019A76
 loc_01B0F6:
 	lda	$2C,x
-	bit	zp_8A
+	bit	button_jump
 	beq	sub_01B104
 	lda	#$0002
 	sta	$34,x

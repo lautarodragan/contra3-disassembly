@@ -154,7 +154,7 @@ sub_1DB06B:
 	inc	$12,x
 	stz	a:wram_029C
 	lda	#$0001
-	sta	a:wram_16B4
+	sta	a:player_autopilot_mode
 	stz	a:wram_1666
 loc_1DB086:
 	rtl
@@ -323,7 +323,7 @@ sub_1DB1C1:
 	lda	#$8000
 	sta	a:wram_029C
 loc_1DB1D0:
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_1DB1F2
 	lda	a:wram_16A2
 	cmp	#$000A
@@ -352,7 +352,7 @@ sub_1DB205:
 	bmi	loc_1DB237
 	cmp	#$0040
 	bcc	loc_1DB237
-	stz	a:wram_16B4
+	stz	a:player_autopilot_mode
 	ldy	#$0200
 	jsr	a:sub_1DB741
 	ldy	#$0240
@@ -360,7 +360,7 @@ sub_1DB205:
 	inc	$12,x
 
 sub_1DB220:
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$01FF
 	bne	loc_1DB22E
 	inc	$12,x
@@ -414,9 +414,9 @@ sub_1DB269:
 	lda	#$0004
 	sta	a:ts_shadow
 	lda	#$0001
-	sta	a:wram_16B4
+	sta	a:player_autopilot_mode
 	lda	#$0001
-	sta	a:wram_1E5E
+	sta	a:life_transfer_disabled
 	lda	#$6000
 	sta	a:wram_1636
 	lda	#$FFFF
@@ -541,7 +541,7 @@ sub_1DB377:
 	lda	#$0060
 	sta	$24,x
 	lda	#$0002
-	sta	a:wram_16B4
+	sta	a:player_autopilot_mode
 loc_1DB3CA:
 	rtl
 
@@ -564,7 +564,7 @@ loc_1DB3E2:
 	lda	#$0040
 	sta	a:wram_0274
 loc_1DB3F3:
-	stz	a:wram_16B4
+	stz	a:player_autopilot_mode
 	lda	#$01F0
 	sta	$24,x
 	bra	sub_1DB409
@@ -573,7 +573,7 @@ sub_1DB3FD:
 	dec	$24,x
 	bpl	sub_1DB409
 	lda	#$0100
-	sta	a:wram_1686
+	sta	a:stage_exit_request
 	inc	$12,x
 
 sub_1DB409:
@@ -637,7 +637,7 @@ sub_1DB472:
 	bcs	loc_1DB43E
 	dec	a:wram_1638
 	bpl	loc_1DB43E
-	lda	zp_BC
+	lda	stage_frame_odd
 	beq	loc_1DB43E
 	phx
 	lda	#$0001
@@ -776,7 +776,7 @@ loc_1DB5A1:
 	rts
 
 sub_1DB5A2:
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_1DB5B5
 	lda	a:wram_16A2
 	cmp	#$000A
@@ -1384,7 +1384,7 @@ loc_1DBA36:
 sub_1DBA68:
 	lda	#$0004
 	sta	a:shake_timer
-	lda	zp_BC
+	lda	stage_frame_odd
 	beq	loc_1DBA8B
 	stz	zp_06
 	lda	#$00C0
@@ -1539,7 +1539,7 @@ loc_1DBBA8:
 	lda	difficulty
 	cmp	#$0004
 	bne	loc_1DBBD9
-	lda	zp_BC
+	lda	stage_frame_odd
 	beq	loc_1DBBD9
 	lda	$24,x
 	and	#$0002
@@ -1603,7 +1603,7 @@ loc_1DBC1D:
 	rtl
 
 sub_1DBC2A:
-	lda	zp_BC
+	lda	stage_frame_odd
 	beq	loc_1DBC58
 	sec
 	lda	$24,x
@@ -1630,7 +1630,7 @@ loc_1DBC58:
 sub_1DBC59:
 	dec	$24,x
 	bpl	loc_1DBC89
-	lda	zp_BC
+	lda	stage_frame_odd
 	beq	loc_1DBC89
 	lda	#$0002
 	sta	zp_02
@@ -1742,7 +1742,7 @@ sub_1DBD32:
 	jsr	a:sub_1DBD6A
 	inc	$12,x
 	lda	#$0002
-	sta	a:wram_16BC
+	sta	a:stage_pause_disabled
 	rtl
 
 sub_1DBD4A:
@@ -1770,7 +1770,7 @@ sub_1DBD69:
 sub_1DBD6A:
 	lda	#$0002
 	sta	a:shake_timer
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0001
 	bne	loc_1DBD88
 	lda	rng_lo
@@ -1787,7 +1787,7 @@ sub_1DBD89:
 	lda	$0E,x
 	cmp	#$00E0
 	bcc	loc_1DBD96
-	lda	zp_BE
+	lda	stage_frame_mod4
 	bne	loc_1DBD96
 	dec	$0E,x
 loc_1DBD96:
@@ -1808,7 +1808,7 @@ sub_1DBDA0:
 loc_1DBDB3:
 	lda	rng_lo
 	adc	rng_hi
-	adc	zp_C0
+	adc	stage_frame_mod8
 	sta	rng_lo
 	tya
 	adc	frame_counter
@@ -1860,7 +1860,7 @@ loc_1DBE11:
 	jsl	f:sub_009015
 	plx
 	lda	#$0100
-	sta	a:wram_1686
+	sta	a:stage_exit_request
 	lda	#$0084
 	jsl	f:queue_sound
 	inc	$12,x
@@ -1879,7 +1879,7 @@ sub_1DBE30:
 	lda	#$0010
 	sta	zp_00
 	lda	#$C6EA
-	ldy	zp_BC
+	ldy	stage_frame_odd
 	bne	loc_1DBE4C
 	lda	#$C702
 loc_1DBE4C:
@@ -1896,7 +1896,7 @@ loc_1DBE60:
 sub_1DBE61:
 	phx
 	ldx	#$FEF9
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0010
 	bne	loc_1DBE6F
 	ldx	#$FF0A
@@ -2054,7 +2054,7 @@ sub_1DBFA3:
 	lda	a:wram_163E
 	cmp	#$0001
 	bcs	loc_1DBFD4
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$003F
 	bne	loc_1DBFB5
 	jsr	a:sub_1DCCC0
@@ -2064,7 +2064,7 @@ loc_1DBFB5:
 	lda	a:wram_163C
 	cmp	#$0030
 	bcs	loc_1DBFCA
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_1DBFCA
 	inc	a:wram_163C
 loc_1DBFCA:
@@ -2323,7 +2323,7 @@ sub_1DC1B8:
 	inc	$12,x
 	rtl
 loc_1DC1D0:
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$001F
 	bne	loc_1DC1E5
 	lda	rng_lo
@@ -2338,7 +2338,7 @@ loc_1DC1E5:
 	lda	#$FFFF
 	sta	zp_02
 	jsr	a:sub_1DCB04
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$003F
 	bne	loc_1DC208
 	lda	rng_hi
@@ -2461,7 +2461,7 @@ loc_1DC2C0:
 	inc	$12,x
 	rtl
 loc_1DC2D1:
-	lda	zp_C0
+	lda	stage_frame_mod8
 	bne	loc_1DC31A
 	lda	rng_lo
 	and	#$0001
@@ -2507,7 +2507,7 @@ sub_1DC31B:
 	lda	a:wram_163C
 	cmp	#$00F0
 	bcs	loc_1DC34E
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$007F
 	bne	loc_1DC341
 	lda	$36,x
@@ -2520,7 +2520,7 @@ loc_1DC341:
 	sta	zp_02
 	jsr	a:sub_1DCB04
 loc_1DC34E:
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_1DC359
 	dec	a:wram_163C
 	bpl	loc_1DC359
@@ -2565,7 +2565,7 @@ loc_1DC39C:
 loc_1DC39D:
 	lda	#$0001
 	sta	a:shake_continuous
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$007F
 	bne	loc_1DC3F4
 	lda	#$0091
@@ -2769,7 +2769,7 @@ loc_1DC51A:
 	rtl
 
 sub_1DC51B:
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$003F
 	bne	loc_1DC544
 	lda	#$0093
@@ -2916,7 +2916,7 @@ loc_1DC62E:
 	sta	$16,x
 	rtl
 loc_1DC63F:
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0004
 	bne	loc_1DC64B
 	lda	$3A,x
@@ -3156,7 +3156,7 @@ sub_1DC801:
 	sta	$16,x
 	bra	loc_1DC81B
 loc_1DC817:
-	lda	zp_BC
+	lda	stage_frame_odd
 	beq	loc_1DC81E
 loc_1DC81B:
 	lda	#$C536
@@ -3225,7 +3225,7 @@ loc_1DC88A:
 	sta	$0E,x
 	sta	zp_FE
 	phx
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$001F
 	bne	loc_1DC8DC
 	lda	#$0090

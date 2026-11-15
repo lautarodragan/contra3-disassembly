@@ -10,11 +10,11 @@
 ; flash and drawing.
 
 ; Draws both players' metasprites (OBJ_SPRITE) into the OAM buffer; the
-; player drawn first alternates every frame (zp_BC) so that neither is
+; player drawn first alternates every frame (stage_frame_odd) so that neither is
 ; always hidden behind the other.
 draw_players:
 	ldx	#$0200
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_00E96A
 	ldx	#$0240
 loc_00E96A:
@@ -124,7 +124,7 @@ loc_00EA0B:
 	bit	#OBJF_TOUCH
 	beq	loc_00EA76
 	ldy	#$0200
-	lda	zp_BC
+	lda	stage_frame_odd
 	beq	loc_00EA1A
 	ldy	#$0240
 loc_00EA1A:

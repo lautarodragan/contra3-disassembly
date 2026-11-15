@@ -1,13 +1,13 @@
 ; game/game_modes.asm -- Game mode state machine
 ; Bank $00, $00:A377-$00:AD7B. Included by main.asm in segment BANK00.
 ;
-; sub_00A377 increments the frame counter $3A and dispatches the game mode $32
-; through tbl_00A38A (15 modes, sub_00A3A8..sub_00AB76); many modes dispatch a
+; run_game_mode increments the frame counter $3A and dispatches the game mode $32
+; through tbl_game_modes (15 modes, game_mode_konami_logo..sub_00AB76); many modes dispatch a
 ; sub-mode $34 through their own table. Also the end-of-life/continue checks
-; (sub_00ABE0) and the per-stage choice between side-view and top-down
-; (tbl_00AC2A, indexed by $70).
+; (run_stage) and the per-stage choice between side-view and top-down
+; (tbl_stage_runners, indexed by $70).
 
-sub_00A377:
+run_game_mode:
 	.a16
 	rep	#$30
 	inc	frame_counter
@@ -15,41 +15,41 @@ sub_00A377:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00A38A,x
+	lda	f:tbl_game_modes,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00A38A:
-	.addr	sub_00A3A8
-	.addr	sub_00A3E4
-	.addr	sub_00A3E5
-	.addr	sub_00A587
-	.addr	sub_00A5E0
-	.addr	sub_00A625
-	.addr	sub_00A64A
-	.addr	sub_00A73D
-	.addr	sub_00A7FE
-	.addr	sub_00A8E1
-	.addr	sub_00A932
-	.addr	sub_00A954
-	.addr	sub_00AA0A
-	.addr	sub_00AB56
-	.addr	sub_00AB76
+tbl_game_modes:
+	.addr	game_mode_konami_logo
+	.addr	game_mode_unused_1
+	.addr	game_mode_opening
+	.addr	game_mode_title
+	.addr	game_mode_demo
+	.addr	game_mode_sound_check
+	.addr	game_mode_game_start
+	.addr	game_mode_stage_select
+	.addr	game_mode_stage_card
+	.addr	game_mode_stage_play
+	.addr	game_mode_stage_clear
+	.addr	game_mode_game_over
+	.addr	game_mode_continue
+	.addr	game_mode_options
+	.addr	game_mode_final_score
 
-sub_00A3A8:
+game_mode_konami_logo:
 	lda	game_submode
 	bne	loc_00A3C1
 	ldx	#$F537
 	jsl	f:sub_0098D4
-	stz	a:wram_1C60
-	stz	a:wram_1C62
+	stz	a:konami_logo_step
+	stz	a:konami_logo_done
 	lda	#$0005
 	sta	force_blank_frames
 	inc	game_submode
 loc_00A3C0:
 	rtl
 loc_00A3C1:
-	jsl	f:sub_00B4DD
+	jsl	f:run_konami_logo
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#$1000
@@ -58,37 +58,37 @@ loc_00A3C1:
 	lda	#$0002
 	sta	force_blank_frames
 	lda	#$0003
-	brl	sub_00ABA3
+	brl	set_game_mode
 loc_00A3D9:
-	lda	a:wram_1C62
+	lda	a:konami_logo_done
 	beq	loc_00A3C0
 	lda	#$0002
-	brl	sub_00ABA3
+	brl	set_game_mode
 
-sub_00A3E4:
+game_mode_unused_1:
 	; (not executed in the CDL traces)
 	rtl
 
-sub_00A3E5:
+game_mode_opening:
 	lda	game_submode
 	asl	a
 	tax
-	jmp	(.loword(tbl_00A3EC),x)
-tbl_00A3EC:
-	.addr	sub_00A404
-	.addr	sub_00A434
-	.addr	sub_00A43B
-	.addr	sub_00A460
-	.addr	sub_00A46E
-	.addr	sub_00A46E
-	.addr	sub_00A46E
-	.addr	sub_00A491
-	.addr	sub_00A4DD
-	.addr	sub_00A501
-	.addr	sub_00A525
-	.addr	sub_00A54F
+	jmp	(.loword(tbl_opening_submodes),x)
+tbl_opening_submodes:
+	.addr	opening_init
+	.addr	opening_start_music
+	.addr	opening_run_cinematic
+	.addr	opening_load_title
+	.addr	opening_zoom_title_logo
+	.addr	opening_zoom_title_logo
+	.addr	opening_zoom_title_logo
+	.addr	opening_zoom_title_logo_last
+	.addr	opening_slide_title_the
+	.addr	opening_slide_title_alien
+	.addr	opening_slide_title_wars
+	.addr	opening_shake_title
 
-sub_00A404:
+opening_init:
 	jsl	f:reset_sound_queue
 	jsl	f:sub_008DBE
 	jsl	f:clear_ram_1c00_1cff
@@ -102,17 +102,17 @@ sub_00A404:
 	iny
 	mvn	#$00, #$00
 	plb
-	stz	a:wram_1600
+	stz	a:stage_state
 	stz	a:topdown_state
 	stz	a:title_menu_cursor
 	stz	stage_number
-	brl	loc_00AB9B
+	brl	next_submode
 
-sub_00A434:
+opening_start_music:
 	jsl	f:sub_04D9F1
-	brl	loc_00AB9B
+	brl	next_submode
 
-sub_00A43B:
+opening_run_cinematic:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#$1000
@@ -120,26 +120,26 @@ sub_00A43B:
 	; (not executed in the CDL traces)
 	stz	nmi_mode
 	stz	hdma_preset
-	brl	loc_00ABA0
+	brl	next_game_mode
 loc_00A44B:
 	lda	#$0002
 	sta	nmi_mode
-	jsl	f:sub_00BD40
-	lda	zp_36
+	jsl	f:run_side_view_stage
+	lda	mode_result
 	beq	loc_00A45F
 	stz	nmi_mode
 	stz	hdma_preset
-	brl	loc_00AB9B
+	brl	next_submode
 loc_00A45F:
 	rtl
 
-sub_00A460:
+opening_load_title:
 	jsl	f:clear_ram_1c00_1cff
 	stz	a:title_menu_cursor
-	jsl	f:sub_00B091
-	brl	loc_00AB9B
+	jsl	f:opening_load_title_screen
+	brl	next_submode
 
-sub_00A46E:
+opening_zoom_title_logo:
 	lda	a:m7a_shadow
 	clc
 	adc	#$0020
@@ -152,11 +152,11 @@ sub_00A46E:
 	bcc	loc_00A490
 	stz	a:m7a_shadow
 	stz	a:m7d_shadow
-	brl	loc_00AB9B
+	brl	next_submode
 loc_00A490:
 	rtl
 
-sub_00A491:
+opening_zoom_title_logo_last:
 	lda	a:m7a_shadow
 	clc
 	adc	#$0010
@@ -171,75 +171,75 @@ sub_00A491:
 	sta	a:m7a_shadow
 	sta	a:m7d_shadow
 	lda	#$0100
-	sta	a:wram_1E56
+	sta	a:title_the_x
 	lda	#$FFA0
-	sta	a:wram_1E58
+	sta	a:title_alien_x
 	lda	#$0100
-	sta	a:wram_1E5A
+	sta	a:title_wars_x
 	lda	#$FF80
 	sta	a:wram_1E5C
 	lda	#$0046
 	jsl	f:queue_sound
-	stz	a:wram_1E64
+	stz	a:title_shake
 	lda	#$0001
 	sta	hdma_preset
-	brl	loc_00AB9B
+	brl	next_submode
 
-sub_00A4DD:
-	jsl	f:sub_00B400
-	lda	a:wram_1E56
+opening_slide_title_the:
+	jsl	f:draw_title_word_sprites
+	lda	a:title_the_x
 	sec
 	sbc	#$0004
-	sta	a:wram_1E56
+	sta	a:title_the_x
 	cmp	#$0068
 	bmi	loc_00A4F1
 	rtl
 loc_00A4F1:
 	lda	#$0068
-	sta	a:wram_1E56
+	sta	a:title_the_x
 	lda	#$0046
 	jsl	f:queue_sound
-	brl	loc_00AB9B
+	brl	next_submode
 
-sub_00A501:
-	jsl	f:sub_00B400
-	lda	a:wram_1E58
+opening_slide_title_alien:
+	jsl	f:draw_title_word_sprites
+	lda	a:title_alien_x
 	clc
 	adc	#$0004
-	sta	a:wram_1E58
+	sta	a:title_alien_x
 	cmp	#$0050
 	bpl	loc_00A515
 	rtl
 loc_00A515:
 	lda	#$0050
-	sta	a:wram_1E58
+	sta	a:title_alien_x
 	lda	#$0046
 	jsl	f:queue_sound
-	brl	loc_00AB9B
+	brl	next_submode
 
-sub_00A525:
-	jsl	f:sub_00B400
-	lda	a:wram_1E5A
+opening_slide_title_wars:
+	jsl	f:draw_title_word_sprites
+	lda	a:title_wars_x
 	sec
 	sbc	#$0004
-	sta	a:wram_1E5A
+	sta	a:title_wars_x
 	cmp	#$0050
 	bmi	loc_00A539
 	rtl
 loc_00A539:
 	lda	#$0050
-	sta	a:wram_1E5A
+	sta	a:title_wars_x
 	lda	#$0047
 	jsl	f:queue_sound
 	lda	#$0004
-	sta	a:wram_1E64
-	brl	loc_00AB9B
+	sta	a:title_shake
+	brl	next_submode
 
-sub_00A54F:
+opening_shake_title:
 	lda	#$00B0
 	sta	a:wram_1E5C
-	jsl	f:sub_00B400
-	ldy	a:wram_1E64
+	jsl	f:draw_title_word_sprites
+	ldy	a:title_shake
 	lda	frame_counter
 	bit	#$0002
 	beq	loc_00A569
@@ -250,66 +250,66 @@ sub_00A54F:
 loc_00A569:
 	sty	a:wram_1398
 	sty	a:wram_1418
-	lda	a:wram_1E64
+	lda	a:title_shake
 	beq	loc_00A57F
 	lda	frame_counter
 	bit	#$000F
 	bne	loc_00A57E
-	dec	a:wram_1E64
+	dec	a:title_shake
 loc_00A57E:
 	rtl
 loc_00A57F:
 	lda	#$0001
 	sta	game_submode
-	brl	loc_00ABAF
+	brl	next_game_mode_keep_submode
 
-sub_00A587:
+game_mode_title:
 	lda	game_submode
 	bne	loc_00A5B9
 	lda	#$0068
-	sta	a:wram_1E56
+	sta	a:title_the_x
 	lda	#$0050
-	sta	a:wram_1E58
+	sta	a:title_alien_x
 	lda	#$0050
-	sta	a:wram_1E5A
+	sta	a:title_wars_x
 	lda	#$00B0
 	sta	a:wram_1E5C
-	stz	a:wram_1E64
+	stz	a:title_shake
 	jsl	f:clear_ram_1c00_1cff
 	stz	a:title_menu_cursor
-	jsl	f:sub_00B0DC
+	jsl	f:load_title_screen
 	lda	#$0001
 	sta	hdma_preset
-	brl	loc_00AB9B
+	brl	next_submode
 loc_00A5B9:
-	jsl	f:sub_00B1AD
-	jsl	f:sub_00B400
-	lda	zp_36
+	jsl	f:run_title_menu
+	jsl	f:draw_title_word_sprites
+	lda	mode_result
 	asl	a
 	tax
-	jmp	(.loword(tbl_00A5C8),x)
-tbl_00A5C8:
-	.addr	sub_00A5DF
-	.addr	sub_00A5D0
-	.addr	sub_00A5D3
-	.addr	sub_00A5D9
+	jmp	(.loword(tbl_title_results),x)
+tbl_title_results:
+	.addr	title_result_none
+	.addr	title_result_timeout
+	.addr	title_result_start
+	.addr	title_result_sound_check
 
-sub_00A5D0:
-	brl	loc_00ABA0
+title_result_timeout:
+	brl	next_game_mode
 
-sub_00A5D3:
+title_result_start:
 	lda	#$0006
-	brl	sub_00ABA3
+	brl	set_game_mode
 
-sub_00A5D9:
+title_result_sound_check:
 	; (not executed in the CDL traces)
 	lda	#$0005
-	brl	sub_00ABA3
+	brl	set_game_mode
 
-sub_00A5DF:
+title_result_none:
 	rtl
 
-sub_00A5E0:
+game_mode_demo:
 	lda	game_submode
 	bne	loc_00A60D
 	php
@@ -329,23 +329,23 @@ loc_00A5F7:
 	lda	#$0001
 	sta	a:title_menu_cursor
 	jsl	f:clear_ram_1c00_1cff
-	brl	loc_00AB9B
+	brl	next_submode
 loc_00A60D:
-	jsl	f:sub_00AD7C
-	lda	zp_36
+	jsl	f:run_demo
+	lda	mode_result
 	beq	loc_00A624
 	dec	a
 	bne	loc_00A61E
 	lda	#$0000
-	brl	sub_00ABA3
+	brl	set_game_mode
 loc_00A61E:
 	; (not executed in the CDL traces)
 	lda	#$0003
-	brl	sub_00ABA3
+	brl	set_game_mode
 loc_00A624:
 	rtl
 
-sub_00A625:
+game_mode_sound_check:
 	; (not executed in the CDL traces)
 	lda	game_submode
 	bne	loc_00A63B
@@ -353,28 +353,28 @@ sub_00A625:
 	jsl	f:sub_008DBE
 	jsl	f:clear_ram_1c00_1cff
 	stz	a:inidisp_shadow
-	brl	loc_00AB9B
+	brl	next_submode
 loc_00A63B:
-	jsl	f:sub_04D878
-	lda	zp_36
+	jsl	f:run_sound_check
+	lda	mode_result
 	beq	loc_00A649
 	lda	#$0003
-	brl	sub_00ABA3
+	brl	set_game_mode
 loc_00A649:
 	rtl
 
-sub_00A64A:
+game_mode_game_start:
 	lda	game_submode
 	dec	a
 	beq	loc_00A65F
 	bpl	loc_00A67F
 	lda	#$0001
 	sta	stage_number
-	stz	a:wram_1E40
+	stz	a:stage_checkpoint
 	ldx	#$0050
-	brl	loc_00AB99
+	brl	next_submode_with_timer
 loc_00A65F:
-	lda	zp_68
+	lda	wait_timer
 	and	#$0004
 	sta	zp_F0
 	lda	a:title_menu_cursor
@@ -383,9 +383,9 @@ loc_00A65F:
 	ldx	a:data_05840A,y
 	lda	#$2400
 	jsl	f:sub_009015
-	jsl	f:sub_00ABB6
+	jsl	f:tick_wait_timer
 	bne	loc_00A67E
-	brl	loc_00AB9B
+	brl	next_submode
 loc_00A67E:
 	rtl
 loc_00A67F:
@@ -403,30 +403,30 @@ loc_00A692:
 	sta	a:inidisp_shadow
 	plp
 	stz	hdma_preset
-	jsr	a:sub_00A6C0
-	jsr	a:sub_00A734
+	jsr	a:init_new_game
+	jsr	a:init_continues
 	lda	a:title_menu_cursor
 	cmp	#$0003
 	bcs	loc_00A6BA
-	lda	a:wram_1E60
+	lda	a:stage_select_enabled
 	beq	loc_00A6B4
 	; (not executed in the CDL traces)
 	lda	#$0007
-	brl	sub_00ABA3
+	brl	set_game_mode
 loc_00A6B4:
 	lda	#$0008
-	brl	sub_00ABA3
+	brl	set_game_mode
 loc_00A6BA:
 	lda	#$000D
-	brl	sub_00ABA3
+	brl	set_game_mode
 
-sub_00A6C0:
-	stz	a:wram_1E4C
+init_new_game:
+	stz	a:stage_gfx_loaded
 
-sub_00A6C3:
-	stz	a:wram_1600
+init_players:
+	stz	a:stage_state
 	stz	a:topdown_state
-	stz	a:wram_1E5E
+	stz	a:life_transfer_disabled
 	stz	a:p1_weapon_slot
 	stz	a:p2_weapon_slot
 	stz	a:wram_1F82
@@ -444,34 +444,34 @@ sub_00A6C3:
 	sta	a:p2_bombs
 	stz	a:p1_spin
 	stz	a:p2_spin
-	stz	a:wram_1FA0
-	stz	a:wram_1FA2
-	stz	a:wram_1FE0
-	stz	a:wram_1FE2
+	stz	a:p1_score
+	stz	a:p1_score_hi
+	stz	a:p2_score
+	stz	a:p2_score_hi
 	lda	#$0000
-	sta	a:wram_1FB6
-	sta	a:wram_1FF6
+	sta	a:p1_next_extend
+	sta	a:p2_next_extend
 	lda	#$0002
-	sta	a:wram_1FB8
-	sta	a:wram_1FF8
-	lda	a:wram_1E3C
+	sta	a:p1_next_extend_hi
+	sta	a:p2_next_extend_hi
+	lda	a:option_lives
 	sta	a:p1_lives
 	lda	a:title_menu_cursor
 	beq	loc_00A72B
-	lda	a:wram_1E3C
+	lda	a:option_lives
 loc_00A72B:
 	sta	a:p2_lives
-	lda	a:wram_1E3E
+	lda	a:option_level
 	sta	difficulty
 	rts
 
-sub_00A734:
+init_continues:
 	ldy	difficulty
-	lda	a:data_0583F6,y
-	sta	a:wram_1E62
+	lda	a:continues_per_difficulty,y
+	sta	a:continues_left
 	rts
 
-sub_00A73D:
+game_mode_stage_select:
 	; (not executed in the CDL traces)
 	lda	game_submode
 	dec	a
@@ -496,8 +496,8 @@ loc_00A747:
 	lda	#$2400
 	jsl	f:sub_009015
 	lda	#$0100
-	sta	zp_4C
-	brl	loc_00AB9B
+	sta	demo_timer
+	brl	next_submode
 loc_00A77C:
 	php
 	lda	a:inidisp_shadow
@@ -524,7 +524,7 @@ loc_00A795:
 	beq	loc_00A7B4
 	lda	#$0002
 	jsl	f:queue_sound
-	brl	loc_00AB9B
+	brl	next_submode
 loc_00A7B4:
 	bit	#$2C00
 	bne	loc_00A7BA
@@ -564,9 +564,9 @@ loc_00A7F4:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
-	brl	loc_00ABA0
+	brl	next_game_mode
 
-sub_00A7FE:
+game_mode_stage_card:
 	lda	game_submode
 	dec	a
 	bne	loc_00A806
@@ -589,30 +589,30 @@ loc_00A80B:
 	jsl	f:sub_0090A8
 	ldy	#$8412
 	jsl	f:sub_009982
-	jsl	f:sub_00B7B2
+	jsl	f:draw_score_board
 	lda	stage_number
 	asl	a
 	tay
 	ldx	a:data_058428,y
 	lda	#$2400
 	jsl	f:sub_009015
-	stz	a:wram_1600
+	stz	a:stage_state
 	stz	a:topdown_state
-	stz	a:wram_1E5E
+	stz	a:life_transfer_disabled
 	lda	#$0020
 	sta	zp_94
 	lda	#$0010
 	sta	zp_96
 	lda	#$4000
-	sta	zp_88
+	sta	button_fire
 	lda	#$8000
-	sta	zp_8A
+	sta	button_jump
 	sta	zp_92
 	lda	#$0080
-	sta	zp_8C
+	sta	button_bomb
 	lda	#$0010
-	sta	zp_8E
-	brl	loc_00AB9B
+	sta	button_stand_still
+	brl	next_submode
 loc_00A870:
 	php
 	lda	a:inidisp_shadow
@@ -638,15 +638,15 @@ loc_00A889:
 	iny
 	mvn	#$00, #$00
 	plb
-	lda	a:wram_1E4C
+	lda	a:stage_gfx_loaded
 	bne	loc_00A8AB
 	lda	stage_number
-	jsl	f:sub_00B99F
+	jsl	f:load_stage_graphics
 loc_00A8AB:
 	lda	#$0002
-	sta	a:wram_1E4C
+	sta	a:stage_gfx_loaded
 	jsl	f:sub_04D9F1
-	brl	loc_00AB9B
+	brl	next_submode
 loc_00A8B8:
 	php
 	rep	#$20
@@ -661,85 +661,85 @@ loc_00A8CB:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
-	stz	zp_4A
+	stz	demo_mode
 	lda	#$0002
-	sta	zp_64
+	sta	pause_disabled
 	lda	stage_number
 	dec	a
 	sta	stage_index
-	brl	loc_00ABA0
+	brl	next_game_mode
 
-sub_00A8E1:
-	jsl	f:sub_00ABDD
-	lda	zp_36
+game_mode_stage_play:
+	jsl	f:run_stage_with_life_transfer
+	lda	mode_result
 	beq	loc_00A931
 	lda	a:p1_lives
 	ora	a:p2_lives
 	bne	loc_00A8FB
 	jsl	f:reset_sound_queue
 	lda	#$000B
-	brl	sub_00ABA3
+	brl	set_game_mode
 loc_00A8FB:
 	lda	stage_number
 	cmp	#$0006
 	bcc	loc_00A92B
 	lda	#$0001
 	sta	stage_number
-	stz	a:wram_1E40
-	lda	a:wram_1E3E
+	stz	a:stage_checkpoint
+	lda	a:option_level
 	inc	a
 	inc	a
 	cmp	#$0006
 	bcc	loc_00A91A
 	lda	#$000E
-	brl	sub_00ABA3
+	brl	set_game_mode
 loc_00A91A:
 	; (not executed in the CDL traces)
-	sta	a:wram_1E3E
+	sta	a:option_level
 	sta	difficulty
-	stz	a:wram_1E4C
-	jsr	a:sub_00A734
+	stz	a:stage_gfx_loaded
+	jsr	a:init_continues
 	lda	#$0008
-	brl	sub_00ABA3
+	brl	set_game_mode
 loc_00A92B:
 	lda	#$000A
-	brl	sub_00ABA3
+	brl	set_game_mode
 loc_00A931:
 	rtl
 
-sub_00A932:
+game_mode_stage_clear:
 	lda	game_submode
 	bne	loc_00A945
 	jsl	f:reset_sound_queue
 	jsl	f:sub_008DBE
 	jsl	f:clear_ram_1c00_1cff
-	brl	loc_00AB9B
+	brl	next_submode
 loc_00A945:
-	jsl	f:sub_00B679
-	lda	zp_36
+	jsl	f:run_stage_clear
+	lda	mode_result
 	beq	loc_00A953
 	lda	#$0008
-	brl	sub_00ABA3
+	brl	set_game_mode
 loc_00A953:
 	rtl
 
-sub_00A954:
+game_mode_game_over:
 	lda	game_submode
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00A963,x
+	lda	f:tbl_game_over_submodes,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00A963:
-	.addr	sub_00A96D
-	.addr	sub_00A9A4
-	.addr	sub_00A9DD
-	.addr	sub_00A9E5
-	.addr	sub_00A9ED
+tbl_game_over_submodes:
+	.addr	game_over_init
+	.addr	game_over_fade_in
+	.addr	game_over_wait_continue
+	.addr	game_over_wait_final
+	.addr	game_over_fade_out
 
-sub_00A96D:
+game_over_init:
 	jsl	f:sub_008DBE
 	lda	#$0080
 	sta	a:inidisp_shadow
@@ -752,15 +752,15 @@ sub_00A96D:
 	jsl	f:sub_0090A8
 	ldy	#$8412
 	jsl	f:sub_009982
-	jsl	f:sub_00B7B2
+	jsl	f:draw_score_board
 	ldx	#$8472
 	lda	#$2400
 	jsl	f:sub_009015
 	ldx	#$F513
 	jsl	f:sub_0098D4
-	brl	loc_00AB9B
+	brl	next_submode
 
-sub_00A9A4:
+game_over_fade_in:
 	php
 	lda	a:inidisp_shadow
 	bit	#$0080
@@ -777,35 +777,35 @@ loc_00A9BD:
 	plp
 	lda	#$006B
 	jsl	f:queue_sound
-	dec	a:wram_1E62
+	dec	a:continues_left
 	bmi	loc_00A9D2
 	lda	#$0080
-	sta	zp_76
-	brl	loc_00AB9B
+	sta	mode_timer
+	brl	next_submode
 loc_00A9D2:
 	; (not executed in the CDL traces)
 	lda	#$0180
-	sta	zp_76
+	sta	mode_timer
 	lda	#$0003
 	sta	game_submode
 	rtl
 
-sub_00A9DD:
-	dec	zp_76
+game_over_wait_continue:
+	dec	mode_timer
 	bne	loc_00A9E4
-	brl	loc_00ABA0
+	brl	next_game_mode
 loc_00A9E4:
 	rtl
 
-sub_00A9E5:
+game_over_wait_final:
 	; (not executed in the CDL traces)
-	dec	zp_76
+	dec	mode_timer
 	bne	loc_00A9EC
-	brl	loc_00AB9B
+	brl	next_submode
 loc_00A9EC:
 	rtl
 
-sub_00A9ED:
+game_over_fade_out:
 	; (not executed in the CDL traces)
 	php
 	rep	#$20
@@ -822,65 +822,65 @@ loc_00AA00:
 	plp
 	brl	loc_00AAA8
 
-sub_00AA0A:
+game_mode_continue:
 	lda	game_submode
 	asl	a
 	tax
-	jmp	(.loword(tbl_00AA11),x)
-tbl_00AA11:
-	.addr	sub_00AA19
-	.addr	sub_00AA25
-	.addr	sub_00AA5D
-	.addr	sub_00AA80
+	jmp	(.loword(tbl_continue_submodes),x)
+tbl_continue_submodes:
+	.addr	continue_init
+	.addr	continue_menu
+	.addr	continue_player_menu
+	.addr	continue_fade_out
 
-sub_00AA19:
+continue_init:
 	lda	#$0002
-	sta	a:wram_1C02
-	stz	a:wram_1C00
-	brl	loc_00AB9B
+	sta	a:continue_option_count
+	stz	a:continue_cursor
+	brl	next_submode
 
-sub_00AA25:
-	jsr	a:sub_00AAB1
-	jsr	a:sub_00AAE6
+continue_menu:
+	jsr	a:continue_move_cursor
+	jsr	a:continue_draw_menu
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#$1000
 	beq	loc_00AA5C
 	lda	#$0002
 	jsl	f:queue_sound
-	lda	a:wram_1C00
+	lda	a:continue_cursor
 	beq	loc_00AA46
 	; (not executed in the CDL traces)
 	lda	#$0003
-	brl	loc_00ABAA
+	brl	set_submode
 loc_00AA46:
 	lda	a:title_menu_cursor
-	sta	a:wram_1C00
+	sta	a:continue_cursor
 	lda	#$0003
-	sta	a:wram_1C02
+	sta	a:continue_option_count
 	ldx	#$8490
 	jsl	f:sub_009024
-	brl	loc_00AB9B
+	brl	next_submode
 loc_00AA5C:
 	rtl
 
-sub_00AA5D:
-	jsr	a:sub_00AAB1
-	jsr	a:sub_00AB28
+continue_player_menu:
+	jsr	a:continue_move_cursor
+	jsr	a:continue_draw_player_menu
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#$1000
 	beq	loc_00AA7F
 	lda	#$0002
 	jsl	f:queue_sound
-	lda	a:wram_1C00
+	lda	a:continue_cursor
 	sta	a:title_menu_cursor
-	stz	a:wram_1C00
-	brl	loc_00AB9B
+	stz	a:continue_cursor
+	brl	next_submode
 loc_00AA7F:
 	rtl
 
-sub_00AA80:
+continue_fade_out:
 	php
 	rep	#$20
 	lda	a:inidisp_shadow
@@ -894,18 +894,18 @@ loc_00AA93:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
-	lda	a:wram_1C00
+	lda	a:continue_cursor
 	bne	loc_00AAA8
-	jsr	a:sub_00A6C3
+	jsr	a:init_players
 	lda	#$0008
-	brl	sub_00ABA3
+	brl	set_game_mode
 loc_00AAA8:
 	; (not executed in the CDL traces)
-	stz	a:wram_1E40
+	stz	a:stage_checkpoint
 	lda	#$0003
-	brl	sub_00ABA3
+	brl	set_game_mode
 
-sub_00AAB1:
+continue_move_cursor:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#$2C00
@@ -916,27 +916,27 @@ sub_00AAB1:
 	pla
 	bit	#$0800
 	bne	loc_00AAD8
-	lda	a:wram_1C00
+	lda	a:continue_cursor
 	inc	a
-	cmp	a:wram_1C02
+	cmp	a:continue_option_count
 	bcc	loc_00AAD4
 	lda	#$0000
 loc_00AAD4:
-	sta	a:wram_1C00
+	sta	a:continue_cursor
 	rts
 loc_00AAD8:
-	lda	a:wram_1C00
+	lda	a:continue_cursor
 	dec	a
 	bpl	loc_00AAE2
-	lda	a:wram_1C02
+	lda	a:continue_option_count
 	dec	a
 loc_00AAE2:
-	sta	a:wram_1C00
+	sta	a:continue_cursor
 loc_00AAE5:
 	rts
 
-sub_00AAE6:
-	lda	a:wram_1C00
+continue_draw_menu:
+	lda	a:continue_cursor
 	asl	a
 	tay
 	lda	a:data_0583FC,y
@@ -946,8 +946,8 @@ sub_00AAE6:
 	pla
 	ldx	#$1E62
 	ldy	#$5A35
-	jsl	f:sub_00AB14
-	lda	a:wram_1C00
+	jsl	f:draw_digit_of_value
+	lda	a:continue_cursor
 	eor	#$0001
 	asl	a
 	tay
@@ -956,31 +956,31 @@ sub_00AAE6:
 	jsl	f:sub_009015
 	rts
 
-sub_00AB14:
+draw_digit_of_value:
 	sta	zp_FA
 	phx
 	jsl	f:sub_008D41
 	plx
 	lda	$00,x
 	inc	a
-	jsl	f:sub_00B927
+	jsl	f:draw_digit
 	jsl	f:sub_008DB0
 	rtl
 
-sub_00AB28:
-	lda	a:wram_1C00
+continue_draw_player_menu:
+	lda	a:continue_cursor
 	asl	a
 	tay
 	lda	a:data_058404,y
 	ldx	#$8599
 	jsl	f:sub_009015
-	lda	a:wram_1C00
+	lda	a:continue_cursor
 	asl	a
 	tay
 	lda	a:data_058402,y
 	ldx	#$85A6
 	jsl	f:sub_009015
-	lda	a:wram_1C00
+	lda	a:continue_cursor
 	asl	a
 	tay
 	lda	a:data_058400,y
@@ -988,68 +988,68 @@ sub_00AB28:
 	jsl	f:sub_009015
 	rts
 
-sub_00AB56:
+game_mode_options:
 	lda	game_submode
 	bne	loc_00AB68
 	jsl	f:reset_sound_queue
 	jsl	f:sub_008DBE
 	jsl	f:clear_ram_1c00_1cff
-	bra	loc_00AB9B
+	bra	next_submode
 loc_00AB68:
-	jsl	f:sub_00B9BE
-	lda	zp_36
+	jsl	f:run_options
+	lda	mode_result
 	beq	loc_00AB75
 	lda	#$0003
-	bra	sub_00ABA3
+	bra	set_game_mode
 loc_00AB75:
 	rtl
 
-sub_00AB76:
+game_mode_final_score:
 	lda	game_submode
 	bne	loc_00AB88
 	jsl	f:reset_sound_queue
 	jsl	f:sub_008DBE
 	jsl	f:clear_ram_1c00_1cff
-	bra	loc_00AB9B
+	bra	next_submode
 loc_00AB88:
-	jsl	f:sub_00BC38
-	lda	zp_36
+	jsl	f:run_final_score
+	lda	mode_result
 	beq	loc_00AB95
 	; (not executed in the CDL traces)
 	lda	#$0002
-	bra	sub_00ABA3
+	bra	set_game_mode
 loc_00AB95:
 	rtl
 	; CDL: not accessed
 	.byte	$A2, $80, $00
-loc_00AB99:
-	stx	zp_68
-loc_00AB9B:
+next_submode_with_timer:
+	stx	wait_timer
+next_submode:
 	lda	game_submode
 	inc	a
-	bra	loc_00ABAA
-loc_00ABA0:
+	bra	set_submode
+next_game_mode:
 	lda	game_mode
 	inc	a
 
-sub_00ABA3:
+set_game_mode:
 	sta	game_mode
 	lda	#$0000
-	sta	zp_36
-loc_00ABAA:
+	sta	mode_result
+set_submode:
 	sta	game_submode
 	stz	zp_38
 	rtl
-loc_00ABAF:
+next_game_mode_keep_submode:
 	inc	game_mode
-	stz	zp_36
+	stz	mode_result
 	stz	zp_38
 	rtl
 
-sub_00ABB6:
-	lda	zp_68
+tick_wait_timer:
+	lda	wait_timer
 	beq	loc_00ABBC
-	dec	zp_68
+	dec	wait_timer
 loc_00ABBC:
 	rtl
 
@@ -1058,14 +1058,14 @@ sub_00ABBD:
 	; (not executed in the CDL traces)
 	jsl	f:sub_00ABC6
 	rep	#$20
-	stz	zp_4A
+	stz	demo_mode
 	rtl
 
 sub_00ABC6:
 	; (not executed in the CDL traces)
 	rep	#$10
 	rep	#$20
-	stz	zp_66
+	stz	paused
 	jsl	f:disable_display_and_nmi
 	sep	#$20
 	.a8
@@ -1075,15 +1075,15 @@ sub_00ABC6:
 	.a16
 	rtl
 
-sub_00ABDD:
-	jsr	a:sub_00AD2A
+run_stage_with_life_transfer:
+	jsr	a:update_life_transfer
 
-sub_00ABE0:
+run_stage:
 	rep	#$30
-	jsr	a:sub_00AC4A
-	lda	zp_4A
+	jsr	a:update_weapon_swap
+	lda	demo_mode
 	bne	loc_00AC1B
-	lda	zp_64
+	lda	pause_disabled
 	bne	loc_00AC1B
 	lda	#$0000
 	ldy	a:p1_lives
@@ -1096,16 +1096,16 @@ loc_00ABF7:
 loc_00ABFE:
 	bit	#$1000
 	beq	loc_00AC16
-	lda	zp_66
+	lda	paused
 	eor	#$0001
-	sta	zp_66
+	sta	paused
 	asl	a
 	tay
-	lda	a:data_0584D6,y
+	lda	a:pause_sounds,y
 	jsl	f:queue_sound
-	jsr	a:sub_00ACAF
+	jsr	a:apply_pause_dimming
 loc_00AC16:
-	lda	zp_66
+	lda	paused
 	beq	loc_00AC1B
 	rtl
 loc_00AC1B:
@@ -1113,31 +1113,31 @@ loc_00AC1B:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00AC2A,x
+	lda	f:tbl_stage_runners,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00AC2A:
-	.addr	sub_00AC36
-	.addr	sub_00AC3F
-	.addr	sub_00AC36
-	.addr	sub_00AC36
-	.addr	sub_00AC3F
-	.addr	sub_00AC36
+tbl_stage_runners:
+	.addr	enter_side_view_stage
+	.addr	enter_top_down_stage
+	.addr	enter_side_view_stage
+	.addr	enter_side_view_stage
+	.addr	enter_top_down_stage
+	.addr	enter_side_view_stage
 
-sub_00AC36:
+enter_side_view_stage:
 	lda	#$0002
 	sta	nmi_mode
-	jml	f:sub_00BD40
+	jml	f:run_side_view_stage
 
-sub_00AC3F:
+enter_top_down_stage:
 	lda	#$0004
 	sta	nmi_mode
-	inc	zp_78
+	inc	stage_frame_counter
 	jml	f:run_topdown_stage
 
-sub_00AC4A:
-	jsr	a:sub_00AC7E
+update_weapon_swap:
+	jsr	a:update_weapon_swap_p1
 	lda	a:p2_spin
 	beq	loc_00AC5C
 	lda	#$0002
@@ -1160,7 +1160,7 @@ loc_00AC71:
 	sta	a:p2_weapon_slot
 	rts
 
-sub_00AC7E:
+update_weapon_swap_p1:
 	lda	a:p1_spin
 	beq	loc_00AC8D
 	lda	#$0002
@@ -1183,29 +1183,29 @@ loc_00ACA2:
 	sta	a:p1_weapon_slot
 	rts
 
-sub_00ACAF:
-	lda	zp_66
+apply_pause_dimming:
+	lda	paused
 	beq	loc_00ACCF
 	lda	a:inidisp_shadow
-	sta	a:wram_1E4E
+	sta	a:pause_saved_brightness
 	lda	a:p1_view_brightness
-	sta	a:wram_1E50
+	sta	a:pause_saved_p1_brightness
 	lda	a:p2_view_brightness
-	sta	a:wram_1E52
-	jsr	a:sub_00ACE2
-	jsr	a:sub_00ACFA
-	jsr	a:sub_00AD12
+	sta	a:pause_saved_p2_brightness
+	jsr	a:dim_screen_brightness
+	jsr	a:dim_p1_brightness
+	jsr	a:dim_p2_brightness
 	rts
 loc_00ACCF:
-	lda	a:wram_1E4E
+	lda	a:pause_saved_brightness
 	sta	a:inidisp_shadow
-	lda	a:wram_1E50
+	lda	a:pause_saved_p1_brightness
 	sta	a:p1_view_brightness
-	lda	a:wram_1E52
+	lda	a:pause_saved_p2_brightness
 	sta	a:p2_view_brightness
 	rts
 
-sub_00ACE2:
+dim_screen_brightness:
 	lda	a:inidisp_shadow
 	bit	#$0080
 	bne	loc_00ACF9
@@ -1220,7 +1220,7 @@ loc_00ACF6:
 loc_00ACF9:
 	rts
 
-sub_00ACFA:
+dim_p1_brightness:
 	lda	a:p1_view_brightness
 	bit	#$0080
 	bne	loc_00AD11
@@ -1234,7 +1234,7 @@ loc_00AD0E:
 loc_00AD11:
 	rts
 
-sub_00AD12:
+dim_p2_brightness:
 	lda	a:p2_view_brightness
 	bit	#$0080
 	bne	loc_00AD29
@@ -1248,15 +1248,15 @@ loc_00AD26:
 loc_00AD29:
 	rts
 
-sub_00AD2A:
-	lda	a:wram_1E5E
+update_life_transfer:
+	lda	a:life_transfer_disabled
 	bne	loc_00AD5A
 	lda	a:title_menu_cursor
 	beq	loc_00AD5A
-	jsr	a:sub_00AD3A
-	jmp	a:loc_00AD5B
+	jsr	a:life_transfer_to_p1
+	jmp	a:life_transfer_to_p2
 
-sub_00AD3A:
+life_transfer_to_p1:
 	lda	a:p1_lives
 	bne	loc_00AD5A
 	; (not executed in the CDL traces)
@@ -1272,7 +1272,7 @@ sub_00AD3A:
 	sta	a:p1_bombs
 loc_00AD5A:
 	rts
-loc_00AD5B:
+life_transfer_to_p2:
 	lda	a:p2_lives
 	bne	loc_00AD7B
 	; (not executed in the CDL traces)

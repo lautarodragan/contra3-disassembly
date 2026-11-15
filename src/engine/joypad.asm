@@ -68,7 +68,7 @@ sub_008B64:
 	and	#$2000
 	bne	loc_008B90
 	lda	#$0006
-	jsl	f:sub_00ABA3
+	jsl	f:set_game_mode
 	jml	f:clear_ram_1c00_1cff
 loc_008B90:
 	rtl
@@ -77,10 +77,10 @@ loc_008B91:
 	sta	force_blank_frames
 	jsl	f:reset_sound_queue
 	lda	#$0002
-	jml	f:sub_00ABA3
+	jml	f:set_game_mode
 
 sub_008BA1:
 	; (not executed in the CDL traces)
 	lda	#$0200
-	sta	zp_68
+	sta	wait_timer
 	rtl

@@ -1,26 +1,26 @@
 ; game/screens.asm -- Other non-gameplay screens
 ; Bank $00, $00:B679-$00:BD3F. Included by main.asm in segment BANK00.
 ;
-; Sub-mode tables of game modes 10, 13 and 14 (sub_00B679, sub_00B9BE,
-; sub_00BC38) and the tilemap/number drawing helpers they share with other
-; modes (sub_00B7B2, sub_00B83B...).
+; Sub-mode tables of game modes 10, 13 and 14 (run_stage_clear, run_options,
+; run_final_score) and the tilemap/number drawing helpers they share with other
+; modes (draw_score_board, add_score...).
 
-sub_00B679:
-	lda	a:wram_1C00
+run_stage_clear:
+	lda	a:mode_step
 	asl	a
 	tax
-	jmp	(.loword(tbl_00B681),x)
-tbl_00B681:
-	.addr	sub_00B691
-	.addr	sub_00B6CF
-	.addr	sub_00B6F4
-	.addr	sub_00B70C
-	.addr	sub_00B739
-	.addr	sub_00B741
-	.addr	sub_00B76C
-	.addr	sub_00B781
+	jmp	(.loword(tbl_stage_clear_steps),x)
+tbl_stage_clear_steps:
+	.addr	stage_clear_init
+	.addr	stage_clear_fade_in
+	.addr	stage_clear_load_next_stage
+	.addr	stage_clear_show_scores
+	.addr	stage_clear_wait
+	.addr	stage_clear_count_bonus
+	.addr	stage_clear_wait_button
+	.addr	stage_clear_fade_out
 
-sub_00B691:
+stage_clear_init:
 	php
 	rep	#$20
 	lda	a:inidisp_shadow
@@ -46,10 +46,10 @@ loc_00B6A4:
 	jsl	f:sub_0090A8
 	ldy	#$8880
 	jsl	f:sub_009982
-	inc	a:wram_1C00
+	inc	a:mode_step
 	rtl
 
-sub_00B6CF:
+stage_clear_fade_in:
 	php
 	lda	a:inidisp_shadow
 	bit	#$0080
@@ -66,10 +66,10 @@ loc_00B6E8:
 	plp
 	lda	#$006A
 	jsl	f:queue_sound
-	inc	a:wram_1C00
+	inc	a:mode_step
 	rtl
 
-sub_00B6F4:
+stage_clear_load_next_stage:
 	lda	stage_number
 	inc	a
 	cmp	#$0007
@@ -77,60 +77,60 @@ sub_00B6F4:
 	; (not executed in the CDL traces)
 	lda	#$0001
 loc_00B6FF:
-	jsl	f:sub_00B99F
+	jsl	f:load_stage_graphics
 	lda	#$0001
-	sta	zp_76
-	inc	a:wram_1C00
+	sta	mode_timer
+	inc	a:mode_step
 	rtl
 
-sub_00B70C:
-	dec	zp_76
+stage_clear_show_scores:
+	dec	mode_timer
 	bpl	loc_00B738
-	jsl	f:sub_00B7B2
+	jsl	f:draw_score_board
 	lda	#$0001
-	sta	a:wram_1C04
+	sta	a:stage_bonus_hi
 	lda	#$0000
-	sta	a:wram_1C02
-	jsr	a:sub_00B8D5
+	sta	a:stage_bonus
+	jsr	a:draw_stage_bonus
 	ldy	#$8889
 	jsl	f:sub_009982
 	lda	#$0040
-	sta	zp_76
+	sta	mode_timer
 	lda	#$0005
 	sta	a:tm_shadow
-	inc	a:wram_1C00
+	inc	a:mode_step
 loc_00B738:
 	rtl
 
-sub_00B739:
-	dec	zp_76
+stage_clear_wait:
+	dec	mode_timer
 	bpl	loc_00B740
-	inc	a:wram_1C00
+	inc	a:mode_step
 loc_00B740:
 	rtl
 
-sub_00B741:
-	jsr	a:sub_00B934
-	jsl	f:sub_00B7B2
-	jsr	a:sub_00B8D5
-	lda	a:wram_1C02
+stage_clear_count_bonus:
+	jsr	a:transfer_stage_bonus
+	jsl	f:draw_score_board
+	jsr	a:draw_stage_bonus
+	lda	a:stage_bonus
 	bit	#$0100
 	bne	loc_00B75A
 	lda	#$0003
 	jsl	f:queue_sound
 loc_00B75A:
-	lda	a:wram_1C02
-	ora	a:wram_1C04
+	lda	a:stage_bonus
+	ora	a:stage_bonus_hi
 	beq	loc_00B763
 	rtl
 loc_00B763:
 	lda	#$0100
-	sta	zp_76
-	inc	a:wram_1C00
+	sta	mode_timer
+	inc	a:mode_step
 	rtl
 
-sub_00B76C:
-	dec	zp_76
+stage_clear_wait_button:
+	dec	mode_timer
 	bpl	loc_00B773
 	; (not executed in the CDL traces)
 	brl	loc_00B77D
@@ -141,10 +141,10 @@ loc_00B773:
 	bne	loc_00B77D
 	rtl
 loc_00B77D:
-	inc	a:wram_1C00
+	inc	a:mode_step
 	rtl
 
-sub_00B781:
+stage_clear_fade_out:
 	php
 	rep	#$20
 	lda	a:inidisp_shadow
@@ -158,7 +158,7 @@ loc_00B794:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
-	stz	a:wram_1E40
+	stz	a:stage_checkpoint
 	inc	stage_number
 	lda	stage_number
 	cmp	#$0007
@@ -168,11 +168,11 @@ loc_00B794:
 	sta	stage_number
 loc_00B7AC:
 	lda	#$0001
-	sta	zp_36
+	sta	mode_result
 	rtl
 
-sub_00B7B2:
-	jsr	a:sub_00B968
+draw_score_board:
+	jsr	a:update_high_score
 	ldx	#$8892
 	lda	#$2400
 	jsl	f:sub_009015
@@ -191,35 +191,35 @@ sub_00B7B2:
 	ldx	#$1E44
 	ldy	#$58AD
 	lda	#$2000
-	jsl	f:sub_00B89E
+	jsl	f:draw_bcd_number
 	ldx	#$1FA0
 	ldy	#$5924
 	lda	#$2000
-	jsl	f:sub_00B89E
+	jsl	f:draw_bcd_number
 	ldx	#$1FE0
 	ldy	#$5936
 	lda	#$2000
-	jsl	f:sub_00B89E
+	jsl	f:draw_bcd_number
 	ldx	#$1F8A
 	ldy	#$5969
 	lda	#$2000
-	jsl	f:sub_00B8ED
+	jsl	f:draw_two_digit_number
 	ldx	#$1FCA
 	ldy	#$597B
 	lda	#$2000
-	jsl	f:sub_00B8ED
+	jsl	f:draw_two_digit_number
 	rtl
 
-sub_00B829:
+add_score_for_player_obj:
 	pha
 	txa
 	clc
 	adc	#$1D80
 	tax
 	pla
-	bra	sub_00B83B
+	bra	add_score
 
-sub_00B833:
+add_score_for_topdown_player:
 	pha
 	txa
 	clc
@@ -227,7 +227,7 @@ sub_00B833:
 	tax
 	pla
 
-sub_00B83B:
+add_score:
 	sed
 	sta	zp_FA
 	sec
@@ -282,39 +282,39 @@ loc_00B89C:
 	cld
 	rtl
 
-sub_00B89E:
+draw_bcd_number:
 	sta	zp_FA
 	phx
 	jsl	f:sub_008D41
 	plx
 	lda	$03,x
-	jsl	f:sub_00B927
+	jsl	f:draw_digit
 	lda	$02,x
-	jsl	f:sub_00B923
+	jsl	f:draw_digit_high_nibble
 	lda	$02,x
-	jsl	f:sub_00B927
+	jsl	f:draw_digit
 	lda	$01,x
-	jsl	f:sub_00B923
+	jsl	f:draw_digit_high_nibble
 	lda	$01,x
-	jsl	f:sub_00B927
+	jsl	f:draw_digit
 	lda	$00,x
-	jsl	f:sub_00B923
+	jsl	f:draw_digit_high_nibble
 	lda	$00,x
-	jsl	f:sub_00B927
+	jsl	f:draw_digit
 	jsl	f:sub_008DB0
 	rtl
 
-sub_00B8D5:
+draw_stage_bonus:
 	ldx	#$88C7
 	lda	#$2400
 	jsl	f:sub_009015
 	ldx	#$1C02
 	ldy	#$5AAD
 	lda	#$2000
-	jsl	f:sub_00B89E
+	jsl	f:draw_bcd_number
 	rts
 
-sub_00B8ED:
+draw_two_digit_number:
 	sta	zp_FA
 	phx
 	jsl	f:sub_008D41
@@ -340,19 +340,19 @@ loc_00B8FC:
 	rep	#$20
 	.a16
 	lda	a:RDDIVL
-	jsl	f:sub_00B927
+	jsl	f:draw_digit
 	lda	a:RDMPYL
-	jsl	f:sub_00B927
+	jsl	f:draw_digit
 	jsl	f:sub_008DB0
 	rtl
 
-sub_00B923:
+draw_digit_high_nibble:
 	lsr	a
 	lsr	a
 	lsr	a
 	lsr	a
 
-sub_00B927:
+draw_digit:
 	and	#$000F
 	inc	a
 	ora	zp_FA
@@ -361,58 +361,58 @@ sub_00B927:
 	plx
 	rtl
 
-sub_00B934:
+transfer_stage_bonus:
 	lda	a:p1_lives
 	beq	loc_00B943
 	lda	#$0100
 	ldx	#$1F80
-	jsl	f:sub_00B83B
+	jsl	f:add_score
 loc_00B943:
 	lda	a:p2_lives
 	beq	loc_00B952
 	; (not executed in the CDL traces)
 	lda	#$0100
 	ldx	#$1FC0
-	jsl	f:sub_00B83B
+	jsl	f:add_score
 loc_00B952:
 	sed
 	sec
-	lda	a:wram_1C02
+	lda	a:stage_bonus
 	sbc	#$0100
-	sta	a:wram_1C02
-	lda	a:wram_1C04
+	sta	a:stage_bonus
+	lda	a:stage_bonus_hi
 	sbc	#$0000
-	sta	a:wram_1C04
+	sta	a:stage_bonus_hi
 	cld
 	rts
 
-sub_00B968:
+update_high_score:
 	sec
-	lda	a:wram_1E44
-	sbc	a:wram_1FA0
-	lda	a:wram_1E46
-	sbc	a:wram_1FA2
+	lda	a:high_score
+	sbc	a:p1_score
+	lda	a:high_score_hi
+	sbc	a:p1_score_hi
 	bcs	loc_00B983
-	lda	a:wram_1FA0
-	sta	a:wram_1E44
-	lda	a:wram_1FA2
-	sta	a:wram_1E46
+	lda	a:p1_score
+	sta	a:high_score
+	lda	a:p1_score_hi
+	sta	a:high_score_hi
 loc_00B983:
 	sec
-	lda	a:wram_1E44
-	sbc	a:wram_1FE0
-	lda	a:wram_1E46
-	sbc	a:wram_1FE2
+	lda	a:high_score
+	sbc	a:p2_score
+	lda	a:high_score_hi
+	sbc	a:p2_score_hi
 	bcs	loc_00B99E
 	; (not executed in the CDL traces)
-	lda	a:wram_1FE0
-	sta	a:wram_1E44
-	lda	a:wram_1FE2
-	sta	a:wram_1E46
+	lda	a:p2_score
+	sta	a:high_score
+	lda	a:p2_score_hi
+	sta	a:high_score_hi
 loc_00B99E:
 	rts
 
-sub_00B99F:
+load_stage_graphics:
 	pha
 	jsl	f:clear_bg_scroll_state
 	jsl	f:clear_wram_7e4000_7effff
@@ -429,29 +429,29 @@ sub_00B99F:
 	jsl	f:sub_0090A8
 	rtl
 
-sub_00B9BE:
-	lda	a:wram_1C00
+run_options:
+	lda	a:mode_step
 	asl	a
 	tax
-	jmp	(.loword(tbl_00B9C6),x)
-tbl_00B9C6:
-	.addr	sub_00B9CC
-	.addr	sub_00B9EB
-	.addr	sub_00BA2B
+	jmp	(.loword(tbl_options_steps),x)
+tbl_options_steps:
+	.addr	options_init
+	.addr	options_input
+	.addr	options_fade_out
 
-sub_00B9CC:
+options_init:
 	ldx	#.loword(data_05CF41)
 	jsl	f:sub_0090A8
 	ldy	#$8412
 	jsl	f:sub_009982
-	jsr	a:sub_00BB4E
+	jsr	a:options_get_lives_index
 	ldx	#$8948
 	lda	#$2400
 	jsl	f:sub_009015
-	inc	a:wram_1C00
+	inc	a:mode_step
 	rtl
 
-sub_00B9EB:
+options_input:
 	php
 	lda	a:inidisp_shadow
 	bit	#$0080
@@ -468,11 +468,11 @@ loc_00B9FA:
 	rtl
 loc_00BA04:
 	plp
-	jsr	a:sub_00BA4B
-	jsr	a:sub_00BA7F
-	jsr	a:sub_00BAA4
-	jsr	a:sub_00BAC6
-	jsr	a:sub_00BAE8
+	jsr	a:options_move_cursor
+	jsr	a:options_update_player_item
+	jsr	a:options_update_level_item
+	jsr	a:options_update_sound_item
+	jsr	a:options_update_exit_item
 	bcs	loc_00BA20
 	lda	joy1_pressed
 	ora	joy2_pressed
@@ -482,10 +482,10 @@ loc_00BA04:
 loc_00BA20:
 	lda	#$0002
 	jsl	f:queue_sound
-	inc	a:wram_1C00
+	inc	a:mode_step
 	rtl
 
-sub_00BA2B:
+options_fade_out:
 	php
 	rep	#$20
 	lda	a:inidisp_shadow
@@ -500,10 +500,10 @@ loc_00BA3E:
 	sta	a:inidisp_shadow
 	plp
 	lda	#$0001
-	sta	zp_36
+	sta	mode_result
 	rtl
 
-sub_00BA4B:
+options_move_cursor:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#$0C00
@@ -514,70 +514,70 @@ sub_00BA4B:
 	pla
 	bit	#$0800
 	bne	loc_00BA72
-	lda	a:wram_1C02
+	lda	a:options_cursor
 	inc	a
 	cmp	#$0004
 	bcc	loc_00BA6E
 	; (not executed in the CDL traces)
 	lda	#$0000
 loc_00BA6E:
-	sta	a:wram_1C02
+	sta	a:options_cursor
 	rts
 loc_00BA72:
-	lda	a:wram_1C02
+	lda	a:options_cursor
 	dec	a
 	bpl	loc_00BA7B
 	lda	#$0003
 loc_00BA7B:
-	sta	a:wram_1C02
+	sta	a:options_cursor
 loc_00BA7E:
 	rts
 
-sub_00BA7F:
-	lda	a:wram_1C02
+options_update_player_item:
+	lda	a:options_cursor
 	cmp	#$0000
 	beq	loc_00BA91
 	ldx	#$8956
 	jsl	f:sub_009024
-	jmp	a:loc_00BB6A
+	jmp	a:options_draw_lives
 loc_00BA91:
 	ldx	#$8956
 	lda	#$2400
 	jsl	f:sub_009015
-	jsr	a:sub_00BB0E
-	jsr	a:sub_00BB42
-	jmp	a:loc_00BB6A
+	jsr	a:options_change_lives
+	jsr	a:options_store_lives
+	jmp	a:options_draw_lives
 
-sub_00BAA4:
-	lda	a:wram_1C02
+options_update_level_item:
+	lda	a:options_cursor
 	cmp	#$0001
 	beq	loc_00BAB6
 	ldx	#$895F
 	jsl	f:sub_009024
-	jmp	a:loc_00BBDF
+	jmp	a:options_draw_level
 loc_00BAB6:
 	ldx	#$895F
 	lda	#$2400
 	jsl	f:sub_009015
-	jsr	a:sub_00BBA9
-	jmp	a:loc_00BBDF
+	jsr	a:options_change_level
+	jmp	a:options_draw_level
 
-sub_00BAC6:
-	lda	a:wram_1C02
+options_update_sound_item:
+	lda	a:options_cursor
 	cmp	#$0002
 	beq	loc_00BAD8
 	ldx	#$8967
 	jsl	f:sub_009024
-	jmp	a:loc_00BC2D
+	jmp	a:options_draw_sound
 loc_00BAD8:
 	ldx	#$8967
 	lda	#$2400
 	jsl	f:sub_009015
-	jsr	a:sub_00BBEA
-	jmp	a:loc_00BC2D
+	jsr	a:options_change_sound
+	jmp	a:options_draw_sound
 
-sub_00BAE8:
-	lda	a:wram_1C02
+options_update_exit_item:
+	lda	a:options_cursor
 	cmp	#$0003
 	beq	loc_00BAF9
 	ldx	#$896F
@@ -596,7 +596,7 @@ loc_00BAF9:
 	sec
 	rts
 
-sub_00BB0E:
+options_change_lives:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#$0300
@@ -608,35 +608,35 @@ sub_00BB0E:
 	pla
 	bit	#$0100
 	bne	loc_00BB32
-	lda	a:wram_1C04
+	lda	a:options_lives_index
 	dec	a
 	bpl	loc_00BB2E
 	lda	#$0002
 loc_00BB2E:
-	sta	a:wram_1C04
+	sta	a:options_lives_index
 	rts
 loc_00BB32:
-	lda	a:wram_1C04
+	lda	a:options_lives_index
 	inc	a
 	cmp	#$0003
 	bcc	loc_00BB3E
 	lda	#$0000
 loc_00BB3E:
-	sta	a:wram_1C04
+	sta	a:options_lives_index
 loc_00BB41:
 	rts
 
-sub_00BB42:
-	lda	a:wram_1C04
+options_store_lives:
+	lda	a:options_lives_index
 	asl	a
 	tay
-	lda	a:data_0588FB,y
-	sta	a:wram_1E3C
+	lda	a:lives_options,y
+	sta	a:option_lives
 	rts
 
-sub_00BB4E:
+options_get_lives_index:
 	ldy	#$0000
-	lda	a:wram_1E3C
+	lda	a:option_lives
 	cmp	#$0003
 	beq	loc_00BB66
 	; (not executed in the CDL traces)
@@ -648,11 +648,11 @@ sub_00BB4E:
 	beq	loc_00BB66
 	iny
 loc_00BB66:
-	sty	a:wram_1C04
+	sty	a:options_lives_index
 	rts
-loc_00BB6A:
+options_draw_lives:
 	ldy	#$5992
-	lda	a:wram_1E3C
+	lda	a:option_lives
 	cmp	#$0063
 	bcc	loc_00BB78
 	; (not executed in the CDL traces)
@@ -679,7 +679,7 @@ loc_00BB78:
 	jsl	f:sub_008DB0
 	rts
 
-sub_00BBA9:
+options_change_level:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#$0300
@@ -691,32 +691,32 @@ sub_00BBA9:
 	bit	#$0100
 	bne	loc_00BBCE
 	; (not executed in the CDL traces)
-	lda	a:wram_1E3E
+	lda	a:option_level
 	dec	a
 	dec	a
 	bpl	loc_00BBCA
 	lda	#$0004
 loc_00BBCA:
-	sta	a:wram_1E3E
+	sta	a:option_level
 	rts
 loc_00BBCE:
-	lda	a:wram_1E3E
+	lda	a:option_level
 	inc	a
 	inc	a
 	cmp	#$0006
 	bcc	loc_00BBDB
 	lda	#$0000
 loc_00BBDB:
-	sta	a:wram_1E3E
+	sta	a:option_level
 loc_00BBDE:
 	rts
-loc_00BBDF:
-	ldy	a:wram_1E3E
+options_draw_level:
+	ldy	a:option_level
 	ldx	a:data_058903,y
 	jsl	f:sub_009024
 	rts
 
-sub_00BBEA:
+options_change_sound:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#$0300
@@ -728,51 +728,51 @@ sub_00BBEA:
 	pla
 	bit	#$0100
 	bne	loc_00BC12
-	lda	a:wram_1E54
+	lda	a:option_sound
 	dec	a
 	dec	a
 	bpl	loc_00BC0B
 	lda	#$0002
 loc_00BC0B:
-	sta	a:wram_1E54
-	jsr	a:sub_00BC22
+	sta	a:option_sound
+	jsr	a:options_apply_sound_mode
 loc_00BC11:
 	rts
 loc_00BC12:
 	; (not executed in the CDL traces)
-	lda	a:wram_1E54
+	lda	a:option_sound
 	inc	a
 	inc	a
 	cmp	#$0004
 	bcc	loc_00BC1F
 	lda	#$0000
 loc_00BC1F:
-	sta	a:wram_1E54
+	sta	a:option_sound
 
-sub_00BC22:
+options_apply_sound_mode:
 	; (not executed in the CDL traces)
-	ldy	a:wram_1E54
-	lda	a:data_05892A,y
+	ldy	a:option_sound
+	lda	a:sound_mode_commands,y
 	jsl	f:queue_sound
 	rts
-loc_00BC2D:
-	ldy	a:wram_1E54
+options_draw_sound:
+	ldy	a:option_sound
 	ldx	a:data_05892E,y
 	jsl	f:sub_009024
 	rts
 
-sub_00BC38:
-	lda	a:wram_1C00
+run_final_score:
+	lda	a:mode_step
 	asl	a
 	tax
-	jmp	(.loword(tbl_00BC40),x)
-tbl_00BC40:
-	.addr	sub_00BC48
-	.addr	sub_00BC7E
-	.addr	sub_00BC9C
-	.addr	sub_00BCA9
+	jmp	(.loword(tbl_final_score_steps),x)
+tbl_final_score_steps:
+	.addr	final_score_init
+	.addr	final_score_fade_in
+	.addr	final_score_wait_start
+	.addr	final_score_fade_out
 
-sub_00BC48:
+final_score_init:
 	php
 	rep	#$20
 	lda	a:inidisp_shadow
@@ -792,11 +792,11 @@ loc_00BC5B:
 	jsl	f:sub_0090A8
 	ldy	#$898E
 	jsl	f:sub_009982
-	jsl	f:sub_00BCC9
-	inc	a:wram_1C00
+	jsl	f:draw_final_scores
+	inc	a:mode_step
 	rtl
 
-sub_00BC7E:
+final_score_fade_in:
 	php
 	lda	a:inidisp_shadow
 	bit	#$0080
@@ -811,20 +811,20 @@ loc_00BC8D:
 	rtl
 loc_00BC97:
 	plp
-	inc	a:wram_1C00
+	inc	a:mode_step
 	rtl
 
-sub_00BC9C:
+final_score_wait_start:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#$1000
 	beq	loc_00BCA8
 	; (not executed in the CDL traces)
-	inc	a:wram_1C00
+	inc	a:mode_step
 loc_00BCA8:
 	rtl
 
-sub_00BCA9:
+final_score_fade_out:
 	; (not executed in the CDL traces)
 	php
 	rep	#$20
@@ -840,11 +840,11 @@ loc_00BCBC:
 	sta	a:inidisp_shadow
 	plp
 	lda	#$0001
-	sta	zp_36
+	sta	mode_result
 	rtl
 
-sub_00BCC9:
-	jsr	a:sub_00B968
+draw_final_scores:
+	jsr	a:update_high_score
 	ldx	#$8997
 	lda	#$2400
 	jsl	f:sub_009015
@@ -863,21 +863,21 @@ sub_00BCC9:
 	ldx	#$1E44
 	ldy	#$58ED
 	lda	#$2000
-	jsl	f:sub_00B89E
+	jsl	f:draw_bcd_number
 	ldx	#$1FA0
 	ldy	#$58E4
 	lda	#$2000
-	jsl	f:sub_00B89E
+	jsl	f:draw_bcd_number
 	ldx	#$1FE0
 	ldy	#$58F6
 	lda	#$2000
-	jsl	f:sub_00B89E
+	jsl	f:draw_bcd_number
 	ldx	#$1F8A
 	ldy	#$5929
 	lda	#$2000
-	jsl	f:sub_00B8ED
+	jsl	f:draw_two_digit_number
 	ldx	#$1FCA
 	ldy	#$593B
 	lda	#$2000
-	jsl	f:sub_00B8ED
+	jsl	f:draw_two_digit_number
 	rtl

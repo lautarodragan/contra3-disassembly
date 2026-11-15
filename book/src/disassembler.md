@@ -133,7 +133,7 @@ than worked out. Its `_doc` key describes every field:
 
 Addresses are written `BB:AAAA`. Today `labels` names `reset`, `nmi` and
 `irq`, and `mx_overrides` plus `comments` give DB `$05` to three routines
-that never ran in the CDL traces (`sub_00B2F3`, `sub_00B346`, `sub_00B39F`,
+that never ran in the CDL traces (`check_button_code_unused`, `check_30_lives_code`, `check_stage_select_code`,
 which look like button-code checks) and to `sub_00FE24`, so that their
 tables in bank `$05` became labels. Everything else was found by the
 analysis and the CDL.

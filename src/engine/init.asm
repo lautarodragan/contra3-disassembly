@@ -193,7 +193,7 @@ clear_ram_1c00_1cff:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:wram_1C00
+	sta	f:mode_work
 	lda	#$00FE
 	ldx	#$1C00
 	txy

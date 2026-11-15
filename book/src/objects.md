@@ -77,7 +77,7 @@ For each slot in use, in order:
    slot to the *target list* at `$15A0` (`target_list_end`; 0-terminated).
    The shots and the bomb only look at this list.
 4. `OBJF_TOUCH`: compare the hitbox with the body box of one player (the
-   one handled first this frame, alternating by `zp_BC`). On overlap
+   one handled first this frame, alternating by `stage_frame_odd`). On overlap
    `OBJ_TOUCHED_BY` = player slot (items read this to give the weapon to
    that player) and, unless the player is invulnerable (respawn), the
    object's `OBJ_FLAGS` are ORed into the player's `PLAYER_CONTACT`. With the
@@ -178,7 +178,7 @@ it, frees it off the screen, and tests it against the target list:
 
 **Damage to enemies** is computed in `update_shots`: the target's
 `OBJ_HP` -= `SHOT_DAMAGE` (skipped for `OBJF_INVULNERABLE`); when it goes
-negative the shooter scores `type_scores[OBJ_TYPE]` (BCD, `sub_00B829`).
+negative the shooter scores `type_scores[OBJ_TYPE]` (BCD, `add_score_for_player_obj`).
 The bomb (`sub_01AB1F`) and the barrier (`update_objects`) take 1 HP per
 frame. Each player's shots are only tested every other frame.
 

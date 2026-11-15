@@ -125,7 +125,7 @@ sub_00DE9C:
 	beq	loc_00DEA3
 	brl	loc_00DDEF
 loc_00DEA3:
-	lda	zp_BC
+	lda	stage_frame_odd
 	bne	loc_00DEAE
 	txa
 	bit	#$0020
@@ -252,7 +252,7 @@ sub_00DF73:
 	sta	$1E,x
 	rtl
 loc_00DF89:
-	lda	zp_E4
+	lda	stage_frame_bit1
 	bne	loc_00DF92
 	lda	$04,x
 	sta	$02,x
@@ -322,7 +322,7 @@ sub_00DFF9:
 	lda	$1A,x
 	adc	#$0000
 	sta	$1A,x
-	lda	zp_BC
+	lda	stage_frame_odd
 	beq	loc_00E049
 	txy
 	phx
@@ -400,7 +400,7 @@ sub_00E072:
 	sta	$04,x
 	rtl
 loc_00E08B:
-	lda	zp_E4
+	lda	stage_frame_bit1
 	beq	loc_00E097
 	lda	$02,x
 	and	#$F1FF
@@ -415,7 +415,7 @@ loc_00E097:
 sub_00E09F:
 	dec	$04,x
 	beq	loc_00E0AF
-	lda	zp_C0
+	lda	stage_frame_mod8
 	and	#$0006
 	tay
 	lda	a:data_05A086,y

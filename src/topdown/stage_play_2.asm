@@ -600,7 +600,7 @@ sub_02EB56:
 	rep	#$30
 	lda	a:title_menu_cursor
 	beq	loc_02EB6B
-	lda	zp_78
+	lda	stage_frame_counter
 	lsr	a
 	bcs	loc_02EB6B
 	lda	a:wram_0F12
@@ -628,13 +628,13 @@ sub_02EB7D:
 	tyx
 	jsr	a:sub_02EBDD
 	ldx	#$1F80
-	jsl	f:sub_00B83B
+	jsl	f:add_score
 	rts
 loc_02EB8E:
 	tyx
 	jsr	a:sub_02EBDD
 	ldx	#$1FC0
-	jsl	f:sub_00B83B
+	jsl	f:add_score
 	rts
 
 sub_02EB9A:
@@ -651,14 +651,14 @@ sub_02EBA2:
 	tyx
 	jsr	a:sub_02EBEA
 	ldx	#$1F80
-	jsl	f:sub_00B83B
+	jsl	f:add_score
 	rts
 loc_02EBB3:
 	; (not executed in the CDL traces)
 	tyx
 	jsr	a:sub_02EBEA
 	ldx	#$1FC0
-	jsl	f:sub_00B83B
+	jsl	f:add_score
 	rts
 
 sub_02EBBF:
@@ -670,7 +670,7 @@ sub_02EBBF:
 sub_02EBC5:
 	jsr	a:sub_02EBDD
 	tyx
-	jsl	f:sub_00B83B
+	jsl	f:add_score
 	rts
 
 sub_02EBCE:
@@ -684,7 +684,7 @@ sub_02EBD4:
 	; (not executed in the CDL traces)
 	jsr	a:sub_02EBEA
 	tyx
-	jsl	f:sub_00B83B
+	jsl	f:add_score
 	rts
 
 sub_02EBDD:
@@ -1140,7 +1140,7 @@ update_screen_shake:
 	beq	loc_02EF6E
 	dec	a:screen_shake_timer
 loc_02EF5C:
-	lda	zp_78
+	lda	stage_frame_counter
 	and	#$0001
 	bne	loc_02EF6D
 	lda	a:screen_shake_offset
@@ -1153,13 +1153,13 @@ loc_02EF6E:
 	lda	a:screen_shake_offset
 	beq	loc_02EF6D
 	bmi	loc_02EF81
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0003
 	bne	loc_02EF5C
 	dec	a:screen_shake_offset
 	bra	loc_02EF5C
 loc_02EF81:
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0003
 	bne	loc_02EF5C
 	inc	a:screen_shake_offset
@@ -1531,7 +1531,7 @@ sub_02F225:
 	rts
 
 sub_02F237:
-	lda	zp_78
+	lda	stage_frame_counter
 	eor	#$00FF
 	and	#$00FF
 	ldy	#$0040

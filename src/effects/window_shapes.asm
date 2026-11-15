@@ -582,7 +582,7 @@ loc_02E173:
 	tay
 	lda	a:ptrs_05E298,y
 	sta	zp_04
-	lda	zp_78
+	lda	stage_frame_counter
 	lsr	a
 	and	#$000F
 	tay
@@ -891,7 +891,7 @@ loc_02E424:
 	tay
 	lda	a:ptrs_05E298,y
 	sta	zp_04
-	lda	zp_78
+	lda	stage_frame_counter
 	lsr	a
 	and	#$000F
 	tay

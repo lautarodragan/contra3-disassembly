@@ -2,7 +2,7 @@
 ; Bank $16, $16:8000-$16:FFFF. Included by main.asm in segment BANK16.
 ;
 ; Compressed graphics (sub_0094A9), data DMA'd by the top-down streaming code
-; (sub_009C18) and data read by the attract demo code (sub_00AECD).
+; (sub_009C18) and data read by the attract demo code (demo_read_p1_event).
 ;
 ; Data only (no labels, no code). Each block starts at a CDL comment.
 
@@ -1883,7 +1883,7 @@
 	.byte	$9F, $0E, $1A, $89, $A2, $17, $A3, $17, $85, $17, $86, $17, $87, $06, $38, $83
 	.byte	$93, $17, $94, $0D, $52, $83, $A0, $17, $A1, $0E, $4A, $85, $A4, $17, $A5, $17
 	.byte	$A6, $06, $54
-	; CDL: read by sub_00AECD
+	; CDL: read by demo_read_p1_event
 	.byte	$00, $00, $43, $00, $00, $01, $15, $00, $00, $41, $0B, $00, $00, $49, $1C, $00
 	.byte	$00, $48, $19, $00, $00, $49, $16, $00, $00, $48, $06, $00, $00, $49, $6B, $00
 	.byte	$00, $C9, $10, $00, $00, $49, $08, $00, $00, $48, $01, $00, $00, $40, $4D, $00
@@ -1918,7 +1918,7 @@
 	.byte	$10, $48, $04, $00, $10, $40, $04, $00, $10, $44, $02, $00, $00, $44, $07, $00
 	.byte	$00, $40, $01, $00, $00, $42, $08, $00, $00, $40, $04, $00, $00, $42, $05, $00
 	.byte	$00, $48, $11, $00, $00, $40, $1B, $00
-	; CDL: read by sub_00AECD
+	; CDL: read by demo_read_p1_event
 	.byte	$00, $00, $4E, $00, $00, $40, $08, $00, $00, $00, $C9, $01, $20, $00, $11, $00
 	.byte	$20, $40, $14, $00, $00, $40, $06, $00, $00, $41, $19, $00, $00, $45, $02, $00
 	.byte	$10, $45, $02, $00, $10, $41, $03, $00, $00, $41, $10, $00, $00, $40, $01, $00

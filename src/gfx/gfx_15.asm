@@ -2,7 +2,7 @@
 ; Bank $15, $15:8000-$15:FFFF. Included by main.asm in segment BANK15.
 ;
 ; Compressed graphics (sub_0094A9) and data read by the attract demo code
-; (sub_00AF11).
+; (demo_read_p2_event).
 ;
 ; Data only (no labels, no code). Each block starts at a CDL comment.
 
@@ -1857,7 +1857,7 @@
 	.byte	$EE, $C0, $81, $C0, $42, $C0, $24, $C2, $18, $C0, $24, $C0, $42, $C2, $81, $7C
 	.byte	$61, $7C, $82, $7C, $A3, $7C, $C4, $7C, $E5, $7D, $06, $7D, $27, $7D, $48, $7D
 	.byte	$69, $7D, $8A, $7D, $AB, $05, $CC
-	; CDL: read by sub_00AF11
+	; CDL: read by demo_read_p2_event
 	.byte	$00, $00, $65, $00, $00, $01, $96, $00, $00, $00, $32, $00, $00, $01, $AB, $00
 	.byte	$00, $00, $1F, $00, $00, $02, $60, $00, $00, $00, $21, $00, $20, $00, $04, $00
 	.byte	$30, $00, $3D, $00, $30, $40, $8D, $00, $00, $00, $02, $01, $00, $01, $03, $00
@@ -1892,7 +1892,7 @@
 	.byte	$EF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $EF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	; CDL: read by sub_00AF11
+	; CDL: read by demo_read_p2_event
 	.byte	$00, $00, $78, $00, $00, $40, $0F, $00, $00, $00, $B4, $01, $20, $00, $09, $00
 	.byte	$20, $08, $08, $00, $20, $0A, $01, $00, $20, $02, $15, $00, $00, $02, $0A, $00
 	.byte	$00, $00, $02, $00, $00, $80, $01, $00, $00, $C0, $5A, $00, $00, $80, $01, $00
@@ -1926,7 +1926,7 @@
 	.byte	$FF, $EF, $FF, $FF, $EF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $EF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	; CDL: read by sub_00AF11
+	; CDL: read by demo_read_p2_event
 	.byte	$00, $00, $3E, $01, $00, $08, $B3, $00, $00, $0A, $0E, $00, $00, $08, $07, $00
 	.byte	$00, $48, $17, $01, $00, $4A, $03, $00, $00, $08, $09, $00, $80, $08, $06, $00
 	.byte	$80, $0A, $03, $00, $00, $0A, $0C, $00, $00, $02, $16, $00, $00, $00, $01, $00

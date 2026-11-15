@@ -255,7 +255,7 @@ sub_00E575:
 	stz	a:HDMAEN
 	rep	#$30
 	.a16
-	lda	a:wram_1600
+	lda	a:stage_state
 	cmp	#$0002
 	bcc	loc_00E574
 	lda	hdma_preset

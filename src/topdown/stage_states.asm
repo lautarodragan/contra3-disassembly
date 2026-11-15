@@ -1,11 +1,11 @@
 ; topdown/stage_states.asm -- Top-down stages: state machine and setup
 ; Bank $02, $02:8000-$02:8E32. Included by main.asm in segment BANK02.
 ;
-; Entered from tbl_00AC2A for stages 2 and 5 (top-down, Mode 7): run_topdown_stage
+; Entered from tbl_stage_runners for stages 2 and 5 (top-down, Mode 7): run_topdown_stage
 ; dispatches $1E42 through tbl_stage2_states (tbl_stage5_states for $86 = 5); screen and
 ; setup, the start-point intro, the Select map view, play, boss and stage end.
 
-; Top-down stage frame (stages 2 and 5), reached from tbl_00AC2A: runs
+; Top-down stage frame (stages 2 and 5), reached from tbl_stage_runners: runs
 ; state topdown_state of tbl_stage2_states, or tbl_stage5_states when
 ; stage_number is 5.
 run_topdown_stage:
@@ -49,7 +49,7 @@ tbl_stage5_states:
 
 ; State 0: resets the sound queue, clears the top-down RAM, sets NMI mode 4,
 ; loads the common graphics and sets up the PPU; next state 1 (or 4,
-; straight to the boss, when wram_1E40 is set).
+; straight to the boss, when stage_checkpoint is set).
 topdown_state_init:
 	stz	a:hdmaen_shadow
 	jsl	f:reset_sound_queue
@@ -58,9 +58,9 @@ topdown_state_init:
 	jsr	a:init_topdown_ppu
 	jsr	a:set_status_bar_scroll
 	lda	#$0001
-	sta	zp_64
+	sta	pause_disabled
 	ldy	#$0001
-	lda	a:wram_1E40
+	lda	a:stage_checkpoint
 	beq	loc_028064
 	; (not executed in the CDL traces)
 	ldy	#$0004
@@ -138,7 +138,7 @@ check_topdown_game_over:
 loc_0280F7:
 	stz	a:topdown_state
 	stz	a:topdown_boss_end_step
-	inc	zp_36
+	inc	mode_result
 	stz	nmi_mode
 loc_028101:
 	sec
@@ -170,7 +170,7 @@ loc_028119:
 	bra	loc_02813C
 loc_028134:
 	lda	#$0001
-	sta	zp_64
+	sta	pause_disabled
 	inc	a:topdown_state
 loc_02813C:
 	rts
@@ -189,7 +189,7 @@ stage2_state_boss_setup:
 	jsl	f:sub_02EBF2
 	jsl	f:init_topdown_irq
 	jsr	a:enable_topdown_display
-	stz	zp_64
+	stz	pause_disabled
 	stz	a:topdown_boss_end_step
 	inc	a:topdown_state
 	rtl
@@ -249,7 +249,7 @@ stage2_boss_defeat_delay:
 	bpl	loc_0281E8
 	jsl	f:reset_sound_queue
 	lda	#$0001
-	sta	zp_64
+	sta	pause_disabled
 	stz	a:fade_target_brightness
 	inc	a:topdown_boss_end_step
 loc_0281E8:
@@ -263,7 +263,7 @@ stage2_boss_exit:
 	jsl	f:reset_sound_queue
 	stz	a:topdown_state
 	stz	a:topdown_boss_end_step
-	inc	zp_36
+	inc	mode_result
 	stz	nmi_mode
 	rts
 
@@ -329,7 +329,7 @@ stage5_state_boss_setup:
 	jsl	f:sub_02EBF2
 	jsl	f:init_topdown_irq
 	jsr	a:enable_topdown_display
-	stz	zp_64
+	stz	pause_disabled
 	stz	a:topdown_boss_end_step
 	inc	a:topdown_state
 	rtl
@@ -390,7 +390,7 @@ stage5_boss_defeat_delay:
 	bpl	loc_028320
 	jsl	f:reset_sound_queue
 	lda	#$0001
-	sta	zp_64
+	sta	pause_disabled
 	stz	a:fade_target_brightness
 	inc	a:topdown_boss_end_step
 loc_028320:
@@ -404,7 +404,7 @@ stage5_boss_exit:
 	jsl	f:reset_sound_queue
 	stz	a:topdown_state
 	stz	a:topdown_boss_end_step
-	inc	zp_36
+	inc	mode_result
 	stz	nmi_mode
 	rts
 
@@ -428,7 +428,7 @@ tbl_map_view_steps:
 
 ; Step 0: Select (by a player with lives) saves the brightness and opens the map.
 map_view_check_select:
-	lda	zp_66
+	lda	paused
 	bne	loc_02838D
 	lda	#$0000
 	ldy	a:p1_lives
@@ -449,7 +449,7 @@ loc_028369:
 	lda	a:p2_view_brightness
 	sta	a:wram_15D6
 	lda	#$0001
-	sta	zp_64
+	sta	pause_disabled
 	lda	#$0001
 	sta	a:map_view_step
 	sec
@@ -646,7 +646,7 @@ loc_0284E7:
 	sta	a:p1_view_brightness
 	lda	a:wram_15D6
 	sta	a:p2_view_brightness
-	stz	zp_64
+	stz	pause_disabled
 	stz	a:map_view_step
 	sec
 	rts
@@ -710,7 +710,7 @@ intro_init:
 	.a16
 	stz	m7_split_screen
 	ldy	#$CD59
-	jsl	f:sub_00B183
+	jsl	f:setup_hdma_from_list
 	lda	#$0080
 	sta	a:hdmaen_shadow
 	stz	a:inidisp_shadow
@@ -743,7 +743,7 @@ intro_choose_start:
 	bcc	loc_0285C7
 	lda	#$0040
 	sta	a:topdown_timer
-	stz	zp_64
+	stz	pause_disabled
 	inc	a:intro_step
 loc_0285C7:
 	clc
@@ -1568,7 +1568,7 @@ loc_028BF3:
 	plb
 	lda	#$0001
 	sta	a:topdown_window_update_on
-	stz	a:wram_1E40
+	stz	a:stage_checkpoint
 	stz	a:p1_barrier_timer
 	stz	a:p2_barrier_timer
 	lda	#$000F
@@ -1631,7 +1631,7 @@ loc_028C8D:
 	lda	#$0001
 	sta	a:topdown_window_update_on
 	lda	#$0001
-	sta	a:wram_1E40
+	sta	a:stage_checkpoint
 	lda	#$000F
 	sta	a:fade_target_brightness
 	lda	#$0200
@@ -1714,7 +1714,7 @@ update_topdown_fade:
 	cmp	a:fade_target_brightness
 	beq	loc_028D77
 	bcs	loc_028D5D
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0001
 	bne	loc_028D77
 	inc	a:inidisp_shadow
@@ -1730,7 +1730,7 @@ loc_028D51:
 loc_028D5C:
 	rts
 loc_028D5D:
-	lda	zp_78
+	lda	stage_frame_counter
 	bit	#$0003
 	bne	loc_028D77
 	dec	a:inidisp_shadow
