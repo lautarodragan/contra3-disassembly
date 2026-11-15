@@ -17,7 +17,7 @@
 update_stage3_boss:
 	.a16
 	.i16
-	lda	$12,x
+	lda	OBJ_STATE,x
 	cmp	#$000D
 	bcc	loc_04802A
 	lda	#$0001
@@ -38,7 +38,7 @@ loc_048023:
 loc_04802A:
 	inc	a:wram_1636
 	jsr	a:sub_048605
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -79,7 +79,7 @@ tbl_stage3_boss_states:
 ; $08C0); shares most states with stage3_boss's robot form.
 update_stage3_second_robot:
 	jsr	a:sub_048605
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -101,20 +101,20 @@ tbl_stage3_second_robot_states:
 	.addr	stage3_second_robot_state_0A
 
 stage3_robot_state_00:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	ldy	$3A,x
 	lda	a:data_05E819,y
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$403D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	a:data_05E815,y
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$001A
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFB8
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$0140
-	sta	$06,x
+	sta	OBJ_HP,x
 	stz	$38,x
 	phx
 	ldy	#$E7E2
@@ -126,45 +126,45 @@ stage3_robot_state_01:
 	lda	a:wram_13BA
 	cmp	#$0004
 	bne	loc_0480E1
-	inc	$12,x
-	stz	$24,x
+	inc	OBJ_STATE,x
+	stz	OBJ_TIMER,x
 	lda	#$0002
-	sta	$04,x
+	sta	OBJ_FACING,x
 	lda	#$401D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 loc_0480E1:
 	rtl
 
 stage3_robot_state_02:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_0480E1
 	ldy	difficulty
 	lda	a:data_05E809,y
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	jsr	a:sub_048545
 	ldy	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00CF
 	bcs	loc_048120
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$0070
 	bcc	loc_04810C
 	lda	#$0002
-	sta	$04,x
+	sta	OBJ_FACING,x
 	lda	#$FFFF
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	bra	loc_048113
 loc_04810C:
 	; (not executed in the CDL traces)
-	stz	$04,x
+	stz	OBJ_FACING,x
 	lda	#$0001
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 loc_048113:
 	lda	#$0004
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$E83B
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	rtl
 loc_048120:
 	lda	zp_06
@@ -174,7 +174,7 @@ loc_048120:
 	cmp	#$0030
 	bcs	loc_04814B
 	lda	zp_00
-	sta	$04,x
+	sta	OBJ_FACING,x
 	lda	#$0004
 	sta	$36,x
 	lda	#$FFF8
@@ -182,20 +182,20 @@ loc_048120:
 	stz	$34,x
 loc_04813E:
 	lda	#$0003
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$E81D
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	rtl
 loc_04814B:
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$0031
 	bcc	loc_048157
 	cmp	#$00AF
 	bcc	loc_04816E
 loc_048157:
 	lda	a:data_05E85D,y
-	sta	$04,x
+	sta	OBJ_FACING,x
 	lda	a:data_05E859,y
 	sta	$34,x
 	lda	#$0005
@@ -205,7 +205,7 @@ loc_048157:
 	brl	loc_04813E
 loc_04816E:
 	lda	a:data_05E85D,y
-	sta	$04,x
+	sta	OBJ_FACING,x
 	lda	a:data_05E855,y
 	sta	$34,x
 	lda	#$0004
@@ -217,44 +217,44 @@ loc_048185:
 	rtl
 
 stage3_second_robot_state_02:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_048185
 	ldy	difficulty
 	lda	a:data_05E80F,y
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	jsr	a:sub_048545
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00CF
 	bcs	loc_0481A8
 	lda	#$0004
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$E83B
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	rtl
 loc_0481A8:
 	lda	zp_04
 	cmp	#$0050
 	bcs	loc_0481C5
 	lda	zp_00
-	sta	$04,x
+	sta	OBJ_FACING,x
 	lda	#$0006
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$E847
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	lda	#$00C0
 	sta	$3E,x
 	rtl
 loc_0481C5:
 	ldy	#$0000
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$0070
 	bcc	loc_0481D2
 	ldy	#$0002
 loc_0481D2:
 	lda	a:data_05E85D,y
-	sta	$04,x
+	sta	OBJ_FACING,x
 	lda	a:data_05E855,y
 	sta	$34,x
 	lda	#$0004
@@ -264,15 +264,15 @@ loc_0481D2:
 	brl	loc_04813E
 
 stage3_boss_state_06:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bmi	loc_048216
 	dec	$3E,x
 	bpl	loc_04821C
-	ldy	$04,x
-	lda	$0A,x
+	ldy	OBJ_FACING,x
+	lda	OBJ_X,x
 	adc	a:data_05E8B3,y
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$FFBE
 	sta	zp_02
 	lda	a:data_05E8A7,y
@@ -283,174 +283,174 @@ stage3_boss_state_06:
 	jsl	f:spawn_enemy_bullet
 loc_048216:
 	lda	#$0002
-	sta	$12,x
+	sta	OBJ_STATE,x
 	rtl
 loc_04821C:
 	jsr	a:sub_048545
 	lda	zp_00
-	sta	$04,x
+	sta	OBJ_FACING,x
 	rtl
 
 stage3_second_robot_state_06:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bmi	loc_04822C
 	dec	$3E,x
 	bpl	loc_048239
 loc_04822C:
 	lda	#$0002
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$E829
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	rtl
 loc_048239:
 	jsr	a:sub_048589
 	rtl
 
 stage3_robot_state_03:
-	lda	$20,x
+	lda	OBJ_ANIM,x
 	bne	loc_04824D
 	lda	$36,x
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	$32,x
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	$34,x
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 loc_04824D:
 	rtl
 
 stage3_robot_state_04:
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$0030
 	bcc	loc_048265
 	cmp	#$00B0
 	bcc	loc_048299
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	bmi	loc_048299
 	lda	#$00B0
-	sta	$0A,x
+	sta	OBJ_X,x
 	bpl	loc_04826E
 loc_048265:
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	bpl	loc_048299
 	lda	#$0030
-	sta	$0A,x
+	sta	OBJ_X,x
 loc_04826E:
-	stz	$18,x
-	stz	$1A,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
 	bra	loc_048299
 
 stage3_robot_state_05:
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$0010
 	bcc	loc_048284
 	cmp	#$00D0
 	bcc	loc_048299
-	stz	$04,x
+	stz	OBJ_FACING,x
 	bra	loc_048289
 loc_048284:
 	; (not executed in the CDL traces)
 	lda	#$0001
-	sta	$04,x
+	sta	OBJ_FACING,x
 loc_048289:
 	lda	#$0033
 	jsl	f:queue_sound
 	lda	#$E841
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	bra	loc_048306
 loc_048299:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bpl	loc_0482CA
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$0090
 	bcs	loc_04831A
 	lda	#$0033
 	jsl	f:queue_sound
 	lda	#$0090
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$E835
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	lda	#$0006
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$0080
 	sta	$3E,x
 	lda	#$E88B
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	bra	loc_04830B
 loc_0482CA:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00D0
 	bcc	loc_04831A
 	lda	#$0032
 	jsl	f:queue_sound
 	lda	#$00D0
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$E829
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	sec
-	lda	$0A,x
+	lda	OBJ_X,x
 	sbc	#$0030
 	cmp	#$0008
 	bcs	loc_0482F6
 	lda	#$0030
-	sta	$0A,x
+	sta	OBJ_X,x
 	bra	loc_048306
 loc_0482F6:
 	sec
 	lda	#$00B0
-	sbc	$0A,x
+	sbc	OBJ_X,x
 	cmp	#$0008
 	bcs	loc_048306
 	lda	#$00B0
-	sta	$0A,x
+	sta	OBJ_X,x
 loc_048306:
 	lda	#$0002
-	sta	$12,x
+	sta	OBJ_STATE,x
 loc_04830B:
-	stz	$1C,x
-	stz	$1E,x
-	stz	$18,x
-	stz	$1A,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
 	lda	#$0003
 	sta	a:shake_timer
 	rtl
 loc_04831A:
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$4000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	rtl
 
 stage3_robot_state_07:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_04834A
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0C00
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$E871
-	sta	$20,x
+	sta	OBJ_ANIM,x
 	lda	#$001D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$FFE2
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$FFFD
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	rtl
 loc_04834A:
 	jsr	a:sub_048669
 	jsl	f:sub_00FD97
 	lda	stage_frame_odd
 	bne	loc_048381
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$000C
 	sta	zp_02
 	lda	#$000F
@@ -472,109 +472,109 @@ stage3_robot_state_08:
 	lda	stage_frame_mod8
 	bne	loc_048396
 	lda	rng_hi
-	adc	$0A,x
+	adc	OBJ_X,x
 	bit	#$0001
 	bne	loc_048396
-	lda	$04,x
+	lda	OBJ_FACING,x
 	eor	#$0002
-	sta	$04,x
+	sta	OBJ_FACING,x
 loc_048396:
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$0010
 	bcs	loc_0483A6
-	stz	$04,x
+	stz	OBJ_FACING,x
 	lda	#$0003
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	bra	loc_0483B5
 loc_0483A6:
 	cmp	#$00D8
 	bcc	loc_0483B5
 	lda	#$0002
-	sta	$04,x
+	sta	OBJ_FACING,x
 	lda	#$FFFD
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 loc_0483B5:
-	lda	$04,x
+	lda	OBJ_FACING,x
 	beq	loc_0483D3
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	bpl	loc_0483C2
 	cmp	#$FFFD
 	bcc	loc_0483EB
 loc_0483C2:
 	sec
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	sbc	#$2000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	sbc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	bra	loc_0483EB
 loc_0483D3:
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	bmi	loc_0483DC
 	cmp	#$0003
 	bcs	loc_0483EB
 loc_0483DC:
 	clc
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	adc	#$2000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	adc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 loc_0483EB:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_0483F7
 	jsl	f:sub_01A177
 	lda	zp_FC
 	bne	loc_048411
 loc_0483F7:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_048400
 	cmp	#$0005
 	bcs	loc_04842D
 loc_048400:
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$5000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	bra	loc_04842D
 loc_048411:
 	lda	rng_lo
-	adc	$0A,x
+	adc	OBJ_X,x
 	and	#$000F
 	bne	loc_04842D
 	lda	#$E86B
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	lda	#$FFF9
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	#$0034
 	jsl	f:queue_sound
 loc_04842D:
 	rtl
 
 stage3_robot_state_09:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_048439
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0080
-	sta	$24,x
+	sta	OBJ_TIMER,x
 loc_048439:
 	brl	loc_04834A
 
 stage3_second_robot_state_0A:
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 
 ; Object type $44. Stage 3 boss room: the cables that lower the two robots
 ; from the ceiling; waits until stage3_boss (slot $0900) reaches state 3.
 update_stage3_robot_cables:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -590,13 +590,13 @@ tbl_stage3_robot_cables_states:
 	.addr	stage3_robot_cables_state_04
 
 stage3_robot_cables_state_00:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0001
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$3400
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$BE1D
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	rtl
 
 stage3_robot_cables_state_01:
@@ -604,19 +604,19 @@ stage3_robot_cables_state_01:
 	cmp	#$0003
 	bcc	loc_048481
 	lda	#$0018
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$E7C8
 	sta	$30,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_048481:
 	rtl
 
 stage3_robot_cables_state_02:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_0484B8
 	lda	#$E7EB
-	sta	$20,x
-	inc	$12,x
+	sta	OBJ_ANIM,x
+	inc	OBJ_STATE,x
 	ldy	#$0200
 	jsr	a:sub_04852F
 	ldy	#$0240
@@ -636,7 +636,7 @@ stage3_robot_cables_state_02:
 	lda	#$000A
 	jml	f:sub_00CFAF
 loc_0484B8:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	bit	#$0007
 	bne	loc_0484E5
 	lda	#$0001
@@ -661,24 +661,24 @@ loc_0484E5:
 	rtl
 
 stage3_robot_cables_state_03:
-	lda	$00,x
+	lda	OBJ_SPRITE,x
 	bne	loc_0484F6
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0010
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$E7DA
 	sta	$30,x
 loc_0484F6:
 	rtl
 
 stage3_robot_cables_state_04:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_048501
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_048501:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	bit	#$0007
 	bne	loc_04852E
 	lda	#$0002
@@ -723,7 +723,7 @@ sub_048545:
 	stz	zp_00
 	sec
 	lda	a:$000A,y
-	sbc	$0A,x
+	sbc	OBJ_X,x
 	bpl	loc_048565
 	eor	#$FFFF
 	inc	zp_00
@@ -732,7 +732,7 @@ loc_048565:
 	sta	zp_04
 	sec
 	lda	a:$000E,y
-	sbc	$0E,x
+	sbc	OBJ_Y,x
 	bpl	loc_048572
 	eor	#$FFFF
 loc_048572:
@@ -761,9 +761,9 @@ sub_048589:
 	sta	a:$0002,y
 	lda	#$000F
 	sta	a:$0016,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$FFE6
 	sta	a:$000E,y
 	lda	#$000C
@@ -808,52 +808,52 @@ loc_048604:
 sub_048605:
 	lda	$38,x
 	bne	loc_048631
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_048630
-	lda	$12,x
+	lda	OBJ_STATE,x
 	cmp	#$0002
 	bne	loc_048630
 	lda	#$0007
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$0030
-	sta	$06,x
+	sta	OBJ_HP,x
 loc_04861E:
 	lda	#$0001
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0080
-	sta	$24,x
-	stz	$20,x
+	sta	OBJ_TIMER,x
+	stz	OBJ_ANIM,x
 	stz	$30,x
-	stz	$04,x
+	stz	OBJ_FACING,x
 	inc	$38,x
 loc_048630:
 	rts
 loc_048631:
 	cmp	#$0002
 	bcs	loc_04864D
-	lda	$06,x
+	lda	OBJ_HP,x
 	bmi	loc_04863C
 	bpl	loc_048630
 loc_04863C:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0400
-	sta	$06,x
-	stz	$18,x
-	stz	$1A,x
-	stz	$1C,x
-	stz	$1E,x
+	sta	OBJ_HP,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	bra	loc_04861E
 loc_04864D:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_048630
 	lda	#$0016
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$0004
 	sta	$36,x
 	stz	$34,x
 	lda	#$0001
-	sta	$16,x
-	stz	$06,x
+	sta	OBJ_FLAGS,x
+	stz	OBJ_HP,x
 	jsl	f:make_players_invulnerable
 	rts
 
@@ -861,20 +861,20 @@ sub_048669:
 	lda	$30,x
 	beq	loc_048675
 	lda	$30,x
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	stz	$30,x
 	bra	loc_04867B
 loc_048675:
-	lda	$00,x
+	lda	OBJ_SPRITE,x
 	sta	$30,x
-	stz	$00,x
+	stz	OBJ_SPRITE,x
 loc_04867B:
 	rts
 
 stage3_boss_state_0A:
 	lda	a:wram_08D0
 	bne	loc_048699
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	loc_048699
 	lda	#$F48A
 	sta	a:wram_1682
@@ -882,7 +882,7 @@ stage3_boss_state_0A:
 	sta	a:wram_1680
 	lda	#$0004
 	sta	a:shake_timer
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_048699:
 	rtl
 
@@ -891,7 +891,7 @@ stage3_boss_state_0B:
 	bne	loc_048699
 	lda	#$0068
 	jsl	f:queue_sound
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0100
 	sta	a:wram_13D8
 	stz	a:wram_163C
@@ -905,14 +905,14 @@ stage3_boss_state_0B:
 	lda	#$0008
 	sta	$32,x
 	lda	#$0068
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$0080
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0028
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFC8
-	sta	$2A,x
-	stz	$16,x
+	sta	OBJ_HITBOX_H,x
+	stz	OBJ_FLAGS,x
 	phx
 	ldx	#.loword(data_05EB45)
 	jsl	f:load_data_list
@@ -927,7 +927,7 @@ stage3_boss_state_0C:
 	dec	$32,x
 	dec	$32,x
 	bpl	loc_048704
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$004E
 	jml	f:queue_sound
 loc_048704:
@@ -969,8 +969,8 @@ stage3_boss_state_0D:
 	stz	$34,x
 	stz	$36,x
 	lda	#$4010
-	sta	$16,x
-	inc	$12,x
+	sta	OBJ_FLAGS,x
+	inc	OBJ_STATE,x
 	rtl
 loc_048751:
 	lda	a:wram_163E
@@ -986,14 +986,14 @@ loc_048765:
 
 stage3_boss_state_17:
 	lda	#$0070
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$0080
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$3400
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$C257
-	sta	$00,x
-	inc	$12,x
+	sta	OBJ_SPRITE,x
+	inc	OBJ_STATE,x
 	rtl
 
 stage3_boss_state_18:
@@ -1003,7 +1003,7 @@ stage3_boss_state_18:
 	bne	loc_0487A1
 	lda	#$0083
 	jsl	f:queue_sound
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0100
 	sta	a:stage_exit_request
 	lda	#$001F
@@ -1016,26 +1016,26 @@ loc_0487A1:
 stage3_boss_state_19:
 	lda	#$006D
 	jsl	f:queue_sound
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 
 stage3_boss_state_1A:
 	stz	a:wram_163A
 	jsr	a:sub_04893E
-	lda	$0E,x
+	lda	OBJ_Y,x
 	bmi	loc_0487C2
 	cmp	#$00D8
 	bcc	loc_0487C2
 	lda	#$FFFD
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 loc_0487C2:
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$2000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	#$0001
 	sta	a:shake_continuous
 	jml	f:loc_01D83E
@@ -1069,7 +1069,7 @@ stage3_boss_state_0E:
 loc_048819:
 	lda	#$0060
 	sta	$3E,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 loc_048821:
 	clc
@@ -1091,7 +1091,7 @@ stage3_boss_state_0F:
 	jsr	a:sub_048A5C
 	dec	$3E,x
 	bne	loc_048847
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	$36,x
 loc_048847:
 	lda	$3E,x
@@ -1108,7 +1108,7 @@ stage3_boss_state_11:
 	jsr	a:sub_0489CD
 	dec	$3E,x
 	bne	loc_04886C
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	$30,x
 	lda	#$003E
 	sta	$32,x
@@ -1144,7 +1144,7 @@ loc_0488A3:
 	cmp	#$0144
 	bcc	loc_0488B9
 	lda	#$0013
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$0002
 	sta	$36,x
 	stz	$34,x
@@ -1162,10 +1162,10 @@ loc_0488C6:
 	dec	$3E,x
 	dec	$3E,x
 	bne	loc_048906
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0080
 	sta	$3E,x
-	stz	$16,x
+	stz	OBJ_FLAGS,x
 	lda	#$0006
 	sta	zp_FE
 	lda	#$0800
@@ -1197,7 +1197,7 @@ stage3_boss_state_15:
 	lda	#$0002
 	sta	a:wram_163A
 	lda	#$000D
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$004E
 	jml	f:queue_sound
 loc_048923:
@@ -1419,7 +1419,7 @@ loc_048ADB:
 ; Object type $4C. Stage 3, skeleton robot: numbered bombs ("3", "2", "1")
 ; that stick to the walls of the room and explode.
 update_countdown_bomb:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_048B25
 	lda	#$FFE8
 	sta	zp_02
@@ -1438,41 +1438,41 @@ update_countdown_bomb:
 	jsl	f:sub_00E16E
 	beq	loc_048B24
 loc_048B0C:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	and	#$FFF8
-	sta	$0E,x
-	lda	$0A,x
+	sta	OBJ_Y,x
+	lda	OBJ_X,x
 	and	#$FFF8
-	sta	$0A,x
-	stz	$1C,x
-	stz	$1E,x
-	stz	$18,x
-	stz	$1A,x
-	inc	$12,x
+	sta	OBJ_X,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
+	inc	OBJ_STATE,x
 loc_048B24:
 	rtl
 loc_048B25:
 	cmp	#$0002
 	beq	loc_048B45
-	lda	$00,x
+	lda	OBJ_SPRITE,x
 	cmp	$34,x
 	beq	loc_048B39
 	sta	$34,x
 	lda	#$0036
 	jsl	f:queue_sound
 loc_048B39:
-	lda	$20,x
+	lda	OBJ_ANIM,x
 	bne	loc_048B44
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0040
-	sta	$24,x
+	sta	OBJ_TIMER,x
 loc_048B44:
 	rtl
 loc_048B45:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	loc_048B4F
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_048B4F:
 	lda	#$0030
@@ -1496,10 +1496,10 @@ loc_048B4F:
 	inc	rng_lo
 	and	#$001F
 	pha
-	adc	$0A,x
+	adc	OBJ_X,x
 	sta	a:$000A,y
 	pla
-	adc	$0E,x
+	adc	OBJ_Y,x
 	sta	a:$000E,y
 	phx
 	lda	rng_hi
@@ -1544,7 +1544,7 @@ loc_048BE9:
 
 ; Object type $87. Stage 3, skeleton robot: fireballs from its eyes.
 update_skeleton_eye_fireball:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -1558,30 +1558,30 @@ tbl_skeleton_eye_fireball_states:
 	.addr	skeleton_eye_fireball_state_02
 
 skeleton_eye_fireball_state_00:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$C6BA
-	sta	$20,x
+	sta	OBJ_ANIM,x
 	lda	#$000D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0008
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF8
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$3000
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$0074
-	sta	$0E,x
+	sta	OBJ_Y,x
 	ldy	difficulty
 	lda	a:data_05EB78,y
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	rtl
 
 skeleton_eye_fireball_state_01:
-	lda	$20,x
+	lda	OBJ_ANIM,x
 	bne	loc_048C5B
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	rng_lo
-	adc	$0A,x
+	adc	OBJ_X,x
 	and	#$000F
 	adc	#$0010
 	sta	$36,x
@@ -1595,34 +1595,34 @@ skeleton_eye_fireball_state_01:
 	and	#$000E
 	tay
 	lda	a:data_05E8C3,y
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	a:data_05E8D7,y
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	a:data_05E8D3,y
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 loc_048C5B:
 	bra	loc_048C79
 
 skeleton_eye_fireball_state_02:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_048C6A
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	jml	f:sub_01A52C
 loc_048C6A:
 	dec	$36,x
 	bpl	loc_048C79
-	dec	$12,x
-	stz	$1A,x
-	stz	$1E,x
+	dec	OBJ_STATE,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL,x
 	lda	#$C636
-	sta	$20,x
+	sta	OBJ_ANIM,x
 loc_048C79:
 	lda	stage_frame_bit1
 	bne	loc_048C84
-	lda	$02,x
+	lda	OBJ_ATTR,x
 	eor	#$0E00
-	sta	$02,x
+	sta	OBJ_ATTR,x
 loc_048C84:
 	jml	f:sub_01A513
 
@@ -1630,7 +1630,7 @@ loc_048C84:
 ; (position 0,0, 32 states): drives the hover-bike scenes, the airship, the
 ; helicopter and the boss.
 update_stage4_controller:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -1674,8 +1674,8 @@ tbl_stage4_controller_states:
 
 stage4_controller_state_00:
 	lda	#$0100
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	stz	a:wram_1688
 	lda	#$0018
 	sta	$34,x
@@ -1684,14 +1684,14 @@ stage4_controller_state_00:
 	rtl
 
 stage4_controller_state_01:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_048CFB
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0063
 	jsl	f:queue_sound
-	stz	$24,x
+	stz	OBJ_TIMER,x
 loc_048CFB:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	cmp	#$0090
 	bne	loc_048D29
 	jsr	a:sub_049B36
@@ -1716,11 +1716,11 @@ stage4_controller_state_03:
 	jsr	a:sub_049B32
 
 stage4_controller_state_02:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_048D3E
 	lda	#$00C0
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_048D3E:
 	jsr	a:sub_0497E0
 	rtl
@@ -1754,7 +1754,7 @@ stage4_controller_state_05:
 	phx
 	jsl	f:sub_00FEA3
 	plx
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0010
 	sta	a:wram_1380
 	sta	a:wram_138A
@@ -1768,11 +1768,11 @@ stage4_controller_state_06:
 	adc	#$0010
 	and	#$00FF
 	bne	loc_048DB2
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$4000
 	sta	$34,x
 	lda	#$0080
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0100
 loc_048DB2:
 	sta	a:wram_1380
@@ -1794,17 +1794,17 @@ stage4_controller_state_07:
 	sta	$34,x
 	cmp	#$4300
 	bcc	loc_048DE0
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	a:wram_1380
 loc_048DE0:
 	jml	f:loc_00D5ED
 
 stage4_controller_state_08:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_048DEF
 	lda	#$0140
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_048DEF:
 	jml	f:loc_00D5ED
 
@@ -1813,13 +1813,13 @@ stage4_controller_state_0A:
 	bne	loc_048E0D
 	lda	#$0002
 	sta	a:wram_1688
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 
 stage4_controller_state_09:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_048E0D
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$006E
 	sta	a:wram_0910
 loc_048E0D:
@@ -1841,24 +1841,24 @@ stage4_controller_state_0B:
 	sta	a:wram_13B2
 	lda	#$0B80
 	sta	a:wram_1380
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	stz	$36,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 	jml	f:loc_00D5ED
 
 stage4_controller_state_0C:
-	ldy	$24,x
+	ldy	OBJ_TIMER,x
 	lda	a:wram_1380
 	cmp	#$01E0
 	bcs	loc_048E56
 	lda	#$0040
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_048E56:
 	cmp	a:data_05EB7E,y
 	bcs	loc_048E5F
-	inc	$24,x
-	inc	$24,x
+	inc	OBJ_TIMER,x
+	inc	OBJ_TIMER,x
 loc_048E5F:
 	lda	a:wram_168D
 	cmp	a:data_05EB8C,y
@@ -1925,13 +1925,13 @@ loc_048EE7:
 	jml	f:loc_00D5ED
 
 stage4_controller_state_0D:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_048F01
 	lda	#$0079
 	sta	a:wram_0910
 	lda	#$0001
 	sta	a:stage_checkpoint
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_048F01:
 	jml	f:loc_00D5ED
 
@@ -1939,9 +1939,9 @@ stage4_controller_state_0E:
 	lda	a:wram_0910
 	cmp	#$0079
 	beq	loc_048F1D
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0100
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	phx
 	ldx	#.loword(data_05ECD0)
 	jsl	f:load_data_list
@@ -1950,10 +1950,10 @@ loc_048F1D:
 	jml	f:loc_00D5ED
 
 stage4_controller_state_0F:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_048F35
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	lda	#$0084
 	sta	a:wram_0910
 	lda	#$0004
@@ -1963,7 +1963,7 @@ loc_048F35:
 	jml	f:loc_00D5ED
 
 stage4_controller_state_10:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	ldy	#$0800
 	lda	#$0065
 	sta	a:$0010,y
@@ -1992,7 +1992,7 @@ stage4_controller_state_11:
 	cmp	#$0040
 	bcc	loc_048F91
 	stz	a:wram_081A
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0006
 	sta	a:wram_1672
 loc_048F91:
@@ -2013,7 +2013,7 @@ loc_048FA2:
 	cmp	#$0001
 	bne	loc_048FC7
 loc_048FB4:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	a:wram_0820
 	stz	a:wram_0822
 	stz	a:wram_0800
@@ -2033,7 +2033,7 @@ stage4_controller_state_14:
 	bne	loc_048FE1
 	lda	#$000A
 	sta	a:wram_13FA
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_048FE1:
 	lda	a:wram_1398
 	cmp	#$0010
@@ -2058,14 +2058,14 @@ stage4_controller_state_15:
 	beq	loc_049017
 	lda	#$C558
 	sta	a:wram_1636
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_049017:
 	rtl
 
 stage4_controller_state_16:
 	lda	stage_frame_odd
 	beq	loc_049017
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$4200
 	jsr	a:sub_049864
 	lda	#$000B
@@ -2129,7 +2129,7 @@ stage4_controller_state_16:
 stage4_controller_state_17:
 	lda	a:wram_13FE
 	beq	loc_0490DE
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	a:wram_13FA
 	lda	#$0002
 	sta	a:wram_0812
@@ -2150,14 +2150,14 @@ loc_0490DE:
 stage4_controller_state_18:
 	lda	stage_frame_odd
 	beq	loc_04911E
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0040
-	sta	$24,x
+	sta	OBJ_TIMER,x
 
 stage4_controller_state_19:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	loc_049105
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0017
 	sta	a:tm_shadow
 	lda	#$0049
@@ -2201,7 +2201,7 @@ stage4_controller_state_1B:
 	sta	a:wram_16AC
 	lda	#$00FF
 	sta	a:wram_16AA
-	inc	$12,x
+	inc	OBJ_STATE,x
 	jsr	a:sub_049878
 	rtl
 
@@ -2221,8 +2221,8 @@ stage4_controller_state_1C:
 	lda	#$0002
 	sta	a:life_transfer_disabled
 	lda	#$0080
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	lda	#$0003
 	sta	a:player_autopilot_mode
 	lda	#$FFD8
@@ -2256,11 +2256,11 @@ loc_0491DF:
 	rtl
 
 stage4_controller_state_1D:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_0491EE
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0080
-	sta	$24,x
+	sta	OBJ_TIMER,x
 loc_0491EE:
 	lda	#$00FE
 	sta	a:p1_view_x
@@ -2272,9 +2272,9 @@ loc_0491EE:
 	bra	loc_049231
 
 stage4_controller_state_1E:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	stage4_controller_state_1F
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0100
 	sta	a:stage_exit_request
 
@@ -2308,7 +2308,7 @@ loc_049231:
 ; players stand on and jump between; in the ending, the missile under the
 ; helicopter (slot $0280).
 update_rideable_missile:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -2329,29 +2329,29 @@ tbl_rideable_missile_states:
 
 rideable_missile_state_00:
 	lda	#$FF80
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$0078
-	sta	$0E,x
-	inc	$12,x
+	sta	OBJ_Y,x
+	inc	OBJ_STATE,x
 	bra	loc_049285
 
 sub_049277:
 	sty	$34,x
 	lda	#$0065
-	sta	$10,x
+	sta	OBJ_TYPE,x
 	lda	#$0007
-	sta	$12,x
-	stz	$1A,x
+	sta	OBJ_STATE,x
+	stz	OBJ_X_VEL,x
 loc_049285:
 	lda	#$0078
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF8
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$0001
-	sta	$16,x
-	stz	$18,x
-	stz	$1C,x
-	stz	$1E,x
+	sta	OBJ_FLAGS,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	stz	$3A,x
 	stz	$3E,x
 	stz	$38,x
@@ -2362,39 +2362,39 @@ loc_049285:
 
 rideable_missile_state_02:
 	sec
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	sbc	#$0800
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	sbc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	bne	loc_0492BE
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	bne	loc_0492BE
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_0492BE:
 	clc
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	adc	#$3000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	adc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	jsr	a:sub_04988E
 	jsr	a:sub_04997F
 	bra	rideable_missile_state_01
 
 rideable_missile_state_03:
 	sec
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	sbc	#$0800
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	sbc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	cmp	#$FFFE
 	bne	loc_0492EB
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_0492EB:
 	jsr	a:sub_0499AB
 	jsr	a:sub_04988E
@@ -2489,7 +2489,7 @@ rideable_missile_state_07:
 	lsr	a
 	tay
 	lda	#$FF80
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	a:data_05EB9A,y
 	and	#$00FF
 	sta	zp_00
@@ -2497,7 +2497,7 @@ rideable_missile_state_07:
 	and	#$0007
 	clc
 	adc	zp_00
-	sta	$0E,x
+	sta	OBJ_Y,x
 	tya
 	clc
 	adc	$30,x
@@ -2511,12 +2511,12 @@ rideable_missile_state_07:
 	lda	a:data_05EBA2,y
 	clc
 	adc	zp_00
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	#$0000
 	adc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	#$0005
-	sta	$12,x
+	sta	OBJ_STATE,x
 	inc	$30,x
 	rtl
 
@@ -2529,15 +2529,15 @@ rideable_missile_state_05:
 	clc
 	lda	a:wram_078A
 	adc	#$FF90
-	cmp	$0A,x
+	cmp	OBJ_X,x
 	bpl	loc_04941A
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 loc_0493FD:
 	clc
 	lda	a:wram_090A
 	adc	#$FF90
-	cmp	$0A,x
+	cmp	OBJ_X,x
 	bpl	loc_04941A
 	lda	#$0200
 	sta	a:wram_0926
@@ -2545,15 +2545,15 @@ loc_0493FD:
 	lda	a:wram_0906
 	sbc	#$0004
 	sta	a:wram_0906
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_04941A:
 	rtl
 
 rideable_missile_state_06:
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$0080
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$FFF5
 	sta	zp_02
 	phx
@@ -2577,15 +2577,15 @@ loc_049430:
 	bpl	loc_049430
 loc_049456:
 	plx
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0030
 	jml	f:queue_sound
 
 rideable_missile_state_08:
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$FFE8
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$0010
 	sta	zp_02
 	lda	#$007F
@@ -2607,12 +2607,12 @@ rideable_missile_state_08:
 ; eye at the end of the sky section (384 HP, slot $0900); fires
 ; stage4_boss_shot and stage4_boss_fireball.
 update_stage4_boss:
-	lda	$16,x
+	lda	OBJ_FLAGS,x
 	bpl	loc_04949D
 	stz	a:wram_13C0
 	rtl
 loc_04949D:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -2629,22 +2629,22 @@ tbl_stage4_boss_states:
 
 stage4_boss_state_00:
 	lda	#$4001
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0180
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$0088
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0180
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0020
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFD0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$017F
 	sta	$32,x
 	stz	$30,x
 	stz	a:wram_163A
-	inc	$12,x
+	inc	OBJ_STATE,x
 	phx
 	ldx	#$0700
 	ldy	#$0000
@@ -2672,23 +2672,23 @@ stage4_boss_state_01:
 	lda	$32,x
 	cmp	#$00E1
 	bcs	stage4_boss_state_02
-	inc	$12,x
+	inc	OBJ_STATE,x
 
 stage4_boss_state_02:
-	lda	$26,x
+	lda	OBJ_SAVED_ATTR,x
 	beq	loc_04952B
 	lda	#$912A
 	sta	cgram_upload_src
 	lda	#$6050
 	sta	cgram_upload_addr
 loc_04952B:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_04953B
 	lda	#$0001
-	sta	$16,x
-	inc	$12,x
+	sta	OBJ_FLAGS,x
+	inc	OBJ_STATE,x
 	lda	#$0080
-	sta	$24,x
+	sta	OBJ_TIMER,x
 loc_04953B:
 	jsr	a:sub_0498AF
 	lda	a:wram_0796
@@ -2724,9 +2724,9 @@ loc_049564:
 	and	#$003F
 	eor	#$FFFF
 	clc
-	adc	$0E,x
+	adc	OBJ_Y,x
 	sta	a:$000E,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$0000
 	sta	a:$000A,y
 loc_0495A0:
@@ -2740,24 +2740,24 @@ loc_0495A1:
 	bcc	loc_0495C7
 	lda	#$0083
 	sta	a:$0010,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$0020
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$FFE0
 	sta	a:$000E,y
 loc_0495C7:
 	rtl
 
 stage4_boss_state_03:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	stage4_boss_state_04
 	inc	a:wram_0952
-	inc	$12,x
+	inc	OBJ_STATE,x
 
 stage4_boss_state_04:
 	jsl	f:sub_00FD8D
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	zp_00
 	lda	#$00FF
 	sta	zp_02
@@ -2779,7 +2779,7 @@ loc_0495FC:
 ; Object type $6A. Stage 4 boss: the upper and lower pods of stage4_boss (128
 ; HP each).
 update_stage4_boss_pod:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_049633
 	phx
 	lda	$30,x
@@ -2796,7 +2796,7 @@ update_stage4_boss_pod:
 	jsl	f:queue_sound
 	ldy	$30,x
 	lda	#$FFFC
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	txy
 	lda	#$C516
 	jml	f:sub_01CF66
@@ -2810,81 +2810,81 @@ loc_04963D:
 
 ; Object type $82. Stage 4 boss: spread shots.
 update_stage4_boss_shot:
-	lda	$3C,x
+	lda	OBJ_TOUCHED_BY,x
 	bne	loc_049646
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_04965A
 loc_049646:
 	lda	#$0017
 	jsl	f:queue_sound
 	lda	#$FFF8
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	txy
 	lda	#$C4CE
 	jml	f:sub_01CF66
 loc_04965A:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_049690
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$C83F
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$3E00
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$001F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	rng_lo
 	and	#$001F
 	adc	#$0090
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	rng_lo
 	and	#$7800
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	#$FFFF
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	rtl
 loc_049690:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bmi	loc_049646
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	bne	loc_04969C
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	beq	loc_0496AF
 loc_04969C:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bpl	loc_0496B0
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$0800
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 loc_0496AF:
 	rtl
 loc_0496B0:
 	sec
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	sbc	#$0800
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	sbc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	rtl
 
 ; Object type $83. Stage 4 boss: fireballs from the red eye (16 HP: can be
 ; shot down).
 update_stage4_boss_fireball:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_0496CC
 	txy
 	lda	#$C516
 	jml	f:sub_01CF66
 loc_0496CC:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -2898,21 +2898,21 @@ tbl_stage4_boss_fireball_states:
 	.addr	stage4_boss_fireball_state_02
 
 stage4_boss_fireball_state_00:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$AF8C
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$3200
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$0013
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$000C
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF4
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$0010
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0001
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	rtl
 
 stage4_boss_fireball_state_01:
@@ -2924,7 +2924,7 @@ stage4_boss_fireball_state_01:
 	lda	a:$0012,y
 	cmp	#$0005
 	bne	loc_04973E
-	inc	$12,x
+	inc	OBJ_STATE,x
 	sty	$30,x
 	bra	loc_04973E
 
@@ -2933,26 +2933,26 @@ stage4_boss_fireball_state_02:
 	lda	a:$0012,y
 	cmp	#$0005
 	beq	loc_04972D
-	dec	$12,x
+	dec	OBJ_STATE,x
 	bra	loc_04973E
 loc_04972D:
 	clc
 	lda	a:$000E,y
 	adc	#$FFF6
-	cmp	$0E,x
+	cmp	OBJ_Y,x
 	bcc	loc_04973C
-	inc	$0E,x
+	inc	OBJ_Y,x
 	bra	loc_04973E
 loc_04973C:
-	dec	$0E,x
+	dec	OBJ_Y,x
 loc_04973E:
 	sec
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	sbc	#$1000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	sbc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	stage_frame_mod4
 	bne	loc_04976E
 	ldy	#$05C0
@@ -2960,10 +2960,10 @@ loc_04973E:
 	bcc	loc_04976E
 	lda	#$C558
 	jsl	f:sub_01CF66
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$0004
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	a:$000E,y
 loc_04976E:
 	ldy	#$07C0
@@ -2971,14 +2971,14 @@ loc_049771:
 	clc
 	lda	a:$000A,y
 	adc	#$0070
-	cmp	$0A,x
+	cmp	OBJ_X,x
 	bmi	loc_04979F
 	lda	a:$000A,y
-	cmp	$0A,x
+	cmp	OBJ_X,x
 	bpl	loc_04979F
 	sec
 	lda	a:$000E,y
-	sbc	$0E,x
+	sbc	OBJ_Y,x
 	bpl	loc_04978E
 	eor	#$FFFF
 loc_04978E:
@@ -2987,7 +2987,7 @@ loc_04978E:
 	lda	#$0006
 	sta	a:$0012,y
 	lda	#$FFFF
-	sta	$06,x
+	sta	OBJ_HP,x
 	rtl
 loc_04979F:
 	tya
@@ -2999,10 +2999,10 @@ loc_04979F:
 	rtl
 
 sub_0497AB:
-	lda	$16,x
+	lda	OBJ_FLAGS,x
 	beq	loc_0497DF
 	bmi	loc_0497DF
-	lda	$12,x
+	lda	OBJ_STATE,x
 	cmp	#$0001
 	beq	loc_0497C2
 	; (not executed in the CDL traces)
@@ -3011,7 +3011,7 @@ sub_0497AB:
 	cmp	#$0004
 	beq	loc_0497C2
 loc_0497C2:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00E0
 	bcs	loc_0497DF
 	txa
@@ -3019,12 +3019,12 @@ loc_0497C2:
 	lsr	a
 	clc
 	adc	#$0010
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$00C3
-	sta	$0E,x
-	stz	$1C,x
-	stz	$1E,x
-	stz	$04,x
+	sta	OBJ_Y,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_FACING,x
 loc_0497DF:
 	rts
 
@@ -3052,21 +3052,21 @@ sub_0497FB:
 	clc
 	lda	a:$000A,y
 	adc	#$0006
-	cmp	$0A,x
+	cmp	OBJ_X,x
 	bmi	loc_049863
 	clc
-	lda	$0A,x
-	adc	$28,x
+	lda	OBJ_X,x
+	adc	OBJ_HITBOX_W,x
 	cmp	a:$000A,y
 	bmi	loc_049863
 	sec
 	lda	a:$000E,y
 	sbc	#$0028
 	sta	zp_00
-	cmp	$0E,x
+	cmp	OBJ_Y,x
 	bpl	loc_049863
 	sec
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sbc	#$0009
 	cmp	zp_00
 	bpl	loc_049863
@@ -3080,7 +3080,7 @@ sub_0497FB:
 	beq	loc_049863
 	sta	a:$0012,y
 	clc
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$0023
 	sta	a:$000E,y
 	lda	#$0000
@@ -3136,39 +3136,39 @@ sub_0498AF:
 	lda	$30,x
 	bne	loc_0498D3
 	lda	$32,x
-	cmp	$0A,x
+	cmp	OBJ_X,x
 	bcs	loc_0498F7
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	bpl	loc_0498C2
 	cmp	#$FFFE
 	bcc	loc_0498FE
 loc_0498C2:
 	sec
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	sbc	#$2000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	sbc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	bra	loc_0498FE
 loc_0498D3:
 	clc
 	lda	$32,x
 	adc	#$0008
-	cmp	$0A,x
+	cmp	OBJ_X,x
 	bcc	loc_0498F7
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	bmi	loc_0498E6
 	cmp	#$0001
 	bcs	loc_0498FE
 loc_0498E6:
 	clc
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	adc	#$1000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	adc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	bra	loc_0498FE
 loc_0498F7:
 	lda	$30,x
@@ -3177,7 +3177,7 @@ loc_0498F7:
 loc_0498FE:
 	sec
 	lda	#$01A0
-	sbc	$0A,x
+	sbc	OBJ_X,x
 	sta	a:wram_13C0
 	lda	stage_frame_counter
 	lsr	a
@@ -3195,7 +3195,7 @@ loc_049918:
 	adc	#$0000
 	sta	a:wram_13D8
 	sec
-	lda	$0A,x
+	lda	OBJ_X,x
 	sbc	#$0020
 	sta	zp_00
 	lda	a:wram_0796
@@ -3206,7 +3206,7 @@ loc_049918:
 	lda	#$8000
 	sta	a:wram_0796
 	lda	#$4011
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$00C8
 	sta	$32,x
 loc_049949:
@@ -3247,11 +3247,11 @@ sub_04997F:
 	jsl	f:sub_01CF66
 	lda	#$FFF8
 	sta	a:$001A,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$FFF8
 	sta	a:$000A,y
 	clc
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$FFF5
 	sta	a:$000E,y
 loc_0499AA:
@@ -3275,10 +3275,10 @@ sub_0499AB:
 	sta	f:wram_7E3806
 	cmp	#$0200
 	bcc	loc_049A05
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$4000
-	sta	$18,x
-	stz	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
 	stz	$30,x
 	lda	#$C606
 	sta	a:wram_1636
@@ -3315,23 +3315,23 @@ loc_049A05:
 
 sub_049A30:
 	lda	a:data_05EC8E,y
-	sta	$10,x
+	sta	OBJ_TYPE,x
 	lda	a:data_05EC92,y
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	a:data_05EC96,y
-	sta	$20,x
+	sta	OBJ_ANIM,x
 	lda	#$0180
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	a:data_05EC9A,y
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	a:data_05EC9E,y
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$0E00
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	rts
 
 sub_049A54:
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$00E0
 	bcs	loc_049AC0
 	lda	difficulty
@@ -3364,10 +3364,10 @@ sub_049A54:
 	lda	a:data_05EBC6,x
 	sta	a:$0020,y
 	plx
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$0000
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$0000
 	sta	a:$000E,y
 	lda	#$001A
@@ -3429,7 +3429,7 @@ sub_049AF5:
 	sta	$32,x
 	dec	$34,x
 	bne	loc_049B31
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_049B31:
 	rts
 
@@ -3464,18 +3464,18 @@ loc_049B73:
 
 scroll_with_airship:
 	sec
-	lda	$0A,x
+	lda	OBJ_X,x
 	sbc	a:wram_1694
-	sta	$0A,x
+	sta	OBJ_X,x
 	cmp	#$0100
 	bcc	loc_049B86
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 loc_049B86:
 	sec
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sbc	a:wram_1696
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rts
 
 airship_part_explode:
@@ -3483,10 +3483,10 @@ airship_part_explode:
 	jsl	f:queue_sound_throttled
 	lda	stage_frame_odd
 	bne	loc_049BD4
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_049BA4
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_049BA4:
 	ldy	#$0580
@@ -3497,13 +3497,13 @@ loc_049BA4:
 	lda	rng_lo
 	and	#$001F
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sbc	zp_00
 	sta	a:$000E,y
 	lda	rng_hi
 	and	#$0007
 	pha
-	adc	$0A,x
+	adc	OBJ_X,x
 	sta	a:$000A,y
 	pla
 	adc	#$FFF8
@@ -3539,22 +3539,22 @@ loc_049C0B:
 ; Object type $5E. Stage 6, vertical section: the winged skeletal alien with a
 ; segmented tail. HP by difficulty: 128/160/192 (data_05ECE2).
 update_winged_alien:
-	ldy	$26,x
+	ldy	OBJ_SAVED_ATTR,x
 	beq	loc_049C1A
 	lda	#$0030
 	sta	cgram_upload_addr
 	lda	#$912A
 	sta	cgram_upload_src
 loc_049C1A:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_049C2A
 	lda	#$0006
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$0001
-	sta	$16,x
-	stz	$06,x
+	sta	OBJ_FLAGS,x
+	stz	OBJ_HP,x
 loc_049C2A:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -3577,7 +3577,7 @@ winged_alien_state_00:
 	sta	a:bg2sc_shadow
 	stz	a:wram_13C0
 	stz	a:wram_13D8
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 
 winged_alien_state_01:
@@ -3588,30 +3588,30 @@ winged_alien_state_01:
 loc_049C61:
 	ldy	difficulty
 	lda	a:data_05ECE2,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	jsr	a:sub_04A0A7
-	stz	$18,x
-	stz	$1A,x
-	stz	$1C,x
-	stz	$1E,x
-	inc	$12,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	inc	OBJ_STATE,x
 	rtl
 
 winged_alien_state_02:
 	lda	#$0080
-	sta	$0A,x
-	lda	$0E,x
+	sta	OBJ_X,x
+	lda	OBJ_Y,x
 	bmi	loc_049C84
 	cmp	#$0070
 	bcs	loc_049C95
 loc_049C84:
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	clc
 	adc	#$2000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	bra	loc_049CAF
 loc_049C95:
 	lda	stage_frame_counter
@@ -3624,9 +3624,9 @@ loc_049C95:
 	sta	$30,x
 	jsr	a:sub_04A298
 loc_049CA7:
-	lsr	$1E,x
-	ror	$1C,x
-	lda	$1C,x
+	lsr	OBJ_Y_VEL,x
+	ror	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL_SUB,x
 	beq	loc_049CB9
 loc_049CAF:
 	inc	a:wram_07B8
@@ -3634,24 +3634,24 @@ loc_049CAF:
 	jsr	a:sub_04A16E
 	rtl
 loc_049CB9:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$401D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	inc	a:wram_07B8
 	inc	a:wram_07B8
 	jsr	a:sub_04A16E
 	rtl
 
 winged_alien_state_03:
-	lda	$06,x
+	lda	OBJ_HP,x
 	ldy	difficulty
 	cmp	a:data_05ECE8,y
 	bcs	loc_049CDA
 	lda	#$0004
-	sta	$12,x
+	sta	OBJ_STATE,x
 	stz	$3A,x
 loc_049CDA:
-	lda	$0A,x
+	lda	OBJ_X,x
 	bmi	loc_049D26
 	cmp	#$00D0
 	bcc	loc_049D26
@@ -3669,7 +3669,7 @@ loc_049CFC:
 	lda	a:$000E,y
 	sta	zp_00
 loc_049D05:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	bmi	loc_049D12
 	cmp	zp_00
 	bcc	loc_049D12
@@ -3679,21 +3679,21 @@ loc_049D12:
 	ldy	#$0000
 loc_049D15:
 	lda	a:data_05ECEE,y
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	lda	a:data_05ECF2,y
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	#$FFFA
-	sta	$1A,x
-	stz	$18,x
+	sta	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
 loc_049D26:
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	clc
 	adc	#$2000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	sta	zp_00
 	adc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	eor	#$FFFF
 	and	zp_00
 	bit	#$8000
@@ -3701,10 +3701,10 @@ loc_049D26:
 	lda	rng_lo
 	and	#$0001
 	bne	loc_049D4C
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 loc_049D4C:
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	bmi	loc_049D5E
 	lda	stage_frame_counter
 	bit	#$0003
@@ -3744,15 +3744,15 @@ tbl_049D89:
 	.addr	sub_049DC4
 
 sub_049D8D:
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	#$FFFA
-	sta	$1A,x
-	stz	$18,x
-	lda	$0A,x
+	sta	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	lda	OBJ_X,x
 	adc	#$FFE0
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$0010
 	sta	zp_02
 	lda	#$003F
@@ -3769,30 +3769,30 @@ loc_049DC2:
 	inc	$3A,x
 
 sub_049DC4:
-	lda	$0A,x
+	lda	OBJ_X,x
 	bmi	loc_049DDE
 	cmp	#$0048
 	bcc	loc_049DDE
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	clc
 	adc	#$8000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	adc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	bmi	loc_049DF8
 loc_049DDE:
-	stz	$1A,x
-	stz	$18,x
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	#$00D0
 	sta	a:wram_07B6
 	lda	#$01F2
 	sta	a:wram_07B8
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	$3A,x
-	stz	$24,x
+	stz	OBJ_TIMER,x
 loc_049DF8:
 	jsr	a:sub_04A16E
 	rtl
@@ -3871,52 +3871,52 @@ loc_049E78:
 sub_049E7A:
 	jsr	a:sub_049E26
 	bcc	loc_049E8B
-	stz	$1A,x
-	stz	$18,x
-	stz	$1E,x
-	stz	$1C,x
-	stz	$24,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_TIMER,x
 	inc	$3A,x
 loc_049E8B:
 	jsr	a:sub_04A2B2
 	rts
 
 sub_049E8F:
-	lda	$0A,x
+	lda	OBJ_X,x
 	bmi	loc_049EC9
 	cmp	#$0048
 	bcc	loc_049EC9
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	sec
 	sbc	#$4000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	sbc	#$0000
-	sta	$1A,x
-	lda	$0E,x
+	sta	OBJ_X_VEL,x
+	lda	OBJ_Y,x
 	bmi	loc_049EC5
 	cmp	#$0010
 	bcc	loc_049EC1
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	sec
 	sbc	#$2000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	sbc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	bra	loc_049EC5
 loc_049EC1:
-	stz	$1C,x
-	stz	$1E,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 loc_049EC5:
 	jsr	a:sub_04A2C5
 	rts
 loc_049EC9:
-	stz	$18,x
-	stz	$1A,x
-	stz	$1C,x
-	stz	$1E,x
-	stz	$24,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_TIMER,x
 	inc	$3A,x
 	rts
 
@@ -3925,13 +3925,13 @@ sub_049ED6:
 	sta	f:wram_7EE823
 	lda	#$0074
 	sta	f:wram_7EE827
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	f:wram_7EE825
 	lda	#$000D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$003D
 	jsl	f:queue_sound
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	inc	$3A,x
 	lda	#$0001
 	jsr	a:sub_04A298
@@ -3943,11 +3943,11 @@ sub_049F01:
 	cmp	#$0002
 	bcc	loc_049F1B
 	lda	#$0180
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0078
-	sta	$0A,x
+	sta	OBJ_X,x
 	inc	$3A,x
-	stz	$24,x
+	stz	OBJ_TIMER,x
 loc_049F1B:
 	rts
 
@@ -3957,12 +3957,12 @@ sub_049F1C:
 	rts
 
 sub_049F21:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$0030
 	bcc	loc_049F2E
 	inc	$3A,x
-	stz	$24,x
+	stz	OBJ_TIMER,x
 loc_049F2E:
 	rts
 
@@ -3985,9 +3985,9 @@ loc_049F4A:
 	lda	zp_00
 	sbc	zp_02
 	sbc	#$0032
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0090
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$0080
 	sta	a:wram_07B6
 	lda	#$0040
@@ -3995,7 +3995,7 @@ loc_049F4A:
 	inc	$3A,x
 	lda	#$0000
 	sta	f:wram_7EE823
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	f:wram_7EE825
 	rts
 
@@ -4005,21 +4005,21 @@ sub_049F7B:
 	cmp	#$0002
 	bcc	loc_049F95
 	lda	#$401D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	stz	hdma_preset
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	inc	$3A,x
 	jsr	a:sub_04A2B2
 loc_049F95:
 	rts
 
 sub_049F96:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$0008
 	bcc	loc_049FC2
 	jsl	f:sub_01E860
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	#$0032
 	cmp	a:$000E,y
@@ -4029,33 +4029,33 @@ sub_049F96:
 loc_049FB4:
 	stz	a:wram_07B8
 	lda	#$FFFA
-	sta	$1A,x
-	stz	$18,x
-	stz	$24,x
+	sta	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_TIMER,x
 	inc	$3A,x
 loc_049FC2:
 	jsr	a:sub_04A2C5
 	rts
 
 sub_049FC6:
-	lda	$0A,x
+	lda	OBJ_X,x
 	bmi	loc_049FE2
 	cmp	#$0040
 	bcs	loc_049FE2
 	; (not executed in the CDL traces)
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	clc
 	adc	#$1F40
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	adc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	jsr	a:sub_04A2C5
 	rts
 loc_049FE2:
-	stz	$18,x
-	stz	$1A,x
-	stz	$24,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_TIMER,x
 	stz	$3A,x
 	jsr	a:sub_04A2B2
 	rts
@@ -4090,32 +4090,32 @@ loc_049FFC:
 	lda	#$0002
 	jsr	a:sub_04A298
 	lda	#$FFFF
-	sta	$1E,x
-	stz	$1A,x
-	stz	$18,x
-	stz	$18,x
-	inc	$12,x
+	sta	OBJ_Y_VEL,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL_SUB,x
+	inc	OBJ_STATE,x
 	jsr	a:sub_04A1B9
 	rtl
 
 winged_alien_state_07:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	bmi	loc_04A047
 	cmp	#$0140
 	bcs	loc_04A088
 loc_04A047:
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	clc
 	adc	#$1000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	jsl	f:sub_00FD92
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$FFE0
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$0010
 	sta	zp_02
 	lda	#$003F
@@ -4141,20 +4141,20 @@ loc_04A088:
 	lda	#$0082
 	jsl	f:queue_sound
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 
 sub_04A0A7:
 	lda	#$000D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0080
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$FFC0
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	stz	$30,x
 	lda	#$0053
 	sta	a:wram_0350
@@ -4228,19 +4228,19 @@ loc_04A13C:
 	rts
 
 sub_04A16E:
-	lda	$0A,x
+	lda	OBJ_X,x
 	sec
 	sbc	#$0028
 	sta	a:wram_034A
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	#$0030
 	sta	a:wram_034E
-	lda	$0A,x
+	lda	OBJ_X,x
 	sec
 	sbc	#$0050
 	sta	a:wram_030A
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	#$0010
 	sta	a:wram_030E
@@ -4254,11 +4254,11 @@ sub_04A16E:
 	sta	a:wram_032A
 	lda	#$0040
 	sta	a:wram_0328
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$FFC8
 	sta	a:wram_078A
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	#$0014
 	sta	a:wram_078E
@@ -4266,19 +4266,19 @@ sub_04A16E:
 sub_04A1B9:
 	lda	#$00B8
 	sec
-	sbc	$0A,x
+	sbc	OBJ_X,x
 	and	#$00FF
 	sta	a:wram_13C0
 	lda	#$0175
 	sec
-	sbc	$0E,x
+	sbc	OBJ_Y,x
 	and	#$01FF
 	sta	a:wram_13D8
 	rts
 
 ; Object type $8D. Stage 6, winged_alien: the tip of the tail.
 update_winged_alien_tail_tip:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -4294,7 +4294,7 @@ tbl_winged_alien_tail_tip_states:
 ; Object type $25. Stage 6: one of the 16 tail segments of winged_alien
 ; (states shared with winged_alien_tail_tip).
 update_winged_alien_tail_segment:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -4319,7 +4319,7 @@ winged_alien_tail_tip_state_00:
 	and	#$000E
 	tay
 	lda	a:data_05ED24,y
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 
 winged_alien_tail_segment_state_00:
 	stx	zp_00
@@ -4363,40 +4363,40 @@ loc_04A23E:
 
 winged_alien_tail_state_01:
 	lda	#$FFFE
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	rng_lo
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	asl	a
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	rng_lo
 	and	#$0001
 	sec
 	sbc	#$0001
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	rng_lo
 	eor	#$CA63
 	adc	frame_counter
 	sta	rng_lo
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	lda	#$0001
-	sta	$16,x
-	inc	$12,x
+	sta	OBJ_FLAGS,x
+	inc	OBJ_STATE,x
 	rtl
 
 winged_alien_tail_state_02:
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	clc
 	adc	#$1000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
-	inc	$24,x
-	lda	$24,x
+	sta	OBJ_Y_VEL,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$0078
 	bcc	loc_04A297
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 loc_04A297:
 	rtl
 
@@ -4652,11 +4652,11 @@ loc_04A40A:
 update_face_boss:
 	lda	#$0030
 	jsl	f:sub_04AA0D
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_04A4AB
 	brl	loc_04A626
 loc_04A4AB:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -4679,7 +4679,7 @@ tbl_face_boss_states:
 face_boss_state_00:
 	ldy	difficulty
 	lda	a:data_05ED5E,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$004A
 	sta	a:bg2sc_shadow
 	stz	$30,x
@@ -4688,7 +4688,7 @@ face_boss_state_00:
 	jsr	a:sub_04A810
 	jsr	a:sub_04A8AF
 	lda	#$0001
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_state_01:
 	lda	a:wram_13BA
@@ -4702,12 +4702,12 @@ loc_04A4FC:
 	lda	#$0044
 	jsl	f:queue_sound
 	lda	#$0040
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0002
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_state_02:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	loc_04A518
 	lda	#$0044
 	jsl	f:queue_sound
@@ -4715,9 +4715,9 @@ loc_04A518:
 	lda	stage_frame_counter
 	lsr	a
 	bcs	loc_04A52A
-	lda	$0E,x
+	lda	OBJ_Y,x
 	inc	a
-	sta	$0E,x
+	sta	OBJ_Y,x
 	cmp	#$0020
 	bpl	loc_04A537
 	jsr	a:sub_04A8AF
@@ -4729,14 +4729,14 @@ loc_04A52A:
 	rtl
 loc_04A537:
 	lda	#$401D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0024
-	sta	$0E,x
+	sta	OBJ_Y,x
 	jsr	a:sub_04A8AF
 	lda	#$0200
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0003
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_state_03:
 	lda	a:wram_0410
@@ -4746,14 +4746,14 @@ face_boss_state_03:
 	cmp	#$0075
 	bne	loc_04A586
 loc_04A55E:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_04A573
 	lda	a:wram_0430
 	ora	a:wram_0470
 	bne	loc_04A56D
 	brl	loc_04A5CD
 loc_04A56D:
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	stz	$38,x
 	bra	loc_04A576
 loc_04A573:
@@ -4767,7 +4767,7 @@ loc_04A576:
 	rtl
 loc_04A586:
 	lda	#$0006
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_state_06:
 	jsr	a:sub_04A74A
@@ -4801,15 +4801,15 @@ loc_04A5BA:
 	rtl
 loc_04A5CD:
 	lda	#$0004
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_state_04:
 	lda	stage_frame_counter
 	lsr	a
 	bcs	loc_04A5E4
-	lda	$0E,x
+	lda	OBJ_Y,x
 	dec	a
-	sta	$0E,x
+	sta	OBJ_Y,x
 	cmp	#$FFF0
 	bmi	loc_04A5F4
 	jsr	a:sub_04A8AF
@@ -4825,12 +4825,12 @@ loc_04A5F4:
 	jsr	a:sub_04A9A8
 	lda	#$0030
 	sta	$36,x
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0005
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_state_05:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_04A60D
 	brl	loc_04A4FC
 loc_04A60D:
@@ -4844,8 +4844,8 @@ loc_04A60D:
 	jsr	a:sub_04A997
 	rtl
 loc_04A626:
-	stz	$06,x
-	stz	$16,x
+	stz	OBJ_HP,x
+	stz	OBJ_FLAGS,x
 	lda	#$8000
 	sta	a:wram_0316
 	sta	a:wram_0356
@@ -4855,12 +4855,12 @@ loc_04A626:
 	jsr	a:sub_04A74A
 	jsr	a:sub_04A907
 	lda	#$0300
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0007
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_state_07:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bmi	loc_04A681
 	jsl	f:sub_00FD92
 	lda	#$0004
@@ -4885,32 +4885,32 @@ loc_04A681:
 	lda	#$0059
 	jsl	f:queue_sound
 	lda	#$0080
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0004
-	sta	$22,x
-	inc	$12,x
+	sta	OBJ_ANIM_TIMER,x
+	inc	OBJ_STATE,x
 
 face_boss_state_08:
-	lda	$22,x
+	lda	OBJ_ANIM_TIMER,x
 	beq	loc_04A69D
 	jsr	a:sub_04A95D
-	dec	$22,x
+	dec	OBJ_ANIM_TIMER,x
 loc_04A69D:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bmi	loc_04A6A2
 	rtl
 loc_04A6A2:
 	lda	#$0003
-	sta	$22,x
-	inc	$12,x
+	sta	OBJ_ANIM_TIMER,x
+	inc	OBJ_STATE,x
 
 face_boss_state_09:
 	jsr	a:sub_04A97A
-	dec	$22,x
+	dec	OBJ_ANIM_TIMER,x
 	bne	loc_04A6B7
 	lda	#$008A
-	sta	$10,x
-	stz	$12,x
+	sta	OBJ_TYPE,x
+	stz	OBJ_STATE,x
 loc_04A6B7:
 	rtl
 
@@ -5080,9 +5080,9 @@ sub_04A7EA:
 	and	#$0080
 	ora	#$0040
 	sta	a:$0004,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	#$0048
 	sta	a:$000E,y
@@ -5091,15 +5091,15 @@ loc_04A80F:
 
 sub_04A810:
 	lda	#$0001
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$00FA
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$FFA0
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0008
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF8
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$0053
 	sta	a:wram_0310
 	lda	#$003D
@@ -5151,38 +5151,38 @@ sub_04A8AF:
 	stz	a:wram_13C0
 	lda	#$0124
 	sec
-	sbc	$0E,x
+	sbc	OBJ_Y,x
 	and	#$01FF
 	sta	a:wram_13D8
-	lda	$0A,x
+	lda	OBJ_X,x
 	sec
 	sbc	#$0074
 	sta	a:wram_030A
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	#$0018
 	sta	a:wram_030E
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$0048
 	sta	a:wram_034A
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	#$0018
 	sta	a:wram_034E
-	lda	$0A,x
+	lda	OBJ_X,x
 	sec
 	sbc	#$0006
 	sta	a:wram_038A
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	#$0020
 	sta	a:wram_038E
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$0006
 	sta	a:wram_03CA
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	#$0020
 	sta	a:wram_03CE
@@ -5237,7 +5237,7 @@ loc_04A95C:
 	rts
 
 sub_04A95D:
-	lda	$22,x
+	lda	OBJ_ANIM_TIMER,x
 	asl	a
 	tay
 	lda	a:data_05EDB6,y
@@ -5254,7 +5254,7 @@ sub_04A95D:
 	rts
 
 sub_04A97A:
-	lda	$22,x
+	lda	OBJ_ANIM_TIMER,x
 	asl	a
 	tay
 	lda	a:data_05EDDC,y
@@ -5302,11 +5302,11 @@ sub_04A9BD:
 	lda	#$0000
 	sta	a:$0012,y
 	sta	a:$0006,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$FF97
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	#$0034
 	sta	a:$000E,y
@@ -5321,11 +5321,11 @@ sub_04A9E5:
 	lda	#$0000
 	sta	a:$0012,y
 	sta	a:$0006,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$005E
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	#$0034
 	sta	a:$000E,y
@@ -5333,7 +5333,7 @@ loc_04AA0C:
 	rts
 
 sub_04AA0D:
-	ldy	$26,x
+	ldy	OBJ_SAVED_ATTR,x
 	beq	loc_04AA18
 	sta	cgram_upload_addr
 	lda	#$912A
@@ -5344,20 +5344,20 @@ loc_04AA18:
 ; Object type $61. Stage 6: toothed mouths in the floor that release
 ; floor_mouth_bug. HP by difficulty: 32/40/48 (data_05EE14).
 update_floor_mouth:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_04AA24
-	stz	$06,x
+	stz	OBJ_HP,x
 	lda	#$0008
-	sta	$12,x
+	sta	OBJ_STATE,x
 loc_04AA24:
-	lda	$26,x
+	lda	OBJ_SAVED_ATTR,x
 	beq	loc_04AA32
 	lda	#$912A
 	sta	cgram_upload_src
 	lda	#$0050
 	sta	cgram_upload_addr
 loc_04AA32:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -5379,48 +5379,48 @@ tbl_floor_mouth_states:
 
 floor_mouth_state_00:
 	lda	#$001F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	ldy	difficulty
 	lda	a:data_05EE14,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0020
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFE0
-	sta	$2A,x
-	stz	$18,x
-	stz	$1A,x
-	stz	$1C,x
-	stz	$1E,x
-	stz	$08,x
-	stz	$0C,x
+	sta	OBJ_HITBOX_H,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_X_SUB,x
+	stz	OBJ_Y_SUB,x
 	stz	$30,x
 	stz	$32,x
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	rtl
 
 floor_mouth_state_01:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	ldy	difficulty
 	cmp	a:data_05EE28,y
 	bcc	loc_04AA8F
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_04AA8F:
 	rtl
 
 floor_mouth_state_03:
 	lda	#$0000
 	jsr	a:sub_04ABA3
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 
 floor_mouth_state_02:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	and	#$0007
 	bne	loc_04AAB2
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	and	#$0008
 	bne	loc_04AAAC
 	lda	#$0000
@@ -5430,12 +5430,12 @@ loc_04AAAC:
 loc_04AAAF:
 	jsr	a:sub_04ABA3
 loc_04AAB2:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$001E
 	bcc	loc_04AABF
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_04AABF:
 	rtl
 
@@ -5446,11 +5446,11 @@ loc_04AAC2:
 	bcs	loc_04AB0B
 	lda	#$0062
 	sta	a:$0010,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$0008
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sec
 	sbc	#$0008
 	sta	a:$000E,y
@@ -5469,29 +5469,29 @@ loc_04AAC2:
 	lda	$30,x
 	cmp	#$0003
 	bcc	loc_04AAC2
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_04AB0B:
 	rtl
 
 floor_mouth_state_05:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$0078
 	bcc	loc_04AB19
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_04AB19:
 	rtl
 
 floor_mouth_state_06:
 	lda	#$0001
 	jsr	a:sub_04ABA3
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 
 floor_mouth_state_07:
 	lda	#$0001
-	sta	$12,x
+	sta	OBJ_STATE,x
 	rtl
 
 floor_mouth_state_08:
@@ -5500,36 +5500,36 @@ floor_mouth_state_08:
 	lda	#$0030
 	jsl	f:queue_sound
 	lda	#$0003
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$3E00
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$C558
-	sta	$20,x
-	stz	$04,x
-	stz	$22,x
-	lda	$0A,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_FACING,x
+	stz	OBJ_ANIM_TIMER,x
+	lda	OBJ_X,x
 	clc
 	adc	#$0008
-	sta	$0A,x
-	lda	$0E,x
+	sta	OBJ_X,x
+	lda	OBJ_Y,x
 	sec
 	sbc	#$0008
-	sta	$0E,x
-	inc	$12,x
+	sta	OBJ_Y,x
+	inc	OBJ_STATE,x
 	rtl
 
 floor_mouth_state_09:
-	lda	$20,x
+	lda	OBJ_ANIM,x
 	bne	loc_04AB69
 	lda	#$8000
-	sta	$16,x
-	stz	$00,x
-	stz	$10,x
+	sta	OBJ_FLAGS,x
+	stz	OBJ_SPRITE,x
+	stz	OBJ_TYPE,x
 loc_04AB69:
 	rtl
 
 sub_04AB6A:
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$0010
 	clc
@@ -5540,7 +5540,7 @@ sub_04AB6A:
 	lsr	a
 	lsr	a
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sec
 	sbc	#$0010
 	clc
@@ -5580,12 +5580,12 @@ sub_04ABA3:
 ; Object type $62. Stage 6: bug released by floor_mouth. HP by difficulty:
 ; 1/1/2 (data_05EE30).
 update_floor_mouth_bug:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_04ABC6
 	lda	#$0007
-	sta	$12,x
+	sta	OBJ_STATE,x
 loc_04ABC6:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -5606,64 +5606,64 @@ tbl_floor_mouth_bug_states:
 
 floor_mouth_bug_state_00:
 	lda	#$001F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$3600
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	ldy	difficulty
 	lda	a:data_05EE30,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	$30,x
 	asl	a
 	tay
 	lda	a:data_05EE38,y
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	a:data_05EE3E,y
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	a:data_05EE44,y
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	lda	a:data_05EE4A,y
-	sta	$1E,x
-	stz	$08,x
-	stz	$0C,x
+	sta	OBJ_Y_VEL,x
+	stz	OBJ_X_SUB,x
+	stz	OBJ_Y_SUB,x
 	stz	$30,x
 	stz	$32,x
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	lda	#$EE50
-	sta	$20,x
-	stz	$04,x
-	stz	$22,x
-	inc	$12,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_FACING,x
+	stz	OBJ_ANIM_TIMER,x
+	inc	OBJ_STATE,x
 	rtl
 
 floor_mouth_bug_state_01:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$003C
 	bcc	loc_04AC4E
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	rtl
 
 floor_mouth_bug_state_02:
-	stz	$18,x
-	stz	$1A,x
-	stz	$1C,x
-	stz	$1E,x
-	stz	$08,x
-	stz	$0C,x
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_X_SUB,x
+	stz	OBJ_Y_SUB,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_04AC4E:
 	rtl
 
 aim_velocity_at_player:
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	zp_02
 	jsl	f:sub_01E860
 	sec
@@ -5683,29 +5683,29 @@ aim_velocity_at_player:
 	adc	a:data_05ABA5,y
 	tay
 	lda	a:$0000,y
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	a:$0010,y
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	a:$0050,y
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	lda	a:$0060,y
-	sta	$18,x
-	inc	$12,x
+	sta	OBJ_X_VEL_SUB,x
+	inc	OBJ_STATE,x
 	rtl
 
 floor_mouth_bug_state_05:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$0040
 	bcc	loc_04ACAB
-	stz	$18,x
-	stz	$1A,x
-	stz	$1C,x
-	stz	$1E,x
-	stz	$08,x
-	stz	$0C,x
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_X_SUB,x
+	stz	OBJ_Y_SUB,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_04ACAB:
 	rtl
 
@@ -5719,31 +5719,31 @@ floor_mouth_bug_state_06:
 loc_04ACBA:
 	lda	#$0002
 loc_04ACBD:
-	sta	$12,x
+	sta	OBJ_STATE,x
 	rtl
 
 floor_mouth_bug_state_07:
-	stz	$06,x
+	stz	OBJ_HP,x
 	lda	#$000B
 	jsl	f:queue_sound
 	lda	#$0003
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$3000
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$C59A
-	sta	$20,x
-	stz	$04,x
-	stz	$22,x
-	inc	$12,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_FACING,x
+	stz	OBJ_ANIM_TIMER,x
+	inc	OBJ_STATE,x
 	rtl
 
 floor_mouth_bug_state_08:
-	lda	$20,x
+	lda	OBJ_ANIM,x
 	bne	loc_04ACEC
 	lda	#$8000
-	sta	$16,x
-	stz	$00,x
-	stz	$10,x
+	sta	OBJ_FLAGS,x
+	stz	OBJ_SPRITE,x
+	stz	OBJ_TYPE,x
 loc_04ACEC:
 	rtl
 
@@ -5755,11 +5755,11 @@ update_wall_worm_larva:
 	bcc	loc_04ACF8
 	brl	loc_04AD6B
 loc_04ACF8:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_04ACFF
 	brl	loc_04AD6B
 loc_04ACFF:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -5775,39 +5775,39 @@ tbl_wall_worm_larva_states:
 
 wall_worm_larva_state_00:
 	lda	#$001F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$3400
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	ldy	difficulty
 	lda	a:data_05EE5E,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0014
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFEC
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	rng_lo
 	and	#$0002
 	tay
 	lda	a:data_05EE64,y
-	sta	$04,x
-	stz	$08,x
-	stz	$0C,x
+	sta	OBJ_FACING,x
+	stz	OBJ_X_SUB,x
+	stz	OBJ_Y_SUB,x
 	lda	#$EE68
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	lda	#$0040
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0001
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 wall_worm_larva_state_01:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bmi	loc_04AD5C
 	lda	#$0010
 	jml	f:sub_1DAD8A
 loc_04AD5C:
 	lda	#$0002
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 larva_state_02:
 	jsr	a:sub_04AD84
@@ -5817,9 +5817,9 @@ loc_04AD6B:
 	lda	#$000C
 	jsl	f:queue_sound
 	lda	#$FFFF
-	sta	$1E,x
-	stz	$18,x
-	stz	$1A,x
+	sta	OBJ_Y_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
 	lda	#$C4CE
 	txy
 	jml	f:sub_01CF66
@@ -5832,25 +5832,25 @@ sub_04AD84:
 	jsr	a:sub_04ADAC
 	lda	a:$000A,y
 	sec
-	sbc	$0A,x
+	sbc	OBJ_X,x
 	sta	zp_08
 	lda	a:$000E,y
 	sec
-	sbc	$0E,x
+	sbc	OBJ_Y,x
 	sta	zp_0A
 	jsl	f:sub_1DABA0
 	sep	#$20
 	.a8
 	sec
-	sbc	$04,x
+	sbc	OBJ_FACING,x
 	bmi	loc_04ADA7
-	inc	$04,x
+	inc	OBJ_FACING,x
 	rep	#$20
 	.a16
 	rts
 loc_04ADA7:
 	.a8
-	dec	$04,x
+	dec	OBJ_FACING,x
 	rep	#$20
 	.a16
 	rts
@@ -5880,11 +5880,11 @@ update_face_boss_larva:
 	bpl	loc_04ADCE
 	brl	loc_04AD6B
 loc_04ADCE:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_04ADD5
 	brl	loc_04AD6B
 loc_04ADD5:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -5900,29 +5900,29 @@ tbl_face_boss_larva_states:
 
 face_boss_larva_state_00:
 	lda	#$001F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$3400
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	ldy	difficulty
 	lda	a:data_05EE9A,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0014
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFEC
-	sta	$2A,x
-	stz	$08,x
-	stz	$0C,x
+	sta	OBJ_HITBOX_H,x
+	stz	OBJ_X_SUB,x
+	stz	OBJ_Y_SUB,x
 loc_04AE0B:
 	lda	#$EE68
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	lda	#$0100
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0001
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_larva_state_01:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bmi	loc_04AE2A
 	jsr	a:sub_04AD84
 	lda	#$0010
@@ -5933,12 +5933,12 @@ loc_04AE2A:
 	lda	#$0010
 	sta	$32,x
 	lda	#$0200
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0002
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_larva_state_02:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bmi	loc_04AE0B
 	lda	#$0010
 	jsr	a:sub_04AE4F
@@ -5951,33 +5951,33 @@ sub_04AE4F:
 	sec
 	sbc	#$0008
 	sec
-	sbc	$0A,x
+	sbc	OBJ_X,x
 	sta	zp_08
 	lda	a:wram_090E
 	clc
 	adc	#$0004
 	sec
-	sbc	$0E,x
+	sbc	OBJ_Y,x
 	sta	zp_0A
 	jsl	f:sub_1DABA0
 	sep	#$20
 	.a8
 	sec
-	sbc	$04,x
+	sbc	OBJ_FACING,x
 	bmi	loc_04AE7E
-	lda	$04,x
+	lda	OBJ_FACING,x
 	clc
 	adc	zp_00
-	sta	$04,x
+	sta	OBJ_FACING,x
 	rep	#$20
 	.a16
 	rts
 loc_04AE7E:
 	.a8
-	lda	$04,x
+	lda	OBJ_FACING,x
 	sec
 	sbc	zp_00
-	sta	$04,x
+	sta	OBJ_FACING,x
 	rep	#$20
 	.a16
 	rts
@@ -5991,11 +5991,11 @@ update_enemy_type_68:
 	bcc	loc_04AE93
 	brl	loc_04AFE7
 loc_04AE93:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_04AE9A
 	brl	loc_04AFE7
 loc_04AE9A:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -6013,79 +6013,79 @@ tbl_enemy_type_68_states:
 
 enemy_type_68_state_00:
 	lda	#$001F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$3400
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	ldy	difficulty
 	lda	a:data_05EEA0,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0014
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFEC
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$0070
-	cmp	$0E,x
+	cmp	OBJ_Y,x
 	lda	#$0000
 	rol	a
 	asl	a
 	sta	$30,x
 	tay
 	lda	a:data_05EEA6,y
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	a:data_05EEAA,y
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	lda	#$FFFF
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	#$0000
-	sta	$18,x
-	stz	$04,x
-	stz	$08,x
-	stz	$0C,x
+	sta	OBJ_X_VEL_SUB,x
+	stz	OBJ_FACING,x
+	stz	OBJ_X_SUB,x
+	stz	OBJ_Y_SUB,x
 	ldy	$30,x
 	lda	a:data_05EEAE,y
-	sta	$00,x
-	stz	$20,x
+	sta	OBJ_SPRITE,x
+	stz	OBJ_ANIM,x
 	lda	#$0001
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 enemy_type_68_state_01:
 	ldy	$30,x
 	jsr	a:sub_04AF1C
 	bcs	loc_04AF2A
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	a:data_05EEB6,y
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	a:data_05EEB2,y
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	rtl
 
 sub_04AF1C:
 	bne	loc_04AF24
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00B8
 	rts
 loc_04AF24:
 	lda	#$0048
-	cmp	$0E,x
+	cmp	OBJ_Y,x
 	rts
 loc_04AF2A:
 	ldy	$30,x
 	lda	a:data_05EEBA,y
-	sta	$0E,x
-	stz	$0C,x
+	sta	OBJ_Y,x
+	stz	OBJ_Y_SUB,x
 	lda	#$FFFE
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	#$8000
-	sta	$18,x
-	stz	$1E,x
-	stz	$1C,x
+	sta	OBJ_X_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	a:data_05EEBE,y
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	lda	#$0002
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 enemy_type_68_state_02:
 	jsr	a:sub_04AF5C
@@ -6105,7 +6105,7 @@ sub_04AF5C:
 	clc
 	adc	#$0020
 	sec
-	sbc	$0A,x
+	sbc	OBJ_X,x
 	cmp	#$0002
 	bcc	loc_04AF86
 loc_04AF70:
@@ -6115,7 +6115,7 @@ loc_04AF70:
 	clc
 	adc	#$0020
 	sec
-	sbc	$0A,x
+	sbc	OBJ_X,x
 	cmp	#$0002
 	bcc	loc_04AF86
 loc_04AF84:
@@ -6130,21 +6130,21 @@ loc_04AF86:
 loc_04AF8F:
 	stz	$30,x
 	lda	#$C307
-	sta	$00,x
-	stz	$20,x
+	sta	OBJ_SPRITE,x
+	stz	OBJ_ANIM,x
 	lda	#$FFFF
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	#$0000
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	#$0003
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	#$0000
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	lda	#$0003
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 enemy_type_68_state_03:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00B8
 	bcc	loc_04AFBB
 	brl	loc_04AF2A
@@ -6153,21 +6153,21 @@ loc_04AFBB:
 loc_04AFBC:
 	lda	#$0002
 	sta	$30,x
-	stz	$20,x
+	stz	OBJ_ANIM,x
 	lda	#$FFFE
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	#$8000
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	#$FFFF
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	#$0000
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	lda	#$0004
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 enemy_type_68_state_04:
 	lda	#$0048
-	cmp	$0E,x
+	cmp	OBJ_Y,x
 	bcc	loc_04AFE6
 	brl	loc_04AF2A
 loc_04AFE6:
@@ -6176,11 +6176,11 @@ loc_04AFE7:
 	lda	#$000E
 	jsl	f:queue_sound
 	lda	#$001D
-	sta	$10,x
+	sta	OBJ_TYPE,x
 	lda	#$FFFF
-	sta	$1E,x
-	stz	$18,x
-	stz	$1A,x
+	sta	OBJ_Y_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
 	lda	#$C4CE
 	txy
 	jml	f:sub_01CF66
@@ -6198,7 +6198,7 @@ update_heart_boss:
 	beq	loc_04B014
 	dec	a:wram_16BA
 loc_04B014:
-	lda	$26,x
+	lda	OBJ_SAVED_ATTR,x
 	beq	loc_04B02A
 	lda	a:wram_16BA
 	bne	loc_04B02A
@@ -6207,11 +6207,11 @@ loc_04B014:
 	lda	#$0004
 	sta	a:wram_16BA
 loc_04B02A:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_04B031
 	brl	loc_04B08A
 loc_04B031:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -6231,7 +6231,7 @@ tbl_heart_boss_states:
 heart_boss_state_00:
 	ldy	difficulty
 	lda	a:data_05EEFA,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0049
 	sta	a:bg2sc_shadow
 	lda	#$0080
@@ -6243,7 +6243,7 @@ heart_boss_state_00:
 	jsr	a:sub_04B1C3
 	lda	#$0009
 	sta	a:wram_13FA
-	inc	$12,x
+	inc	OBJ_STATE,x
 
 heart_boss_state_01:
 	lda	a:wram_13BA
@@ -6252,7 +6252,7 @@ heart_boss_state_01:
 	jsr	a:sub_04B14B
 	rtl
 loc_04B084:
-	inc	$12,x
+	inc	OBJ_STATE,x
 
 heart_boss_state_02:
 	jsr	a:sub_04B14B
@@ -6260,18 +6260,18 @@ heart_boss_state_02:
 loc_04B08A:
 	lda	#$0052
 	jsl	f:queue_sound
-	stz	$06,x
-	stz	$16,x
+	stz	OBJ_HP,x
+	stz	OBJ_FLAGS,x
 	lda	#$8000
 	ldy	$30,x
 	sta	a:$0016,y
 	lda	#$0080
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0003
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 heart_boss_state_03:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bmi	loc_04B0D8
 	lda	#$0004
 	sta	a:shake_timer
@@ -6293,12 +6293,12 @@ loc_04B0D7:
 	rtl
 loc_04B0D8:
 	lda	#$0003
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 
 heart_boss_state_04:
 	jsr	a:sub_04B12E
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	beq	loc_04B0E7
 	rtl
 loc_04B0E7:
@@ -6309,11 +6309,11 @@ loc_04B0E7:
 	jsl	f:load_data_list
 	plx
 	lda	#$0080
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 
 heart_boss_state_05:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bmi	loc_04B10C
 	bne	loc_04B10B
 	lda	#$0083
@@ -6325,7 +6325,7 @@ loc_04B10C:
 	ldx	#$F497
 	jsl	f:request_song_set
 	plx
-	inc	$12,x
+	inc	OBJ_STATE,x
 
 heart_boss_state_06:
 	lda	apu_pending_cmd
@@ -6335,7 +6335,7 @@ heart_boss_state_06:
 	jsl	f:queue_sound
 	stz	a:wram_13BA
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 loc_04B12D:
 	rtl
 
@@ -6344,7 +6344,7 @@ sub_04B12E:
 	sta	zp_02
 	lda	#$0040
 	sta	zp_08
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	asl	a
 	tay
 	lda	a:data_05EF04,y
@@ -6357,15 +6357,15 @@ sub_04B12E:
 	rts
 
 sub_04B14B:
-	lda	$22,x
-	inc	$22,x
+	lda	OBJ_ANIM_TIMER,x
+	inc	OBJ_ANIM_TIMER,x
 	bit	#$0007
 	bne	loc_04B17B
 	ldy	zp_B6
 	cpy	#$0010
 	bcc	loc_04B15E
 	; (not executed in the CDL traces)
-	dec	$22,x
+	dec	OBJ_ANIM_TIMER,x
 	rts
 loc_04B15E:
 	lsr	a
@@ -6387,15 +6387,15 @@ loc_04B17B:
 
 sub_04B17C:
 	lda	#$001D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0110
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$0090
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0040
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFD0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	jsl	f:find_free_slot_y
 	bcs	loc_04B1C2
 	sty	$30,x
@@ -6447,11 +6447,11 @@ update_heart_boss_bug:
 	bcc	loc_04B1FF
 	brl	loc_04B283
 loc_04B1FF:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_04B206
 	brl	loc_04B283
 loc_04B206:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -6468,16 +6468,16 @@ tbl_heart_boss_bug_states:
 heart_boss_bug_state_00:
 	ldy	difficulty
 	lda	a:data_05EF78,y
-	sta	$06,x
-	stz	$08,x
-	stz	$0C,x
-	stz	$04,x
+	sta	OBJ_HP,x
+	stz	OBJ_X_SUB,x
+	stz	OBJ_Y_SUB,x
+	stz	OBJ_FACING,x
 	lda	#$001D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	stz	$34,x
 	stz	$36,x
 loc_04B23D:
@@ -6493,12 +6493,12 @@ loc_04B23D:
 	asl	a
 	tay
 	lda	a:data_05EF7E,y
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0001
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 heart_boss_bug_state_01:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bmi	loc_04B260
 	rtl
 loc_04B260:
@@ -6507,14 +6507,14 @@ loc_04B260:
 	sta	$34,x
 	stz	$36,x
 	lda	#$0030
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 
 heart_boss_bug_state_02:
 	jsl	f:sub_04B2E7
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bmi	loc_04B23D
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	cmp	#$0020
 	bne	loc_04B282
 	jsr	a:sub_04B2C1
@@ -6524,27 +6524,27 @@ loc_04B283:
 	lda	#$003B
 	jsl	f:queue_sound
 	lda	#$0003
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 heart_boss_bug_state_03:
-	stz	$06,x
+	stz	OBJ_HP,x
 	lda	#$0003
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	ldy	$30,x
 	lda	a:data_05EFC6,y
 	jsl	f:sub_04B32B
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$000A
-	sta	$0A,x
-	lda	$0E,x
+	sta	OBJ_X,x
+	lda	OBJ_Y,x
 	sec
 	sbc	#$0008
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$FFFF
-	sta	$1E,x
-	stz	$18,x
-	stz	$1A,x
+	sta	OBJ_Y_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
 	txy
 	lda	#$C4CE
 	jsl	f:sub_01CF66
@@ -6556,13 +6556,13 @@ sub_04B2C1:
 	bcs	loc_04B2E6
 	lda	#$0068
 	sta	a:$0010,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$0008
 	sta	a:$000A,y
 	phy
 	ldy	$30,x
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	a:data_05EFCA,y
 	ply
@@ -6621,11 +6621,11 @@ sub_04B32B:
 ; Object type $5B. Stage 6: the giant worm that bursts out of the wall at the
 ; start of the stage. HP by difficulty: 64/128/256 (data_05EFCE).
 update_wall_worm:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_04B33A
 	brl	loc_04B383
 loc_04B33A:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -6643,10 +6643,10 @@ tbl_wall_worm_states:
 wall_worm_state_00:
 	ldy	difficulty
 	lda	a:data_05EFCE,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	stz	$34,x
 	stz	$36,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 
 wall_worm_state_01:
 	lda	a:wram_13BA
@@ -6657,7 +6657,7 @@ loc_04B368:
 loc_04B369:
 	jsr	a:sub_04B486
 	bcs	loc_04B368
-	inc	$12,x
+	inc	OBJ_STATE,x
 
 wall_worm_state_02:
 	jsr	a:sub_04B4F3
@@ -6670,24 +6670,24 @@ wall_worm_state_02:
 loc_04B383:
 	lda	#$0051
 	jsl	f:queue_sound
-	stz	$06,x
-	stz	$16,x
+	stz	OBJ_HP,x
+	stz	OBJ_FLAGS,x
 	lda	#$8000
 	ldy	$30,x
 	sta	a:$0016,y
 	ldy	$32,x
 	sta	a:$0016,y
 	lda	#$0080
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0003
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 wall_worm_state_03:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bmi	loc_04B3D5
 	lda	#$0004
 	sta	a:shake_timer
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	zp_00
 	lda	#$0080
 	sta	zp_02
@@ -6705,17 +6705,17 @@ loc_04B3D4:
 	rtl
 loc_04B3D5:
 	lda	#$0004
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0004
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 wall_worm_state_04:
 	jsr	a:sub_04B469
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	loc_04B368
 	stz	a:wram_13BA
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 
 sub_04B3EF:
@@ -6739,11 +6739,11 @@ sub_04B403:
 	sta	$34,x
 	tay
 	lda	a:data_05EFE8,y
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	a:data_05EFEC,y
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	a:data_05EFF0,y
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	a:data_05EFD4,y
 	tay
 	lda	#$0002
@@ -6794,7 +6794,7 @@ sub_04B469:
 	sta	zp_02
 	lda	#$0018
 	sta	zp_08
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	asl	a
 	tay
 	lda	a:data_05F002,y
@@ -6808,15 +6808,15 @@ sub_04B469:
 
 sub_04B486:
 	lda	#$003F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0090
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$0080
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0040
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFE0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	ldy	#$03C0
 	sty	$30,x
 	lda	#$0053
@@ -6849,7 +6849,7 @@ sub_04B486:
 	rts
 
 sub_04B4F3:
-	lda	$26,x
+	lda	OBJ_SAVED_ATTR,x
 	beq	loc_04B501
 	lda	#$912A
 	sta	cgram_upload_src
@@ -6885,7 +6885,7 @@ update_cave_beast:
 	lda	a:$0006,y
 	bpl	loc_04B539
 	lda	#$0026
-	sta	$12,x
+	sta	OBJ_STATE,x
 loc_04B539:
 	ldy	#$0840
 	lda	a:$0026,y
@@ -6897,7 +6897,7 @@ loc_04B539:
 	lda	#$000F
 	jsl	f:queue_sound
 loc_04B552:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -6962,26 +6962,26 @@ cave_beast_state_00:
 	sta	a:bg2sc_shadow
 	stz	a:wram_13C0
 	stz	a:wram_13D8
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 
 cave_beast_state_01:
 	lda	a:wram_13BA
 	cmp	#$0004
 	bne	loc_04B5D8
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_04B5D8:
 	rtl
 
 cave_beast_state_02:
 	lda	#$0079
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0FFF
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0034
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFA8
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	ldy	#$0800
 	lda	#$0053
 	sta	a:$0010,y
@@ -7019,19 +7019,19 @@ cave_beast_state_02:
 	lda	#$FFC0
 	sta	a:$002A,y
 	lda	#$00AD
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$01E0
-	sta	$0E,x
-	stz	$18,x
-	stz	$1A,x
-	stz	$1C,x
-	stz	$1E,x
-	stz	$08,x
-	stz	$0C,x
+	sta	OBJ_Y,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_X_SUB,x
+	stz	OBJ_Y_SUB,x
 	stz	$30,x
 	stz	$32,x
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_04B674:
 	jsr	a:sub_04BBBD
 	stz	zp_0C
@@ -7051,18 +7051,18 @@ loc_04B674:
 	rtl
 
 cave_beast_state_03:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	bit	#$003F
 	bne	loc_04B6AC
 	lda	#$0053
 	jsl	f:queue_sound
 loc_04B6AC:
-	dec	$0E,x
-	lda	$0E,x
+	dec	OBJ_Y,x
+	lda	OBJ_Y,x
 	cmp	#$00B9
 	bcs	loc_04B6BC
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	jmp	a:loc_04B674
 loc_04B6BC:
 	lda	#$0003
@@ -7086,27 +7086,27 @@ loc_04B6BC:
 	lda	#$00B8
 	sta	a:$000E,y
 loc_04B6F1:
-	inc	$24,x
+	inc	OBJ_TIMER,x
 	jmp	a:loc_04B674
 loc_04B6F6:
 	lda	#$FFFF
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 loc_04B6FB:
 	lda	#$8000
-	sta	$18,x
-	stz	$1C,x
+	sta	OBJ_X_VEL_SUB,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	#$FFFC
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	#$000A
 	jsr	a:sub_04BC10
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 loc_04B710:
-	stz	$1A,x
+	stz	OBJ_X_VEL,x
 	bra	loc_04B6FB
 
 cave_beast_state_06:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_04B72F
 	lda	stage_frame_counter
 	bit	#$0003
@@ -7120,7 +7120,7 @@ loc_04B729:
 loc_04B72C:
 	jsr	a:sub_04BC10
 loc_04B72F:
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$002D
 	bmi	loc_04B740
 	cmp	#$00AD
@@ -7131,9 +7131,9 @@ loc_04B72F:
 loc_04B740:
 	lda	#$002D
 loc_04B743:
-	sta	$0A,x
-	stz	$18,x
-	stz	$1A,x
+	sta	OBJ_X,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
 loc_04B749:
 	stz	zp_00
 loc_04B74B:
@@ -7142,7 +7142,7 @@ loc_04B74B:
 	tay
 	lda	a:data_05F02C,y
 	sta	zp_02
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_04B7B2
 	ldy	zp_02
 	lda	a:$000A,y
@@ -7187,29 +7187,29 @@ loc_04B7B2:
 	lda	zp_00
 	cmp	#$0002
 	bcc	loc_04B74B
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00B8
 	bcc	loc_04B7DD
-	stz	$18,x
-	stz	$1A,x
-	stz	$1C,x
-	stz	$1E,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	lda	#$00B8
-	sta	$0E,x
+	sta	OBJ_Y,x
 	sta	$32,x
 	lda	a:wram_1398
 	sta	$30,x
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	jmp	a:loc_04B7EC
 loc_04B7DD:
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	clc
 	adc	#$1400
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 loc_04B7EC:
 	jmp	a:loc_04B674
 
@@ -7219,25 +7219,25 @@ cave_beast_state_07:
 	lda	#$0003
 	sta	a:shake_timer
 	stz	$30,x
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	lda	#$0056
 	jsl	f:queue_sound
-	inc	$12,x
+	inc	OBJ_STATE,x
 	jmp	a:loc_04B7EC
 
 cave_beast_state_08:
 	lda	a:shake_timer
 	bne	loc_04B816
 	stz	$30,x
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_04B816:
 	jmp	a:loc_04B7EC
 
 cave_beast_state_09:
 	jsl	f:sub_01E860
 	lda	a:$000A,y
-	cmp	$0A,x
+	cmp	OBJ_X,x
 	bcc	loc_04B839
 
 cave_beast_state_0D:
@@ -7245,9 +7245,9 @@ cave_beast_state_0D:
 	lda	#$4000
 loc_04B829:
 	sta	$38,x
-	stz	$1A,x
-	stz	$18,x
-	inc	$12,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	inc	OBJ_STATE,x
 	lda	#$0054
 	jsl	f:queue_sound
 	rtl
@@ -7260,35 +7260,35 @@ loc_04B839:
 cave_beast_state_0A:
 	lda	$3A,x
 	bmi	loc_04B855
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$00AD
 	bcc	loc_04B87F
 	lda	#$00AD
-	sta	$0A,x
+	sta	OBJ_X,x
 	bra	loc_04B861
 loc_04B855:
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$002D
 	bpl	loc_04B87F
 	lda	#$002D
-	sta	$0A,x
+	sta	OBJ_X,x
 loc_04B861:
-	stz	$18,x
-	stz	$1A,x
-	stz	$1C,x
-	stz	$1E,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	lda	#$00B8
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0000
 	sta	a:shake_continuous
 	lda	#$0007
 	jsr	a:sub_04BC10
-	inc	$12,x
+	inc	OBJ_STATE,x
 	jmp	a:loc_04B674
 loc_04B87F:
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	sta	zp_00
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	sta	zp_02
 	lda	zp_00
 	clc
@@ -7304,9 +7304,9 @@ loc_04B89A:
 	cmp	#$0004
 	bcs	loc_04B8A7
 	lda	zp_00
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	zp_02
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 loc_04B8A7:
 	jsl	f:find_free_slot_y
 	bcs	loc_04B8D6
@@ -7344,19 +7344,19 @@ loc_04B8ED:
 	jmp	a:loc_04B674
 
 cave_beast_state_11:
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	jmp	a:loc_04B674
 
 cave_beast_state_12:
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	stz	$30,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 	jmp	a:loc_04B674
 
 cave_beast_state_13:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	and	#$0007
 	bne	loc_04B934
 	lda	$30,x
@@ -7372,15 +7372,15 @@ cave_beast_state_13:
 	lda	a:$0016,y
 	and	#$FFDF
 	sta	a:$0016,y
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	stz	$30,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_04B934:
 	jmp	a:loc_04B674
 
 cave_beast_state_14:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	and	#$0007
 	bne	loc_04B934
 	jsl	f:find_free_slot_y
@@ -7390,10 +7390,10 @@ cave_beast_state_14:
 	lda	#$0000
 	sta	a:$0012,y
 	sta	a:$0006,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$0014
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	a:$000E,y
 loc_04B962:
 	inc	$30,x
@@ -7401,21 +7401,21 @@ loc_04B962:
 	lda	a:data_05F034,y
 	cmp	$30,x
 	bcs	loc_04B973
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	stz	$30,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_04B973:
 	jmp	a:loc_04B674
 
 cave_beast_state_15:
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	stz	$30,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 	jmp	a:loc_04B674
 
 cave_beast_state_17:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	and	#$0007
 	bne	loc_04B9A8
 	lda	$30,x
@@ -7429,15 +7429,15 @@ cave_beast_state_17:
 	bcc	loc_04B934
 	lda	#$0014
 	jsl	f:queue_sound
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	stz	$30,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_04B9A8:
 	jmp	a:loc_04B674
 
 cave_beast_state_18:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	and	#$0001
 	bne	loc_04B9E4
 	lda	$30,x
@@ -7449,11 +7449,11 @@ cave_beast_state_18:
 	lda	#$0000
 	sta	a:$0012,y
 	sta	a:$0006,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$0004
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sec
 	sbc	#$0040
 	sta	a:$000E,y
@@ -7477,15 +7477,15 @@ loc_04B9E7:
 	cmp	#$000A
 	bcc	loc_04B9E4
 loc_04BA0A:
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	stz	$30,x
 	stz	$32,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 	jmp	a:loc_04B674
 
 cave_beast_state_19:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	and	#$0007
 	bne	loc_04BA43
 	lda	$30,x
@@ -7501,9 +7501,9 @@ cave_beast_state_19:
 	lda	a:$0016,y
 	ora	#$0020
 	sta	a:$0016,y
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	stz	$30,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_04BA43:
 	jmp	a:loc_04B674
 
@@ -7512,41 +7512,41 @@ cave_beast_state_1B:
 	lda	a:$0006,y
 	cmp	#$0080
 	bcs	loc_04BA55
-	inc	$12,x
+	inc	OBJ_STATE,x
 	bra	loc_04BA5A
 loc_04BA55:
 	lda	#$0005
-	sta	$12,x
+	sta	OBJ_STATE,x
 loc_04BA5A:
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	stz	$30,x
 	jmp	a:loc_04B674
 
 cave_beast_state_1C:
-	stz	$1A,x
-	stz	$18,x
-	stz	$1C,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	#$0001
-	sta	$1E,x
-	stz	$24,x
+	sta	OBJ_Y_VEL,x
+	stz	OBJ_TIMER,x
 	stz	$30,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 	jmp	a:loc_04B674
 
 cave_beast_state_1D:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	bit	#$003F
 	bne	loc_04BA83
 	lda	#$0053
 	jsl	f:queue_sound
 loc_04BA83:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$0140
 	bcc	loc_04BA95
-	stz	$1E,x
-	stz	$24,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_TIMER,x
 	stz	$30,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 	jmp	a:loc_04B674
 loc_04BA95:
 	jmp	a:loc_04B6BC
@@ -7566,8 +7566,8 @@ loc_04BAB0:
 	lda	#$00A0
 	bra	loc_04BAB5
 loc_04BAB5:
-	sta	$0A,x
-	inc	$12,x
+	sta	OBJ_X,x
+	inc	OBJ_STATE,x
 	jmp	a:loc_04B674
 
 cave_beast_state_05:
@@ -7578,13 +7578,13 @@ cave_beast_state_05:
 	sbc	a:$000A,y
 	cmp	#$0080
 	bcc	cave_beast_state_20
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	lda	#$0009
-	sta	$12,x
+	sta	OBJ_STATE,x
 	jmp	a:loc_04B674
 
 cave_beast_state_20:
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$0080
 	bcc	loc_04BAE3
 	jmp	a:loc_04B6F6
@@ -7593,42 +7593,42 @@ loc_04BAE3:
 
 cave_beast_state_24:
 	lda	#$0005
-	sta	$12,x
-	stz	$24,x
+	sta	OBJ_STATE,x
+	stz	OBJ_TIMER,x
 	stz	$30,x
 	jmp	a:loc_04B674
 
 cave_beast_state_26:
 	lda	#$0001
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0000
 	ldy	#$0800
 	sta	a:$0016,y
 	ldy	#$0840
 	sta	a:$0016,y
 	sta	a:$0006,y
-	stz	$06,x
-	stz	$24,x
+	stz	OBJ_HP,x
+	stz	OBJ_TIMER,x
 	stz	$30,x
 	stz	$32,x
-	stz	$0C,x
-	stz	$0C,x
-	stz	$1A,x
-	stz	$18,x
-	stz	$1C,x
+	stz	OBJ_Y_SUB,x
+	stz	OBJ_Y_SUB,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	#$FFFE
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	#$0006
 	jsr	a:sub_04BC10
-	inc	$12,x
+	inc	OBJ_STATE,x
 	jmp	a:loc_04B674
 
 cave_beast_state_27:
 	jsl	f:sub_00FD92
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$FFE0
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$0010
 	sta	zp_02
 	lda	#$003F
@@ -7642,26 +7642,26 @@ cave_beast_state_27:
 	lda	#$FFFD
 	sta	a:$001E,y
 loc_04BB59:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_04BB62
 	cmp	#$0001
 	bcs	loc_04BB6E
 loc_04BB62:
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	clc
 	adc	#$2000
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	bcc	loc_04BB6E
-	inc	$1E,x
+	inc	OBJ_Y_VEL,x
 loc_04BB6E:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$0140
 	bcs	loc_04BB78
 	jmp	a:loc_04B6BC
 loc_04BB78:
 	stz	a:wram_13BA
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	ldy	#$0840
 	sta	a:$0016,y
 	ldy	#$0800
@@ -7674,61 +7674,61 @@ loc_04BB78:
 	rtl
 
 cave_beast_state_04:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$003C
 	bcc	loc_04BBAA
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_04BBAA:
 	jmp	a:loc_04B674
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_04BBAD:
 	; (not executed in the CDL traces)
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$0078
 	bcc	loc_04BBBA
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_04BBBA:
 	jmp	a:loc_04B674
 
 sub_04BBBD:
 	ldy	#$0800
-	lda	$0A,x
+	lda	OBJ_X,x
 	sec
 	sbc	#$0028
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	a:$000E,y
 	ldy	#$0840
-	lda	$0A,x
+	lda	OBJ_X,x
 	sec
 	sbc	#$000A
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sec
 	sbc	#$0020
 	sta	a:$000E,y
 	ldy	#$0880
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$0030
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	a:$000E,y
 	rts
 
 sub_04BBF5:
-	lda	$0A,x
+	lda	OBJ_X,x
 	sec
 	sbc	#$00AD
 	eor	#$FFFF
 	inc	a
 	sta	a:wram_13C0
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sec
 	sbc	#$01C0
 	eor	#$FFFF
@@ -7768,98 +7768,98 @@ sub_04BC2E:
 ; Object type $66. Stage 6, dark cave: the rocks that pile up on the floor (up
 ; to 18).
 update_cave_rock:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_04BC6F
 	lda	#$0003
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$3400
-	sta	$02,x
-	stz	$06,x
+	sta	OBJ_ATTR,x
+	stz	OBJ_HP,x
 	lda	rng_lo
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	rng_lo
 	and	#$0007
 	sbc	#$0004
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	rng_hi
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	lda	#$FFFC
-	sta	$1E,x
-	stz	$08,x
-	stz	$0C,x
+	sta	OBJ_Y_VEL,x
+	stz	OBJ_X_SUB,x
+	stz	OBJ_Y_SUB,x
 	stz	$30,x
 	stz	$32,x
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	lda	#$AEB6
-	sta	$00,x
-	stz	$20,x
-	stz	$04,x
-	stz	$22,x
-	inc	$12,x
+	sta	OBJ_SPRITE,x
+	stz	OBJ_ANIM,x
+	stz	OBJ_FACING,x
+	stz	OBJ_ANIM_TIMER,x
+	inc	OBJ_STATE,x
 	rtl
 loc_04BC6F:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$00F0
 	bcc	loc_04BC7E
 	; (not executed in the CDL traces)
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_04BC7E:
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	clc
 	adc	#$4000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	rtl
 
 ; Object type $70. Stage 6, cave_beast: small embers flying around the beast
 ; (not identified exactly).
 update_enemy_type_70:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_04BCD7
 	lda	#$000F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$3E00
-	sta	$02,x
-	stz	$06,x
+	sta	OBJ_ATTR,x
+	stz	OBJ_HP,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	rng_lo
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	rng_lo
 	and	#$0003
 	sbc	#$0003
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	rng_hi
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	lda	#$FFF9
-	sta	$1E,x
-	stz	$08,x
-	stz	$0C,x
+	sta	OBJ_Y_VEL,x
+	stz	OBJ_X_SUB,x
+	stz	OBJ_Y_SUB,x
 	stz	$30,x
 	stz	$32,x
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	lda	#$C376
-	sta	$00,x
-	stz	$20,x
-	stz	$04,x
-	stz	$22,x
-	inc	$12,x
+	sta	OBJ_SPRITE,x
+	stz	OBJ_ANIM,x
+	stz	OBJ_FACING,x
+	stz	OBJ_ANIM_TIMER,x
+	inc	OBJ_STATE,x
 	rtl
 loc_04BCD7:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$012C
 	bcc	loc_04BCE6
 	; (not executed in the CDL traces)
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_04BCE6:
 	lda	stage_frame_counter
@@ -7870,69 +7870,69 @@ loc_04BCE6:
 	asl	a
 	asl	a
 	ora	#$3000
-	sta	$02,x
-	lda	$1E,x
+	sta	OBJ_ATTR,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_04BCFE
 	cmp	#$0006
 	bcs	loc_04BD0D
 loc_04BCFE:
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	clc
 	adc	#$2000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 loc_04BD0D:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_04BD16
 	sec
-	ror	$1A,x
-	ror	$18,x
+	ror	OBJ_X_VEL,x
+	ror	OBJ_X_VEL_SUB,x
 loc_04BD16:
 	rtl
 
 ; Object type $71. Stage 6, cave_beast: projectile aimed at a player
 ; (aim_velocity_at_player, double speed), removed after 300 frames.
 update_cave_beast_fireball:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_04BD59
 	lda	#$000F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$3E00
-	sta	$02,x
-	stz	$06,x
+	sta	OBJ_ATTR,x
+	stz	OBJ_HP,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF0
-	sta	$2A,x
-	stz	$08,x
-	stz	$0C,x
+	sta	OBJ_HITBOX_H,x
+	stz	OBJ_X_SUB,x
+	stz	OBJ_Y_SUB,x
 	stz	$36,x
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	lda	#$AF82
-	sta	$00,x
-	stz	$20,x
-	stz	$04,x
-	stz	$22,x
-	lda	$0A,x
+	sta	OBJ_SPRITE,x
+	stz	OBJ_ANIM,x
+	stz	OBJ_FACING,x
+	stz	OBJ_ANIM_TIMER,x
+	lda	OBJ_X,x
 	sta	$32,x
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	$34,x
 	jsl	f:aim_velocity_at_player
-	asl	$18,x
-	rol	$1A,x
-	asl	$1C,x
-	rol	$1E,x
+	asl	OBJ_X_VEL_SUB,x
+	rol	OBJ_X_VEL,x
+	asl	OBJ_Y_VEL_SUB,x
+	rol	OBJ_Y_VEL,x
 	rtl
 loc_04BD59:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$012C
 	bcc	loc_04BD68
 	; (not executed in the CDL traces)
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_04BD68:
 	lda	stage_frame_counter
@@ -7940,46 +7940,46 @@ loc_04BD68:
 	asl	a
 	tay
 	lda	a:data_05F0C6,y
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	rtl
 
 ; Object type $72. Stage 6, cave_beast: segments of the beast's beam.
 update_cave_beast_beam:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_04BD59
 	lda	#$000F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$3E00
-	sta	$02,x
-	stz	$06,x
+	sta	OBJ_ATTR,x
+	stz	OBJ_HP,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	stz	$36,x
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	lda	#$AF82
-	sta	$00,x
-	stz	$20,x
-	stz	$04,x
-	stz	$22,x
-	stz	$08,x
-	stz	$0C,x
+	sta	OBJ_SPRITE,x
+	stz	OBJ_ANIM,x
+	stz	OBJ_FACING,x
+	stz	OBJ_ANIM_TIMER,x
+	stz	OBJ_X_SUB,x
+	stz	OBJ_Y_SUB,x
 	lda	$30,x
 	tay
 	lda	a:$0032,y
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	a:$0034,y
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	a:$0018,y
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	a:$001A,y
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	a:$001C,y
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	lda	a:$001E,y
-	sta	$1E,x
-	inc	$12,x
+	sta	OBJ_Y_VEL,x
+	inc	OBJ_STATE,x
 	rtl
 
 sub_04BDC6:
@@ -8034,7 +8034,7 @@ loc_04BE23:
 ; Object type $75. Stage 6, face_boss: the two side heads that reach out on
 ; necks. HP by difficulty: 128/192/256 (data_05F0CE).
 update_face_boss_side_head:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_04BE2B
 	brl	loc_04BFA2
 loc_04BE2B:
@@ -8043,7 +8043,7 @@ loc_04BE2B:
 	; (not executed in the CDL traces)
 	brl	loc_04BFA2
 loc_04BE33:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -8062,21 +8062,21 @@ tbl_face_boss_side_head_states:
 face_boss_side_head_state_00:
 	ldy	difficulty
 	lda	a:data_05F0CE,y
-	sta	$06,x
-	stz	$16,x
+	sta	OBJ_HP,x
+	stz	OBJ_FLAGS,x
 	lda	#$C49F
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$2600
-	sta	$02,x
-	stz	$26,x
+	sta	OBJ_ATTR,x
+	stz	OBJ_SAVED_ATTR,x
 	lda	#$0020
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFE0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$0001
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0001
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_side_head_state_01:
 	lda	a:wram_0912
@@ -8085,26 +8085,26 @@ face_boss_side_head_state_01:
 	rtl
 loc_04BE80:
 	lda	#$4019
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	stz	$30,x
 	lda	#$C49F
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$2600
-	sta	$02,x
-	stz	$26,x
+	sta	OBJ_ATTR,x
+	stz	OBJ_SAVED_ATTR,x
 	lda	#$0002
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_side_head_state_02:
 	ldy	$32,x
 	lda	a:wram_090A
 	clc
 	adc	a:data_05F0E8,y
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	a:wram_090E
 	clc
 	adc	#$0034
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	$30,x
 	beq	loc_04BEB5
 	jsr	a:sub_04C137
@@ -8117,7 +8117,7 @@ loc_04BEB5:
 	lda	#$0000
 	ldy	#$C49F
 loc_04BEC3:
-	sty	$00,x
+	sty	OBJ_SPRITE,x
 	sta	$3A,x
 	cmp	#$0008
 	bne	loc_04BECF
@@ -8126,17 +8126,17 @@ loc_04BECF:
 	rtl
 loc_04BED0:
 	lda	#$401D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$C4BC
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$3600
-	sta	$02,x
-	stz	$26,x
+	sta	OBJ_ATTR,x
+	stz	OBJ_SAVED_ATTR,x
 	jsr	a:sub_04BF56
 	bcs	loc_04BE80
 	sty	$38,x
 	lda	#$0080
-	sta	$04,x
+	sta	OBJ_FACING,x
 	lda	$34,x
 	asl	a
 	ora	$32,x
@@ -8145,20 +8145,20 @@ loc_04BED0:
 	sta	$36,x
 	ldy	$34,x
 	lda	a:data_05F0DC,y
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	jsr	a:sub_04BFC1
 	lda	#$0003
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_side_head_state_03:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bmi	loc_04BF79
 	ldy	$36,x
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	a:$0000,y
 	iny
 	iny
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	a:$0000,y
 	iny
 	iny
@@ -8166,30 +8166,30 @@ face_boss_side_head_state_03:
 	ldy	$38,x
 	lda	a:$1312,y
 	sec
-	sbc	$0A,x
+	sbc	OBJ_X,x
 	sta	zp_08
 	lda	a:$1314,y
 	sec
-	sbc	$0E,x
+	sbc	OBJ_Y,x
 	sta	zp_0A
 	jsl	f:sub_1DABA0
 	rep	#$20
 	sec
-	sbc	$04,x
+	sbc	OBJ_FACING,x
 	beq	loc_04BF4E
 	bit	#$0080
 	beq	loc_04BF45
-	lda	$04,x
+	lda	OBJ_FACING,x
 	dec	a
 	dec	a
 	bra	loc_04BF49
 loc_04BF45:
-	lda	$04,x
+	lda	OBJ_FACING,x
 	inc	a
 	inc	a
 loc_04BF49:
 	and	#$00FF
-	sta	$04,x
+	sta	OBJ_FACING,x
 loc_04BF4E:
 	lda	#$0020
 	jsl	f:sub_1DAD8A
@@ -8222,13 +8222,13 @@ loc_04BF6F:
 loc_04BF79:
 	ldy	$34,x
 	lda	a:data_05F0DC,y
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	jsr	a:sub_04C18A
 	lda	#$0004
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_side_head_state_04:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_04BF8F
 	brl	loc_04BE80
 loc_04BF8F:
@@ -8236,27 +8236,27 @@ loc_04BF8F:
 	dey
 	dey
 	lda	a:$0000,y
-	sta	$0E,x
+	sta	OBJ_Y,x
 	dey
 	dey
 	lda	a:$0000,y
-	sta	$0A,x
+	sta	OBJ_X,x
 	sty	$36,x
 	rtl
 loc_04BFA2:
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$0010
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$FFFF
-	sta	$1E,x
-	stz	$18,x
-	stz	$1A,x
+	sta	OBJ_Y_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
 	txy
 	lda	#$C4CE
 	jsl	f:sub_01CF66
 	lda	#$0005
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_side_head_state_05:
 	rtl
@@ -8480,11 +8480,11 @@ sub_04C1DA:
 loc_04C1E6:
 	lda	#$0018
 	sta	a:$0010,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$0010
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	a:$000E,y
 	lda	#$0000
 	sta	a:$001A,y
@@ -8497,11 +8497,11 @@ loc_04C1E6:
 	bcs	loc_04C26D
 	lda	#$0018
 	sta	a:$0010,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$0010
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	a:$000E,y
 	lda	#$0002
 	sta	a:$001A,y
@@ -8514,11 +8514,11 @@ loc_04C1E6:
 	bcs	loc_04C26D
 	lda	#$0018
 	sta	a:$0010,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$0010
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	a:$000E,y
 	lda	#$0000
 	sta	a:$0018,y
@@ -8544,7 +8544,7 @@ loc_04C276:
 	bpl	loc_04C284
 	brl	loc_04C383
 loc_04C284:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -8563,9 +8563,9 @@ tbl_face_boss_neck_states:
 	.addr	face_boss_neck_state_07
 
 face_boss_neck_state_00:
-	stz	$06,x
+	stz	OBJ_HP,x
 	lda	#$0001
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_neck_state_01:
 	lda	$36,x
@@ -8582,26 +8582,26 @@ loc_04C2B5:
 	rtl
 loc_04C2BA:
 	lda	#$003D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$C4D9
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$2600
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	ldy	$30,x
 	lda	a:wram_090A
 	clc
 	adc	a:data_05F0E8,y
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	a:wram_090E
 	clc
 	adc	#$001C
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0020
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFE0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$0002
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_neck_state_02:
 	lda	$36,x
@@ -8613,24 +8613,24 @@ loc_04C2F6:
 	; (not executed in the CDL traces)
 	rtl
 loc_04C2F7:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	inc	a
 	inc	a
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	a:wram_090E
 	clc
 	adc	#$0034
-	cmp	$0E,x
+	cmp	OBJ_Y,x
 	bcc	loc_04C309
 	rtl
 loc_04C309:
 	lda	#$0034
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$3600
-	sta	$02,x
-	stz	$24,x
+	sta	OBJ_ATTR,x
+	stz	OBJ_TIMER,x
 	lda	#$0003
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_neck_state_03:
 	lda	$36,x
@@ -8642,24 +8642,24 @@ loc_04C324:
 	; (not executed in the CDL traces)
 	rtl
 loc_04C325:
-	inc	$24,x
+	inc	OBJ_TIMER,x
 	ldy	$32,x
 	lda	a:$0000,y
-	sta	$0A,x
+	sta	OBJ_X,x
 	iny
 	iny
 	lda	a:$0000,y
-	sta	$0E,x
+	sta	OBJ_Y,x
 	iny
 	iny
 	sty	$32,x
 	rtl
 loc_04C33A:
 	lda	#$0004
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_neck_state_04:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_04C346
 	brl	loc_04C359
 loc_04C346:
@@ -8667,54 +8667,54 @@ loc_04C346:
 	dey
 	dey
 	lda	a:$0000,y
-	sta	$0E,x
+	sta	OBJ_Y,x
 	dey
 	dey
 	lda	a:$0000,y
-	sta	$0A,x
+	sta	OBJ_X,x
 	sty	$32,x
 	rtl
 loc_04C359:
 	lda	#$2600
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$0005
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_neck_state_05:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	dec	a
 	dec	a
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	a:wram_090E
 	clc
 	adc	#$001C
-	cmp	$0E,x
+	cmp	OBJ_Y,x
 	bcc	loc_04C377
 	brl	loc_04C378
 loc_04C377:
 	rtl
 loc_04C378:
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0007
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_neck_state_07:
 	rtl
 loc_04C383:
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	#$0010
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$FFFF
-	sta	$1E,x
-	stz	$18,x
-	stz	$1A,x
+	sta	OBJ_Y_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
 	txy
 	lda	#$C4CE
 	jsl	f:sub_01CF66
 	lda	#$0006
-	sta	$12,x
+	sta	OBJ_STATE,x
 
 face_boss_neck_state_06:
 	rtl
@@ -8735,12 +8735,12 @@ update_snake_robot:
 	lda	a:$0006,y
 	bpl	loc_04C3C2
 	lda	#$0010
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$0000
 	sta	a:$0006,y
 	sta	a:$0016,y
 loc_04C3C2:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -8774,17 +8774,17 @@ snake_robot_state_0A:
 
 snake_robot_state_00:
 	lda	#$0080
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$0010
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0001
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0FFF
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0001
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFFF
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	ldy	#$0500
 	lda	#$0081
 	sta	a:$0010,y
@@ -8861,8 +8861,8 @@ loc_04C46F:
 	stz	$3E,x
 	lda	#$00C0
 	sta	$36,x
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	jmp	a:loc_04CD2B
 
 snake_robot_state_01:
@@ -8881,11 +8881,11 @@ loc_04C4DB:
 	lda	zp_00
 	cmp	#$0010
 	bcc	loc_04C4DB
-	stz	$1C,x
-	stz	$1E,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	stz	$30,x
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	jsr	a:sub_04CB63
 	jmp	a:loc_04CD2B
 
@@ -8896,8 +8896,8 @@ snake_robot_state_02:
 	cmp	#$00B0
 	bcc	loc_04C51D
 	stz	$30,x
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	jsr	a:sub_04CB63
 	jmp	a:loc_04CD2B
 loc_04C51D:
@@ -8929,12 +8929,12 @@ loc_04C53B:
 	lda	zp_02
 	cmp	#$0002
 	bcc	loc_04C51F
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	clc
 	adc	#$1000
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	bcc	loc_04C559
-	inc	$1E,x
+	inc	OBJ_Y_VEL,x
 loc_04C559:
 	jsr	a:sub_04CB63
 	jmp	a:loc_04CD2B
@@ -8954,9 +8954,9 @@ snake_robot_state_03:
 	sta	a:$0018,y
 	lda	#$FFFF
 	sta	a:$001A,y
-	sta	$1A,x
-	stz	$18,x
-	lda	$1E,x
+	sta	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	cmp	#$0002
 	bcc	loc_04C599
 	lda	#$0038
@@ -8967,8 +8967,8 @@ loc_04C59C:
 	jsl	f:queue_sound
 	stz	$30,x
 	stz	$38,x
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	jsr	a:sub_04CBE2
 	jmp	a:loc_04CD2B
 
@@ -8978,18 +8978,18 @@ snake_robot_state_04:
 	ldy	#$0300
 	lda	a:$000E,y
 	sec
-	sbc	$0E,x
+	sbc	OBJ_Y,x
 	cmp	#$0060
 	bcc	loc_04C5C5
 	inc	$30,x
 	jmp	a:loc_04CD2B
 loc_04C5C5:
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	sec
 	sbc	#$2000
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	bcs	loc_04C5D1
-	dec	$1E,x
+	dec	OBJ_Y_VEL,x
 loc_04C5D1:
 	jsr	a:sub_04CBE2
 	jmp	a:loc_04CD2B
@@ -8997,13 +8997,13 @@ loc_04C5D7:
 	ldy	#$0300
 	lda	a:$000E,y
 	sec
-	sbc	$0E,x
+	sbc	OBJ_Y,x
 	cmp	#$0060
 	bcs	loc_04C60E
-	stz	$1C,x
-	stz	$1E,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	stz	$30,x
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	ldy	#$0700
 	lda	#$0000
 	sta	a:$001A,y
@@ -9011,18 +9011,18 @@ loc_04C5D7:
 	ldy	#$0300
 	sta	a:$001A,y
 	sta	a:$0018,y
-	stz	$1A,x
-	stz	$18,x
-	inc	$12,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	inc	OBJ_STATE,x
 	jsr	a:sub_04CBE2
 	jmp	a:loc_04CD2B
 loc_04C60E:
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	clc
 	adc	#$8000
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	bcc	loc_04C61A
-	inc	$1E,x
+	inc	OBJ_Y_VEL,x
 loc_04C61A:
 	jsr	a:sub_04CBE2
 	jmp	a:loc_04CD2B
@@ -9038,9 +9038,9 @@ loc_04C62A:
 	tay
 	lda	a:data_05F156,y
 	tay
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	a:$0032,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	a:$0034,y
 	inc	zp_00
 	lda	zp_00
@@ -9049,8 +9049,8 @@ loc_04C62A:
 	stz	$30,x
 	stz	$36,x
 	stz	$38,x
-	stz	$24,x
-	lda	$0A,x
+	stz	OBJ_TIMER,x
+	lda	OBJ_X,x
 	bmi	loc_04C658
 	cmp	#$0080
 	bcc	loc_04C658
@@ -9087,7 +9087,7 @@ loc_04C658:
 	sta	a:$0018,y
 	lda	zp_06
 	sta	a:$001A,y
-	inc	$12,x
+	inc	OBJ_STATE,x
 	jsr	a:sub_04CCAC
 	jsr	a:sub_04CBE2
 	jmp	a:loc_04CD2B
@@ -9099,7 +9099,7 @@ snake_robot_state_06:
 	sbc	a:$0006,y
 	cmp	#$0020
 	bcs	loc_04C6D5
-	lda	$0A,x
+	lda	OBJ_X,x
 	bmi	loc_04C6D2
 	cmp	#$0028
 	bcc	loc_04C6D2
@@ -9200,17 +9200,17 @@ loc_04C78F:
 loc_04C79B:
 	jsl	f:sub_01E860
 	lda	a:$000A,y
-	cmp	$0A,x
+	cmp	OBJ_X,x
 	bmi	loc_04C7C9
 	lda	a:$000E,y
 	sbc	#$0018
-	cmp	$0E,x
+	cmp	OBJ_Y,x
 	bpl	loc_04C805
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	zp_00
 	clc
 	adc	#$0010
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sec
 	sbc	#$0008
 	sta	zp_02
@@ -9221,9 +9221,9 @@ loc_04C7C9:
 	lda	#$0000
 	jsl	f:sub_01A2F0
 	bcc	loc_04C805
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	a:$000E,y
 	lda	#$0000
 	sta	a:$0018,x
@@ -9248,10 +9248,10 @@ loc_04C805:
 	jsr	a:sub_04CBE2
 	jmp	a:loc_04CD2B
 loc_04C80E:
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$FFF0
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$0010
 	sta	zp_02
 	lda	#$001F
@@ -9288,15 +9288,15 @@ loc_04C83E:
 	sta	a:$001A,y
 	sta	a:$0018,y
 	stz	$30,x
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	jsr	a:sub_04CCAC
 	jsr	a:sub_04CBE2
 	jmp	a:loc_04CD2B
 
 snake_robot_state_07:
 	stz	$38,x
-	lda	$0A,x
+	lda	OBJ_X,x
 	bmi	loc_04C894
 	cmp	#$0080
 	bcs	loc_04C896
@@ -9329,33 +9329,33 @@ loc_04C896:
 	lda	zp_00
 	sta	a:$0018,y
 	lda	#$FFFE
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	#$8000
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	lda	zp_02
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	zp_00
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	stz	$30,x
 	stz	$38,x
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	jsr	a:sub_04CCAC
 	jsr	a:sub_04CBE2
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	zp_02
 	jsl	f:fire_bullet_at_player
 	jmp	a:loc_04CD2B
 
 snake_robot_state_08:
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	clc
 	adc	#$0400
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	bcc	loc_04C911
-	inc	$1E,x
+	inc	OBJ_Y_VEL,x
 loc_04C911:
 	ldy	#$0300
 	lda	a:$001C,y
@@ -9378,12 +9378,12 @@ loc_04C911:
 	ldy	#$0300
 	lda	a:$000E,y
 	sec
-	sbc	$0E,x
+	sbc	OBJ_Y,x
 	cmp	#$0060
 	bcc	loc_04C951
 	inc	$30,x
 loc_04C951:
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	a:data_05F17A
 	sta	zp_00
@@ -9404,7 +9404,7 @@ loc_04C970:
 	bmi	loc_04C97B
 	sta	a:$000A,y
 loc_04C97B:
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	a:data_05F17C
 	sta	zp_00
@@ -9455,14 +9455,14 @@ loc_04C9AD:
 	sta	a:$001C,y
 	sta	a:$001A,y
 	sta	a:$0018,y
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	$30,x
 	stz	$38,x
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	jmp	a:loc_04CD2B
 
 snake_robot_state_09:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_04CA15
 	ldy	#$0300
 	lda	a:$000E,y
@@ -9470,9 +9470,9 @@ snake_robot_state_09:
 	cmp	#$00B0
 	bcc	loc_04CA15
 	stz	$30,x
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	lda	#$0003
-	sta	$12,x
+	sta	OBJ_STATE,x
 	jsr	a:sub_04CB63
 	jmp	a:loc_04CD2B
 loc_04CA15:
@@ -9504,25 +9504,25 @@ loc_04CA35:
 	lda	zp_02
 	cmp	#$0002
 	bcc	loc_04CA17
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	clc
 	adc	#$0400
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	bcc	loc_04CA53
-	inc	$1E,x
+	inc	OBJ_Y_VEL,x
 loc_04CA53:
 	jsr	a:sub_04CB63
 	jmp	a:loc_04CD2B
 
 snake_robot_state_10:
 	lda	#$0001
-	sta	$16,x
-	stz	$06,x
+	sta	OBJ_FLAGS,x
+	stz	OBJ_HP,x
 	lda	#$0005
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	#$FFFD
-	sta	$1E,x
-	stz	$24,x
+	sta	OBJ_Y_VEL,x
+	stz	OBJ_TIMER,x
 	stz	zp_00
 loc_04CA6E:
 	lda	zp_00
@@ -9557,14 +9557,14 @@ loc_04CA6E:
 	lda	#$0041
 	jsl	f:queue_sound
 	stz	$30,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 	jmp	a:loc_04CD2B
 
 snake_robot_state_11:
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$FFE0
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$0010
 	sta	zp_02
 	lda	#$001F
@@ -9715,9 +9715,9 @@ loc_04CBE4:
 	tay
 	pla
 	clc
-	adc	$0A,x
+	adc	OBJ_X,x
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	a:$000E,y
 	inc	zp_00
 	lda	zp_00
@@ -9886,15 +9886,15 @@ loc_04CD18:
 	lda	a:data_05F156,y
 	tay
 	lda	a:$0032,y
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	a:$0034,y
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rts
 loc_04CD2B:
 	ldy	#$0500
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	a:$000E,y
 	rtl
 
@@ -9905,7 +9905,7 @@ update_snake_robot_head:
 	lda	a:$0010,y
 	bne	loc_04CD47
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 loc_04CD47:
 	rtl
 
@@ -9913,19 +9913,19 @@ loc_04CD47:
 ; identified exactly).
 update_enemy_type_7C:
 	jsr	a:scroll_with_airship
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_04CD65
 	lda	#$001C
 	sta	$30,x
 	jsr	a:sub_04CE28
 	lda	#$0010
-	sta	$24,x
-	stz	$16,x
-	stz	$06,x
+	sta	OBJ_TIMER,x
+	stz	OBJ_FLAGS,x
+	stz	OBJ_HP,x
 	lda	#$0004
-	sta	$12,x
+	sta	OBJ_STATE,x
 loc_04CD65:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -9941,35 +9941,35 @@ tbl_enemy_type_7C_states:
 	.addr	airship_part_explode
 
 enemy_type_7C_state_00:
-	inc	$12,x
-	stz	$16,x
+	inc	OBJ_STATE,x
+	stz	OBJ_FLAGS,x
 	lda	#$0020
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFE0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	ldy	$3A,x
 	lda	a:data_05F1FC,y
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	difficulty
 	asl	a
 	clc
 	adc	#$0010
-	sta	$06,x
+	sta	OBJ_HP,x
 	rtl
 
 enemy_type_7C_state_01:
 	cmp	#$0002
 	beq	enemy_type_7C_state_03
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	loc_04CDAA
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	$30,x
 loc_04CDAA:
 	rtl
 
 enemy_type_7C_state_02:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	bit	#$0007
 	bne	loc_04CDCB
 	jsr	a:sub_04CE28
@@ -9979,9 +9979,9 @@ enemy_type_7C_state_02:
 	sta	$30,x
 	cmp	#$0010
 	bne	loc_04CDCB
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$4010
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 loc_04CDCB:
 	rtl
 
@@ -10018,16 +10018,16 @@ loc_04CDF6:
 	ply
 	clc
 	lda	a:data_05F228,y
-	adc	$0E,x
+	adc	OBJ_Y,x
 	sta	zp_02
 	clc
 	lda	a:data_05F22E,y
-	adc	$0A,x
+	adc	OBJ_X,x
 	sta	zp_00
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_04CE26
 	lda	#$0100
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	pla
 	jml	f:spawn_enemy_bullet
 loc_04CE26:
@@ -10056,16 +10056,16 @@ sub_04CE28:
 ; drop lightning_bolt. HP by difficulty: 64/96/$7FFF (data_05F26C).
 update_lightning_pylon:
 	jsr	a:scroll_with_airship
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_04CE80
 	; (not executed in the CDL traces)
 	lda	#$0002
-	sta	$12,x
-	stz	$06,x
-	stz	$16,x
+	sta	OBJ_STATE,x
+	stz	OBJ_HP,x
+	stz	OBJ_FLAGS,x
 	ldy	$3A,x
 	lda	#$0010
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$59C0
 	sta	zp_00
 	lda	a:data_05F23A,y
@@ -10078,19 +10078,19 @@ update_lightning_pylon:
 	adc	#$0080
 	jml	f:sub_00FE76
 loc_04CE80:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_04CE9F
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$4010
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFC0
-	sta	$2A,x
-	stz	$24,x
+	sta	OBJ_HITBOX_H,x
+	stz	OBJ_TIMER,x
 	ldy	difficulty
 	lda	a:data_05F26C,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	rtl
 loc_04CE9F:
 	cmp	#$0002
@@ -10098,22 +10098,22 @@ loc_04CE9F:
 	; (not executed in the CDL traces)
 	brl	airship_part_explode
 loc_04CEA7:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_04CED7
 	ldy	$3A,x
 	lda	a:data_05F260,y
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	ldy	#$0580
 	jsl	f:find_free_slot_y_down
 	bcc	loc_04CED7
 	lda	#$007B
 	sta	a:$0010,y
 	clc
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$0001
 	sta	a:$000A,y
 	clc
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$0008
 	sta	a:$000E,y
 	txa
@@ -10132,11 +10132,11 @@ update_lightning_bolt:
 loc_04CEE7:
 	; (not executed in the CDL traces)
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_04CEED:
 	jsr	a:scroll_with_airship
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -10151,51 +10151,51 @@ tbl_lightning_bolt_states:
 	.addr	lightning_bolt_state_03
 
 lightning_bolt_state_00:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0018
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$000C
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$F246
-	sta	$20,x
+	sta	OBJ_ANIM,x
 	lda	#$0008
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFC0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$3000
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	rtl
 
 lightning_bolt_state_01:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_04CF3A
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0008
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0014
 	jml	f:queue_sound
 loc_04CF3A:
 	rtl
 
 lightning_bolt_state_02:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_04CF48
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0020
-	sta	$24,x
-	inc	$04,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_FACING,x
 loc_04CF48:
 	clc
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$0008
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 
 lightning_bolt_state_03:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_04CF5B
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_04CF5B:
 	lda	stage_frame_odd
@@ -10205,9 +10205,9 @@ loc_04CF5B:
 	bcc	loc_04CF90
 	lda	#$C672
 	jsl	f:sub_01CF66
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	a:$000E,y
 	lda	rng_lo
 	and	#$0007
@@ -10226,7 +10226,7 @@ loc_04CF90:
 ; Object type $7D. Stage 4, airship: clusters of spiked mines dropped by the
 ; airship.
 update_spiked_mine:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -10242,15 +10242,15 @@ tbl_spiked_mine_states:
 	.addr	spiked_mine_state_04
 
 spiked_mine_state_00:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$C81D
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$3E00
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$001E
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFE2
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	stz	$30,x
 	stz	$32,x
 	stz	zp_FC
@@ -10367,20 +10367,20 @@ spiked_mine_state_02:
 	beq	loc_04D0BB
 	lda	#$C82E
 loc_04D0BB:
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$3E00
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$403C
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$001E
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFE2
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	stz	$32,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	$34,x
 	beq	loc_04D0DB
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_04D0DB:
 	rtl
 
@@ -10400,9 +10400,9 @@ sub_04D0EA:
 	cmp	#$007D
 	beq	loc_04D106
 	lda	#$FFFB
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	#$0001
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	txy
 	lda	#$C516
 	jsl	f:sub_01CF66
@@ -10450,23 +10450,23 @@ sub_04D142:
 
 sub_04D158:
 	lda	zp_02
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	zp_00
-	sta	$0A,x
+	sta	OBJ_X,x
 	rts
 
 ; Object type $7F. Stage 4, airship: the hanging cannon arms (128 HP).
 update_airship_gun_arm:
 	jsr	a:scroll_with_airship
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_04D1A6
 	; (not executed in the CDL traces)
-	stz	$06,x
-	stz	$16,x
+	stz	OBJ_HP,x
+	stz	OBJ_FLAGS,x
 	lda	#$0002
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$0020
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0001
 	sta	zp_02
 	lda	#$0018
@@ -10535,33 +10535,33 @@ loc_04D207:
 ; Object type $80. Stage 4, airship: seen briefly at the end of the airship
 ; (not identified exactly).
 update_enemy_type_80:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_04D230
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$000F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0003
-	sta	$1A,x
-	sta	$1E,x
+	sta	OBJ_X_VEL,x
+	sta	OBJ_Y_VEL,x
 	lda	#$0008
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF8
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$F278
-	sta	$20,x
+	sta	OBJ_ANIM,x
 	lda	#$0015
 	jml	f:queue_sound
 loc_04D230:
 	cmp	#$0002
 	beq	loc_04D26C
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00B0
 	bcc	loc_04D247
-	stz	$1C,x
-	stz	$1E,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	lda	#$FFF8
-	sta	$1A,x
-	inc	$12,x
+	sta	OBJ_X_VEL,x
+	inc	OBJ_STATE,x
 loc_04D247:
 	ldy	#$05C0
 	jsl	f:find_free_slot_y_down
@@ -10571,9 +10571,9 @@ loc_04D247:
 	lda	#$FFFA
 	sta	a:$001A,y
 	sta	a:$001E,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	a:$000E,y
 	bra	loc_04D2AC
 loc_04D26C:
@@ -10582,7 +10582,7 @@ loc_04D26C:
 	sta	zp_04
 	lda	#$0007
 	sta	zp_06
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	zp_00
 	lda	#$00B0
 	sta	zp_02
@@ -10601,9 +10601,9 @@ loc_04D26C:
 	lda	#$000F
 	sta	a:$0016,y
 loc_04D2AC:
-	ldy	$20,x
+	ldy	OBJ_ANIM,x
 	lda	a:$0004,y
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	rtl
 
 ; Object type $84. Stage 4, helicopter: the rope hanging from the helicopter;
@@ -10612,31 +10612,31 @@ loc_04D2AC:
 update_helicopter_rope:
 	cpx	#$0900
 	bne	loc_04D2ED
-	lda	$06,x
+	lda	OBJ_HP,x
 	bmi	loc_04D2C6
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$0180
 	bmi	loc_04D2ED
 	; (not executed in the CDL traces)
 	bcc	loc_04D2ED
 loc_04D2C6:
 	jsl	f:sub_01A52C
-	stz	$20,x
-	stz	$22,x
+	stz	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	lda	#$CB30
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$0002
-	sta	$1A,x
-	stz	$1E,x
+	sta	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL,x
 	lda	#$000C
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$0001
-	sta	$16,x
-	stz	$06,x
+	sta	OBJ_FLAGS,x
+	stz	OBJ_HP,x
 	lda	#$0015
 	jsl	f:queue_sound
 loc_04D2ED:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -10663,9 +10663,9 @@ helicopter_rope_state_00:
 	lda	a:wram_13FA
 	cmp	#$000B
 	bne	loc_04D32E
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$01C0
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	phx
 	ldx	#.loword(data_05F286)
 	jsl	f:load_data_list
@@ -10674,54 +10674,54 @@ loc_04D32E:
 	rtl
 
 helicopter_rope_state_01:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_04D372
 	lda	#$0015
 	jsl	f:queue_sound
 	lda	#$C859
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$3400
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$401D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$00F0
-	sta	$0E,x
-	stz	$0A,x
+	sta	OBJ_Y,x
+	stz	OBJ_X,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFEE
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$0080
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$FFFE
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	#$8000
-	sta	$1C,x
-	sta	$18,x
+	sta	OBJ_Y_VEL_SUB,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	#$0001
-	sta	$1A,x
-	inc	$12,x
+	sta	OBJ_X_VEL,x
+	inc	OBJ_STATE,x
 loc_04D372:
 	rtl
 
 helicopter_rope_state_02:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$0060
 	bcs	loc_04D389
 	cmp	#$0078
 	bcs	loc_04D3B3
 	jsl	f:sub_04D3B4
 	lda	#$0006
-	sta	$12,x
+	sta	OBJ_STATE,x
 	rtl
 loc_04D389:
 	lda	#$000F
 	sta	zp_06
 	sta	zp_04
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$FFF0
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	zp_02
 	ldy	#$0700
 	lda	#$C4CE
@@ -10791,7 +10791,7 @@ helicopter_rope_state_05:
 	cmp	#$0001
 	bne	loc_04D43A
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_04D43A:
 	lda	#$0000
@@ -10799,7 +10799,7 @@ loc_04D43A:
 	bne	loc_04D445
 	lda	#$CB86
 loc_04D445:
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	jsr	a:sub_04D686
 	jsr	a:sub_04D6E7
 	jsr	a:sub_04D701
@@ -10819,10 +10819,10 @@ helicopter_rope_state_04:
 	cmp	#$0001
 	bne	loc_04D46F
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_04D46F:
-	stz	$16,x
+	stz	OBJ_FLAGS,x
 	lda	#$0000
 	ldy	a:wram_163E
 	bne	loc_04D488
@@ -10832,16 +10832,16 @@ loc_04D46F:
 	lda	#$CB72
 loc_04D483:
 	ldy	#$0000
-	sty	$16,x
+	sty	OBJ_FLAGS,x
 loc_04D488:
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	a:wram_1638
 	beq	loc_04D4F6
 	lda	#$CB72
-	sta	$00,x
-	lda	$0A,x
+	sta	OBJ_SPRITE,x
+	lda	OBJ_X,x
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	zp_02
 	jsr	a:sub_04D6DD
 	jsr	a:sub_04D6E7
@@ -10849,7 +10849,7 @@ loc_04D488:
 	lda	a:wram_163A
 	bne	loc_04D4F5
 	ldy	a:wram_163C
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$0084
 	bcc	loc_04D4C8
 	cpy	#$0140
@@ -10888,42 +10888,42 @@ loc_04D4F6:
 
 helicopter_rope_state_06:
 	lda	#$0007
-	sta	$12,x
-	lda	$1A,x
+	sta	OBJ_STATE,x
+	lda	OBJ_X_VEL,x
 	bpl	loc_04D513
 	stz	a:wram_1636
-	stz	$04,x
+	stz	OBJ_FACING,x
 	lda	#$0240
 	bra	loc_04D51E
 loc_04D513:
 	lda	#$0002
 	sta	a:wram_1636
-	sta	$04,x
+	sta	OBJ_FACING,x
 	lda	#$01C2
 loc_04D51E:
 	sta	a:wram_163C
 	stz	a:wram_1642
 	stz	a:wram_1644
 	lda	#$F2F3
-	sta	$20,x
+	sta	OBJ_ANIM,x
 	lda	#$0016
 	sta	a:wram_163E
 
 helicopter_rope_state_07:
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$2000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
-	ldy	$04,x
+	sta	OBJ_Y_VEL,x
+	ldy	OBJ_FACING,x
 	clc
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	a:data_05F329,y
 	sta	zp_00
 	clc
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$FFEE
 	sta	zp_02
 	jsr	a:sub_04D6DD
@@ -10945,7 +10945,7 @@ helicopter_rope_state_08:
 	bcc	loc_04D56A
 	cmp	#$0103
 	bcs	loc_04D56A
-	inc	$12,x
+	inc	OBJ_STATE,x
 
 helicopter_rope_state_09:
 	lda	stage_frame_mod4
@@ -10960,33 +10960,33 @@ helicopter_rope_state_09:
 	sta	a:wram_163E
 	stz	a:wram_1642
 	stz	a:wram_1644
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$F30B
-	sta	$20,x
+	sta	OBJ_ANIM,x
 	lda	#$0040
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0400
 	jsl	f:pick_target_player
 	lda	a:$000A,y
-	cmp	$0A,x
+	cmp	OBJ_X,x
 	bcc	loc_04D5BB
-	stz	$04,x
+	stz	OBJ_FACING,x
 	bra	loc_04D5C0
 loc_04D5BB:
 	lda	#$0002
-	sta	$04,x
+	sta	OBJ_FACING,x
 loc_04D5C0:
 	brl	sub_04D457
 
 helicopter_rope_state_0A:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	loc_04D5D0
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	a:wram_163E
-	stz	$20,x
-	stz	$22,x
+	stz	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 loc_04D5D0:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	cmp	#$0014
 	bne	loc_04D5FB
 	ldy	#$04C0
@@ -10994,18 +10994,18 @@ loc_04D5D0:
 	bcc	loc_04D5FB
 	lda	#$0085
 	sta	a:$0010,y
-	lda	$04,x
+	lda	OBJ_FACING,x
 	sta	a:$0004,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$0008
 	sta	a:$000A,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$0000
 	sta	a:$000E,y
 loc_04D5FB:
 	jsl	f:sub_04D457
 	lda	#$007C
-	sta	$0E,x
+	sta	OBJ_Y,x
 	jml	f:sub_01A513
 
 helicopter_rope_state_0B:
@@ -11014,7 +11014,7 @@ helicopter_rope_state_0B:
 	dec	a:wram_1640
 	bne	loc_04D61C
 	lda	#$0003
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$0002
 	sta	a:wram_163A
 loc_04D61C:
@@ -11022,32 +11022,32 @@ loc_04D61C:
 	brl	sub_04D457
 
 helicopter_rope_state_0C:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$0180
 	bcs	loc_04D632
-	lda	$0A,x
+	lda	OBJ_X,x
 	bpl	loc_04D638
 	cmp	#$FFC8
 	bcs	loc_04D638
 loc_04D632:
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_04D638:
 	sec
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	sbc	#$2000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	sbc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$0800
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	stage_frame_odd
 	bne	loc_04D685
 	ldy	#$0700
@@ -11055,12 +11055,12 @@ loc_04D638:
 	bcc	loc_04D685
 	lda	#$C4CE
 	jsl	f:sub_01CF66
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$0000
 	sta	a:$000A,y
 	lda	rng_lo
 	and	#$000F
-	adc	$0E,x
+	adc	OBJ_Y,x
 	adc	#$0000
 	sta	a:$000E,y
 	lda	#$FFF8
@@ -11148,9 +11148,9 @@ sub_04D6E7:
 
 sub_04D701:
 	lda	zp_02
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	zp_00
-	sta	$0A,x
+	sta	OBJ_X,x
 	rts
 
 sub_04D70A:
@@ -11163,11 +11163,11 @@ sub_04D70A:
 	lsr	a
 	and	#$001C
 	clc
-	adc	$04,x
+	adc	OBJ_FACING,x
 	tay
 	sty	$3A,x
 	lda	a:data_05F293,y
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	rts
 
 sub_04D724:
@@ -11175,11 +11175,11 @@ sub_04D724:
 	clc
 	lda	a:data_05F2B3,y
 	adc	zp_00
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
 	lda	a:data_05F2D3,y
 	adc	zp_02
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rts
 
 sub_04D737:
@@ -11189,18 +11189,18 @@ sub_04D737:
 loc_04D73D:
 	ldy	#$0800
 	lda	a:$000E,y
-	cmp	$0E,x
+	cmp	OBJ_Y,x
 	bcc	loc_04D7C6
 	clc
 	adc	#$FFF0
-	cmp	$0E,x
+	cmp	OBJ_Y,x
 	bcs	loc_04D7C6
 	lda	a:$000A,y
-	cmp	$0A,x
+	cmp	OBJ_X,x
 	bcs	loc_04D7C6
 	clc
 	adc	a:$0028,y
-	cmp	$0A,x
+	cmp	OBJ_X,x
 	bcc	loc_04D7C6
 	ldy	#$04C0
 	jsl	f:find_free_slot_y_down
@@ -11213,9 +11213,9 @@ loc_04D73D:
 	sta	a:$001A,y
 	lda	#$FFFE
 	sta	a:$001E,y
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	a:$000E,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	a:$000A,y
 loc_04D78B:
 	ldy	#$0003
@@ -11282,7 +11282,7 @@ loc_04D817:
 	lda	a:wram_1636
 	eor	#$0002
 	sta	a:wram_1636
-	sta	$04,x
+	sta	OBJ_FACING,x
 	lda	a:wram_163A
 	beq	loc_04D82A
 	dec	a:wram_163A
@@ -11296,34 +11296,34 @@ loc_04D82A:
 ; Object type $85. Stage 4, helicopter scene: a spinning projectile thrown
 ; upward that curves (probably by the enemy on helicopter_rope).
 update_enemy_type_85:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_04D866
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$F32D
-	sta	$20,x
+	sta	OBJ_ANIM,x
 	lda	#$000F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$3400
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$0008
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF8
-	sta	$2A,x
-	ldy	$04,x
+	sta	OBJ_HITBOX_H,x
+	ldy	OBJ_FACING,x
 	lda	a:data_05F33B,y
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	#$FFFF
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	#$2000
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	rtl
 loc_04D866:
-	ldy	$04,x
+	ldy	OBJ_FACING,x
 	clc
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	adc	a:data_05F33F,y
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	adc	a:data_05F343,y
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	rtl

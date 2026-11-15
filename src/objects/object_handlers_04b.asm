@@ -63,7 +63,7 @@ update_ending_crowd_member:
 	rtl
 
 update_ending_crowd_walker_a:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -77,62 +77,62 @@ tbl_ending_crowd_walker_a_states:
 	.addr	ending_crowd_walker_a_state_02
 
 ending_crowd_walker_a_state_00:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$00B4
 	bcs	loc_04E2BC
-	lda	$04,x
+	lda	OBJ_FACING,x
 	bne	loc_04E2AD
-	lda	$0A,x
+	lda	OBJ_X,x
 	inc	a
 	and	#$00FF
 	cmp	#$0030
 	bcs	loc_04E2C4
-	sta	$0A,x
+	sta	OBJ_X,x
 	bra	loc_04E2C0
 loc_04E2AD:
-	lda	$0A,x
+	lda	OBJ_X,x
 	dec	a
 	and	#$00FF
 	cmp	#$0008
 	bcc	loc_04E2C4
-	sta	$0A,x
+	sta	OBJ_X,x
 	bra	loc_04E2C0
 loc_04E2BC:
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_04E2C0:
 	jsr	a:place_ending_crowd_member
 	rtl
 loc_04E2C4:
-	lda	$04,x
+	lda	OBJ_FACING,x
 	eor	#$0002
 	and	#$0002
-	sta	$04,x
+	sta	OBJ_FACING,x
 	bra	loc_04E2C0
 
 ending_crowd_walker_a_state_01:
-	lda	$04,x
+	lda	OBJ_FACING,x
 	lda	#$F642
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	bra	loc_04E2BC
 
 ending_crowd_walker_a_state_02:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$00B4
 	bcc	loc_04E2C0
 	lda	#$F650
-	sta	$20,x
-	stz	$22,x
-	stz	$24,x
-	stz	$12,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
+	stz	OBJ_TIMER,x
+	stz	OBJ_STATE,x
 	bra	loc_04E2C0
 
 ; Object type $9F. Ending: another crowd member walking back and forth.
 update_ending_crowd_walker_b:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -148,73 +148,73 @@ tbl_ending_crowd_walker_b_states:
 	.addr	ending_crowd_walker_b_state_04
 
 ending_crowd_walker_b_state_00:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$00F0
 	bcc	loc_04E317
 loc_04E313:
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_04E317:
 	jsr	a:place_ending_crowd_member
 	rtl
 
 ending_crowd_walker_b_state_01:
-	lda	$04,x
+	lda	OBJ_FACING,x
 	lda	#$F678
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	bra	loc_04E313
 
 ending_crowd_walker_b_state_02:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$00B4
 	bcc	loc_04E317
 	bcs	loc_04E313
 
 ending_crowd_walker_b_state_03:
-	lda	$04,x
+	lda	OBJ_FACING,x
 	lda	#$F680
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	bra	loc_04E313
 
 ending_crowd_walker_b_state_04:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$00B4
 	bcs	loc_04E372
-	lda	$04,x
+	lda	OBJ_FACING,x
 	bne	loc_04E359
-	lda	$0A,x
+	lda	OBJ_X,x
 	inc	a
 	inc	a
 	and	#$00FF
 	cmp	#$00E8
 	bcs	loc_04E366
-	sta	$0A,x
+	sta	OBJ_X,x
 	bra	loc_04E317
 loc_04E359:
-	lda	$0A,x
+	lda	OBJ_X,x
 	dec	a
 	dec	a
 	cmp	#$00C0
 	bcc	loc_04E366
-	sta	$0A,x
+	sta	OBJ_X,x
 	bra	loc_04E317
 loc_04E366:
-	lda	$04,x
+	lda	OBJ_FACING,x
 	eor	#$0002
 	and	#$0002
-	sta	$04,x
+	sta	OBJ_FACING,x
 	bra	loc_04E317
 loc_04E372:
 	lda	#$F66A
-	sta	$20,x
-	stz	$22,x
-	stz	$24,x
-	stz	$12,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
+	stz	OBJ_TIMER,x
+	stz	OBJ_STATE,x
 	bra	loc_04E317
 
 place_ending_crowd_member:
@@ -223,7 +223,7 @@ place_ending_crowd_member:
 	sbc	a:wram_1398
 	clc
 	adc	$32,x
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rts
 	; CDL: not accessed
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF

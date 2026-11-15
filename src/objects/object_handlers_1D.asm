@@ -11,7 +11,7 @@
 ; 8). Then spawns the crowd (spawn_ending_crowd) and the fireworks
 ; (spawn_ending_firework).
 update_ending_sequence:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	cmp	#$0009
 	bcs	loc_1DAF38
 	lda	#$918A
@@ -19,32 +19,32 @@ update_ending_sequence:
 	lda	#$0030
 	sta	cgram_upload_addr
 loc_1DAF38:
-	lda	$26,x
+	lda	OBJ_SAVED_ATTR,x
 	beq	loc_1DAF46
 	lda	#$912A
 	sta	cgram_upload_src
 	lda	#$B030
 	sta	cgram_upload_addr
 loc_1DAF46:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_1DAF72
-	stz	$06,x
+	stz	OBJ_HP,x
 	lda	#$0001
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0002
 	sta	a:wram_1688
-	stz	$1C,x
-	stz	$1E,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	lda	#$000F
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$8000
 	sta	a:wram_0956
 	lda	#$076F
 	sta	f:wram_7EE800
 	lda	#$0200
-	sta	$24,x
+	sta	OBJ_TIMER,x
 loc_1DAF72:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -98,7 +98,7 @@ tbl_ending_sequence_states:
 	.addr	ending_sequence_state_2A
 
 ending_sequence_state_00:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0002
 	sta	a:wram_16B6
 	lda	#$8000
@@ -116,7 +116,7 @@ ending_sequence_state_00:
 ending_sequence_state_01:
 	lda	a:wram_13FE
 	beq	loc_1DB06A
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	a:wram_13FA
 	lda	#$0065
 	sta	a:wram_0290
@@ -158,7 +158,7 @@ ending_sequence_state_02:
 	bmi	loc_1DB086
 	cmp	#$006C
 	bcc	loc_1DB086
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	a:wram_029C
 	lda	#$0001
 	sta	a:player_autopilot_mode
@@ -181,21 +181,21 @@ loc_1DB097:
 	cmp	#$0001
 	bne	loc_1DB0AB
 loc_1DB0A4:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0040
-	sta	$24,x
+	sta	OBJ_TIMER,x
 loc_1DB0AB:
 	rtl
 
 ending_sequence_state_04:
 	jsr	a:sub_1DB41F
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DB0C1
 	lda	#$FFFF
 	sta	a:wram_029E
 	lda	#$8000
 	sta	a:wram_029C
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_1DB0C1:
 	rtl
 
@@ -208,37 +208,37 @@ ending_sequence_state_05:
 	stz	a:wram_029C
 	stz	a:wram_029E
 	lda	#$0080
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_1DB0DC:
 	rtl
 
 ending_sequence_state_06:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DB0E8
 	lda	#$0080
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_1DB0E8:
 	rtl
 
 ending_sequence_state_07:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DB102
 	lda	difficulty
 	cmp	#$0004
 	beq	loc_1DB0FF
 	lda	#$0100
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0025
-	sta	$12,x
+	sta	OBJ_STATE,x
 	rtl
 loc_1DB0FF:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 loc_1DB102:
 	ldy	#$FF59
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	bit	#$0008
 	bne	loc_1DB10F
 	ldy	#$FF5D
@@ -252,21 +252,21 @@ ending_sequence_state_08:
 	stz	a:wram_1636
 	lda	#$0010
 	sta	a:wram_1638
-	inc	$12,x
+	inc	OBJ_STATE,x
 	jsr	a:sub_1DB81A
 	stz	$30,x
 	lda	#$401D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$002C
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFB0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$006A
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$00C0
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0180
-	sta	$06,x
+	sta	OBJ_HP,x
 	stz	$34,x
 	stz	$36,x
 	lda	#$0001
@@ -299,7 +299,7 @@ ending_sequence_state_09:
 	bcc	loc_1DB19C
 	lda	#$0049
 	jsl	f:queue_sound
-	inc	$12,x
+	inc	OBJ_STATE,x
 	jsr	a:sub_1DB642
 	lda	#$0002
 	sta	a:wram_16B6
@@ -312,21 +312,21 @@ ending_sequence_state_0A:
 	beq	loc_1DB1D0
 	bit	#$0080
 	bne	loc_1DB1D0
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	a:wram_029C
 	stz	a:wram_029E
-	stz	$1C,x
-	stz	$1E,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	lda	#$0004
 	sta	a:wram_13BA
 	lda	#$0100
-	sta	$24,x
+	sta	OBJ_TIMER,x
 
 ending_sequence_state_0B:
 	jsr	a:sub_1DB685
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DB1D0
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$8000
 	sta	a:wram_029C
 loc_1DB1D0:
@@ -364,13 +364,13 @@ ending_sequence_state_0C:
 	jsr	a:sub_1DB741
 	ldy	#$0240
 	jsr	a:sub_1DB741
-	inc	$12,x
+	inc	OBJ_STATE,x
 
 ending_sequence_state_0D:
 	lda	stage_frame_counter
 	bit	#$01FF
 	bne	loc_1DB22E
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0400
 	sta	$36,x
 loc_1DB22E:
@@ -397,7 +397,7 @@ ending_sequence_state_0E:
 	jsr	a:sub_1DB41F
 	dec	$36,x
 	bpl	loc_1DB268
-	dec	$12,x
+	dec	OBJ_STATE,x
 loc_1DB268:
 	rtl
 
@@ -413,7 +413,7 @@ ending_sequence_state_14:
 	adc	#$0100
 	and	#$FF00
 	sta	a:wram_13B0
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0006
 	sta	a:wram_13BA
 	lda	#$0012
@@ -440,20 +440,20 @@ loc_1DB2BB:
 
 ending_sequence_state_10:
 	jsr	a:sub_1DB44A
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DB2F1
-	inc	$12,x
+	inc	OBJ_STATE,x
 	phx
 	ldx	#.loword(data_05F8C3)
 	jsl	f:load_data_list
 	ldy	#$F8DA
 	jsl	f:sub_009982
 	plx
-	stz	$0A,x
+	stz	OBJ_X,x
 	lda	#$0180
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0200
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0100
 	sta	f:wram_7EE809
 loc_1DB2F1:
@@ -482,8 +482,8 @@ ending_sequence_state_15:
 	lda	#$0004
 	sta	a:wram_13BA
 	lda	#$00C0
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	stz	a:wram_163A
 	stz	a:wram_163C
 loc_1DB337:
@@ -497,7 +497,7 @@ ending_sequence_state_20:
 	bcc	loc_1DB360
 	stz	a:wram_163A
 	stz	a:wram_163C
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0006
 	sta	a:wram_13BA
 	lda	#$0900
@@ -530,7 +530,7 @@ ending_sequence_state_21:
 	cmp	a:wram_1398
 	bcs	loc_1DB3CA
 	sta	a:wram_1398
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	a:wram_1380
 	and	#$0100
 	asl	a
@@ -546,16 +546,16 @@ ending_sequence_state_21:
 	lda	#$0020
 	jsl	f:sub_00CFAF
 	lda	#$0060
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0002
 	sta	a:player_autopilot_mode
 loc_1DB3CA:
 	rtl
 
 ending_sequence_state_22:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	ending_sequence_state_24
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	a:p1_lives
 	beq	loc_1DB3E2
 	lda	#$0013
@@ -573,15 +573,15 @@ loc_1DB3E2:
 loc_1DB3F3:
 	stz	a:player_autopilot_mode
 	lda	#$01F0
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	bra	ending_sequence_state_24
 
 ending_sequence_state_23:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	ending_sequence_state_24
 	lda	#$0100
 	sta	a:stage_exit_request
-	inc	$12,x
+	inc	OBJ_STATE,x
 
 ending_sequence_state_24:
 	lda	a:wram_028E
@@ -621,10 +621,10 @@ sub_1DB43F:
 sub_1DB44A:
 	sec
 	lda	#$0141
-	sbc	$0E,x
+	sbc	OBJ_Y,x
 	sta	f:wram_7EE809
 	clc
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$FFF0
 	sta	a:wram_094E
 	clc
@@ -872,11 +872,11 @@ sub_1DB642:
 	lda	#$2000
 	sta	a:wram_029C
 	sta	a:wram_163A
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	lda	#$FFFF
 	sta	a:wram_029E
 	sta	a:wram_163C
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	rts
 
 sub_1DB668:
@@ -962,19 +962,19 @@ loc_1DB70E:
 sub_1DB70F:
 	lda	$34,x
 	beq	loc_1DB722
-	stz	$1C,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	#$FFFE
-	sta	$1E,x
-	lda	$0E,x
+	sta	OBJ_Y_VEL,x
+	lda	OBJ_Y,x
 	cmp	#$00C4
 	bcc	loc_1DB739
 loc_1DB721:
 	rts
 loc_1DB722:
 	lda	#$C000
-	sta	$1C,x
-	stz	$1E,x
-	lda	$0E,x
+	sta	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	lda	OBJ_Y,x
 	cmp	#$0100
 	bcc	loc_1DB721
 	lda	#$005D
@@ -1128,17 +1128,17 @@ sub_1DB85C:
 	ldy	#$0000
 loc_1DB863:
 	lda	#$0096
-	sta	$10,x
+	sta	OBJ_TYPE,x
 	lda	zp_04
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$C503
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$0600
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$0008
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF8
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	phx
 	phy
 	lda	#$0180
@@ -1183,7 +1183,7 @@ update_enemy_type_96:
 	lda	a:wram_1688
 	beq	loc_1DB8CB
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_1DB8CB:
 	clc
@@ -1203,12 +1203,12 @@ loc_1DB8CB:
 	clc
 	lda	zp_FC
 	adc	zp_08
-	sta	$0A,x
+	sta	OBJ_X,x
 	sta	zp_FC
 	clc
 	lda	zp_FE
 	adc	zp_0A
-	sta	$0E,x
+	sta	OBJ_Y,x
 	sta	zp_FE
 	ldy	$36,x
 	beq	loc_1DB940
@@ -1256,7 +1256,7 @@ loc_1DB940:
 	and	#$0006
 	tay
 	lda	a:data_05F8AB,y
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	bra	loc_1DB930
 
 ; Object type $97. Not seen in the emulator.
@@ -1417,9 +1417,9 @@ ending_sequence_state_16:
 	sta	zp_02
 	jsr	a:sub_1DB762
 	jsr	a:sub_1DB43F
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	bmi	loc_1DBAAA
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DBAE9
 loc_1DBAAA:
 	dec	a:inidisp_shadow
@@ -1431,11 +1431,11 @@ loc_1DBAB4:
 	stz	a:wram_029E
 	stz	a:tm_shadow
 	stz	hdma_preset
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$00F0
 	sta	a:wram_13D8
 	lda	#$0024
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	phx
 	ldy	#$FECD
 	jsl	f:sub_009982
@@ -1450,10 +1450,10 @@ loc_1DBAE9:
 	rtl
 
 ending_sequence_state_17:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DBB2D
 	lda	#$0080
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	phx
 	ldy	difficulty
 	ldx	a:data_05FD9B,y
@@ -1461,7 +1461,7 @@ ending_sequence_state_17:
 	ldy	#$FEE8
 	jsl	f:sub_009982
 	plx
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0081
 	jsl	f:queue_sound
 	stz	a:wram_029C
@@ -1481,18 +1481,18 @@ loc_1DBB2D:
 	rtl
 
 ending_sequence_state_18:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DBB6A
 	lda	#$0040
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	difficulty
 	cmp	#$0004
 	beq	loc_1DBB45
 	lda	#$0029
-	sta	$12,x
+	sta	OBJ_STATE,x
 	bra	loc_1DBB47
 loc_1DBB45:
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_1DBB47:
 	phx
 	ldx	#$F4C3
@@ -1510,11 +1510,11 @@ loc_1DBB6A:
 	rtl
 
 ending_sequence_state_19:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DBB83
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0080
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	phx
 	ldy	a:wram_163E
 	lda	a:ptrs_05FDBC,y
@@ -1525,20 +1525,20 @@ loc_1DBB83:
 	rtl
 
 ending_sequence_state_1A:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DBB8F
 	lda	#$0004
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_1DBB8F:
 	rtl
 
 ending_sequence_state_1B:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DBBA8
 	lda	#$00E0
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	phx
 	ldx	#$1210
 	ldy	#$FED3
@@ -1551,7 +1551,7 @@ loc_1DBBA8:
 	bne	loc_1DBBD9
 	lda	stage_frame_odd
 	beq	loc_1DBBD9
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	and	#$0002
 	tay
 	lda	a:data_05FDF7,y
@@ -1573,12 +1573,12 @@ loc_1DBBD9:
 	rtl
 
 ending_sequence_state_1C:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DBC15
 	lda	#$0014
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0019
-	sta	$12,x
+	sta	OBJ_STATE,x
 	phx
 	ldx	#$1210
 	ldy	#$FED9
@@ -1590,9 +1590,9 @@ ending_sequence_state_1C:
 	cmp	#$000A
 	bcc	loc_1DBC15
 	lda	#$0054
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$001D
-	sta	$12,x
+	sta	OBJ_STATE,x
 	phx
 	ldy	#$FECD
 	jsl	f:sub_009982
@@ -1601,13 +1601,13 @@ loc_1DBC15:
 	rtl
 
 ending_sequence_state_1E:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bmi	loc_1DBC1D
 	brl	loc_1DBBA8
 loc_1DBC1D:
 	lda	#$0380
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	stz	hdma_preset
 	jsr	a:update_enemy_type_97
 	rtl
@@ -1616,11 +1616,11 @@ ending_sequence_state_1F:
 	lda	stage_frame_odd
 	beq	loc_1DBC58
 	sec
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	sbc	#$0080
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	bne	loc_1DBC49
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0012
 	sta	hdma_preset
 	lda	#$001F
@@ -1638,7 +1638,7 @@ loc_1DBC58:
 	rtl
 
 ending_sequence_state_25:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DBC89
 	lda	stage_frame_odd
 	beq	loc_1DBC89
@@ -1651,7 +1651,7 @@ ending_sequence_state_25:
 	phx
 	jsl	f:sub_00FEA3
 	plx
-	inc	$12,x
+	inc	OBJ_STATE,x
 	jsr	a:sub_1DB642
 	lda	#$0012
 	sta	a:wram_1636
@@ -1671,23 +1671,23 @@ ending_sequence_state_26:
 	beq	loc_1DBCBB
 	bit	#$0080
 	bne	loc_1DBCBB
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	a:wram_029C
 	stz	a:wram_029E
-	stz	$1C,x
-	stz	$1E,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	lda	#$0004
 	sta	a:wram_13BA
 	lda	#$0100
-	sta	$24,x
+	sta	OBJ_TIMER,x
 loc_1DBCBB:
 	jsr	a:sub_1DB685
 	rtl
 
 ending_sequence_state_27:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DBCBB
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$8000
 	sta	a:wram_029C
 	bra	loc_1DBCBB
@@ -1698,28 +1698,28 @@ ending_sequence_state_28:
 	cmp	#$0010
 	bcc	loc_1DBCBB
 	lda	#$0010
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0010
-	sta	$12,x
+	sta	OBJ_STATE,x
 	bra	loc_1DBCBB
 
 ending_sequence_state_0F:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$0108
 	bcc	loc_1DBCF5
-	stz	$1C,x
-	stz	$1E,x
-	inc	$12,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	inc	OBJ_STATE,x
 	lda	#$0010
-	sta	$24,x
+	sta	OBJ_TIMER,x
 loc_1DBCF5:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	bmi	loc_1DBCFD
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bra	loc_1DBD02
 loc_1DBCFD:
 	lda	#$8000
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 loc_1DBD02:
 	jsr	a:sub_1DB758
 	jsr	a:sub_1DB685
@@ -1738,9 +1738,9 @@ ending_sequence_state_11:
 	jsr	a:sub_1DB41F
 	jsr	a:sub_1DBD89
 	jsr	a:sub_1DBD6A
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DBD31
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_1DBD31:
 	rtl
 
@@ -1750,28 +1750,28 @@ ending_sequence_state_12:
 	jsr	a:sub_1DB41F
 	jsr	a:sub_1DBD89
 	jsr	a:sub_1DBD6A
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0002
 	sta	a:stage_pause_disabled
 	rtl
 
 ; Object type $98. Ending: explosions along the floor of the lair.
 update_ending_explosion:
-	ldy	$20,x
+	ldy	OBJ_ANIM,x
 	bne	loc_1DBD54
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_1DBD54:
 	lda	a:$0004,y
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$8000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	rtl
 
 ; Object type $99. Not seen in the emulator.
@@ -1796,12 +1796,12 @@ loc_1DBD88:
 	rts
 
 sub_1DBD89:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00E0
 	bcc	loc_1DBD96
 	lda	stage_frame_mod4
 	bne	loc_1DBD96
-	dec	$0E,x
+	dec	OBJ_Y,x
 loc_1DBD96:
 	lda	#$00FF
 	sta	zp_04
@@ -1809,10 +1809,10 @@ loc_1DBD96:
 	sta	zp_06
 
 sub_1DBDA0:
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$FFF0
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	zp_02
 	ldy	#$02C0
 	lda	#$0001
@@ -1853,9 +1853,9 @@ loc_1DBDF6:
 	rts
 
 ending_sequence_state_29:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	bmi	loc_1DBE03
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	ending_sequence_state_2A
 loc_1DBE03:
 	lda	joy1_pressed
@@ -1875,7 +1875,7 @@ loc_1DBE11:
 	sta	a:stage_exit_request
 	lda	#$0084
 	jsl	f:queue_sound
-	inc	$12,x
+	inc	OBJ_STATE,x
 
 ending_sequence_state_2A:
 	jsr	a:sub_1DBE30
@@ -1927,7 +1927,7 @@ update_brain_boss:
 	bmi	loc_1DBE80
 	dec	a:wram_1644
 loc_1DBE80:
-	lda	$26,x
+	lda	OBJ_SAVED_ATTR,x
 	beq	loc_1DBEA5
 	lda	#$912A
 	sta	cgram_upload_src
@@ -1943,40 +1943,40 @@ loc_1DBE98:
 	lda	#$0004
 	sta	a:wram_16BA
 loc_1DBEA5:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_1DBED8
 	lda	#$0002
 	sta	a:wram_1688
 	lda	#$0002
 	sta	a:wram_1638
 	lda	#$0008
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$0030
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0100
-	sta	$24,x
-	stz	$06,x
+	sta	OBJ_TIMER,x
+	stz	OBJ_HP,x
 	lda	#$003F
 	sta	$34,x
 	lda	#$001F
 	sta	$36,x
-	stz	$1E,x
-	stz	$1A,x
-	stz	$1C,x
-	stz	$18,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_X_VEL_SUB,x
 loc_1DBED8:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	beq	loc_1DBEEE
 	sec
 	lda	#$0160
-	sbc	$0A,x
+	sbc	OBJ_X,x
 	sta	a:wram_13C0
 	sec
 	lda	#$0140
-	sbc	$0E,x
+	sbc	OBJ_Y,x
 	sta	a:wram_13D8
 loc_1DBEEE:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -1998,18 +1998,18 @@ tbl_brain_boss_states:
 	.addr	brain_boss_state_0A
 
 brain_boss_state_00:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	ldy	difficulty
 	lda	#$0031
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0040
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	a:data_05FF9B,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0038
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFD0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$014B
 	sta	$36,x
 	stz	$38,x
@@ -2017,9 +2017,9 @@ brain_boss_state_00:
 	sec
 	lda	#$0140
 	sbc	a:wram_13D8
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0060
-	sta	$0A,x
+	sta	OBJ_X,x
 	stz	a:wram_1638
 	phx
 	ldx	#.loword(data_05FF27)
@@ -2030,13 +2030,13 @@ brain_boss_state_00:
 	jml	f:loc_00E733
 
 brain_boss_state_01:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DBF72
 	lda	#$8000
-	sta	$1C,x
-	inc	$12,x
+	sta	OBJ_Y_VEL_SUB,x
+	inc	OBJ_STATE,x
 	lda	#$0040
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0010
 	sta	hdma_preset
 loc_1DBF72:
@@ -2044,12 +2044,12 @@ loc_1DBF72:
 
 brain_boss_state_02:
 	jsr	a:sub_1DCB48
-	lda	$0E,x
+	lda	OBJ_Y,x
 	bmi	loc_1DBF88
 	cmp	#$0070
 	bcc	loc_1DBF88
-	stz	$1C,x
-	inc	$12,x
+	stz	OBJ_Y_VEL_SUB,x
+	inc	OBJ_STATE,x
 	stz	hdma_preset
 loc_1DBF88:
 	rtl
@@ -2063,7 +2063,7 @@ brain_boss_state_03:
 	lda	#$0001
 	sta	a:wram_163C
 	stz	a:wram_163E
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 
 brain_boss_state_04:
@@ -2093,7 +2093,7 @@ loc_1DBFD4:
 	cmp	#$0002
 	beq	loc_1DC005
 	lda	#$0060
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	ldy	#$0300
 loc_1DBFE1:
 	lda	a:$0006,y
@@ -2115,15 +2115,15 @@ loc_1DBFEE:
 loc_1DC004:
 	rtl
 loc_1DC005:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DC004
 	lda	#$0011
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	rng_hi
 	and	#$003F
 	adc	#$0200
 	sta	a:wram_1644
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	a:wram_1636
 	phx
 	asl	a
@@ -2162,24 +2162,24 @@ tbl_1DC04B:
 	.addr	sub_1DC51B
 
 brain_boss_state_06:
-	lda	$06,x
+	lda	OBJ_HP,x
 	cmp	#$0100
 	bcc	loc_1DC065
 	lsr	a
-	sta	$06,x
+	sta	OBJ_HP,x
 loc_1DC065:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	$3A,x
 	lda	#$0010
 	sta	hdma_preset
 	lda	#$014B
 	sta	$36,x
 	lda	#$0031
-	sta	$16,x
-	stz	$18,x
-	stz	$1A,x
-	stz	$1C,x
-	stz	$1E,x
+	sta	OBJ_FLAGS,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	stz	$3E,x
 	jsr	a:sub_1DCB48
 	stz	a:wram_1642
@@ -2199,10 +2199,10 @@ loc_1DC09B:
 	bcs	loc_1DC0C6
 	lda	#$C6DE
 	jsl	f:sub_01CF66
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$FFE4
 	sta	a:$000E,y
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$001C
 	sta	a:$000A,y
 	lda	zp_FC
@@ -2213,11 +2213,11 @@ loc_1DC09B:
 	bne	loc_1DC09B
 loc_1DC0C6:
 	lda	#$0180
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0105
 	sta	$36,x
 	lda	#$0020
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0003
 	sta	a:shake_timer
 loc_1DC0DB:
@@ -2227,14 +2227,14 @@ loc_1DC0DB:
 loc_1DC0E1:
 	cpy	#$0002
 	beq	loc_1DC10A
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DC106
 	inc	$3A,x
 	lda	#$0060
-	sta	$0A,x
+	sta	OBJ_X,x
 	ldy	a:wram_1638
 	lda	a:data_05FF1B,y
-	sta	$0E,x
+	sta	OBJ_Y,x
 	ldy	#$FF59
 	jsr	a:sub_1DCC1C
 	lda	#$0059
@@ -2247,7 +2247,7 @@ loc_1DC10A:
 	bcc	loc_1DC119
 	ldy	a:wram_1638
 	lda	a:data_05FF1F,y
-	sta	$12,x
+	sta	OBJ_STATE,x
 	stz	hdma_preset
 loc_1DC119:
 	inc	$36,x
@@ -2259,10 +2259,10 @@ loc_1DC119:
 brain_boss_state_08:
 	lda	#$0004
 	sta	a:shake_timer
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DC13D
 	lda	#$0006
-	sta	$12,x
+	sta	OBJ_STATE,x
 	phx
 	ldx	#.loword(data_05FF30)
 	jsl	f:load_data_list
@@ -2273,19 +2273,19 @@ loc_1DC13D:
 
 brain_boss_state_09:
 	lda	#$0200
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 
 brain_boss_state_0A:
 	lda	#$918A
 	sta	cgram_upload_src
 	lda	#$0030
 	sta	cgram_upload_addr
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DC175
 	lda	#$0095
-	sta	$10,x
-	stz	$12,x
+	sta	OBJ_TYPE,x
+	stz	OBJ_STATE,x
 	clc
 	lda	a:wram_1380
 	and	#$0100
@@ -2297,13 +2297,13 @@ brain_boss_state_0A:
 	adc	#$0040
 	sta	a:bg1sc_shadow
 loc_1DC175:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	cmp	#$0180
 	bne	loc_1DC182
 	inc	a:wram_1642
 	inc	a:wram_1642
 loc_1DC182:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	cmp	#$0180
 	bcs	loc_1DC18D
 	jsl	f:sub_00FD8D
@@ -2336,7 +2336,7 @@ sub_1DC1B8:
 	jsr	a:sub_1DCBD1
 	lda	a:wram_1644
 	bpl	loc_1DC1D0
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 loc_1DC1D0:
 	lda	stage_frame_counter
@@ -2409,10 +2409,10 @@ tbl_1DC24D:
 	.addr	sub_1DC2AA
 
 sub_1DC259:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00BC
 	bcc	loc_1DC281
-	stz	$1E,x
+	stz	OBJ_Y_VEL,x
 	lda	#$0003
 	sta	a:shake_timer
 	inc	a:wram_1642
@@ -2420,7 +2420,7 @@ sub_1DC259:
 	cmp	#$0005
 	beq	loc_1DC281
 	lda	#$0050
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$008C
 	ldy	#$0340
 	jsr	a:sub_1DCA52
@@ -2428,10 +2428,10 @@ loc_1DC281:
 	rtl
 
 sub_1DC282:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DC28E
 	lda	#$FFFE
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	inc	a:wram_1642
 loc_1DC28E:
 	rtl
@@ -2440,16 +2440,16 @@ sub_1DC28F:
 	lda	a:wram_1644
 	bpl	loc_1DC29C
 	lda	#$0001
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	inc	a:wram_1642
 loc_1DC29C:
 	rtl
 
 sub_1DC29D:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$0070
 	bcs	loc_1DC2A9
-	stz	$1E,x
+	stz	OBJ_Y_VEL,x
 	inc	a:wram_1642
 loc_1DC2A9:
 	rtl
@@ -2462,10 +2462,10 @@ sub_1DC2AB:
 	bne	loc_1DC2C0
 	ldy	a:difficulty
 	lda	a:data_05FF61,y
-	cmp	$0E,x
+	cmp	OBJ_Y,x
 	bcc	loc_1DC2BF
 	inc	a:wram_1642
-	stz	$1E,x
+	stz	OBJ_Y_VEL,x
 loc_1DC2BF:
 	rtl
 loc_1DC2C0:
@@ -2474,7 +2474,7 @@ loc_1DC2C0:
 	jsr	a:sub_1DCB7A
 	lda	a:wram_1644
 	bpl	loc_1DC2D1
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 loc_1DC2D1:
 	lda	stage_frame_mod8
@@ -2540,7 +2540,7 @@ loc_1DC34E:
 	bne	loc_1DC359
 	dec	a:wram_163C
 	bpl	loc_1DC359
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_1DC359:
 	rtl
 
@@ -2553,7 +2553,7 @@ sub_1DC35A:
 	jsr	a:sub_1DCBD1
 	lda	a:wram_1644
 	bpl	loc_1DC371
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_1DC371:
 	rtl
 
@@ -2561,18 +2561,18 @@ sub_1DC372:
 	lda	a:wram_1642
 	bne	loc_1DC39D
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$1480
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
-	lda	$0E,x
+	sta	OBJ_Y_VEL,x
+	lda	OBJ_Y,x
 	cmp	#$00C0
 	bcc	loc_1DC39C
-	stz	$1A,x
-	stz	$1C,x
-	stz	$1E,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	lda	#$0004
 	sta	a:shake_timer
 	inc	a:wram_1642
@@ -2625,14 +2625,14 @@ loc_1DC3F3:
 loc_1DC3F4:
 	lda	a:wram_1644
 	bpl	loc_1DC3FB
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_1DC3FB:
 	rtl
 
 sub_1DC3FC:
 	lda	a:wram_1644
 	bpl	loc_1DC404
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 loc_1DC404:
 	ldy	$38,x
@@ -2658,10 +2658,10 @@ tbl_1DC41C:
 	.addr	sub_1DC44C
 
 sub_1DC42E:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$007C
 	bcs	loc_1DC437
-	inc	$0E,x
+	inc	OBJ_Y,x
 loc_1DC437:
 	inc	a:wram_163C
 	lda	a:wram_163C
@@ -2674,7 +2674,7 @@ loc_1DC44B:
 	rtl
 
 sub_1DC44C:
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$0040
 	bcs	loc_1DC458
 	lda	#$0000
@@ -2743,7 +2743,7 @@ loc_1DC4C3:
 	lda	rng_lo
 	and	#$000F
 	adc	#$0004
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0004
 	sta	a:shake_timer
 	lda	#$0039
@@ -2756,19 +2756,19 @@ loc_1DC4DA:
 	lda	a:$0036,y
 	sbc	a:$000A,y
 	clc
-	adc	$0A,x
-	sta	$0A,x
+	adc	OBJ_X,x
+	sta	OBJ_X,x
 	sec
 	lda	a:$0038,y
 	sbc	a:$000E,y
 	clc
-	adc	$0E,x
-	sta	$0E,x
+	adc	OBJ_Y,x
+	sta	OBJ_Y,x
 	rtl
 
 sub_1DC4F9:
-	dec	$24,x
-	lda	$24,x
+	dec	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	bpl	loc_1DC51A
 	lda	$38,x
 	eor	#$0002
@@ -2813,7 +2813,7 @@ loc_1DC544:
 	jsr	a:sub_1DCBD1
 	lda	a:wram_1644
 	bpl	loc_1DC558
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_1DC558:
 	rtl
 
@@ -2834,12 +2834,12 @@ sub_1DC559:
 
 sub_1DC57A:
 	lda	#$0001
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	rtl
 
 sub_1DC580:
 	lda	#$FFFF
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	rtl
 
 sub_1DC586:
@@ -2867,13 +2867,13 @@ sub_1DC5A7:
 	rtl
 
 sub_1DC5B7:
-	stz	$24,x
+	stz	OBJ_TIMER,x
 	clc
 	lda	a:wram_1644
 	adc	#$0100
 	sta	a:wram_1644
 	lda	#$0002
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	rtl
 
 sub_1DC5C9:
@@ -2915,33 +2915,33 @@ update_brain_boss_orb_cluster:
 	lda	a:wram_163C
 	cmp	#$0030
 	bcc	loc_1DC62C
-	lda	$14,x
+	lda	OBJ_HIT,x
 	beq	loc_1DC629
 	lda	#$0001
 	sta	a:wram_163E
-	sta	$06,x
+	sta	OBJ_HP,x
 loc_1DC629:
 	lda	a:wram_163C
 loc_1DC62C:
 	bra	loc_1DC687
 loc_1DC62E:
-	lda	$16,x
+	lda	OBJ_FLAGS,x
 	cmp	#$0030
 	bne	loc_1DC65C
 	dec	$30,x
 	bpl	loc_1DC63F
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_1DC63F:
 	lda	stage_frame_counter
 	bit	#$0004
 	bne	loc_1DC64B
 	lda	$3A,x
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	rtl
 loc_1DC64B:
-	stz	$00,x
+	stz	OBJ_SPRITE,x
 	rtl
 
 ; Object type $8B. Stage 6, brain_boss (hard): a ring of 16 orbs that bursts
@@ -2951,7 +2951,7 @@ update_brain_boss_orb_ring:
 	bne	loc_1DC65C
 	lda	a:wram_1644
 	bmi	loc_1DC65C
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_1DC674
 loc_1DC65C:
 	lda	#$0004
@@ -2980,12 +2980,12 @@ loc_1DC687:
 	lda	a:wram_090A
 	adc	#$001C
 	adc	zp_08
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
 	lda	a:wram_090E
 	adc	#$FFE4
 	adc	zp_0A
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 
 ; Object type $8C. Stage 6, brain_boss: chain of red links swung from the
@@ -2995,7 +2995,7 @@ update_brain_boss_chain:
 	beq	loc_1DC6AF
 	brl	loc_1DC7C9
 loc_1DC6AF:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -3010,9 +3010,9 @@ tbl_brain_boss_chain_states:
 	.addr	brain_boss_chain_state_03
 
 brain_boss_chain_state_00:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0090
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$003E
 	sta	$32,x
 	lda	#$0000
@@ -3040,40 +3040,40 @@ brain_boss_chain_state_02:
 	lda	a:wram_090A
 	adc	#$001C
 	sec
-	sbc	$0A,x
+	sbc	OBJ_X,x
 	bpl	loc_1DC712
 	eor	#$FFFF
 loc_1DC712:
 	cmp	#$0004
 	bcs	loc_1DC749
-	stz	$18,x
-	stz	$1A,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
 	clc
 	lda	a:wram_090E
 	adc	#$FFE4
 	sec
-	sbc	$0E,x
+	sbc	OBJ_Y,x
 	bpl	loc_1DC72A
 	eor	#$FFFF
 loc_1DC72A:
 	cmp	#$0004
 	bcs	loc_1DC749
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0070
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0180
-	sta	$0A,x
+	sta	OBJ_X,x
 	jml	f:sub_01A513
 
 brain_boss_chain_state_01:
 	lda	a:wram_1642
 	cmp	#$0005
 	bne	loc_1DC749
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_1DC749:
 	lda	#$0001
 	sta	a:shake_continuous
-	lda	$0A,x
+	lda	OBJ_X,x
 	bmi	loc_1DC761
 	cmp	#$0020
 	bcc	loc_1DC761
@@ -3087,32 +3087,32 @@ loc_1DC761:
 loc_1DC765:
 	lda	$36,x
 	bne	loc_1DC783
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	bpl	loc_1DC772
 	cmp	#$FFFC
 	bcc	loc_1DC79B
 loc_1DC772:
 	sec
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	sbc	#$3000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	sbc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	bra	loc_1DC79B
 loc_1DC783:
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	bmi	loc_1DC78C
 	cmp	#$0004
 	bcs	loc_1DC79B
 loc_1DC78C:
 	clc
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	adc	#$3000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	adc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 loc_1DC79B:
 	lda	$34,x
 	inc	a
@@ -3127,21 +3127,21 @@ loc_1DC79B:
 	rol	a
 	sta	zp_02
 	clc
-	lda	$0C,x
+	lda	OBJ_Y_SUB,x
 	adc	zp_00
-	sta	$0C,x
-	lda	$0E,x
+	sta	OBJ_Y_SUB,x
+	lda	OBJ_Y,x
 	adc	zp_02
-	sta	$0E,x
+	sta	OBJ_Y,x
 	jml	f:sub_01A513
 
 brain_boss_chain_state_03:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DC7D2
 	inc	a:wram_0912
 loc_1DC7C9:
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	jml	f:sub_01A52C
 loc_1DC7D2:
 	jml	f:sub_01A513
@@ -3149,24 +3149,24 @@ loc_1DC7D2:
 ; Object type $8E. Stage 6, brain_boss (hard): spiked orbs around the brain
 ; (not identified exactly).
 update_enemy_type_8E:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00B4
 	bcc	loc_1DC7F1
 	lda	#$0030
 	jsl	f:queue_sound
 	lda	#$FFFC
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	txy
 	lda	#$C516
 	jml	f:sub_01CF66
 loc_1DC7F1:
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$3000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	rtl
 
 ; Object type $8F. Stage 6, brain_boss: glowing orbs thrown by the brain (not
@@ -3179,7 +3179,7 @@ update_enemy_type_8F:
 	bcc	loc_1DC822
 	bne	loc_1DC817
 	lda	#$001C
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	bra	loc_1DC81B
 loc_1DC817:
 	lda	stage_frame_odd
@@ -3187,7 +3187,7 @@ loc_1DC817:
 loc_1DC81B:
 	lda	#$C536
 loc_1DC81E:
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	bra	loc_1DC847
 loc_1DC822:
 	cmp	#$0002
@@ -3196,7 +3196,7 @@ loc_1DC822:
 	lda	a:$0016,y
 	beq	loc_1DC835
 	bmi	loc_1DC835
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_1DC847
 loc_1DC835:
 	jsr	a:sub_1DCAC9
@@ -3217,16 +3217,16 @@ loc_1DC855:
 	clc
 	lda	a:$1312,y
 	adc	zp_08
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
 	lda	a:$1314,y
 	adc	zp_0A
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 
 ; Object type $90. Stage 6, brain_boss: eyeballs (12 HP) thrown by the brain.
 update_brain_boss_eyeball:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bmi	loc_1DC87B
 	lda	a:wram_1688
 	bne	loc_1DC87B
@@ -3239,17 +3239,17 @@ loc_1DC87B:
 	lda	#$C516
 	jml	f:sub_01CF66
 loc_1DC88A:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_1DC8DE
 	clc
 	lda	a:wram_090A
 	adc	#$001C
-	sta	$0A,x
+	sta	OBJ_X,x
 	sta	zp_FC
 	clc
 	lda	a:wram_090E
 	adc	#$FFE0
-	sta	$0E,x
+	sta	OBJ_Y,x
 	sta	zp_FE
 	phx
 	lda	stage_frame_counter
@@ -3282,30 +3282,30 @@ loc_1DC8DC:
 	plx
 	rtl
 loc_1DC8DE:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_1DC902
-	lda	$0E,x
+	lda	OBJ_Y,x
 	bmi	loc_1DC902
 	cmp	#$00B0
 	bcc	loc_1DC902
 	jsr	a:sub_1DCCD4
 	lda	$30,x
 	bne	loc_1DC902
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	eor	#$FFFF
 	inc	a
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	inc	$30,x
 	lda	#$0002
 	sta	a:shake_timer
 loc_1DC902:
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$3C00
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	rtl
 
 ; Object type $91. Stage 6, brain_boss: eye pods rolling on the floor.
@@ -3321,7 +3321,7 @@ loc_1DC91C:
 loc_1DC924:
 	lda	$3A,x
 	beq	loc_1DC960
-	lda	$0A,x
+	lda	OBJ_X,x
 	bpl	loc_1DC931
 	cmp	#$FF80
 	bcc	loc_1DC91C
@@ -3329,21 +3329,21 @@ loc_1DC931:
 	lda	$38,x
 	cmp	#$FFC0
 	bne	loc_1DC957
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_1DC956
 	lda	#$0040
 	sta	$38,x
 	sec
-	lda	$0A,x
+	lda	OBJ_X,x
 	sbc	$36,x
 	inc	a
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	a:difficulty
 	lsr	a
 	and	#$0002
 	tay
 	lda	a:data_05FF23,y
-	sta	$24,x
+	sta	OBJ_TIMER,x
 loc_1DC956:
 	rtl
 loc_1DC957:
@@ -3363,11 +3363,11 @@ loc_1DC960:
 	clc
 	lda	a:$000A,y
 	adc	zp_08
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
 	lda	a:$000E,y
 	adc	zp_0A
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 
 ; Object type $92. Stage 6, brain_boss: arch of blue orbs forming arms around
@@ -3402,11 +3402,11 @@ loc_1DC9A5:
 	clc
 	lda	a:$000A,y
 	adc	zp_08
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
 	lda	a:$000E,y
 	adc	zp_0A
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 loc_1DC9CA:
 	lda	a:wram_163E
@@ -3427,12 +3427,12 @@ loc_1DC9DC:
 	lda	a:wram_090A
 	adc	#$001C
 	adc	zp_08
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
 	lda	a:wram_090E
 	adc	#$FFE8
 	adc	zp_0A
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 
 ; Object type $93. Stage 6, brain_boss: blue orbs scattered around the room.
@@ -3448,8 +3448,8 @@ loc_1DCA0A:
 	lda	#$C4CE
 	jml	f:sub_01CF66
 loc_1DCA19:
-	lda	$0E,x
-	ldy	$1E,x
+	lda	OBJ_Y,x
+	ldy	OBJ_Y_VEL,x
 	bmi	loc_1DCA26
 	cmp	#$00B8
 	bcc	loc_1DCA38
@@ -3461,12 +3461,12 @@ loc_1DCA2B:
 	tya
 	eor	#$FFFF
 	inc	a
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	#$0002
 	sta	a:shake_timer
 loc_1DCA38:
-	lda	$0A,x
-	ldy	$1A,x
+	lda	OBJ_X,x
+	ldy	OBJ_X_VEL,x
 	bmi	loc_1DCA45
 	cmp	#$00F0
 	bcc	loc_1DCA51
@@ -3478,7 +3478,7 @@ loc_1DCA4A:
 	tya
 	eor	#$FFFF
 	inc	a
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 loc_1DCA51:
 	rtl
 
@@ -3513,39 +3513,39 @@ sub_1DCA73:
 sub_1DCA7D:
 	lda	zp_02
 loc_1DCA7F:
-	sta	$10,x
-	stz	$12,x
-	stz	$20,x
-	stz	$22,x
-	stz	$18,x
-	stz	$1A,x
-	stz	$1C,x
-	stz	$1E,x
+	sta	OBJ_TYPE,x
+	stz	OBJ_STATE,x
+	stz	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	clc
 	lda	difficulty
 	adc	#$000A
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0008
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF8
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	clc
 	lda	a:wram_090A
 	adc	#$001C
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
 	lda	a:wram_090E
 	adc	#$FFE4
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	a:wram_1636
 	asl	a
 	tay
 	lda	a:data_05FF3E,y
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	a:data_05FF67,y
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	a:data_05FF77,y
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	clc
 loc_1DCAC8:
 	rts
@@ -3557,17 +3557,17 @@ sub_1DCAC9:
 	and	#$007E
 	tay
 	lda	a:data_058D5A,y
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	a:data_058D7A,y
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	a:data_058DFA,y
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	lda	a:data_058E1A,y
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	rts
 
 sub_1DCAE9:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	asl	a
 	asl	a
 	asl	a
@@ -3656,7 +3656,7 @@ sub_1DCB66:
 	rts
 
 sub_1DCB7A:
-	lda	$0A,x
+	lda	OBJ_X,x
 	bmi	loc_1DCB8C
 	cmp	#$0040
 	bcc	loc_1DCB8C
@@ -3670,32 +3670,32 @@ loc_1DCB8C:
 loc_1DCB91:
 	lda	$38,x
 	bne	loc_1DCBAE
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	bpl	loc_1DCB9E
 	cmp	#$FFFF
 	bcc	loc_1DCBC6
 loc_1DCB9E:
 	sec
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	sbc	#$1000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	sbc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	rts
 loc_1DCBAE:
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	bmi	loc_1DCBB7
 	cmp	#$0001
 	bcs	loc_1DCBC6
 loc_1DCBB7:
 	clc
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	adc	#$1000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	adc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 loc_1DCBC6:
 	rts
 
@@ -3708,7 +3708,7 @@ sub_1DCBC7:
 	sta	zp_02
 
 sub_1DCBD1:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	bmi	loc_1DCBE1
 	cmp	zp_00
 	bcc	loc_1DCBE1
@@ -3722,32 +3722,32 @@ loc_1DCBE1:
 loc_1DCBE6:
 	lda	$3E,x
 	bne	loc_1DCC03
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bpl	loc_1DCBF3
 	cmp	#$FFFF
 	bcc	loc_1DCC1B
 loc_1DCBF3:
 	sec
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	sbc	#$1800
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	sbc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	rts
 loc_1DCC03:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_1DCC0C
 	cmp	#$0001
 	bcs	loc_1DCC1B
 loc_1DCC0C:
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$1800
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 loc_1DCC1B:
 	rts
 
@@ -3854,5 +3854,5 @@ sub_1DCCD4:
 	lda	rng_hi
 	and	#$0001
 	adc	#$FFF9
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	rts
