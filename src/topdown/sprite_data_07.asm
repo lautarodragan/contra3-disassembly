@@ -1828,18 +1828,30 @@ stage2_arena_debris_streams:
 	.byte	$01, $04, $00, $00, $CE, $C1, $F0, $00, $CE, $81, $00, $F0, $CE, $41, $F0, $F0
 	.byte	$CE, $01, $01, $F8, $F8, $A4, $01, $01, $F8, $F8, $8C, $01, $01, $F8, $F8, $C0
 	.byte	$01, $01, $F8, $F8, $C2, $01, $01, $F8, $F8, $C4, $01, $01, $F8, $F8, $8E, $01
-	.byte	$01, $F8, $F8, $86, $01, $01, $FC, $FC, $11, $00, $04, $FC, $FE, $F9, $00, $FC
-	.byte	$F6, $E9, $00, $00, $F8, $EC, $01, $F0, $F8, $EA, $01, $01, $F8, $F8, $E2, $01
+	.byte	$01, $F8, $F8, $86, $01, $01, $FC, $FC, $11, $00
+metasprite_07E971:
+	.byte	$04, $FC, $FE, $F9, $00, $FC
+	.byte	$F6, $E9, $00, $00, $F8, $EC, $01, $F0, $F8, $EA, $01
+metasprite_07E982:
+	.byte	$01, $F8, $F8, $E2, $01
 	.byte	$04, $00, $00, $E0, $C1, $F0, $00, $E0, $81, $00, $F0, $E0, $41, $F0, $F0, $E0
 	.byte	$01, $04, $00, $00, $EE, $C1, $F0, $00, $EE, $81, $00, $F0, $EE, $41, $F0, $F0
-	.byte	$EE, $01, $04
+	.byte	$EE, $01
+metasprite_07E9A9:
+	.byte	$04
 	; CDL: read by draw_td_item_metasprite, draw_td_item_metasprite_p2
 	.byte	$FC, $FE, $E5, $00, $FC, $F6, $E4, $00, $00, $F8, $EC, $01, $F0, $F8, $EA, $01
+metasprite_07E9BA:
 	.byte	$04, $FC, $FE, $F5, $00, $FC, $F6, $E4, $00, $00, $F8, $EC, $01, $F0, $F8, $EA
-	.byte	$01, $04, $FC, $FE, $F6, $00, $FC, $F6, $E6, $00, $00, $F8, $EC, $01, $F0, $F8
-	.byte	$EA, $01, $04
+	.byte	$01
+metasprite_07E9CB:
+	.byte	$04, $FC, $FE, $F6, $00, $FC, $F6, $E6, $00, $00, $F8, $EC, $01, $F0, $F8
+	.byte	$EA, $01
+metasprite_07E9DC:
+	.byte	$04
 	; CDL: read by draw_td_item_metasprite
 	.byte	$FC, $FE, $F7, $00, $FC, $F6, $E7, $00, $00, $F8, $EC, $01, $F0, $F8, $EA, $01
+metasprite_07E9ED:
 	.byte	$04, $FC, $FE, $F8, $00, $FC, $F6, $E8, $00, $00, $F8, $EC, $01, $F0, $F8, $EA
 	.byte	$01
 	; CDL: read by decompress_chunk

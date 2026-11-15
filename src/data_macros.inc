@@ -8,6 +8,8 @@
 ; otherwise.  Some objects never face the other way and keep other values
 ; in the third word.  A negative first word is a jump to that address (in
 ; bank $05), 0 ends the script (OBJ_ANIM = 0, the last sprite stays).
+; The items of the top-down stages (animate_td_item) use the same format with
+; metasprites in bank $07 and OAM attributes in the third word.
 ; ---------------------------------------------------------------------------
 .macro anim_frame frames, sprite, sprite_facing
 	.word	frames

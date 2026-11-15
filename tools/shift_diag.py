@@ -130,6 +130,27 @@ def build_mapping(out):
     return mapping, a
 
 
+def find_literal(value, srcdir="src", limit=6):
+    """Source lines with the 16-bit value as a literal: an operand or word,
+    or two adjacent bytes of a .byte line (little-endian)."""
+    import re
+    word = "$%04X" % value
+    pair = re.compile(r"\$%02X,\s*\$%02X\b" % (value & 0xFF, value >> 8))
+    hits = []
+    for root, _dirs, files in os.walk(srcdir):
+        for f in sorted(files):
+            if not f.endswith(".asm") or "/gfx" in root or f.startswith("sound_1"):
+                continue            # data-only banks hold no pointers
+            path = os.path.join(root, f)
+            for n, line in enumerate(open(path), 1):
+                code = line.split(";")[0]
+                if re.search(r"\%s\b" % word, code) or (".byte" in code and pair.search(code)):
+                    hits.append("%s:%d: %s" % (path, n, code.strip()[:70]))
+                    if len(hits) >= limit:
+                        return hits
+    return hits
+
+
 def main(argv):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--private", default=os.environ.get("PRIVATE", "../contra3-disassembly-private"))
@@ -181,6 +202,9 @@ def main(argv):
         lo = lorom_addr(first[0])
         desc = ("filler" if first[1] is None else "normal-build $%06X (%s)" % (lorom_addr(first[1]), where(lorom_addr(first[1]))))
         print("  reader %-40s %4d bytes, first at shifted $%06X = %s" % (rname, len(items), lo, desc))
+        low = min(lorom_addr(o) for o, _x in items)
+        for h in find_literal(low & 0xFFFF):
+            print("      $%04X in %s" % (low & 0xFFFF, h))
     return 1
 
 

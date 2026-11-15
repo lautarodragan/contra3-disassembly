@@ -1636,7 +1636,7 @@ anim_05AB14:
 	anim_goto	anim_05AB14
 anim_05AB22:
 	anim_frame	$0080, metasprite_06AFD9, $3E00
-	anim_goto	anim_05C420
+	.byte	$20, $C4
 	.byte	$40, $C4, $A0, $C4, $C0, $C4, $00, $C5
 	.byte	$20, $C5, $80, $C5, $A0, $C5, $00, $B5, $60, $C4, $00, $B5, $E0, $C4
 stage1_boss_shell_hp:
@@ -2296,7 +2296,6 @@ anim_05BF7D:
 	.byte	$80, $60, $C0, $60, $00, $64, $40, $64, $00, $01, $40, $01, $66, $98, $20, $AC
 	.byte	$00, $61, $40, $61, $00, $64, $40, $64, $00, $01, $40, $01, $7F, $98, $39, $AC
 	.byte	$80, $61
-anim_05C420:
 	.byte	$C0, $61, $00, $64, $40, $64, $00, $01, $40, $01, $98, $98, $52, $AC
 	.byte	$80, $64, $C0, $64, $00, $65, $40, $65, $00, $01, $40, $01, $B1, $98, $6B, $AC
 ; OBJ_HP of update_window_sniper by difficulty (easy, normal, hard)
@@ -3250,85 +3249,85 @@ data_05D67C:
 	; CDL: read by td_item_bomb_state_0, animate_td_item; partly not accessed
 	.addr	anim_05D6F8, anim_05D77E
 anim_05D680:
-	anim_frame	$0100, metasprite_06E9A9, $2E00
+	anim_frame	$0100, metasprite_07E9A9, $2E00
 anim_05D686:
 	anim_frame	$0002, $0000, $2E00
-	anim_frame	$0002, metasprite_06E9A9, $2E00
+	anim_frame	$0002, metasprite_07E9A9, $2E00
 	anim_goto	anim_05D686
 anim_05D694:
-	anim_frame	$0100, metasprite_06E9BA, $2E00
+	anim_frame	$0100, metasprite_07E9BA, $2E00
 anim_05D69A:
 	anim_frame	$0002, $0000, $2E00
-	anim_frame	$0002, metasprite_06E9BA, $2E00
+	anim_frame	$0002, metasprite_07E9BA, $2E00
 	anim_goto	anim_05D69A
 anim_05D6A8:
-	anim_frame	$0100, metasprite_06E9CB, $2E00
+	anim_frame	$0100, metasprite_07E9CB, $2E00
 anim_05D6AE:
 	anim_frame	$0002, $0000, $2E00
-	anim_frame	$0002, metasprite_06E9CB, $2E00
+	anim_frame	$0002, metasprite_07E9CB, $2E00
 	anim_goto	anim_05D6AE
 anim_05D6BC:
-	anim_frame	$0100, metasprite_06E9DC, $2E00
+	anim_frame	$0100, metasprite_07E9DC, $2E00
 anim_05D6C2:
 	anim_frame	$0002, $0000, $2E00
-	anim_frame	$0002, metasprite_06E9DC, $2E00
+	anim_frame	$0002, metasprite_07E9DC, $2E00
 	anim_goto	anim_05D6C2
 anim_05D6D0:
-	anim_frame	$0100, metasprite_06E9ED, $2E00
+	anim_frame	$0100, metasprite_07E9ED, $2E00
 anim_05D6D6:
 	anim_frame	$0002, $0000, $2E00
-	anim_frame	$0002, metasprite_06E9ED, $2E00
+	anim_frame	$0002, metasprite_07E9ED, $2E00
 	anim_goto	anim_05D6D6
 anim_05D6E4:
-	anim_frame	$0100, metasprite_06E971, $2C00
+	anim_frame	$0100, metasprite_07E971, $2C00
 anim_05D6EA:
 	anim_frame	$0002, $0000, $2C00
-	anim_frame	$0002, metasprite_06E971, $2C00
+	anim_frame	$0002, metasprite_07E971, $2C00
 	anim_goto	anim_05D6EA
 anim_05D6F8:
-	anim_frame	$0002, metasprite_06E982, $2E00
-	anim_frame	$0002, metasprite_06E982, $2600
+	anim_frame	$0002, metasprite_07E982, $2E00
+	anim_frame	$0002, metasprite_07E982, $2600
 	anim_goto	anim_05D6F8
 anim_05D706:
-	anim_frame	$0100, metasprite_06E9A9, $1E00
+	anim_frame	$0100, metasprite_07E9A9, $1E00
 anim_05D70C:
 	anim_frame	$0002, $0000, $1E00
-	anim_frame	$0002, metasprite_06E9A9, $1E00
+	anim_frame	$0002, metasprite_07E9A9, $1E00
 	anim_goto	anim_05D70C
 	; CDL: read by animate_td_item; partly not accessed
 anim_05D71A:
-	anim_frame	$0100, metasprite_06E9BA, $1E00
+	anim_frame	$0100, metasprite_07E9BA, $1E00
 anim_05D720:
 	anim_frame	$0002, $0000, $1E00
-	anim_frame	$0002, metasprite_06E9BA, $1E00
+	anim_frame	$0002, metasprite_07E9BA, $1E00
 	anim_goto	anim_05D720
 anim_05D72E:
-	anim_frame	$0100, metasprite_06E9CB, $1E00
+	anim_frame	$0100, metasprite_07E9CB, $1E00
 anim_05D734:
 	anim_frame	$0002, $0000, $1E00
-	anim_frame	$0002, metasprite_06E9CB, $1E00
+	anim_frame	$0002, metasprite_07E9CB, $1E00
 	anim_goto	anim_05D734
 anim_05D742:
-	anim_frame	$0100, metasprite_06E9DC, $1E00
+	anim_frame	$0100, metasprite_07E9DC, $1E00
 anim_05D748:
 	anim_frame	$0002, $0000, $1E00
-	anim_frame	$0002, metasprite_06E9DC, $1E00
+	anim_frame	$0002, metasprite_07E9DC, $1E00
 	anim_goto	anim_05D748
 anim_05D756:
-	anim_frame	$0100, metasprite_06E9ED, $1E00
+	anim_frame	$0100, metasprite_07E9ED, $1E00
 anim_05D75C:
 	anim_frame	$0002, $0000, $1E00
-	anim_frame	$0002, metasprite_06E9ED, $1E00
+	anim_frame	$0002, metasprite_07E9ED, $1E00
 	anim_goto	anim_05D75C
 anim_05D76A:
-	anim_frame	$0100, metasprite_06E971, $1C00
+	anim_frame	$0100, metasprite_07E971, $1C00
 anim_05D770:
 	anim_frame	$0002, $0000, $1C00
-	anim_frame	$0002, metasprite_06E971, $1C00
+	anim_frame	$0002, metasprite_07E971, $1C00
 	anim_goto	anim_05D770
 anim_05D77E:
-	anim_frame	$0002, metasprite_06E982, $1E00
-	anim_frame	$0002, metasprite_06E982, $1600
+	anim_frame	$0002, metasprite_07E982, $1E00
+	anim_frame	$0002, metasprite_07E982, $1600
 	anim_goto	anim_05D77E
 td_item_drop_kinds:
 	; CDL: read by td_spawn_item_drop; partly not accessed
