@@ -5108,10 +5108,23 @@ vram_blocks_05EFF8:
 data_05EFFA:
 	; CDL: read by queue_vram_blocks_at_x, sub_04B469
 	.byte	$20, $5A, $90, $44, $10, $45, $90, $45
+; VRAM block lists by OBJ_TIMER (1-4) for sub_04B469; entry 0 is the last
+; word of data_05EFFA.
 data_05F002:
 	; CDL: read by queue_vram_blocks_at_x, sub_04B469
-	.byte	$10, $46, $0C, $F0, $12, $F0, $18, $F0, $1E, $F0, $60, $50, $20, $52, $40, $52
-	.byte	$60, $50, $60, $50, $60, $50, $60, $50, $60, $50, $60, $50, $60, $50, $60, $50
+	.byte	$10, $46
+	.addr	vram_blocks_05F00C
+	.addr	vram_blocks_05F012
+	.addr	vram_blocks_05F018
+	.addr	vram_blocks_05F01E
+vram_blocks_05F00C:
+	.byte	$60, $50, $20, $52, $40, $52
+vram_blocks_05F012:
+	.byte	$60, $50, $60, $50, $60, $50
+vram_blocks_05F018:
+	.byte	$60, $50, $60, $50, $60, $50
+vram_blocks_05F01E:
+	.byte	$60, $50, $60, $50
 	.byte	$60, $50
 data_05F024:
 	; CDL: read by cave_beast_state_02; partly not accessed
