@@ -300,6 +300,7 @@ data_078828:
 	.byte	$00, $FA, $7F, $00, $00, $FB, $00, $FC, $7F, $00, $00, $FD, $00, $FE, $7F, $00
 	.byte	$00, $FF, $02, $AC, $13, $00, $02, $AD, $02, $AE, $13, $00, $02, $AF, $02, $B0
 	.byte	$13, $00, $02, $B1, $02, $B2, $13, $00, $02, $B3, $02, $B4, $13, $00, $02, $B5
+data_079118:
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF
@@ -308,6 +309,7 @@ data_078828:
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+data_079198:
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $00, $01, $00
@@ -340,6 +342,7 @@ data_078828:
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+data_079398:
 	.byte	$00, $00, $28, $00, $9E, $00, $64, $01, $78, $02, $DA, $03, $8B, $05, $8A, $07
 	.byte	$D7, $09, $71, $0C, $59, $0F, $8C, $12, $0C, $16, $D8, $19, $EE, $1D, $4F, $22
 	.byte	$FA, $26, $ED, $2B, $29, $31, $AC, $36, $75, $3C, $84, $42, $D8, $48, $70, $4F
@@ -348,6 +351,7 @@ data_078828:
 	.byte	$8D, $E3, $15, $EE, $C8, $F8, $A3, $03, $A6, $0E, $CD, $19, $18, $25, $85, $30
 	.byte	$11, $3C, $BC, $47, $84, $53, $66, $5F, $60, $6B, $72, $77, $99, $83, $D2, $8F
 	.byte	$1E, $9C, $78, $A8, $E0, $B4, $54, $C1, $D1, $CD, $56, $DA, $E1, $E6, $70, $F3
+data_079418:
 	.byte	$00, $00, $90, $0C, $1F, $19, $AA, $25, $2F, $32, $AC, $3E, $20, $4B, $88, $57
 	.byte	$E2, $63, $2E, $70, $67, $7C, $8E, $88, $A0, $94, $9A, $A0, $7C, $AC, $44, $B8
 	.byte	$EF, $C3, $7B, $CF, $E8, $DA, $33, $E6, $5A, $F1, $5D, $FC, $38, $07, $EB, $11
@@ -1966,45 +1970,44 @@ data_079C84:
 	.byte	$A3, $A5, $A4, $00, $A8, $AF, $9A, $9D, $9D, $00, $9F, $A0, $A5, $00, $93, $96
 	.byte	$00, $00, $00, $00, $00, $00, $00, $AF, $00, $97, $A0, $A3, $98, $A0, $A5, $A5
 	.byte	$96, $9F, $2E, $2E, $2E, $2E, $2E, $00, $00, $7E, $81, $7E, $A2, $7E, $C3, $7E
-	.byte	$E4, $7F, $05, $7F, $26, $7F, $47, $7F, $68, $7F, $89, $7F, $AA, $47, $CB, $00
+	.byte	$E4, $7F, $05, $7F, $26, $7F, $47, $7F, $68, $7F, $89, $7F, $AA, $47, $CB
+data_07F903:
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$10, $10, $10, $10, $10, $10, $10, $11, $11, $11, $11, $11, $11, $11, $11, $11
-	.byte	$11, $11, $11, $18, $18, $18, $18, $18, $18, $18, $19, $19, $19, $19, $19, $19
-	.byte	$19, $19, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
+	.byte	$00, $10, $10, $10, $10, $10, $10, $10, $11, $11, $11, $11, $11, $11, $11, $11
+	.byte	$11, $11, $11, $11, $18, $18, $18, $18, $18, $18, $18, $19, $19, $19, $19, $19
+	.byte	$19, $19, $19, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
 	.byte	$01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
 	.byte	$01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
-	.byte	$01, $05, $01, $05, $01, $01, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03
-	.byte	$03, $03, $03, $03, $03, $03, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte	$01, $01, $05, $01, $05, $01, $01, $03, $03, $03, $03, $03, $03, $03, $03, $03
+	.byte	$03, $03, $03, $03, $03, $03, $03, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $04, $04, $04, $04, $FC, $FC, $FC, $FC
+	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $04, $04, $04, $04, $FC, $FC, $FC
 	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
 	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
 	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
-	.byte	$FC, $FC, $FC, $FC, $FC, $FE, $FE, $FE, $FE, $FE, $FD, $FD, $FD, $FD, $FD, $00
+	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FE, $FE, $FE, $FE, $FE, $FD, $FD, $FD, $FD, $FD
+data_07FA03:
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
-	.byte	$01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $FF, $F4, $F4, $F4
-	.byte	$F4, $F4, $F4, $F4, $F4, $F4, $F4, $F4, $F3, $F3, $F3, $F3, $F3, $F3, $F3, $F3
-	.byte	$F3, $F3, $F3, $F2, $F2, $F2, $F2, $F2, $F2, $F2, $F2, $F2, $F2, $F2, $F1, $F1
-	.byte	$F1, $F1, $F1, $F1, $F1, $F1, $F1, $F1, $F1, $F0, $F0, $F0, $F0, $F0, $F0, $EF
-	.byte	$EF, $EF, $EF, $EF, $EF, $EE, $EE, $EE, $EE, $EE, $EE, $ED, $ED, $ED, $ED, $ED
-	.byte	$ED, $FB, $FB, $FB, $FB, $FB, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
-	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
-	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
-	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FA
-	.byte	$FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $F8
-	.byte	$F8, $F8, $F8, $F8, $F8, $F8, $F8, $F7, $F7, $F7, $F7, $F7, $F7, $F7, $F7, $F6
-	.byte	$F6, $F6, $F6, $F6, $F6, $F6, $F6, $F5, $F5, $F5, $F5, $F5, $F5, $F5, $F5, $00
-	.byte	$00, $00, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9
-	.byte	$F9, $F9, $F9, $F9, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
+	.byte	$00, $00, $00, $00, $00, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
+	.byte	$01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $FF, $F4, $F4
+	.byte	$F4, $F4, $F4, $F4, $F4, $F4, $F4, $F4, $F4, $F3, $F3, $F3, $F3, $F3, $F3, $F3
+	.byte	$F3, $F3, $F3, $F3, $F2, $F2, $F2, $F2, $F2, $F2, $F2, $F2, $F2, $F2, $F2, $F1
+	.byte	$F1, $F1, $F1, $F1, $F1, $F1, $F1, $F1, $F1, $F1, $F0, $F0, $F0, $F0, $F0, $F0
+	.byte	$EF, $EF, $EF, $EF, $EF, $EF, $EE, $EE, $EE, $EE, $EE, $EE, $ED, $ED, $ED, $ED
+	.byte	$ED, $ED, $FB, $FB, $FB, $FB, $FB, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
 	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
 	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
 	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
-	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
+	.byte	$FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA, $FA
+	.byte	$F8, $F8, $F8, $F8, $F8, $F8, $F8, $F8, $F7, $F7, $F7, $F7, $F7, $F7, $F7, $F7
+	.byte	$F6, $F6, $F6, $F6, $F6, $F6, $F6, $F6, $F5, $F5, $F5, $F5, $F5, $F5, $F5, $F5
+data_07FB03:
+	.byte	$00, $00, $00, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9
+	.byte	$F9, $F9, $F9, $F9, $F9, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
 	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
 	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
 	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
@@ -2012,9 +2015,13 @@ data_079C84:
 	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
 	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
 	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
-	.byte	$FC, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9
+	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
+	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
+	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
+	.byte	$FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC, $FC
+	.byte	$FC, $FC, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9
 	.byte	$F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9, $F9
-	.byte	$F9, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $FF
+	.byte	$F9, $F9, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
@@ -2078,4 +2085,4 @@ data_079C84:
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF

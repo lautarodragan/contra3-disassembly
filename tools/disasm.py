@@ -189,10 +189,20 @@ class Disassembler:
     # -- main analysis ----------------------------------------------------
 
     def run(self):
-        for it in range(6):
+        # Iterate: each pass knows the code entry points found by the previous
+        # one (so table scans stop in front of them) and the inferred call
+        # return states.  Stop when nothing changes.
+        self.prev_code_entries = set()
+        self.passes = 0
+        for it in range(10):
+            self.passes += 1
             changed = self._pass()
-            if not changed:
+            entries = set(self.direct_targets)
+            sig = (frozenset(entries), tuple(sorted((k, len(v[1])) for k, v in self.tables.items())))
+            if not changed and sig == getattr(self, '_sig', None):
                 break
+            self._sig = sig
+            self.prev_code_entries = entries
 
     def _seed(self):
         seeds = []
@@ -224,7 +234,7 @@ class Disassembler:
     def _pass(self):
         self.instrs = {}          # off -> Instr
         self.owner = {}           # off -> instr start offset
-        self.visited = {}         # off -> (m8, x8, db)
+        self.visited = {}         # off -> {(m8, x8): db}
         self.labels = {}          # off -> kind ('sub','loc','data','jt','ptr')
         self.routines = set()
         self.tables = {}          # off -> (kind, [entry target offsets], entry size)
@@ -232,6 +242,7 @@ class Disassembler:
         self.stops = []
         self.data_refs = {}       # instr off -> target ROM offset (data label)
         self.table_bytes = set()  # ROM offsets claimed by jump tables
+        self.direct_targets = set()  # targets of jsr/jsl/jmp/branches
         self.warnings = []
         self.work = collections.deque()
 
@@ -243,9 +254,11 @@ class Disassembler:
         self._assign_cdl_tables()
         return self._infer_returns()
 
-    def _queue(self, off, st, kind):
+    def _queue(self, off, st, kind, direct=True):
         if off is None:
             return
+        if direct:
+            self.direct_targets.add(off)
         prev = self.labels.get(off)
         if kind == 'sub' or prev is None:
             self.labels[off] = kind if prev != 'sub' else 'sub'
@@ -261,6 +274,7 @@ class Disassembler:
         self.work.append((off, st))
 
     def _trace(self, off, st):
+        self._hist = collections.deque(maxlen=16)
         while True:
             if off is None or off >= ROM_SIZE:
                 return
@@ -269,45 +283,55 @@ class Disassembler:
                                        % fmt_addr(self.cfg.canon(self.owner[off]))))
                 return
             vis = self.visited.get(off)
-            if vis is not None:
-                vm8, vx8, vdb = vis
-                if (vm8, vx8) != (st.m8, st.x8):
-                    self.conflicts.append((off, 'reached with M%d X%d, decoded as M%d X%d'
-                                           % (8 if st.m8 else 16, 8 if st.x8 else 16,
-                                              8 if vm8 else 16, 8 if vx8 else 16)))
-                    return
+            key = (st.m8, st.x8)
+            if vis is not None and key in vis:
+                vdb = vis[key]
                 if vdb == st.db or vdb is None:
                     return
                 # DB disagreement: forget it and re-propagate with DB unknown
                 st = st._replace(db=None)
-                self.visited[off] = (vm8, vx8, None)
+                vis[key] = None
                 self.instrs[off].db = None
+            elif vis is not None:
+                # same instruction reached with other M/X widths: fine as long
+                # as its length does not depend on them
+                old = self.instrs[off]
+                alt = self.decode(off, st.m8, st.x8)
+                if alt is None or alt.length != old.length:
+                    self.conflicts.append((off, 'reached with M%d X%d, decoded as M%d X%d'
+                                           % (8 if st.m8 else 16, 8 if st.x8 else 16,
+                                              8 if old.m8 else 16, 8 if old.x8 else 16)))
+                    return
+                vis[key] = st.db
+                if old.db != st.db:
+                    old.db = None
             if off in self.table_bytes:
                 self.conflicts.append((off, 'code runs into jump table'))
                 return
             if self.data_mask[off] and off not in self.force_code:
                 self.stops.append((off, 'hint says data'))
                 return
-            ins = self.decode(off, st.m8, st.x8)
-            if ins is None:
-                self.stops.append((off, 'instruction crosses bank end'))
-                return
-            for i in range(off + 1, off + ins.length):
-                if i in self.owner or self.data_mask[i] or i in self.table_bytes:
-                    self.conflicts.append((off, 'instruction overlaps code/data at %s'
-                                           % fmt_addr(self.cfg.canon(i))))
-                    return
-            if ins.mn in SUSPICIOUS and off not in self.force_code:
-                self.stops.append((off, 'suspicious opcode %s' % ins.mn))
-                return
             if vis is None:
+                ins = self.decode(off, st.m8, st.x8)
+                if ins is None:
+                    self.stops.append((off, 'instruction crosses bank end'))
+                    return
+                for i in range(off + 1, off + ins.length):
+                    if i in self.owner or self.data_mask[i] or i in self.table_bytes:
+                        self.conflicts.append((off, 'instruction overlaps code/data at %s'
+                                               % fmt_addr(self.cfg.canon(i))))
+                        return
+                if ins.mn in SUSPICIOUS and off not in self.force_code:
+                    self.stops.append((off, 'suspicious opcode %s' % ins.mn))
+                    return
                 ins.db = st.db
                 self.instrs[off] = ins
                 for i in range(off, off + ins.length):
                     self.owner[i] = off
-                self.visited[off] = (st.m8, st.x8, st.db)
+                self.visited[off] = {key: st.db}
             else:
                 ins = self.instrs[off]
+            self._hist.append(ins)
             st = self._step(ins, st)
             if st is None:
                 return
@@ -388,6 +412,8 @@ class Disassembler:
             pop(2)
         elif mn == 'xce':
             pass  # assume native mode throughout (the reset code switches once)
+        elif mn in ('mvn', 'mvp'):
+            db = opd & 0xFF
         elif mn == 'tcs' or mn == 'txs':
             stack = []
 
@@ -456,8 +482,11 @@ class Disassembler:
                 return new._replace(a_imm=None)
             return None
         if mn in ('jmp', 'jml') and mode in ('absi', 'absil'):
-            # indirect through RAM: needs a CDL to know the targets
-            self.warnings.append((ins.off, 'indirect jump through RAM ($%04X)' % opd))
+            # indirect through a RAM pointer.  Recognise the idiom
+            #   lda table,x / sta ptr / jmp (ptr)
+            # and otherwise leave it to a CDL.
+            if not self._ram_pointer_table(ins, new):
+                self.warnings.append((ins.off, 'indirect jump through RAM ($%04X)' % opd))
             return None
         if mn in ('rts', 'rtl', 'rti', 'stp'):
             return None
@@ -496,7 +525,9 @@ class Disassembler:
             if count is not None and len(targets) >= count:
                 break
             if count is None:
-                if off != start and (off in self.labels or off in self.owner):
+                if off != start and (off in self.labels or off in self.owner
+                                     or off in self.prev_code_entries
+                                     or off + 1 in self.prev_code_entries):
                     break
                 if any(t is not None and start <= t < off + entry_size for t in targets):
                     break
@@ -506,6 +537,11 @@ class Disassembler:
                        for i in range(off, off + entry_size)):
                     break
             v = int.from_bytes(self.rom[off:off + entry_size], 'little')
+            if v == 0:
+                # null entry (unused slot)
+                targets.append(None)
+                off += entry_size
+                continue
             if entry_size == 2:
                 t = rom_offset((bank << 16) | v)
             else:
@@ -514,6 +550,9 @@ class Disassembler:
                 break
             targets.append(t)
             off += entry_size
+        if count is None:
+            while targets and targets[-1] is None:
+                targets.pop()
         return targets
 
     def _jump_table(self, ins, st):
@@ -534,6 +573,67 @@ class Disassembler:
         if not targets:
             self.warnings.append((ins.off, 'empty jump table at %s' % fmt_addr(self.cfg.canon(start))))
 
+    def _ram_pointer_table(self, ins, st):
+        """Recognise a jump through a RAM pointer loaded from a ROM table:
+            lda table,x|y (M16) ... sta ptr ... jmp (ptr)          -> word table
+            lda table,y ... sta ptr ... lda table+2,y ... sta ptr+2
+                ... jml [ptr]                                      -> long table
+        """
+        ptr = ins.operand
+        long_jump = ins.mn == 'jml'
+        hist = list(self._hist)[:-1][-14:]
+        stores = {}   # pointer byte offset (0 or 2) -> source lda
+
+        def is_store(prev, addr):
+            return prev.mn == 'sta' and ((prev.mode == 'dp' and addr < 0x100 and prev.operand == addr)
+                                         or (prev.mode == 'abs' and prev.operand == addr))
+        pending = None
+        for prev in reversed(hist):
+            if prev.mn in BRANCHES or prev.mn in ('jsr', 'jsl', 'rts', 'rtl'):
+                break
+            if pending is None:
+                for k in (0, 2):
+                    if k not in stores and is_store(prev, ptr + k):
+                        pending = k
+                continue
+            if prev.mn == 'lda':
+                stores[pending] = prev
+                pending = None
+                if 0 in stores and (not long_jump or 2 in stores):
+                    break
+                continue
+            if prev.mn not in ('plx', 'ply', 'phx', 'phy', 'clc', 'sec', 'tax', 'tay'):
+                pending = None
+        src = stores.get(0)
+        if src is None or src.m8 or src.mode not in ('absx', 'absy', 'longx'):
+            return False
+        if long_jump:
+            hi = stores.get(2)
+            if hi is None or hi.mode != src.mode or hi.operand != src.operand + 2:
+                return False
+        if src.mode == 'longx':
+            start = rom_offset(src.operand)
+        elif src.db is not None:
+            start = rom_offset((src.db << 16) | src.operand)
+        else:
+            return False
+        if start is None:
+            return False
+        size = 3 if long_jump else 2
+        bank = self.pc_bank(ins.off)
+        hint = self.table_hints.get(start)
+        if start in self.no_table_at and not hint:
+            return False
+        count = hint.get('count') if hint else None
+        if start in self.tables:
+            targets = self.tables[start][1]
+        else:
+            targets = self._scan_table(start, st, size, bank, count)
+        if not any(t is not None for t in targets):
+            return False
+        self._register_table(start, 'word' if size == 2 else 'long', targets, size, st)
+        return True
+
     def _inline_table(self, ins, dispatcher, st):
         """`jsr/jsl dispatcher` followed by an inline table of pointers."""
         h = self.inline_tables[dispatcher]
@@ -551,7 +651,8 @@ class Disassembler:
             self.table_bytes.add(i)
         self.labels[start] = 'jt' if self.labels.get(start) in (None, 'data') else self.labels[start]
         for t in targets:
-            self._queue(t, st._replace(stack=(), a_imm=None), 'sub')
+            if t is not None:
+                self._queue(t, st._replace(stack=(), a_imm=None), 'sub', direct=False)
 
     def _assign_cdl_tables(self):
         if not self.cdl:
@@ -568,7 +669,7 @@ class Disassembler:
         for r in sorted(self.routines):
             if r in self.call_returns or r not in self.visited:
                 continue
-            em8, ex8, _ = self.visited[r]
+            em8, ex8 = self.instrs[r].m8, self.instrs[r].x8
             exits = set()
             seen = set()
             todo = [r]
@@ -798,8 +899,7 @@ class Emitter:
         table_entry = {}
         for tstart, (kind, targets, size) in d.tables.items():
             for i, t in enumerate(targets):
-                if t is not None:
-                    table_entry[tstart + i * size] = (t, size)
+                table_entry[tstart + i * size] = (t, size)
         hdr = 0x7FB0 if bank == 0 else None
         off = start
         pending_data = []
@@ -830,9 +930,13 @@ class Emitter:
             if off in table_entry and off not in d.instrs:
                 t, size = table_entry[off]
                 if (all(i not in d.owner and i not in self.label_name
-                        for i in range(off + 1, off + size)) and self.has_label(t)):
+                        for i in range(off + 1, off + size))
+                        and (t is None or self.has_label(t))):
                     flush()
-                    w(('\t.addr\t' if size == 2 else '\t.faraddr\t') + self.ref(t))
+                    if t is None:
+                        w('\t.addr\t$0000' if size == 2 else '\t.faraddr\t$000000')
+                    else:
+                        w(('\t.addr\t' if size == 2 else '\t.faraddr\t') + self.ref(t))
                     self.stats['table_entries'] += 1
                     self.stats['data_bytes'] += size
                     self.stats['table_bytes'] += size
@@ -975,8 +1079,8 @@ def make_report(d, em, cfg, path):
              '| operands: hardcoded ROM addresses ($8000+) | %d |' % st['operand_rom_number'],
              '| operands: hardcoded RAM/other addresses | %d |' % st['operand_ram_number'],
              '| immediates (some may be pointers) | %d |' % st['immediate'],
-             '| M/X conflicts (same address reached with different widths) | %d |' % len(d.conflicts),
-             '| decoding stops (suspicious opcode etc.) | %d |' % len(d.stops),
+             '| M/X conflicts and overlaps | %d |' % len(set(d.conflicts)),
+             '| decoding stops (suspicious opcode etc.) | %d |' % len(set(d.stops)),
              '| auto-inferred call return states | %d |' % len(d.auto_call_returns),
              '']
     per_bank = collections.Counter()
@@ -988,6 +1092,7 @@ def make_report(d, em, cfg, path):
     lines.append('')
 
     def section(title, items):
+        items = sorted(set(items))
         lines.append('## %s (%d)' % (title, len(items)))
         lines.append('')
         for off, msg in sorted(set(items))[:400]:
