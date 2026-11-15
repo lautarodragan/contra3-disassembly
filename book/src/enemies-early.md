@@ -80,8 +80,8 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $34 | `update_object_type_34` | stage 1 section 2. Not identified |
 | $35 | `update_object_type_35` | stage 1 (the cafe front), HP 1. Not identified |
 | $38 | `update_stage1_boss_fire` | stage 1 boss fire breath (spawned near the boss by `stage1_boss_spawn_fire`) |
-| $39 | `update_object_type_39` | stage 3. Not identified |
-| $3A | `update_object_type_3A` | stage 3. Not identified |
+| $39 | `update_swing_pivot` | stage 3. Not identified |
+| $3A | `update_swing_handle` | stage 3. Not identified |
 | $3B | `update_scroll_modes_trigger` | stage trigger: sets `bg2_scroll_mode` from field `$3B`, then as type `$0E` |
 | $3C | `update_object_type_3C` | stage 3 BG effect (palette cycling, line scroll table at `$7E:E000`). Not identified |
 | $3D | `update_stage3_spiked_climber` | stage 3 mid-boss: the spiked machine climbing the girder (HP 160; seen in the emulator) |
@@ -105,7 +105,7 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $57 | `update_object_type_57` | never run in the CDL traces |
 | $59 | `update_object_type_59` | not seen. Not identified |
 | $5A | `update_object_type_5A` | stage 3 spiked climber, spikes. Not identified exactly |
-| $5C | `update_object_type_5C` | stage 6 (the bone arch). Not identified |
+| $5C | `update_alien_soldier_spawner` | stage 6 (the bone arch). Not identified |
 | $60 | `update_object_type_60` | does nothing (rtl); never run in the CDL traces |
 | $6E | `update_stage4_tank` | stage 4: the tank at the start (HP 315; seen in the emulator) |
 | $73 | `update_object_type_73` | stage 4: soldier dropping onto the road (HP 6); dies as type $1B |

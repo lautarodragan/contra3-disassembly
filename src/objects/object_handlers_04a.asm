@@ -3665,7 +3665,7 @@ loc_049CDA:
 	sta	zp_00
 	bra	loc_049D05
 loc_049CFC:
-	jsl	f:sub_01E860
+	jsl	f:pick_random_player
 	lda	a:$000E,y
 	sta	zp_00
 loc_049D05:
@@ -3975,7 +3975,7 @@ sub_049F2F:
 	sta	zp_00
 	bra	loc_049F4A
 loc_049F41:
-	jsl	f:sub_01E860
+	jsl	f:pick_random_player
 	lda	a:$000E,y
 	sta	zp_00
 loc_049F4A:
@@ -4018,7 +4018,7 @@ sub_049F96:
 	lda	OBJ_TIMER,x
 	cmp	#$0008
 	bcc	loc_049FC2
-	jsl	f:sub_01E860
+	jsl	f:pick_random_player
 	lda	OBJ_Y,x
 	clc
 	adc	#$0032
@@ -5665,7 +5665,7 @@ aim_velocity_at_player:
 	sta	zp_00
 	lda	OBJ_Y,x
 	sta	zp_02
-	jsl	f:sub_01E860
+	jsl	f:pick_random_player
 	sec
 	lda	a:$1312,y
 	sbc	zp_00
@@ -7235,7 +7235,7 @@ loc_04B816:
 	jmp	a:loc_04B7EC
 
 cave_beast_state_09:
-	jsl	f:sub_01E860
+	jsl	f:pick_random_player
 	lda	a:$000A,y
 	cmp	OBJ_X,x
 	bcc	loc_04B839
@@ -7552,7 +7552,7 @@ loc_04BA95:
 	jmp	a:loc_04B6BC
 
 cave_beast_state_1E:
-	jsl	f:sub_01E860
+	jsl	f:pick_random_player
 	lda	a:$000A,y
 	cmp	#$0040
 	bcc	loc_04BAAB
@@ -7571,7 +7571,7 @@ loc_04BAB5:
 	jmp	a:loc_04B674
 
 cave_beast_state_05:
-	jsl	f:sub_01E860
+	jsl	f:pick_random_player
 	lda	a:$000A,y
 	ldy	#$0800
 	sec
@@ -9198,7 +9198,7 @@ loc_04C78F:
 	bcs	loc_04C79B
 	jmp	a:loc_04C6E3
 loc_04C79B:
-	jsl	f:sub_01E860
+	jsl	f:pick_random_player
 	lda	a:$000A,y
 	cmp	OBJ_X,x
 	bmi	loc_04C7C9

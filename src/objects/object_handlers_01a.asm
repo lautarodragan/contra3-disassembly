@@ -72,7 +72,7 @@ tbl_object_type_02_states:
 	.addr	object_type_02_state_06
 	.addr	object_type_02_state_07
 	.addr	object_type_02_state_08
-	.addr	sub_01D831
+	.addr	shake_and_explode_state
 	.addr	object_type_02_state_0A
 
 object_type_02_state_00:
@@ -3454,7 +3454,7 @@ loc_01CBBD:
 	lda	#$0004
 	sta	zp_08
 	lda	#$2208
-	jsl	f:sub_01D005
+	jsl	f:spawn_explosion_burst
 	lda	#$0001
 	sta	zp_02
 	lda	#$0020

@@ -42,7 +42,7 @@ update_debris_spark:
 	jsl	f:get_bg_tile_at_object
 	beq	loc_01CFF4
 
-sub_01CFC5:
+make_debris_effect:
 	lda	#.loword(anim_05C672)
 	sta	$20,x
 	stz	$22,x
@@ -79,7 +79,7 @@ loc_01CFFF:
 	sta	$02,x
 	rtl
 
-sub_01D005:
+spawn_explosion_burst:
 	phx
 	pha
 	xba
@@ -164,11 +164,11 @@ alien_dog_state_00:
 	inc	$12,x
 
 alien_dog_state_01:
-	jsr	a:sub_01D0A4
+	jsr	a:alien_dog_check_player_close
 	bcc	loc_01D0E8
 	rtl
 
-sub_01D0A4:
+alien_dog_check_player_close:
 	lda	a:p1_lives
 	beq	loc_01D0B4
 	lda	$0A,x
@@ -189,7 +189,7 @@ loc_01D0C4:
 loc_01D0C5:
 	rts
 
-sub_01D0C6:
+alien_dog_check_player_in_range:
 	lda	a:p1_lives
 	beq	loc_01D0D6
 	lda	$0A,x
@@ -219,7 +219,7 @@ loc_01D0E8:
 alien_dog_state_02:
 	lda	difficulty
 	beq	loc_01D0FC
-	jsr	a:sub_01D0C6
+	jsr	a:alien_dog_check_player_in_range
 	bcc	loc_01D0FD
 loc_01D0FC:
 	rtl
@@ -323,7 +323,7 @@ update_enemy_bullet:
 	bne	loc_01D1D2
 	lda	#$180F
 	sta	$16,x
-	jsl	f:sub_01D1DB
+	jsl	f:enemy_bullet_cycle_palette
 	lda	#$0008
 	sta	$28,x
 	lda	#$FFF8
@@ -335,11 +335,11 @@ update_enemy_bullet:
 	rtl
 loc_01D1D2:
 	lda	$3C,x
-	beq	sub_01D1DB
+	beq	enemy_bullet_cycle_palette
 	lda	#$8000
 	sta	$16,x
 
-sub_01D1DB:
+enemy_bullet_cycle_palette:
 	lda	stage_frame_counter
 	and	#$0006
 	tay
@@ -1071,9 +1071,9 @@ update_object_type_34:
 tbl_object_type_34_states:
 	.addr	object_type_34_state_00
 	.addr	object_type_34_state_01
-	.addr	sub_01D7E2
-	.addr	sub_01D7E2
-	.addr	sub_01D831
+	.addr	object_type_34_state_02
+	.addr	object_type_34_state_02
+	.addr	shake_and_explode_state
 	.addr	object_type_34_state_05
 
 object_type_34_state_00:
@@ -1124,7 +1124,7 @@ loc_01D7BB:
 loc_01D7E1:
 	rtl
 
-sub_01D7E2:
+object_type_34_state_02:
 	lda	stage_frame_mod4
 	cmp	#$0002
 	bne	loc_01D809
@@ -1165,7 +1165,10 @@ object_type_34_state_05:
 loc_01D830:
 	rtl
 
-sub_01D831:
+; State shared by type $02 (state 9) and type $34: shakes the screen and
+; spawns explosions around the object for OBJ_TIMER frames, then the next
+; state.
+shake_and_explode_state:
 	lda	#$0003
 	sta	a:shake_timer
 	dec	$24,x
@@ -1229,8 +1232,12 @@ sub_01D8AA:
 	rep	#$20
 	rep	#$10
 
-; Object type $39: stage 3. Not identified.
-update_object_type_39:
+; Object type $39: stage 3 (sections 2 and 4): pivot of a rotating swing the
+; players hang from (PLAYER_STATE_HANG_OBJECT, seen in the emulator): turns
+; its angle (field $30, speed $38) and carries the players whose field $3E
+; is this pivot around it (swing_carry_player); up/down moves them along
+; the arm (swing_player_climb), past its end they drop.
+update_swing_pivot:
 	lda	$12,x
 	bne	loc_01D8C0
 	inc	$12,x
@@ -1238,7 +1245,7 @@ update_object_type_39:
 	sta	$16,x
 	txa
 	sta	$3E,x
-	jsr	a:sub_01D932
+	jsr	a:init_swing_pivot
 	rtl
 loc_01D8C0:
 	stx	zp_FC
@@ -1257,27 +1264,29 @@ loc_01D8DA:
 	lda	#$8000
 	sta	$16,x
 loc_01D8DF:
-	jsr	a:sub_01D9C7
+	jsr	a:advance_swing_angle
 	ldy	#$0200
 	sty	zp_FE
 	lda	a:$003E,y
 	cmp	$3E,x
 	bne	loc_01D8F4
-	jsr	a:sub_01DA12
-	jsr	a:sub_01DA72
+	jsr	a:swing_player_climb
+	jsr	a:swing_carry_player
 loc_01D8F4:
 	ldy	#$0240
 	sty	zp_FE
 	lda	a:$003E,y
 	cmp	$3E,x
 	bne	loc_01D906
-	jsr	a:sub_01DA12
-	jsr	a:sub_01DA72
+	jsr	a:swing_player_climb
+	jsr	a:swing_carry_player
 loc_01D906:
 	rtl
 
-; Object type $3A: stage 3. Not identified.
-update_object_type_3A:
+; Object type $3A: a handle on a swing's arm (pivot in field $34): follows
+; the pivot's angle; a player touching it grabs the swing (swing_grab_handle:
+; state $10, radius = the distance to the pivot). Freed with its pivot.
+update_swing_handle:
 	ldy	$34,x
 	lda	a:$0016,y
 	bne	loc_01D916
@@ -1285,20 +1294,20 @@ update_object_type_3A:
 	lda	#.loword(anim_05C516)
 	jml	f:make_effect_object
 loc_01D916:
-	jsr	a:sub_01D9D2
+	jsr	a:swing_handle_follow_pivot
 	ldy	#$0200
-	jsl	f:sub_01DB1A
+	jsl	f:swing_check_grab
 	bcs	loc_01D925
-	jsr	a:sub_01DAC0
+	jsr	a:swing_grab_handle
 loc_01D925:
 	ldy	#$0240
-	jsl	f:sub_01DB1A
+	jsl	f:swing_check_grab
 	bcs	loc_01D931
-	jsr	a:sub_01DAC0
+	jsr	a:swing_grab_handle
 loc_01D931:
 	rtl
 
-sub_01D932:
+init_swing_pivot:
 	ldy	$3A,x
 	lda	a:data_05C874,y
 	sta	$38,x
@@ -1369,7 +1378,7 @@ loc_01D9C5:
 	plx
 	rts
 
-sub_01D9C7:
+advance_swing_angle:
 	clc
 	lda	$30,x
 	adc	$38,x
@@ -1377,7 +1386,7 @@ sub_01D9C7:
 	sta	$30,x
 	rts
 
-sub_01D9D2:
+swing_handle_follow_pivot:
 	lda	$32,x
 	cmp	$3A,x
 	bcc	loc_01D9DA
@@ -1412,7 +1421,7 @@ loc_01D9DA:
 	sta	$00,x
 	rts
 
-sub_01DA12:
+swing_player_climb:
 	lda	$16,x
 	bpl	loc_01DA19
 	; (not executed in the CDL traces)
@@ -1467,7 +1476,7 @@ loc_01DA6F:
 	ldx	zp_FC
 	rts
 
-sub_01DA72:
+swing_carry_player:
 	ldy	zp_FE
 	lda	a:$0016,y
 	bmi	loc_01DA67
@@ -1509,7 +1518,7 @@ loc_01DAB0:
 loc_01DABF:
 	rts
 
-sub_01DAC0:
+swing_grab_handle:
 	lda	#$0000
 	sta	a:$001C,y
 	sta	a:$001E,y
@@ -1555,7 +1564,7 @@ loc_01DB10:
 	sta	a:$0034,y
 	rts
 
-sub_01DB1A:
+swing_check_grab:
 	lda	a:$0016,y
 	beq	loc_01DB63
 	bmi	loc_01DB63
@@ -1612,13 +1621,13 @@ loc_01DB72:
 	sta	zp_00
 	jmp	(zp_00)
 tbl_object_type_48_states:
-	.addr	sub_01DB8B
+	.addr	object_type_48_state_00
 	.addr	object_type_48_state_01
-	.addr	sub_01DC66
-	.addr	sub_01DB8B
-	.addr	sub_01DC66
+	.addr	object_type_48_state_02
+	.addr	object_type_48_state_00
+	.addr	object_type_48_state_02
 
-sub_01DB8B:
+object_type_48_state_00:
 	lda	#$001F
 	sta	$16,x
 	lda	#$3800
@@ -1640,7 +1649,7 @@ loc_01DBB0:
 	stz	$32,x
 	stz	$34,x
 	stz	$36,x
-	jsr	a:sub_01DCA0
+	jsr	a:object_type_48_set_x_velocity
 	stz	$1E,x
 	stz	$1C,x
 	stz	$0C,x
@@ -1726,7 +1735,7 @@ loc_01DC45:
 	inc	$12,x
 	rtl
 
-sub_01DC66:
+object_type_48_state_02:
 	lda	$32,x
 	clc
 	adc	#$0020
@@ -1758,7 +1767,7 @@ loc_01DC98:
 	sta	$12,x
 	jmp	a:loc_01DBB0
 
-sub_01DCA0:
+object_type_48_set_x_velocity:
 	ldy	$38,x
 	lda	a:$000A,y
 	cmp	$0A,x
@@ -1934,9 +1943,9 @@ loc_01DDE0:
 	lda	$30,x
 	bne	loc_01DDF5
 	ldy	#$0200
-	jsr	a:sub_01DED0
+	jsr	a:rolling_mine_check_player
 	ldy	#$0240
-	jsr	a:sub_01DED0
+	jsr	a:rolling_mine_check_player
 	rtl
 loc_01DDF5:
 	lda	#$0003
@@ -1966,7 +1975,7 @@ loc_01DE16:
 	adc	#$0000
 	sta	$1E,x
 loc_01DE25:
-	jsr	a:sub_01DEEF
+	jsr	a:rolling_mine_check_wall
 	lda	$1E,x
 	bmi	loc_01DE4E
 	jsl	f:object_follow_floor
@@ -2057,7 +2066,7 @@ loc_01DEC5:
 	sta	$12,x
 	rtl
 
-sub_01DED0:
+rolling_mine_check_player:
 	lda	a:$0016,y
 	beq	loc_01DEEE
 	clc
@@ -2075,7 +2084,7 @@ loc_01DEE4:
 loc_01DEEE:
 	rts
 
-sub_01DEEF:
+rolling_mine_check_wall:
 	lda	#$0010
 	sta	zp_00
 	lda	#$FFF0
@@ -2137,21 +2146,21 @@ tbl_object_type_4E_states:
 	.addr	object_type_4E_state_08
 	.addr	object_type_4E_state_09
 	.addr	object_type_4E_state_0A
-	.addr	sub_01E0B8
+	.addr	object_type_4E_state_0B
 	.addr	object_type_4E_state_0C
 	.addr	object_type_4E_state_0D
-	.addr	sub_01E0D1
-	.addr	sub_01E1CC
+	.addr	object_type_4E_state_0E
+	.addr	object_type_4E_state_0F
 	.addr	object_type_4E_state_10
-	.addr	sub_01E0B8
+	.addr	object_type_4E_state_0B
 	.addr	object_type_4E_state_12
 	.addr	object_type_4E_state_13
-	.addr	sub_01E0D1
+	.addr	object_type_4E_state_0E
 	.addr	object_type_4E_state_15
-	.addr	sub_01E1CC
+	.addr	object_type_4E_state_0F
 	.addr	object_type_4E_state_17
 	.addr	object_type_4E_state_18
-	.addr	sub_01E0D1
+	.addr	object_type_4E_state_0E
 	.addr	object_type_4E_state_1A
 	; CDL: not accessed
 	.byte	$6B
@@ -2236,7 +2245,7 @@ object_type_4E_state_02:
 	rtl
 
 object_type_4E_state_03:
-	jsr	a:sub_01E01E
+	jsr	a:object_type_4E_set_bg2_scroll
 	lda	$0E,x
 	cmp	#$0020
 	bcs	loc_01E01D
@@ -2246,7 +2255,7 @@ object_type_4E_state_03:
 loc_01E01D:
 	rtl
 
-sub_01E01E:
+object_type_4E_set_bg2_scroll:
 	lda	$0A,x
 	eor	#$FFFF
 	inc	a
@@ -2270,7 +2279,7 @@ object_type_4E_state_06:
 	rtl
 
 object_type_4E_state_07:
-	jsr	a:sub_01E01E
+	jsr	a:object_type_4E_set_bg2_scroll
 	lda	$0E,x
 	cmp	#$0043
 	bcc	loc_01E056
@@ -2327,13 +2336,13 @@ object_type_4E_state_0A:
 	lda	$0A,x
 	sta	zp_00
 	phx
-	jsr	a:sub_01E318
+	jsr	a:build_bg2_slant_table
 	plx
 	stz	$30,x
 	inc	$12,x
 	rtl
 
-sub_01E0B8:
+object_type_4E_state_0B:
 	lda	#$0002
 	sta	zp_02
 	lda	#$0030
@@ -2346,7 +2355,7 @@ sub_01E0B8:
 	inc	$12,x
 	rtl
 
-sub_01E0D1:
+object_type_4E_state_0E:
 	lda	#$0002
 	sta	zp_02
 	lda	#$0030
@@ -2360,11 +2369,11 @@ sub_01E0D1:
 	rtl
 
 object_type_4E_state_0C:
-	jsr	a:sub_01E0F0
+	jsr	a:object_type_4E_pick_target
 	inc	$12,x
 	rtl
 
-sub_01E0F0:
+object_type_4E_pick_target:
 	lda	#$0200
 	sta	$34,x
 	lda	a:wram_0216
@@ -2384,7 +2393,7 @@ loc_01E111:
 	rts
 
 object_type_4E_state_0D:
-	jsr	a:sub_01E01E
+	jsr	a:object_type_4E_set_bg2_scroll
 	lda	a:bg2_x
 	sta	f:wram_7EA008
 	lda	stage_frame_counter
@@ -2455,9 +2464,9 @@ loc_01E19B:
 	adc	$32,x
 	sta	zp_00
 	phx
-	jsr	a:sub_01E318
+	jsr	a:build_bg2_slant_table
 	plx
-	jsr	a:sub_01E3EA
+	jsr	a:object_type_4E_track_target
 	inc	$24,x
 	lda	$24,x
 	cmp	#$00F0
@@ -2470,8 +2479,8 @@ loc_01E19B:
 loc_01E1CB:
 	rtl
 
-sub_01E1CC:
-	jsr	a:sub_01E01E
+object_type_4E_state_0F:
+	jsr	a:object_type_4E_set_bg2_scroll
 	lda	a:bg2_x
 	sta	f:wram_7EA008
 	stz	$1A,x
@@ -2570,12 +2579,12 @@ loc_01E290:
 	lda	#$0240
 	sta	a:$0038,y
 loc_01E29E:
-	jsr	a:sub_01E01E
+	jsr	a:object_type_4E_set_bg2_scroll
 	lda	a:bg2_x
 	sta	f:wram_7EA008
-	jsr	a:sub_01E3C5
+	jsr	a:object_type_4E_keep_in_range
 
-sub_01E2AB:
+object_type_4E_slant_to_target:
 	lda	#$006D
 	sta	zp_06
 	lda	$0A,x
@@ -2587,7 +2596,7 @@ sub_01E2AB:
 	lda	a:$0016,y
 	bit	#$0001
 	bne	loc_01E2D6
-	jsr	a:sub_01E0F0
+	jsr	a:object_type_4E_pick_target
 	lda	a:wram_0216
 	ora	a:wram_0256
 	and	#$0001
@@ -2601,13 +2610,13 @@ loc_01E2D6:
 loc_01E2DC:
 	sta	zp_00
 	phx
-	jsr	a:sub_01E318
+	jsr	a:build_bg2_slant_table
 	plx
 	rtl
 
 object_type_4E_state_10:
-	jsr	a:sub_01E0F0
-	jsl	f:sub_01E2AB
+	jsr	a:object_type_4E_pick_target
+	jsl	f:object_type_4E_slant_to_target
 	inc	$12,x
 	rtl
 
@@ -2634,7 +2643,10 @@ object_type_4E_state_17:
 	sta	$12,x
 	rtl
 
-sub_01E318:
+; Builds per-line BG2 horizontal offsets at $7E:A100 for a slanted line from
+; x zp_04 (line zp_06) to x zp_00 (line zp_02): the BG2-drawn body of type
+; $4E leaning towards its target.
+build_bg2_slant_table:
 	lda	zp_02
 	sec
 	sbc	zp_06
@@ -2738,11 +2750,11 @@ sub_01E3AC:
 	sta	zp_02
 	lda	#$0000
 	sta	zp_06
-	jsr	a:sub_01E318
+	jsr	a:build_bg2_slant_table
 	plx
 	rtl
 
-sub_01E3C5:
+object_type_4E_keep_in_range:
 	lda	$0A,x
 	cmp	#$00B0
 	bcs	loc_01E427
@@ -2764,13 +2776,13 @@ sub_01E3DD:
 loc_01E3E7:
 	jmp	a:loc_01E43E
 
-sub_01E3EA:
+object_type_4E_track_target:
 	lda	$34,x
 	tay
 	lda	a:$0016,y
 	bit	#$0001
 	bne	loc_01E408
-	jsr	a:sub_01E0F0
+	jsr	a:object_type_4E_pick_target
 	lda	a:wram_0216
 	ora	a:wram_0256
 	and	#$0001
@@ -2847,7 +2859,7 @@ object_type_4E_state_18:
 	rtl
 
 object_type_4E_state_1A:
-	jsr	a:sub_01E01E
+	jsr	a:object_type_4E_set_bg2_scroll
 	jsl	f:queue_sound_41_throttled
 	lda	$0A,x
 	adc	#$FFE0
@@ -2903,9 +2915,9 @@ loc_01E4FE:
 	lda	#$000C
 	jsl	f:queue_sound
 	ldy	#$0200
-	jsr	a:sub_01E6DD
+	jsr	a:stage3_winged_bug_release_player
 	ldy	#$0240
-	jsr	a:sub_01E6DD
+	jsr	a:stage3_winged_bug_release_player
 	lda	#$0004
 	sta	$12,x
 	stz	$22,x
@@ -2957,9 +2969,9 @@ loc_01E560:
 	adc	#$0000
 	sta	$1E,x
 loc_01E56F:
-	jsr	a:sub_01E5AE
-	jsr	a:sub_01E63E
-	jsr	a:sub_01E763
+	jsr	a:stage3_winged_bug_aim
+	jsr	a:stage3_winged_bug_grab_players
+	jsr	a:stage3_winged_bug_count_down
 	rtl
 
 stage3_winged_bug_state_02:
@@ -2986,12 +2998,12 @@ loc_01E595:
 	sbc	#$0000
 	sta	$1E,x
 loc_01E5A4:
-	jsr	a:sub_01E5AE
-	jsr	a:sub_01E63E
-	jsr	a:sub_01E763
+	jsr	a:stage3_winged_bug_aim
+	jsr	a:stage3_winged_bug_grab_players
+	jsr	a:stage3_winged_bug_count_down
 	rtl
 
-sub_01E5AE:
+stage3_winged_bug_aim:
 	lda	$32,x
 	bit	#$001F
 	bne	loc_01E5EA
@@ -3027,7 +3039,7 @@ loc_01E5EA:
 	rts
 
 stage3_winged_bug_state_03:
-	jsr	a:sub_01E63E
+	jsr	a:stage3_winged_bug_grab_players
 	sec
 	lda	$1C,x
 	sbc	#$1000
@@ -3068,15 +3080,15 @@ loc_01E629:
 	sta	$1E,x
 	rtl
 
-sub_01E63E:
+stage3_winged_bug_grab_players:
 	ldy	#$0200
-	jsr	a:sub_01E64B
+	jsr	a:stage3_winged_bug_grab_player
 	ldy	#$0240
-	jsr	a:sub_01E64B
+	jsr	a:stage3_winged_bug_grab_player
 loc_01E64A:
 	rts
 
-sub_01E64B:
+stage3_winged_bug_grab_player:
 	lda	a:$0016,y
 	beq	loc_01E64A
 	bmi	loc_01E64A
@@ -3142,7 +3154,7 @@ loc_01E6D6:
 loc_01E6DC:
 	rts
 
-sub_01E6DD:
+stage3_winged_bug_release_player:
 	txa
 	cmp	a:$003E,y
 	bne	loc_01E6EF
@@ -3201,7 +3213,7 @@ stage3_winged_bug_state_00:
 loc_01E762:
 	rtl
 
-sub_01E763:
+stage3_winged_bug_count_down:
 	dec	$24,x
 	bpl	loc_01E771
 	lda	#$0003
@@ -3232,7 +3244,7 @@ loc_01E782:
 tbl_object_type_56_states:
 	.addr	object_type_56_state_00
 	.addr	object_type_56_state_01
-	.addr	sub_01E822
+	.addr	object_type_56_state_02
 
 object_type_56_state_00:
 	ldy	difficulty
@@ -3246,7 +3258,7 @@ object_type_56_state_00:
 	sta	$28,x
 	lda	#$FFE0
 	sta	$2A,x
-	jsr	a:sub_01E864
+	jsr	a:pick_random_player_local
 	lda	a:$000A,y
 	cmp	$0A,x
 	bcc	loc_01E7C0
@@ -3259,7 +3271,7 @@ loc_01E7C5:
 	lda	#.loword(anim_05CAF7)
 	sta	$20,x
 	stz	$22,x
-	jsr	a:sub_01E7E0
+	jsr	a:object_type_56_set_velocity
 	stz	$1C,x
 	stz	$1E,x
 	stz	$08,x
@@ -3270,7 +3282,7 @@ loc_01E7C5:
 	inc	$12,x
 	rtl
 
-sub_01E7E0:
+object_type_56_set_velocity:
 	lda	$04,x
 	bne	loc_01E7F2
 	ldy	difficulty
@@ -3307,7 +3319,7 @@ object_type_56_state_01:
 loc_01E821:
 	rtl
 
-sub_01E822:
+object_type_56_state_02:
 	lda	$1E,x
 	bmi	loc_01E82B
 	cmp	#$0004
@@ -3325,7 +3337,7 @@ loc_01E837:
 	jsl	f:get_bg_tile_at_object
 	bit	#$807E
 	beq	loc_01E85F
-	jsr	a:sub_01E7E0
+	jsr	a:object_type_56_set_velocity
 	stz	$1C,x
 	stz	$1E,x
 	stz	$08,x
@@ -3339,11 +3351,13 @@ loc_01E837:
 loc_01E85F:
 	rtl
 
-sub_01E860:
-	jsr	a:sub_01E864
+; Y = a player slot: $0200 or $0240 at random when both are present (bit 0
+; of OBJ_FLAGS), else the present one.
+pick_random_player:
+	jsr	a:pick_random_player_local
 	rtl
 
-sub_01E864:
+pick_random_player_local:
 	lda	#$0200
 	tay
 	lda	a:wram_0216
@@ -3361,8 +3375,11 @@ loc_01E877:
 loc_01E883:
 	rts
 
-; Object type $5C: stage 6 (the bone arch). Not identified.
-update_object_type_5C:
+; Object type $5C: stage 6, invisible spawner of alien soldiers (type $56):
+; every data_05CB1D[difficulty] + rnd frames one from the right edge, every
+; data_05CB23 + rnd frames one from the left, dropped onto the floor
+; (drop_object_to_floor); none while a big enemy is near the right edge.
+update_alien_soldier_spawner:
 	lda	$12,x
 	bne	loc_01E89A
 	lda	#$0003
@@ -3377,16 +3394,16 @@ loc_01E89A:
 	dec	$30,x
 	lda	$30,x
 	bne	loc_01E8A3
-	jsr	a:sub_01E8AD
+	jsr	a:spawn_alien_soldier_right
 loc_01E8A3:
 	dec	$32,x
 	lda	$32,x
 	bne	loc_01E8AC
-	jsr	a:sub_01E8F9
+	jsr	a:spawn_alien_soldier_left
 loc_01E8AC:
 	rtl
 
-sub_01E8AD:
+spawn_alien_soldier_right:
 	ldy	difficulty
 	lda	rng_lo
 	and	#$007F
@@ -3413,7 +3430,7 @@ loc_01E8CF:
 	bcs	loc_01E8F8
 	lda	#$00FF
 	sta	a:$000A,y
-	jsr	a:sub_01E916
+	jsr	a:drop_object_to_floor
 loc_01E8E9:
 	lda	#$0056
 	sta	a:$0010,y
@@ -3423,7 +3440,7 @@ loc_01E8E9:
 loc_01E8F8:
 	rts
 
-sub_01E8F9:
+spawn_alien_soldier_left:
 	ldy	difficulty
 	lda	rng_lo
 	and	#$00FF
@@ -3433,10 +3450,11 @@ sub_01E8F9:
 	bcs	loc_01E8F8
 	lda	#$0000
 	sta	a:$000A,y
-	jsr	a:sub_01E916
+	jsr	a:drop_object_to_floor
 	bra	loc_01E8E9
 
-sub_01E916:
+; Moves the object at Y down from y $78 to the first solid BG tile.
+drop_object_to_floor:
 	lda	#$0078
 	sta	zp_05
 	phx
@@ -3491,7 +3509,7 @@ loc_01E95F:
 tbl_object_type_24_states:
 	.addr	object_type_24_state_00
 	.addr	object_type_24_state_01
-	.addr	sub_01E822
+	.addr	object_type_56_state_02
 
 object_type_24_state_00:
 	ldy	difficulty
@@ -3505,7 +3523,7 @@ object_type_24_state_00:
 	sta	$28,x
 	lda	#$FFE0
 	sta	$2A,x
-	jsr	a:sub_01E864
+	jsr	a:pick_random_player_local
 	lda	a:$000A,y
 	cmp	$0A,x
 	bcc	loc_01E99D
@@ -3640,15 +3658,15 @@ stage3_spiked_climber_state_03:
 	phx
 	ldx	#$0340
 	ldy	#$0000
-	jsr	a:sub_01EBCE
+	jsr	a:spiked_climber_init_part
 	ldx	#$0380
 	ldy	#$0002
 	lda	#$FFFE
 	sta	$24,x
-	jsr	a:sub_01EBCE
+	jsr	a:spiked_climber_init_part
 	ldx	#$0300
 	ldy	#$0004
-	jsr	a:sub_01EBCE
+	jsr	a:spiked_climber_init_part
 	lda	#$4010
 	sta	$16,x
 	ldy	difficulty
@@ -3657,7 +3675,7 @@ stage3_spiked_climber_state_03:
 	lda	#$FFF8
 	sta	$2A,x
 	plx
-	jsr	a:sub_01D932
+	jsr	a:init_swing_pivot
 	rtl
 
 stage3_spiked_climber_state_04:
@@ -3670,13 +3688,13 @@ stage3_spiked_climber_state_04:
 stage3_spiked_climber_state_05:
 	lda	a:wram_1642
 	beq	loc_01EAC9
-	jsr	a:sub_01ECED
+	jsr	a:spiked_climber_check_fallen
 	lda	$16,x
 	beq	loc_01EB2E
 loc_01EAC9:
 	stx	zp_FC
-	jsr	a:sub_01ECAA
-	jsr	a:sub_01EBF4
+	jsr	a:spiked_climber_move_x
+	jsr	a:spiked_climber_place_parts
 	lda	a:wram_1642
 	beq	loc_01EADD
 	lda	#$0003
@@ -3702,23 +3720,23 @@ loc_01EAE7:
 	inc	a
 	sta	$38,x
 loc_01EB07:
-	jsr	a:sub_01D9C7
+	jsr	a:advance_swing_angle
 loc_01EB0A:
 	ldy	#$0200
 	sty	zp_FE
 	lda	a:$003E,y
 	cmp	$3E,x
 	bne	loc_01EB1C
-	jsr	a:sub_01DA12
-	jsr	a:sub_01DA72
+	jsr	a:swing_player_climb
+	jsr	a:swing_carry_player
 loc_01EB1C:
 	ldy	#$0240
 	sty	zp_FE
 	lda	a:$003E,y
 	cmp	$3E,x
 	bne	loc_01EB2E
-	jsr	a:sub_01DA12
-	jsr	a:sub_01DA72
+	jsr	a:swing_player_climb
+	jsr	a:swing_carry_player
 loc_01EB2E:
 	rtl
 
@@ -3799,10 +3817,10 @@ update_object_type_3F:
 	ldy	#$B8C3
 loc_01EBC8:
 	sty	$00,x
-	jsr	a:sub_01EC51
+	jsr	a:object_type_3F_move_spikes
 	rtl
 
-sub_01EBCE:
+spiked_climber_init_part:
 	lda	a:data_05CB3D,y
 	sta	$00,x
 	lda	a:data_05CB31,y
@@ -3820,7 +3838,7 @@ sub_01EBCE:
 	sta	$0E,x
 	rts
 
-sub_01EBF4:
+spiked_climber_place_parts:
 	clc
 	lda	$0A,x
 	adc	#$0004
@@ -3868,7 +3886,7 @@ loc_01EC25:
 	sta	a:wram_038E
 	rts
 
-sub_01EC51:
+object_type_3F_move_spikes:
 	lda	a:wram_1642
 	bne	loc_01EC63
 	inc	$24,x
@@ -3911,7 +3929,7 @@ loc_01ECA6:
 loc_01ECA9:
 	rts
 
-sub_01ECAA:
+spiked_climber_move_x:
 	ldy	a:wram_163E
 	bne	loc_01ECC1
 	lda	$0A,x
@@ -3947,7 +3965,7 @@ loc_01ECDD:
 loc_01ECEC:
 	rts
 
-sub_01ECED:
+spiked_climber_check_fallen:
 	lda	$0E,x
 	cmp	#$0100
 	bcc	loc_01ED3E
@@ -4139,10 +4157,10 @@ loc_01EE7D:
 	sta	zp_FE
 	lda	#$FFFE
 	sta	zp_FC
-	jsr	a:sub_01F3BD
+	jsr	a:spiked_climber_fire_missile
 	lda	#$0001
 	sta	zp_FE
-	jsr	a:sub_01F3BD
+	jsr	a:spiked_climber_fire_missile
 	plx
 	phx
 	inc	a:wram_163A
@@ -4304,7 +4322,7 @@ update_object_type_52:
 	clc
 	adc	#$4000
 	ldy	#$CCA3
-	jsr	a:sub_01F2B0
+	jsr	a:spiked_climber_queue_tiles
 	inc	$12,x
 	stz	a:wram_1640
 	lda	#$0040
@@ -4319,7 +4337,7 @@ stage3_spiked_climber_state_0C:
 	lda	$30,x
 	adc	#$4280
 	ldy	#$CCBB
-	jsr	a:sub_01F2B0
+	jsr	a:spiked_climber_queue_tiles
 	rtl
 
 stage3_spiked_climber_state_0D:
@@ -4329,13 +4347,13 @@ stage3_spiked_climber_state_0D:
 	lda	#$FFE2
 	sta	a:wram_03EA
 	sta	a:wram_062A
-	jsr	a:sub_01F2C3
+	jsr	a:spiked_climber_init_hdma
 	inc	$12,x
 	clc
 	lda	$30,x
 	adc	#$4300
 	ldy	#$CCAF
-	jsr	a:sub_01F2B0
+	jsr	a:spiked_climber_queue_tiles
 	lda	#$0003
 	sta	a:shake_timer
 	lda	#$0020
@@ -4345,7 +4363,7 @@ stage3_spiked_climber_state_0D:
 	rtl
 
 stage3_spiked_climber_state_0E:
-	jsr	a:sub_01F3E3
+	jsr	a:spiked_climber_kill_players_outside
 	lda	#$0001
 	sta	a:shake_continuous
 	lda	f:wram_7E3821
@@ -4365,7 +4383,7 @@ loc_01F039:
 	rtl
 
 stage3_spiked_climber_state_0F:
-	jsr	a:sub_01F3E3
+	jsr	a:spiked_climber_kill_players_outside
 	lda	#$0003
 	sta	a:shake_timer
 	lda	#$8000
@@ -4388,19 +4406,19 @@ stage3_spiked_climber_state_0F:
 	sta	a:wram_0352
 	ldy	#$0002
 	ldx	#$0400
-	jsr	a:sub_01F360
+	jsr	a:spiked_climber_init_hitbox
 	ldx	#$0440
-	jsr	a:sub_01F360
+	jsr	a:spiked_climber_init_hitbox
 	lda	#$006C
 	sta	$0E,x
 	ldy	#$0004
 	ldx	#$0380
-	jsr	a:sub_01F360
+	jsr	a:spiked_climber_init_hitbox
 	lda	#$0002
 	sta	$04,x
 	ldy	#$0000
 	ldx	#$0340
-	jsr	a:sub_01F36F
+	jsr	a:spiked_climber_set_hitbox
 	lda	#.loword(anim_05CCDD)
 	sta	$20,x
 	lda	#$401D
@@ -4408,12 +4426,12 @@ stage3_spiked_climber_state_0F:
 	ldy	difficulty
 	lda	a:stage3_spiked_climber_hp,y
 	sta	$06,x
-	jsr	a:sub_01F2FF
+	jsr	a:spiked_climber_place_bg
 	plx
 	rtl
 
 stage3_spiked_climber_state_10:
-	jsr	a:sub_01F3E3
+	jsr	a:spiked_climber_kill_players_outside
 	lda	$06,x
 	bpl	loc_01F0F4
 	lda	#$0100
@@ -4457,7 +4475,7 @@ loc_01F118:
 	stz	$1E,x
 	bra	loc_01F164
 loc_01F127:
-	jsr	a:sub_01F2A0
+	jsr	a:spiked_climber_dy_to_player
 	bmi	loc_01F149
 	cmp	#$000C
 	bcc	loc_01F14E
@@ -4471,7 +4489,7 @@ loc_01F131:
 	bra	loc_01F15E
 loc_01F141:
 	lda	#$1000
-	jsr	a:sub_01F26C
+	jsr	a:spiked_climber_accel_up
 	bra	loc_01F164
 loc_01F149:
 	cmp	#$FFF4
@@ -4486,7 +4504,7 @@ loc_01F14E:
 	bra	loc_01F141
 loc_01F15E:
 	lda	#$1000
-	jsr	a:sub_01F286
+	jsr	a:spiked_climber_accel_down
 loc_01F164:
 	ldy	a:wram_1640
 	bne	loc_01F1A0
@@ -4500,7 +4518,7 @@ loc_01F164:
 	lda	#$0002
 	sta	a:shake_timer
 	phy
-	jsr	a:sub_01F38B
+	jsr	a:spiked_climber_spawn_debris
 	ply
 	lda	#$FFFE
 	sta	$1A,x
@@ -4544,11 +4562,11 @@ loc_01F1CE:
 	adc	a:data_05CCCB,y
 	sta	$1A,x
 loc_01F1DD:
-	jsr	a:sub_01F2FF
+	jsr	a:spiked_climber_place_bg
 	rtl
 
 stage3_spiked_climber_state_11:
-	jsr	a:sub_01F3E3
+	jsr	a:spiked_climber_kill_players_outside
 	dec	$24,x
 	bpl	loc_01F1EF
 	inc	$12,x
@@ -4577,7 +4595,7 @@ loc_01F21E:
 	rtl
 
 stage3_spiked_climber_state_12:
-	jsr	a:sub_01F3E3
+	jsr	a:spiked_climber_kill_players_outside
 	lda	#$0001
 	sta	a:shake_continuous
 	lda	f:wram_7E3821
@@ -4612,7 +4630,7 @@ stage3_spiked_climber_state_13:
 loc_01F26B:
 	rtl
 
-sub_01F26C:
+spiked_climber_accel_up:
 	sta	zp_00
 	lda	$1E,x
 	bpl	loc_01F277
@@ -4629,7 +4647,7 @@ loc_01F277:
 loc_01F285:
 	rts
 
-sub_01F286:
+spiked_climber_accel_down:
 	sta	zp_00
 	lda	$1E,x
 	bmi	loc_01F291
@@ -4646,7 +4664,7 @@ loc_01F291:
 loc_01F29F:
 	rts
 
-sub_01F2A0:
+spiked_climber_dy_to_player:
 	lda	#$0400
 	jsl	f:pick_target_player
 	lda	$0E,x
@@ -4654,7 +4672,7 @@ sub_01F2A0:
 	sbc	a:$1314,y
 	rts
 
-sub_01F2B0:
+spiked_climber_queue_tiles:
 	pha
 	lda	#$0006
 	sta	zp_02
@@ -4666,7 +4684,7 @@ sub_01F2B0:
 	plx
 	rts
 
-sub_01F2C3:
+spiked_climber_init_hdma:
 	sep	#$20
 	.a8
 	lda	#$7E
@@ -4699,7 +4717,7 @@ sub_01F2C3:
 	sta	hdma_preset
 	rts
 
-sub_01F2FF:
+spiked_climber_place_bg:
 	sec
 	lda	#$00C4
 	sbc	$0A,x
@@ -4746,7 +4764,7 @@ loc_01F359:
 loc_01F35F:
 	rts
 
-sub_01F360:
+spiked_climber_init_hitbox:
 	lda	#$0053
 	sta	$10,x
 	lda	#.loword(anim_05CC87)
@@ -4754,7 +4772,7 @@ sub_01F360:
 	lda	#$003C
 	sta	$16,x
 
-sub_01F36F:
+spiked_climber_set_hitbox:
 	lda	a:data_05CC71,y
 	sta	$0E,x
 	lda	a:data_05CC75,y
@@ -4768,7 +4786,7 @@ sub_01F36F:
 	stz	$04,x
 	rts
 
-sub_01F38B:
+spiked_climber_spawn_debris:
 	lda	$0A,x
 	adc	#$0028
 	sta	zp_12
@@ -4788,7 +4806,7 @@ loc_01F3A2:
 	lda	zp_14
 	sta	$0E,x
 	phy
-	jsl	f:sub_01CFC5
+	jsl	f:make_debris_effect
 	ply
 	dec	zp_10
 	bpl	loc_01F3A2
@@ -4796,7 +4814,7 @@ loc_01F3BB:
 	plx
 	rts
 
-sub_01F3BD:
+spiked_climber_fire_missile:
 	lda	#$0000
 	bra	loc_01F3C5
 	; CDL: not accessed
@@ -4816,7 +4834,9 @@ loc_01F3C5:
 loc_01F3E2:
 	rts
 
-sub_01F3E3:
+; Kills the players above y $48 or below y $C4 (kill_players_outside with A
+; = 2: the barrier does not protect).
+spiked_climber_kill_players_outside:
 	lda	#$48C4
 	sta	zp_00
 	stz	zp_02
@@ -4913,17 +4933,17 @@ hoverbike_rider_state_01:
 	inc	a
 	sta	$12,x
 loc_01F49F:
-	jsr	a:sub_01F52D
+	jsr	a:hoverbike_rider_keep_in_bounds
 	rtl
 
 hoverbike_rider_state_03:
-	jsr	a:sub_01F55E
-	jsr	a:sub_01F52D
+	jsr	a:hoverbike_rider_fire
+	jsr	a:hoverbike_rider_keep_in_bounds
 	rtl
 
 hoverbike_rider_state_02:
-	jsr	a:sub_01F5A0
-	jsr	a:sub_01F52D
+	jsr	a:hoverbike_rider_drop_bomb
+	jsr	a:hoverbike_rider_keep_in_bounds
 	rtl
 
 hoverbike_rider_state_04:
@@ -4989,7 +5009,7 @@ hoverbike_rider_state_06:
 loc_01F52C:
 	rtl
 
-sub_01F52D:
+hoverbike_rider_keep_in_bounds:
 	lda	$0E,x
 	cmp	#$0020
 	bcs	loc_01F538
@@ -5018,7 +5038,7 @@ loc_01F545:
 loc_01F55D:
 	rts
 
-sub_01F55E:
+hoverbike_rider_fire:
 	lda	stage_frame_mod4
 	bne	loc_01F59F
 	lda	#$0400
@@ -5047,7 +5067,7 @@ loc_01F57C:
 loc_01F59F:
 	rts
 
-sub_01F5A0:
+hoverbike_rider_drop_bomb:
 	lda	#$0400
 	jsl	f:pick_target_player
 	lda	$0A,x
