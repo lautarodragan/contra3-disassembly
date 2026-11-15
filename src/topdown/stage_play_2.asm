@@ -41,9 +41,9 @@ loc_02E68B:
 loc_02E68E:
 	lda	$12,x
 	bne	loc_02E6A9
-	lda	a:data_05FF8A,x
+	lda	a:.loword($000A - $0080),x	; x of the player (X - $80) that threw the bomb X
 	sta	$0A,x
-	lda	a:data_05FF8E,x
+	lda	a:.loword($000E - $0080),x	; and its y
 	sta	$0E,x
 	lda	#$0001
 	sta	$06,x

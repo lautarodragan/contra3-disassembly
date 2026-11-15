@@ -1399,7 +1399,8 @@ data_059F06:
 	.byte	$04, $00
 data_059F08:
 	; CDL: read by object_type_06_state_04; partly not accessed
-	.byte	$8A, $F4, $70, $00
+	.addr	song_set_05F48A
+	.byte	$70, $00
 data_059F0C:
 	; CDL: read by object_type_06_state_04, update_bomber_bomb, update_objects; partly not accessed
 	.byte	$88, $00, $FF, $FF, $00, $00
