@@ -88,3 +88,40 @@ they share:
 The routines of stages 2 and 5 (`src/topdown/`) are described in
 [Top-down stages](topdown.md), starting from `run_topdown_stage`; each
 routine has a header comment in the source.
+
+## Engine and sound
+
+The engine (`src/engine/`) and the sound CPU interface (`src/sound/`) are
+described in [Engine: frame flow, video and loading](engine.md) and
+[Sound driver interface](sound.md). The main routines:
+
+| label | address | what |
+|---|---|---|
+| `warm_boot` | `$00:80A3` | RAM/VRAM/PPU initialisation after a reset or soft reset, then the main loop |
+| `nmi_frame_default` / `nmi_frame_side_view` / `nmi_frame_top_down` | `$00:81E6` / `$00:823C` / `$00:83A3` | the frame handlers (`nmi_mode`) |
+| `next_random` | `$00:816C` | random number generator, once per frame |
+| `read_joypads` | `$00:8B19` | pads, newly pressed buttons, soft reset |
+| `queue_sound` | `$00:868F` | A = sound command: queue it for the sound CPU |
+| `send_queued_sound` | `$00:85F3` | per frame: send the next queued command |
+| `send_sound_command_now` | `$00:8624` | send a command and wait for the echo |
+| `reset_sound_queue` | `$00:865C` | empty the queue, stop all sound |
+| `load_song_set` / `request_song_set` | `$00:98D4` / `$00:994F` | upload a song set now / from the main loop |
+| `load_stage_music` | `$04:D9F1` | song set and start command of the stage |
+| `disable_display_and_nmi` / `enable_nmi` | `$00:85A9` / `$00:85C1` | display and NMI off / on around loading |
+| `reset_video_state` | `$00:8DBE` | reset PPU, VRAM, OAM, palettes and tasks |
+| `init_ppu_registers` | `$00:86AC` | every PPU register to its start-up value |
+| `run_vram_queue` | `$00:8CFF` | NMI: execute the queued VRAM DMAs |
+| `begin_vram_transfer` / `push_vram_word` / `end_vram_transfer` | `$00:8D41` / `$00:8DA5` / `$00:8DB0` | build a queued VRAM transfer |
+| `draw_text` | `$00:9024` | X = string: write it to the BG tilemap through the queue |
+| `load_data_list` | `$00:90A8` | X = data list (bank `$05`): load compressed graphics/data to VRAM, WRAM or the sound CPU |
+| `run_pending_loads` | `$00:90C7` | per frame: next chunk of deferred lists |
+| `decompress_ring` / `decompress_chunk` | `$00:949C` / `$00:94A9` | the decompressor (resumable, 1 KiB window) |
+| `start_palette_task` / `run_palette_tasks` | `$00:9982` / `$00:9995` | palette animations and fades |
+| `run_bg1_scroll_mode` / `run_bg2_scroll_mode` | `$00:C67D` / `$00:C917` | side-view scrolling of BG1 / BG2 |
+| `draw_bg_column` / `draw_bg_row` | `$00:CB29` / `$00:CA52` | queue the tiles entering the screen |
+| `update_bg_collision_map` | `$00:CC37` | collision map from the queued tiles |
+| `spawn_stage_objects` | `$00:CE3A` | place the stage's objects as BG1 scrolls |
+| `init_hud` / `update_p1_hud` / `upload_p1_hud` | `$00:E369` / `$00:E3DA` / `$00:E4F6` | the HUD |
+| `setup_stage_hdma` | `$00:E575` | side view: HDMA channels |
+| `build_scroll_split_hdma` | `$00:E5F7` | HDMA table for horizontally split scrolling |
+| `calc_angle` / `polar_to_xy` / `set_velocity_from_angle` / `calc_distance` | `$1D:ABA0` / `$1D:ACA4` / `$1D:AD8A` / `$1D:AED0` | angles and distances |

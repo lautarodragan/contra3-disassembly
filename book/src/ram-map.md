@@ -4,7 +4,7 @@ All RAM names are in `src/ram.inc`, included by `src/common.inc`. The first
 pass (milestone 2) replaced RAM operands by symbols mechanically, with the
 CDL: every variable the code addresses directly has a symbol, most of them
 still a placeholder named by its address (`zp_00`-style for the direct page,
-`inidisp_shadow`-style for `$0100-$1FFF`, `wram_7EA000`-style above `$7E:2000`).
+`wram_13CE`-style for `$0100-$1FFF`, `wram_7EA000`-style above `$7E:2000`).
 The header of `src/ram.inc` lists exactly what was converted and what was
 left as a number on purpose; in short:
 
@@ -12,10 +12,12 @@ left as a number on purpose; in short:
   are mostly fields of the structure that X or Y points to (an object slot,
   a player), and naming them as absolute addresses would be wrong;
 - direct-page operands of instructions that ran (or may run) with the direct
-  page register D other than 0 are left as numbers: in the loader and
+  page register D other than 0 are not variables: in the loader and
   decompressor (`src/engine/gfx_loader.asm`, `src/engine/decompress.asm`,
-  `src/sound/`) D points at a context structure at `$1300`, `$1340` or
-  `$1F00`, and the comment on the line gives the address really accessed.
+  `src/sound/`) D points at a loader context (`LOADER_VRAM` = `$1300`,
+  `LOADER_WRAM` = `$1340`, `LOADER_SPC` = `$1F00`) and the operands are its
+  fields (`LDR_*` constants); the comment on the line gives the address
+  really accessed.
 
 ## Named variables
 
@@ -24,7 +26,7 @@ the ones in the lead's notes confirmed by the code):
 
 | name | address | meaning |
 |---|---|---|
-| `joy1_held` | `$20` | joypad 1 buttons held (written by sub_008B19; pads 2-4 at $22/$24/$26) |
+| `joy1_held` | `$20` | joypad 1 buttons held (written by `read_joypads`; pads 2-4 at $22/$24/$26) |
 | `joy2_held` | `$22` | joypad 2 buttons held |
 | `joy1_pressed` | `$28` | joypad 1 buttons newly pressed this frame (pads 2-4 at $2A/$2C/$2E) |
 | `joy2_pressed` | `$2A` | joypad 2 buttons newly pressed this frame |
@@ -32,14 +34,14 @@ the ones in the lead's notes confirmed by the code):
 | `game_submode` | `$34` | sub-mode of the current game mode (each mode dispatches it through its own table) |
 | `frame_counter` | `$3A` | incremented by sub_00A377 every frame |
 | `nmi_busy` | `$3C` | non-zero while the NMI frame handler runs (re-entry guard in nmi) |
-| `nmi_mode` | `$42` | NMI frame handler, x2 index into tbl_0081E0 (0, 2 = side-view stages, 4 = top-down stages) |
-| `sound_queue_read` | `$54` | read index of sound_queue (sub_0085F3) |
-| `sound_queue_write` | `$56` | write index of sound_queue (sub_00868F) |
-| `sound_last_queued` | `$5C` | last command queued by sub_00868F (repeats are dropped) |
+| `nmi_mode` | `$42` | NMI frame handler, x2 index into `tbl_nmi_frame_handlers`: 0 menus/screens, 2 side-view stages, 4 top-down stages (`NMI_MODE_*` constants) |
+| `sound_queue_read` | `$54` | read index of `sound_queue` (`send_queued_sound`) |
+| `sound_queue_write` | `$56` | write index of `sound_queue` (`queue_sound`) |
+| `sound_last_queued` | `$5C` | last command queued by `queue_sound` this frame (repeats are dropped) |
 | `stage_index` | `$70` | stage number - 1 (0-5), set from stage_number in normal play and in the demo; indexes per-stage tables such as tbl_00AC2A |
 | `difficulty` | `$84` | difficulty x2: 0 easy, 2 normal, 4 hard (copied from $1E3E) |
 | `stage_number` | `$86` | stage number, 1-6 |
-| `rng_lo` | `$E8` | random number generator state, low word (sub_00816C) |
+| `rng_lo` | `$E8` | random number generator state, low word (`next_random`) |
 | `rng_hi` | `$EA` | random number generator state, high word |
 | `oam_hi_bits` | `$9C` | OAM high-table bits being packed by `draw_metasprite` / `draw_shot` |
 | `shake_bg1_y` | `$A0` | screen shake: subtracted from BG1 VOFS and added to sprites' y (`update_shake_side_view`) |
@@ -47,7 +49,7 @@ the ones in the lead's notes confirmed by the code):
 | `target_list_end` | `$AA` | end of the list of shot targets at `$15A0`, built by `update_objects` |
 | `oam_ptr` | `$AC` | next free entry of the OAM buffer (`$0FC0`) |
 | `oam_hi_ptr` | `$AE` | next byte of the OAM high table (`$11C0`) |
-| `sound_queue` | `$0100` | ring of commands for the sound CPU (sub_00868F, sub_0085F3) |
+| `sound_queue` | `$0100` | ring of 256 commands for the sound CPU (`queue_sound`, `send_queued_sound`) |
 | `player1_obj` | `$0200` | player 1 object ($40 bytes; player 2 at $0240) |
 | `player1_state` | `$0212` | player 1 object field +$12, state |
 | `player2_obj` | `$0240` | player 2 object ($40 bytes) |
@@ -116,3 +118,35 @@ are described in [Top-down stages](topdown.md). The top-down stages reuse
 `$1780-$17FF` (sprite graphics stream list) and `$1800-$1867` (Mode 7 block
 patches) and the tile attribute map at `$7E:4000` differently from the
 side-view stages, so those addresses keep their placeholder names.
+
+## Engine and sound variables
+
+Described in [Engine](engine.md) and [Sound](sound.md); each has a comment
+in `src/ram.inc`:
+
+| name | address | meaning |
+|---|---|---|
+| `force_blank_frames` | `$3E` | frames the NMI keeps the screen blanked (4 after a display change) |
+| `irq_mode` | `$44` | IRQ handler index (top-down split screen) |
+| `hdma_preset` | `$46` | HDMA channel preset (`setup_hdma_channels`, `setup_stage_hdma`) |
+| `cgram_dma_src` | `$48` | WRAM address of the palette DMAd to CGRAM every frame (`$2200`) |
+| `vram_queue_end` | `$4E` | end of the VRAM DMA queue (`VRAM_QUEUE` = `$7E:3000`) |
+| `vram_queue_data_ptr` | `$50` | next free byte of the queue's data (`VRAM_QUEUE_DATA` = `$7E:3400`) |
+| `apu_pending_cmd` | `$52` | sound command waiting for the driver's echo; `$FF` during an upload |
+| `cgram_upload_addr` | `$98` | CGRAM address of a 32-byte palette upload (side view) |
+| `rng_temp` | `$E6` | complement of `rng_lo`, read by some objects as a random value |
+| `text_erase` | `$F0` | `draw_text` erases instead of writing |
+| `palette_tasks` | `$1200` | 8 palette task slots (`TASK_*` fields) |
+| `vram_tasks` | `$1280` | VRAM script task slots |
+| `LOADER_VRAM` / `LOADER_WRAM` | `$1300` / `$1340` | loader contexts (`LDR_*` fields) |
+| `bg1_x` | `$1380` | BG1 scroll state (`BG_*` fields); `bg1_y` at `$1398` |
+| `bg1_x_delta` / `bg1_y_delta` | `$138E` / `$13A6` | BG1 movement of this frame |
+| `bg1_scroll_mode` | `$13BA` | BG1 scroll handler (`tbl_bg1_scroll_modes`) |
+| `bg2_x` | `$13C0` | BG2 scroll state; `bg2_y` at `$13D8` |
+| `bg2_scroll_mode` | `$13FA` | BG2 scroll handler (`tbl_bg2_scroll_modes`) |
+| `spawn_pages` ... | `$1602-$160C` | stage object spawner (`spawn_stage_objects`) |
+| `scroll_split_pattern` | `$1676` | scroll-split HDMA pattern (0 = off), `scroll_split_y` at `$1674` |
+| `hud_buffer` | `$1700` | HUD tilemap buffer, 4 rows of `$20` bytes |
+| `boot_signature` | `$1E0A` | `>JIN L<` + `$0400`: keeps `$1E00-$1FFF` across a reset |
+| `inidisp_shadow` ... `hdmaen_shadow` | `$1E80-$1EC4` | PPU register shadows (`write_ppu_shadows`, the NMI frame handlers) |
+| `LOADER_SPC` | `$1F00` | sound CPU loader context; `pending_spc_list` (`$1F2C`) is the song set requested from the main loop |

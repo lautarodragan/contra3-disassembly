@@ -58,12 +58,12 @@ banks, stay as source because they contain pointers that will become labels.
 | `src/game/attract.asm` | `$00:AD7C-$00:B678` | Attract mode: demo, title screen and menu, Konami logo |
 | `src/game/screens.asm` | `$00:B679-$00:BD3F` | Stage clear, OPTION and FINAL SCORE screens; scores |
 | `src/game/stage.asm` | `$00:BD40-$00:C282` | Side-view stage state machine |
-| `src/engine/bg_scroll.asm` | `$00:C283-$00:CF0B` | BG scrolling and tilemap updates |
+| `src/engine/bg_scroll.asm` | `$00:C283-$00:CF0B` | BG scrolling, tilemap updates and stage spawning |
 | `src/objects/object_handlers_00a.asm` | `$00:CF0C-$00:D655` | Object handlers (bank $00, part 1) |
 | `src/objects/player_shots.asm` | `$00:D656-$00:DDC7` | Player shots |
 | `src/objects/object_handlers_00b.asm` | `$00:DDC8-$00:E1B7` | Object handlers (bank $00, part 2) |
 | `src/objects/secondary_objects.asm` | `$00:E1B8-$00:E368` | Player shots (the secondary object list) |
-| `src/engine/hdma.asm` | `$00:E369-$00:E7EE` | HDMA tables and their NMI-time transfers |
+| `src/engine/hdma.asm` | `$00:E369-$00:E7EE` | HUD, stage HDMA and HDMA tables |
 | `src/engine/window_effect.asm` | `$00:E7EF-$00:E95F` | Window effect around a player |
 | `src/objects/object_loop.asm` | `$00:E960-$00:EB19` | Object loop and type dispatcher |
 | `src/objects/sprite_draw.asm` | `$00:EB1A-$00:EBC3` | Metasprite drawing |

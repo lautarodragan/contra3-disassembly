@@ -15,6 +15,8 @@
 - [The cartridge](cartridge.md)
 - [RAM map](ram-map.md)
 - [Routines](routines.md)
+- [Engine: frame flow, video and loading](engine.md)
+- [Sound driver interface](sound.md)
 - [Game flow](game-flow.md)
 - [Top-down stages](topdown.md)
 - [Objects](objects.md)
