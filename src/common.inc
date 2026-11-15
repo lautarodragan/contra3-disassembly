@@ -8,5 +8,6 @@ COMMON_INC = 1
 
 .include "snes_registers.inc"
 .include "ram.inc"
+.include "game/game.inc"
 
 .endif

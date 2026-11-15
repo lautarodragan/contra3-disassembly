@@ -50,9 +50,9 @@ sound_check_input:
 	; (not executed in the CDL traces)
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$1000
+	bit	#JOY_START
 	bne	loc_04D8EF
-	bit	#$8000
+	bit	#JOY_B
 	bne	loc_04D8E7
 	ldx	#$F347
 	lda	#$2400
@@ -93,14 +93,14 @@ sound_check_change_id:
 	; (not executed in the CDL traces)
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$0F00
+	bit	#JOY_DPAD
 	beq	loc_04D920
 	stz	a:sound_check_repeat_delay
 	bra	loc_04D945
 loc_04D920:
 	lda	joy1_held
 	ora	joy2_held
-	bit	#$0F00
+	bit	#JOY_DPAD
 	beq	loc_04D966
 	inc	a:sound_check_repeat_delay
 	bne	loc_04D934
@@ -115,7 +115,7 @@ loc_04D934:
 	lda	joy1_held
 	ora	joy2_held
 loc_04D945:
-	bit	#$0500
+	bit	#JOY_DOWN|JOY_RIGHT
 	bne	loc_04D957
 	lda	a:sound_check_id
 	dec	a
@@ -139,7 +139,7 @@ sound_check_play:
 	; (not executed in the CDL traces)
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$4000
+	bit	#JOY_Y
 	beq	loc_04D988
 	ldx	a:sound_check_id
 	lda	f:data_1DCCE0,x

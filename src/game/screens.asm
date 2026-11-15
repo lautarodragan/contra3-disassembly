@@ -137,7 +137,7 @@ stage_clear_wait_button:
 loc_00B773:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$D0C0
+	bit	#JOY_B|JOY_Y|JOY_START|JOY_A|JOY_X
 	bne	loc_00B77D
 	rtl
 loc_00B77D:
@@ -476,7 +476,7 @@ loc_00BA04:
 	bcs	loc_00BA20
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$1000
+	bit	#JOY_START
 	bne	loc_00BA20
 	rtl
 loc_00BA20:
@@ -506,13 +506,13 @@ loc_00BA3E:
 options_move_cursor:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$0C00
+	bit	#JOY_UP|JOY_DOWN
 	beq	loc_00BA7E
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
-	bit	#$0800
+	bit	#JOY_UP
 	bne	loc_00BA72
 	lda	a:options_cursor
 	inc	a
@@ -591,7 +591,7 @@ loc_00BAF9:
 	jsl	f:draw_text_attr
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$C0C0
+	bit	#JOY_B|JOY_Y|JOY_A|JOY_X
 	beq	loc_00BAF7
 	sec
 	rts
@@ -599,14 +599,14 @@ loc_00BAF9:
 options_change_lives:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$0300
+	bit	#JOY_LEFT|JOY_RIGHT
 	beq	loc_00BB41
 	; (not executed in the CDL traces)
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
-	bit	#$0100
+	bit	#JOY_RIGHT
 	bne	loc_00BB32
 	lda	a:options_lives_index
 	dec	a
@@ -682,13 +682,13 @@ loc_00BB78:
 options_change_level:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$0300
+	bit	#JOY_LEFT|JOY_RIGHT
 	beq	loc_00BBDE
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
-	bit	#$0100
+	bit	#JOY_RIGHT
 	bne	loc_00BBCE
 	; (not executed in the CDL traces)
 	lda	a:option_level
@@ -719,14 +719,14 @@ options_draw_level:
 options_change_sound:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$0300
+	bit	#JOY_LEFT|JOY_RIGHT
 	beq	loc_00BC11
 	; (not executed in the CDL traces)
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
-	bit	#$0100
+	bit	#JOY_RIGHT
 	bne	loc_00BC12
 	lda	a:option_sound
 	dec	a
@@ -817,7 +817,7 @@ loc_00BC97:
 final_score_wait_start:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$1000
+	bit	#JOY_START
 	beq	loc_00BCA8
 	; (not executed in the CDL traces)
 	inc	a:mode_step

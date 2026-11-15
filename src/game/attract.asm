@@ -56,7 +56,7 @@ demo_play:
 	beq	loc_00ADFF
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$1000
+	bit	#JOY_START
 	bne	loc_00AE0B
 	jsr	a:demo_update_input
 	jsl	f:run_stage
@@ -600,9 +600,9 @@ loc_00B239:
 title_menu_update_cursor:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$1000
+	bit	#JOY_START
 	bne	loc_00B2C3
-	bit	#$2C00
+	bit	#JOY_SELECT|JOY_UP|JOY_DOWN
 	beq	draw_title_menu_cursor
 	lda	#$0300
 	sta	a:title_menu_timeout
@@ -610,17 +610,17 @@ title_menu_update_cursor:
 	jsl	f:queue_sound
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$2400
+	bit	#JOY_SELECT|JOY_DOWN
 	bne	loc_00B277
 	dec	a:title_menu_cursor
 	bpl	draw_title_menu_cursor
-	lda	#$0003
+	lda	#TITLE_OPTION
 	sta	a:title_menu_cursor
 	bra	draw_title_menu_cursor
 loc_00B277:
 	inc	a:title_menu_cursor
 	lda	a:title_menu_cursor
-	cmp	#$0004
+	cmp	#TITLE_OPTION+1
 	bcc	draw_title_menu_cursor
 	stz	a:title_menu_cursor
 
@@ -653,7 +653,7 @@ draw_title_menu_cursor:
 	rtl
 loc_00B2C3:
 	lda	a:title_menu_cursor
-	cmp	#$0003
+	cmp	#TITLE_OPTION
 	beq	loc_00B2D4
 	lda	#$006D
 	jsl	f:queue_sound
@@ -697,7 +697,7 @@ loc_00B300:
 loc_00B30B:
 	lda	joy1_held
 	ora	joy2_held
-	and	#$0F00
+	and	#JOY_DPAD
 	cmp	a:data_0586D3,y
 	bne	loc_00B33B
 	cpy	#$0000
@@ -715,7 +715,7 @@ loc_00B322:
 loc_00B332:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$0040
+	bit	#JOY_X
 	bne	loc_00B33D
 loc_00B33B:
 	clc
@@ -742,7 +742,7 @@ loc_00B353:
 loc_00B35E:
 	lda	joy1_held
 	ora	joy2_held
-	and	#$0F00
+	and	#JOY_DPAD
 	cmp	a:data_0586D9,y
 	bne	loc_00B38E
 	cpy	#$0000
@@ -760,7 +760,7 @@ loc_00B375:
 loc_00B385:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$1000
+	bit	#JOY_START
 	bne	loc_00B390
 loc_00B38E:
 	clc
@@ -789,7 +789,7 @@ loc_00B3AC:
 loc_00B3B7:
 	lda	joy1_held
 	ora	joy2_held
-	and	#$0F00
+	and	#JOY_DPAD
 	cmp	a:data_0586DF,y
 	bne	loc_00B3E7
 	cpy	#$0000
@@ -807,14 +807,14 @@ loc_00B3CE:
 loc_00B3DE:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$1000
+	bit	#JOY_START
 	bne	loc_00B3E9
 loc_00B3E7:
 	clc
 	rts
 loc_00B3E9:
 	lda	a:title_menu_cursor
-	cmp	#$0003
+	cmp	#TITLE_OPTION
 	beq	loc_00B3E7
 	lda	#$0059
 	jsl	f:queue_sound

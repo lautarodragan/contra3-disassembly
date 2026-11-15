@@ -52,17 +52,17 @@ loc_00A3C1:
 	jsl	f:run_konami_logo
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$1000
+	bit	#JOY_START
 	beq	loc_00A3D9
 	; (not executed in the CDL traces)
 	lda	#$0002
 	sta	force_blank_frames
-	lda	#$0003
+	lda	#GAME_MODE_TITLE
 	brl	set_game_mode
 loc_00A3D9:
 	lda	a:konami_logo_done
 	beq	loc_00A3C0
-	lda	#$0002
+	lda	#GAME_MODE_OPENING
 	brl	set_game_mode
 
 game_mode_unused_1:
@@ -115,7 +115,7 @@ opening_start_music:
 opening_run_cinematic:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$1000
+	bit	#JOY_START
 	beq	loc_00A44B
 	; (not executed in the CDL traces)
 	stz	nmi_mode
@@ -298,12 +298,12 @@ title_result_timeout:
 	brl	next_game_mode
 
 title_result_start:
-	lda	#$0006
+	lda	#GAME_MODE_GAME_START
 	brl	set_game_mode
 
 title_result_sound_check:
 	; (not executed in the CDL traces)
-	lda	#$0005
+	lda	#GAME_MODE_SOUND_CHECK
 	brl	set_game_mode
 
 title_result_none:
@@ -336,11 +336,11 @@ loc_00A60D:
 	beq	loc_00A624
 	dec	a
 	bne	loc_00A61E
-	lda	#$0000
+	lda	#GAME_MODE_KONAMI_LOGO
 	brl	set_game_mode
 loc_00A61E:
 	; (not executed in the CDL traces)
-	lda	#$0003
+	lda	#GAME_MODE_TITLE
 	brl	set_game_mode
 loc_00A624:
 	rtl
@@ -358,7 +358,7 @@ loc_00A63B:
 	jsl	f:run_sound_check
 	lda	mode_result
 	beq	loc_00A649
-	lda	#$0003
+	lda	#GAME_MODE_TITLE
 	brl	set_game_mode
 loc_00A649:
 	rtl
@@ -406,18 +406,18 @@ loc_00A692:
 	jsr	a:init_new_game
 	jsr	a:init_continues
 	lda	a:title_menu_cursor
-	cmp	#$0003
+	cmp	#TITLE_OPTION
 	bcs	loc_00A6BA
 	lda	a:stage_select_enabled
 	beq	loc_00A6B4
 	; (not executed in the CDL traces)
-	lda	#$0007
+	lda	#GAME_MODE_STAGE_SELECT
 	brl	set_game_mode
 loc_00A6B4:
-	lda	#$0008
+	lda	#GAME_MODE_STAGE_CARD
 	brl	set_game_mode
 loc_00A6BA:
-	lda	#$000D
+	lda	#GAME_MODE_OPTIONS
 	brl	set_game_mode
 
 init_new_game:
@@ -520,7 +520,7 @@ loc_00A795:
 	jsl	f:draw_text
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$1000
+	bit	#JOY_START
 	beq	loc_00A7B4
 	lda	#$0002
 	jsl	f:queue_sound
@@ -534,7 +534,7 @@ loc_00A7BA:
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
-	bit	#$0800
+	bit	#JOY_UP
 	beq	loc_00A7D2
 	dec	stage_number
 	bne	loc_00A7E0
@@ -677,7 +677,7 @@ game_mode_stage_play:
 	ora	a:p2_lives
 	bne	loc_00A8FB
 	jsl	f:reset_sound_queue
-	lda	#$000B
+	lda	#GAME_MODE_GAME_OVER
 	brl	set_game_mode
 loc_00A8FB:
 	lda	stage_number
@@ -691,7 +691,7 @@ loc_00A8FB:
 	inc	a
 	cmp	#$0006
 	bcc	loc_00A91A
-	lda	#$000E
+	lda	#GAME_MODE_FINAL_SCORE
 	brl	set_game_mode
 loc_00A91A:
 	; (not executed in the CDL traces)
@@ -699,10 +699,10 @@ loc_00A91A:
 	sta	difficulty
 	stz	a:stage_gfx_loaded
 	jsr	a:init_continues
-	lda	#$0008
+	lda	#GAME_MODE_STAGE_CARD
 	brl	set_game_mode
 loc_00A92B:
-	lda	#$000A
+	lda	#GAME_MODE_STAGE_CLEAR
 	brl	set_game_mode
 loc_00A931:
 	rtl
@@ -718,7 +718,7 @@ loc_00A945:
 	jsl	f:run_stage_clear
 	lda	mode_result
 	beq	loc_00A953
-	lda	#$0008
+	lda	#GAME_MODE_STAGE_CARD
 	brl	set_game_mode
 loc_00A953:
 	rtl
@@ -844,7 +844,7 @@ continue_menu:
 	jsr	a:continue_draw_menu
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$1000
+	bit	#JOY_START
 	beq	loc_00AA5C
 	lda	#$0002
 	jsl	f:queue_sound
@@ -869,7 +869,7 @@ continue_player_menu:
 	jsr	a:continue_draw_player_menu
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$1000
+	bit	#JOY_START
 	beq	loc_00AA7F
 	lda	#$0002
 	jsl	f:queue_sound
@@ -897,24 +897,24 @@ loc_00AA93:
 	lda	a:continue_cursor
 	bne	loc_00AAA8
 	jsr	a:init_players
-	lda	#$0008
+	lda	#GAME_MODE_STAGE_CARD
 	brl	set_game_mode
 loc_00AAA8:
 	; (not executed in the CDL traces)
 	stz	a:stage_checkpoint
-	lda	#$0003
+	lda	#GAME_MODE_TITLE
 	brl	set_game_mode
 
 continue_move_cursor:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#$2C00
+	bit	#JOY_SELECT|JOY_UP|JOY_DOWN
 	beq	loc_00AAE5
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
-	bit	#$0800
+	bit	#JOY_UP
 	bne	loc_00AAD8
 	lda	a:continue_cursor
 	inc	a
@@ -999,7 +999,7 @@ loc_00AB68:
 	jsl	f:run_options
 	lda	mode_result
 	beq	loc_00AB75
-	lda	#$0003
+	lda	#GAME_MODE_TITLE
 	bra	set_game_mode
 loc_00AB75:
 	rtl
@@ -1016,7 +1016,7 @@ loc_00AB88:
 	lda	mode_result
 	beq	loc_00AB95
 	; (not executed in the CDL traces)
-	lda	#$0002
+	lda	#GAME_MODE_OPENING
 	bra	set_game_mode
 loc_00AB95:
 	rtl
@@ -1094,7 +1094,7 @@ loc_00ABF7:
 	beq	loc_00ABFE
 	ora	joy2_pressed
 loc_00ABFE:
-	bit	#$1000
+	bit	#JOY_START
 	beq	loc_00AC16
 	lda	paused
 	eor	#$0001
@@ -1148,7 +1148,7 @@ loc_00AC5C:
 	lda	a:p2_lives
 	beq	loc_00AC71
 	lda	joy2_pressed
-	bit	#$0040
+	bit	#JOY_X
 	beq	loc_00AC71
 	lda	a:wram_1FDE
 	eor	#$0002
@@ -1171,7 +1171,7 @@ loc_00AC8D:
 	lda	a:p1_lives
 	beq	loc_00ACA2
 	lda	joy1_pressed
-	bit	#$0040
+	bit	#JOY_X
 	beq	loc_00ACA2
 	lda	a:wram_1F9E
 	eor	#$0002
@@ -1261,7 +1261,7 @@ life_transfer_to_p1:
 	bne	loc_00AD5A
 	; (not executed in the CDL traces)
 	lda	joy1_pressed
-	bit	#$0080
+	bit	#JOY_A
 	beq	loc_00AD5A
 	lda	a:p2_lives
 	cmp	#$0002
@@ -1277,7 +1277,7 @@ life_transfer_to_p2:
 	bne	loc_00AD7B
 	; (not executed in the CDL traces)
 	lda	joy2_pressed
-	bit	#$0080
+	bit	#JOY_A
 	beq	loc_00AD7B
 	lda	a:p1_lives
 	cmp	#$0002
