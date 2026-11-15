@@ -160,6 +160,9 @@ n = (command & `$1F`) + 2:
 | `$C0-$DF` | n copies of the next byte |
 | `$E0-$FF` | n zeros |
 
+[Compression](compression.md) has the format in detail and the compressor
+that reproduces the ROM's streams (`tools/c3lz.py`).
+
 ## Side-view scrolling
 
 `src/engine/bg_scroll.asm`. BG1 (the playfield) and BG2 (the background)

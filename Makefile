@@ -17,7 +17,7 @@ src_files := $(shell find src -name '*.asm' -o -name '*.inc' -o -name '*.bin')
 # A failed link must not leave a partial ROM behind that looks up to date.
 .DELETE_ON_ERROR:
 
-.PHONY: all compare clean disasm emu-test shift-build shift-test book book-check cheats ips cheat-test
+.PHONY: all compare clean disasm emu-test shift-build shift-test book book-check cheats ips cheat-test compress-test
 
 all: compare
 
@@ -120,3 +120,13 @@ cheat-test:
 	  { echo "cheat-test: no tests/test_cheats.py in PRIVATE=$(PRIVATE)"; exit 1; }
 	$(MAKE) -C "$(PRIVATE)" cores
 	cd "$(PRIVATE)" && C3_DISASM="$(CURDIR)" $(PYTHON) -m pytest tests/test_cheats.py
+
+# Matching compressor (tools/c3lz.py): decompress every compressed block of
+# the built ROM, compress it again with each strategy and compare.  Fails if a
+# strategy does not round-trip or the original encoder's two versions (v1, v2)
+# do not reproduce every block.  See the book's Compression page.
+#   make compress-test [COMPRESS_FLAGS="-v -s v1 -s v2"]
+COMPRESS_FLAGS ?=
+
+compress-test: compare
+	$(PYTHON) tools/test_compressor.py $(COMPRESS_FLAGS)
