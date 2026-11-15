@@ -9,11 +9,11 @@
 sub_018000:
 	.a16
 	.i16
-	stz	a:$1D8E,x
-	lda	$12,x
+	stz	a:PLAYER_SPIN,x
+	lda	OBJ_STATE,x
 	cmp	#$000C
 	beq	loc_018017
-	lda	$22,x
+	lda	PLAYER_JOY_HELD,x
 	and	#$0030
 	beq	loc_018016
 	cmp	#$0030
@@ -21,26 +21,26 @@ sub_018000:
 loc_018016:
 	rtl
 loc_018017:
-	inc	a:$1D8E,x
+	inc	a:PLAYER_SPIN,x
 	rtl
 
 sub_01801B:
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_bomb
 	beq	loc_01804D
-	lda	a:$1310,x
+	lda	a:PLAYER_BOMB_RADIUS,x
 	bne	loc_01804D
-	lda	a:$1D8C,x
+	lda	a:PLAYER_BOMBS,x
 	beq	loc_01804D
-	inc	a:$1310,x
-	dec	a:$1D8C,x
-	stz	a:$1318,x
+	inc	a:PLAYER_BOMB_RADIUS,x
+	dec	a:PLAYER_BOMBS,x
+	stz	a:PLAYER_BOMB_SPEED_SUB,x
 	lda	#$0001
-	sta	a:$131A,x
-	lda	a:$1312,x
-	sta	a:$131C,x
-	lda	a:$1314,x
-	sta	a:$131E,x
+	sta	a:PLAYER_BOMB_SPEED,x
+	lda	a:PLAYER_CENTER_X,x
+	sta	a:PLAYER_BOMB_X,x
+	lda	a:PLAYER_CENTER_Y,x
+	sta	a:PLAYER_BOMB_Y,x
 	lda	#$005A
 	jsl	f:queue_sound
 loc_01804D:
@@ -49,7 +49,7 @@ loc_01804D:
 ; (no caller found; decoded because it follows the end of a routine)
 sub_01804E:
 	; (not executed in the CDL traces)
-	lda	$22,x
+	lda	PLAYER_JOY_HELD,x
 	bit	#$4000
 	beq	loc_018062
 	ldy	#$0012
@@ -62,9 +62,9 @@ loc_018062:
 	rtl
 
 sub_018063:
-	lda	$20,x
+	lda	PLAYER_POSE,x
 	clc
-	adc	a:$1300,x
+	adc	a:PLAYER_POSE_ADD,x
 	clc
 	adc	$38,x
 	asl	a
@@ -103,14 +103,14 @@ sub_018063:
 	adc	#$0200
 	sta	a:wram_1796
 	stz	$38,x
-	lda	$04,x
+	lda	OBJ_FACING,x
 	bne	loc_0180CB
 	lda	a:data_05B2AA,y
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	rtl
 loc_0180CB:
 	lda	a:data_05B2AC,y
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
@@ -254,10 +254,10 @@ loc_0181EC:
 	clc
 	lda	stage_frame_mod4
 	adc	#$FFFC
-	sta	$24,x
-	lda	$16,x
+	sta	PLAYER_INVULN_TIMER,x
+	lda	OBJ_FLAGS,x
 	ora	#$0002
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	cpx	#$0240
 	beq	loc_018205
 	ldx	#$0240
@@ -274,10 +274,10 @@ sub_018207:
 	cmp	#$0001
 	bne	loc_01821B
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_01821B:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -292,27 +292,27 @@ tbl_01822A:
 
 sub_018230:
 	ldy	$30,x
-	stz	$16,x
-	stz	$24,x
+	stz	OBJ_FLAGS,x
+	stz	OBJ_TIMER,x
 	lda	#$00B4
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	a:data_05AB70,y
-	sta	$02,x
-	inc	$12,x
+	sta	OBJ_ATTR,x
+	inc	OBJ_STATE,x
 	rtl
 
 sub_018243:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	bmi	loc_01824B
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bra	loc_01824D
 loc_01824B:
-	stz	$00,x
+	stz	OBJ_SPRITE,x
 loc_01824D:
 	lda	a:$000A,y
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	a:$000E,y
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	a:$0012,y
 	cmp	#$0011
 	beq	loc_018272
@@ -321,30 +321,30 @@ loc_01824D:
 	lda	a:$0016,y
 	beq	loc_018272
 	bmi	loc_018272
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$CB8B
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 loc_018272:
 	rtl
 
 sub_018273:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00B1
 	bcc	loc_01827C
-	dec	$0E,x
+	dec	OBJ_Y,x
 loc_01827C:
 	lda	a:$0016,y
 	beq	loc_0182B2
 	bmi	loc_0182B2
 	lda	a:$000A,y
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	a:$0032,y
 	bne	loc_0182B4
 	lda	a:$000E,y
 	cmp	#$00A4
 	bcc	loc_0182B4
 	lda	#$0002
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0011
 	sta	a:$0012,y
 	lda	#$00B4
@@ -354,16 +354,16 @@ loc_01827C:
 	lda	#$0000
 	sta	a:$001E,y
 loc_0182B2:
-	dec	$12,x
+	dec	OBJ_STATE,x
 loc_0182B4:
 	rtl
 loc_0182B5:
-	dec	$0A,x
+	dec	OBJ_X,x
 	lda	#$0000
 	bra	loc_0182D0
 
 sub_0182BC:
-	inc	$0A,x
+	inc	OBJ_X,x
 	lda	#$0000
 	bra	loc_0182D0
 
@@ -377,43 +377,43 @@ loc_0182CD:
 	lda	#$010A
 loc_0182D0:
 	sta	$32,x
-	stz	$1C,x
-	stz	$1E,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	lda	#$0004
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$00D3
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	stz	$38,x
 	bra	sub_018317
 loc_0182E4:
 	lda	#$DFFF
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	lda	#$FFFB
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	#$0003
-	sta	$12,x
+	sta	OBJ_STATE,x
 	stz	$32,x
 	bra	sub_018354
 loc_0182F7:
-	dec	$0A,x
+	dec	OBJ_X,x
 	bra	loc_0182FD
 loc_0182FB:
-	inc	$0A,x
+	inc	OBJ_X,x
 loc_0182FD:
 	lda	#$0068
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	stz	$38,x
-	stz	$1C,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	#$FFFA
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	#$0003
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$070A
 	sta	$32,x
 	bra	sub_018354
 
 sub_018317:
-	lda	$3C,x
+	lda	PLAYER_CONTACT,x
 	bit	#$0004
 	beq	loc_018322
 	jml	f:loc_019A76
@@ -421,7 +421,7 @@ loc_018322:
 	jsr	a:sub_018F6C
 	jsl	f:sub_01801B
 	stz	zp_C4
-	lda	$26,x
+	lda	PLAYER_AIM,x
 	phx
 	asl	a
 	tax
@@ -445,7 +445,7 @@ tbl_01833A:
 	.addr	sub_01852C
 
 sub_018354:
-	lda	$3C,x
+	lda	PLAYER_CONTACT,x
 	bit	#$0004
 	beq	loc_01835F
 	jml	f:loc_019A76
@@ -454,7 +454,7 @@ loc_01835F:
 	jsl	f:sub_01801B
 	stz	zp_C4
 	jsl	f:sub_018555
-	lda	$26,x
+	lda	PLAYER_AIM,x
 	phx
 	asl	a
 	tax
@@ -478,7 +478,7 @@ tbl_01837B:
 	.addr	sub_018543
 
 sub_018395:
-	lda	$04,x
+	lda	OBJ_FACING,x
 	bne	sub_0183AF
 
 sub_018399:
@@ -489,7 +489,7 @@ sub_018399:
 	lda	#$FFDD
 	sta	zp_16
 	lda	#$00D3
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	bra	loc_0183E9
 
 sub_0183AF:
@@ -500,11 +500,11 @@ sub_0183AF:
 	lda	#$FFDD
 	sta	zp_16
 	lda	#$00D3
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	bra	loc_0183E9
 
 sub_0183C5:
-	lda	$04,x
+	lda	OBJ_FACING,x
 	bne	sub_0183DA
 
 sub_0183C9:
@@ -524,11 +524,11 @@ sub_0183DA:
 	lda	#$FFD8
 	sta	zp_16
 loc_0183E9:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	cmp	#$000C
 	bne	loc_01841E
 	lda	#$FFF2
-	ldy	$04,x
+	ldy	OBJ_FACING,x
 	bne	loc_0183FA
 	lda	#$FFF6
 loc_0183FA:
@@ -538,7 +538,7 @@ loc_0183FA:
 	jsl	f:sub_00D692
 	stz	$38,x
 	lda	#$0002
-	ldy	$04,x
+	ldy	OBJ_FACING,x
 	bne	loc_018411
 	lda	#$0006
 loc_018411:
@@ -549,26 +549,26 @@ loc_018411:
 	bra	loc_018429
 loc_01841E:
 	jsl	f:sub_00D6DC
-	lda	$12,x
+	lda	OBJ_STATE,x
 	cmp	#$0003
 	bne	loc_01842B
 loc_018429:
 	stz	$38,x
 loc_01842B:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_018434
 	cmp	#$0006
 	bcs	loc_018443
 loc_018434:
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$4000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 loc_018443:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_01844A
 	brl	loc_01871A
 loc_01844A:
@@ -576,10 +576,10 @@ loc_01844A:
 
 sub_01844D:
 	lda	#$00D7
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$0000
 	sta	zp_12
-	lda	$04,x
+	lda	OBJ_FACING,x
 	bne	loc_018460
 	lda	#$FFFE
 	bra	loc_018463
@@ -602,7 +602,7 @@ sub_01846D:
 
 sub_01847F:
 	lda	#$00D5
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$0010
 	sta	zp_12
 	lda	#$000C
@@ -622,7 +622,7 @@ sub_018496:
 
 sub_0184A8:
 	lda	#$00D5
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$0070
 	sta	zp_12
 	lda	#$FFE8
@@ -642,10 +642,10 @@ sub_0184BF:
 
 sub_0184D1:
 	lda	#$00DB
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$0040
 	sta	zp_12
-	lda	$04,x
+	lda	OBJ_FACING,x
 	bne	loc_0184E4
 	lda	#$FFF9
 	bra	loc_0184E4
@@ -667,7 +667,7 @@ sub_0184F1:
 
 sub_018503:
 	lda	#$00D9
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$0030
 	sta	zp_12
 	lda	#$000A
@@ -687,7 +687,7 @@ sub_01851A:
 
 sub_01852C:
 	lda	#$00D9
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$0050
 	sta	zp_12
 	lda	#$FFEC
@@ -707,15 +707,15 @@ sub_018543:
 	brl	loc_0183E9
 
 sub_018555:
-	lda	$20,x
+	lda	PLAYER_POSE,x
 	cmp	#$003A
 	bcs	loc_018562
 loc_01855C:
 	lda	#$003A
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	rtl
 loc_018562:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bpl	loc_01856C
 	lda	stage_frame_odd
 	bne	loc_018579
@@ -724,8 +724,8 @@ loc_01856C:
 	lda	stage_frame_mod4
 	bne	loc_018579
 loc_018570:
-	inc	$20,x
-	lda	$20,x
+	inc	PLAYER_POSE,x
+	lda	PLAYER_POSE,x
 	cmp	#$003E
 	bcs	loc_01855C
 loc_018579:
@@ -878,7 +878,7 @@ loc_018682:
 	beq	loc_0186AC
 	bmi	loc_0186F5
 	lda	#$0002
-	sta	$12,x
+	sta	OBJ_STATE,x
 	jsl	f:sub_019414
 	lda	zp_C4
 	bpl	loc_0186AB
@@ -893,7 +893,7 @@ loc_0186AC:
 	; (not executed in the CDL traces)
 	bmi	loc_0186D7
 	lda	#$0005
-	sta	$12,x
+	sta	OBJ_STATE,x
 	jsl	f:sub_019433
 	lda	zp_C4
 	bpl	loc_0186AB
@@ -911,7 +911,7 @@ loc_0186D7:
 	beq	loc_0186E6
 	bmi	loc_0186E6
 	lda	#$000D
-	sta	$12,x
+	sta	OBJ_STATE,x
 loc_0186E6:
 	rtl
 loc_0186E7:
@@ -927,14 +927,14 @@ loc_0186F5:
 	; (not executed in the CDL traces)
 	bmi	loc_018704
 	lda	#$000D
-	sta	$12,x
+	sta	OBJ_STATE,x
 loc_018704:
 	rtl
 loc_018705:
 	lda	zp_C4
 	beq	loc_018715
 	lda	#$000D
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	zp_C4
 	bpl	loc_018715
 	brl	sub_0193F4
@@ -944,15 +944,15 @@ loc_018716:
 	; (not executed in the CDL traces)
 	jml	f:loc_019A76
 loc_01871A:
-	lda	$3C,x
+	lda	PLAYER_CONTACT,x
 	bit	#$0004
 	bne	loc_018716
 	bit	#$0080
 	beq	loc_018731
 	lda	#$0000
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$0014
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	rtl
 loc_018731:
 	stz	zp_00
@@ -987,7 +987,7 @@ loc_018762:
 	beq	loc_01878C
 	bmi	loc_0187D6
 	lda	#$0002
-	sta	$12,x
+	sta	OBJ_STATE,x
 	jsl	f:sub_019414
 	lda	zp_C4
 	bpl	loc_01878B
@@ -1001,7 +1001,7 @@ loc_01878C:
 	beq	loc_0187AA
 	bmi	loc_0187B8
 	lda	#$0005
-	sta	$12,x
+	sta	OBJ_STATE,x
 	jsl	f:sub_019433
 	lda	zp_C4
 	bpl	loc_0187A9
@@ -1021,7 +1021,7 @@ loc_0187B8:
 	bmi	loc_0187F7
 	; (not executed in the CDL traces)
 	lda	#$0000
-	sta	$12,x
+	sta	OBJ_STATE,x
 	rtl
 loc_0187C8:
 	lda	#$0006
@@ -1035,13 +1035,13 @@ loc_0187D6:
 	beq	loc_0187F7
 	bmi	loc_0187F7
 	lda	#$0000
-	sta	$12,x
+	sta	OBJ_STATE,x
 	rtl
 loc_0187E6:
 	lda	zp_C4
 	beq	loc_0187F7
 	lda	#$0000
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	zp_C4
 	bpl	loc_0187F6
 	brl	sub_0193DB
@@ -1075,25 +1075,25 @@ loc_01882B:
 	lda	zp_C4
 	beq	loc_018838
 	lda	#$0001
-	sta	$12,x
+	sta	OBJ_STATE,x
 loc_018838:
 	rtl
 
 sub_018839:
-	ldy	$04,x
-	lda	$0A,x
-	sta	$06,x
+	ldy	OBJ_FACING,x
+	lda	OBJ_X,x
+	sta	PLAYER_HITBOX_LEFT,x
 	adc	#$0006
-	sta	$28,x
+	sta	PLAYER_HITBOX_RIGHT,x
 	adc	a:data_05AB74,y
-	sta	a:$1312,x
-	lda	$0E,x
+	sta	a:PLAYER_CENTER_X,x
+	lda	OBJ_Y,x
 	adc	#$FFF2
-	sta	$10,x
+	sta	PLAYER_HITBOX_BOTTOM,x
 	adc	#$FFE4
-	sta	$2A,x
+	sta	PLAYER_HITBOX_TOP,x
 	adc	#$0006
-	sta	a:$1314,x
+	sta	a:PLAYER_CENTER_Y,x
 	rts
 loc_01885D:
 	rtl
@@ -1101,29 +1101,29 @@ loc_01885D:
 sub_01885E:
 	jsl	f:sub_01801B
 	jsr	a:sub_018F6C
-	lda	$3C,x
+	lda	PLAYER_CONTACT,x
 	bit	#$0004
 	beq	loc_018870
 	jml	f:loc_019A76
 loc_018870:
-	ldy	a:$1304,x
+	ldy	a:PLAYER_PLATFORM,x
 	beq	loc_0188A4
 	bit	#$0080
 	beq	loc_0188A4
 	clc
-	lda	$08,x
+	lda	OBJ_X_SUB,x
 	adc	a:$0018,y
-	sta	$08,x
-	lda	$0A,x
+	sta	OBJ_X_SUB,x
+	lda	OBJ_X,x
 	adc	a:$001A,y
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
-	lda	$0C,x
+	lda	OBJ_Y_SUB,x
 	adc	a:$001C,y
-	sta	$0C,x
-	lda	$0E,x
+	sta	OBJ_Y_SUB,x
+	lda	OBJ_Y,x
 	adc	a:$001E,y
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$8002
 	sta	zp_C4
 	lda	#$2000
@@ -1131,7 +1131,7 @@ loc_018870:
 	bra	loc_0188C2
 loc_0188A4:
 	jsl	f:sub_018EF5
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01885D
 	lda	zp_C4
 	bne	loc_0188B3
@@ -1140,14 +1140,14 @@ loc_0188B3:
 	bit	#$0078
 	beq	loc_0188C2
 	clc
-	lda	a:$1314,x
+	lda	a:PLAYER_CENTER_Y,x
 	adc	#$FFFC
-	sta	a:$1314,x
+	sta	a:PLAYER_CENTER_Y,x
 loc_0188C2:
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_0188F3
-	lda	$26,x
+	lda	PLAYER_AIM,x
 	cmp	#$0008
 	beq	loc_0188D2
 	brl	loc_0182FD
@@ -1162,18 +1162,18 @@ loc_0188DC:
 	beq	loc_0188E6
 	brl	loc_0182CD
 loc_0188E6:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$0074
 	bcc	loc_0188F0
 	brl	loc_0182FD
 loc_0188F0:
 	brl	loc_0182CD
 loc_0188F3:
-	lda	a:$1D8E,x
+	lda	a:PLAYER_SPIN,x
 	beq	loc_0188FB
 	brl	loc_01AC62
 loc_0188FB:
-	lda	$26,x
+	lda	PLAYER_AIM,x
 	phx
 	asl	a
 	tax
@@ -1198,8 +1198,8 @@ tbl_01890A:
 
 sub_018924:
 	lda	#$0001
-	sta	$2E,x
-	lda	$04,x
+	sta	PLAYER_LOCKED,x
+	lda	OBJ_FACING,x
 	beq	sub_018930
 	brl	sub_018B0D
 
@@ -1209,14 +1209,14 @@ sub_018930:
 	lda	zp_C4
 	bit	#$0002
 	beq	loc_018971
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_018959
-	stz	$20,x
+	stz	PLAYER_POSE,x
 	lda	zp_C4
 	bpl	loc_01894B
 loc_018946:
 	lda	#$0014
-	sta	$20,x
+	sta	PLAYER_POSE,x
 loc_01894B:
 	lda	#$0010
 	sta	zp_14
@@ -1225,7 +1225,7 @@ loc_01894B:
 	jml	f:sub_00D6DC
 loc_018959:
 	lda	#$0002
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$0010
 	sta	zp_14
@@ -1233,14 +1233,14 @@ loc_018959:
 	sta	zp_16
 	jml	f:loc_00D6CE
 loc_018971:
-	ldy	$2E,x
+	ldy	PLAYER_LOCKED,x
 	beq	loc_0189A4
 	lda	zp_C4
 	bmi	loc_018946
 	bit	#$0028
 	bne	loc_018991
 	lda	#$00BA
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$0010
 	sta	zp_14
 	lda	#$FFDA
@@ -1248,7 +1248,7 @@ loc_018971:
 	jml	f:sub_00D6DC
 loc_018991:
 	lda	#$00B0
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$0010
 	sta	zp_14
 	lda	#$FFDA
@@ -1258,7 +1258,7 @@ loc_0189A4:
 	bit	#$0028
 	bne	loc_0189C1
 	lda	#$0074
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$0010
 	sta	zp_14
@@ -1267,7 +1267,7 @@ loc_0189A4:
 	jml	f:sub_00D6DC
 loc_0189C1:
 	lda	#$0068
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$0010
 	sta	zp_14
@@ -1287,9 +1287,9 @@ sub_0189D9:
 loc_0189EC:
 	ldy	#$00DD
 loc_0189EF:
-	sty	$20,x
+	sty	PLAYER_POSE,x
 	ldy	#$FFF9
-	lda	$04,x
+	lda	OBJ_FACING,x
 	bne	loc_0189FB
 	ldy	#$FFFE
 loc_0189FB:
@@ -1302,14 +1302,14 @@ loc_018A06:
 	bmi	loc_0189EC
 	bit	#$0028
 	bne	loc_018A39
-	lda	$04,x
+	lda	OBJ_FACING,x
 	bne	loc_018A26
 	lda	#$FFFF
 	sta	zp_14
 	lda	#$FFBE
 	sta	zp_16
 	lda	#$00BC
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	jml	f:sub_00D6DC
 loc_018A26:
 	lda	#$FFF8
@@ -1317,17 +1317,17 @@ loc_018A26:
 	lda	#$FFBE
 	sta	zp_16
 	lda	#$00B2
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	jml	f:sub_00D6DC
 loc_018A39:
-	lda	$04,x
+	lda	OBJ_FACING,x
 	bne	loc_018A50
 	lda	#$FFFF
 	sta	zp_14
 	lda	#$FFBE
 	sta	zp_16
 	lda	#$00B2
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	jml	f:sub_00D6DC
 loc_018A50:
 	lda	#$FFF8
@@ -1335,7 +1335,7 @@ loc_018A50:
 	lda	#$FFBE
 	sta	zp_16
 	lda	#$00BC
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	jml	f:sub_00D6DC
 
 sub_018A63:
@@ -1344,7 +1344,7 @@ sub_018A63:
 	lda	zp_C4
 	bit	#$0002
 	beq	loc_018AA5
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_018A8D
 	ldy	#$001C
 	lda	zp_C4
@@ -1352,7 +1352,7 @@ sub_018A63:
 loc_018A7A:
 	ldy	#$0024
 loc_018A7D:
-	sty	$20,x
+	sty	PLAYER_POSE,x
 	lda	#$000C
 	sta	zp_14
 	lda	#$FFCA
@@ -1360,7 +1360,7 @@ loc_018A7D:
 	jml	f:sub_00D6DC
 loc_018A8D:
 	lda	#$001E
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$000C
 	sta	zp_14
@@ -1368,14 +1368,14 @@ loc_018A8D:
 	sta	zp_16
 	jml	f:sub_00D6DC
 loc_018AA5:
-	ldy	$2E,x
+	ldy	PLAYER_LOCKED,x
 	beq	loc_018AD8
 	lda	zp_C4
 	bmi	loc_018A7A
 	bit	#$0028
 	bne	loc_018AC5
 	lda	#$00BE
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$000C
 	sta	zp_14
 	lda	#$FFC7
@@ -1383,7 +1383,7 @@ loc_018AA5:
 	jml	f:sub_00D6DC
 loc_018AC5:
 	lda	#$00B4
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$000C
 	sta	zp_14
 	lda	#$FFC7
@@ -1393,7 +1393,7 @@ loc_018AD8:
 	bit	#$0028
 	bne	loc_018AF5
 	lda	#$008C
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$0011
 	sta	zp_14
@@ -1402,7 +1402,7 @@ loc_018AD8:
 	jml	f:sub_00D6DC
 loc_018AF5:
 	lda	#$0080
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$000C
 	sta	zp_14
@@ -1416,7 +1416,7 @@ sub_018B0D:
 	lda	zp_C4
 	bit	#$0002
 	beq	loc_018B4F
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_018B37
 	ldy	#$0000
 	lda	zp_C4
@@ -1424,7 +1424,7 @@ sub_018B0D:
 loc_018B24:
 	ldy	#$0014
 loc_018B27:
-	sty	$20,x
+	sty	PLAYER_POSE,x
 	lda	#$FFE6
 	sta	zp_14
 	lda	#$FFDD
@@ -1432,7 +1432,7 @@ loc_018B27:
 	jml	f:sub_00D6DC
 loc_018B37:
 	lda	#$0002
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$FFE6
 	sta	zp_14
@@ -1440,14 +1440,14 @@ loc_018B37:
 	sta	zp_16
 	jml	f:loc_00D6CE
 loc_018B4F:
-	ldy	$2E,x
+	ldy	PLAYER_LOCKED,x
 	beq	loc_018B82
 	lda	zp_C4
 	bmi	loc_018B24
 	bit	#$0050
 	bne	loc_018B6F
 	lda	#$00BA
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$FFE6
 	sta	zp_14
 	lda	#$FFDA
@@ -1455,7 +1455,7 @@ loc_018B4F:
 	jml	f:sub_00D6DC
 loc_018B6F:
 	lda	#$00B0
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$FFE6
 	sta	zp_14
 	lda	#$FFDD
@@ -1465,7 +1465,7 @@ loc_018B82:
 	bit	#$0050
 	bne	loc_018B9F
 	lda	#$0074
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$FFE6
 	sta	zp_14
@@ -1474,7 +1474,7 @@ loc_018B82:
 	jml	f:sub_00D6DC
 loc_018B9F:
 	lda	#$0068
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$FFE6
 	sta	zp_14
@@ -1488,7 +1488,7 @@ sub_018BB7:
 	lda	zp_C4
 	bit	#$0002
 	beq	loc_018BF9
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_018BE1
 	; (not executed in the CDL traces)
 	ldy	#$001C
@@ -1497,7 +1497,7 @@ sub_018BB7:
 loc_018BCE:
 	ldy	#$0024
 loc_018BD1:
-	sty	$20,x
+	sty	PLAYER_POSE,x
 	lda	#$FFE8
 	sta	zp_14
 	lda	#$FFC8
@@ -1505,7 +1505,7 @@ loc_018BD1:
 	jml	f:sub_00D6DC
 loc_018BE1:
 	lda	#$001E
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$FFE8
 	sta	zp_14
@@ -1513,7 +1513,7 @@ loc_018BE1:
 	sta	zp_16
 	jml	f:sub_00D6DC
 loc_018BF9:
-	ldy	$2E,x
+	ldy	PLAYER_LOCKED,x
 	beq	loc_018C2C
 	; (not executed in the CDL traces)
 	lda	zp_C4
@@ -1521,7 +1521,7 @@ loc_018BF9:
 	bit	#$0050
 	bne	loc_018C19
 	lda	#$00BE
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$FFEC
 	sta	zp_14
 	lda	#$FFC8
@@ -1529,7 +1529,7 @@ loc_018BF9:
 	jml	f:sub_00D6DC
 loc_018C19:
 	lda	#$00B4
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$FFEC
 	sta	zp_14
 	lda	#$FFC8
@@ -1539,7 +1539,7 @@ loc_018C2C:
 	bit	#$0050
 	bne	loc_018C49
 	lda	#$008C
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$FFE5
 	sta	zp_14
@@ -1548,7 +1548,7 @@ loc_018C2C:
 	jml	f:sub_00D6DC
 loc_018C49:
 	lda	#$0080
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$FFE8
 	sta	zp_14
@@ -1557,7 +1557,7 @@ loc_018C49:
 	jml	f:sub_00D6DC
 
 sub_018C61:
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_018C68
 	; (not executed in the CDL traces)
 	brl	loc_018D19
@@ -1565,13 +1565,13 @@ loc_018C68:
 	lda	zp_C4
 	bit	#$0002
 	beq	loc_018CA2
-	lda	$0E,x
-	sta	$10,x
+	lda	OBJ_Y,x
+	sta	PLAYER_HITBOX_BOTTOM,x
 	adc	#$FFF2
-	sta	$2A,x
+	sta	PLAYER_HITBOX_TOP,x
 	adc	#$0006
-	sta	a:$1314,x
-	lda	$04,x
+	sta	a:PLAYER_CENTER_Y,x
+	lda	OBJ_FACING,x
 	bne	loc_018C8A
 	lda	#$0020
 	ldy	#$0018
@@ -1585,17 +1585,17 @@ loc_018C90:
 	lda	#$FFF2
 	sta	zp_16
 	lda	#$002A
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	jml	f:sub_00D6DC
 loc_018CA2:
-	lda	$0E,x
-	sta	$10,x
+	lda	OBJ_Y,x
+	sta	PLAYER_HITBOX_BOTTOM,x
 	adc	#$FFE4
-	sta	$2A,x
+	sta	PLAYER_HITBOX_TOP,x
 	adc	#$000A
-	sta	a:$1314,x
+	sta	a:PLAYER_CENTER_Y,x
 	lda	zp_C4
-	ldy	$04,x
+	ldy	OBJ_FACING,x
 	bne	loc_018CE9
 	ldy	#$0020
 	sty	zp_12
@@ -1607,7 +1607,7 @@ loc_018CA2:
 	lda	#$FFE5
 	sta	zp_16
 	lda	#$00C0
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	jml	f:sub_00D6DC
 loc_018CD6:
 	lda	#$0010
@@ -1615,7 +1615,7 @@ loc_018CD6:
 	lda	#$FFE5
 	sta	zp_16
 	lda	#$00B6
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	jml	f:sub_00D6DC
 loc_018CE9:
 	ldy	#$0060
@@ -1627,7 +1627,7 @@ loc_018CE9:
 	lda	#$FFE5
 	sta	zp_16
 	lda	#$00B6
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	jml	f:sub_00D6DC
 loc_018D06:
 	lda	#$FFE6
@@ -1635,7 +1635,7 @@ loc_018D06:
 	lda	#$FFE5
 	sta	zp_16
 	lda	#$00C0
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	jml	f:sub_00D6DC
 loc_018D19:
 	; (not executed in the CDL traces)
@@ -1651,9 +1651,9 @@ loc_018D27:
 loc_018D2C:
 	lda	#$00DF
 loc_018D2F:
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	ldy	#$FFFD
-	lda	$04,x
+	lda	OBJ_FACING,x
 	bne	loc_018D3B
 	ldy	#$FFF9
 loc_018D3B:
@@ -1665,14 +1665,14 @@ loc_018D46:
 	bmi	loc_018D27
 	bit	#$0028
 	bne	loc_018D77
-	lda	$04,x
+	lda	OBJ_FACING,x
 	bne	loc_018D64
 	lda	#$FFFA
 	sta	zp_14
 	lda	#$FFF6
 	sta	zp_16
 	lda	#$00E5
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	jml	f:sub_00D6DC
 loc_018D64:
 	lda	#$FFFA
@@ -1680,17 +1680,17 @@ loc_018D64:
 	lda	#$FFF6
 	sta	zp_16
 	lda	#$00E3
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	jml	f:sub_00D6DC
 loc_018D77:
-	lda	$04,x
+	lda	OBJ_FACING,x
 	bne	loc_018D8E
 	lda	#$FFFA
 	sta	zp_14
 	lda	#$FFF4
 	sta	zp_16
 	lda	#$00E3
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	jml	f:sub_00D6DC
 loc_018D8E:
 	lda	#$FFFC
@@ -1698,7 +1698,7 @@ loc_018D8E:
 	lda	#$FFF4
 	sta	zp_16
 	lda	#$00E5
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	jml	f:sub_00D6DC
 
 sub_018DA1:
@@ -1707,7 +1707,7 @@ sub_018DA1:
 	lda	zp_C4
 	bit	#$0002
 	beq	loc_018DE3
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_018DCB
 	; (not executed in the CDL traces)
 	ldy	#$002C
@@ -1716,7 +1716,7 @@ sub_018DA1:
 loc_018DB8:
 	ldy	#$0034
 loc_018DBB:
-	sty	$20,x
+	sty	PLAYER_POSE,x
 	lda	#$000A
 	sta	zp_14
 	lda	#$FFF0
@@ -1724,7 +1724,7 @@ loc_018DBB:
 	jml	f:sub_00D6DC
 loc_018DCB:
 	lda	#$002E
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$000A
 	sta	zp_14
@@ -1733,14 +1733,14 @@ loc_018DCB:
 	jml	f:sub_00D6DC
 loc_018DE3:
 	; (not executed in the CDL traces)
-	ldy	$2E,x
+	ldy	PLAYER_LOCKED,x
 	beq	loc_018E16
 	lda	zp_C4
 	bmi	loc_018DB8
 	bit	#$0028
 	bne	loc_018E03
 	lda	#$00C2
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$000A
 	sta	zp_14
 	lda	#$FFEC
@@ -1748,7 +1748,7 @@ loc_018DE3:
 	jml	f:sub_00D6DC
 loc_018E03:
 	lda	#$00B8
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$000B
 	sta	zp_14
 	lda	#$FFEC
@@ -1758,7 +1758,7 @@ loc_018E16:
 	bit	#$0028
 	bne	loc_018E33
 	lda	#$00A4
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$0014
 	sta	zp_14
@@ -1767,7 +1767,7 @@ loc_018E16:
 	jml	f:sub_00D6DC
 loc_018E33:
 	lda	#$0098
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$000D
 	sta	zp_14
@@ -1781,7 +1781,7 @@ sub_018E4B:
 	lda	zp_C4
 	bit	#$0002
 	beq	loc_018E8D
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_018E75
 	; (not executed in the CDL traces)
 	ldy	#$002C
@@ -1790,7 +1790,7 @@ sub_018E4B:
 loc_018E62:
 	ldy	#$0034
 loc_018E65:
-	sty	$20,x
+	sty	PLAYER_POSE,x
 	lda	#$FFEC
 	sta	zp_14
 	lda	#$FFF0
@@ -1798,7 +1798,7 @@ loc_018E65:
 	jml	f:sub_00D6DC
 loc_018E75:
 	lda	#$002E
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$FFEC
 	sta	zp_14
@@ -1807,14 +1807,14 @@ loc_018E75:
 	jml	f:sub_00D6DC
 loc_018E8D:
 	; (not executed in the CDL traces)
-	ldy	$2E,x
+	ldy	PLAYER_LOCKED,x
 	beq	loc_018EC0
 	lda	zp_C4
 	bmi	loc_018E62
 	bit	#$0050
 	bne	loc_018EAD
 	lda	#$00C2
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$FFEC
 	sta	zp_14
 	lda	#$FFEC
@@ -1822,7 +1822,7 @@ loc_018E8D:
 	jml	f:sub_00D6DC
 loc_018EAD:
 	lda	#$00B8
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$FFEA
 	sta	zp_14
 	lda	#$FFEE
@@ -1832,7 +1832,7 @@ loc_018EC0:
 	bit	#$0050
 	bne	loc_018EDD
 	lda	#$00A4
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$FFE4
 	sta	zp_14
@@ -1841,7 +1841,7 @@ loc_018EC0:
 	jml	f:sub_00D6DC
 loc_018EDD:
 	lda	#$0098
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:sub_018F5A
 	lda	#$FFE8
 	sta	zp_14
@@ -1863,7 +1863,7 @@ loc_018F0B:
 	bit	#$0002
 	beq	loc_018F18
 	lda	#$0005
-	sta	$12,x
+	sta	OBJ_STATE,x
 	brl	sub_019433
 loc_018F18:
 	lda	#$0006
@@ -1879,7 +1879,7 @@ loc_018F31:
 	bit	#$0002
 	beq	loc_018F3E
 	lda	#$0002
-	sta	$12,x
+	sta	OBJ_STATE,x
 	brl	sub_019414
 loc_018F3E:
 	stz	zp_00
@@ -1897,58 +1897,58 @@ loc_018F3E:
 sub_018F5A:
 	lda	stage_frame_mod8
 	bne	loc_018F62
-	inc	$20,x
-	inc	$20,x
+	inc	PLAYER_POSE,x
+	inc	PLAYER_POSE,x
 loc_018F62:
-	lda	$20,x
+	lda	PLAYER_POSE,x
 	cmp	#$000C
 	bcc	loc_018F6B
-	stz	$20,x
+	stz	PLAYER_POSE,x
 loc_018F6B:
 	rtl
 
 sub_018F6C:
-	lda	$0A,x
-	sta	$06,x
+	lda	OBJ_X,x
+	sta	PLAYER_HITBOX_LEFT,x
 	adc	#$0006
-	sta	$28,x
+	sta	PLAYER_HITBOX_RIGHT,x
 	adc	#$FFFC
-	sta	a:$1312,x
-	lda	$0E,x
-	sta	$10,x
+	sta	a:PLAYER_CENTER_X,x
+	lda	OBJ_Y,x
+	sta	PLAYER_HITBOX_BOTTOM,x
 	adc	#$FFDC
-	sta	$2A,x
+	sta	PLAYER_HITBOX_TOP,x
 	adc	#$000E
-	sta	a:$1314,x
+	sta	a:PLAYER_CENTER_Y,x
 	rts
 
 sub_018F8B:
-	lda	$3C,x
+	lda	PLAYER_CONTACT,x
 	bit	#$0004
 	beq	loc_018F96
 	jml	f:loc_019A76
 loc_018F96:
 	jsr	a:sub_01B0C0
 	jsl	f:sub_01801B
-	ldy	a:$1304,x
+	ldy	a:PLAYER_PLATFORM,x
 	beq	loc_018FC9
-	lda	$3C,x
+	lda	PLAYER_CONTACT,x
 	bit	#$2000
 	beq	loc_018FC9
 	clc
-	lda	$08,x
+	lda	OBJ_X_SUB,x
 	adc	a:$0018,y
-	sta	$08,x
-	lda	$0A,x
+	sta	OBJ_X_SUB,x
+	lda	OBJ_X,x
 	adc	a:$001A,y
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
-	lda	$0C,x
+	lda	OBJ_Y_SUB,x
 	adc	a:$001C,y
-	sta	$0C,x
-	lda	$0E,x
+	sta	OBJ_Y_SUB,x
+	lda	OBJ_Y,x
 	adc	a:$001E,y
-	sta	$0E,x
+	sta	OBJ_Y,x
 	bra	loc_018FD5
 loc_018FC9:
 	jsl	f:sub_019013
@@ -1956,10 +1956,10 @@ loc_018FC9:
 	bne	loc_018FD5
 	brl	loc_0182C8
 loc_018FD5:
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_018FE8
-	lda	$26,x
+	lda	PLAYER_AIM,x
 	bit	#$0008
 	beq	loc_018FE5
 	brl	loc_0182C8
@@ -1967,7 +1967,7 @@ loc_018FE5:
 	brl	loc_0182FD
 loc_018FE8:
 	stz	zp_14
-	lda	$26,x
+	lda	PLAYER_AIM,x
 	phx
 	asl	a
 	tax
@@ -2132,18 +2132,18 @@ loc_01911D:
 	brl	loc_019565
 
 sub_019125:
-	lda	$3C,x
+	lda	PLAYER_CONTACT,x
 	bit	#$0004
 	beq	loc_019130
 	jml	f:loc_019A76
 loc_019130:
 	jsr	a:sub_01B0C0
 	jsl	f:sub_01801B
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_01914C
 	stz	$3E,x
-	lda	$22,x
+	lda	PLAYER_JOY_HELD,x
 	bit	#$0400
 	beq	loc_019149
 	brl	sub_0182C3
@@ -2153,25 +2153,25 @@ loc_01914C:
 	brl	loc_018FE8
 
 sub_01914F:
-	lda	$3C,x
+	lda	PLAYER_CONTACT,x
 	bit	#$0004
 	beq	loc_01915A
 	jml	f:loc_019A76
 loc_01915A:
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$FFF6
-	sta	$06,x
+	sta	PLAYER_HITBOX_LEFT,x
 	adc	#$0006
-	sta	$28,x
+	sta	PLAYER_HITBOX_RIGHT,x
 	adc	#$FFFE
-	sta	a:$1312,x
-	lda	$0E,x
+	sta	a:PLAYER_CENTER_X,x
+	lda	OBJ_Y,x
 	adc	#$FFF8
-	sta	$10,x
+	sta	PLAYER_HITBOX_BOTTOM,x
 	adc	#$FFE0
-	sta	$2A,x
+	sta	PLAYER_HITBOX_TOP,x
 	adc	#$000C
-	sta	a:$1314,x
+	sta	a:PLAYER_CENTER_Y,x
 	jsl	f:sub_01801B
 	lda	#$0006
 	sta	zp_00
@@ -2190,8 +2190,8 @@ loc_01915A:
 loc_0191A6:
 	brl	loc_0182E4
 loc_0191A9:
-	stz	$04,x
-	lda	$26,x
+	stz	OBJ_FACING,x
+	lda	PLAYER_AIM,x
 	phx
 	asl	a
 	tax
@@ -2215,7 +2215,7 @@ tbl_0191BA:
 	.addr	sub_019349
 
 sub_0191D4:
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_0191DD
 	brl	loc_0182B5
@@ -2224,7 +2224,7 @@ loc_0191DD:
 
 sub_0191E0:
 	lda	#$0058
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$0020
 	sta	zp_12
 	lda	#$0006
@@ -2234,21 +2234,21 @@ sub_0191E0:
 	jml	f:sub_00D6DC
 
 sub_0191F8:
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_019203
 	lda	#$0066
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	bra	loc_019211
 loc_019203:
 	jsl	f:sub_019397
 	beq	loc_01920D
 	; (not executed in the CDL traces)
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 loc_01920D:
 	jsl	f:sub_0193BE
 loc_019211:
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_01921A
 	brl	loc_0182F7
@@ -2262,16 +2262,16 @@ loc_01921A:
 	jml	f:sub_00D6DC
 
 sub_01922D:
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_019238
 	lda	#$005A
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	bra	loc_019246
 loc_019238:
 	jsl	f:sub_019397
 	beq	loc_019242
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 loc_019242:
 	jsl	f:sub_0193BE
 loc_019246:
@@ -2289,25 +2289,25 @@ sub_019259:
 	jsl	f:sub_0193AC
 	beq	loc_019272
 loc_019265:
-	ldy	$0A,x
+	ldy	OBJ_X,x
 	cpy	#$000B
 	bcc	loc_019272
 	dec	a
-	sta	$12,x
-	dec	$0A,x
+	sta	OBJ_STATE,x
+	dec	OBJ_X,x
 	rtl
 loc_019272:
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_019285
 	lda	#$97FF
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	#$FFFE
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	brl	loc_0182B5
 loc_019285:
 	lda	#$005E
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$0060
 	sta	zp_12
 	lda	#$FFCC
@@ -2322,31 +2322,31 @@ sub_01929D:
 	jsl	f:sub_0193AC
 	beq	loc_0192B6
 loc_0192A9:
-	ldy	$0A,x
+	ldy	OBJ_X,x
 	cpy	#$000B
 	bcc	loc_0192B6
 	dec	a
-	sta	$12,x
-	dec	$0A,x
+	sta	OBJ_STATE,x
+	dec	OBJ_X,x
 	rtl
 loc_0192B6:
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_0192C1
 	lda	#$0060
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	bra	loc_0192C5
 loc_0192C1:
 	; (not executed in the CDL traces)
 	jsl	f:sub_0193BE
 loc_0192C5:
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_0192D8
 	; (not executed in the CDL traces)
 	lda	#$97FF
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	#$FFFE
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	brl	loc_0182F7
 loc_0192D8:
 	lda	#$0070
@@ -2358,20 +2358,20 @@ loc_0192D8:
 	jml	f:sub_00D6DC
 
 sub_0192EB:
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_0192F6
 	lda	#$0064
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	bra	loc_019304
 loc_0192F6:
 	jsl	f:sub_0193AC
 	beq	loc_019300
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 loc_019300:
 	jsl	f:sub_0193BE
 loc_019304:
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_01930D
 	brl	loc_0182B5
@@ -2386,16 +2386,16 @@ loc_01930D:
 
 sub_019320:
 	; (not executed in the CDL traces)
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_01932B
 	lda	#$005C
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	bra	loc_019339
 loc_01932B:
 	jsl	f:sub_0193AC
 	beq	loc_019335
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 loc_019335:
 	jsl	f:sub_0193BE
 loc_019339:
@@ -2413,29 +2413,29 @@ sub_019349:
 	jsl	f:sub_0193AC
 	beq	loc_019362
 loc_019355:
-	ldy	$0A,x
+	ldy	OBJ_X,x
 	cpy	#$000B
 	bcc	loc_019362
 	dec	a
-	sta	$12,x
-	dec	$0A,x
+	sta	OBJ_STATE,x
+	dec	OBJ_X,x
 	rtl
 loc_019362:
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_01936D
 	lda	#$0062
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	bra	loc_019371
 loc_01936D:
 	jsl	f:sub_0193BE
 loc_019371:
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_019384
 	lda	#$97FF
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	#$FFFE
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	brl	loc_0182B5
 loc_019384:
 	lda	#$0050
@@ -2470,9 +2470,9 @@ loc_0193BD:
 sub_0193BE:
 	lda	stage_frame_mod8
 	bne	loc_0193C4
-	inc	$20,x
+	inc	PLAYER_POSE,x
 loc_0193C4:
-	lda	$20,x
+	lda	PLAYER_POSE,x
 	cmp	#$0054
 	bcc	loc_0193D1
 	cmp	#$0058
@@ -2480,92 +2480,92 @@ loc_0193C4:
 	rtl
 loc_0193D1:
 	lda	#$0054
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	rtl
 loc_0193D7:
-	stz	$18,x
-	stz	$1A,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
 
 sub_0193DB:
 	clc
 	lda	a:wram_1398
-	adc	$0E,x
+	adc	OBJ_Y,x
 	and	#$0007
 	sta	zp_0E
 	sec
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sbc	zp_0E
-	sta	$0E,x
-	stz	$1E,x
-	stz	$1C,x
-	stz	$0C,x
+	sta	OBJ_Y,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_SUB,x
 	rtl
 
 sub_0193F4:
-	stz	$1E,x
-	stz	$1C,x
-	stz	$0C,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_SUB,x
 	clc
 	lda	a:wram_1398
-	adc	$0E,x
+	adc	OBJ_Y,x
 	eor	#$FFFF
 	and	#$0007
 	sta	zp_0E
 	clc
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	zp_0E
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 
 sub_019410:
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	bmi	loc_01942E
 
 sub_019414:
 	clc
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	zp_00
 	adc	a:wram_1380
 	and	#$0007
 	sta	zp_0E
 	sec
-	lda	$0A,x
+	lda	OBJ_X,x
 	sbc	zp_0E
-	sta	$0A,x
-	stz	$1A,x
-	stz	$18,x
-	stz	$08,x
+	sta	OBJ_X,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_SUB,x
 loc_01942E:
 	rtl
 
 sub_01942F:
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	bpl	loc_01944F
 
 sub_019433:
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	a:wram_1380
 	and	#$0007
 	sta	zp_0E
 	sec
-	lda	$0A,x
+	lda	OBJ_X,x
 	sbc	zp_0E
 	clc
 	adc	#$0007
-	sta	$0A,x
-	stz	$1A,x
-	stz	$18,x
-	stz	$08,x
+	sta	OBJ_X,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_SUB,x
 loc_01944F:
 	rtl
 loc_019450:
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	a:wram_1398
 	and	#$0007
 	sta	zp_10
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	a:wram_1380
 	and	#$000F
@@ -2575,20 +2575,20 @@ loc_019450:
 	sec
 	sbc	zp_10
 	sta	zp_0E
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	zp_10
 	and	#$FFF8
 	clc
 	adc	zp_0E
 	dec	a
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 loc_019480:
 	lda	a:wram_1398
 	and	#$0007
 	sta	zp_10
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	a:wram_1380
 	and	#$000F
@@ -2598,21 +2598,21 @@ loc_019480:
 	sec
 	sbc	zp_10
 	sta	zp_0E
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	zp_10
 	and	#$FFF8
 	clc
 	adc	zp_0E
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 loc_0194AB:
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	a:wram_1398
 	and	#$0007
 	sta	zp_10
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	a:wram_1380
 	and	#$000F
@@ -2624,20 +2624,20 @@ loc_0194AB:
 	lda	#$000E
 	sbc	zp_0E
 	sta	zp_0E
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	zp_10
 	and	#$FFF8
 	clc
 	adc	zp_0E
 	dec	a
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 loc_0194DD:
 	lda	a:wram_1398
 	and	#$0007
 	sta	zp_10
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	a:wram_1380
 	and	#$000F
@@ -2645,21 +2645,21 @@ loc_0194DD:
 	clc
 	adc	zp_10
 	sta	zp_0E
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	zp_10
 	and	#$FFF8
 	sec
 	sbc	zp_0E
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 loc_019502:
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	a:wram_1398
 	and	#$0007
 	sta	zp_10
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	a:wram_1380
 	and	#$000F
@@ -2669,7 +2669,7 @@ loc_019502:
 	sec
 	sbc	zp_10
 	sta	zp_0E
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	zp_10
 	clc
@@ -2678,13 +2678,13 @@ loc_019502:
 	clc
 	adc	zp_0E
 	dec	a
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 loc_019536:
 	lda	a:wram_1398
 	and	#$0007
 	sta	zp_10
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	a:wram_1380
 	and	#$000F
@@ -2694,7 +2694,7 @@ loc_019536:
 	sec
 	sbc	zp_10
 	sta	zp_0E
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	zp_10
 	clc
@@ -2702,15 +2702,15 @@ loc_019536:
 	and	#$FFF8
 	clc
 	adc	zp_0E
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 loc_019565:
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	a:wram_1398
 	and	#$0007
 	sta	zp_10
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	zp_00
 	clc
@@ -2720,20 +2720,20 @@ loc_019565:
 	sec
 	sbc	zp_10
 	sta	zp_0E
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	zp_10
 	and	#$FFF8
 	clc
 	adc	zp_0E
 	dec	a
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 loc_019592:
 	lda	a:wram_1398
 	and	#$0007
 	sta	zp_10
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	zp_00
 	clc
@@ -2743,21 +2743,21 @@ loc_019592:
 	sec
 	sbc	zp_10
 	sta	zp_0E
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	zp_10
 	and	#$FFF8
 	clc
 	adc	zp_0E
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 loc_0195BA:
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	a:wram_1398
 	and	#$0007
 	sta	zp_10
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	zp_00
 	clc
@@ -2772,20 +2772,20 @@ loc_0195BA:
 	lda	#$000E
 	sbc	zp_0E
 	sta	zp_0E
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	zp_10
 	and	#$FFF8
 	clc
 	adc	zp_0E
 	dec	a
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 loc_0195F2:
 	lda	a:wram_1398
 	and	#$0007
 	sta	zp_10
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	zp_00
 	clc
@@ -2796,21 +2796,21 @@ loc_0195F2:
 	clc
 	adc	zp_10
 	sta	zp_0E
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	zp_10
 	and	#$FFF8
 	sec
 	sbc	zp_0E
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 loc_01961D:
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	a:wram_1398
 	and	#$0007
 	sta	zp_10
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	zp_00
 	clc
@@ -2821,7 +2821,7 @@ loc_01961D:
 	sec
 	sbc	zp_10
 	sta	zp_0E
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	zp_10
 	clc
@@ -2830,13 +2830,13 @@ loc_01961D:
 	clc
 	adc	zp_0E
 	dec	a
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 loc_019651:
 	lda	a:wram_1398
 	and	#$0007
 	sta	zp_10
-	lda	$0A,x
+	lda	OBJ_X,x
 	clc
 	adc	zp_00
 	clc
@@ -2847,7 +2847,7 @@ loc_019651:
 	sec
 	sbc	zp_10
 	sta	zp_0E
-	lda	$0E,x
+	lda	OBJ_Y,x
 	clc
 	adc	zp_10
 	clc
@@ -2855,7 +2855,7 @@ loc_019651:
 	and	#$FFF8
 	clc
 	adc	zp_0E
-	sta	$0E,x
+	sta	OBJ_Y,x
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
@@ -3077,25 +3077,25 @@ loc_01980B:
 	brl	loc_0195F2
 
 sub_019813:
-	lda	$3C,x
+	lda	PLAYER_CONTACT,x
 	bit	#$0004
 	beq	loc_01981E
 	jml	f:loc_019A76
 loc_01981E:
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$0008
-	sta	$06,x
+	sta	PLAYER_HITBOX_LEFT,x
 	adc	#$0006
-	sta	$28,x
+	sta	PLAYER_HITBOX_RIGHT,x
 	adc	#$FFFC
-	sta	a:$1312,x
-	lda	$0E,x
+	sta	a:PLAYER_CENTER_X,x
+	lda	OBJ_Y,x
 	adc	#$FFF8
-	sta	$10,x
+	sta	PLAYER_HITBOX_BOTTOM,x
 	adc	#$FFE0
-	sta	$2A,x
+	sta	PLAYER_HITBOX_TOP,x
 	adc	#$0006
-	sta	a:$1314,x
+	sta	a:PLAYER_CENTER_Y,x
 	jsl	f:sub_01801B
 	stz	zp_00
 	lda	#$FFE0
@@ -3114,8 +3114,8 @@ loc_019867:
 	brl	loc_0182E4
 loc_01986A:
 	lda	#$0002
-	sta	$04,x
-	lda	$26,x
+	sta	OBJ_FACING,x
+	lda	PLAYER_AIM,x
 	phx
 	asl	a
 	tax
@@ -3139,7 +3139,7 @@ tbl_01987E:
 	.addr	sub_019A1D
 
 sub_019898:
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_0198A1
 	brl	sub_0182BC
@@ -3153,21 +3153,21 @@ sub_0198A3:
 	beq	loc_0198B5
 loc_0198AF:
 	dec	a
-	sta	$12,x
-	inc	$0A,x
+	sta	OBJ_STATE,x
+	inc	OBJ_X,x
 	rtl
 loc_0198B5:
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_0198C8
 	lda	#$6800
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	#$0001
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	brl	sub_0182BC
 loc_0198C8:
 	lda	#$005E
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$0020
 	sta	zp_12
 	lda	#$002A
@@ -3177,21 +3177,21 @@ loc_0198C8:
 	jml	f:sub_00D6DC
 
 sub_0198E0:
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_0198EB
 	lda	#$0066
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	bra	loc_0198F9
 loc_0198EB:
 	; (not executed in the CDL traces)
 	jsl	f:sub_019A49
 	beq	loc_0198F5
-	stz	$1C,x
-	stz	$1E,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 loc_0198F5:
 	jsl	f:sub_0193BE
 loc_0198F9:
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_019902
 	brl	loc_0182FB
@@ -3212,25 +3212,25 @@ sub_019915:
 loc_019921:
 	; (not executed in the CDL traces)
 	dec	a
-	sta	$12,x
-	inc	$0A,x
+	sta	OBJ_STATE,x
+	inc	OBJ_X,x
 	rtl
 loc_019927:
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_019932
 	lda	#$0060
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	bra	loc_019936
 loc_019932:
 	jsl	f:sub_0193BE
 loc_019936:
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_019949
 	lda	#$6800
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	#$0001
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	brl	loc_0182FB
 loc_019949:
 	lda	#$0010
@@ -3243,7 +3243,7 @@ loc_019949:
 
 sub_01995C:
 	lda	#$0058
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	lda	#$0060
 	sta	zp_12
 	lda	#$FFF0
@@ -3253,17 +3253,17 @@ sub_01995C:
 	jml	f:sub_00D6DC
 
 sub_019974:
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_01997F
 	lda	#$005A
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	bra	loc_01998D
 loc_01997F:
 	; (not executed in the CDL traces)
 	jsl	f:sub_019A49
 	beq	loc_019989
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 loc_019989:
 	jsl	f:sub_0193BE
 loc_01998D:
@@ -3276,21 +3276,21 @@ loc_01998D:
 	jml	f:sub_00D6DC
 
 sub_0199A0:
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_0199AB
 	lda	#$0064
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	bra	loc_0199B9
 loc_0199AB:
 	jsl	f:sub_019A61
 	beq	loc_0199B5
 	; (not executed in the CDL traces)
-	stz	$1C,x
-	stz	$1E,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 loc_0199B5:
 	jsl	f:sub_0193BE
 loc_0199B9:
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_0199C3
 	; (not executed in the CDL traces)
@@ -3312,25 +3312,25 @@ sub_0199D6:
 	beq	loc_0199E8
 loc_0199E2:
 	dec	a
-	sta	$12,x
-	inc	$0A,x
+	sta	OBJ_STATE,x
+	inc	OBJ_X,x
 	rtl
 loc_0199E8:
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_0199F3
 	lda	#$0062
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	bra	loc_0199F7
 loc_0199F3:
 	jsl	f:sub_0193BE
 loc_0199F7:
-	lda	$2C,x
+	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_019A0A
 	lda	#$6800
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	#$0001
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	brl	sub_0182BC
 loc_019A0A:
 	lda	#$0030
@@ -3343,16 +3343,16 @@ loc_019A0A:
 
 sub_019A1D:
 	; (not executed in the CDL traces)
-	lda	$2E,x
+	lda	PLAYER_LOCKED,x
 	beq	loc_019A28
 	lda	#$005C
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	bra	loc_019A36
 loc_019A28:
 	jsl	f:sub_019A61
 	beq	loc_019A32
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 loc_019A32:
 	jsl	f:sub_0193BE
 loc_019A36:
@@ -3389,7 +3389,7 @@ loc_019A75:
 	rtl
 loc_019A76:
 	lda	#$003F
-	ldy	$0E,x
+	ldy	OBJ_Y,x
 	cpy	#$00F8
 	bcc	loc_019A85
 	bmi	loc_019A85
@@ -3400,60 +3400,60 @@ loc_019A85:
 	stz	$34,x
 	stz	$36,x
 	stz	$3E,x
-	lda	$04,x
+	lda	OBJ_FACING,x
 	beq	loc_019AA1
 	lda	#$0001
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	#$6800
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	bra	loc_019AAB
 loc_019AA1:
 	lda	#$FFFE
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	#$97FF
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 loc_019AAB:
 	lda	#$DFFF
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	lda	#$FFFB
-	sta	$1E,x
-	lda	a:$1D80,x
+	sta	OBJ_Y_VEL,x
+	lda	a:PLAYER_WEAPON_SLOT,x
 	bne	loc_019ABF
-	stz	a:$1D86,x
+	stz	a:PLAYER_WEAPON_2,x
 	bra	loc_019ACA
 loc_019ABF:
-	lda	a:$1D82,x
+	lda	a:PLAYER_WEAPON_SLOT_OTHER,x
 	beq	loc_019AC7
-	stz	a:$1D86,x
+	stz	a:PLAYER_WEAPON_2,x
 loc_019AC7:
-	stz	a:$1D84,x
+	stz	a:PLAYER_WEAPON_1,x
 loc_019ACA:
 	lda	#$0007
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$00E8
-	sta	$20,x
-	stz	a:$1300,x
+	sta	PLAYER_POSE,x
+	stz	a:PLAYER_POSE_ADD,x
 	stz	$32,x
 	lda	#$0028
 	sta	$30,x
-	stz	$24,x
+	stz	PLAYER_INVULN_TIMER,x
 	stz	$38,x
 	lda	#$8000
-	sta	$16,x
-	stz	a:$1D88,x
+	sta	OBJ_FLAGS,x
+	stz	a:PLAYER_BARRIER,x
 	rtl
 
 sub_019AEB:
-	lda	$0A,x
-	sta	$06,x
+	lda	OBJ_X,x
+	sta	PLAYER_HITBOX_LEFT,x
 	adc	#$0006
-	sta	$28,x
-	lda	$0E,x
+	sta	PLAYER_HITBOX_RIGHT,x
+	lda	OBJ_Y,x
 	adc	#$FFF2
-	sta	$10,x
+	sta	PLAYER_HITBOX_BOTTOM,x
 	adc	#$FFE4
-	sta	$2A,x
-	lda	$0E,x
+	sta	PLAYER_HITBOX_TOP,x
+	lda	OBJ_Y,x
 	bmi	loc_019B09
 	cmp	#$0120
 	bcs	loc_019B52
@@ -3463,97 +3463,97 @@ loc_019B09:
 	beq	loc_019B22
 	bit	#$0007
 	bne	loc_019B22
-	inc	$20,x
+	inc	PLAYER_POSE,x
 	lda	#$00ED
-	cmp	$20,x
+	cmp	PLAYER_POSE,x
 	bne	loc_019B22
 	lda	#$00E9
-	sta	$20,x
+	sta	PLAYER_POSE,x
 loc_019B22:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_019B2B
 	cmp	#$0006
 	bcs	loc_019B3A
 loc_019B2B:
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$4000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 loc_019B3A:
 	stz	zp_C4
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bpl	loc_019B4A
 	jsl	f:sub_019D76
 loc_019B44:
 	lda	#$0007
-	sta	$12,x
+	sta	OBJ_STATE,x
 	rtl
 loc_019B4A:
 	jsl	f:sub_019DAB
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_019B44
 loc_019B52:
 	lda	#$0008
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$0020
 	sta	$30,x
-	stz	$1A,x
-	stz	$18,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
 	lda	#$00ED
-	sta	$20,x
+	sta	PLAYER_POSE,x
 	rtl
 
 sub_019B66:
-	lda	$0A,x
-	sta	$06,x
+	lda	OBJ_X,x
+	sta	PLAYER_HITBOX_LEFT,x
 	adc	#$0006
-	sta	$28,x
-	lda	$0E,x
-	sta	$10,x
+	sta	PLAYER_HITBOX_RIGHT,x
+	lda	OBJ_Y,x
+	sta	PLAYER_HITBOX_BOTTOM,x
 	adc	#$FFF0
-	sta	$2A,x
+	sta	PLAYER_HITBOX_TOP,x
 	dec	$30,x
 	bpl	loc_019B9C
-	stz	$0A,x
-	stz	$0E,x
-	stz	$00,x
-	stz	$20,x
-	stz	a:$1300,x
-	stz	$16,x
+	stz	OBJ_X,x
+	stz	OBJ_Y,x
+	stz	OBJ_SPRITE,x
+	stz	PLAYER_POSE,x
+	stz	a:PLAYER_POSE_ADD,x
+	stz	OBJ_FLAGS,x
 	lda	#$000E
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$0000
-	dec	a:$1D8A,x
+	dec	a:PLAYER_LIVES,x
 	beq	loc_019B99
 	lda	#$0001
 loc_019B99:
-	sta	a:$1D8C,x
+	sta	a:PLAYER_BOMBS,x
 loc_019B9C:
 	rtl
 
 sub_019B9D:
-	lda	a:$1D8A,x
+	lda	a:PLAYER_LIVES,x
 	beq	loc_019BC7
-	stz	$0A,x
-	stz	$0E,x
-	stz	$00,x
-	stz	$20,x
-	stz	a:$1300,x
-	stz	$1A,x
-	stz	$18,x
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_X,x
+	stz	OBJ_Y,x
+	stz	OBJ_SPRITE,x
+	stz	PLAYER_POSE,x
+	stz	a:PLAYER_POSE_ADD,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	stz	$32,x
-	stz	$24,x
+	stz	PLAYER_INVULN_TIMER,x
 	stz	$38,x
-	stz	$16,x
-	stz	$3C,x
+	stz	OBJ_FLAGS,x
+	stz	PLAYER_CONTACT,x
 	lda	#$000F
-	sta	$12,x
-	stz	a:$1D88,x
+	sta	OBJ_STATE,x
+	stz	a:PLAYER_BARRIER,x
 loc_019BC7:
 	rtl
 
@@ -3583,23 +3583,23 @@ sub_019BEA:
 	beq	loc_019BF5
 	lda	#$0040
 loc_019BF5:
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$005A
-	sta	$0E,x
+	sta	OBJ_Y,x
 	brl	sub_019E14
 
 sub_019BFF:
 	sec
 	lda	a:wram_028E
 	sbc	#$0018
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0058
 	cpx	#$0200
 	beq	loc_019C13
 	; (not executed in the CDL traces)
 	lda	#$0098
 loc_019C13:
-	sta	$0A,x
+	sta	OBJ_X,x
 	brl	sub_019E14
 
 sub_019C18:
@@ -3619,11 +3619,11 @@ loc_019C1B:
 	clc
 	adc	#$0020
 	adc	a:$000A,y
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
 	lda	a:$000E,y
 	adc	#$0024
-	sta	$0E,x
+	sta	OBJ_Y,x
 	jml	f:sub_019E14
 loc_019C49:
 	tya
@@ -3636,12 +3636,12 @@ loc_019C49:
 
 sub_019C55:
 	lda	#$00B4
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$000A
-	sta	$0A,x
+	sta	OBJ_X,x
 	jsl	f:sub_019E14
 	lda	#$0008
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	rtl
 
 sub_019C69:
@@ -3721,12 +3721,12 @@ loc_019CC6:
 loc_019CF0:
 	lda	#$0020
 loc_019CF3:
-	sta	$0E,x
+	sta	OBJ_Y,x
 	sec
 	lda	zp_00
 	sbc	a:wram_1380
 	and	#$00FF
-	sta	$0A,x
+	sta	OBJ_X,x
 	brl	sub_019E14
 loc_019D03:
 	clc
@@ -3763,8 +3763,8 @@ loc_019D39:
 loc_019D42:
 	; (not executed in the CDL traces)
 	lda	#$0080
-	sta	$0A,x
-	sta	$0E,x
+	sta	OBJ_X,x
+	sta	OBJ_Y,x
 	brl	sub_019E14
 
 sub_019D4C:
@@ -3773,9 +3773,9 @@ sub_019D4C:
 	beq	loc_019D57
 	lda	#$0088
 loc_019D57:
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$00D2
-	sta	$0A,x
+	sta	OBJ_X,x
 	brl	sub_019E14
 
 sub_019D61:
@@ -3785,9 +3785,9 @@ sub_019D61:
 	; (not executed in the CDL traces)
 	lda	#$0058
 loc_019D6C:
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$00BC
-	sta	$0E,x
+	sta	OBJ_Y,x
 	brl	sub_019E14
 
 sub_019D76:
@@ -3817,11 +3817,11 @@ loc_019DAA:
 	rtl
 
 sub_019DAB:
-	lda	$3C,x
+	lda	PLAYER_CONTACT,x
 	bit	#$0080
 	beq	loc_019DB5
 	; (not executed in the CDL traces)
-	stz	$12,x
+	stz	OBJ_STATE,x
 	rtl
 loc_019DB5:
 	stz	zp_00
@@ -3844,7 +3844,7 @@ loc_019DB5:
 	lda	zp_C4
 	beq	loc_019DED
 	bmi	loc_019DED
-	stz	$12,x
+	stz	OBJ_STATE,x
 loc_019DED:
 	rtl
 loc_019DEE:
@@ -3856,13 +3856,13 @@ loc_019DEE:
 	lda	zp_C4
 	beq	loc_019E05
 	bmi	loc_019E05
-	stz	$12,x
+	stz	OBJ_STATE,x
 loc_019E05:
 	rtl
 loc_019E06:
 	lda	zp_C4
 	beq	loc_019E13
-	stz	$12,x
+	stz	OBJ_STATE,x
 	lda	zp_C4
 	bpl	loc_019E13
 	brl	sub_0193DB
@@ -3873,22 +3873,22 @@ sub_019E14:
 	ldy	a:wram_1672
 	lda	a:data_05AB78,y
 	and	#$00FF
-	sta	$12,x
+	sta	OBJ_STATE,x
 	tya
 	asl	a
 	tay
 	lda	a:data_05AB93,y
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	a:data_05AB81,y
-	sta	$20,x
-	stz	$04,x
+	sta	PLAYER_POSE,x
+	stz	OBJ_FACING,x
 	stz	$32,x
-	stz	$18,x
-	stz	$1A,x
-	stz	$1C,x
-	stz	a:$1300,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	a:PLAYER_POSE_ADD,x
 	lda	#$0060
-	sta	$24,x
+	sta	PLAYER_INVULN_TIMER,x
 	lda	#$0003
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
