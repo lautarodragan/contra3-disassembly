@@ -9,7 +9,10 @@
 ; bounds are exact and that holds no pointers (a candidate for a binary file).
 ; Other blocks start at a CDL comment.
 
-	.byte	$96, $1E, $00, $00, $00, $00, $00, $00, $00, $00, $00, $C0, $00, $00, $11, $EF
+	.byte	$96, $1E
+spc_block_1E8002:
+	; ASSET: sound CPU data (uncompressed), $1E:8002-$1E:9E97, uploaded by song_set_05F3AE
+	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $C0, $00, $00, $11, $EF
 	.byte	$3E, $D0, $E6, $4B, $C0, $04, $B9, $23, $E1, $22, $D1, $41, $1F, $B0, $D4, $35
 	.byte	$41, $51, $D2, $62, $1B, $E3, $C0, $F0, $23, $10, $75, $AF, $F0, $5C, $54, $D0
 	.byte	$F0, $F1, $DC, $02, $EF, $2E, $F1, $CE, $D0, $14, $F2, $00, $FD, $F1, $CD, $FC
@@ -498,7 +501,10 @@
 	.byte	$3D, $32, $54, $23, $1F, $12, $11, $12, $40, $12, $01, $44, $01, $14, $5F, $15
 	.byte	$21, $F2, $61, $F3, $54, $0F, $20, $D2, $0D, $F2, $EC, $EC, $00, $48, $BD, $41
 	.byte	$AF, $6C, $1B, $1F, $00, $CF, $44, $1E, $EF, $EC, $A4, $AB, $DE, $CB, $F5, $45
-	.byte	$1D, $FB, $34, $40, $42, $33, $10, $01, $37, $26, $00, $00, $00, $00, $00, $00
+	.byte	$1D, $FB, $34, $40, $42, $33, $10, $01, $37, $26
+spc_block_1E9E9A:
+	; ASSET: sound CPU data (uncompressed), $1E:9E9A-$1E:C4D0, uploaded by song_set_05F3C9, song_set_05F4F8, song_set_05F51C (+1 more)
+	.byte	$00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $C0, $00, $00, $11, $EF, $3E, $D0, $E6, $4B, $C0, $04, $B9, $23
 	.byte	$E1, $22, $D1, $41, $1F, $B0, $D4, $35, $41, $51, $D2, $62, $1B, $E3, $C0, $F0
 	.byte	$23, $10, $75, $AF, $F0, $5C, $54, $D0, $F0, $F1, $DC, $02, $EF, $2E, $F1, $CE
@@ -1112,6 +1118,8 @@
 	.byte	$1E, $EF, $EC, $A4, $AB, $DE, $CB, $F5, $45, $1D, $FB, $34, $40, $42, $33, $10
 	.byte	$01, $FD, $26
 	; CDL: read by upload_spc_raw_block
+spc_block_1EC4D3:
+	; ASSET: sound CPU data (uncompressed), $1E:C4D3-$1E:EBCF, uploaded by song_set_05F3E4
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $C0, $00, $00, $11, $EF, $3E, $D0
 	.byte	$E6, $4B, $C0, $04, $B9, $23, $E1, $22, $D1, $41, $1F, $B0, $D4, $35, $41, $51
 	.byte	$D2, $62, $1B, $E3, $C0, $F0, $23, $10, $75, $AF, $F0, $5C, $54, $D0, $F0, $F1

@@ -9,7 +9,10 @@
 ; bounds are exact and that holds no pointers (a candidate for a binary file).
 ; Other blocks start at a CDL comment.
 
-	.byte	$44, $25, $00, $00, $00, $00, $00, $00, $00, $00, $00, $C0, $00, $00, $02, $3B
+	.byte	$44, $25
+spc_block_1F8002:
+	; ASSET: sound CPU data (uncompressed), $1F:8002-$1F:A545, uploaded by song_set_05F3FF
+	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $C0, $00, $00, $02, $3B
 	.byte	$C0, $3D, $E1, $ED, $C4, $20, $F0, $11, $F0, $42, $C3, $F0, $3C, $C0, $35, $24
 	.byte	$4F, $0E, $BC, $CD, $4E, $F9, $C4, $23, $B2, $3E, $30, $C4, $0F, $6D, $F0, $C4
 	.byte	$E5, $EB, $32, $D6, $FB, $3E, $31, $F5, $C4, $E1, $3F, $EE, $3D, $E2, $DD, $F0
@@ -605,7 +608,10 @@
 	.byte	$6A, $00, $14, $31, $F0, $34, $30, $12, $44, $6A, $22, $34, $45, $43, $22, $01
 	.byte	$56, $40, $7A, $23, $32, $33, $32, $31, $00, $44, $43, $6A, $63, $35, $54, $45
 	.byte	$54, $65, $53, $46, $6A, $76, $32, $13, $44, $23, $53, $FF, $13, $5B, $34, $45
-	.byte	$20, $21, $1C, $AB, $15, $42, $78, $21, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte	$20, $21, $1C, $AB, $15, $42, $78, $21
+spc_block_1FA548:
+	; ASSET: sound CPU data (uncompressed), $1F:A548-$1F:C6BF, uploaded by song_set_05F41A
+	.byte	$00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $C0, $00, $00, $11, $EF, $3E, $D0, $E6, $4B, $C0, $04, $B9, $23, $E1, $22
 	.byte	$D1, $41, $1F, $B0, $D4, $35, $41, $51, $D2, $62, $1B, $E3, $C0, $F0, $23, $10
 	.byte	$75, $AF, $F0, $5C, $54, $D0, $F0, $F1, $DC, $02, $EF, $2E, $F1, $CE, $D0, $14
@@ -1143,6 +1149,8 @@
 	.byte	$EF, $FF, $00, $F1, $32, $01, $0C, $9B, $C0, $33, $31, $ED, $F0, $01, $10, $00
 	.byte	$93, $21
 	; CDL: read by upload_spc_raw_block
+spc_block_1FC6C2:
+	; ASSET: sound CPU data (uncompressed), $1F:C6C2-$1F:E854, uploaded by song_set_05F435
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $C0, $00, $00, $11, $EF, $3E, $D0
 	.byte	$E6, $4B, $C0, $04, $B9, $23, $E1, $22, $D1, $41, $1F, $B0, $D4, $35, $41, $51
 	.byte	$D2, $62, $1B, $E3, $C0, $F0, $23, $10, $75, $AF, $F0, $5C, $54, $D0, $F0, $F1

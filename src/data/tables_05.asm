@@ -4734,30 +4734,62 @@ text_sound_2:
 	.byte	$4C, $5A, $4D, $4A, $4F, $49, $3F, $FF
 song_lists:
 	; CDL: not accessed
-	.byte	$C9, $F3
+	.addr	song_set_05F3C9
 	; CDL: read by load_stage_music; partly not accessed
-	.byte	$AE, $F3, $FF, $F3, $E4, $F3, $C9, $F3, $1A, $F4, $35, $F4, $50, $F4, $6B, $F4
-	.byte	$A4, $F4, $F8, $F4, $1C, $F5, $C9, $F3, $C9, $F3, $C9, $F3, $E4, $F3, $C9, $F3
-	.byte	$D0, $F4, $40, $F5
+	.addr	song_set_05F3AE, song_set_05F3FF, song_set_05F3E4
+	.addr	song_set_05F3C9, song_set_05F41A, song_set_05F435, song_set_05F450
+	.addr	song_set_05F46B, song_set_05F4A4, song_set_05F4F8, song_set_05F51C
+	.addr	song_set_05F3C9, song_set_05F3C9, song_set_05F3C9, song_set_05F3E4
+	.addr	song_set_05F3C9, song_set_05F4D0, song_set_05F540
 song_start_commands:
 	; CDL: not accessed
 	.byte	$74, $00
 	; CDL: read by load_spc_list, upload_ring_to_spc, upload_spc_raw_block (+3 more); partly not accessed
 	.byte	$7A, $00, $76, $00, $75, $00, $74, $00, $77, $00, $78, $00, $79, $00, $74, $00
 	.byte	$79, $00, $74, $00, $74, $00, $74, $00, $74, $00, $74, $00, $74, $00, $74, $00
-	.byte	$79, $00, $74, $00, $02, $00, $FE, $FF, $00, $50, $02, $80, $1D, $00, $01, $FE
-	.byte	$FF, $8E, $B0, $02, $80, $1E, $96, $1E, $00, $30, $8D, $C0, $1A, $FF, $FF, $02
-	.byte	$00, $FE, $FF, $00, $50, $04, $81, $1D, $00, $01, $FE, $FF, $8E, $B0, $9A, $9E
-	.byte	$1E, $37, $26, $00, $30, $02, $80, $1C, $FF, $FF, $02, $00, $FE, $FF, $00, $50
-	.byte	$06, $82, $1D, $00, $01, $FE, $FF, $8E, $B0, $D3, $C4, $1E, $FD, $26, $00, $30
-	.byte	$7B, $97, $1C, $FF, $FF, $02, $00, $FE, $FF, $00, $50, $08, $83, $1D, $00, $01
-	.byte	$FE, $FF, $8E, $B0, $02, $80, $1F, $44, $25, $00, $30, $3C, $B1, $1C, $FF, $FF
-	.byte	$02, $00, $FE, $FF, $00, $50, $0A, $84, $1D, $00, $01, $FE, $FF, $8E, $B0, $48
-	.byte	$A5, $1F, $78, $21, $00, $30, $E7, $BD, $1C, $FF, $FF, $02, $00, $FE, $FF, $00
-	.byte	$50, $0C, $85, $1D, $00, $01, $FE, $FF, $8E, $B0, $C2, $C6, $1F, $93, $21, $00
-	.byte	$30, $5E, $D1, $1C, $FF, $FF, $02, $00, $FE, $FF, $00, $50, $0E, $86, $1D, $00
-	.byte	$01, $FE, $FF, $8E, $B0, $10, $87, $1D, $90, $24, $00, $30, $BD, $E6, $1C, $FF
-	.byte	$FF
+	.byte	$79, $00, $74, $00
+song_set_05F3AE:
+	load_list	$02, $00
+	load_spc_raw	$5000, spc_block_1D8002, $0100
+	load_spc_raw	$B08E, spc_block_1E8002, $1E96
+	load_spc	$3000, spc_data_1AC08D
+	load_end
+song_set_05F3C9:
+	load_list	$02, $00
+	load_spc_raw	$5000, spc_block_1D8104, $0100
+	load_spc_raw	$B08E, spc_block_1E9E9A, $2637
+	load_spc	$3000, spc_data_1C8002
+	load_end
+song_set_05F3E4:
+	load_list	$02, $00
+	load_spc_raw	$5000, spc_block_1D8206, $0100
+	load_spc_raw	$B08E, spc_block_1EC4D3, $26FD
+	load_spc	$3000, spc_data_1C977B
+	load_end
+song_set_05F3FF:
+	load_list	$02, $00
+	load_spc_raw	$5000, spc_block_1D8308, $0100
+	load_spc_raw	$B08E, spc_block_1F8002, $2544
+	load_spc	$3000, spc_data_1CB13C
+	load_end
+song_set_05F41A:
+	load_list	$02, $00
+	load_spc_raw	$5000, spc_block_1D840A, $0100
+	load_spc_raw	$B08E, spc_block_1FA548, $2178
+	load_spc	$3000, spc_data_1CBDE7
+	load_end
+song_set_05F435:
+	load_list	$02, $00
+	load_spc_raw	$5000, spc_block_1D850C, $0100
+	load_spc_raw	$B08E, spc_block_1FC6C2, $2193
+	load_spc	$3000, spc_data_1CD15E
+	load_end
+song_set_05F450:
+	load_list	$02, $00
+	load_spc_raw	$5000, spc_block_1D860E, $0100
+	load_spc_raw	$B08E, spc_block_1D8710, $2490
+	load_spc	$3000, spc_data_1CE6BD
+	load_end
 song_set_05F46B:
 	load_list	$02, $00
 	load_spc_raw	$5000, spc_block_1D860E, $0100
@@ -4765,37 +4797,54 @@ song_set_05F46B:
 	load_spc_raw	$3000, spc_block_1AA9CC, $12D8
 	load_end
 	.byte	$02, $00, $FE, $FF, $00, $30, $CC, $A9, $1A, $D8, $12, $FF, $FF, $02, $00, $FE
-	.byte	$FF, $00, $30, $23, $CA, $1A, $A6, $1F, $FF, $FF, $02, $00, $FE, $FF, $00, $50
-	.byte	$0E, $86, $1D, $00, $01, $FE, $FF, $8E, $B0, $10, $87, $1D, $90, $24, $FE, $FF
-	.byte	$00, $30, $23, $CA, $1A, $A6, $1F, $FF, $FF
+	.byte	$FF, $00, $30, $23, $CA, $1A, $A6, $1F, $FF, $FF
+song_set_05F4A4:
+	load_list	$02, $00
+	load_spc_raw	$5000, spc_block_1D860E, $0100
+	load_spc_raw	$B08E, spc_block_1D8710, $2490
+	load_spc_raw	$3000, spc_block_1ACA23, $1FA6
+	load_end
 song_set_05F4C3:
 	load_list	$02, $00
 	load_spc_raw	$3000, spc_block_1BDF92, $1DDC
 	load_end
-	.byte	$02, $00, $FE, $FF, $00, $50, $0E, $86, $1D, $00
-	.byte	$01, $FE, $FF, $8E, $B0, $10, $87, $1D, $90, $24, $FE, $FF, $00, $30, $92, $DF
-	.byte	$1B, $DC, $1D, $FF, $FF
+song_set_05F4D0:
+	load_list	$02, $00
+	load_spc_raw	$5000, spc_block_1D860E, $0100
+	load_spc_raw	$B08E, spc_block_1D8710, $2490
+	load_spc_raw	$3000, spc_block_1BDF92, $1DDC
+	load_end
 song_set_05F4EF:
 	load_list	$02, $00
 	load_spc	$3000, spc_data_1ABCA6
 	load_end
-	.byte	$02, $00
-	.byte	$FE, $FF, $00, $50, $04, $81, $1D, $00, $01, $FE, $FF, $8E, $B0, $9A, $9E, $1E
-	.byte	$37, $26, $00, $30, $A6, $BC, $1A, $FF, $FF
+song_set_05F4F8:
+	load_list	$02, $00
+	load_spc_raw	$5000, spc_block_1D8104, $0100
+	load_spc_raw	$B08E, spc_block_1E9E9A, $2637
+	load_spc	$3000, spc_data_1ABCA6
+	load_end
 song_set_05F513:
 	load_list	$02, $00
 	load_spc	$3000, spc_data_1ABE84
 	load_end
-	.byte	$02, $00, $FE, $FF, $00, $50, $04, $81, $1D, $00, $01, $FE, $FF, $8E
-	.byte	$B0, $9A, $9E, $1E, $37, $26, $00, $30, $84, $BE, $1A, $FF, $FF
+song_set_05F51C:
+	load_list	$02, $00
+	load_spc_raw	$5000, spc_block_1D8104, $0100
+	load_spc_raw	$B08E, spc_block_1E9E9A, $2637
+	load_spc	$3000, spc_data_1ABE84
+	load_end
 song_set_05F537:
 	load_list	$02, $00
 	load_spc	$3000, spc_data_1AA5EE
 	load_end
-	.byte	$02, $00, $FE, $FF, $00, $50, $04, $81, $1D, $00
-	.byte	$01, $FE, $FF, $8E, $B0, $9A, $9E, $1E, $37, $26, $00, $30, $EE, $A5, $1A, $FF
-	.byte	$FF
-load_list_05F55B:
+song_set_05F540:
+	load_list	$02, $00
+	load_spc_raw	$5000, spc_block_1D8104, $0100
+	load_spc_raw	$B08E, spc_block_1E9E9A, $2637
+	load_spc	$3000, spc_data_1AA5EE
+	load_end
+song_set_05F55B:
 	; CDL: read by load_data_list, load_spc_list, upload_ring_to_spc (+5 more)
 	load_list	$02, $00
 	load_spc_raw	$5000, spc_block_1AA8CA, $0100

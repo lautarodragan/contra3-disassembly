@@ -11,7 +11,7 @@
 
 	.byte	$00, $2E
 spc_data_1A8002:
-	; ASSET: compressed sound CPU data, $1A:8002-$1A:A5EB (from its length word), loaded by load_list_05F55B
+	; ASSET: compressed sound CPU data, $1A:8002-$1A:A5EB (from its length word), loaded by song_set_05F55B
 	.byte	$EA, $25, $83, $5F, $96, $08, $7F, $BE, $7C, $02, $7C, $23, $7C, $44
 	.byte	$7C, $65, $7C, $86, $7C, $A7, $7C, $C8, $7C, $E9, $7D, $0A, $7D, $2B, $7D, $4C
 	.byte	$7D, $6D, $7D, $8E, $F3, $81, $40, $C0, $01, $82, $37, $1B, $05, $C5, $81, $5B
@@ -669,7 +669,7 @@ spc_data_1AA5EE:
 	.byte	$7E, $6C, $7E, $8D, $7E, $AE, $7E, $CF, $7E, $F0, $7F, $11, $7F, $32, $7F, $53
 	.byte	$7F, $74, $7F, $95, $7F, $B6, $17, $D7, $00, $01
 spc_block_1AA8CA:
-	; ASSET: sound CPU data (uncompressed), $1A:A8CA-$1A:A9C9, uploaded by load_list_05F55B
+	; ASSET: sound CPU data (uncompressed), $1A:A8CA-$1A:A9C9, uploaded by song_set_05F55B
 	.byte	$00, $51, $3F, $51, $7E, $51, $CF, $51, $0E, $52, $56, $52, $7A, $52, $C2, $52
 	.byte	$E6, $52, $2E, $53, $52, $53, $9A, $53, $C7, $53, $E2, $53, $EB, $53, $06, $54
 	.byte	$21, $54, $3C, $54, $57, $54, $72, $54, $D5, $54, $F0, $54, $0B, $55, $26, $55
@@ -1058,7 +1058,10 @@ spc_data_1ABE84:
 	.byte	$69, $00, $88, $00, $1E, $01, $67, $87, $E3, $15, $E3, $0D, $FA, $9A, $B7, $08
 	.byte	$25, $82, $E3, $08, $00, $29, $88, $E3, $0B, $FA, $9D, $BB, $00, $3D, $15, $01
 	.byte	$D9, $85, $0C, $E0, $07, $E3, $05, $04, $A2, $81, $19, $0C, $92, $1C, $A7, $04
-	.byte	$41, $81, $FF, $1B, $D7, $20, $0A, $94, $09, $8E, $0C, $30, $5C, $31, $86, $32
+	.byte	$41, $81, $FF, $1B, $D7, $20, $0A
+spc_data_1AC08D:
+	; ASSET: compressed sound CPU data, $1A:C08D-$1A:CA20 (from its length word), loaded by song_set_05F3AE
+	.byte	$94, $09, $8E, $0C, $30, $5C, $31, $86, $32
 	.byte	$AF, $34, $A1, $36, $00, $38, $F4, $37, $C0, $50, $97, $F5, $05, $4B, $02, $EA
 	.byte	$5C, $E2, $08, $EE, $7E, $F2, $FD, $E3, $0B, $FA, $28, $B4, $00, $11, $C0, $65
 	.byte	$3B, $E1, $00, $02, $24, $05, $83, $63, $F4, $17, $C0, $50, $90, $11, $60, $65
@@ -1213,6 +1216,8 @@ spc_data_1ABE84:
 	.byte	$D5, $09, $DF, $09, $E1, $00, $E9, $84, $81, $CB, $81, $DC, $01, $E9, $8A, $FF
 	.byte	$0E, $0C, $C3, $8F, $C3, $90, $C3, $91, $C3, $01, $D0, $A6, $1F
 	; CDL: read by upload_spc_raw_block
+spc_block_1ACA23:
+	; ASSET: sound CPU data (uncompressed), $1A:CA23-$1A:E9C8, uploaded by song_set_05F4A4
 	.byte	$0C, $30, $AD, $32, $FC, $34, $28, $38, $2E, $3A, $B5, $3C, $F4, $33, $50, $50
 	.byte	$F5, $05, $46, $02, $EA, $38, $E2, $12, $EE, $00, $E3, $08, $F2, $03, $EF, $BE
 	.byte	$7F, $FA, $28, $D2, $00, $27, $BE, $63, $5F, $EE, $50, $FA, $96, $D2, $00, $2D

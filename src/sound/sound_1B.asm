@@ -12,7 +12,7 @@
 	; CDL: read by upload_spc_raw_block; partly not accessed
 	.byte	$8E, $5F
 spc_block_1B8002:
-	; ASSET: sound CPU data (uncompressed), $1B:8002-$1B:DF8F, uploaded by load_list_05F55B
+	; ASSET: sound CPU data (uncompressed), $1B:8002-$1B:DF8F, uploaded by song_set_05F55B
 	.byte	$02, $00, $00, $00, $00, $00, $00, $00, $00, $C2, $00, $00, $FE, $F4
 	.byte	$3E, $F1, $14, $2C, $C2, $D1, $12, $1C, $D1, $0F, $FC, $E3, $1D, $C2, $DC, $E3
 	.byte	$1C, $DE, $F3, $2D, $E0, $02, $C2, $1C, $E3, $33, $2E, $05, $42, $1E, $06, $C2
