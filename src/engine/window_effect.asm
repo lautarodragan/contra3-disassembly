@@ -184,7 +184,7 @@ wobble_barrier_window:
 	lda	zp_06
 	sta	zp_FC
 	ldx	zp_FE
-	ldy	#$8F40
+	ldy	#$8F40	; [num]
 	lda	a:PLAYER_BARRIER,x
 	cmp	#$0060
 	bcs	loc_00E927

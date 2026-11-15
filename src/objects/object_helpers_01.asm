@@ -7,7 +7,7 @@
 ; Handler of object type 54: marks itself OBJF_DELETE and frees the first
 ; object (from $0280) whose OBJ_TYPE equals its own $3A.
 delete_self_and_linked:
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	txy
 	ldx	#$0280
@@ -145,7 +145,7 @@ loc_019EE4:
 sub_019EE6:
 	; (not executed in the CDL traces)
 	stz	zp_00
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$0002
@@ -156,7 +156,7 @@ sub_019EE6:
 loc_019EFE:
 	lda	#$0010
 	sta	zp_00
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$0002
@@ -332,7 +332,7 @@ solid_push_player_right_2:
 	sec
 	sbc	OBJ_X_VEL,x
 	bcs	loc_01A04B
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	bcs	loc_01A04B
 loc_01A038:
 	lda	#$0000
@@ -783,7 +783,7 @@ init_homing_missile:
 	sta	$02,x
 	lda	#$0010
 	sta	$28,x
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	$2A,x
 	lda	#$00A0
 	sta	$24,x
@@ -916,7 +916,7 @@ loc_01A41C:
 	phx
 	sta	zp_06
 loc_01A41F:
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_12
 	lda	#$0001
 	sta	zp_14
@@ -1074,7 +1074,7 @@ delete_trail_chain:
 @loop:
 	ldy	$3E,x
 	beq	loc_01A546
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:$0016,y
 	lda	a:$0032,y
 	eor	#$FFFF

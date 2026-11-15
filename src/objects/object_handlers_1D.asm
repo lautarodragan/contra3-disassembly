@@ -23,7 +23,7 @@ loc_1DAF38:
 	beq	loc_1DAF46
 	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
-	lda	#$B030
+	lda	#$B030	; [num]
 	sta	cgram_upload_addr
 loc_1DAF46:
 	lda	OBJ_HP,x
@@ -37,7 +37,7 @@ loc_1DAF46:
 	stz	OBJ_Y_VEL,x
 	lda	#$000F
 	sta	OBJ_STATE,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:wram_0956
 	lda	#$076F
 	sta	f:wram_7EE800
@@ -101,7 +101,7 @@ ending_sequence_state_00:
 	inc	OBJ_STATE,x
 	lda	#$0002
 	sta	a:wram_16B6
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:wram_08D6
 	lda	#$0002
 	sta	a:bg2_scroll_mode
@@ -124,21 +124,21 @@ ending_sequence_state_01:
 	sta	a:wram_0296
 	lda	#$0078
 	sta	a:wram_02A8
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	a:wram_02AA
 	lda	#$0001
 	sta	a:wram_0292
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	a:wram_028E
 	lda	#$0042
 	sta	a:wram_028A
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:wram_029C
 	lda	#$076F
 	sta	f:wram_7EE800
 	lda	#$7FE8
 	sta	f:wram_7EE802
-	lda	#$E809
+	lda	#$E809	; [num]
 	sta	f:wram_7EE804
 	lda	#$7F00
 	sta	f:wram_7EE806
@@ -191,9 +191,9 @@ ending_sequence_state_04:
 	jsr	a:ending_set_missile_hdma
 	dec	OBJ_TIMER,x
 	bpl	@return
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	a:wram_029E
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:wram_029C
 	inc	OBJ_STATE,x
 @return:
@@ -203,7 +203,7 @@ ending_sequence_state_05:
 	jsr	a:ending_set_missile_hdma
 	lda	a:wram_028E
 	bpl	@return
-	cmp	#$FFDD
+	cmp	#$FFDD	; [num]
 	bcs	@return
 	stz	a:wram_029C
 	stz	a:wram_029E
@@ -237,11 +237,11 @@ loc_1DB0FF:
 	inc	OBJ_STATE,x
 	rtl
 loc_1DB102:
-	ldy	#$FF59
+	ldy	#$FF59	; [num]
 	lda	OBJ_TIMER,x
 	bit	#$0008
 	bne	loc_1DB10F
-	ldy	#$FF5D
+	ldy	#$FF5D	; [num]
 loc_1DB10F:
 	jsr	a:queue_brain_boss_tiles
 	rtl
@@ -259,7 +259,7 @@ ending_sequence_state_08:
 	sta	OBJ_FLAGS,x
 	lda	#$002C
 	sta	OBJ_HITBOX_W,x
-	lda	#$FFB0
+	lda	#$FFB0	; [num]
 	sta	OBJ_HITBOX_H,x
 	lda	#$006A
 	sta	OBJ_X,x
@@ -279,7 +279,7 @@ ending_sequence_state_08:
 	sta	$16,x
 	lda	#$007C
 	sta	$28,x
-	lda	#$FFD8
+	lda	#$FFD8	; [num]
 	sta	$2A,x
 	lda	#$0042
 	sta	$0A,x
@@ -327,7 +327,7 @@ ending_sequence_state_0B:
 	dec	OBJ_TIMER,x
 	bpl	loc_1DB1D0
 	inc	OBJ_STATE,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:wram_029C
 loc_1DB1D0:
 	lda	stage_frame_odd
@@ -426,7 +426,7 @@ ending_sequence_state_14:
 	sta	a:life_transfer_disabled
 	lda	#$6000
 	sta	a:boss_work_0
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	a:boss_work_1
 	jsl	f:ending_sequence_state_15
 	lda	a:bg2_y
@@ -878,7 +878,7 @@ ending_start_vertical_autoscroll:
 	sta	a:wram_029C
 	sta	a:boss_work_2
 	sta	OBJ_Y_VEL_SUB,x
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	a:wram_029E
 	sta	a:boss_work_3
 	sta	OBJ_Y_VEL,x
@@ -900,7 +900,7 @@ sub_1DB668:
 sub_1DB685:
 	lda	a:boss_work_3
 	bpl	loc_1DB68F
-	cmp	#$FFFA
+	cmp	#$FFFA	; [num]
 	bcc	loc_1DB6A2
 loc_1DB68F:
 	sec
@@ -922,7 +922,7 @@ loc_1DB6A2:
 
 sub_1DB6B6:
 	lda	a:boss_work_3
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	bcs	loc_1DB6A2
 	clc
 	lda	a:boss_work_2
@@ -936,7 +936,7 @@ sub_1DB6B6:
 sub_1DB6D3:
 	lda	a:boss_work_1
 	bpl	loc_1DB6DD
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	bcc	loc_1DB70E
 loc_1DB6DD:
 	sec
@@ -968,7 +968,7 @@ sub_1DB70F:
 	lda	$34,x
 	beq	loc_1DB722
 	stz	OBJ_Y_VEL_SUB,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	OBJ_Y_VEL,x
 	lda	OBJ_Y,x
 	cmp	#$00C4
@@ -976,7 +976,7 @@ sub_1DB70F:
 loc_1DB721:
 	rts
 loc_1DB722:
-	lda	#$C000
+	lda	#$C000	; [num]
 	sta	OBJ_Y_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
 	lda	OBJ_Y,x
@@ -1022,7 +1022,7 @@ sub_1DB762:
 loc_1DB771:
 	lda	a:wram_029D
 	bpl	loc_1DB77B
-	cmp	#$FF80
+	cmp	#$FF80	; [num]
 	bcc	loc_1DB7B8
 loc_1DB77B:
 	sec
@@ -1058,7 +1058,7 @@ loc_1DB7B8:
 sub_1DB7B9:
 	lda	a:wram_028E
 	bpl	loc_1DB7CA
-	cmp	#$FFF0
+	cmp	#$FFF0	; [num]
 	bcs	loc_1DB7CA
 	stz	a:wram_029C
 	stz	a:wram_029E
@@ -1144,7 +1144,7 @@ sub_1DB85C:
 	sta	OBJ_ATTR,x
 	lda	#$0008
 	sta	OBJ_HITBOX_W,x
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	OBJ_HITBOX_H,x
 	phx
 	phy
@@ -1189,7 +1189,7 @@ sub_1DB85C:
 update_enemy_type_96:
 	lda	a:wram_1688
 	beq	loc_1DB8CB
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	rtl
 loc_1DB8CB:
@@ -1269,7 +1269,7 @@ loc_1DB940:
 ; Object type $97. Not seen in the emulator.
 update_enemy_type_97:
 	stz	a:boss_work_7
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	a:boss_work_4
 	stz	a:boss_work_6
 	lda	#$0010
@@ -1367,7 +1367,7 @@ loc_1DBA1D:
 	clc
 	adc	#$5C20
 	sta	bg_dma_vram_addr
-	lda	#$A000
+	lda	#$A000	; [num]
 	sta	bg_dma_src
 	lda	#$00C0
 	sta	bg_dma_size
@@ -1410,7 +1410,7 @@ sub_1DBA68:
 	lda	#.loword(anim_05C69C)
 	jsl	f:spawn_effect_random_offset
 	bcs	@return
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	a:$001E,y
 @return:
 	rts
@@ -1474,7 +1474,7 @@ ending_sequence_state_17:
 	stz	a:wram_029C
 	stz	a:wram_029E
 	stz	a:wram_02BA
-	lda	#$FFDD
+	lda	#$FFDD	; [num]
 	sta	a:wram_028E
 	ldy	a:p1_lives
 	beq	loc_1DBB25
@@ -1637,7 +1637,7 @@ ending_sequence_state_1F:
 loc_1DBC49:
 	adc	#$5C00
 	sta	bg_dma_vram_addr
-	lda	#$A000
+	lda	#$A000	; [num]
 	sta	bg_dma_src
 	lda	#$00FE
 	sta	bg_dma_size
@@ -1695,7 +1695,7 @@ ending_sequence_state_27:
 	dec	OBJ_TIMER,x
 	bpl	loc_1DBCBB
 	inc	OBJ_STATE,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:wram_029C
 	bra	loc_1DBCBB
 
@@ -1725,7 +1725,7 @@ loc_1DBCF5:
 	dec	OBJ_TIMER,x
 	bra	loc_1DBD02
 loc_1DBCFD:
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_Y_VEL_SUB,x
 loc_1DBD02:
 	jsr	a:sub_1DB758
@@ -1766,7 +1766,7 @@ ending_sequence_state_12:
 update_ending_explosion:
 	ldy	OBJ_ANIM,x
 	bne	loc_1DBD54
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	rtl
 loc_1DBD54:
@@ -1838,7 +1838,7 @@ loc_1DBDB3:
 	bcs	loc_1DBDF6
 	lda	#OBJT_ENDING_EXPLOSION
 	sta	a:$0010,y
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	a:$001E,y
 	phx
 	ldx	#$0000
@@ -2015,7 +2015,7 @@ brain_boss_state_00:
 	sta	OBJ_HP,x
 	lda	#$0038
 	sta	OBJ_HITBOX_W,x
-	lda	#$FFD0
+	lda	#$FFD0	; [num]
 	sta	OBJ_HITBOX_H,x
 	lda	#$014B
 	sta	$36,x
@@ -2039,7 +2039,7 @@ brain_boss_state_00:
 brain_boss_state_01:
 	dec	OBJ_TIMER,x
 	bpl	loc_1DBF72
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_Y_VEL_SUB,x
 	inc	OBJ_STATE,x
 	lda	#$0040
@@ -2117,7 +2117,7 @@ loc_1DBFEE:
 	lsr	a
 	sta	a:boss_work_0
 	inc	a:boss_work_4
-	ldy	#$FF5D
+	ldy	#$FF5D	; [num]
 	jsr	a:queue_brain_boss_tiles
 loc_1DC004:
 	rtl
@@ -2220,7 +2220,7 @@ brain_boss_state_07:
 	sta	a:$001A,y
 	dec	zp_FC
 	lda	zp_FC
-	cmp	#$FFFB
+	cmp	#$FFFB	; [num]
 	bne	@loop
 loc_1DC0C6:
 	lda	#$0180
@@ -2246,7 +2246,7 @@ loc_1DC0E1:
 	ldy	a:boss_work_1
 	lda	a:data_05FF1B,y
 	sta	OBJ_Y,x
-	ldy	#$FF59
+	ldy	#$FF59	; [num]
 	jsr	a:queue_brain_boss_tiles
 	lda	#$0059
 	jsl	f:queue_sound
@@ -2362,7 +2362,7 @@ loc_1DC1D0:
 loc_1DC1E5:
 	lda	#$0001
 	sta	zp_00
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	zp_02
 	jsr	a:brain_boss_oscillate
 	lda	stage_frame_counter
@@ -2379,7 +2379,7 @@ loc_1DC208:
 	lda	a:boss_work_3
 	cmp	#$0024
 	bcc	loc_1DC217
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	$38,x
 	bra	loc_1DC221
 loc_1DC217:
@@ -2393,7 +2393,7 @@ loc_1DC221:
 	adc	$38,x
 	sta	a:boss_work_3
 	lda	a:boss_work_4
-	cmp	#$FFE8
+	cmp	#$FFE8	; [num]
 	bcc	@return
 	sec
 	lda	a:boss_work_4
@@ -2441,7 +2441,7 @@ brain_boss_attack_5_step_00:
 brain_boss_attack_5_step_01:
 	dec	OBJ_TIMER,x
 	bpl	@return
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	OBJ_Y_VEL,x
 	inc	a:boss_work_6
 @return:
@@ -2543,7 +2543,7 @@ brain_boss_attack_2:
 loc_1DC341:
 	lda	#$0004
 	sta	zp_00
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	zp_02
 	jsr	a:brain_boss_oscillate
 loc_1DC34E:
@@ -2806,13 +2806,13 @@ brain_boss_attack_7:
 	lda	#$0003
 	ldy	rng_lo
 	bpl	loc_1DC535
-	lda	#$FFFD
+	lda	#$FFFD	; [num]
 loc_1DC535:
 	sta	$1E,x
 	lda	#$0001
 	ldy	rng_hi
 	bpl	loc_1DC541
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 loc_1DC541:
 	sta	$1A,x
 	plx
@@ -2839,7 +2839,7 @@ brain_boss_attack_start_0:
 	stz	$34,x
 	lda	#$0001
 	sta	a:boss_work_3
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	a:boss_work_4
 	rtl
 
@@ -2849,7 +2849,7 @@ brain_boss_attack_start_5:
 	rtl
 
 brain_boss_attack_start_3:
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	OBJ_Y_VEL,x
 	rtl
 
@@ -2891,7 +2891,7 @@ brain_boss_attack_start_4:
 	lda	#$0092
 	ldy	#$0580
 	jsr	a:brain_boss_fill_slots
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:wram_033A
 	sta	a:wram_047A
 	lda	#$0001
@@ -2941,7 +2941,7 @@ loc_1DC62E:
 	bne	loc_1DC65C
 	dec	$30,x
 	bpl	loc_1DC63F
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	rtl
 loc_1DC63F:
@@ -3035,7 +3035,7 @@ brain_boss_chain_state_00:
 	sta	zp_0A
 	lda	#$0008
 	sta	zp_0C
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	zp_0E
 	lda	#$403C
 	sta	zp_10
@@ -3100,7 +3100,7 @@ loc_1DC765:
 	bne	loc_1DC783
 	lda	OBJ_X_VEL,x
 	bpl	loc_1DC772
-	cmp	#$FFFC
+	cmp	#$FFFC	; [num]
 	bcc	loc_1DC79B
 loc_1DC772:
 	sec
@@ -3151,7 +3151,7 @@ brain_boss_chain_state_03:
 	bpl	loc_1DC7D2
 	inc	a:wram_0912
 loc_1DC7C9:
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	jml	f:delete_trail_chain
 loc_1DC7D2:
@@ -3165,7 +3165,7 @@ update_enemy_type_8E:
 	bcc	loc_1DC7F1
 	lda	#$0030
 	jsl	f:queue_sound
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	OBJ_Y_VEL,x
 	txy
 	lda	#.loword(anim_05C516)
@@ -3334,11 +3334,11 @@ loc_1DC924:
 	beq	loc_1DC960
 	lda	OBJ_X,x
 	bpl	loc_1DC931
-	cmp	#$FF80
+	cmp	#$FF80	; [num]
 	bcc	loc_1DC91C
 loc_1DC931:
 	lda	$38,x
-	cmp	#$FFC0
+	cmp	#$FFC0	; [num]
 	bne	loc_1DC957
 	dec	OBJ_TIMER,x
 	bpl	@return
@@ -3542,7 +3542,7 @@ loc_1DCA7F:
 	sta	OBJ_HP,x
 	lda	#$0008
 	sta	OBJ_HITBOX_W,x
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	OBJ_HITBOX_H,x
 	clc
 	lda	a:wram_090A
@@ -3689,7 +3689,7 @@ loc_1DCB91:
 	bne	loc_1DCBAE
 	lda	OBJ_X_VEL,x
 	bpl	loc_1DCB9E
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	bcc	loc_1DCBC6
 loc_1DCB9E:
 	sec
@@ -3741,7 +3741,7 @@ loc_1DCBE6:
 	bne	loc_1DCC03
 	lda	OBJ_Y_VEL,x
 	bpl	loc_1DCBF3
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	bcc	loc_1DCC1B
 loc_1DCBF3:
 	sec
@@ -3793,7 +3793,7 @@ brain_boss_launch_from_mouth:
 	sta	a:$001A,y
 	lda	rng_hi
 	sta	a:$0018,y
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	a:$001E,y
 	rts
 
@@ -3818,7 +3818,7 @@ loc_1DCC6F:
 	sta	$16,x
 	lda	#$0008
 	sta	$28,x
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	$2A,x
 	lda	#$0058
 	sta	$30,x

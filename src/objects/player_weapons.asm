@@ -247,19 +247,19 @@ loc_018194:
 loc_0181A8:
 	lda	#$00FF
 	sta	f:wram_7EF800
-	lda	#$F807
+	lda	#$F807	; [num]
 	sta	f:wram_7EF801
 	lda	#$00FF
 	sta	f:wram_7EF803
-	lda	#$F887
+	lda	#$F887	; [num]
 	sta	f:wram_7EF804
 	lda	#$00FF
 	sta	f:wram_7EFA00
-	lda	#$FA07
+	lda	#$FA07	; [num]
 	sta	f:wram_7EFA01
 	lda	#$00FF
 	sta	f:wram_7EFA03
-	lda	#$FA87
+	lda	#$FA87	; [num]
 	sta	f:wram_7EFA04
 	rtl
 loc_0181E1:
@@ -300,7 +300,7 @@ update_player_bike:
 	lda	a:$0012,y
 	cmp	#$0001
 	bne	loc_01821B
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	rtl
 loc_01821B:
@@ -417,9 +417,9 @@ loc_0182D0:
 	stz	$38,x
 	bra	player_state_fall
 loc_0182E4:
-	lda	#$DFFF
+	lda	#$DFFF	; [num]
 	sta	OBJ_Y_VEL_SUB,x
-	lda	#$FFFB
+	lda	#$FFFB	; [num]
 	sta	OBJ_Y_VEL,x
 	lda	#$0003
 	sta	OBJ_STATE,x
@@ -435,7 +435,7 @@ loc_0182FD:
 	sta	PLAYER_POSE,x
 	stz	$38,x
 	stz	OBJ_Y_VEL_SUB,x
-	lda	#$FFFA
+	lda	#$FFFA	; [num]
 	sta	OBJ_Y_VEL,x
 	lda	#$0003
 	sta	OBJ_STATE,x
@@ -521,7 +521,7 @@ fall_aim_right:
 	sta	zp_12
 	lda	#$0010
 	sta	zp_14
-	lda	#$FFDD
+	lda	#$FFDD	; [num]
 	sta	zp_16
 	lda	#$00D3
 	sta	PLAYER_POSE,x
@@ -530,9 +530,9 @@ fall_aim_right:
 fall_aim_left:
 	lda	#$0060
 	sta	zp_12
-	lda	#$FFE6
+	lda	#$FFE6	; [num]
 	sta	zp_14
-	lda	#$FFDD
+	lda	#$FFDD	; [num]
 	sta	zp_16
 	lda	#$00D3
 	sta	PLAYER_POSE,x
@@ -547,28 +547,28 @@ jump_aim_right:
 	sta	zp_12
 	lda	#$0008
 	sta	zp_14
-	lda	#$FFD8
+	lda	#$FFD8	; [num]
 	sta	zp_16
 	bra	loc_0183E9
 
 jump_aim_left:
 	lda	#$0060
 	sta	zp_12
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_14
-	lda	#$FFD8
+	lda	#$FFD8	; [num]
 	sta	zp_16
 loc_0183E9:
 	lda	OBJ_STATE,x
 	cmp	#$000C
 	bne	loc_01841E
-	lda	#$FFF2
+	lda	#$FFF2	; [num]
 	ldy	OBJ_FACING,x
 	bne	loc_0183FA
-	lda	#$FFF6
+	lda	#$FFF6	; [num]
 loc_0183FA:
 	sta	zp_14
-	lda	#$FFD8
+	lda	#$FFD8	; [num]
 	sta	zp_16
 	jsl	f:spin_fire_weapon_2
 	stz	$38,x
@@ -578,7 +578,7 @@ loc_0183FA:
 	lda	#$0006
 loc_018411:
 	sta	zp_14
-	lda	#$FFD8
+	lda	#$FFD8	; [num]
 	sta	zp_16
 	jsl	f:spin_fire_weapon_1
 	bra	loc_018429
@@ -616,22 +616,22 @@ fall_aim_up:
 	sta	zp_12
 	lda	OBJ_FACING,x
 	bne	loc_018460
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	bra	loc_018463
 loc_018460:
-	lda	#$FFF9
+	lda	#$FFF9	; [num]
 loc_018463:
 	sta	zp_14
-	lda	#$FFBE
+	lda	#$FFBE	; [num]
 	sta	zp_16
 	brl	loc_0183E9
 
 jump_aim_up:
 	lda	#$0000
 	sta	zp_12
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	zp_14
-	lda	#$FFD0
+	lda	#$FFD0	; [num]
 	sta	zp_16
 	brl	loc_0183E9
 
@@ -642,7 +642,7 @@ fall_aim_up_right:
 	sta	zp_12
 	lda	#$000C
 	sta	zp_14
-	lda	#$FFCA
+	lda	#$FFCA	; [num]
 	sta	zp_16
 	brl	loc_0183E9
 
@@ -651,7 +651,7 @@ jump_aim_up_right:
 	sta	zp_12
 	lda	#$0004
 	sta	zp_14
-	lda	#$FFD4
+	lda	#$FFD4	; [num]
 	sta	zp_16
 	brl	loc_0183E9
 
@@ -660,18 +660,18 @@ fall_aim_up_left:
 	sta	PLAYER_POSE,x
 	lda	#$0070
 	sta	zp_12
-	lda	#$FFE8
+	lda	#$FFE8	; [num]
 	sta	zp_14
-	lda	#$FFC8
+	lda	#$FFC8	; [num]
 	sta	zp_16
 	brl	loc_0183E9
 
 jump_aim_up_left:
 	lda	#$0070
 	sta	zp_12
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_14
-	lda	#$FFD0
+	lda	#$FFD0	; [num]
 	sta	zp_16
 	brl	loc_0183E9
 
@@ -682,21 +682,21 @@ fall_aim_down:
 	sta	zp_12
 	lda	OBJ_FACING,x
 	bne	loc_0184E4
-	lda	#$FFF9
+	lda	#$FFF9	; [num]
 	bra	loc_0184E4
 loc_0184E4:
-	lda	#$FFFD
+	lda	#$FFFD	; [num]
 	sta	zp_14
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	zp_16
 	brl	loc_0183E9
 
 jump_aim_down:
 	lda	#$0040
 	sta	zp_12
-	lda	#$FFF9
+	lda	#$FFF9	; [num]
 	sta	zp_14
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	zp_16
 	brl	loc_0183E9
 
@@ -707,7 +707,7 @@ fall_aim_down_right:
 	sta	zp_12
 	lda	#$000A
 	sta	zp_14
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_16
 	brl	loc_0183E9
 
@@ -716,7 +716,7 @@ jump_aim_down_right:
 	sta	zp_12
 	lda	#$0008
 	sta	zp_14
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	zp_16
 	brl	loc_0183E9
 
@@ -725,9 +725,9 @@ fall_aim_down_left:
 	sta	PLAYER_POSE,x
 	lda	#$0050
 	sta	zp_12
-	lda	#$FFEC
+	lda	#$FFEC	; [num]
 	sta	zp_14
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_16
 	brl	loc_0183E9
 
@@ -735,9 +735,9 @@ jump_aim_down_left:
 	; (not executed in the CDL traces)
 	lda	#$0050
 	sta	zp_12
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_14
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	zp_16
 	brl	loc_0183E9
 
@@ -875,7 +875,7 @@ loc_018641:
 	sta	zp_C4
 	brl	snap_y_up_to_tile
 loc_018649:
-	lda	#$8002
+	lda	#$8002	; [num]
 	sta	zp_C4
 	rtl
 loc_01864F:
@@ -909,7 +909,7 @@ loc_018682:
 	jsl	f:check_ceiling_hang_height
 	lda	#$0006
 	sta	zp_00
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
@@ -937,7 +937,7 @@ loc_0186AC:
 	bpl	loc_0186AB
 	brl	snap_y_down_to_tile
 loc_0186C9:
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
@@ -1018,7 +1018,7 @@ loc_018762:
 	jsl	f:check_floor_tiles
 	lda	#$0006
 	sta	zp_00
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
@@ -1047,7 +1047,7 @@ loc_01878C:
 @return:
 	rtl
 loc_0187AA:
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
@@ -1087,7 +1087,7 @@ loc_0187E6:
 	rtl
 loc_0187F7:
 	stz	zp_00
-	lda	#$FFD0
+	lda	#$FFD0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	sta	zp_04
@@ -1167,7 +1167,7 @@ loc_018870:
 	lda	OBJ_Y,x
 	adc	a:$001E,y
 	sta	OBJ_Y,x
-	lda	#$8002
+	lda	#$8002	; [num]
 	sta	zp_C4
 	lda	#$2000
 	sta	zp_12
@@ -1263,7 +1263,7 @@ loc_018946:
 loc_01894B:
 	lda	#$0010
 	sta	zp_14
-	lda	#$FFDD
+	lda	#$FFDD	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018959:
@@ -1272,7 +1272,7 @@ loc_018959:
 	jsl	f:animate_player_walk
 	lda	#$0010
 	sta	zp_14
-	lda	#$FFDD
+	lda	#$FFDD	; [num]
 	sta	zp_16
 	jml	f:loc_00D6CE
 loc_018971:
@@ -1286,7 +1286,7 @@ loc_018971:
 	sta	PLAYER_POSE,x
 	lda	#$0010
 	sta	zp_14
-	lda	#$FFDA
+	lda	#$FFDA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018991:
@@ -1294,7 +1294,7 @@ loc_018991:
 	sta	PLAYER_POSE,x
 	lda	#$0010
 	sta	zp_14
-	lda	#$FFDA
+	lda	#$FFDA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_0189A4:
@@ -1305,7 +1305,7 @@ loc_0189A4:
 	jsl	f:animate_player_walk
 	lda	#$0010
 	sta	zp_14
-	lda	#$FFDD
+	lda	#$FFDD	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_0189C1:
@@ -1314,7 +1314,7 @@ loc_0189C1:
 	jsl	f:animate_player_walk
 	lda	#$0010
 	sta	zp_14
-	lda	#$FFDB
+	lda	#$FFDB	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -1331,13 +1331,13 @@ loc_0189EC:
 	ldy	#$00DD
 loc_0189EF:
 	sty	PLAYER_POSE,x
-	ldy	#$FFF9
+	ldy	#$FFF9	; [num]
 	lda	OBJ_FACING,x
 	bne	loc_0189FB
-	ldy	#$FFFE
+	ldy	#$FFFE	; [num]
 loc_0189FB:
 	sty	zp_14
-	lda	#$FFC0
+	lda	#$FFC0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018A06:
@@ -1347,17 +1347,17 @@ loc_018A06:
 	bne	loc_018A39
 	lda	OBJ_FACING,x
 	bne	loc_018A26
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	zp_14
-	lda	#$FFBE
+	lda	#$FFBE	; [num]
 	sta	zp_16
 	lda	#$00BC
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
 loc_018A26:
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	zp_14
-	lda	#$FFBE
+	lda	#$FFBE	; [num]
 	sta	zp_16
 	lda	#$00B2
 	sta	PLAYER_POSE,x
@@ -1365,17 +1365,17 @@ loc_018A26:
 loc_018A39:
 	lda	OBJ_FACING,x
 	bne	loc_018A50
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	zp_14
-	lda	#$FFBE
+	lda	#$FFBE	; [num]
 	sta	zp_16
 	lda	#$00B2
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
 loc_018A50:
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	zp_14
-	lda	#$FFBE
+	lda	#$FFBE	; [num]
 	sta	zp_16
 	lda	#$00BC
 	sta	PLAYER_POSE,x
@@ -1398,7 +1398,7 @@ loc_018A7D:
 	sty	PLAYER_POSE,x
 	lda	#$000C
 	sta	zp_14
-	lda	#$FFCA
+	lda	#$FFCA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018A8D:
@@ -1407,7 +1407,7 @@ loc_018A8D:
 	jsl	f:animate_player_walk
 	lda	#$000C
 	sta	zp_14
-	lda	#$FFCA
+	lda	#$FFCA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018AA5:
@@ -1421,7 +1421,7 @@ loc_018AA5:
 	sta	PLAYER_POSE,x
 	lda	#$000C
 	sta	zp_14
-	lda	#$FFC7
+	lda	#$FFC7	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018AC5:
@@ -1429,7 +1429,7 @@ loc_018AC5:
 	sta	PLAYER_POSE,x
 	lda	#$000C
 	sta	zp_14
-	lda	#$FFC7
+	lda	#$FFC7	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018AD8:
@@ -1440,7 +1440,7 @@ loc_018AD8:
 	jsl	f:animate_player_walk
 	lda	#$0011
 	sta	zp_14
-	lda	#$FFCA
+	lda	#$FFCA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018AF5:
@@ -1449,7 +1449,7 @@ loc_018AF5:
 	jsl	f:animate_player_walk
 	lda	#$000C
 	sta	zp_14
-	lda	#$FFCA
+	lda	#$FFCA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -1468,18 +1468,18 @@ loc_018B24:
 	ldy	#$0014
 loc_018B27:
 	sty	PLAYER_POSE,x
-	lda	#$FFE6
+	lda	#$FFE6	; [num]
 	sta	zp_14
-	lda	#$FFDD
+	lda	#$FFDD	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018B37:
 	lda	#$0002
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
-	lda	#$FFE6
+	lda	#$FFE6	; [num]
 	sta	zp_14
-	lda	#$FFDD
+	lda	#$FFDD	; [num]
 	sta	zp_16
 	jml	f:loc_00D6CE
 loc_018B4F:
@@ -1491,17 +1491,17 @@ loc_018B4F:
 	bne	loc_018B6F
 	lda	#$00BA
 	sta	PLAYER_POSE,x
-	lda	#$FFE6
+	lda	#$FFE6	; [num]
 	sta	zp_14
-	lda	#$FFDA
+	lda	#$FFDA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018B6F:
 	lda	#$00B0
 	sta	PLAYER_POSE,x
-	lda	#$FFE6
+	lda	#$FFE6	; [num]
 	sta	zp_14
-	lda	#$FFDD
+	lda	#$FFDD	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018B82:
@@ -1510,18 +1510,18 @@ loc_018B82:
 	lda	#$0074
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
-	lda	#$FFE6
+	lda	#$FFE6	; [num]
 	sta	zp_14
-	lda	#$FFDD
+	lda	#$FFDD	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018B9F:
 	lda	#$0068
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
-	lda	#$FFE6
+	lda	#$FFE6	; [num]
 	sta	zp_14
-	lda	#$FFDB
+	lda	#$FFDB	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -1541,18 +1541,18 @@ loc_018BCE:
 	ldy	#$0024
 loc_018BD1:
 	sty	PLAYER_POSE,x
-	lda	#$FFE8
+	lda	#$FFE8	; [num]
 	sta	zp_14
-	lda	#$FFC8
+	lda	#$FFC8	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018BE1:
 	lda	#$001E
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
-	lda	#$FFE8
+	lda	#$FFE8	; [num]
 	sta	zp_14
-	lda	#$FFC8
+	lda	#$FFC8	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018BF9:
@@ -1565,17 +1565,17 @@ loc_018BF9:
 	bne	loc_018C19
 	lda	#$00BE
 	sta	PLAYER_POSE,x
-	lda	#$FFEC
+	lda	#$FFEC	; [num]
 	sta	zp_14
-	lda	#$FFC8
+	lda	#$FFC8	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018C19:
 	lda	#$00B4
 	sta	PLAYER_POSE,x
-	lda	#$FFEC
+	lda	#$FFEC	; [num]
 	sta	zp_14
-	lda	#$FFC8
+	lda	#$FFC8	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018C2C:
@@ -1584,18 +1584,18 @@ loc_018C2C:
 	lda	#$008C
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
-	lda	#$FFE5
+	lda	#$FFE5	; [num]
 	sta	zp_14
-	lda	#$FFC9
+	lda	#$FFC9	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018C49:
 	lda	#$0080
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
-	lda	#$FFE8
+	lda	#$FFE8	; [num]
 	sta	zp_14
-	lda	#$FFC8
+	lda	#$FFC8	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -1621,11 +1621,11 @@ loc_018C68:
 	bra	loc_018C90
 loc_018C8A:
 	lda	#$0060
-	ldy	#$FFDE
+	ldy	#$FFDE	; [num]
 loc_018C90:
 	sta	zp_12
 	sty	zp_14
-	lda	#$FFF2
+	lda	#$FFF2	; [num]
 	sta	zp_16
 	lda	#$002A
 	sta	PLAYER_POSE,x
@@ -1647,7 +1647,7 @@ loc_018CA2:
 	bne	loc_018CD6
 	lda	#$0012
 	sta	zp_14
-	lda	#$FFE5
+	lda	#$FFE5	; [num]
 	sta	zp_16
 	lda	#$00C0
 	sta	PLAYER_POSE,x
@@ -1655,7 +1655,7 @@ loc_018CA2:
 loc_018CD6:
 	lda	#$0010
 	sta	zp_14
-	lda	#$FFE5
+	lda	#$FFE5	; [num]
 	sta	zp_16
 	lda	#$00B6
 	sta	PLAYER_POSE,x
@@ -1665,17 +1665,17 @@ loc_018CE9:
 	sty	zp_12
 	bit	#$0028
 	bne	loc_018D06
-	lda	#$FFE4
+	lda	#$FFE4	; [num]
 	sta	zp_14
-	lda	#$FFE5
+	lda	#$FFE5	; [num]
 	sta	zp_16
 	lda	#$00B6
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
 loc_018D06:
-	lda	#$FFE6
+	lda	#$FFE6	; [num]
 	sta	zp_14
-	lda	#$FFE5
+	lda	#$FFE5	; [num]
 	sta	zp_16
 	lda	#$00C0
 	sta	PLAYER_POSE,x
@@ -1695,13 +1695,13 @@ loc_018D2C:
 	lda	#$00DF
 loc_018D2F:
 	sta	PLAYER_POSE,x
-	ldy	#$FFFD
+	ldy	#$FFFD	; [num]
 	lda	OBJ_FACING,x
 	bne	loc_018D3B
-	ldy	#$FFF9
+	ldy	#$FFF9	; [num]
 loc_018D3B:
 	sty	zp_14
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018D46:
@@ -1710,17 +1710,17 @@ loc_018D46:
 	bne	loc_018D77
 	lda	OBJ_FACING,x
 	bne	loc_018D64
-	lda	#$FFFA
+	lda	#$FFFA	; [num]
 	sta	zp_14
-	lda	#$FFF6
+	lda	#$FFF6	; [num]
 	sta	zp_16
 	lda	#$00E5
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
 loc_018D64:
-	lda	#$FFFA
+	lda	#$FFFA	; [num]
 	sta	zp_14
-	lda	#$FFF6
+	lda	#$FFF6	; [num]
 	sta	zp_16
 	lda	#$00E3
 	sta	PLAYER_POSE,x
@@ -1728,17 +1728,17 @@ loc_018D64:
 loc_018D77:
 	lda	OBJ_FACING,x
 	bne	loc_018D8E
-	lda	#$FFFA
+	lda	#$FFFA	; [num]
 	sta	zp_14
-	lda	#$FFF4
+	lda	#$FFF4	; [num]
 	sta	zp_16
 	lda	#$00E3
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
 loc_018D8E:
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	zp_14
-	lda	#$FFF4
+	lda	#$FFF4	; [num]
 	sta	zp_16
 	lda	#$00E5
 	sta	PLAYER_POSE,x
@@ -1762,7 +1762,7 @@ loc_018DBB:
 	sty	PLAYER_POSE,x
 	lda	#$000A
 	sta	zp_14
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018DCB:
@@ -1771,7 +1771,7 @@ loc_018DCB:
 	jsl	f:animate_player_walk
 	lda	#$000A
 	sta	zp_14
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018DE3:
@@ -1786,7 +1786,7 @@ loc_018DE3:
 	sta	PLAYER_POSE,x
 	lda	#$000A
 	sta	zp_14
-	lda	#$FFEC
+	lda	#$FFEC	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018E03:
@@ -1794,7 +1794,7 @@ loc_018E03:
 	sta	PLAYER_POSE,x
 	lda	#$000B
 	sta	zp_14
-	lda	#$FFEC
+	lda	#$FFEC	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018E16:
@@ -1805,7 +1805,7 @@ loc_018E16:
 	jsl	f:animate_player_walk
 	lda	#$0014
 	sta	zp_14
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018E33:
@@ -1814,7 +1814,7 @@ loc_018E33:
 	jsl	f:animate_player_walk
 	lda	#$000D
 	sta	zp_14
-	lda	#$FFEC
+	lda	#$FFEC	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -1834,18 +1834,18 @@ loc_018E62:
 	ldy	#$0034
 loc_018E65:
 	sty	PLAYER_POSE,x
-	lda	#$FFEC
+	lda	#$FFEC	; [num]
 	sta	zp_14
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018E75:
 	lda	#$002E
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
-	lda	#$FFEC
+	lda	#$FFEC	; [num]
 	sta	zp_14
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018E8D:
@@ -1858,17 +1858,17 @@ loc_018E8D:
 	bne	loc_018EAD
 	lda	#$00C2
 	sta	PLAYER_POSE,x
-	lda	#$FFEC
+	lda	#$FFEC	; [num]
 	sta	zp_14
-	lda	#$FFEC
+	lda	#$FFEC	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018EAD:
 	lda	#$00B8
 	sta	PLAYER_POSE,x
-	lda	#$FFEA
+	lda	#$FFEA	; [num]
 	sta	zp_14
-	lda	#$FFEE
+	lda	#$FFEE	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018EC0:
@@ -1877,24 +1877,24 @@ loc_018EC0:
 	lda	#$00A4
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
-	lda	#$FFE4
+	lda	#$FFE4	; [num]
 	sta	zp_14
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 loc_018EDD:
 	lda	#$0098
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
-	lda	#$FFE8
+	lda	#$FFE8	; [num]
 	sta	zp_14
-	lda	#$FFEE
+	lda	#$FFEE	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
 sub_018EF5:
 	stz	zp_00
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8000
@@ -1911,7 +1911,7 @@ loc_018F0B:
 loc_018F18:
 	lda	#$0006
 	sta	zp_00
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8000
@@ -2042,7 +2042,7 @@ tbl_hang_aim:
 ; to hang from.
 check_hang_bar:
 	stz	zp_00
-	lda	#$FFD0
+	lda	#$FFD0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	sta	zp_04
@@ -2154,7 +2154,7 @@ loc_0190DF:
 	beq	loc_01911D
 	bne	loc_01911D
 loc_0190F2:
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	zp_C4
 	brl	snap_y_down_to_tile
 loc_0190FA:
@@ -2229,12 +2229,12 @@ loc_01915A:
 	jsl	f:check_bomb_button
 	lda	#$0006
 	sta	zp_00
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$0002
 	bne	loc_0191A9
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$0002
@@ -2283,7 +2283,7 @@ climb_right_aim_right:
 	sta	zp_12
 	lda	#$0006
 	sta	zp_14
-	lda	#$FFDA
+	lda	#$FFDA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -2309,9 +2309,9 @@ loc_019211:
 loc_01921A:
 	lda	#$0000
 	sta	zp_12
-	lda	#$FFF3
+	lda	#$FFF3	; [num]
 	sta	zp_14
-	lda	#$FFBC
+	lda	#$FFBC	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -2333,7 +2333,7 @@ loc_019246:
 	sta	zp_12
 	lda	#$0002
 	sta	zp_14
-	lda	#$FFC8
+	lda	#$FFC8	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -2354,9 +2354,9 @@ loc_019272:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_019285
-	lda	#$97FF
+	lda	#$97FF	; [num]
 	sta	OBJ_X_VEL_SUB,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	OBJ_X_VEL,x
 	brl	loc_0182B5
 loc_019285:
@@ -2364,9 +2364,9 @@ loc_019285:
 	sta	PLAYER_POSE,x
 	lda	#$0060
 	sta	zp_12
-	lda	#$FFCC
+	lda	#$FFCC	; [num]
 	sta	zp_14
-	lda	#$FFDA
+	lda	#$FFDA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -2397,17 +2397,17 @@ loc_0192C5:
 	bit	button_jump
 	beq	loc_0192D8
 	; (not executed in the CDL traces)
-	lda	#$97FF
+	lda	#$97FF	; [num]
 	sta	OBJ_X_VEL_SUB,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	OBJ_X_VEL,x
 	brl	loc_0182F7
 loc_0192D8:
 	lda	#$0070
 	sta	zp_12
-	lda	#$FFD5
+	lda	#$FFD5	; [num]
 	sta	zp_14
-	lda	#$FFCA
+	lda	#$FFCA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -2432,9 +2432,9 @@ loc_019304:
 loc_01930D:
 	lda	#$0040
 	sta	zp_12
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_14
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -2456,7 +2456,7 @@ loc_019339:
 	lda	#$0030
 	sta	zp_12
 	stz	zp_14
-	lda	#$FFEE
+	lda	#$FFEE	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -2486,17 +2486,17 @@ loc_019371:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_019384
-	lda	#$97FF
+	lda	#$97FF	; [num]
 	sta	OBJ_X_VEL_SUB,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	OBJ_X_VEL,x
 	brl	loc_0182B5
 loc_019384:
 	lda	#$0050
 	sta	zp_12
-	lda	#$FFD2
+	lda	#$FFD2	; [num]
 	sta	zp_14
-	lda	#$FFEE
+	lda	#$FFEE	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -2504,7 +2504,7 @@ loc_019384:
 ; $0E).
 climb_right_check_ceiling:
 	stz	zp_00
-	lda	#$FFD0
+	lda	#$FFD0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	beq	@return
@@ -3090,12 +3090,12 @@ loc_0197A8:
 	stz	zp_C4
 	rtl
 loc_0197AB:
-	lda	#$8011
+	lda	#$8011	; [num]
 	sta	zp_C4
 	brl	loc_019651
 loc_0197B3:
 	; (not executed in the CDL traces)
-	lda	#$8011
+	lda	#$8011	; [num]
 	sta	zp_C4
 	brl	loc_019592
 loc_0197BB:
@@ -3103,19 +3103,19 @@ loc_0197BB:
 	sta	zp_C4
 	brl	snap_y_up_to_tile
 loc_0197C3:
-	lda	#$8002
+	lda	#$8002	; [num]
 	sta	zp_C4
 	brl	snap_y_up_to_tile
 loc_0197CB:
-	lda	#$8008
+	lda	#$8008	; [num]
 	sta	zp_C4
 	brl	loc_019480
 loc_0197D3:
-	lda	#$8008
+	lda	#$8008	; [num]
 	sta	zp_C4
 	brl	loc_0194DD
 loc_0197DB:
-	lda	#$8008
+	lda	#$8008	; [num]
 	sta	zp_C4
 	brl	loc_019536
 loc_0197E3:
@@ -3127,7 +3127,7 @@ loc_0197EB:
 	sta	zp_C4
 	brl	loc_0194DD
 loc_0197F3:
-	lda	#$8010
+	lda	#$8010	; [num]
 	sta	zp_C4
 	brl	loc_019592
 loc_0197FB:
@@ -3136,7 +3136,7 @@ loc_0197FB:
 	brl	loc_019592
 loc_019803:
 	; (not executed in the CDL traces)
-	lda	#$8010
+	lda	#$8010	; [num]
 	sta	zp_C4
 	brl	loc_0195F2
 loc_01980B:
@@ -3167,13 +3167,13 @@ loc_01981E:
 	sta	a:PLAYER_CENTER_Y,x
 	jsl	f:check_bomb_button
 	stz	zp_00
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$0002
 	bne	loc_01986A
 	; (not executed in the CDL traces)
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$0002
@@ -3241,7 +3241,7 @@ loc_0198C8:
 	sta	zp_12
 	lda	#$002A
 	sta	zp_14
-	lda	#$FFDA
+	lda	#$FFDA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -3269,7 +3269,7 @@ loc_019902:
 	sta	zp_12
 	lda	#$0004
 	sta	zp_14
-	lda	#$FFBE
+	lda	#$FFBE	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -3306,7 +3306,7 @@ loc_019949:
 	sta	zp_12
 	lda	#$0020
 	sta	zp_14
-	lda	#$FFCC
+	lda	#$FFCC	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -3315,9 +3315,9 @@ climb_left_aim_left:
 	sta	PLAYER_POSE,x
 	lda	#$0060
 	sta	zp_12
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_14
-	lda	#$FFDA
+	lda	#$FFDA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -3338,9 +3338,9 @@ loc_019989:
 loc_01998D:
 	lda	#$0070
 	sta	zp_12
-	lda	#$FFF4
+	lda	#$FFF4	; [num]
 	sta	zp_14
-	lda	#$FFC6
+	lda	#$FFC6	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -3369,7 +3369,7 @@ loc_0199C3:
 	sta	zp_12
 	lda	#$0006
 	sta	zp_14
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -3406,7 +3406,7 @@ loc_019A0A:
 	sta	zp_12
 	lda	#$0024
 	sta	zp_14
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -3427,9 +3427,9 @@ loc_019A32:
 loc_019A36:
 	lda	#$0050
 	sta	zp_12
-	lda	#$FFF6
+	lda	#$FFF6	; [num]
 	sta	zp_14
-	lda	#$FFED
+	lda	#$FFED	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -3437,7 +3437,7 @@ loc_019A36:
 climb_left_check_ceiling:
 	lda	#$0006
 	sta	zp_00
-	lda	#$FFD0
+	lda	#$FFD0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	beq	@return
@@ -3486,14 +3486,14 @@ loc_019A85:
 	sta	OBJ_X_VEL_SUB,x
 	bra	loc_019AAB
 loc_019AA1:
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	OBJ_X_VEL,x
-	lda	#$97FF
+	lda	#$97FF	; [num]
 	sta	OBJ_X_VEL_SUB,x
 loc_019AAB:
-	lda	#$DFFF
+	lda	#$DFFF	; [num]
 	sta	OBJ_Y_VEL_SUB,x
-	lda	#$FFFB
+	lda	#$FFFB	; [num]
 	sta	OBJ_Y_VEL,x
 .if !CHEAT_KEEP_WEAPONS
 	lda	a:PLAYER_WEAPON_SLOT,x
@@ -3520,7 +3520,7 @@ loc_019ACA:	; cheat: the weapons are kept
 	sta	$30,x
 	stz	PLAYER_INVULN_TIMER,x
 	stz	$38,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	stz	a:PLAYER_BARRIER,x
 	rtl
@@ -3899,11 +3899,11 @@ loc_019D6C:
 
 ; Thrown back, moving up: ceiling and wall collision.
 dying_check_ceiling_walls:
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	jsl	f:check_ceiling_at_offset
 	lda	#$0006
 	sta	zp_00
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
@@ -3945,7 +3945,7 @@ loc_019DB5:
 	jsl	f:check_floor_tiles
 	lda	#$0006
 	sta	zp_00
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002

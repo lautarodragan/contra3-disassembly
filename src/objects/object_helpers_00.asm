@@ -261,8 +261,8 @@ clear_hdma_line_buffer:
 	phx
 	phb
 	lda	#$01FF
-	ldx	#$A000
-	ldy	#$A001
+	ldx	#$A000	; [num]
+	ldy	#$A001	; [num]
 	mvn	#$7E, #$7E
 	plb
 	plx

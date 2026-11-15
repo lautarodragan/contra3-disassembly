@@ -53,11 +53,11 @@ load_spc_list_entries:
 	rep	#$20
 	ldx	LDR_LIST	; $1F18 (D=$1F00)
 	lda	f:TABLES_05_BASE,x
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	bne	@not_end
 	brl	finish_loader_list
 @not_end:
-	cmp	#$FFFE
+	cmp	#$FFFE	; [num]
 	bne	@compressed
 	jsl	f:upload_spc_raw_block
 	bra	load_spc_list_entries
@@ -69,7 +69,7 @@ load_spc_list_entries:
 ; counter.
 spc_ipl_handshake:
 	rep	#$20
-	lda	#$BBAA
+	lda	#$BBAA	; [num]
 	stz	LDR_SPC_COUNTER	; $1F20 (D=$1F00)
 @wait_ready:
 	cmp	a:APUIO0
@@ -155,7 +155,7 @@ spc_check_list_end:
 	.a16
 	ldx	LDR_LIST	; $1F18 (D=$1F00)
 	lda	f:TABLES_05_BASE,x
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	bne	@more
 	brl	@end
 @more:

@@ -246,9 +246,11 @@ SCAN_DOC = """Forms that must not come back (exit status 1): a 16-bit immediate 
 loaded and then handed to a routine or field that takes a ROM pointer
 (OBJ_ANIM, OBJ_SPRITE, make_effect_object, start_palette_task, draw_text,
 load_data_list, ...); a literal bank $05-$1C pushed and pulled into DB; a
-long operand into a ROM bank.  Also counted, for information: the other
-16-bit immediates >= $8000 that are loaded (mostly negative numbers, some
-pointers not found yet)."""
+long operand into a ROM bank; and any other 16-bit immediate >= $8000 that
+is loaded (lda/ldx/ldy) or compared (cmp/cpx/cpy) unless its comment has
+the marker "[num]", which says it was checked to be a number (a negative
+value, a mask, a WRAM or VRAM address...), not a ROM address.  --list
+prints the unchecked ones."""
 
 POINTER_CONSUMERS = re.compile(
     r"^(sta|stx|sty)\t(OBJ_ANIM,[xy]|OBJ_SPRITE,[xy]|a:\$0020,y|a:\$0000,y|cgram_upload_src)$"
@@ -256,8 +258,11 @@ POINTER_CONSUMERS = re.compile(
     r"|load_data_list|load_song_set|copy_hdma_table|build_wave_table|setup_hdma_from_list)$")
 
 
-def scan_source(srcdir="src"):
-    errors, info = [], 0
+NUM_MARK = "[num]"
+
+
+def scan_source(srcdir="src", unchecked=None):
+    errors, info, numbers = [], 0, 0
     for root, _dirs, files in os.walk(srcdir):
         for f in sorted(files):
             if not f.endswith(".asm"):
@@ -265,7 +270,17 @@ def scan_source(srcdir="src"):
             path = os.path.join(root, f)
             lines = open(path).read().split("\n")
             for i, line in enumerate(lines):
-                code = line.split(";")[0].rstrip()
+                code, _sep, comment = line.partition(";")
+                code = code.rstrip()
+                m = re.match(r"^\t(cmp|cpx|cpy)\t#\$([0-9A-F]{4})$", code)
+                if m and int(m.group(2), 16) >= 0x8000:
+                    if NUM_MARK in comment:
+                        numbers += 1
+                    else:
+                        info += 1
+                        if unchecked is not None:
+                            unchecked.append("%s:%d: %s" % (path, i + 1, code.strip()))
+                    continue
                 m = re.match(r"^\t(lda|ldx|ldy)\t#\$([0-9A-F]{4})$", code)
                 if m and int(m.group(2), 16) >= 0x8000:
                     hit = False
@@ -285,8 +300,12 @@ def scan_source(srcdir="src"):
                         break
                     if hit:
                         errors.append("%s:%d: pointer immediate: %s" % (path, i + 1, code.strip()))
+                    elif NUM_MARK in comment:
+                        numbers += 1
                     else:
                         info += 1
+                        if unchecked is not None:
+                            unchecked.append("%s:%d: %s" % (path, i + 1, code.strip()))
                     continue
                 m = re.match(r"^\t(lda|ldx|ldy)\t#\$(0[5-9A-F]|1[0-9A-C])$", code)
                 if m:
@@ -299,16 +318,18 @@ def scan_source(srcdir="src"):
                     bank, addr = int(m.group(1), 16), int(m.group(2), 16)
                     if 0x01 <= bank <= 0x3F or (bank == 0 and addr >= 0x8000):
                         errors.append("%s:%d: long operand into ROM: %s" % (path, i + 1, code.strip()))
-    return errors, info
+    return errors, info, numbers
 
 
 def cmd_scan(args):
-    errors, info = scan_source()
-    for e in errors:
+    unchecked = [] if args.list else None
+    errors, info, numbers = scan_source(unchecked=unchecked)
+    for e in errors + (unchecked or []):
         print(e)
     print("%d hardcoded ROM references of the checked forms; %d other 16-bit "
-          "immediates >= $8000 loaded (not checked)" % (len(errors), info))
-    return 1 if errors else 0
+          "immediates >= $8000 loaded or compared not checked (%d verified numbers, "
+          "marked %s)" % (len(errors), info, numbers, NUM_MARK))
+    return 1 if errors or info else 0
 
 
 def main(argv):
@@ -323,7 +344,8 @@ def main(argv):
     p = sub.add_parser("diff")
     p.add_argument("--out", default="build/shift")
     p.add_argument("-v", "--verbose", action="store_true")
-    sub.add_parser("scan", help=SCAN_DOC.split("\n")[0])
+    p = sub.add_parser("scan", help=SCAN_DOC.split("\n")[0])
+    p.add_argument("--list", action="store_true", help="list the unchecked immediates")
     args = ap.parse_args(argv[1:])
     return {"build": cmd_build, "diff": cmd_diff, "scan": cmd_scan}[args.cmd](args)
 

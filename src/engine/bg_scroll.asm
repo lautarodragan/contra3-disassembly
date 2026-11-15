@@ -619,7 +619,7 @@ bg1_init_vertical:
 	lda	a:bg1_y
 	and	#$FF00
 	sta	a:spawn_last_page
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	a:spawn_pos_invert
 	lda	#$1398
 	sta	a:spawn_scroll_var
@@ -683,7 +683,7 @@ bg1_scroll_vertical:
 	lda	a:data_058D52,y
 	adc	a:bg1_y_sub
 	sta	a:bg1_y_sub
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	adc	#$0000
 	sta	a:bg1_y_delta
 	ldx	#$1380
@@ -732,7 +732,7 @@ bg1_update_vertical:
 
 bg2_draw_column_at_8:
 	ldx	#$13C0
-	ldy	#$A000
+	ldy	#$A000	; [num]
 	bra	bg_draw_column_at_8
 
 bg1_draw_column_at_8:
@@ -788,7 +788,7 @@ bg2_draw_screen_step:
 	sta	a:bg2_x
 	ldx	#$13C0
 	stx	zp_FC
-	ldy	#$A000
+	ldy	#$A000	; [num]
 	sty	zp_FE
 	jsl	f:draw_bg_column
 	sec
@@ -803,7 +803,7 @@ bg2_draw_screen_step:
 	sta	a:bg2_map_offset
 	bra	@done
 @check_end:
-	cmp	#$FFF8
+	cmp	#$FFF8	; [num]
 	bne	@done
 	inc	a:bg2_screen_drawn
 @done:
@@ -871,7 +871,7 @@ bg2_autoscroll_xy:
 bg2_parallax_y_1_3:
 	ldx	#$13C0
 	stx	zp_FC
-	ldy	#$A000
+	ldy	#$A000	; [num]
 	sty	zp_FE
 	lda	BG_X,x
 	and	#$00FF
@@ -941,7 +941,7 @@ draw_bg_row:
 	sta	zp_1A
 	lda	#$0008
 	sta	zp_06
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	zp_0C
 	lda	BG_X,x
 	and	#$0100
@@ -1067,7 +1067,7 @@ draw_bg_column:
 	ldy	#$0007
 @set_count:
 	sty	zp_06
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	zp_0C
 	ldy	#$0000
 	clc
@@ -1279,7 +1279,7 @@ update_bg_collision_map:
 	lda	#$5800
 	bra	@mirror
 @class12:
-	lda	#$A000
+	lda	#$A000	; [num]
 	bra	@store
 @mirror:
 	eor	zp_0C

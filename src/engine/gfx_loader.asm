@@ -59,7 +59,7 @@ load_vram_list:
 	jsl	f:disable_display_and_nmi
 	ldx	LDR_LIST	; $1318 (D=$1300)
 	lda	f:TABLES_05_BASE,x
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	beq	finish_list_enable_nmi
 	jsl	f:load_vram_stream
 	bra	@loop
@@ -100,7 +100,7 @@ step_vram_loader_start:
 	bne	@decompress
 	ldx	LDR_LIST	; $1318 (D=$1300)
 	lda	f:TABLES_05_BASE,x
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	beq	finish_loader_list
 	sta	LDR_VRAM_DEST	; $1322 (D=$1300)
 	inx
@@ -207,7 +207,7 @@ load_vram_byte_list:
 	jsl	f:disable_display_and_nmi
 	ldx	LDR_LIST	; $1318 (D=$1300)
 	lda	f:TABLES_05_BASE,x
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	bne	@next_high
 	brl	finish_list_enable_nmi
 @next_high:
@@ -220,7 +220,7 @@ load_vram_byte_list:
 	jsl	f:disable_display_and_nmi
 	ldx	LDR_LIST	; $1318 (D=$1300)
 	lda	f:TABLES_05_BASE,x
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	bne	@next_low
 	; (not executed in the CDL traces)
 	brl	finish_list_enable_nmi
@@ -334,7 +334,7 @@ load_wram_list:
 	.a16
 	ldx	LDR_LIST	; $1358 (D=$1340)
 	lda	f:TABLES_05_BASE,x
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	bne	@next
 	brl	finish_loader_list
 @next:
@@ -363,7 +363,7 @@ step_wram_loader_start:
 	bne	@decompress
 	ldx	LDR_LIST	; $1358 (D=$1340)
 	lda	f:TABLES_05_BASE,x
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	bne	@next_stream
 	brl	finish_loader_list
 @next_stream:

@@ -301,9 +301,9 @@ demo_init_players:
 	sta	zp_96
 	lda	#$4000
 	sta	button_fire
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	button_jump
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	zp_92
 	lda	#$0080
 	sta	button_bomb
@@ -505,7 +505,7 @@ setup_hdma_list_unused:
 ; HDMAEN value; writes them to the DMA registers.
 setup_hdma_from_list:
 	ldx	a:$0000,y
-	cpx	#$FFFF
+	cpx	#$FFFF	; [num]
 	bcs	@end_of_list
 	lda	a:$0002,y
 	sta	$00,x
@@ -863,7 +863,7 @@ draw_title_word_sprites:
 	ldx	#$0FC0
 	lda	#$11C0
 	sta	zp_12
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	zp_14
 	lda	a:title_the_x
 	sta	zp_FC
@@ -947,7 +947,7 @@ draw_title_sprite_group:
 	iny
 	iny
 	sty	zp_12
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	zp_14
 	ply
 @no_flush:

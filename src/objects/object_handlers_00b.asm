@@ -83,7 +83,7 @@ update_crush_shot:
 	dec	$14,x
 	bne	loc_00DE3D
 	stz	$06,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$0A,x
 	rtl
 loc_00DE3D:
@@ -205,7 +205,7 @@ loc_00DEF0:
 	lda	$04,x
 	sbc	zp_0A
 	bpl	loc_00DF28
-	cmp	#$FFC0
+	cmp	#$FFC0	; [num]
 	bcc	loc_00DF2D
 loc_00DF20:
 	clc
@@ -248,7 +248,7 @@ loc_00DF38:
 update_shot_type_05:
 	dec	$00,x
 	bpl	@return
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$0A,x
 	lda	#$3F62
 	sta	$02,x
@@ -264,7 +264,7 @@ update_shot_type_06:
 	sta	$04,x
 	lda	#$0015
 	sta	$10,x
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	$1E,x
 	rtl
 loc_00DF89:
@@ -284,7 +284,7 @@ loc_00DF9A:
 	bpl	loc_00DFA9
 	lda	#$3E00
 	sta	$02,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$0A,x
 	rtl
 loc_00DFA9:
@@ -378,7 +378,7 @@ loc_00E049:
 update_shot_type_08:
 	dec	$04,x
 	bne	loc_00E054
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$0A,x
 	rtl
 loc_00E054:
@@ -440,7 +440,7 @@ update_shot_type_0C:
 	sta	$02,x
 	rtl
 loc_00E0AF:
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$0A,x
 	rtl
 
@@ -454,7 +454,7 @@ loc_00E0BB:
 	dec	$04,x
 	bpl	loc_00E0C7
 	stz	$06,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$0A,x
 	rtl
 loc_00E0C7:
@@ -469,7 +469,7 @@ update_shot_type_0E:
 	; (not executed in the CDL traces)
 	dec	$04,x
 	bne	@return
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$0A,x
 @return:
 	rtl
@@ -491,7 +491,7 @@ update_shot_type_10:
 	sta	$02,x
 	rtl
 loc_00E0FC:
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$0A,x
 	rtl
 
@@ -499,7 +499,7 @@ update_shot_type_13:
 	; (not executed in the CDL traces)
 	dec	$04,x
 	bne	@return
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$0A,x
 @return:
 	rtl
@@ -509,7 +509,7 @@ update_shot_type_13:
 update_spent_shot:
 	dec	$04,x
 	bne	loc_00E116
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$0A,x
 	rtl
 loc_00E116:

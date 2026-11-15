@@ -53,7 +53,7 @@ unused_spc_stream_list:
 @loop:
 	ldx	LDR_LIST
 	lda	f:TABLES_05_BASE,x
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	beq	@end
 	jsr	a:unused_stream_compressed_block
 	bra	@loop
@@ -73,9 +73,9 @@ unused_stream_compressed_block:
 	stz	LDR_ACTIVE
 	stz	LDR_RING_LIMIT
 	stz	LDR_SPC_COUNTER
-	lda	#$AABB
+	lda	#$AABB	; [num]
 	jsr	a:write_apuio2_wait
-	lda	#$A0B0
+	lda	#$A0B0	; [num]
 	jsr	a:write_apuio2_wait
 	ldx	LDR_LIST
 	lda	f:TABLES_05_BASE,x
@@ -104,7 +104,7 @@ unused_stream_compressed_block:
 	jsr	a:unused_stream_ring
 	ldx	LDR_ACTIVE
 	bne	@loop
-	lda	#$BBAA
+	lda	#$BBAA	; [num]
 	jsr	a:write_apuio2_wait
 	rts
 
@@ -152,7 +152,7 @@ unused_stream_raw_list:
 @loop:
 	ldx	LDR_LIST
 	lda	f:TABLES_05_BASE,x
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	beq	@end
 	jsr	a:unused_stream_raw_block
 	bra	@loop
@@ -164,9 +164,9 @@ unused_stream_raw_list:
 unused_stream_raw_block:
 	; (not executed in the CDL traces)
 	stz	LDR_SPC_COUNTER
-	lda	#$AABB
+	lda	#$AABB	; [num]
 	jsr	a:write_apuio2_wait
-	lda	#$A0B0
+	lda	#$A0B0	; [num]
 	jsr	a:write_apuio2_wait
 	ldx	LDR_LIST
 	lda	f:TABLES_05_BASE,x
@@ -209,7 +209,7 @@ unused_stream_raw_block:
 	inc	LDR_RING
 	inc	LDR_RING
 	jsr	a:unused_stream_raw_bytes
-	lda	#$BBAA
+	lda	#$BBAA	; [num]
 	jsr	a:write_apuio2_wait
 	rts
 
@@ -283,9 +283,9 @@ unused_service_stream:
 	stz	LDR_ACTIVE
 	stz	LDR_RING_LIMIT
 	stz	LDR_SPC_COUNTER
-	lda	#$AABB
+	lda	#$AABB	; [num]
 	jsl	f:stream_write_apuio2
-	lda	#$A0B0
+	lda	#$A0B0	; [num]
 	jsl	f:stream_write_apuio2
 	ldx	LDR_LIST
 	sep	#$20
@@ -323,7 +323,7 @@ unused_service_stream:
 	beq	@aborted
 	ldx	LDR_ACTIVE
 	bne	@loop
-	lda	#$BBAA
+	lda	#$BBAA	; [num]
 	jsl	f:stream_write_apuio2
 	lda	LDR_FLAGS
 	cmp	#$0002
@@ -343,7 +343,7 @@ unused_service_stream:
 	pld
 	rtl
 @aborted:
-	lda	#$BBAA
+	lda	#$BBAA	; [num]
 	jsl	f:stream_write_apuio2
 	lda	LDR_SPC_STREAM_ID
 	and	#$0001

@@ -398,7 +398,7 @@ opening_beam_start_flash:
 	stz	a:opening_flash_speed_lo
 	stz	a:opening_flash_speed_hi
 	stz	a:wram_16AC
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	a:wram_16AA
 	lda	#$0080
 	sta	a:wram_151E

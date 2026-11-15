@@ -64,7 +64,7 @@ stage1_boss_controller_state_00:
 	inc	$12,x
 	lda	#$0040
 	sta	zp_04
-	lda	#$A000
+	lda	#$A000	; [num]
 	sta	zp_02
 	ldy	#$4830
 	lda	#$0018
@@ -131,7 +131,7 @@ loc_00F362:
 	sta	$0A,x
 	lda	#$0080
 	sta	$28,x
-	lda	#$FFA0
+	lda	#$FFA0	; [num]
 	sta	$2A,x
 	ldy	#.loword(vram_blocks_05AAC8)
 	lda	#$4218
@@ -282,7 +282,7 @@ stage1_boss_death_explosions:
 	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	@return
-	lda	#$FFFD
+	lda	#$FFFD	; [num]
 	sta	a:$001E,y
 @return:
 	rts
@@ -306,7 +306,7 @@ loc_00F4C3:
 	rts
 
 stage1_boss_queue_bg_block:
-	lda	#$A000
+	lda	#$A000	; [num]
 	sta	zp_00
 	lda	#$0020
 	sta	zp_E2
@@ -345,7 +345,7 @@ spawn_stage1_boss_wall_chunks:
 	sta	$02,x
 	lda	#$001C
 	sta	$28,x
-	lda	#$FFE5
+	lda	#$FFE5	; [num]
 	sta	$2A,x
 	stz	$30,x
 	lda	a:data_05AA50,y
@@ -417,11 +417,11 @@ loc_00F5BB:
 loc_00F5BE:
 	lda	#$4000
 	sta	$18,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	$1A,x
 	lda	#$0000
 	sta	$1C,x
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	$1E,x
 	lda	#$0001
 	sta	$30,x
@@ -1019,11 +1019,11 @@ stage1_boss_fire_tracking_shot:
 	sta	a:$000A,y
 	lda	rng_lo
 	sta	a:$001C,x
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	a:$001A,y
 	lda	#$000E
 	sta	a:$0028,y
-	lda	#$FFF2
+	lda	#$FFF2	; [num]
 	sta	a:$002A,y
 	plx
 loc_00FA54:
@@ -1060,13 +1060,13 @@ stage1_boss_fire_falling_shot:
 	tax
 	lda	a:data_05AAF2,x
 	sta	a:$0018,y
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	a:$001A,y
 	lda	#$000E
 	sta	a:$0028,y
-	lda	#$FFF2
+	lda	#$FFF2	; [num]
 	sta	a:$002A,y
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	a:$001E,y
 	plx
 @return:
@@ -1139,7 +1139,7 @@ loc_00FB2A:
 	beq	loc_00FB44
 	jsl	f:snap_y_up_to_tile
 	inc	$12,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	$1E,x
 	rtl
 loc_00FB44:
@@ -1204,11 +1204,11 @@ stage1_boss_spawn_fire_stream_shot:
 	lda	a:wram_044E
 	adc	#$FFFC
 	sta	a:$000E,y
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	a:$001A,y
 	lda	#$001C
 	sta	a:$0028,y
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	a:$002A,y
 @return:
 	rts
@@ -1288,7 +1288,7 @@ loc_00FC58:
 	lda	#$0006
 	sta	a:wram_0936
 	stz	a:wram_0464
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 	lda	#.loword(anim_05C540)
 	sta	zp_00
@@ -1316,7 +1316,7 @@ loc_00FCA0:
 	lda	#$0040
 	sta	$24,x
 	inc	$12,x
-	lda	#$C480
+	lda	#$C480	; [num]
 	sta	zp_00
 	ldy	#$0008
 	lda	#$4D14
@@ -1331,7 +1331,7 @@ loc_00FCBD:
 loc_00FCC9:
 	dec	$24,x
 	bne	loc_00FCD2
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 loc_00FCD2:
 	lda	stage_frame_mod8
@@ -1358,7 +1358,7 @@ loc_00FCD2:
 	lda	a:data_05C828,x
 	sta	a:$001A,y
 	plx
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	a:$001E,y
 @return:
 	rtl
@@ -1401,7 +1401,7 @@ update_falling_debris:
 	lda	OBJ_Y,x
 	cmp	#$00C8
 	bcc	loc_00FD5A
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	OBJ_Y_VEL,x
 	txy
 	lda	#.loword(anim_05C69C)
@@ -1421,7 +1421,7 @@ loc_00FD5A:
 update_stage1_boss_fire:
 	dec	OBJ_TIMER,x
 	bne	loc_00FD73
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 loc_00FD73:
 	lda	a:wram_044A

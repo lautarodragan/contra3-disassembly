@@ -170,7 +170,7 @@ stage_setup_video:
 	ldy	#$4000
 	jsl	f:fill_bg_screen
 	ldx	#$13C0
-	ldy	#$A000
+	ldy	#$A000	; [num]
 	jsl	f:fill_bg_screen
 	lda	stage_number
 	cmp	#$0004
@@ -274,7 +274,7 @@ stage_frame:
 	sta	oam_ptr
 	lda	#$11C0
 	sta	oam_hi_ptr
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	oam_hi_bits
 	jsl	f:reset_vram_update_queues
 	jsr	a:update_stage_frame_counters
@@ -492,7 +492,7 @@ stage_cinematic:
 	sta	oam_ptr
 	lda	#$11C0
 	sta	oam_hi_ptr
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	oam_hi_bits
 	jsl	f:reset_vram_update_queues
 	jsr	a:update_stage_frame_counters
@@ -604,7 +604,7 @@ player_autopilot_mode1:
 	sbc	a:data_058CDE,y
 	bpl	@check_left
 	beq	@stop
-	cmp	#$FFFE
+	cmp	#$FFFE	; [num]
 	bcc	@walk_right
 @stop:
 	stz	$04,x

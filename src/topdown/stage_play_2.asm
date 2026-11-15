@@ -1467,7 +1467,7 @@ stage5_boss_body_step_2:
 	bcc	loc_02F17E
 	lda	#$0017
 	sta	a:boss_anim_frame
-	lda	#$B000
+	lda	#$B000	; [num]
 	sta	$16,x
 	rts
 loc_02F17E:
@@ -1935,7 +1935,7 @@ loc_02F532:
 	cmp	$12,x
 	beq	stage5_boss_claw_state_2
 	sta	$12,x
-	lda	#$B000
+	lda	#$B000	; [num]
 	sta	$16,x
 	lda	#$0011
 	sta	$00,x
@@ -1981,7 +1981,7 @@ loc_02F58B:
 	cmp	$12,x
 	beq	stage5_boss_claw_state_5
 	sta	$12,x
-	lda	#$B000
+	lda	#$B000	; [num]
 	sta	$16,x
 	lda	#$0011
 	sta	$00,x
@@ -2062,7 +2062,7 @@ stage5_boss_arm_base_state_1:
 	jsr	a:stage5_boss_arm_follow_trail
 	rtl
 loc_02F628:
-	lda	#$B000
+	lda	#$B000	; [num]
 	sta	$16,x
 	lda	#$0011
 	sta	$00,x
@@ -2160,7 +2160,7 @@ stage5_boss_arm_segment_state_1:
 @return:
 	rtl
 loc_02F6D6:
-	lda	#$B000
+	lda	#$B000	; [num]
 	sta	$16,x
 	lda	#$018C
 	sta	$00,x
@@ -2473,7 +2473,7 @@ td_nest_state_0:
 loc_02F903:
 	lda	#$0001
 	sta	$20,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 	lda	#$0001
 	sta	$12,x
@@ -2515,7 +2515,7 @@ loc_02F950:
 	lda	#$0003
 	sta	$20,x
 	stz	$2A,x
-	lda	#$B000
+	lda	#$B000	; [num]
 	sta	$16,x
 	lda	#$0080
 	sta	$24,x
@@ -2529,7 +2529,7 @@ td_nest_state_3:
 loc_02F96C:
 	lda	#$0002
 	sta	$20,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 	lda	#$0008
 	sta	$24,x
@@ -2634,7 +2634,7 @@ gun_hatch_state_0:
 loc_02FA25:
 	lda	#$0050
 	sta	$20,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 	lda	#$0001
 	sta	$12,x
@@ -2672,7 +2672,7 @@ loc_02FA66:
 	lda	#$0059
 	sta	$20,x
 	stz	$2A,x
-	lda	#$B000
+	lda	#$B000	; [num]
 	sta	$16,x
 	lda	#$0080
 	sta	$24,x
@@ -2686,7 +2686,7 @@ gun_hatch_state_3:
 loc_02FA82:
 	lda	#$005B
 	sta	$20,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 	lda	#$0008
 	sta	$24,x
@@ -2898,7 +2898,7 @@ loc_02FBDC:
 	lda	#$0059
 	sta	$20,x
 	stz	$2A,x
-	lda	#$B000
+	lda	#$B000	; [num]
 	sta	$16,x
 	ldy	difficulty
 	lda	a:data_05E6D8,y
@@ -2970,7 +2970,7 @@ loc_02FC59:
 	lda	#$0059
 	sta	$20,x
 	stz	$2A,x
-	lda	#$B000
+	lda	#$B000	; [num]
 	sta	$16,x
 	ldy	difficulty
 	lda	a:data_05E6DE,y

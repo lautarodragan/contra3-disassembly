@@ -29,7 +29,7 @@ update_debris_explosion:
 	lda	#$0003
 	sta	$16,x
 	stz	$1A,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	$1E,x
 @return:
 	rtl
@@ -71,7 +71,7 @@ loc_01CFF4:
 update_effect:
 	ldy	OBJ_ANIM,x
 	bne	loc_01CFFF
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	rtl
 loc_01CFFF:
@@ -228,7 +228,7 @@ loc_01D0FD:
 	sta	$16,x
 	lda	#$0010
 	sta	$28,x
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	$2A,x
 	ldy	difficulty
 	lda	a:alien_dog_hp,y
@@ -239,7 +239,7 @@ loc_01D0FD:
 	sta	$18,x
 	lda	#$0000
 	sta	$1E,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$1C,x
 	stz	$04,x
 	lda	#.loword(anim_05C778)
@@ -271,11 +271,11 @@ loc_01D149:
 	stz	$06,x
 	lda	#$0007
 	sta	$16,x
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	$1A,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$18,x
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	$1E,x
 	lda	#$0000
 	sta	$1C,x
@@ -298,7 +298,7 @@ alien_dog_state_05:
 	sec
 	sbc	#$0010
 	sta	OBJ_Y,x
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	OBJ_Y_VEL,x
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
@@ -326,7 +326,7 @@ update_enemy_bullet:
 	jsl	f:enemy_bullet_cycle_palette
 	lda	#$0008
 	sta	$28,x
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	$2A,x
 	stz	$20,x
 	lda	#.loword(metasprite_06AF55)
@@ -336,7 +336,7 @@ update_enemy_bullet:
 loc_01D1D2:
 	lda	$3C,x
 	beq	enemy_bullet_cycle_palette
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 
 enemy_bullet_cycle_palette:
@@ -388,7 +388,7 @@ loc_01D20F:
 	sta	$1A,x
 	lda	a:data_05C7A2,y
 	sta	$18,x
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	$1E,x
 	lda	#$0000
 	sta	$1C,x
@@ -406,7 +406,7 @@ loc_01D23C:
 	sec
 	sbc	#$0010
 	sta	$0E,x
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	$1E,x
 	stz	$18,x
 	stz	$1A,x
@@ -463,7 +463,7 @@ update_grenade_blast:
 start_grenade_blast:
 	stz	$1A,x
 	stz	$18,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	$1E,x
 	stz	$1C,x
 	lda	$0E,x
@@ -471,7 +471,7 @@ start_grenade_blast:
 	stz	$04,x
 	lda	#$0010
 	sta	$28,x
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	$2A,x
 	lda	#$3E00
 	sta	$02,x
@@ -488,7 +488,7 @@ start_grenade_blast:
 loc_01D2D8:
 	lda	$24,x
 	bne	loc_01D2E2
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 	rtl
 loc_01D2E2:
@@ -521,7 +521,7 @@ loc_01D302:
 	sta	a:$0010,y
 	lda	#$0001
 	sta	a:$0006,y
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	a:$001E,y
 	lda	rng_lo
 	and	#$000F
@@ -583,10 +583,10 @@ loc_01D383:
 	lda	$0A,x
 	cmp	#$0120
 	bcc	loc_01D395
-	cmp	#$FF80
+	cmp	#$FF80	; [num]
 	bcs	loc_01D395
 	; (not executed in the CDL traces)
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 	rtl
 loc_01D395:
@@ -612,11 +612,11 @@ loc_01D3B0:
 	dec	$32,x
 	lda	#$0030
 	sta	a:$0010,y
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:$0018,y
 	lda	#$0002
 	sta	a:$001A,y
-	lda	#$FFF9
+	lda	#$FFF9	; [num]
 	sta	a:$001E,y
 	bra	loc_01D446
 
@@ -628,7 +628,7 @@ update_object_type_2B:
 	sta	OBJ_TIMER,x
 	lda	#$0003
 	sta	OBJ_FLAGS,x
-	lda	#$FFFD
+	lda	#$FFFD	; [num]
 	sta	OBJ_Y_VEL,x
 	lda	#.loword(metasprite_06AEA5)
 	sta	OBJ_SPRITE,x
@@ -648,14 +648,14 @@ loc_01D3FE:
 	cmp	$0E,x
 	bcs	loc_01D42D
 	sta	$0E,x
-	lda	#$FFFD
+	lda	#$FFFD	; [num]
 	dec	$24,x
 	bne	loc_01D42B
 	lda	$3A,x
 	sta	$24,x
 	lda	#$0023
 	jsl	f:queue_sound
-	lda	#$FFFA
+	lda	#$FFFA	; [num]
 loc_01D42B:
 	sta	$1E,x
 loc_01D42D:
@@ -681,7 +681,7 @@ loc_01D446:
 	sta	a:$0002,y
 	lda	#$000C
 	sta	a:$0028,y
-	lda	#$FFF4
+	lda	#$FFF4	; [num]
 	sta	a:$002A,y
 loc_01D46E:
 	rtl
@@ -706,7 +706,7 @@ update_object_type_2E:
 	txa
 	bit	#$0040
 	bne	loc_01D491
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	rtl
 loc_01D491:
@@ -717,9 +717,9 @@ loc_01D491:
 	lda	#OBJT_EFFECT
 	sta	$10,x
 	stz	$22,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	$1E,x
-	ldy	#$FFFF
+	ldy	#$FFFF	; [num]
 	lda	rng_hi
 	bpl	loc_01D4B1
 	ldy	#$0000
@@ -753,7 +753,7 @@ update_object_type_31:
 	sta	OBJ_HP,x
 	lda	#$0010
 	sta	OBJ_HITBOX_W,x
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	OBJ_HITBOX_H,x
 	brl	loc_01D591
 loc_01D4EF:
@@ -837,7 +837,7 @@ loc_01D591:
 	lda	#.loword(anim_05C4CE)
 	sta	$20,x
 	stz	$30,x
-	lda	#$FFFD
+	lda	#$FFFD	; [num]
 	sta	$1E,x
 	lda	#$00C0
 	sta	$0E,x
@@ -861,7 +861,7 @@ update_object_type_32:
 	lda	OBJ_Y,x
 	cmp	#$00CC
 	bcc	loc_01D5E1
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	OBJ_Y_VEL,x
 loc_01D5D0:
 	lda	#$0001
@@ -880,7 +880,7 @@ update_object_type_33:
 	bne	loc_01D5F1
 	lda	#$0003
 	sta	OBJ_FLAGS,x
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	OBJ_TIMER,x
 loc_01D5F0:
 	rtl
@@ -889,13 +889,13 @@ loc_01D5F1:
 	lda	$0A,x
 	cmp	#$0030
 	bcs	loc_01D600
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 	rtl
 loc_01D600:
 	lda	#$0001
 	sta	a:shake_continuous
-	ldy	#$FFFD
+	ldy	#$FFFD	; [num]
 	lda	$24,x
 	bit	#$0100
 	bne	loc_01D625
@@ -906,7 +906,7 @@ loc_01D600:
 loc_01D61C:
 	lda	#$0004
 	sta	a:shake_timer
-	ldy	#$FFF9
+	ldy	#$FFF9	; [num]
 loc_01D625:
 	sty	$30,x
 	lda	stage_frame_odd
@@ -935,7 +935,7 @@ loc_01D64E:
 	sta	a:$0016,y
 	lda	#$000C
 	sta	a:$0028,y
-	lda	#$FFF4
+	lda	#$FFF4	; [num]
 	sta	a:$002A,y
 loc_01D672:
 	lda	$0E,x
@@ -949,7 +949,7 @@ loc_01D672:
 	sta	a:$001E,y
 	phx
 	tyx
-	ldy	#$FFFF
+	ldy	#$FFFF	; [num]
 	lda	rng_hi
 	bpl	loc_01D693
 	ldy	#$0000
@@ -980,7 +980,7 @@ update_object_type_2C:
 	sta	OBJ_FLAGS,x
 	lda	#$00C8
 	sta	OBJ_Y,x
-	lda	#$FFFD
+	lda	#$FFFD	; [num]
 	sta	$34,x
 	rtl
 loc_01D6C5:
@@ -994,9 +994,9 @@ loc_01D6C5:
 	lda	$34,x
 	sbc	#$0000
 	sta	$34,x
-	cmp	#$FFF0
+	cmp	#$FFF0	; [num]
 	bcs	loc_01D712
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	$32,x
 	bra	loc_01D712
 loc_01D6E6:
@@ -1007,7 +1007,7 @@ loc_01D6E6:
 	lda	$34,x
 	adc	#$0000
 	sta	$34,x
-	cmp	#$FFFB
+	cmp	#$FFFB	; [num]
 	bcc	loc_01D712
 	stz	$32,x
 	bra	loc_01D712
@@ -1042,7 +1042,7 @@ loc_01D712:
 	sta	a:$0020,y
 	lda	#$000E
 	sta	a:$0028,y
-	lda	#$FFF2
+	lda	#$FFF2	; [num]
 	sta	a:$002A,y
 @return:
 	rtl
@@ -1160,7 +1160,7 @@ object_type_34_state_05:
 	lda	#.loword(anim_05C59A)
 	jsl	f:spawn_effect_random_offset
 	bcs	@return
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	a:$001E,y
 @return:
 	rtl
@@ -1252,16 +1252,16 @@ loc_01D8C0:
 	lda	$0A,x
 	cmp	#$0120
 	bcc	loc_01D8CE
-	cmp	#$FFE0
+	cmp	#$FFE0	; [num]
 	bcc	loc_01D8DA
 loc_01D8CE:
 	lda	$0E,x
 	cmp	#$0120
 	bcc	loc_01D8DF
-	cmp	#$FFE0
+	cmp	#$FFE0	; [num]
 	bcs	loc_01D8DF
 loc_01D8DA:
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 loc_01D8DF:
 	jsr	a:advance_swing_angle
@@ -1360,7 +1360,7 @@ init_swing_pivot:
 	sta	a:$0010,y
 	lda	#$0010
 	sta	a:$0028,y
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	a:$002A,y
 	dec	zp_00
 	bne	@loop2
@@ -1634,7 +1634,7 @@ object_type_48_state_00:
 	sta	OBJ_ATTR,x
 	lda	#$0010
 	sta	OBJ_HITBOX_W,x
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	OBJ_HITBOX_H,x
 	ldy	difficulty
 	lda	a:object_type_48_hp,y
@@ -1708,17 +1708,17 @@ loc_01DC29:
 	lda	a:$000A,y
 	cmp	$0A,x
 	bcc	loc_01DC3B
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$18,x
 	stz	$1A,x
 	bra	loc_01DC45
 loc_01DC3B:
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$18,x
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	$1A,x
 loc_01DC45:
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	$1E,x
 	stz	$1C,x
 	stz	$24,x
@@ -1797,7 +1797,7 @@ update_object_type_49:
 	lda	OBJ_Y,x
 	cmp	#$00E8
 	bcc	loc_01DCDD
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	rtl
 loc_01DCDD:
@@ -1882,7 +1882,7 @@ update_rolling_mine:
 	lda	#$0030
 	jsl	f:queue_sound
 	txy
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	$1E,x
 	lda	#.loword(anim_05C516)
 	jml	f:make_effect_object
@@ -1913,7 +1913,7 @@ rolling_mine_state_00:
 	sta	OBJ_ATTR,x
 	lda	#$0010
 	sta	OBJ_HITBOX_W,x
-	lda	#$FFE4
+	lda	#$FFE4	; [num]
 	sta	OBJ_HITBOX_H,x
 	ldy	$3A,x
 	sty	OBJ_FACING,x
@@ -1986,7 +1986,7 @@ loc_01DE25:
 	lda	#$0020
 	sta	$24,x
 	inc	$32,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	$1E,x
 	stz	$1C,x
 	rtl
@@ -2087,16 +2087,16 @@ loc_01DEEE:
 rolling_mine_check_wall:
 	lda	#$0010
 	sta	zp_00
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
 	beq	loc_01DF11
 	lda	#$0002
 	sta	$04,x
-	lda	#$87FF
+	lda	#$87FF	; [num]
 	sta	$18,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	$1A,x
 loc_01DF11:
 	stz	zp_00
@@ -2170,7 +2170,7 @@ object_type_4E_state_00:
 	sta	OBJ_FLAGS,x
 	lda	#$0006
 	sta	OBJ_HITBOX_W,x
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	OBJ_HITBOX_H,x
 	stz	OBJ_X_SUB,x
 	stz	OBJ_Y_SUB,x
@@ -2237,7 +2237,7 @@ object_type_4E_state_05:
 object_type_4E_state_02:
 	lda	#$0001
 	sta	OBJ_FLAGS,x
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	OBJ_Y_VEL,x
 	stz	a:bg2_x
 	stz	a:bg2_y
@@ -2422,7 +2422,7 @@ loc_01E137:
 	lda	#$0000
 	sta	a:$001A,y
 	sta	a:$0018,y
-	lda	#$FFFD
+	lda	#$FFFD	; [num]
 	sta	a:$001E,y
 	lda	#$0000
 	sta	a:$001C,y
@@ -2506,10 +2506,10 @@ object_type_4E_state_12:
 	lda	#$0000
 	bra	loc_01E202
 loc_01E1FF:
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 loc_01E202:
 	sta	$1A,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$18,x
 	lda	#$0002
 	sta	zp_02
@@ -2548,14 +2548,14 @@ loc_01E232:
 	lda	#$0008
 	bra	loc_01E260
 loc_01E257:
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	a:$001A,y
-	lda	#$FFE8
+	lda	#$FFE8	; [num]
 loc_01E260:
 	clc
 	adc	$0A,x
 	sta	a:$000A,y
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:$0018,y
 	lda	$0E,x
 	sec
@@ -2667,7 +2667,7 @@ loc_01E334:
 	eor	#$FFFF
 	inc	a
 	sta	zp_08
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	zp_10
 loc_01E33F:
 	ldx	#$0000
@@ -2760,7 +2760,7 @@ object_type_4E_keep_in_range:
 	bcs	loc_01E427
 	cmp	#$0050
 	bcs	loc_01E3E7
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$18,x
 	lda	#$0000
 	sta	$1A,x
@@ -2769,9 +2769,9 @@ object_type_4E_keep_in_range:
 ; (no caller found; decoded because it follows the end of a routine)
 sub_01E3DD:
 	; (not executed in the CDL traces)
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$18,x
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	$1A,x
 loc_01E3E7:
 	jmp	a:loc_01E43E
@@ -2800,7 +2800,7 @@ loc_01E40E:
 	lda	$0A,x
 	cmp	#$00B0
 	bcs	loc_01E43A
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$18,x
 	lda	#$0000
 	sta	$1A,x
@@ -2809,9 +2809,9 @@ loc_01E427:
 	lda	$0A,x
 	cmp	#$0050
 	bcc	loc_01E43A
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$18,x
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	$1A,x
 	bra	loc_01E43E
 loc_01E43A:
@@ -2851,7 +2851,7 @@ object_type_4E_state_18:
 	stz	$1A,x
 	stz	$18,x
 	stz	$1C,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	$1E,x
 	inc	$12,x
 	lda	#$0030
@@ -2875,7 +2875,7 @@ object_type_4E_state_1A:
 	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_01E4C0
-	lda	#$FFFD
+	lda	#$FFFD	; [num]
 	sta	a:$001E,y
 loc_01E4C0:
 	lda	#$0003
@@ -2895,7 +2895,7 @@ loc_01E4DB:
 	lda	$0E,x
 	cmp	#$0140
 	bcc	@return
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 	stz	$10,x
 	stz	a:bg1_scroll_mode
@@ -2987,7 +2987,7 @@ stage3_winged_bug_state_02:
 loc_01E58C:
 	lda	$1E,x
 	bpl	loc_01E595
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	bcc	loc_01E5A4
 loc_01E595:
 	sec
@@ -3033,7 +3033,7 @@ loc_01E5DA:
 	lda	rng_hi
 	adc	$0E,x
 	sta	$18,x
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	$1A,x
 loc_01E5EA:
 	rts
@@ -3065,7 +3065,7 @@ stage3_winged_bug_state_04:
 	lda	#.loword(anim_05C672)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_01E629
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	a:$001E,y
 loc_01E629:
 	lda	rng_temp
@@ -3122,7 +3122,7 @@ stage3_winged_bug_grab_player:
 	cmp	$0E,x
 	bcs	loc_01E6DC
 	stz	$1E,x
-	lda	#$F000
+	lda	#$F000	; [num]
 	sta	$1C,x
 	sta	$18,x
 	stz	$1A,x
@@ -3135,7 +3135,7 @@ loc_01E6A8:
 	sta	a:$001A,y
 	sta	a:$001C,y
 	sta	a:$0018,y
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	a:$001E,y
 	lda	$0A,x
 	cmp	#$000C
@@ -3161,7 +3161,7 @@ stage3_winged_bug_release_player:
 loc_01E6E3:
 	lda	#$0000
 	sta	a:$003E,y
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	a:$001E,y
 loc_01E6EF:
 	rts
@@ -3182,7 +3182,7 @@ stage3_winged_bug_state_00:
 	sta	a:$0002,y
 	lda	#$001C
 	sta	a:$0028,y
-	lda	#$FFD8
+	lda	#$FFD8	; [num]
 	sta	a:$002A,y
 	lda	#.loword(anim_05CAAF)
 	sta	a:$0020,y
@@ -3256,7 +3256,7 @@ object_type_56_state_00:
 	sta	OBJ_ATTR,x
 	lda	#$0010
 	sta	OBJ_HITBOX_W,x
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	OBJ_HITBOX_H,x
 	jsr	a:pick_random_player_local
 	lda	a:$000A,y
@@ -3304,7 +3304,7 @@ object_type_56_state_01:
 	jsl	f:object_follow_floor
 	lda	zp_FC
 	bne	@return
-	lda	#$FFFD
+	lda	#$FFFD	; [num]
 	sta	$1E,x
 	lda	$04,x
 	tay
@@ -3521,7 +3521,7 @@ object_type_24_state_00:
 	sta	OBJ_ATTR,x
 	lda	#$0010
 	sta	OBJ_HITBOX_W,x
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	OBJ_HITBOX_H,x
 	jsr	a:pick_random_player_local
 	lda	a:$000A,y
@@ -3628,7 +3628,7 @@ stage3_spiked_climber_state_00:
 	cmp	#$0004
 	bne	loc_01EA58
 	inc	OBJ_STATE,x
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	a:boss_work_0
 	lda	#$0200
 	sta	a:boss_work_2
@@ -3651,7 +3651,7 @@ stage3_spiked_climber_state_03:
 	inc	OBJ_STATE,x
 	lda	#$0008
 	sta	$3A,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	OBJ_Y_VEL,x
 	txa
 	sta	$3E,x
@@ -3661,7 +3661,7 @@ stage3_spiked_climber_state_03:
 	jsr	a:spiked_climber_init_part
 	ldx	#$0380
 	ldy	#$0002
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	$24,x
 	jsr	a:spiked_climber_init_part
 	ldx	#$0300
@@ -3672,7 +3672,7 @@ stage3_spiked_climber_state_03:
 	ldy	difficulty
 	lda	a:stage3_spiked_climber_core_hp,y
 	sta	$06,x
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	$2A,x
 	plx
 	jsr	a:init_swing_pivot
@@ -3743,14 +3743,14 @@ loc_01EB2E:
 stage3_spiked_climber_state_06:
 	lda	a:bg1_y
 	bpl	@return
-	cmp	#$FF58
+	cmp	#$FF58	; [num]
 	bcs	@return
 	inc	OBJ_STATE,x
 	lda	#$0002
 	sta	a:wram_1672
 	lda	#$0001
 	sta	a:wram_0356
-	lda	#$FFFB
+	lda	#$FFFB	; [num]
 	sta	a:wram_035E
 	lda	#$0048
 	jsl	f:queue_sound
@@ -3831,7 +3831,7 @@ spiked_climber_init_part:
 	sta	$02,x
 	lda	a:data_05CB37,y
 	sta	$28,x
-	lda	#$FFDC
+	lda	#$FFDC	; [num]
 	sta	$2A,x
 	lda	#$0180
 	sta	$0A,x
@@ -3903,14 +3903,14 @@ loc_01EC63:
 	jsl	f:queue_sound
 loc_01EC72:
 	lda	a:boss_work_0
-	cmp	#$FFF8
+	cmp	#$FFF8	; [num]
 	bcs	loc_01ECA9
 	clc
 	lda	a:boss_work_0
 	adc	#$0004
-	cmp	#$FFF8
+	cmp	#$FFF8	; [num]
 	bcc	loc_01ECA6
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	bra	loc_01ECA6
 loc_01EC8B:
 	and	#$00FF
@@ -3919,7 +3919,7 @@ loc_01EC8B:
 	jsl	f:queue_sound
 loc_01EC97:
 	lda	a:boss_work_0
-	cmp	#$FFD4
+	cmp	#$FFD4	; [num]
 	bcc	loc_01ECA9
 	clc
 	lda	a:boss_work_0
@@ -3946,7 +3946,7 @@ loc_01ECC1:
 	bcc	loc_01ECD3
 	lda	$1A,x
 	bpl	loc_01ECDD
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	bcc	loc_01ECEC
 	bcs	loc_01ECDD
 loc_01ECD3:
@@ -3969,7 +3969,7 @@ spiked_climber_check_fallen:
 	lda	$0E,x
 	cmp	#$0100
 	bcc	loc_01ED3E
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:wram_0316
 	sta	a:wram_0396
 	inc	$12,x
@@ -4016,7 +4016,7 @@ loc_01ED3E:
 	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	@return
-	lda	#$FFFA
+	lda	#$FFFA	; [num]
 	sta	a:$001E,y
 @return:
 	rts
@@ -4038,7 +4038,7 @@ update_object_type_59:
 	sta	$02,x
 	lda	#$003D
 	sta	$16,x
-	lda	#$FFF4
+	lda	#$FFF4	; [num]
 	sta	$2A,x
 	lda	#$000C
 	sta	$28,x
@@ -4062,7 +4062,7 @@ update_object_type_59:
 	sta	$38,x
 	lda	#$005A
 	sta	$10,x
-	lda	#$FF80
+	lda	#$FF80	; [num]
 	sta	$0A,x
 	lda	#$0080
 	sta	$0E,x
@@ -4121,7 +4121,7 @@ loc_01EE44:
 	lda	#$0001
 	bra	loc_01EE53
 loc_01EE50:
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 loc_01EE53:
 	clc
 	adc	a:wram_034A
@@ -4153,9 +4153,9 @@ loc_01EE7D:
 	bcc	loc_01EE7C
 	phx
 	ldx	#$0340
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	zp_FE
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	zp_FC
 	jsr	a:spiked_climber_fire_missile
 	lda	#$0001
@@ -4183,7 +4183,7 @@ loc_01EE7D:
 	ldx	#$03C0
 	bra	loc_01EEE0
 loc_01EEDA:
-	lda	#$FFC0
+	lda	#$FFC0	; [num]
 	ldx	#$0600
 loc_01EEE0:
 	sta	zp_00
@@ -4210,9 +4210,9 @@ loc_01EEE0:
 	ldx	#$0340
 	lda	#$004F
 	sta	$24,x
-	lda	#$C7FF
+	lda	#$C7FF	; [num]
 	sta	$18,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	$1A,x
 	lda	#$0800
 	sta	$3A,x
@@ -4344,7 +4344,7 @@ stage3_spiked_climber_state_0D:
 	lda	#$00F0
 	sta	a:wram_03E8
 	sta	a:wram_0628
-	lda	#$FFE2
+	lda	#$FFE2	; [num]
 	sta	a:wram_03EA
 	sta	a:wram_062A
 	jsr	a:spiked_climber_init_hdma
@@ -4386,7 +4386,7 @@ stage3_spiked_climber_state_0F:
 	jsr	a:spiked_climber_kill_players_outside
 	lda	#$0003
 	sta	a:shake_timer
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:wram_0416
 	sta	a:wram_0456
 	sta	a:wram_0496
@@ -4436,7 +4436,7 @@ stage3_spiked_climber_state_10:
 	bpl	loc_01F0F4
 	lda	#$0100
 	sta	$24,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:wram_03D6
 	sta	a:wram_0616
 	sta	a:wram_0416
@@ -4492,13 +4492,13 @@ loc_01F141:
 	jsr	a:spiked_climber_accel_up
 	bra	loc_01F164
 loc_01F149:
-	cmp	#$FFF4
+	cmp	#$FFF4	; [num]
 	bcs	loc_01F131
 loc_01F14E:
 	lda	$0E,x
 	cmp	#$00BC
 	bcc	loc_01F15E
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	$1E,x
 	stz	$1C,x
 	bra	loc_01F141
@@ -4520,9 +4520,9 @@ loc_01F164:
 	phy
 	jsr	a:spiked_climber_spawn_debris
 	ply
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	$1A,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$18,x
 	dec	$32,x
 	bmi	loc_01F1B2
@@ -4538,7 +4538,7 @@ loc_01F1A0:
 	bcc	loc_01F1B2
 	lda	$1A,x
 	bpl	loc_01F1CE
-	cmp	#$FFFE
+	cmp	#$FFFE	; [num]
 	bcc	loc_01F1DD
 	bcs	loc_01F1CE
 loc_01F1B2:
@@ -4589,7 +4589,7 @@ loc_01F1EF:
 	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	@return
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	a:$001A,y
 @return:
 	rtl
@@ -4621,7 +4621,7 @@ loc_01F24A:
 stage3_spiked_climber_state_13:
 	dec	OBJ_TIMER,x
 	bpl	@return
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	lda	#$0002
 	sta	a:bg1_scroll_mode
@@ -4634,7 +4634,7 @@ spiked_climber_accel_up:
 	sta	zp_00
 	lda	$1E,x
 	bpl	loc_01F277
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	bcc	loc_01F285
 loc_01F277:
 	sec
@@ -4751,7 +4751,7 @@ loc_01F340:
 	sec
 	sbc	a:wram_038A
 	bpl	loc_01F356
-	cmp	#$FFE8
+	cmp	#$FFE8	; [num]
 	bcs	loc_01F35F
 	lda	#$0024
 	bra	loc_01F359
@@ -4853,7 +4853,7 @@ update_hoverbike_rider:
 	jsl	f:queue_sound
 	lda	#$0004
 	sta	$12,x
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	$1A,x
 	stz	$06,x
 	lda	#$0003
@@ -4894,7 +4894,7 @@ hoverbike_rider_state_00:
 	sta	OBJ_HP,x
 	lda	#$0020
 	sta	OBJ_HITBOX_W,x
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	OBJ_HITBOX_H,x
 	ldy	$30,x
 	lda	a:data_05CD07,y
@@ -4949,7 +4949,7 @@ hoverbike_rider_state_02:
 hoverbike_rider_state_04:
 	dec	OBJ_TIMER,x
 	bpl	loc_01F4BA
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 loc_01F4BA:
 	lda	stage_frame_odd
@@ -5000,7 +5000,7 @@ hoverbike_rider_state_06:
 	lda	#.loword(anim_05C61E)
 	jsl	f:spawn_effect
 	bcs	@return
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	a:$001A,y
 	lda	$0A,x
 	sta	a:$000A,y
@@ -5110,7 +5110,7 @@ update_object_type_76:
 	sta	OBJ_X_VEL_SUB,x
 	lda	#$0008
 	sta	OBJ_HITBOX_W,x
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	OBJ_HITBOX_H,x
 	rtl
 loc_01F608:
@@ -5124,7 +5124,7 @@ loc_01F608:
 	inc	$12,x
 	stz	$1C,x
 	stz	$1E,x
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	$1A,x
 	lda	#$000F
 	sta	$16,x
@@ -5171,7 +5171,7 @@ update_object_type_78:
 	sta	OBJ_ATTR,x
 	lda	#$0008
 	sta	OBJ_HITBOX_W,x
-	lda	#$FFF8
+	lda	#$FFF8	; [num]
 	sta	OBJ_HITBOX_H,x
 	lda	#$000F
 	sta	OBJ_FLAGS,x
@@ -5185,7 +5185,7 @@ loc_01F692:
 	cmp	#$00B0
 	bcc	loc_01F691
 	stz	$1A,x
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	$1E,x
 	lda	#.loword(anim_05C59A)
 	txy

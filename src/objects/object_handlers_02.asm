@@ -86,7 +86,7 @@ ending_firework_state_00:
 	sta	$02,x
 	stz	$16,x
 	stz	$06,x
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	$1E,x
 	stz	$1A,x
 	stz	$1C,x
@@ -404,7 +404,7 @@ loc_02FF4B:
 	lda	#$0000
 	bra	loc_02FF57
 loc_02FF54:
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 loc_02FF57:
 	sta	zp_00
 	lda	zp_08
@@ -421,7 +421,7 @@ loc_02FF57:
 	lda	#$0000
 	bra	loc_02FF70
 loc_02FF6D:
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 loc_02FF70:
 	sta	zp_02
 	lda	zp_0A

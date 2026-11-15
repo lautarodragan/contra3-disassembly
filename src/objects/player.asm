@@ -84,7 +84,7 @@ loc_01A5C8:
 	sta	SHOT_DAMAGE,x
 	lda	#$3348
 	sta	SHOT_ATTR,x
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	SHOT_HIT,x
 	lda	#$00A0
 	sta	OBJ_Y,x
@@ -97,9 +97,9 @@ loc_01A5C8:
 	stz	OBJ_X_VEL,x
 	stz	OBJ_X_VEL_SUB,x
 	tyx
-	lda	#$DFFF
+	lda	#$DFFF	; [num]
 	sta	$34,x
-	lda	#$FFF9
+	lda	#$FFF9	; [num]
 	sta	$36,x
 	lda	#$0004
 	sta	a:shake_timer
@@ -271,7 +271,7 @@ loc_01A72A:
 loc_01A739:
 	lda	OBJ_X_VEL,x
 	bpl	loc_01A745
-	cmp	#$FFFE
+	cmp	#$FFFE	; [num]
 	bcs	loc_01A745
 	brl	move_player_unless_locked
 loc_01A745:
@@ -330,7 +330,7 @@ loc_01A79C:
 	beq	loc_01A7B1
 	brl	move_player_unless_locked
 loc_01A7B1:
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	OBJ_X_VEL,x
 	brl	move_player_unless_locked
 
@@ -392,18 +392,18 @@ input_free_move:
 loc_01A81F:
 	bit	#$0200
 	beq	loc_01A82E
-	lda	#$97FF
+	lda	#$97FF	; [num]
 	sta	OBJ_X_VEL_SUB,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 loc_01A82C:
 	sta	OBJ_X_VEL,x
 loc_01A82E:
 	lda	PLAYER_JOY_HELD,x
 	bit	#$0800
 	beq	loc_01A83F
-	lda	#$97FF
+	lda	#$97FF	; [num]
 	sta	OBJ_Y_VEL_SUB,x
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	bra	loc_01A84C
 loc_01A83F:
 	bit	#$0400
@@ -447,7 +447,7 @@ loc_01A86F:
 	dec	OBJ_Y,x
 	lda	#$3FFF
 	sta	OBJ_Y_VEL_SUB,x
-	lda	#$FFFA
+	lda	#$FFFA	; [num]
 	sta	OBJ_Y_VEL,x
 	lda	#$0060
 	sta	PLAYER_INVULN_TIMER,x
@@ -468,9 +468,9 @@ loc_01A8A9:
 loc_01A8C1:
 	bit	#$0200
 	beq	loc_01A8E1
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	OBJ_X_VEL,x
-	lda	#$97FF
+	lda	#$97FF	; [num]
 loc_01A8CE:
 	sta	OBJ_X_VEL_SUB,x
 	lda	a:wram_16AE
@@ -574,9 +574,9 @@ loc_01A977:
 	lda	PLAYER_CONTACT,x
 	bit	#$0200
 	bne	loc_01A994
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	OBJ_X_VEL,x
-	lda	#$97FF
+	lda	#$97FF	; [num]
 	sta	OBJ_X_VEL_SUB,x
 loc_01A994:
 	lda	#$0004
@@ -617,9 +617,9 @@ loc_01A9D5:
 	lda	PLAYER_JOY_HELD,x
 	bit	#$0800
 	beq	loc_01A9F4
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	sta	OBJ_Y_VEL,x
-	lda	#$97FF
+	lda	#$97FF	; [num]
 	sta	OBJ_Y_VEL_SUB,x
 	lda	#$0002
 	sta	PLAYER_AIM,x
@@ -924,7 +924,7 @@ loc_01ABEB:
 	lda	PLAYER_JOY_HELD,x
 	bit	#$0040
 	beq	loc_01ABFE
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:PLAYER_LIVES,x
 	sta	a:PLAYER_BOMBS,x
 	sta	a:PLAYER_BARRIER,x
@@ -1077,7 +1077,7 @@ loc_01ACDF:
 	lda	PLAYER_JOY_HELD,x
 	bit	button_fire
 	beq	@return
-	lda	#$FFFA
+	lda	#$FFFA	; [num]
 	sta	OBJ_Y_VEL,x
 	lda	#$070A
 	sta	$32,x
@@ -1105,13 +1105,13 @@ player_state_spin_jump_unused:
 loc_01AD1F:
 	jsl	f:animate_player_somersault
 	jsl	f:check_bomb_button
-	lda	#$FFF2
+	lda	#$FFF2	; [num]
 	ldy	OBJ_FACING,x
 	bne	loc_01AD31
-	lda	#$FFF6
+	lda	#$FFF6	; [num]
 loc_01AD31:
 	sta	zp_14
-	lda	#$FFD8
+	lda	#$FFD8	; [num]
 	sta	zp_16
 	jsl	f:spin_fire_weapon_2
 	stz	$38,x
@@ -1121,7 +1121,7 @@ loc_01AD31:
 	lda	#$0006
 loc_01AD48:
 	sta	zp_14
-	lda	#$FFD8
+	lda	#$FFD8	; [num]
 	sta	zp_16
 	jsl	f:spin_fire_weapon_1
 	stz	$38,x
@@ -1223,7 +1223,7 @@ loc_01ADFD:
 	sta	zp_12
 	lda	#$0008
 	sta	zp_14
-	lda	#$FFDF
+	lda	#$FFDF	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -1232,13 +1232,13 @@ hang_aim_up:
 	sta	PLAYER_POSE,x
 	lda	#$0000
 	sta	zp_12
-	ldy	#$FFFE
+	ldy	#$FFFE	; [num]
 	lda	OBJ_FACING,x
 	bne	loc_01AE24
-	ldy	#$FFF8
+	ldy	#$FFF8	; [num]
 loc_01AE24:
 	sty	zp_14
-	lda	#$FFC0
+	lda	#$FFC0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -1255,7 +1255,7 @@ loc_01AE3E:
 	sta	zp_12
 	lda	#$0008
 	sta	zp_14
-	lda	#$FFCB
+	lda	#$FFCB	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -1270,9 +1270,9 @@ loc_01AE5C:
 loc_01AE60:
 	lda	#$0060
 	sta	zp_12
-	lda	#$FFEC
+	lda	#$FFEC	; [num]
 	sta	zp_14
-	lda	#$FFDF
+	lda	#$FFDF	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -1288,9 +1288,9 @@ loc_01AE7E:
 loc_01AE82:
 	lda	#$0070
 	sta	zp_12
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_14
-	lda	#$FFCC
+	lda	#$FFCC	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -1302,7 +1302,7 @@ hang_aim_down:
 	ldy	#$0000
 	lda	OBJ_FACING,x
 	bne	loc_01AEA9
-	ldy	#$FFF6
+	ldy	#$FFF6	; [num]
 loc_01AEA9:
 	sty	zp_14
 	lda	#$0000
@@ -1323,7 +1323,7 @@ loc_01AEC3:
 	sta	zp_12
 	lda	#$0008
 	sta	zp_14
-	lda	#$FFF4
+	lda	#$FFF4	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -1339,9 +1339,9 @@ loc_01AEE1:
 loc_01AEE5:
 	lda	#$0050
 	sta	zp_12
-	lda	#$FFF0
+	lda	#$FFF0	; [num]
 	sta	zp_14
-	lda	#$FFF2
+	lda	#$FFF2	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
 
@@ -1387,7 +1387,7 @@ loc_01AF32:
 ; (state 5 / 2) and snap to the tile.
 hang_climb_check_walls:
 	stz	zp_00
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$0002
@@ -1398,7 +1398,7 @@ hang_climb_check_walls:
 loc_01AF54:
 	lda	#$0006
 	sta	zp_00
-	lda	#$FFE0
+	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$0002
@@ -1408,7 +1408,7 @@ loc_01AF54:
 	brl	snap_x_left_to_tile
 
 check_ceiling_hang_height:
-	lda	#$FFD0
+	lda	#$FFD0	; [num]
 
 ; Classifies the collision tiles at y + A (x and x+6) like check_hang_bar
 ; but with the solid bits ($0182); sets zp_C4 and snaps (bumping a ceiling).
@@ -1522,7 +1522,7 @@ loc_01B03B:
 	beq	loc_01B077
 	bne	loc_01B077
 loc_01B04E:
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	zp_C4
 	rtl
 loc_01B054:
@@ -1552,7 +1552,7 @@ loc_01B077:
 ; (no caller found; decoded because it follows the end of a routine)
 sub_01B07F:
 	; (not executed in the CDL traces)
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	zp_C4
 	rtl
 
@@ -1667,7 +1667,7 @@ player_state_bike_intro:
 loc_01B125:
 	lda	$1D,x
 	bpl	loc_01B12E
-	cmp	#$FFC0
+	cmp	#$FFC0	; [num]
 	bcc	loc_01B162
 loc_01B12E:
 	sec

@@ -67,7 +67,7 @@ sub_0089E4:
 	rep	#$30
 	sta	zp_00
 	stx	zp_02
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	zp_04
 	ldy	#$0008
 	lda	zp_02
@@ -98,7 +98,7 @@ sub_0089E4:
 	ldx	a:RDDIVL
 	stx	zp_02
 	lda	zp_00
-	cmp	#$FFFF
+	cmp	#$FFFF	; [num]
 	clc
 	bne	@halve
 	lda	#$0000

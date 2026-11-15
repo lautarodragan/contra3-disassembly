@@ -287,7 +287,7 @@ setup_stage_hdma:
 	ldy	a:ptrs_stage_hdma_lists,x
 @channel_loop:
 	ldx	a:$0000,y
-	cpx	#$FFFF
+	cpx	#$FFFF	; [num]
 	bcs	@channels_done
 	lda	a:$0002,y
 	sta	$00,x
@@ -345,11 +345,11 @@ build_scroll_split_hdma:
 	dec	a
 	asl	a
 	tay
-	lda	#$D000
+	lda	#$D000	; [num]
 	sta	zp_00
 	lda	a:data_05A25A,y
 	sta	zp_04
-	lda	#$D400
+	lda	#$D400	; [num]
 	phx
 	jsr	a:build_split_line_table
 	jsr	a:fill_split_values
@@ -525,11 +525,11 @@ unused_debug_scroll_split:
 	lda	a:scroll_split_y
 	and	#$01FF
 	sta	a:scroll_split_y
-	lda	#$D000
+	lda	#$D000	; [num]
 	sta	zp_00
 	lda	#.loword(data_05A25A + $6)
 	sta	zp_04
-	lda	#$D400
+	lda	#$D400	; [num]
 	rts
 init_line_hdma_table:
 	sep	#$20
@@ -543,17 +543,17 @@ init_line_hdma_table:
 	phx
 	phb
 	lda	#$03FF
-	ldx	#$E800
-	ldy	#$E801
+	ldx	#$E800	; [num]
+	ldy	#$E801	; [num]
 	mvn	#$7E, #$7E
 	plb
 	plx
 	lda	#$00FF
 	sta	a:$EA00
 	stz	a:$EA06
-	lda	#$FFE8
+	lda	#$FFE8	; [num]
 	sta	a:$EA02
-	lda	#$E900
+	lda	#$E900	; [num]
 	sta	a:$EA04
 	sep	#$20
 	.a8

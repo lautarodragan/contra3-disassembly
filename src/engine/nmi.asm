@@ -258,12 +258,12 @@ nmi_frame_side_view:
 	.a16
 	phb
 	lda	#$0063
-	ldx	#$D000
-	ldy	#$D200
+	ldx	#$D000	; [num]
+	ldy	#$D200	; [num]
 	mvn	#$7E, #$7E
 	lda	#$0084
-	ldx	#$D400
-	ldy	#$D800
+	ldx	#$D400	; [num]
+	ldy	#$D800	; [num]
 	mvn	#$7E, #$7E
 	plb
 	jsl	f:read_joypads

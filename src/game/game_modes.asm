@@ -189,11 +189,11 @@ opening_zoom_title_logo_last:
 	sta	a:m7d_shadow
 	lda	#$0100
 	sta	a:title_the_x
-	lda	#$FFA0
+	lda	#$FFA0	; [num]
 	sta	a:title_alien_x
 	lda	#$0100
 	sta	a:title_wars_x
-	lda	#$FF80
+	lda	#$FF80	; [num]
 	sta	a:title_tm_x
 	lda	#$0046
 	jsl	f:queue_sound
@@ -667,7 +667,7 @@ game_mode_stage_card:
 	sta	zp_96
 	lda	#$4000
 	sta	button_fire
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	button_jump
 	sta	zp_92
 	lda	#$0080

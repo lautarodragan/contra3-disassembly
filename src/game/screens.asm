@@ -286,7 +286,7 @@ add_score:
 	sbc	#$0999
 	bcc	@done
 	; (not executed in the CDL traces)
-	lda	#$9999
+	lda	#$9999	; [num]
 	sta	$20,x
 	lda	#$0999
 	sta	$22,x

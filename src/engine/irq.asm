@@ -30,7 +30,7 @@ setup_hdma_channels:
 	ldy	a:data_05822E,x
 @loop:
 	ldx	a:$0000,y
-	cpx	#$FFFF
+	cpx	#$FFFF	; [num]
 	bcs	@done
 	lda	a:$0002,y
 	sta	$00,x

@@ -71,7 +71,7 @@ loc_00E1ED:
 	cmp	#$00F8
 	bcs	loc_00E21C
 	lda	OBJ_Y,x
-	cmp	#$FFC0
+	cmp	#$FFC0	; [num]
 	bcs	loc_00E22A
 	cmp	#$00F0
 	bcc	loc_00E22A
@@ -217,7 +217,7 @@ loc_00E30C:
 	sta	$00,x
 	inx
 	inx
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	oam_hi_bits
 	stx	oam_hi_ptr
 	plx

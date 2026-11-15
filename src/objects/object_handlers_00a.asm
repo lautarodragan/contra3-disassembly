@@ -88,7 +88,7 @@ update_object_type_57:
 	and	#$FFFC
 	ora	$3A,x
 	sta	a:bg2sc_shadow
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	rtl
 
@@ -126,7 +126,7 @@ update_object_type_28:
 ; Object type $08: invisible stage trigger (stage 1 section 4): stops
 ; bg1_autoscroll, sets bg1_scroll_mode = 4 and adjusts the scroll target.
 update_object_type_08:
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	stz	a:bg1_autoscroll
 	lda	#$0004
@@ -144,7 +144,7 @@ update_object_type_08:
 
 ; Object type $89: not seen. Not identified.
 update_object_type_89:
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	lda	#$0001
 	sta	a:stage_checkpoint
@@ -170,7 +170,7 @@ loc_00D019:
 	lda	$3A,x
 	and	#$000F
 	sta	a:bg2_scroll_mode
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 @return:
 	rtl
@@ -179,7 +179,7 @@ loc_00D019:
 update_bg1_autoscroll_trigger:
 	lda	#$0001
 	sta	a:bg1_autoscroll
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	rtl
 
@@ -212,14 +212,14 @@ update_bg1_scroll_mode_trigger:
 	adc	#$00FF
 	and	#$FF00
 	sta	a:bg1_y
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	rtl
 
 ; Object type $07: stage trigger: loads the list
 ; data_059E4A[field $3A] with load_data_list and deletes itself.
 update_load_list_trigger:
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	lda	$3A,x
 	tay
@@ -242,7 +242,7 @@ update_object_type_42:
 	sta	a:wram_1666
 	rep	#$20
 	.a16
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 	rtl
 
@@ -251,7 +251,7 @@ update_object_type_42:
 ; data_059F06; never run in the CDL traces.
 update_song_change_trigger:
 	; (not executed in the CDL traces)
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	ldy	$3A,x
 	lda	a:data_059F06,y
@@ -293,9 +293,9 @@ object_type_06_state_00:
 object_type_06_state_01:
 	lda	#$003F
 	sta	a:wram_166C
-	lda	#$A000
+	lda	#$A000	; [num]
 	sta	a:wram_161E
-	lda	#$F300
+	lda	#$F300	; [num]
 	sta	a:wram_161C
 	stz	a:wram_1620
 	stz	a:wram_1622
@@ -353,7 +353,7 @@ loc_00D11D:
 	lda	a:wram_161C
 	adc	#$0070
 	sta	a:wram_161C
-	cmp	#$F500
+	cmp	#$F500	; [num]
 	bcc	loc_00D196
 	sec
 	sbc	#$0200
@@ -428,7 +428,7 @@ object_type_06_state_03:
 	sta	a:$0003,y
 	lda	#$0100
 	sta	a:$0005,y
-	lda	#$FFFF
+	lda	#$FFFF	; [num]
 	sta	a:$0007,y
 	lda	#$0000
 	sta	a:$0009,y
@@ -455,7 +455,7 @@ object_type_06_state_03:
 	stz	$30,x
 	lda	#$7FFF
 	sta	$1C,x
-	lda	#$FFFD
+	lda	#$FFFD	; [num]
 	sta	$1E,x
 	stz	a:boss_work_0
 	lda	#$00A0
@@ -625,7 +625,7 @@ loc_00D3C0:
 	lda	#.loword(anim_05C4CE)
 	jsl	f:spawn_effect_random_offset
 	bcs	@return
-	lda	#$FFFC
+	lda	#$FFFC	; [num]
 	sta	a:$001E,y
 @return:
 	rtl
@@ -696,7 +696,7 @@ object_type_06_state_08:
 	bne	loc_00D47E
 	dec	a:wram_166C
 	bne	loc_00D47E
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 	stz	hdma_preset
 	stz	a:wram_1672
@@ -749,7 +749,7 @@ loc_00D4D2:
 	lda	a:$0012,y
 	inc	a
 	sta	a:$0012,y
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 	ldy	#$0280
 @loop:
@@ -760,7 +760,7 @@ loc_00D4D2:
 	ldy	#$02C0
 	bra	@loop
 loc_00D4EE:
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:$0016,y
 	rtl
 
@@ -781,9 +781,9 @@ update_bomber_bomb:
 	sta	a:$000E,y
 	lda	$0A,x
 	sta	a:$000A,y
-	lda	#$E000
+	lda	#$E000	; [num]
 	sta	a:$001C,y
-	lda	#$FFFD
+	lda	#$FFFD	; [num]
 	sta	a:$001E,y
 	lda	#$0003
 	sta	a:$0016,y
@@ -842,7 +842,7 @@ loc_00D57F:
 	sta	a:scroll_split_y
 	cmp	#$0090
 	bcs	loc_00D5A2
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$16,x
 	stz	a:scroll_split_pattern
 	stz	a:scroll_split_y

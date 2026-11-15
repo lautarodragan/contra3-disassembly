@@ -65,7 +65,12 @@ More rules:
   number. Pointers in code are `#.loword(label)`, banks `#^label`, pointers
   in data `.addr` / `.faraddr` or the macros of `src/data_macros.inc`;
   `tools/datafmt.py label 05:C59A name` adds a label at an address.
-  `python3 tools/shift.py scan` must stay at 0.
+  `python3 tools/shift.py scan` must stay at 0: it also fails on any
+  16-bit immediate `>= $8000` that is loaded or compared (`lda`, `ldx`,
+  `ldy`, `cmp`, `cpx`, `cpy`) and is neither a label expression nor marked
+  `; [num]`. Put the marker only after checking how the value is used (a
+  negative number, a mask, a WRAM or VRAM address, a colour...);
+  `scan --list` prints the unmarked ones.
 - **Cheap locals.** In ca65 an `@name` label is only visible between two
   normal labels, and every `loc_XXXXXX` is a normal label, so a cheap local
   can only replace a `loc_` label when nothing outside that span refers to

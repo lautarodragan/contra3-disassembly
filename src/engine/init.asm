@@ -337,7 +337,7 @@ clear_wram_7e4000_7effff:
 	phb
 	lda	#$0000
 	sta	f:wram_7E4000
-	lda	#$BFFE
+	lda	#$BFFE	; [num]
 	ldx	#$4000
 	txy
 	iny
@@ -353,7 +353,7 @@ clear_wram_7e8000_and_7ec000:
 	lda	#$0000
 	sta	f:wram_7E8000
 	lda	#$1FFE
-	ldx	#$8000
+	ldx	#$8000	; [num]
 	txy
 	iny
 	mvn	#$7E, #$7E
@@ -363,7 +363,7 @@ clear_wram_7e8000_and_7ec000:
 	lda	#$0000
 	sta	f:wram_7EC000
 	lda	#$1FFE
-	ldx	#$C000
+	ldx	#$C000	; [num]
 	txy
 	iny
 	mvn	#$7E, #$7E

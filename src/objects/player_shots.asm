@@ -579,7 +579,7 @@ loc_00DA0F:
 	sta	$B4,x
 	sta	$D4,x
 	sta	$F4,x
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	$2A,x
 	sta	$4A,x
 	sta	$6A,x
@@ -640,7 +640,7 @@ loc_00DA8E:
 	sbc	zp_00
 	cmp	#$0005
 	bcc	loc_00DAD3
-	cmp	#$FFFB
+	cmp	#$FFFB	; [num]
 	bcs	loc_00DAD3
 	bmi	loc_00DACB
 	sec
@@ -665,7 +665,7 @@ loc_00DAD5:
 	sbc	zp_00
 	cmp	#$0005
 	bcc	loc_00DB00
-	cmp	#$FFFB
+	cmp	#$FFFB	; [num]
 	bcs	loc_00DB00
 	bmi	loc_00DAF8
 	sec
@@ -697,9 +697,9 @@ loc_00DB17:
 	lda	zp_06
 	bra	loc_00DB40
 loc_00DB1B:
-	cmp	#$FF00
+	cmp	#$FF00	; [num]
 	bcc	loc_00DB37
-	cmp	#$FFF0
+	cmp	#$FFF0	; [num]
 	bcs	loc_00DB17
 loc_00DB25:
 	sec

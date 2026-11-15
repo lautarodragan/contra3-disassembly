@@ -143,7 +143,7 @@ warm_boot:
 	phb
 	lda	#$0000
 	sta	f:wram_7E2000
-	lda	#$DFFE
+	lda	#$DFFE	; [num]
 	ldx	#$2000
 	txy
 	iny
@@ -153,7 +153,7 @@ warm_boot:
 	phb
 	lda	#$0000
 	sta	f:wram_7F0000
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	ldx	#$0000
 	txy
 	iny

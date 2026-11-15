@@ -178,7 +178,7 @@ build_m7_tilemap:
 	sta	zp_0A
 	lda	#$3400
 	sta	zp_0C
-	lda	#$9000
+	lda	#$9000	; [num]
 	sta	zp_08
 	lda	#$0004
 	sta	zp_12

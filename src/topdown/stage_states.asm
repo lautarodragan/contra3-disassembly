@@ -496,11 +496,11 @@ map_view_open:
 	sta	a:p1_m7_scale_y
 	lda	#$0000
 	sta	a:p1_m7_center_x
-	lda	#$FFE6
+	lda	#$FFE6	; [num]
 	sta	a:p1_m7_hofs
 	lda	#$0000
 	sta	a:p1_m7_center_y
-	lda	#$FFF6
+	lda	#$FFF6	; [num]
 	sta	a:p1_m7_vofs
 	stz	a:p1_m7_angle
 	inc	a:map_view_step
@@ -1583,7 +1583,7 @@ init_stage5_vars:
 	stz	a:boss_centered_view
 	lda	#$0004
 	sta	a:targets_left_flag
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	a:td_push_speed_frac
 	stz	a:td_push_speed
 	lda	#$0002

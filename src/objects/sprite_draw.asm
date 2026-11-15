@@ -37,7 +37,7 @@ loc_00EB3D:
 	adc	zp_0A
 	cmp	#$00E8
 	bcc	loc_00EB4B
-	cmp	#$FFF0
+	cmp	#$FFF0	; [num]
 	bcc	loc_00EBA9
 loc_00EB4B:
 	xba
@@ -80,7 +80,7 @@ loc_00EB79:
 	stx	oam_hi_ptr
 	cpx	#$11E0
 	bcs	loc_00EBBA
-	lda	#$8000
+	lda	#$8000	; [num]
 	sta	oam_hi_bits
 	plx
 loc_00EB97:

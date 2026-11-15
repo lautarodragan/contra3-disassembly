@@ -300,7 +300,7 @@ half_distance_squared:
 	ply
 	rtl
 @too_far:
-	lda	#$FFFE
+	lda	#$FFFE	; [num]
 	ply
 	rtl
 
@@ -570,7 +570,7 @@ calc_distance:
 	rtl
 @sqrt:
 	phy
-	ldy	#$FFFF
+	ldy	#$FFFF	; [num]
 @sqrt_loop:
 	iny
 	iny

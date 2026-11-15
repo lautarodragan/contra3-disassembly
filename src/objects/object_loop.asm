@@ -93,14 +93,14 @@ loc_00E9C9:
 	lda	OBJ_X,x
 	cmp	#$0120
 	bcc	loc_00E9DD
-	cmp	#$FFE0
+	cmp	#$FFE0	; [num]
 	bcs	loc_00E9DD
 	brl	loc_00EAB0
 loc_00E9DD:
 	lda	OBJ_Y,x
 	cmp	#$0120
 	bcc	loc_00E9EC
-	cmp	#$FFE0
+	cmp	#$FFE0	; [num]
 	bcs	loc_00E9EC
 	brl	loc_00EAB0
 loc_00E9EC:
