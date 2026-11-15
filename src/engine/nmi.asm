@@ -304,7 +304,7 @@ nmi_frame_top_down:
 	sta	a:HDMAEN
 	rep	#$20
 	.a16
-	jsl	f:sub_02DDC6
+	jsl	f:swap_topdown_window_buffer
 	jsl	f:upload_m7_block_patches
 	jsl	f:upload_hud_alternating
 	jsl	f:stream_topdown_sprite_gfx
@@ -346,7 +346,7 @@ nmi_frame_top_down:
 	rep	#$20
 @after_display:
 	.a16
-	jsl	f:sub_02DDDC
+	jsl	f:update_topdown_window
 	jsl	f:read_joypads
 	stz	sound_last_queued
 	jsl	f:run_game_mode

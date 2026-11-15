@@ -1923,7 +1923,7 @@ rolling_mine_state_01:
 	bmi	loc_01DDD5
 	dec	$24,x
 loc_01DDD5:
-	jsl	f:sub_01A177
+	jsl	f:object_follow_floor
 	lda	zp_FC
 	bne	loc_01DDE0
 	inc	$12,x
@@ -1969,7 +1969,7 @@ loc_01DE25:
 	jsr	a:sub_01DEEF
 	lda	$1E,x
 	bmi	loc_01DE4E
-	jsl	f:sub_01A177
+	jsl	f:object_follow_floor
 	lda	zp_FC
 	beq	loc_01DE4E
 	lda	$32,x
@@ -3289,7 +3289,7 @@ loc_01E7FE:
 	rts
 
 object_type_56_state_01:
-	jsl	f:sub_01A177
+	jsl	f:object_follow_floor
 	lda	zp_FC
 	bne	loc_01E821
 	lda	#$FFFD
@@ -3531,7 +3531,7 @@ loc_01E9A2:
 	rtl
 
 object_type_24_state_01:
-	jsl	f:sub_01A177
+	jsl	f:object_follow_floor
 	lda	zp_FC
 	bne	loc_01E9D7
 	stz	$18,x
@@ -4802,7 +4802,7 @@ sub_01F3BD:
 	; CDL: not accessed
 	.byte	$A9, $02, $00
 loc_01F3C5:
-	jsl	f:sub_01A2F0
+	jsl	f:spawn_homing_missile
 	bcc	loc_01F3E2
 	lda	$0A,x
 	sta	a:$000A,y

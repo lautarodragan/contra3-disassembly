@@ -3063,7 +3063,7 @@ loc_1DC72A:
 	sta	OBJ_TIMER,x
 	lda	#$0180
 	sta	OBJ_X,x
-	jml	f:sub_01A513
+	jml	f:trail_pass_to_next
 
 brain_boss_chain_state_01:
 	lda	a:wram_1642
@@ -3133,7 +3133,7 @@ loc_1DC79B:
 	lda	OBJ_Y,x
 	adc	zp_02
 	sta	OBJ_Y,x
-	jml	f:sub_01A513
+	jml	f:trail_pass_to_next
 
 brain_boss_chain_state_03:
 	dec	OBJ_TIMER,x
@@ -3142,9 +3142,9 @@ brain_boss_chain_state_03:
 loc_1DC7C9:
 	lda	#$8000
 	sta	OBJ_FLAGS,x
-	jml	f:sub_01A52C
+	jml	f:delete_trail_chain
 loc_1DC7D2:
-	jml	f:sub_01A513
+	jml	f:trail_pass_to_next
 
 ; Object type $8E. Stage 6, brain_boss (hard): spiked orbs around the brain
 ; (not identified exactly).

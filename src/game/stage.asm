@@ -119,7 +119,7 @@ stage_init:
 	stz	a:p2_view_x
 	lda	#$0280
 	sta	a:wram_1646
-	stz	a:wram_16B2
+	stz	a:trail_buffers_used
 	stz	a:scroll_split_pattern
 	stz	a:song_change_wait
 	stz	a:wram_167C

@@ -5,7 +5,9 @@
 ; engine/window_effect.asm that compute window/HDMA shapes (clip_window_circle,
 ; build_window_circle, build_window_hdma_lines...).
 
-sub_02DDC6:
+; NMI (top-down): HDMA channel 2 reads the window table at $7E:3C00 on odd
+; frames, $3E00 on even ones (double buffer).
+swap_topdown_window_buffer:
 	lda	frame_counter
 	lsr	a
 	bcs	loc_02DDCE
@@ -20,7 +22,9 @@ loc_02DDD5:
 loc_02DDDB:
 	rtl
 
-sub_02DDDC:
+; NMI (top-down): while topdown_window_update_on, builds the window table
+; for the next frame into the other buffer (loc_02E0FD / loc_02E3AE).
+update_topdown_window:
 	lda	a:topdown_window_update_on
 	beq	loc_02DDDB
 	lda	frame_counter
@@ -389,7 +393,9 @@ end_window_hdma_table:
 	.a16
 	rtl
 
-sub_02E021:
+; Appends to the indirect HDMA table at zp_1E an entry of 16 lines pointing
+; at $3C1E (window off).
+add_window_off_16_lines:
 	ldx	zp_1E
 	sep	#$20
 	.a8
@@ -405,7 +411,8 @@ sub_02E021:
 	stx	zp_1E
 	rtl
 
-sub_02E03A:
+; The same with 24 lines.
+add_window_off_24_lines:
 	ldx	zp_1E
 	sep	#$20
 	.a8
@@ -421,7 +428,8 @@ sub_02E03A:
 	stx	zp_1E
 	rtl
 
-sub_02E053:
+; The same for zp_1A - zp_18 lines.
+add_window_off_span:
 	ldx	zp_1E
 	sep	#$20
 	.a8
@@ -439,7 +447,8 @@ sub_02E053:
 	stx	zp_1E
 	rtl
 
-sub_02E06F:
+; The same, several entries of one line each.
+add_window_off_single_lines:
 	; (not executed in the CDL traces)
 	ldx	zp_1E
 	sep	#$20
@@ -481,7 +490,10 @@ sub_02E06F:
 	stx	zp_1E
 	rtl
 
-sub_02E0B4:
+; Like build_window_circle, but the half-widths of the lines come from the
+; table at (zp_12) instead of the divider: zp_14 -/+ width, clipped to
+; 0-$FF, written from zp_1C.
+build_window_from_widths:
 	lda	zp_0E
 	sta	zp_02
 	lda	zp_0C
@@ -625,13 +637,13 @@ loc_02E1A3:
 	sta	zp_18
 	lda	#$00E0
 	sta	zp_1A
-	jsl	f:sub_02E03A
+	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
 	bcs	loc_02E1D3
 	lda	a:wram_0EEC
 	bne	loc_02E1D3
 	jsl	f:build_window_hdma_lines
-	jsl	f:sub_02E0B4
+	jsl	f:build_window_from_widths
 loc_02E1D3:
 	jsl	f:end_window_hdma_table
 	rtl
@@ -646,11 +658,11 @@ loc_02E1D8:
 	sta	zp_18
 	lda	#$00E0
 	sta	zp_1A
-	jsl	f:sub_02E03A
+	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
 	bcs	loc_02E203
 	jsl	f:build_window_hdma_lines
-	jsl	f:sub_02E0B4
+	jsl	f:build_window_from_widths
 loc_02E203:
 	jsl	f:end_window_hdma_table
 	rtl
@@ -668,7 +680,7 @@ loc_02E208:
 	jsl	f:clip_window_circle
 	bcc	loc_02E22D
 loc_02E227:
-	jsl	f:sub_02E06F
+	jsl	f:add_window_off_single_lines
 	bra	loc_02E24E
 loc_02E22D:
 	lda	#$0000
@@ -685,9 +697,9 @@ loc_02E23A:
 	beq	loc_02E227
 loc_02E246:
 	jsl	f:build_window_hdma_lines
-	jsl	f:sub_02E0B4
+	jsl	f:build_window_from_widths
 loc_02E24E:
-	jsl	f:sub_02E021
+	jsl	f:add_window_off_16_lines
 	lda	#$3C20
 	sta	zp_1C
 	lda	a:wram_0F72
@@ -701,7 +713,7 @@ loc_02E24E:
 	jsl	f:clip_window_circle
 	bcc	loc_02E277
 loc_02E271:
-	jsl	f:sub_02E053
+	jsl	f:add_window_off_span
 	bra	loc_02E28C
 loc_02E277:
 	lda	#$0000
@@ -711,7 +723,7 @@ loc_02E277:
 	bne	loc_02E271
 loc_02E284:
 	jsl	f:build_window_hdma_lines
-	jsl	f:sub_02E0B4
+	jsl	f:build_window_from_widths
 loc_02E28C:
 	jsl	f:end_window_hdma_table
 	rtl
@@ -763,7 +775,7 @@ loc_02E2DC:
 	sta	zp_18
 	lda	#$00E0
 	sta	zp_1A
-	jsl	f:sub_02E03A
+	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
 	bcs	loc_02E307
 	jsl	f:build_window_hdma_lines
@@ -782,7 +794,7 @@ loc_02E30C:
 	sta	zp_18
 	lda	#$00E0
 	sta	zp_1A
-	jsl	f:sub_02E03A
+	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
 	bcs	loc_02E33C
 	lda	a:wram_0EEC
@@ -806,7 +818,7 @@ loc_02E341:
 	jsl	f:clip_window_circle
 	bcc	loc_02E366
 loc_02E360:
-	jsl	f:sub_02E053
+	jsl	f:add_window_off_span
 	bra	loc_02E373
 loc_02E366:
 	lda	a:wram_0EEC
@@ -814,7 +826,7 @@ loc_02E366:
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
 loc_02E373:
-	jsl	f:sub_02E021
+	jsl	f:add_window_off_16_lines
 	lda	#$3C20
 	sta	zp_1C
 	lda	a:wram_0F7A
@@ -828,7 +840,7 @@ loc_02E373:
 	jsl	f:clip_window_circle
 	bcc	loc_02E39C
 loc_02E396:
-	jsl	f:sub_02E053
+	jsl	f:add_window_off_span
 	bra	loc_02E3A9
 loc_02E39C:
 	lda	a:wram_0F2C
@@ -934,13 +946,13 @@ loc_02E454:
 	sta	zp_18
 	lda	#$00E0
 	sta	zp_1A
-	jsl	f:sub_02E03A
+	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
 	bcs	loc_02E484
 	lda	a:wram_0F2C
 	bne	loc_02E484
 	jsl	f:build_window_hdma_lines
-	jsl	f:sub_02E0B4
+	jsl	f:build_window_from_widths
 loc_02E484:
 	jsl	f:end_window_hdma_table
 	rtl
@@ -955,11 +967,11 @@ loc_02E489:
 	sta	zp_18
 	lda	#$00E0
 	sta	zp_1A
-	jsl	f:sub_02E03A
+	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
 	bcs	loc_02E4B4
 	jsl	f:build_window_hdma_lines
-	jsl	f:sub_02E0B4
+	jsl	f:build_window_from_widths
 loc_02E4B4:
 	jsl	f:end_window_hdma_table
 	rtl
@@ -977,7 +989,7 @@ loc_02E4B9:
 	jsl	f:clip_window_circle
 	bcc	loc_02E4DE
 loc_02E4D8:
-	jsl	f:sub_02E06F
+	jsl	f:add_window_off_single_lines
 	bra	loc_02E4FF
 loc_02E4DE:
 	lda	#$0002
@@ -994,9 +1006,9 @@ loc_02E4EB:
 	beq	loc_02E4D8
 loc_02E4F7:
 	jsl	f:build_window_hdma_lines
-	jsl	f:sub_02E0B4
+	jsl	f:build_window_from_widths
 loc_02E4FF:
-	jsl	f:sub_02E021
+	jsl	f:add_window_off_16_lines
 	lda	#$3E20
 	sta	zp_1C
 	lda	a:wram_0FB2
@@ -1010,7 +1022,7 @@ loc_02E4FF:
 	jsl	f:clip_window_circle
 	bcc	loc_02E528
 loc_02E522:
-	jsl	f:sub_02E053
+	jsl	f:add_window_off_span
 	bra	loc_02E53D
 loc_02E528:
 	lda	#$0002
@@ -1020,7 +1032,7 @@ loc_02E528:
 	bne	loc_02E522
 loc_02E535:
 	jsl	f:build_window_hdma_lines
-	jsl	f:sub_02E0B4
+	jsl	f:build_window_from_widths
 loc_02E53D:
 	jsl	f:end_window_hdma_table
 	rtl
@@ -1072,7 +1084,7 @@ loc_02E58D:
 	sta	zp_18
 	lda	#$00E0
 	sta	zp_1A
-	jsl	f:sub_02E03A
+	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
 	bcs	loc_02E5B8
 	jsl	f:build_window_hdma_lines
@@ -1091,7 +1103,7 @@ loc_02E5BD:
 	sta	zp_18
 	lda	#$00E0
 	sta	zp_1A
-	jsl	f:sub_02E03A
+	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
 	bcs	loc_02E5ED
 	lda	a:wram_0F2C
@@ -1115,7 +1127,7 @@ loc_02E5F2:
 	jsl	f:clip_window_circle
 	bcc	loc_02E617
 loc_02E611:
-	jsl	f:sub_02E053
+	jsl	f:add_window_off_span
 	bra	loc_02E624
 loc_02E617:
 	lda	a:wram_0EEC
@@ -1123,7 +1135,7 @@ loc_02E617:
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
 loc_02E624:
-	jsl	f:sub_02E021
+	jsl	f:add_window_off_16_lines
 	lda	#$3E20
 	sta	zp_1C
 	lda	a:wram_0FBA
@@ -1137,7 +1149,7 @@ loc_02E624:
 	jsl	f:clip_window_circle
 	bcc	loc_02E64D
 loc_02E647:
-	jsl	f:sub_02E053
+	jsl	f:add_window_off_span
 	bra	loc_02E65A
 loc_02E64D:
 	lda	a:wram_0F2C

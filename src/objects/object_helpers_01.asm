@@ -34,7 +34,9 @@ loc_019E61:
 	plx
 	rtl
 
-sub_019E6E:
+; While OBJ_HIT is set, uploads the flash palette ($05:912A) to CGRAM
+; address Y (bosses drawn on BG flash this way).
+flash_palette_on_hit:
 	lda	OBJ_SAVED_ATTR,x
 	bne	loc_019E80
 	lda	OBJ_HIT,x
@@ -240,27 +242,27 @@ loc_019F83:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_019FA0,x
+	lda	f:tbl_solid_push_up,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_019FA0:
-	.addr	sub_019FEB
-	.addr	sub_019FEB
-	.addr	sub_019FEB
+tbl_solid_push_up:
+	.addr	solid_push_player_up
+	.addr	solid_push_player_up
+	.addr	solid_push_player_up
 loc_019FA6:
 	lda	zp_0C
 	phx
 	asl	a
 	tax
-	lda	f:tbl_019FB5,x
+	lda	f:tbl_solid_push_down,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_019FB5:
-	.addr	sub_01A0C7
-	.addr	sub_01A0C7
-	.addr	sub_01A0C7
+tbl_solid_push_down:
+	.addr	solid_push_player_down
+	.addr	solid_push_player_down
+	.addr	solid_push_player_down
 loc_019FBB:
 	lda	zp_10
 	cmp	zp_12
@@ -269,43 +271,47 @@ loc_019FBB:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_019FD0,x
+	lda	f:tbl_solid_push_right,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_019FD0:
-	.addr	sub_01A006
-	.addr	sub_01A006
-	.addr	sub_01A021
+tbl_solid_push_right:
+	.addr	solid_push_player_right
+	.addr	solid_push_player_right
+	.addr	solid_push_player_right_2
 loc_019FD6:
 	lda	zp_0C
 	phx
 	asl	a
 	tax
-	lda	f:tbl_019FE5,x
+	lda	f:tbl_solid_push_left,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_019FE5:
-	.addr	sub_01A055
-	.addr	sub_01A070
-	.addr	sub_01A055
+tbl_solid_push_left:
+	.addr	solid_push_player_left
+	.addr	solid_push_player_left_1
+	.addr	solid_push_player_left
 
-sub_019FEB:
+; zp_0C kinds 0-2: player landed on top: stops its fall, puts it on the
+; object, PCONTACT_ON_OBJECT.
+solid_push_player_up:
 	lda	a:OBJ_Y_VEL,y
 	bmi	loc_01A005
 	lda	#$0000
 	sta	a:OBJ_Y_VEL,y
 	sta	a:OBJ_Y_VEL_SUB,y
-	jsr	a:sub_01A0A4
+	jsr	a:place_player_on_object
 	lda	#$0080
 	ora	a:PLAYER_CONTACT,y
 	sta	a:PLAYER_CONTACT,y
 loc_01A005:
 	rtl
 
-sub_01A006:
-	jsr	a:sub_01A0BD
+; The player hit the right side of the object: put it right of it,
+; PCONTACT_BLOCK_LEFT; crushed (PCONTACT_KILLED) when that is past x $F1.
+solid_push_player_right:
+	jsr	a:place_player_right_of_object
 	cmp	#$00F1
 	bcs	loc_01A038
 	lda	#$0000
@@ -316,9 +322,9 @@ sub_01A006:
 	sta	a:PLAYER_CONTACT,y
 	rtl
 
-sub_01A021:
+solid_push_player_right_2:
 	; (not executed in the CDL traces)
-	jsr	a:sub_01A0BD
+	jsr	a:place_player_right_of_object
 	cmp	#$00F1
 	bcs	loc_01A038
 	lda	a:OBJ_X_VEL,y
@@ -343,8 +349,10 @@ loc_01A04B:
 	sta	a:PLAYER_CONTACT,y
 	rtl
 
-sub_01A055:
-	jsr	a:sub_01A0AE
+; The player hit the left side of the object: put it left of it,
+; PCONTACT_BLOCK_RIGHT; crushed when that is left of x 9.
+solid_push_player_left:
+	jsr	a:place_player_left_of_object
 	cmp	#$0009
 	bcc	loc_01A087
 	lda	#$0000
@@ -355,8 +363,8 @@ sub_01A055:
 	sta	a:PLAYER_CONTACT,y
 	rtl
 
-sub_01A070:
-	jsr	a:sub_01A0AE
+solid_push_player_left_1:
+	jsr	a:place_player_left_of_object
 	cmp	#$0009
 	bcc	loc_01A087
 	lda	a:OBJ_X_VEL,y
@@ -382,7 +390,7 @@ loc_01A09A:
 	sta	a:PLAYER_CONTACT,y
 	rtl
 
-sub_01A0A4:
+place_player_on_object:
 	clc
 	lda	OBJ_Y,x
 	adc	OBJ_HITBOX_H,x
@@ -390,7 +398,7 @@ sub_01A0A4:
 	sta	a:OBJ_Y,y
 	rts
 
-sub_01A0AE:
+place_player_left_of_object:
 	sec
 	lda	a:OBJ_X,y
 	sbc	a:PLAYER_HITBOX_RIGHT,y
@@ -400,7 +408,7 @@ sub_01A0AE:
 	sta	a:OBJ_X,y
 	rts
 
-sub_01A0BD:
+place_player_right_of_object:
 	clc
 	lda	OBJ_X,x
 	adc	OBJ_HITBOX_W,x
@@ -408,7 +416,8 @@ sub_01A0BD:
 	sta	a:OBJ_X,y
 	rts
 
-sub_01A0C7:
+; Hitting the object from below: nothing.
+solid_push_player_down:
 	rtl
 
 ; A = angle (0-255, calc_angle) from the centre of the hitbox of the object
@@ -513,10 +522,14 @@ loc_01A173:
 	ldy	#$0240
 	rtl
 
-sub_01A177:
+; For walking objects: keeps the object at X on the BG floor under the
+; centre of its hitbox (object_check_floor_tiles, the same tile classes as
+; check_floor_tiles); zp_FC = 1 and the y velocity cleared when it stands on
+; the floor.
+object_follow_floor:
 	lda	$0A,x
 	pha
-	jsl	f:sub_01A18A
+	jsl	f:object_check_floor_tiles
 	pla
 	sta	$0A,x
 	lda	zp_FC
@@ -526,7 +539,7 @@ sub_01A177:
 loc_01A189:
 	rtl
 
-sub_01A18A:
+object_check_floor_tiles:
 	lda	#$0001
 	sta	zp_FC
 	lda	$28,x
@@ -648,10 +661,15 @@ loc_01A26F:
 loc_01A272:
 	brl	loc_0195F2
 
-sub_01A275:
+; Object type $53: does nothing (rtl). A hitbox moved by another object
+; (stage 3 spiked climber's body, seen in the emulator; stages 4 and 6).
+update_passive_part:
 	rtl
 
-sub_01A276:
+; Object type $6B: part of a bigger enemy (stage 4, seen at the airship):
+; takes its attributes from word 2 of its animation entry; explodes when
+; OBJ_HP < 0.
+update_destructible_part:
 	lda	$06,x
 	bpl	loc_01A282
 	txy
@@ -663,7 +681,9 @@ loc_01A282:
 	sta	$02,x
 	rtl
 
-sub_01A28A:
+; Object type $6C: as type $6B with another explosion; never run in the CDL
+; traces.
+update_destructible_part_2:
 	; (not executed in the CDL traces)
 	lda	$06,x
 	bpl	loc_01A282
@@ -730,27 +750,33 @@ loc_01A2EF:
 	.a16
 	rts
 
-sub_01A2F0:
+; Spawns a homing missile (type $47; field $3A = A: 0 flies horizontally, 2
+; vertically) from the slots below $0740.
+spawn_homing_missile:
 	phx
 	sta	zp_00
 	ldy	#$0740
 	jsl	f:find_free_slot_y_down
 	bcc	loc_01A30A
 	tyx
-	lda	#$0047
-	sta	$10,x
+	lda	#OBJT_HOMING_MISSILE
+	sta	OBJ_TYPE,x
 	lda	zp_00
 	sta	$3A,x
-	jsl	f:sub_01A310
+	jsl	f:init_homing_missile
 loc_01A30A:
 	plx
 	rtl
 
-sub_01A30C:
+; Object type $47: small missile homing on a player (stage 3 and 4, seen in
+; the emulator; fired by the stage 4 tank, the snake robot...): accelerates
+; towards PLAYER_CENTER_X/Y (data_05ABAB by difficulty), smoke trail,
+; explodes after $A0 frames, when it touches a player or is shot.
+update_homing_missile:
 	lda	$12,x
 	bne	loc_01A332
 
-sub_01A310:
+init_homing_missile:
 	lda	#$AE9B
 	sta	$00,x
 	lda	#$3E00
@@ -874,7 +900,13 @@ loc_01A402:
 	sta	$1A,x
 	rtl
 
-sub_01A412:
+; Spawns a chain of A+1 trail segments (type $86) after the object at X,
+; linked by field $3E: each gets a free 16-word ring buffer at $7E:E000 +
+; $34 (bit in trail_buffers_used, kept in $32). The segments then follow the
+; path of the one before them (snake bodies, ropes, chains). In:
+; zp_00/zp_04/zp_08/zp_0A/zp_0C/zp_0E/zp_10 = their fields
+; $18/$04/$00/$02/$28/$2A/$16.
+spawn_trail_chain:
 	stz	zp_08
 	stz	zp_0A
 	stz	zp_0C
@@ -888,7 +920,7 @@ loc_01A41F:
 	sta	zp_12
 	lda	#$0001
 	sta	zp_14
-	lda	a:wram_16B2
+	lda	a:trail_buffers_used
 	sta	zp_16
 	jsl	f:find_free_slot_y_to_end
 	bcs	loc_01A4B3
@@ -922,12 +954,12 @@ loc_01A459:
 	dec	zp_FC
 	bpl	loc_01A459
 	plx
-	lda	a:wram_16B2
+	lda	a:trail_buffers_used
 	ora	zp_14
-	sta	a:wram_16B2
+	sta	a:trail_buffers_used
 	sta	a:$0032,y
-	lda	#$0086
-	sta	a:$0010,y
+	lda	#OBJT_TRAIL_SEGMENT
+	sta	a:OBJ_TYPE,y
 	lda	zp_04
 	sta	a:$0004,y
 	lda	zp_00
@@ -955,12 +987,17 @@ loc_01A4B3:
 	plx
 	rtl
 
-sub_01A4B5:
-	jsl	f:sub_01A4BE
-	jsl	f:sub_01A513
+; Object type $86: a segment of a trail chain (spawn_trail_chain; seen at
+; the stage 3 skeleton robot).
+update_trail_segment:
+	jsl	f:trail_segment_follow
+	jsl	f:trail_pass_to_next
 	rtl
 
-sub_01A4BE:
+; Records the position handed over by the previous segment (fields $1C/$1E)
+; in the ring buffer and moves to the entry written ($04 / 2) frames ago;
+; visible on the frames selected by the mask $18.
+trail_segment_follow:
 	sep	#$20
 	.a8
 	lda	#$7E
@@ -1014,7 +1051,9 @@ loc_01A50A:
 	.a16
 	rtl
 
-sub_01A513:
+; Hands the position, sprite and attributes of X to the next segment of the
+; chain (field $3E).
+trail_pass_to_next:
 	ldy	$3E,x
 	beq	loc_01A52B
 	lda	$0A,x
@@ -1028,7 +1067,9 @@ sub_01A513:
 loc_01A52B:
 	rtl
 
-sub_01A52C:
+; Deletes the segments linked from X and frees their ring buffers
+; (trail_buffers_used).
+delete_trail_chain:
 	phx
 loc_01A52D:
 	ldy	$3E,x
@@ -1037,8 +1078,8 @@ loc_01A52D:
 	sta	a:$0016,y
 	lda	a:$0032,y
 	eor	#$FFFF
-	and	a:wram_16B2
-	sta	a:wram_16B2
+	and	a:trail_buffers_used
+	sta	a:trail_buffers_used
 	tyx
 	bra	loc_01A52D
 loc_01A546:

@@ -926,7 +926,7 @@ data_05A3A6:
 	; CDL: read by update_player_window
 	.byte	$00, $3C, $00, $3E
 data_05A3AA:
-	; CDL: read by sub_00E913
+	; CDL: read by wobble_barrier_window
 	.byte	$1F, $1F, $1E, $1E, $1D, $1D, $1C, $1C, $1B, $1B, $1A, $1A, $19, $19, $18, $18
 	.byte	$17, $17, $16, $16, $15, $15, $14, $14, $13, $13, $12, $12, $11, $11, $10, $10
 	.byte	$0F, $0F, $0E, $0E, $0D, $0D, $0C, $0C, $0B, $0B, $0A, $0A, $09, $09, $08, $08
@@ -935,7 +935,7 @@ data_05A3AA:
 	.byte	$08, $08, $09, $09, $0A, $0A, $0B, $0B, $0C, $0C, $0D, $0D, $0E, $0E, $0F, $0F
 	.byte	$10, $10, $11, $11, $12, $12, $13, $13, $14, $14, $15, $15, $16, $16, $17, $17
 	.byte	$18, $18, $19, $19, $1A, $1A, $1B, $1B, $1C, $1C, $1D, $1D, $1E, $1E, $1F, $1F
-	; CDL: read by sub_02E0B4
+	; CDL: read by build_window_from_widths
 	.byte	$00, $00, $06, $00, $09, $00, $0B, $00, $0D, $00, $0E, $00, $0F, $00, $10, $00
 	.byte	$11, $00, $12, $00, $13, $00, $14, $00, $14, $00, $15, $00, $15, $00, $16, $00
 	.byte	$16, $00, $16, $00, $17, $00, $17, $00, $17, $00, $17, $00, $17, $00, $17, $00
@@ -1014,7 +1014,7 @@ tbl_object_types:
 	.faraddr	update_stage3_robot_cables
 	.faraddr	update_stage3_second_robot
 	.faraddr	update_debris_explosion
-	.faraddr	sub_01A30C
+	.faraddr	update_homing_missile
 	.faraddr	update_object_type_48
 	.faraddr	update_object_type_49
 	.faraddr	update_rolling_mine
@@ -1026,7 +1026,7 @@ tbl_object_types:
 	.faraddr	update_wall_hatch
 	.faraddr	update_object_type_48
 	.faraddr	update_object_type_52
-	.faraddr	sub_01A275
+	.faraddr	update_passive_part
 	.faraddr	update_object_type_04
 	.faraddr	update_object_type_55
 	.faraddr	update_object_type_56
@@ -1050,8 +1050,8 @@ tbl_object_types:
 	.faraddr	update_enemy_type_68
 	.faraddr	update_stage4_boss
 	.faraddr	update_stage4_boss_pod
-	.faraddr	sub_01A276
-	.faraddr	sub_01A28A
+	.faraddr	update_destructible_part
+	.faraddr	update_destructible_part_2
 	.faraddr	update_player_bike
 	.faraddr	update_stage4_tank
 	.faraddr	update_brain_boss
@@ -1077,7 +1077,7 @@ tbl_object_types:
 	.faraddr	update_stage4_boss_fireball
 	.faraddr	update_helicopter_rope
 	.faraddr	update_enemy_type_85
-	.faraddr	sub_01A4B5
+	.faraddr	update_trail_segment
 	.faraddr	update_skeleton_eye_fireball
 	.faraddr	update_snake_robot_debris
 	.faraddr	update_object_type_89
@@ -1321,16 +1321,16 @@ ptrs_enemy_bullet_speeds:
 	; CDL: read by spawn_enemy_bullet
 	.byte	$8A, $92, $8A, $92, $CA, $93
 data_05ABAB:
-	; CDL: read by sub_01A310
+	; CDL: read by init_homing_missile
 	.byte	$00, $14
 data_05ABAD:
-	; CDL: read by sub_01A310
+	; CDL: read by init_homing_missile
 	.byte	$40, $04, $00, $14, $80, $05, $00, $14, $80, $07, $00, $14
 data_05ABB9:
-	; CDL: read by sub_01A310
+	; CDL: read by init_homing_missile
 	.byte	$06, $00, $00, $00
 data_05ABBD:
-	; CDL: read by sub_01A310
+	; CDL: read by init_homing_missile
 	.byte	$00, $00, $06, $00
 data_05ABC1:
 	; CDL: read by player_state_ending
@@ -3349,7 +3349,7 @@ data_05EBB4:
 	.byte	$10, $4C, $90, $4E, $10, $00, $00, $00, $00, $00, $10, $00, $70, $C7, $00, $00
 	.byte	$B8, $EB
 data_05EBC6:
-	; CDL: read by update_objects, sub_01A276, sub_049A54
+	; CDL: read by update_objects, update_destructible_part, sub_049A54
 	.byte	$CA, $EB, $D8, $EB, $01, $00, $87, $AF, $00, $32, $01, $00, $87, $AF, $00, $3E
 	.byte	$CA, $EB, $01, $00, $91, $AF, $00, $32, $01, $00, $91, $AF, $00, $3E, $D8, $EB
 data_05EBE6:

@@ -655,7 +655,7 @@ p2_td_joy_pressed           = $156E	; player 2's joypad newly pressed buttons
 topdown_boss_end_step           = $1580	; step of the boss state after the boss is defeated (tbl_stage2_boss_end_steps / tbl_stage5_boss_end_steps)
 map_view_step           = $1582	; step of the Select map view, index into tbl_map_view_steps (update_map_view); 0 = not open
 td_palette_anim_timer           = $1584	; 0-$5F, the palette tasks of stages 2 and 5 start at 0 and $20 (step_palette_anim_timer)
-topdown_window_update_on           = $1586	; non-zero during play: the NMI (sub_02DDDC) rebuilds the window HDMA tables at $7E:3C00/$7E:3E00
+topdown_window_update_on           = $1586	; non-zero during play: the NMI (update_topdown_window) rebuilds the window HDMA tables at $7E:3C00/$7E:3E00
 fade_target_brightness           = $1588	; brightness ($00-$0F) that update_topdown_fade moves inidisp_shadow towards
 intro_step           = $158A	; step of the start-point intro, index into tbl_intro_steps (update_topdown_intro)
 boss_chr_stream_src           = $158C	; boss maps: source address of the boss's Mode 7 characters DMAd by stream_topdown_sprite_gfx
@@ -758,7 +758,7 @@ wram_16AA           = $16AA
 wram_16AC           = $16AC
 wram_16AE           = $16AE
 wram_16B0           = $16B0
-wram_16B2           = $16B2
+trail_buffers_used           = $16B2
 player_autopilot_mode           = $16B4	; non-zero: apply_player_autopilot forces the players' input (1-3, tbl_player_autopilot_modes); set by objects
 wram_16B6           = $16B6
 wram_16BA           = $16BA

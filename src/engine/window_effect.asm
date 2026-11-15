@@ -12,7 +12,7 @@
 ; $7E:xxxx for it: the bomb blast (a colour-math circle of radius A =
 ; PLAYER_BOMB_RADIUS around PLAYER_BOMB_X/Y, setup_bomb_window) or, with
 ; the barrier, a wavy circle around PLAYER_CENTER_X/Y (setup_barrier_window,
-; sub_00E8C1, sub_00E913); none: windows off (coldata_shadow = 0).
+; copy_window_hdma_lines, wobble_barrier_window); none: windows off (coldata_shadow = 0).
 update_player_window:
 	lda	stage_frame_odd
 	asl	a
@@ -57,9 +57,9 @@ loc_00E839:
 	jsl	f:clip_window_circle
 	bcs	loc_00E82D
 	jsl	f:build_window_hdma_lines
-	jsl	f:sub_02E0B4
-	jsr	a:sub_00E8C1
-	jsr	a:sub_00E913
+	jsl	f:build_window_from_widths
+	jsr	a:copy_window_hdma_lines
+	jsr	a:wobble_barrier_window
 	jsl	f:end_window_hdma_table
 	rtl
 loc_00E855:
@@ -113,7 +113,10 @@ setup_bomb_window:
 	stz	zp_C6
 	rts
 
-sub_00E8C1:
+; Copies the 16-byte line-count part of the window HDMA table (zp_9E) to
+; zp_C6 and points its entries $20 bytes further (the colour table of the
+; barrier).
+copy_window_hdma_lines:
 	ldx	zp_9E
 	ldy	zp_C6
 	tya
@@ -177,7 +180,7 @@ loc_00E8FF:
 ; Wobbles the barrier circle: adds data_05A3AA (a sine-like table, scrolled
 ; by stage_frame_counter) to the table, with a colour that changes when the
 ; barrier has less than $60 frames left (it blinks before running out).
-sub_00E913:
+wobble_barrier_window:
 	lda	zp_06
 	sta	zp_FC
 	ldx	zp_FE

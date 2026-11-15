@@ -23,7 +23,7 @@ update_stage3_boss:
 	lda	#$0001
 	sta	a:shake_continuous
 	ldy	#$0050
-	jsl	f:sub_019E6E
+	jsl	f:flash_palette_on_hit
 	lda	stage_frame_counter
 	and	#$000C
 	lsr	a
@@ -525,7 +525,7 @@ loc_0483DC:
 loc_0483EB:
 	lda	OBJ_Y_VEL,x
 	bmi	loc_0483F7
-	jsl	f:sub_01A177
+	jsl	f:object_follow_floor
 	lda	zp_FC
 	bne	loc_048411
 loc_0483F7:
@@ -1537,7 +1537,7 @@ sub_048BBF:
 	sta	zp_04
 	lda	#$0005
 	ldy	#$0380
-	jsl	f:sub_01A412
+	jsl	f:spawn_trail_chain
 	plx
 loc_048BE9:
 	rts
@@ -1608,7 +1608,7 @@ skeleton_eye_fireball_state_02:
 	bpl	loc_048C6A
 	lda	#$8000
 	sta	OBJ_FLAGS,x
-	jml	f:sub_01A52C
+	jml	f:delete_trail_chain
 loc_048C6A:
 	dec	$36,x
 	bpl	loc_048C79
@@ -1624,7 +1624,7 @@ loc_048C79:
 	eor	#$0E00
 	sta	OBJ_ATTR,x
 loc_048C84:
-	jml	f:sub_01A513
+	jml	f:trail_pass_to_next
 
 ; Object type $64. Stage 4: invisible controller present for the whole stage
 ; (position 0,0, 32 states): drives the hover-bike scenes, the airship, the
@@ -9219,7 +9219,7 @@ loc_04C79B:
 	bra	loc_04C805
 loc_04C7C9:
 	lda	#$0000
-	jsl	f:sub_01A2F0
+	jsl	f:spawn_homing_missile
 	bcc	loc_04C805
 	lda	OBJ_X,x
 	sta	a:$000A,y
@@ -10620,7 +10620,7 @@ update_helicopter_rope:
 	; (not executed in the CDL traces)
 	bcc	loc_04D2ED
 loc_04D2C6:
-	jsl	f:sub_01A52C
+	jsl	f:delete_trail_chain
 	stz	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	lda	#$CB30
@@ -10741,7 +10741,7 @@ sub_04D3B4:
 	sta	zp_04
 	lda	#$0003
 	ldy	#$0940
-	jsl	f:sub_01A412
+	jsl	f:spawn_trail_chain
 	stz	$34,x
 	lda	#$0002
 	sta	$32,x
@@ -10812,7 +10812,7 @@ helicopter_rope_state_03:
 sub_04D457:
 	jsr	a:sub_04D686
 	jsr	a:sub_04D724
-	jml	f:sub_01A513
+	jml	f:trail_pass_to_next
 
 helicopter_rope_state_04:
 	lda	a:wram_0916
@@ -10935,7 +10935,7 @@ helicopter_rope_state_07:
 loc_04D563:
 	dec	a:wram_163E
 loc_04D566:
-	jml	f:sub_01A513
+	jml	f:trail_pass_to_next
 loc_04D56A:
 	brl	helicopter_rope_state_03
 
@@ -11006,7 +11006,7 @@ loc_04D5FB:
 	jsl	f:sub_04D457
 	lda	#$007C
 	sta	OBJ_Y,x
-	jml	f:sub_01A513
+	jml	f:trail_pass_to_next
 
 helicopter_rope_state_0B:
 	lda	stage_frame_mod4

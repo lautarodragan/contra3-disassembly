@@ -621,7 +621,7 @@ loc_01B662:
 	and	#$007F
 	bne	loc_01B682
 	lda	#$0000
-	jsl	f:sub_01A2F0
+	jsl	f:spawn_homing_missile
 	bcc	loc_01B682
 	lda	#$0002
 	sta	$1A,x
