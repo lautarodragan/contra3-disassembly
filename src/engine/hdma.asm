@@ -1,16 +1,16 @@
 ; engine/hdma.asm -- HDMA tables and their NMI-time transfers
 ; Bank $00, $00:E369-$00:E7EE. Included by main.asm in segment BANK00.
 ;
-; sub_00E369 clears and sets up the HDMA table buffer at $1700;
+; init_hud clears and sets up the HDMA table buffer at $1700;
 ; sub_00E3DA/sub_00E464 (from NMI) compute table entries with the hardware
-; divider; sub_00E4F6/sub_00E535 DMA to VRAM and sub_00E575 programs HDMA
+; divider; sub_00E4F6/sub_00E535 DMA to VRAM and setup_stage_hdma programs HDMA
 ; channels 3 and 4.
 
-sub_00E369:
+init_hud:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:wram_1700
+	sta	f:hud_buffer
 	lda	#$007E
 	ldx	#$1700
 	txy
@@ -21,54 +21,54 @@ sub_00E369:
 	ldx	#$A105
 	jsl	f:draw_text_attr
 	ldx	#$0020
-loc_00E38C:
+@copy_p1_top:
 	lda	a:data_05A14F,x
 	sta	a:$16FE,x
 	dex
 	dex
-	bne	loc_00E38C
+	bne	@copy_p1_top
 	ldx	#$0020
-loc_00E399:
+@copy_p1_bottom:
 	lda	a:data_05A18F,x
 	sta	a:$173E,x
 	dex
 	dex
-	bne	loc_00E399
+	bne	@copy_p1_bottom
 	lda	a:title_menu_cursor
-	beq	loc_00E3CC
+	beq	@done
 	lda	#$2400
 	ldx	#$A12B
 	jsl	f:draw_text_attr
 	ldx	#$0020
-loc_00E3B5:
+@copy_p2_top:
 	lda	a:data_05A16F,x
 	sta	a:$171E,x
 	dex
 	dex
-	bne	loc_00E3B5
+	bne	@copy_p2_top
 	ldx	#$0020
-loc_00E3C2:
+@copy_p2_bottom:
 	lda	a:data_05A1AF,x
 	sta	a:$175E,x
 	dex
 	dex
-	bne	loc_00E3C2
-loc_00E3CC:
+	bne	@copy_p2_bottom
+@done:
 	rtl
 
-sub_00E3CD:
+update_hud_alternating:
 	lda	a:title_menu_cursor
-	beq	sub_00E3DA
+	beq	update_p1_hud
 	lda	frame_counter
 	lsr	a
-	bcc	sub_00E3DA
-	brl	sub_00E464
+	bcc	update_p1_hud
+	brl	update_p2_hud
 
-sub_00E3DA:
+update_p1_hud:
 	lda	a:p1_lives
-	beq	loc_00E3E0
+	beq	@lives_digits
 	dec	a
-loc_00E3E0:
+@lives_digits:
 	sta	a:WRDIVL
 	sep	#$20
 	.a8
@@ -84,52 +84,52 @@ loc_00E3E0:
 	nop
 	lda	a:RDDIVL
 	inc	a
-	sta	a:wram_1744
+	sta	a:hud_buffer+$44
 	lda	a:RDMPYL
 	inc	a
-	sta	a:wram_1746
+	sta	a:hud_buffer+$46
 	ldx	a:p1_weapon_slot
-	lda	a:data_05A1D1,x
-	sta	a:wram_170B
-	sta	a:wram_170D
-	sta	a:wram_174B
-	sta	a:wram_174D
+	lda	a:hud_weapon_slot_attrs,x
+	sta	a:hud_buffer+$0B
+	sta	a:hud_buffer+$0D
+	sta	a:hud_buffer+$4B
+	sta	a:hud_buffer+$4D
 	ldx	a:p1_weapon_slot_other
-	lda	a:data_05A1D1,x
-	sta	a:wram_1711
-	sta	a:wram_1713
-	sta	a:wram_1751
-	sta	a:wram_1753
+	lda	a:hud_weapon_slot_attrs,x
+	sta	a:hud_buffer+$11
+	sta	a:hud_buffer+$13
+	sta	a:hud_buffer+$51
+	sta	a:hud_buffer+$53
 	ldx	a:p1_weapon_1
-	lda	a:data_05A1D5,x
-	sta	a:wram_170A
-	lda	a:data_05A1DB,x
-	sta	a:wram_170C
-	lda	a:data_05A1E1,x
-	sta	a:wram_174A
-	lda	a:data_05A1E7,x
-	sta	a:wram_174C
+	lda	a:hud_weapon_tiles_tl,x
+	sta	a:hud_buffer+$0A
+	lda	a:hud_weapon_tiles_tr,x
+	sta	a:hud_buffer+$0C
+	lda	a:hud_weapon_tiles_bl,x
+	sta	a:hud_buffer+$4A
+	lda	a:hud_weapon_tiles_br,x
+	sta	a:hud_buffer+$4C
 	ldx	a:p1_weapon_2
-	lda	a:data_05A1D5,x
-	sta	a:wram_1710
-	lda	a:data_05A1DB,x
-	sta	a:wram_1712
-	lda	a:data_05A1E1,x
-	sta	a:wram_1750
-	lda	a:data_05A1E7,x
-	sta	a:wram_1752
+	lda	a:hud_weapon_tiles_tl,x
+	sta	a:hud_buffer+$10
+	lda	a:hud_weapon_tiles_tr,x
+	sta	a:hud_buffer+$12
+	lda	a:hud_weapon_tiles_bl,x
+	sta	a:hud_buffer+$50
+	lda	a:hud_weapon_tiles_br,x
+	sta	a:hud_buffer+$52
 	lda	a:p1_bombs
 	inc	a
-	sta	a:wram_175C
+	sta	a:hud_buffer+$5C
 	rep	#$20
 	.a16
 	rtl
 
-sub_00E464:
+update_p2_hud:
 	lda	a:p2_lives
-	beq	loc_00E46A
+	beq	@lives_digits
 	dec	a
-loc_00E46A:
+@lives_digits:
 	sta	a:WRDIVL
 	sep	#$20
 	.a8
@@ -145,54 +145,54 @@ loc_00E46A:
 	nop
 	lda	a:RDDIVL
 	inc	a
-	sta	a:wram_1764
+	sta	a:hud_buffer+$64
 	lda	a:RDMPYL
 	inc	a
-	sta	a:wram_1766
+	sta	a:hud_buffer+$66
 	ldx	a:p2_weapon_slot
-	lda	a:data_05A1D1,x
-	sta	a:wram_172B
-	sta	a:wram_172D
-	sta	a:wram_176B
-	sta	a:wram_176D
+	lda	a:hud_weapon_slot_attrs,x
+	sta	a:hud_buffer+$2B
+	sta	a:hud_buffer+$2D
+	sta	a:hud_buffer+$6B
+	sta	a:hud_buffer+$6D
 	ldx	a:p2_weapon_slot_other
-	lda	a:data_05A1D1,x
-	sta	a:wram_1731
-	sta	a:wram_1733
-	sta	a:wram_1771
-	sta	a:wram_1773
+	lda	a:hud_weapon_slot_attrs,x
+	sta	a:hud_buffer+$31
+	sta	a:hud_buffer+$33
+	sta	a:hud_buffer+$71
+	sta	a:hud_buffer+$73
 	ldx	a:p2_weapon_1
-	lda	a:data_05A1D5,x
-	sta	a:wram_172A
-	lda	a:data_05A1DB,x
-	sta	a:wram_172C
-	lda	a:data_05A1E1,x
-	sta	a:wram_176A
-	lda	a:data_05A1E7,x
-	sta	a:wram_176C
+	lda	a:hud_weapon_tiles_tl,x
+	sta	a:hud_buffer+$2A
+	lda	a:hud_weapon_tiles_tr,x
+	sta	a:hud_buffer+$2C
+	lda	a:hud_weapon_tiles_bl,x
+	sta	a:hud_buffer+$6A
+	lda	a:hud_weapon_tiles_br,x
+	sta	a:hud_buffer+$6C
 	ldx	a:p2_weapon_2
-	lda	a:data_05A1D5,x
-	sta	a:wram_1730
-	lda	a:data_05A1DB,x
-	sta	a:wram_1732
-	lda	a:data_05A1E1,x
-	sta	a:wram_1770
-	lda	a:data_05A1E7,x
-	sta	a:wram_1772
+	lda	a:hud_weapon_tiles_tl,x
+	sta	a:hud_buffer+$30
+	lda	a:hud_weapon_tiles_tr,x
+	sta	a:hud_buffer+$32
+	lda	a:hud_weapon_tiles_bl,x
+	sta	a:hud_buffer+$70
+	lda	a:hud_weapon_tiles_br,x
+	sta	a:hud_buffer+$72
 	lda	a:p2_bombs
 	inc	a
-	sta	a:wram_177C
+	sta	a:hud_buffer+$7C
 	rep	#$20
 	.a16
 	rtl
 
-sub_00E4EE:
+upload_hud_alternating:
 	lda	frame_counter
 	lsr	a
-	bcs	sub_00E4F6
-	brl	sub_00E535
+	bcs	upload_p1_hud
+	brl	upload_p2_hud
 
-sub_00E4F6:
+upload_p1_hud:
 	sep	#$20
 	.a8
 	lda	#$80
@@ -219,7 +219,7 @@ sub_00E4F6:
 	.a16
 	rtl
 
-sub_00E535:
+upload_p2_hud:
 	sep	#$20
 	.a8
 	lda	#$80
@@ -245,10 +245,10 @@ sub_00E535:
 	rep	#$20
 	.a16
 	rtl
-loc_00E574:
+hdma_return:
 	rtl
 
-sub_00E575:
+setup_stage_hdma:
 	stz	zp_00
 	sep	#$20
 	.a8
@@ -257,17 +257,17 @@ sub_00E575:
 	.a16
 	lda	a:stage_state
 	cmp	#$0002
-	bcc	loc_00E574
+	bcc	hdma_return
 	lda	hdma_preset
-	beq	loc_00E5B6
+	beq	@window_channel
 	dec	a
 	asl	a
 	tax
 	ldy	a:data_05A1ED,x
-loc_00E590:
+@channel_loop:
 	ldx	a:$0000,y
 	cpx	#$FFFF
-	bcs	loc_00E5B1
+	bcs	@channels_done
 	lda	a:$0002,y
 	sta	$00,x
 	lda	a:$0004,y
@@ -279,29 +279,29 @@ loc_00E590:
 	clc
 	adc	#$0008
 	tay
-	bra	loc_00E590
-loc_00E5B1:
+	bra	@channel_loop
+@channels_done:
 	lda	a:$0002,y
 	sta	zp_00
-loc_00E5B6:
+@window_channel:
 	lda	zp_9E
-	beq	loc_00E5CA
+	beq	@coldata_channel
 	sta	a:A1T3L
 	lda	#$2641
 	sta	a:DMAP3
 	lda	#$0008
 	ora	zp_00
 	sta	zp_00
-loc_00E5CA:
+@coldata_channel:
 	lda	zp_C6
-	beq	loc_00E5DE
+	beq	@enable
 	sta	a:A1T4L
 	lda	#$3242
 	sta	a:DMAP4
 	lda	#$0010
 	ora	zp_00
 	sta	zp_00
-loc_00E5DE:
+@enable:
 	sep	#$20
 	.a8
 	lda	#$7E
@@ -314,12 +314,12 @@ loc_00E5DE:
 	rep	#$20
 	.a16
 	rtl
-loc_00E5F6:
+split_hdma_return:
 	rtl
 
-sub_00E5F7:
-	lda	a:wram_1676
-	beq	loc_00E5F6
+build_scroll_split_hdma:
+	lda	a:scroll_split_pattern
+	beq	split_hdma_return
 	dec	a
 	asl	a
 	tay
@@ -329,25 +329,25 @@ sub_00E5F7:
 	sta	zp_04
 	lda	#$D400
 	phx
-	jsr	a:sub_00E61B
-	jsr	a:sub_00E6B4
+	jsr	a:build_split_line_table
+	jsr	a:fill_split_values
 	plx
 	rtl
-loc_00E615:
+split_skip_entry:
 	iny
 	iny
 	iny
 	iny
-	bra	loc_00E637
+	bra	split_entry_loop
 
-sub_00E61B:
+build_split_line_table:
 	sta	zp_02
 	sta	zp_FC
 	lda	zp_00
 	sta	zp_FE
 	stz	zp_08
 	stz	zp_0C
-	lda	a:wram_1674
+	lda	a:scroll_split_y
 	and	#$FF00
 	xba
 	asl	a
@@ -355,7 +355,7 @@ sub_00E61B:
 	lda	(zp_04),y
 	sta	zp_06
 	ldy	#$0000
-loc_00E637:
+split_entry_loop:
 	sep	#$20
 	.a8
 	lda	#$05
@@ -365,14 +365,14 @@ loc_00E637:
 	.a16
 	sec
 	lda	(zp_06),y
-	sbc	a:wram_1674
-	bmi	loc_00E615
-	beq	loc_00E615
+	sbc	a:scroll_split_y
+	bmi	split_skip_entry
+	beq	split_skip_entry
 	cmp	#$00DF
-	bcc	loc_00E653
+	bcc	@line_count
 	inc	zp_0C
 	lda	#$00DF
-loc_00E653:
+@line_count:
 	and	#$00FF
 	sta	zp_0A
 	sec
@@ -426,9 +426,9 @@ loc_00E653:
 	iny
 	iny
 	lda	zp_0C
-	bne	loc_00E6A6
-	bra	loc_00E637
-loc_00E6A6:
+	bne	@end
+	bra	split_entry_loop
+@end:
 	lda	#$0000
 	sta	(zp_00)
 	sep	#$20
@@ -440,15 +440,15 @@ loc_00E6A6:
 	.a16
 	rts
 
-sub_00E6B4:
+fill_split_values:
 	ldx	zp_FE
 	lda	f:$7E0000,x
-	beq	loc_00E6DA
+	beq	@done
 	ldx	zp_FC
 	lda	f:$7E0000,x
 	sta	zp_02
 	and	#$00FE
-	jsr	a:sub_00E6DB
+	jsr	a:call_split_value_handler
 	inc	zp_FE
 	inc	zp_FE
 	inc	zp_FE
@@ -456,17 +456,17 @@ sub_00E6B4:
 	inc	zp_FC
 	inc	zp_FC
 	inc	zp_FC
-	bra	sub_00E6B4
-loc_00E6DA:
+	bra	fill_split_values
+@done:
 	rts
 
-sub_00E6DB:
+call_split_value_handler:
 	tay
 	lda	a:tbl_05A35C,y
 	sta	zp_00
 	jmp	(zp_00)
 
-sub_00E6E4:
+split_value_from_table:
 	lda	zp_03
 	and	#$00FF
 	phx
@@ -476,40 +476,40 @@ sub_00E6E4:
 	sta	f:$7E0002,x
 	rts
 
-sub_00E6F5:
-	lda	a:wram_1380
+split_value_bg1_x:
+	lda	a:bg1_x
 	sta	f:$7E0002,x
 	rts
 
-sub_00E6FD:
-	lda	a:wram_13C0
+split_value_bg2_x:
+	lda	a:bg2_x
 	sta	f:$7E0002,x
 	rts
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_00E705:
+unused_debug_scroll_split:
 	; (not executed in the CDL traces)
 	lda	#$0007
 	sta	hdma_preset
 	lda	joy1_held
 	bit	#$0800
-	beq	loc_00E714
-	dec	a:wram_1674
-loc_00E714:
+	beq	@no_left
+	dec	a:scroll_split_y
+@no_left:
 	bit	#$0400
-	beq	loc_00E71C
-	inc	a:wram_1674
-loc_00E71C:
-	lda	a:wram_1674
+	beq	@clamp
+	inc	a:scroll_split_y
+@clamp:
+	lda	a:scroll_split_y
 	and	#$01FF
-	sta	a:wram_1674
+	sta	a:scroll_split_y
 	lda	#$D000
 	sta	zp_00
 	lda	#$A260
 	sta	zp_04
 	lda	#$D400
 	rts
-loc_00E733:
+init_line_hdma_table:
 	sep	#$20
 	.a8
 	lda	#$7E
@@ -542,7 +542,7 @@ loc_00E733:
 	.a16
 	rtl
 
-sub_00E76C:
+fill_line_hdma_table:
 	pha
 	tya
 	asl	a
@@ -591,7 +591,7 @@ sub_00E76C:
 	.a16
 	ldx	#$00FE
 	ldy	#$0000
-loc_00E7BC:
+@loop:
 	clc
 	lda	zp_00
 	adc	zp_08
@@ -614,7 +614,7 @@ loc_00E7BC:
 	iny
 	dex
 	dex
-	bpl	loc_00E7BC
+	bpl	@loop
 	sep	#$20
 	.a8
 	lda	#$05

@@ -71,7 +71,7 @@ its `$40` bytes (`OBJF_DELETE`, `OBJF_OFFSCREEN_KILL`, `delete_self_and_linked`)
 For each slot in use, in order:
 
 1. `OBJF_MOVE`: position += velocity, minus this frame's BG scroll
-   (`wram_138E`, `wram_13A6`), so objects stay put in the level.
+   (`bg1_x_delta`, `bg1_y_delta`), so objects stay put in the level.
 2. `OBJF_OFFSCREEN_KILL`: free the slot when it is off the screen.
 3. `OBJF_TARGET`: compute `OBJ_HITBOX_RIGHT`/`OBJ_HITBOX_TOP` and append the
    slot to the *target list* at `$15A0` (`target_list_end`; 0-terminated).

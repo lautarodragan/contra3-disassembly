@@ -1,13 +1,13 @@
 ; gfx/gfx_08.asm -- Palettes and compressed graphics (bank $08)
 ; Bank $08, $08:8000-$08:FFFF. Included by main.asm in segment BANK08.
 ;
-; Palettes copied to the WRAM palette buffer by the palette tasks (sub_0099C9,
-; sub_009AA5; see engine/palette_tasks.asm) and by sub_02F3C1, then graphics
+; Palettes copied to the WRAM palette buffer by the palette tasks (palette_task_animate,
+; palette_task_fade_in; see engine/palette_tasks.asm) and by sub_02F3C1, then graphics
 ; compressed for decompress_chunk.
 ;
 ; Data only (no labels, no code). Each block starts at a CDL comment.
 
-	; CDL: read by sub_0099C9
+	; CDL: read by palette_task_animate
 	.byte	$1F, $00, $20, $04, $01, $00, $01, $00, $01, $00, $01, $00, $08, $20, $4D, $2C
 	.byte	$B2, $38, $7C, $55, $DC, $59, $3C, $62, $BD, $6A, $9E, $7B, $01, $00, $01, $00
 	.byte	$01, $00, $1F, $00, $00, $00, $00, $00, $00, $30, $00, $44, $00, $58, $00, $7C
@@ -31,7 +31,7 @@
 	.byte	$00, $00, $1F, $00, $00, $00, $D5, $46, $CD, $09, $65, $08, $00, $00, $CD, $5D
 	.byte	$E7, $2C, $21, $0C, $00, $00, $42, $18, $D6, $7C, $B2, $08, $00, $00, $3B, $1A
 	.byte	$F6, $10, $44, $10
-	; CDL: read by sub_0099C9
+	; CDL: read by palette_task_animate
 	.byte	$BF, $00, $00, $00, $42, $08, $C7, $18, $09, $21, $6D, $31, $F1, $3D, $D6, $5A
 	.byte	$7F, $6F, $64, $08, $88, $04, $0C, $11, $90, $1D, $F4, $25, $9B, $3A, $7F, $4F
 	.byte	$FF, $67, $00, $00, $66, $08, $C7, $18, $09, $21, $AE, $08, $6D, $31, $D8, $2D
@@ -51,7 +51,7 @@
 	.byte	$00, $00, $0E, $5E, $A5, $14, $31, $46, $FF, $7F, $0E, $5E, $50, $66, $92, $6E
 	.byte	$D4, $76, $0E, $5E, $1D, $2C, $FF, $01, $74, $4E, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00
-	; CDL: read by sub_0099C9, sub_009AA5
+	; CDL: read by palette_task_animate, palette_task_fade_in
 	.byte	$5F, $00, $00, $00, $EA, $62, $C3, $45, $C3, $24, $FF, $6B, $1F, $47, $1C, $2A
 	.byte	$34, $11, $BF, $77, $B8, $4A, $B0, $2D, $2C, $1D, $86, $08, $AF, $04, $BF, $04
 	.byte	$9F, $2F, $00, $00, $9F, $1E, $58, $09, $2B, $00, $DF, $5F, $DF, $42, $FA, $29
@@ -191,7 +191,7 @@
 	.byte	$A7, $0C, $EA, $10, $4D, $21, $B1, $31, $34, $3A, $D8, $4E, $46, $00, $ED, $08
 	.byte	$AA, $04, $10, $0D, $73, $19, $F7, $29, $7B, $3A, $1F, $4F, $BF, $63, $01, $00
 	.byte	$FF, $7F
-	; CDL: read by sub_0099C9
+	; CDL: read by palette_task_animate
 	.byte	$1F, $00, $00, $00, $08, $00, $2C, $00, $4F, $00, $71, $00, $53, $04, $96, $04
 	.byte	$B9, $04, $DD, $08, $5E, $11, $BE, $1D, $1F, $26, $7F, $32, $DF, $36, $5F, $3B
 	.byte	$FF, $43, $5F, $00, $00, $00, $A5, $14, $3F, $53, $7D, $3A, $D9, $25, $12, $0D
@@ -231,10 +231,10 @@
 	.byte	$BF, $12, $BF, $05, $5B, $00, $BE, $6B, $6B, $25, $00, $00, $20, $00, $DF, $63
 	.byte	$5F, $3F, $9F, $0A, $BF, $09, $1F, $00, $34, $00, $0C, $00, $DF, $73, $5B, $63
 	.byte	$D7, $56, $53, $46, $EF, $39, $6B, $29, $E7, $1C, $00, $00
-	; CDL: read by sub_009AA5
+	; CDL: read by palette_task_fade_in
 	.byte	$15, $00, $0D, $00, $1F, $00, $FF, $3D, $83, $74, $A6, $75, $C4, $7B, $19, $1B
 	.byte	$DF, $6F, $15, $00, $FF, $1C, $FF, $5E, $05, $00, $11, $00, $1F, $00, $BF, $56
-	; CDL: read by sub_0099C9; partly not accessed
+	; CDL: read by palette_task_animate; partly not accessed
 	.byte	$1F, $00, $00, $00, $C5, $18, $07, $21, $69, $2D, $EE, $3D, $92, $52, $F5, $5E
 	.byte	$7A, $6F, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $9F, $00, $00, $00, $02, $00, $24, $00, $25, $04, $46, $04, $67, $04
@@ -257,7 +257,7 @@
 	.byte	$66, $0C, $AB, $18, $0E, $29, $70, $31, $D4, $35, $9A, $52, $3F, $6B, $3F, $73
 	.byte	$43, $14, $84, $1C, $C7, $28, $49, $39, $6D, $45, $12, $5E, $B7, $6A, $1A, $6F
 	.byte	$66, $0C, $AB, $18, $0E, $29, $90, $31, $D4, $39, $BA, $52, $5F, $6F, $5F, $77
-	; CDL: read by sub_0099C9
+	; CDL: read by palette_task_animate
 	.byte	$3F, $00, $CE, $39, $BD, $36, $FE, $1D, $FC, $2B, $7D, $11, $9A, $04, $FB, $0C
 	.byte	$96, $00, $70, $00, $29, $00, $06, $00, $BD, $1D, $E0, $03, $95, $04, $29, $00
 	.byte	$AF, $08, $CE, $39, $7B, $5B, $B6, $4A, $73, $3E, $32, $32, $CE, $29, $11, $32
@@ -1812,13 +1812,13 @@
 	.byte	$00, $10, $07, $1D, $03, $A2, $A4, $1F, $1F, $1C, $10, $07, $08, $88, $17, $AE
 	.byte	$02, $ED, $00, $FD, $A4, $E3, $00, $26, $03, $50, $05, $B3, $C0, $FC, $82, $AF
 	.byte	$50, $09, $57, $E6, $02, $D1
-	; CDL: read by sub_0099C9
+	; CDL: read by palette_task_animate
 	.byte	$3F, $00, $00, $00, $00, $7C, $D6, $7E, $FF, $7F, $00, $00, $1F, $00, $DF, $5A
 	.byte	$FF, $7F, $00, $00, $00, $5C, $10, $5E, $F7, $5E, $00, $00, $17, $00, $17, $42
 	.byte	$F7, $5E, $00, $00, $00, $3C, $6B, $3D, $EF, $3D, $00, $00, $0F, $00, $6F, $2D
 	.byte	$EF, $3D, $00, $00, $00, $20, $A5, $20, $08, $21, $00, $00, $08, $00, $A8, $14
 	.byte	$08, $21
-	; CDL: read by sub_009AA5; partly not accessed
+	; CDL: read by palette_task_fade_in; partly not accessed
 	.byte	$0B, $00, $84, $10, $08, $21, $AD, $35, $52, $4A, $18, $63, $BD, $77, $0D, $00
 	.byte	$00, $7C, $D6, $7E, $FF, $7F, $00, $00, $1F, $00, $DF, $5A, $FF, $7F, $05, $00
 	.byte	$11, $00, $1F, $00, $DF, $15, $17, $00, $A5, $24, $E7, $2C, $4A, $39, $AD, $45

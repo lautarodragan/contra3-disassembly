@@ -50,7 +50,7 @@ stage_clear_init:
 	tax
 	jsl	f:load_data_list
 	ldy	#$8880
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	inc	a:mode_step
 	rtl
 
@@ -98,7 +98,7 @@ stage_clear_show_scores:
 	sta	a:stage_bonus
 	jsr	a:draw_stage_bonus
 	ldy	#$8889
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	lda	#$0040
 	sta	mode_timer
 	lda	#$0005
@@ -466,7 +466,7 @@ options_init:
 	ldx	#.loword(data_05CF41)
 	jsl	f:load_data_list
 	ldy	#$8412
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	jsr	a:options_get_lives_index
 	ldx	#$8948
 	lda	#$2400
@@ -815,7 +815,7 @@ final_score_init:
 	ldx	#.loword(data_058976)
 	jsl	f:load_data_list
 	ldy	#$898E
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	jsl	f:draw_final_scores
 	inc	a:mode_step
 	rtl

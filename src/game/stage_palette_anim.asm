@@ -2,7 +2,7 @@
 ; Bank $01, $01:F6A8-$01:FFFF. Included by main.asm in segment BANK01.
 ;
 ; update_palette_anim (once per frame from stage_frame): while
-; palette_anim_id is set, starts palette tasks (sub_009982) from
+; palette_anim_id is set, starts palette tasks (start_palette_task) from
 ; data_05CD1B/data_05CD21 every $30 frames. Objects start it with
 ; start_palette_anim / apply_palette_anim_once. The rest of the bank is
 ; $FF padding.
@@ -33,7 +33,7 @@ palette_anim_apply_first:
 	phx
 	lda	a:data_05CD1B,y
 	tay
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	plx
 	rtl
 palette_anim_check_second:
@@ -43,7 +43,7 @@ palette_anim_check_second:
 	phx
 	lda	a:data_05CD21,y
 	tay
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	plx
 palette_anim_return:
 	rtl

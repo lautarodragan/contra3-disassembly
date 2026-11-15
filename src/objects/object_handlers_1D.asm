@@ -104,20 +104,20 @@ ending_sequence_state_00:
 	lda	#$8000
 	sta	a:wram_08D6
 	lda	#$0002
-	sta	a:wram_13FA
+	sta	a:bg2_scroll_mode
 	lda	#$0480
-	sta	a:wram_13FC
-	stz	a:wram_13FE
+	sta	a:bg2_map_offset
+	stz	a:bg2_screen_drawn
 	lda	#$01F8
-	sta	a:wram_13C2
+	sta	a:bg2_draw_x
 	stz	a:wram_13F2
 	rtl
 
 ending_sequence_state_01:
-	lda	a:wram_13FE
+	lda	a:bg2_screen_drawn
 	beq	loc_1DB06A
 	inc	OBJ_STATE,x
-	stz	a:wram_13FA
+	stz	a:bg2_scroll_mode
 	lda	#OBJT_RIDEABLE_MISSILE
 	sta	a:wram_0290
 	lda	#$0001
@@ -307,7 +307,7 @@ loc_1DB19C:
 	rtl
 
 ending_sequence_state_0A:
-	lda	a:wram_1398
+	lda	a:bg1_y
 	bit	#$00FF
 	beq	loc_1DB1D0
 	bit	#$0080
@@ -318,7 +318,7 @@ ending_sequence_state_0A:
 	stz	OBJ_Y_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
 	lda	#$0004
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	lda	#$0100
 	sta	OBJ_TIMER,x
 
@@ -402,20 +402,20 @@ loc_1DB268:
 	rtl
 
 ending_sequence_state_14:
-	lda	a:wram_1398
+	lda	a:bg1_y
 	and	#$01FF
 	cmp	#$0004
 	bcs	loc_1DB2BB
 	clc
 	adc	#$0200
-	sta	a:wram_1398
+	sta	a:bg1_y
 	clc
 	adc	#$0100
 	and	#$FF00
 	sta	a:wram_13B0
 	inc	OBJ_STATE,x
 	lda	#$0006
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	lda	#$0012
 	sta	hdma_preset
 	lda	#$0004
@@ -429,7 +429,7 @@ ending_sequence_state_14:
 	lda	#$FFFF
 	sta	a:wram_1638
 	jsl	f:ending_sequence_state_15
-	lda	a:wram_13D8
+	lda	a:bg2_y
 	sta	a:wram_13E2
 	rtl
 loc_1DB2BB:
@@ -447,7 +447,7 @@ ending_sequence_state_10:
 	ldx	#.loword(data_05F8C3)
 	jsl	f:load_data_list
 	ldy	#$F8DA
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	plx
 	stz	OBJ_X,x
 	lda	#$0180
@@ -476,11 +476,11 @@ ending_sequence_state_15:
 	sta	zp_02
 	jsr	a:sub_1DB762
 	jsr	a:sub_1DB43F
-	lda	a:wram_1398
+	lda	a:bg1_y
 	bpl	loc_1DB337
-	stz	a:wram_1398
+	stz	a:bg1_y
 	lda	#$0004
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	lda	#$00C0
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
@@ -499,9 +499,9 @@ ending_sequence_state_20:
 	stz	a:wram_163C
 	inc	OBJ_STATE,x
 	lda	#$0006
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	lda	#$0900
-	sta	a:wram_13BC
+	sta	a:bg1_map_offset
 	sta	a:wram_13B0
 	jsl	f:spawn_ending_crowd
 loc_1DB360:
@@ -527,11 +527,11 @@ ending_sequence_state_21:
 	jsr	a:sub_1DB43F
 	jsr	a:sub_1DB7DE
 	lda	#$0100
-	cmp	a:wram_1398
+	cmp	a:bg1_y
 	bcs	loc_1DB3CA
-	sta	a:wram_1398
+	sta	a:bg1_y
 	inc	OBJ_STATE,x
-	lda	a:wram_1380
+	lda	a:bg1_x
 	and	#$0100
 	asl	a
 	asl	a
@@ -615,7 +615,7 @@ sub_1DB43F:
 	sec
 	lda	#$0078
 	sbc	a:wram_028E
-	sta	a:wram_13D8
+	sta	a:bg2_y
 	rts
 
 sub_1DB44A:
@@ -865,10 +865,10 @@ loc_1DB628:
 
 sub_1DB642:
 	lda	#$0002
-	sta	a:wram_13BA
-	sta	a:wram_13B4
+	sta	a:bg1_scroll_mode
+	sta	a:bg1_autoscroll
 	lda	#$0004
-	sta	a:wram_13B6
+	sta	a:bg1_autoscroll_speed
 	lda	#$2000
 	sta	a:wram_029C
 	sta	a:wram_163A
@@ -910,9 +910,9 @@ loc_1DB6A2:
 	lda	a:wram_139C
 	adc	a:wram_163A
 	sta	a:wram_139C
-	lda	a:wram_1398
+	lda	a:bg1_y
 	adc	a:wram_163C
-	sta	a:wram_1398
+	sta	a:bg1_y
 	rts
 
 sub_1DB6B6:
@@ -1068,9 +1068,9 @@ loc_1DB7CA:
 
 sub_1DB7DE:
 	lda	#$0003
-	sta	a:wram_1676
-	lda	a:wram_1398
-	sta	a:wram_1674
+	sta	a:scroll_split_pattern
+	lda	a:bg1_y
+	sta	a:scroll_split_y
 	phx
 	ldx	#$0006
 	lda	a:wram_1636
@@ -1199,7 +1199,7 @@ loc_1DB8CB:
 	sta	zp_FA
 	plx
 	ldy	$30,x
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	clc
 	lda	zp_FC
 	adc	zp_08
@@ -1276,7 +1276,7 @@ update_enemy_type_97:
 	sta	a:bgmode_shadow
 	phx
 	ldy	#$F8E3
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	plx
 	phx
 	ldx	#.loword(data_05F8D1)
@@ -1359,11 +1359,11 @@ loc_1DBA1D:
 	lsr	a
 	clc
 	adc	#$5C20
-	sta	zp_B0
+	sta	bg_dma_vram_addr
 	lda	#$A000
-	sta	zp_B4
+	sta	bg_dma_src
 	lda	#$00C0
-	sta	zp_B2
+	sta	bg_dma_size
 	rts
 loc_1DBA36:
 	sty	a:wram_169A
@@ -1433,15 +1433,15 @@ loc_1DBAB4:
 	stz	hdma_preset
 	inc	OBJ_STATE,x
 	lda	#$00F0
-	sta	a:wram_13D8
+	sta	a:bg2_y
 	lda	#$0024
 	sta	OBJ_TIMER,x
 	phx
 	ldy	#$FECD
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	ldx	#$1210
 	ldy	#$FED9
-	jsl	f:sub_009985
+	jsl	f:start_palette_task_at
 	plx
 	stz	a:wram_163E
 	lda	#$0081
@@ -1459,7 +1459,7 @@ ending_sequence_state_17:
 	ldx	a:data_05FD9B,y
 	jsl	f:load_data_list
 	ldy	#$FEE8
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	plx
 	inc	OBJ_STATE,x
 	lda	#$0081
@@ -1500,7 +1500,7 @@ loc_1DBB47:
 	lda	#$0071
 	jsl	f:queue_sound
 	ldy	#$FEC7
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	ldx	#.loword(data_05FEDF)
 	jsl	f:load_data_list
 	plx
@@ -1542,7 +1542,7 @@ ending_sequence_state_1B:
 	phx
 	ldx	#$1210
 	ldy	#$FED3
-	jsl	f:sub_009985
+	jsl	f:start_palette_task_at
 	plx
 	rtl
 loc_1DBBA8:
@@ -1582,7 +1582,7 @@ ending_sequence_state_1C:
 	phx
 	ldx	#$1210
 	ldy	#$FED9
-	jsl	f:sub_009985
+	jsl	f:start_palette_task_at
 	plx
 	inc	a:wram_163E
 	inc	a:wram_163E
@@ -1595,7 +1595,7 @@ ending_sequence_state_1C:
 	sta	OBJ_STATE,x
 	phx
 	ldy	#$FECD
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	plx
 loc_1DBC15:
 	rtl
@@ -1629,11 +1629,11 @@ ending_sequence_state_1F:
 	rtl
 loc_1DBC49:
 	adc	#$5C00
-	sta	zp_B0
+	sta	bg_dma_vram_addr
 	lda	#$A000
-	sta	zp_B4
+	sta	bg_dma_src
 	lda	#$00FE
-	sta	zp_B2
+	sta	bg_dma_size
 loc_1DBC58:
 	rtl
 
@@ -1666,7 +1666,7 @@ loc_1DBC89:
 	rtl
 
 ending_sequence_state_26:
-	lda	a:wram_1398
+	lda	a:bg1_y
 	bit	#$00FF
 	beq	loc_1DBCBB
 	bit	#$0080
@@ -1677,7 +1677,7 @@ ending_sequence_state_26:
 	stz	OBJ_Y_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
 	lda	#$0004
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	lda	#$0100
 	sta	OBJ_TIMER,x
 loc_1DBCBB:
@@ -1970,11 +1970,11 @@ loc_1DBED8:
 	sec
 	lda	#$0160
 	sbc	OBJ_X,x
-	sta	a:wram_13C0
+	sta	a:bg2_x
 	sec
 	lda	#$0140
 	sbc	OBJ_Y,x
-	sta	a:wram_13D8
+	sta	a:bg2_y
 loc_1DBEEE:
 	lda	OBJ_STATE,x
 	phx
@@ -2016,7 +2016,7 @@ brain_boss_state_00:
 	stz	$34,x
 	sec
 	lda	#$0140
-	sbc	a:wram_13D8
+	sbc	a:bg2_y
 	sta	OBJ_Y,x
 	lda	#$0060
 	sta	OBJ_X,x
@@ -2027,7 +2027,7 @@ brain_boss_state_00:
 	plx
 	stz	a:wram_1642
 	stz	a:wram_16BA
-	jml	f:loc_00E733
+	jml	f:init_line_hdma_table
 
 brain_boss_state_01:
 	dec	OBJ_TIMER,x
@@ -2040,7 +2040,7 @@ brain_boss_state_01:
 	lda	#$0010
 	sta	hdma_preset
 loc_1DBF72:
-	jml	f:loc_00E733
+	jml	f:init_line_hdma_table
 
 brain_boss_state_02:
 	jsr	a:sub_1DCB48
@@ -2287,7 +2287,7 @@ brain_boss_state_0A:
 	sta	OBJ_TYPE,x
 	stz	OBJ_STATE,x
 	clc
-	lda	a:wram_1380
+	lda	a:bg1_x
 	and	#$0100
 	eor	#$0000
 	xba
@@ -2975,7 +2975,7 @@ loc_1DC687:
 	pha
 	jsr	a:sub_1DCAE9
 	ply
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	clc
 	lda	a:wram_090A
 	adc	#$001C
@@ -3212,7 +3212,7 @@ loc_1DC847:
 	bcc	loc_1DC855
 	ldy	#$0040
 loc_1DC855:
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	ldy	a:wram_163E
 	clc
 	lda	a:$1312,y
@@ -3358,7 +3358,7 @@ loc_1DC960:
 	beq	loc_1DC91C
 	lda	a:$0038,y
 	ldy	$36,x
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	ldy	$38,x
 	clc
 	lda	a:$000A,y
@@ -3394,7 +3394,7 @@ loc_1DC9A5:
 	adc	#$0010
 	sta	a:wram_163A
 	ldy	a:wram_163C
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	txa
 	clc
 	adc	#$FFC0
@@ -3422,7 +3422,7 @@ loc_1DC9DC:
 	and	#$00FF
 	sta	a:wram_163A
 	ldy	#$0014
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	clc
 	lda	a:wram_090A
 	adc	#$001C
@@ -3646,13 +3646,13 @@ loc_1DCB64:
 
 sub_1DCB66:
 	sec
-	lda	a:wram_13D8
+	lda	a:bg2_y
 	sta	zp_00
 	and	#$01FE
 	sbc	#$00A0
 	tay
 	lda	$36,x
-	jsl	f:sub_00E76C
+	jsl	f:fill_line_hdma_table
 	rts
 
 sub_1DCB7A:

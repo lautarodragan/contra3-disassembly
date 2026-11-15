@@ -1549,7 +1549,7 @@ sub_02F237:
 	eor	#$00FF
 	and	#$00FF
 	ldy	#$0040
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	lda	#$0200
 	clc
 	adc	zp_08
@@ -1762,7 +1762,7 @@ sub_02F3CF:
 	sec
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	sta	a:wram_0B44
 	clc
 	adc	#$0020
@@ -2259,7 +2259,7 @@ sub_02F7B1:
 	lda	a:wram_0AFC
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	rts
 
 sub_02F7C6:
@@ -2271,7 +2271,7 @@ sub_02F7C6:
 	lda	$0E,x
 	sbc	a:wram_0E8E
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	rts
 
 sub_02F7DB:
@@ -2283,7 +2283,7 @@ sub_02F7DB:
 	lda	$0E,x
 	sbc	a:wram_0BCE
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	rts
 
 sub_02F7F0:
@@ -2380,7 +2380,7 @@ sub_02F86F:
 	sta	a:$0004,y
 	phy
 	ldy	#$000C
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	ply
 	lda	$0A,x
 	clc

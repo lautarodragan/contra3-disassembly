@@ -427,9 +427,9 @@ init_title_logo_zoomed_out:
 	lda	#$0040
 	sta	a:m7y_shadow
 	lda	#$0000
-	sta	a:wram_1380
+	sta	a:bg1_x
 	lda	#$0000
-	sta	a:wram_1398
+	sta	a:bg1_y
 	stz	a:m7sel_shadow
 	rts
 
@@ -448,9 +448,9 @@ load_title_screen:
 load_title_graphics:
 	ldy	#$8558
 	ldx	#$1210
-	jsl	f:sub_009985
+	jsl	f:start_palette_task_at
 	ldy	#$854B
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	ldx	#.loword(data_058527)
 	jsl	f:load_data_list
 	ldx	#.loword(data_058530)
@@ -473,9 +473,9 @@ init_title_logo:
 	sta	a:m7x_shadow
 	sta	a:m7y_shadow
 	lda	#$0000
-	sta	a:wram_1380
+	sta	a:bg1_x
 	lda	#$0000
-	sta	a:wram_1398
+	sta	a:bg1_y
 	stz	a:m7sel_shadow
 	rts
 
@@ -923,7 +923,7 @@ draw_title_word_sprites:
 draw_title_sprite_group:
 	lda	zp_FE
 	sec
-	sbc	a:wram_1398
+	sbc	a:bg1_y
 	clc
 	adc	(zp_1C),y
 	sta	a:$0001,x
@@ -1003,12 +1003,12 @@ konami_logo_init:
 	ldx	#.loword(data_0587AB)
 	jsl	f:load_data_list
 	ldy	#$87C3
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	lda	#$0400
-	sta	a:wram_1398
+	sta	a:bg1_y
 	lda	#$0100
-	sta	a:wram_1380
-	sta	a:wram_13C0
+	sta	a:bg1_x
+	sta	a:bg2_x
 	lda	#$0019
 	sta	a:bgmode_shadow
 	lda	#$0003
@@ -1031,12 +1031,12 @@ konami_logo_sweep:
 	and	#$0003
 	sta	a:konami_logo_count1
 @scroll:
-	lda	a:wram_1380
+	lda	a:bg1_x
 	sec
 	sbc	#$0008
-	sta	a:wram_1380
+	sta	a:bg1_x
 	bne	@return
-	stz	a:wram_13C0
+	stz	a:bg2_x
 	inc	a:konami_logo_step
 @return:
 	rtl
@@ -1054,10 +1054,10 @@ konami_logo_cycle_line:
 	rtl
 
 konami_logo_scroll_in:
-	lda	a:wram_1398
+	lda	a:bg1_y
 	sec
 	sbc	#$0002
-	sta	a:wram_1398
+	sta	a:bg1_y
 	and	#$0100
 	bne	konami_logo_step_return
 konami_logo_next_step:
@@ -1072,7 +1072,7 @@ konami_logo_start_shine:
 	sta	a:konami_logo_count2
 	sta	a:konami_logo_count3
 	ldy	#$87E1
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	lda	#$0072
 	jsl	f:queue_sound
 	inc	a:konami_logo_step
@@ -1085,7 +1085,7 @@ konami_logo_shine:
 	cmp	#$000A
 	bne	@rotate_row1
 	ldy	#$87EA
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 @rotate_row1:
 	dec	a:konami_logo_count1
 	ldx	#$222C
@@ -1105,7 +1105,7 @@ konami_logo_shine:
 	dec	a:konami_logo_timer
 	bne	@return
 	ldy	#$87D8
-	jmp	a:sub_009982
+	jmp	a:start_palette_task
 @check_count3:
 	lda	a:konami_logo_count3
 	bmi	konami_logo_next_step

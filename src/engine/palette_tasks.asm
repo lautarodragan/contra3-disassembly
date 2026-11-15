@@ -2,12 +2,12 @@
 ; Bank $00, $00:9971-$00:9C17. Included by main.asm in segment BANK00.
 ;
 ; Eight task slots of $10 bytes at $1200 (sub_009982/sub_009985 start one from
-; a script in Y; sub_009995 runs them each frame through tbl_0099C1): copy
-; palettes from bank $08 to the WRAM buffer, and fade them. sub_009B76 runs a
+; a script in Y; run_palette_tasks runs them each frame through tbl_palette_task_types): copy
+; palettes from bank $08 to the WRAM buffer, and fade them. run_vram_tasks runs a
 ; second kind of task (slots at $1280) that appends entries to the VRAM
 ; transfer list.
 
-sub_009971:
+clear_palette_task:
 	stz	$00,x
 	stz	$02,x
 	stz	$04,x
@@ -18,11 +18,11 @@ sub_009971:
 	stz	$0E,x
 	rtl
 
-sub_009982:
+start_palette_task:
 	ldx	#$1200
 
-sub_009985:
-	jsl	f:sub_009971
+start_palette_task_at:
+	jsl	f:clear_palette_task
 	lda	a:$0000,y
 	and	#$00FF
 	sta	$00,x
@@ -30,57 +30,57 @@ sub_009985:
 	sty	$02,x
 	rtl
 
-sub_009995:
+run_palette_tasks:
 	rep	#$20
 	rep	#$10
 	ldx	#$1200
-loc_00999C:
+@loop:
 	stx	zp_FC
 	lda	$00,x
-	beq	loc_0099A6
-	jsl	f:sub_0099B3
-loc_0099A6:
+	beq	@next
+	jsl	f:call_palette_task
+@next:
 	lda	zp_FC
 	clc
 	adc	#$0010
 	tax
 	cpx	#$1280
-	bcc	loc_00999C
+	bcc	@loop
 	rtl
 
-sub_0099B3:
+call_palette_task:
 	dec	a
 	phx
 	asl	a
 	tax
-	lda	f:tbl_0099C1,x
+	lda	f:tbl_palette_task_types,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_0099C1:
-	.addr	sub_0099C9
-	.addr	sub_009A19
-	.addr	sub_009AA5
-	.addr	sub_009A81
+tbl_palette_task_types:
+	.addr	palette_task_animate
+	.addr	palette_task_darken
+	.addr	palette_task_fade_in
+	.addr	palette_task_fade_out
 
-sub_0099C9:
+palette_task_animate:
 	lda	$08,x
-	beq	loc_0099D0
+	beq	@next_frame
 	; (not executed in the CDL traces)
 	dec	$08,x
 	rtl
-loc_0099D0:
+@next_frame:
 	ldy	$02,x
 	lda	a:$0000,y
 	and	#$00FF
 	sta	$08,x
-loc_0099DA:
+@copy_entry:
 	lda	$02,x
 	clc
 	adc	$06,x
 	tay
 	lda	a:$0002,y
-	beq	loc_009A03
+	beq	@end_of_frames
 	phb
 	phx
 	ldx	a:$0002,y
@@ -96,20 +96,20 @@ loc_0099DA:
 	clc
 	adc	#$0004
 	sta	$06,x
-	bra	sub_0099C9
-loc_009A03:
+	bra	palette_task_animate
+@end_of_frames:
 	inc	$04,x
 	stz	$06,x
 	ldy	$02,x
 	lda	a:$0000,y
-	bmi	loc_0099DA
+	bmi	@copy_entry
 	xba
 	and	#$00FF
 	cmp	$04,x
-	bcs	loc_0099DA
-	jmp	a:sub_009971
+	bcs	@copy_entry
+	jmp	a:clear_palette_task
 
-sub_009A19:
+palette_task_darken:
 	; (not executed in the CDL traces)
 	ldy	$02,x
 	lda	$04,x
@@ -118,9 +118,9 @@ sub_009A19:
 	sta	zp_04
 	lda	a:$0000,y
 	and	#$00FF
-	bne	loc_009A2E
+	bne	@speed_ok
 	lda	#$0010
-loc_009A2E:
+@speed_ok:
 	asl	a
 	asl	a
 	asl	a
@@ -128,58 +128,58 @@ loc_009A2E:
 	clc
 	adc	$04,x
 	cmp	#$2000
-	bcc	loc_009A3D
-	brl	sub_009971
-loc_009A3D:
+	bcc	@advance
+	brl	clear_palette_task
+@advance:
 	sta	$04,x
 	xba
 	and	#$00FF
 	sec
 	sbc	zp_04
-	beq	loc_009A52
+	beq	@done
 	sta	zp_02
-loc_009A4A:
-	jsl	f:sub_009A53
+@step:
+	jsl	f:darken_palette_range
 	dec	zp_02
-	bne	loc_009A4A
-loc_009A52:
+	bne	@step
+@done:
 	rtl
 
-sub_009A53:
+darken_palette_range:
 	; (not executed in the CDL traces)
 	lda	a:$0003,y
 	sta	zp_00
 	ldx	a:$0001,y
-loc_009A5B:
+@loop:
 	sec
 	lda	f:$7E0000,x
 	bit	#$001F
-	beq	loc_009A66
+	beq	@green
 	dec	a
-loc_009A66:
+@green:
 	bit	#$03E0
-	beq	loc_009A6E
+	beq	@blue
 	sbc	#$0020
-loc_009A6E:
+@blue:
 	bit	#$7C00
-	beq	loc_009A76
+	beq	@store
 	sbc	#$0400
-loc_009A76:
+@store:
 	sta	f:$7E0000,x
 	inx
 	inx
 	cpx	zp_00
-	bcc	loc_009A5B
+	bcc	@loop
 	rtl
 
-sub_009A81:
+palette_task_fade_out:
 	ldy	$02,x
 	lda	a:$0000,y
 	and	#$00FF
-	bne	loc_009A8E
+	bne	@speed_ok
 	; (not executed in the CDL traces)
 	lda	#$0010
-loc_009A8E:
+@speed_ok:
 	asl	a
 	asl	a
 	asl	a
@@ -187,22 +187,22 @@ loc_009A8E:
 	clc
 	adc	$04,x
 	cmp	#$2000
-	bcc	loc_009A9D
-	brl	sub_009971
-loc_009A9D:
+	bcc	@advance
+	brl	clear_palette_task
+@advance:
 	sta	$04,x
 	xba
 	and	#$00FF
-	bra	loc_009ACA
+	bra	fade_palette_from_source
 
-sub_009AA5:
+palette_task_fade_in:
 	ldy	$02,x
 	lda	a:$0000,y
 	and	#$00FF
-	bne	loc_009AB2
+	bne	@speed_ok
 	; (not executed in the CDL traces)
 	lda	#$0010
-loc_009AB2:
+@speed_ok:
 	asl	a
 	asl	a
 	asl	a
@@ -210,14 +210,14 @@ loc_009AB2:
 	clc
 	adc	$04,x
 	cmp	#$2000
-	bcc	loc_009AC1
-	brl	sub_009971
-loc_009AC1:
+	bcc	@advance
+	brl	clear_palette_task
+@advance:
 	sta	$04,x
 	xba
 	and	#$00FF
 	eor	#$001F
-loc_009ACA:
+fade_palette_from_source:
 	sta	zp_08
 	asl	a
 	asl	a
@@ -243,31 +243,31 @@ loc_009ACA:
 	.a16
 	lda	a:$0000,y
 	sta	zp_02
-loc_009AEE:
+@loop:
 	lda	a:$0002,y
 	and	#$001F
 	sec
 	sbc	zp_08
-	bpl	loc_009AFC
+	bpl	@green
 	lda	#$0000
-loc_009AFC:
+@green:
 	sta	zp_00
 	lda	a:$0002,y
 	and	#$03E0
 	sec
 	sbc	zp_0A
-	bpl	loc_009B0C
+	bpl	@blue
 	lda	#$0000
-loc_009B0C:
+@blue:
 	ora	zp_00
 	sta	zp_00
 	lda	a:$0002,y
 	and	#$7C00
 	sec
 	sbc	zp_0C
-	bpl	loc_009B1E
+	bpl	@store
 	lda	#$0000
-loc_009B1E:
+@store:
 	ora	zp_00
 	sta	f:$7E0000,x
 	inx
@@ -276,7 +276,7 @@ loc_009B1E:
 	iny
 	dec	zp_02
 	dec	zp_02
-	bpl	loc_009AEE
+	bpl	@loop
 	sep	#$20
 	.a8
 	lda	#$05
@@ -287,36 +287,36 @@ loc_009B1E:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_009B37:
+unused_start_vram_task_linked:
 	; (not executed in the CDL traces)
-	jsl	f:sub_009B4A
-	bne	loc_009B46
+	jsl	f:start_vram_task
+	bne	@done
 	ldy	zp_FC
 	sty	$0A,x
 	lda	a:$0010,y
 	sta	$0C,x
-loc_009B46:
+@done:
 	rtl
 	; CDL: not accessed
 	.byte	$A2, $80, $12
 
-sub_009B4A:
+start_vram_task:
 	; (not executed in the CDL traces)
 	lda	a:$0000,y
-	beq	loc_009B53
+	beq	@start
 	lda	$00,x
-	bne	loc_009B64
-loc_009B53:
-	jsl	f:sub_009B65
+	bne	@done
+@start:
+	jsl	f:clear_vram_task
 	lda	a:$0000,y
 	sta	$00,x
 	lda	a:$0002,y
 	sta	$02,x
 	lda	#$0000
-loc_009B64:
+@done:
 	rtl
 
-sub_009B65:
+clear_vram_task:
 	; (not executed in the CDL traces)
 	stz	$00,x
 	stz	$02,x
@@ -328,64 +328,64 @@ sub_009B65:
 	stz	$0E,x
 	rtl
 
-sub_009B76:
+run_vram_tasks:
 	ldx	#$1280
 	lda	frame_counter
 	lsr	a
-	bcs	loc_009B81
+	bcs	@loop
 	ldx	#$1290
-loc_009B81:
+@loop:
 	stx	zp_FC
 	lda	$00,x
-	beq	loc_009B8B
+	beq	@next
 	; (not executed in the CDL traces)
-	jsl	f:sub_009B98
-loc_009B8B:
+	jsl	f:call_vram_task
+@next:
 	clc
 	lda	zp_FC
 	adc	#$0020
 	tax
 	cpx	#$1300
-	bcc	loc_009B81
+	bcc	@loop
 	rtl
 
-sub_009B98:
+call_vram_task:
 	; (not executed in the CDL traces)
 	dec	a
 	phx
 	asl	a
 	tax
-	lda	f:tbl_009BA6,x
+	lda	f:tbl_vram_task_types,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_009BA6:
-	.addr	sub_009BA8
+tbl_vram_task_types:
+	.addr	vram_task_script
 
-sub_009BA8:
+vram_task_script:
 	; (not executed in the CDL traces)
 	lda	$08,x
-	beq	loc_009BAF
+	beq	@next_frame
 	dec	$08,x
 	rtl
-loc_009BAF:
+@next_frame:
 	lda	$02,x
 	sta	zp_00
 	lda	(zp_00)
 	sta	$08,x
-loc_009BB7:
+@next_entry:
 	inc	$06,x
 	inc	$06,x
 	ldy	$06,x
 	iny
 	iny
 	lda	(zp_00),y
-	beq	loc_009C06
+	beq	@end_of_frames
 	ldx	vram_queue_end
 	tay
-loc_009BC6:
+@copy_loop:
 	lda	a:$0000,y
-	beq	loc_009C00
+	beq	@entry_done
 	sta	f:$7E0000,x
 	lda	a:$0002,y
 	sta	f:$7E0002,x
@@ -405,17 +405,17 @@ loc_009BC6:
 	clc
 	adc	#$000B
 	tax
-	bra	loc_009BC6
-loc_009C00:
+	bra	@copy_loop
+@entry_done:
 	stx	vram_queue_end
 	ldx	zp_FC
-	bra	sub_009BA8
-loc_009C06:
+	bra	vram_task_script
+@end_of_frames:
 	inc	$04,x
 	stz	$06,x
 	ldy	#$0002
 	lda	(zp_00),y
-	bmi	loc_009BB7
+	bmi	@next_entry
 	cmp	$04,x
-	bcs	loc_009BB7
-	jmp	a:sub_009B65
+	bcs	@next_entry
+	jmp	a:clear_vram_task

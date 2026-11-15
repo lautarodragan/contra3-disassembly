@@ -7,12 +7,12 @@
 sub_00CF0C:
 	clc
 	lda	a:wram_168C
-	adc	a:wram_1384
-	sta	a:wram_1384
-	lda	a:wram_1380
+	adc	a:bg1_x_sub
+	sta	a:bg1_x_sub
+	lda	a:bg1_x
 	sta	zp_00
 	adc	a:wram_168E
-	sta	a:wram_1380
+	sta	a:bg1_x
 	sec
 	sbc	zp_00
 	sta	a:wram_1694
@@ -20,16 +20,16 @@ sub_00CF0C:
 	lda	a:wram_1690
 	adc	a:wram_139C
 	sta	a:wram_139C
-	lda	a:wram_1398
+	lda	a:bg1_y
 	sta	zp_00
 	adc	a:wram_1692
-	sta	a:wram_1398
+	sta	a:bg1_y
 	sec
 	sbc	zp_00
 	sta	a:wram_1696
 	ldy	a:wram_168A
 	lda	a:data_059BC8,y
-	cmp	a:wram_1380
+	cmp	a:bg1_x
 	bcc	loc_00CF7D
 	phx
 	ldx	#$0600
@@ -47,7 +47,7 @@ loc_00CF59:
 	xba
 	and	#$00FF
 	sec
-	sbc	a:wram_1398
+	sbc	a:bg1_y
 	sta	$0E,x
 	lda	a:data_059BCC,y
 	sta	$3A,x
@@ -71,11 +71,11 @@ sub_00CF7E:
 	and	#$0006
 	tay
 	lda	a:data_059E42,y
-	sta	zp_B4
+	sta	bg_dma_src
 	lda	#$0400
-	sta	zp_B2
+	sta	bg_dma_size
 	lda	#$3A90
-	sta	zp_B0
+	sta	bg_dma_vram_addr
 loc_00CF9D:
 	rtl
 
@@ -121,17 +121,17 @@ loc_00CFB9:
 sub_00CFD0:
 	lda	#$8000
 	sta	$16,x
-	stz	a:wram_13B4
+	stz	a:bg1_autoscroll
 	lda	#$0004
-	sta	a:wram_13BA
-	stz	a:wram_13B6
-	lda	a:wram_160A
+	sta	a:bg1_scroll_mode
+	stz	a:bg1_autoscroll_speed
+	lda	a:spawn_scroll_var
 	sta	zp_02
 	lda	(zp_02)
 	clc
 	adc	#$0080
 	and	#$FF00
-	sta	a:wram_160C
+	sta	a:spawn_last_page
 	sta	(zp_02)
 	rtl
 
@@ -146,19 +146,19 @@ sub_00D001:
 	lda	$12,x
 	bne	loc_00D019
 	lda	#$0001
-	sta	a:wram_13FA
+	sta	a:bg2_scroll_mode
 	lda	$3A,x
 	and	#$FFF0
-	sta	a:wram_13FC
+	sta	a:bg2_map_offset
 	inc	$12,x
-	stz	a:wram_13FE
+	stz	a:bg2_screen_drawn
 	rtl
 loc_00D019:
-	lda	a:wram_13FE
+	lda	a:bg2_screen_drawn
 	beq	loc_00D02B
 	lda	$3A,x
 	and	#$000F
-	sta	a:wram_13FA
+	sta	a:bg2_scroll_mode
 	lda	#$8000
 	sta	$16,x
 loc_00D02B:
@@ -166,36 +166,36 @@ loc_00D02B:
 
 sub_00D02C:
 	lda	#$0001
-	sta	a:wram_13B4
+	sta	a:bg1_autoscroll
 	lda	#$8000
 	sta	$16,x
 	rtl
 
 sub_00D038:
 	clc
-	lda	a:wram_13D8
+	lda	a:bg2_y
 	adc	#$00FF
 	and	#$FF00
 	sta	a:wram_13F0
 	lda	$3B,x
 	and	#$00FF
-	sta	a:wram_13FA
+	sta	a:bg2_scroll_mode
 
 sub_00D04D:
 	lda	$3A,x
 	and	#$00FF
-	sta	a:wram_13BA
-	stz	a:wram_13B4
+	sta	a:bg1_scroll_mode
+	stz	a:bg1_autoscroll
 	clc
-	lda	a:wram_1380
+	lda	a:bg1_x
 	adc	#$00FF
 	and	#$FF00
-	sta	a:wram_1380
+	sta	a:bg1_x
 	clc
-	lda	a:wram_1398
+	lda	a:bg1_y
 	adc	#$00FF
 	and	#$FF00
-	sta	a:wram_1398
+	sta	a:bg1_y
 	lda	#$8000
 	sta	$16,x
 	rtl
@@ -258,7 +258,7 @@ tbl_00D0C9:
 	.addr	sub_00D3E7
 
 sub_00D0DB:
-	lda	a:wram_13BA
+	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	loc_00D0E5
 	inc	$12,x
@@ -276,7 +276,7 @@ sub_00D0E6:
 	stz	a:wram_1622
 	inc	$12,x
 	lda	#$0005
-	sta	a:wram_13FA
+	sta	a:bg2_scroll_mode
 	rtl
 
 sub_00D107:
@@ -384,13 +384,13 @@ sub_00D1BD:
 	ldy	#$3800
 	lda	#$0018
 	sta	a:$0000,y
-	lda	a:wram_1380
+	lda	a:bg1_x
 	sta	a:$0001,y
 	lda	#$0048
 	sta	a:$0003,y
 	lda	#$0101
 	sta	a:$0005,y
-	lda	a:wram_1380
+	lda	a:bg1_x
 	sta	a:$0007,y
 	lda	#$0000
 	sta	a:$0009,y
@@ -542,7 +542,7 @@ loc_00D332:
 	sta	f:wram_7E3824
 	sep	#$20
 	.a8
-	lda	a:wram_1398
+	lda	a:bg1_y
 	dec	a
 	sta	f:wram_7E3827
 	lda	f:wram_7E3842
@@ -574,7 +574,7 @@ sub_00D37E:
 loc_00D394:
 	inc	$12,x
 	lda	#$0001
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	lda	#$0004
 	sta	hdma_preset
 	stz	$32,x
@@ -686,10 +686,10 @@ sub_00D480:
 	lda	#$0000
 	jsl	f:kill_players_outside
 loc_00D48E:
-	lda	a:wram_13C0
+	lda	a:bg2_x
 	sta	f:wram_7E3821
 	sta	f:wram_7E3824
-	lda	a:wram_1380
+	lda	a:bg1_x
 	and	#$00FF
 	sta	f:wram_7E3827
 	inc	$32,x
@@ -698,11 +698,11 @@ loc_00D48E:
 	and	#$0006
 	tay
 	lda	a:data_059FAA,y
-	sta	zp_B4
+	sta	bg_dma_src
 	lda	#$0380
-	sta	zp_B2
+	sta	bg_dma_size
 	lda	#$2E40
-	sta	zp_B0
+	sta	bg_dma_vram_addr
 	rtl
 
 sub_00D4BC:
@@ -797,24 +797,24 @@ sub_00D563:
 	lsr	a
 	tay
 	lda	a:data_059FB2,y
-	sta	zp_B4
+	sta	bg_dma_src
 	lda	#$02E0
-	sta	zp_B2
+	sta	bg_dma_size
 	lda	#$0E80
-	sta	zp_B0
+	sta	bg_dma_vram_addr
 loc_00D57F:
 	lda	#$0001
-	sta	a:wram_1676
+	sta	a:scroll_split_pattern
 	clc
-	lda	a:wram_13D8
+	lda	a:bg2_y
 	adc	#$0200
-	sta	a:wram_1674
+	sta	a:scroll_split_y
 	cmp	#$0090
 	bcs	loc_00D5A2
 	lda	#$8000
 	sta	$16,x
-	stz	a:wram_1676
-	stz	a:wram_1674
+	stz	a:scroll_split_pattern
+	stz	a:scroll_split_y
 	stz	hdma_preset
 	rtl
 loc_00D5A2:
@@ -877,25 +877,25 @@ loc_00D5FD:
 	and	#$0003
 	pha
 	clc
-	adc	a:wram_1674
-	sta	a:wram_1674
+	adc	a:scroll_split_y
+	sta	a:scroll_split_y
 	pla
 	clc
 	adc	#$0000
-	sta	a:wram_13D8
+	sta	a:bg2_y
 
 sub_00D610:
 	lda	#$0002
-	sta	a:wram_1676
+	sta	a:scroll_split_pattern
 	clc
-	lda	a:wram_13D8
+	lda	a:bg2_y
 	adc	#$0100
-	sta	a:wram_1674
+	sta	a:scroll_split_y
 	cmp	#$0002
 	bcs	loc_00D630
 	inc	$12,x
-	stz	a:wram_1676
-	stz	a:wram_1674
+	stz	a:scroll_split_pattern
+	stz	a:scroll_split_y
 	stz	hdma_preset
 	rtl
 loc_00D630:

@@ -2,16 +2,16 @@
 ; Bank $00, $00:C283-$00:CF0B. Included by main.asm in segment BANK00.
 ;
 ; sub_00C283/sub_00C575 (from NMI) DMA the tilemap rows/columns queued at
-; $1780 to VRAM; sub_00C612..sub_00CC37 scroll the BG layers, whose state is
-; at $1380 and $13C0 ($40 bytes each). Tables data_00CD0A..data_00CD90.
+; $1780 to VRAM; fill_bg_screen..sub_00CC37 scroll the BG layers, whose state is
+; at $1380 and $13C0 ($40 bytes each). Tables metatile_column_offsets..metatile_row_offsets+6.
 
-sub_00C283:
+dma_bg_tilemap_updates:
 	sep	#$10
 	.i8
 	lda	zp_B8
-	bne	loc_00C28C
-	brl	loc_00C33B
-loc_00C28C:
+	bne	@rows
+	brl	@extra_dma
+@rows:
 	sta	a:VMADDL
 	ldx	#$80
 	stx	a:VMAIN
@@ -72,21 +72,21 @@ loc_00C28C:
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-loc_00C33B:
+@extra_dma:
 	ldy	#$01
 	ldx	#$7E
 	stx	a:A1B0
-	lda	zp_B0
-	beq	loc_00C356
+	lda	bg_dma_vram_addr
+	beq	@blocks0
 	sta	a:VMADDL
-	lda	zp_B4
+	lda	bg_dma_src
 	sta	a:A1T0L
-	lda	zp_B2
+	lda	bg_dma_size
 	sta	a:DAS0L
 	sty	a:MDMAEN
-loc_00C356:
+@blocks0:
 	lda	a:wram_1800
-	beq	loc_00C396
+	beq	@blocks1
 	sta	a:VMADDL
 	lda	a:wram_1840
 	sta	a:A1T0L
@@ -108,9 +108,9 @@ loc_00C356:
 	lda	zp_E2
 	sta	a:DAS0L
 	sty	a:MDMAEN
-loc_00C396:
+@blocks1:
 	lda	a:wram_1808
-	beq	loc_00C3DA
+	beq	@blocks2
 	sta	a:VMADDL
 	lda	a:wram_1848
 	sta	a:A1T0L
@@ -132,9 +132,9 @@ loc_00C396:
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-loc_00C3DA:
+@blocks2:
 	lda	a:wram_1810
-	beq	loc_00C41E
+	beq	@blocks3
 	sta	a:VMADDL
 	lda	a:wram_1850
 	sta	a:A1T0L
@@ -156,9 +156,9 @@ loc_00C3DA:
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-loc_00C41E:
+@blocks3:
 	lda	a:wram_1818
-	beq	loc_00C462
+	beq	@blocks4
 	sta	a:VMADDL
 	lda	a:wram_1858
 	sta	a:A1T0L
@@ -180,9 +180,9 @@ loc_00C41E:
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-loc_00C462:
+@blocks4:
 	lda	a:wram_1820
-	beq	loc_00C4A6
+	beq	@blocks5
 	sta	a:VMADDL
 	lda	a:wram_1860
 	sta	a:A1T0L
@@ -204,9 +204,9 @@ loc_00C462:
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-loc_00C4A6:
+@blocks5:
 	lda	a:wram_1828
-	beq	loc_00C4EA
+	beq	@blocks6
 	sta	a:VMADDL
 	lda	a:wram_1868
 	sta	a:A1T0L
@@ -228,9 +228,9 @@ loc_00C4A6:
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-loc_00C4EA:
+@blocks6:
 	lda	a:wram_1830
-	beq	loc_00C52E
+	beq	@blocks7
 	sta	a:VMADDL
 	lda	a:wram_1870
 	sta	a:A1T0L
@@ -252,9 +252,9 @@ loc_00C4EA:
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-loc_00C52E:
+@blocks7:
 	lda	a:wram_1838
-	beq	loc_00C572
+	beq	@done
 	sta	a:VMADDL
 	lda	a:wram_1878
 	sta	a:A1T0L
@@ -276,12 +276,12 @@ loc_00C52E:
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-loc_00C572:
+@done:
 	rep	#$10
 	.i16
 	rtl
 
-sub_00C575:
+draw_bg3_block_map:
 	ldx	#$0000
 	ldy	#$0001
 	lda	#$5C00
@@ -289,7 +289,7 @@ sub_00C575:
 	sta	zp_00
 	lda	#$0008
 	sta	zp_0A
-loc_00C587:
+@loop:
 	lda	a:data_058CE2,x
 	sta	zp_08
 	sep	#$10
@@ -332,29 +332,29 @@ loc_00C587:
 	rep	#$10
 	.i16
 	dec	zp_0A
-	bne	loc_00C5FF
+	bne	@next_column
 	lda	#$0008
 	sta	zp_0A
 	clc
 	lda	zp_0E
 	adc	#$0080
 	sta	zp_0E
-	bra	loc_00C605
-loc_00C5FF:
+	bra	@store_addr
+@next_column:
 	clc
 	lda	zp_00
 	adc	#$0004
-loc_00C605:
+@store_addr:
 	sta	zp_00
 	inx
 	inx
 	cpx	#$0070
-	bcs	loc_00C611
-	brl	loc_00C587
-loc_00C611:
+	bcs	@done
+	brl	@loop
+@done:
 	rtl
 
-sub_00C612:
+fill_bg_screen:
 	stx	zp_FC
 	sty	zp_FE
 	stz	$32,x
@@ -363,24 +363,24 @@ sub_00C612:
 	sta	$00,x
 	lda	zp_FC
 	cmp	#$1380
-	bne	loc_00C632
+	bne	@full_width
 	lda	stage_number
 	cmp	#$0004
-	beq	loc_00C632
+	beq	@full_width
 	lda	#$0020
-	bra	loc_00C635
-loc_00C632:
+	bra	@set_count
+@full_width:
 	lda	#$003F
-loc_00C635:
+@set_count:
 	sta	zp_18
-loc_00C637:
+@loop:
 	ldx	zp_FC
-	jsl	f:sub_00CB29
+	jsl	f:draw_bg_column
 	lda	zp_FC
 	cmp	#$1380
-	bne	loc_00C648
-	jsl	f:sub_00CC37
-loc_00C648:
+	bne	@no_collision
+	jsl	f:update_bg_collision_map
+@no_collision:
 	jsl	f:run_vram_queue
 	ldx	zp_FC
 	clc
@@ -388,149 +388,149 @@ loc_00C648:
 	adc	#$0008
 	sta	$00,x
 	cmp	#$01FF
-	bcc	loc_00C665
+	bcc	@next
 	stz	$00,x
 	clc
 	lda	$3C,x
 	adc	#$0080
 	sta	$3C,x
-loc_00C665:
+@next:
 	dec	zp_18
-	bpl	loc_00C637
+	bpl	@loop
 	stz	$00,x
 	stz	$02,x
 	lda	#$0000
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	lda	#$0005
-	sta	a:wram_13FA
+	sta	a:bg2_scroll_mode
 	stz	a:wram_13B0
 	rtl
 
-sub_00C67D:
-	lda	a:wram_13BA
+run_bg1_scroll_mode:
+	lda	a:bg1_scroll_mode
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00C68D,x
+	lda	f:tbl_bg1_scroll_modes,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00C68D:
-	.addr	sub_00C6A2
-	.addr	sub_00C705
-	.addr	sub_00C7BF
-	.addr	sub_00C82A
-	.addr	sub_00C69B
-	.addr	sub_00C8F8
-	.addr	sub_00C8C8
+tbl_bg1_scroll_modes:
+	.addr	bg1_init_horizontal
+	.addr	bg1_scroll_horizontal
+	.addr	bg1_init_vertical
+	.addr	bg1_scroll_vertical
+	.addr	bg1_scroll_stop
+	.addr	bg1_draw_column_at_8
+	.addr	bg1_update_vertical
 
-sub_00C69B:
-	stz	a:wram_138E
-	stz	a:wram_13A6
+bg1_scroll_stop:
+	stz	a:bg1_x_delta
+	stz	a:bg1_y_delta
 	rtl
 
-sub_00C6A2:
+bg1_init_horizontal:
 	lda	#$0080
-	sta	zp_A6
-	jsl	f:sub_00CC1D
+	sta	scroll_threshold
+	jsl	f:clear_bg1_scroll_deltas
 	stz	a:wram_13B2
 	lda	#$0001
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	ldx	#$1380
 	stx	zp_FC
 	ldy	#$4000
 	sty	zp_FE
-	jsl	f:sub_00CB29
-	jsl	f:sub_00CC37
+	jsl	f:draw_bg_column
+	jsl	f:update_bg_collision_map
 	clc
-	lda	a:wram_1380
+	lda	a:bg1_x
 	adc	#$0008
-	sta	a:wram_1380
+	sta	a:bg1_x
 	ldx	#$1380
 	ldy	#$4000
-	jsl	f:sub_00CB29
-	jsl	f:sub_00CC37
+	jsl	f:draw_bg_column
+	jsl	f:update_bg_collision_map
 	lda	#$0002
 	sta	a:wram_13B2
 	sec
-	lda	a:wram_1380
+	lda	a:bg1_x
 	sbc	#$0008
-	sta	a:wram_1380
-	sta	a:wram_160C
+	sta	a:bg1_x
+	sta	a:spawn_last_page
 	clc
 	adc	#$0010
 	and	#$FF00
 	sta	a:wram_13B0
-	stz	a:wram_1608
+	stz	a:spawn_pos_invert
 	lda	#$1380
-	sta	a:wram_160A
+	sta	a:spawn_scroll_var
 	rtl
 
-sub_00C705:
-	lda	a:wram_13B4
-	bne	loc_00C77B
+bg1_scroll_horizontal:
+	lda	a:bg1_autoscroll
+	bne	@autoscroll
 	ldx	#$0080
 	lda	a:p1_lives
-	beq	loc_00C71A
+	beq	@check_p1
 	lda	a:p2_lives
-	beq	loc_00C71A
+	beq	@check_p1
 	ldx	#$00A0
-loc_00C71A:
-	stx	zp_A6
+@check_p1:
+	stx	scroll_threshold
 	lda	a:wram_020A
-	cmp	zp_A6
-	bcc	loc_00C731
+	cmp	scroll_threshold
+	bcc	@check_p2
 	ldx	#$0200
 	ldy	#$0240
 	lda	$1A,x
-	beq	loc_00C76E
-	bmi	loc_00C76E
-	bra	loc_00C749
-loc_00C731:
+	beq	@player_not_moving
+	bmi	@player_not_moving
+	bra	@push_player
+@check_p2:
 	lda	a:p2_lives
-	beq	loc_00C75E
+	beq	@no_scroll
 	lda	a:wram_024A
-	cmp	zp_A6
-	bcc	loc_00C75E
+	cmp	scroll_threshold
+	bcc	@no_scroll
 	ldx	#$0240
 	ldy	#$0200
 	lda	$1A,x
-	beq	loc_00C76E
-	bmi	loc_00C76E
-loc_00C749:
+	beq	@player_not_moving
+	bmi	@player_not_moving
+@push_player:
 	lda	a:$1D8A,y
-	beq	loc_00C765
+	beq	@scroll_by_player
 	lda	a:$000A,y
 	cmp	#$000C
-	bcs	loc_00C765
+	bcs	@scroll_by_player
 	sec
 	lda	$0A,x
 	sbc	a:$1306,x
 	sta	$0A,x
-loc_00C75E:
-	stz	a:wram_138E
+@no_scroll:
+	stz	a:bg1_x_delta
 	stz	a:$1306,x
 	rtl
-loc_00C765:
+@scroll_by_player:
 	clc
 	lda	a:$1306,x
-	sta	a:wram_138E
-	bra	loc_00C78E
-loc_00C76E:
+	sta	a:bg1_x_delta
+	bra	@apply
+@player_not_moving:
 	lda	a:$1D8A,y
-	beq	loc_00C77B
+	beq	@autoscroll
 	lda	a:$000A,y
 	cmp	#$000C
-	bcc	loc_00C75E
-loc_00C77B:
+	bcc	@no_scroll
+@autoscroll:
 	clc
-	lda	a:wram_1384
+	lda	a:bg1_x_sub
 	adc	#$6800
-	sta	a:wram_1384
+	sta	a:bg1_x_sub
 	lda	#$0000
 	adc	#$0001
-	sta	a:wram_138E
-loc_00C78E:
+	sta	a:bg1_x_delta
+@apply:
 	ldx	#$1380
 	stx	zp_FC
 	ldy	#$4000
@@ -547,85 +547,85 @@ loc_00C78E:
 	adc	$00,x
 	and	#$FF00
 	cmp	$30,x
-	beq	loc_00C7B8
+	beq	@draw
 	sta	$30,x
 	clc
 	lda	$3C,x
 	adc	#$0080
 	sta	$3C,x
-loc_00C7B8:
-	jsl	f:sub_00CB29
-	jmp	a:sub_00CC37
+@draw:
+	jsl	f:draw_bg_column
+	jmp	a:update_bg_collision_map
 
-sub_00C7BF:
+bg1_init_vertical:
 	lda	#$0060
-	sta	zp_A6
-	jsl	f:sub_00CC1D
-	inc	a:wram_13BA
+	sta	scroll_threshold
+	jsl	f:clear_bg1_scroll_deltas
+	inc	a:bg1_scroll_mode
 	ldx	#$1380
 	stx	zp_FC
 	ldy	#$4000
 	sty	zp_FE
-	jsl	f:sub_00CA52
-	jsl	f:sub_00CC37
+	jsl	f:draw_bg_row
+	jsl	f:update_bg_collision_map
 	clc
-	lda	a:wram_1398
+	lda	a:bg1_y
 	adc	#$0008
-	sta	a:wram_1398
+	sta	a:bg1_y
 	ldx	#$1380
 	stx	zp_FC
 	ldy	#$4000
 	sty	zp_FE
-	jsl	f:sub_00CA52
-	jsl	f:sub_00CC37
+	jsl	f:draw_bg_row
+	jsl	f:update_bg_collision_map
 	sec
-	lda	a:wram_1398
+	lda	a:bg1_y
 	sbc	#$0008
-	sta	a:wram_1398
+	sta	a:bg1_y
 	clc
 	adc	#$00F0
 	and	#$FF00
 	sta	a:wram_13B0
-	lda	a:wram_1398
+	lda	a:bg1_y
 	and	#$FF00
-	sta	a:wram_160C
+	sta	a:spawn_last_page
 	lda	#$FFFF
-	sta	a:wram_1608
+	sta	a:spawn_pos_invert
 	lda	#$1398
-	sta	a:wram_160A
+	sta	a:spawn_scroll_var
 	rtl
-loc_00C823:
-	stz	a:wram_13A4
-	stz	a:wram_13A6
+bg1_no_vertical_scroll:
+	stz	a:bg1_y_sub
+	stz	a:bg1_y_delta
 	rtl
 
-sub_00C82A:
-	lda	a:wram_13B4
-	bne	loc_00C883
+bg1_scroll_vertical:
+	lda	a:bg1_autoscroll
+	bne	@autoscroll
 	lda	a:p1_lives
-	beq	loc_00C846
+	beq	@check_p2
 	lda	a:wram_020E
-	bmi	loc_00C83D
-	cmp	zp_A6
-	bcs	loc_00C846
-loc_00C83D:
+	bmi	@p1_high
+	cmp	scroll_threshold
+	bcs	@check_p2
+@p1_high:
 	ldx	#$0200
 	lda	$1E,x
-	bpl	loc_00C883
-	bmi	loc_00C85B
-loc_00C846:
+	bpl	@autoscroll
+	bmi	@scroll_by_player
+@check_p2:
 	lda	a:p2_lives
-	beq	loc_00C823
+	beq	bg1_no_vertical_scroll
 	; (not executed in the CDL traces)
 	lda	a:wram_024E
-	bmi	loc_00C854
-	cmp	zp_A6
-	bcs	loc_00C823
-loc_00C854:
+	bmi	@p2_high
+	cmp	scroll_threshold
+	bcs	bg1_no_vertical_scroll
+@p2_high:
 	ldx	#$0240
 	lda	$1E,x
-	bpl	loc_00C883
-loc_00C85B:
+	bpl	@autoscroll
+@scroll_by_player:
 	clc
 	lda	$0C,x
 	adc	$1C,x
@@ -634,26 +634,26 @@ loc_00C85B:
 	adc	$1E,x
 	sec
 	sbc	zp_00
-	sta	a:wram_13A6
+	sta	a:bg1_y_delta
 	ldx	#$1380
 	stx	zp_FC
 	ldy	#$4000
 	sty	zp_FE
 	clc
 	lda	$18,x
-	adc	a:wram_13A6
+	adc	a:bg1_y_delta
 	sta	$18,x
-	stz	a:wram_13A4
-	bra	loc_00C8AA
-loc_00C883:
-	ldy	a:wram_13B6
+	stz	a:bg1_y_sub
+	bra	@page
+@autoscroll:
+	ldy	a:bg1_autoscroll_speed
 	clc
 	lda	a:data_058D52,y
-	adc	a:wram_13A4
-	sta	a:wram_13A4
+	adc	a:bg1_y_sub
+	sta	a:bg1_y_sub
 	lda	#$FFFF
 	adc	#$0000
-	sta	a:wram_13A6
+	sta	a:bg1_y_delta
 	ldx	#$1380
 	stx	zp_FC
 	ldy	#$4000
@@ -662,23 +662,23 @@ loc_00C883:
 	lda	$18,x
 	adc	$26,x
 	sta	$18,x
-loc_00C8AA:
+@page:
 	clc
 	lda	#$00F0
 	adc	$18,x
 	and	#$FF00
 	cmp	$30,x
-	beq	loc_00C8C1
+	beq	@draw
 	sta	$30,x
 	clc
 	lda	$3C,x
 	adc	#$0080
 	sta	$3C,x
-loc_00C8C1:
-	jsl	f:sub_00CA52
-	jmp	a:sub_00CC37
+@draw:
+	jsl	f:draw_bg_row
+	jmp	a:update_bg_collision_map
 
-sub_00C8C8:
+bg1_update_vertical:
 	ldx	#$1380
 	stx	zp_FC
 	ldy	#$4000
@@ -688,22 +688,22 @@ sub_00C8C8:
 	adc	$18,x
 	and	#$FF00
 	cmp	$30,x
-	beq	loc_00C8E9
+	beq	@draw
 	sta	$30,x
 	clc
 	lda	$3C,x
 	adc	#$0080
 	sta	$3C,x
-loc_00C8E9:
-	jsl	f:sub_00CA52
-	jmp	a:sub_00CC37
+@draw:
+	jsl	f:draw_bg_row
+	jmp	a:update_bg_collision_map
 
-sub_00C8F0:
+bg2_draw_column_at_8:
 	ldx	#$13C0
 	ldy	#$A000
 	bra	loc_00C8FE
 
-sub_00C8F8:
+bg1_draw_column_at_8:
 	ldx	#$1380
 	ldy	#$4000
 loc_00C8FE:
@@ -719,123 +719,123 @@ loc_00C8FE:
 	and	#$FF00
 	lsr	a
 	sta	$3C,x
-	jml	f:sub_00CB29
+	jml	f:draw_bg_column
 
-sub_00C917:
-	lda	a:wram_13FA
+run_bg2_scroll_mode:
+	lda	a:bg2_scroll_mode
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00C927,x
+	lda	f:tbl_bg2_scroll_modes,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00C927:
-	.addr	sub_00C941
-	.addr	sub_00C982
-	.addr	sub_00C942
-	.addr	sub_00C9AB
-	.addr	sub_00C99B
-	.addr	sub_00C9AC
-	.addr	sub_00C9CC
-	.addr	sub_00C9F7
-	.addr	sub_00CA3C
-	.addr	sub_00CA3D
-	.addr	sub_00C9CC
-	.addr	sub_00C9E0
-	.addr	sub_00C8F0
+tbl_bg2_scroll_modes:
+	.addr	bg2_scroll_none
+	.addr	bg2_start_draw_screen
+	.addr	bg2_draw_screen_step
+	.addr	bg2_scroll_none_3
+	.addr	bg2_parallax_x_1_8_hdma
+	.addr	bg2_parallax_x_1_8
+	.addr	bg2_autoscroll_x
+	.addr	bg2_parallax_y_1_3
+	.addr	bg2_scroll_none_8
+	.addr	bg2_follow_bg1_x
+	.addr	bg2_autoscroll_x
+	.addr	bg2_autoscroll_xy
+	.addr	bg2_draw_column_at_8
 
-sub_00C941:
+bg2_scroll_none:
 	rtl
 
-sub_00C942:
-	lda	a:wram_13FE
-	bne	loc_00C97E
-	lda	a:wram_13C2
-	sta	a:wram_13C0
+bg2_draw_screen_step:
+	lda	a:bg2_screen_drawn
+	bne	@done
+	lda	a:bg2_draw_x
+	sta	a:bg2_x
 	ldx	#$13C0
 	stx	zp_FC
 	ldy	#$A000
 	sty	zp_FE
-	jsl	f:sub_00CB29
+	jsl	f:draw_bg_column
 	sec
-	lda	a:wram_13C2
+	lda	a:bg2_draw_x
 	sbc	#$0008
-	sta	a:wram_13C2
+	sta	a:bg2_draw_x
 	cmp	#$00F8
-	bne	loc_00C976
+	bne	@check_end
 	clc
-	lda	a:wram_13FC
+	lda	a:bg2_map_offset
 	adc	#$0080
-	sta	a:wram_13FC
-	bra	loc_00C97E
-loc_00C976:
+	sta	a:bg2_map_offset
+	bra	@done
+@check_end:
 	cmp	#$FFF8
-	bne	loc_00C97E
-	inc	a:wram_13FE
-loc_00C97E:
-	stz	a:wram_13C0
+	bne	@done
+	inc	a:bg2_screen_drawn
+@done:
+	stz	a:bg2_x
 	rtl
 
-sub_00C982:
+bg2_start_draw_screen:
 	stz	a:wram_13F2
-	stz	a:wram_13D8
-	stz	a:wram_13DC
-	stz	a:wram_13C0
-	stz	a:wram_13C4
+	stz	a:bg2_y
+	stz	a:bg2_y_sub
+	stz	a:bg2_x
+	stz	a:bg2_x_sub
 	lda	#$01F8
-	sta	a:wram_13C2
-	inc	a:wram_13FA
+	sta	a:bg2_draw_x
+	inc	a:bg2_scroll_mode
 	rtl
 
-sub_00C99B:
-	jsl	f:sub_00C9AC
-	lda	a:wram_13C0
+bg2_parallax_x_1_8_hdma:
+	jsl	f:bg2_parallax_x_1_8
+	lda	a:bg2_x
 	sta	f:wram_7E3801
 	sta	f:wram_7E3804
 	rtl
 
-sub_00C9AB:
+bg2_scroll_none_3:
 	; (not executed in the CDL traces)
 	rtl
 
-sub_00C9AC:
+bg2_parallax_x_1_8:
 	stz	a:wram_13D2
 	stz	a:wram_13EA
 	clc
-	lda	a:wram_138E
+	lda	a:bg1_x_delta
 	adc	a:wram_13CE
 	sta	a:wram_13CE
 	sec
 	sbc	#$0008
-	bmi	loc_00C9CB
+	bmi	@done
 	sta	a:wram_13CE
-	inc	a:wram_13C0
+	inc	a:bg2_x
 	inc	a:wram_13D2
-loc_00C9CB:
+@done:
 	rtl
 
-sub_00C9CC:
+bg2_autoscroll_x:
 	clc
-	lda	a:wram_13C4
+	lda	a:bg2_x_sub
 	adc	#$2000
-	sta	a:wram_13C4
-	lda	a:wram_13C0
+	sta	a:bg2_x_sub
+	lda	a:bg2_x
 	adc	#$0001
-	sta	a:wram_13C0
+	sta	a:bg2_x
 	rtl
 
-sub_00C9E0:
+bg2_autoscroll_xy:
 	sec
-	lda	a:wram_13DC
+	lda	a:bg2_y_sub
 	sbc	#$A000
-	sta	a:wram_13DC
-	lda	a:wram_13D8
+	sta	a:bg2_y_sub
+	lda	a:bg2_y
 	sbc	#$0000
-	sta	a:wram_13D8
-	jsl	f:sub_00C9CC
+	sta	a:bg2_y
+	jsl	f:bg2_autoscroll_x
 
-sub_00C9F7:
+bg2_parallax_y_1_3:
 	ldx	#$13C0
 	stx	zp_FC
 	ldy	#$A000
@@ -846,48 +846,48 @@ sub_00C9F7:
 	stz	$12,x
 	stz	$2A,x
 	clc
-	lda	a:wram_13A6
+	lda	a:bg1_y_delta
 	adc	$26,x
 	sta	$26,x
-loc_00CA14:
+@loop:
 	clc
 	adc	#$0003
-	bpl	loc_00CA22
+	bpl	@page
 	sta	$26,x
 	dec	$18,x
 	dec	$2A,x
-	bra	loc_00CA14
-loc_00CA22:
+	bra	@loop
+@page:
 	clc
 	lda	#$00F0
 	adc	$18,x
 	and	#$FF00
 	cmp	$30,x
-	beq	loc_00CA39
+	beq	@draw
 	sta	$30,x
 	clc
 	lda	$3C,x
 	adc	#$0080
 	sta	$3C,x
-loc_00CA39:
-	brl	sub_00CA52
+@draw:
+	brl	draw_bg_row
 
-sub_00CA3C:
+bg2_scroll_none_8:
 	; (not executed in the CDL traces)
 	rtl
 
-sub_00CA3D:
+bg2_follow_bg1_x:
 	clc
-	lda	a:wram_138E
+	lda	a:bg1_x_delta
 	sta	a:wram_13CE
 	sta	a:wram_13D2
 	stz	a:wram_13EA
 	clc
-	adc	a:wram_13C0
-	sta	a:wram_13C0
+	adc	a:bg2_x
+	sta	a:bg2_x
 	rtl
 
-sub_00CA52:
+draw_bg_row:
 	clc
 	lda	$18,x
 	adc	#$0010
@@ -924,14 +924,14 @@ sub_00CA52:
 	sta	zp_04
 	ldx	zp_FE
 	cpx	#$4000
-	bne	loc_00CAA4
+	bne	@bg2
 	clc
 	adc	#$4000
-	bra	loc_00CAA8
-loc_00CAA4:
+	bra	@queue
+@bg2:
 	clc
 	adc	#$4800
-loc_00CAA8:
+@queue:
 	sta	zp_04
 	sep	#$20
 	.a8
@@ -943,7 +943,7 @@ loc_00CAA8:
 	lda	#$0080
 	ldy	zp_04
 	jsl	f:begin_vram_transfer_vmain
-loc_00CABB:
+@loop:
 	lda	(zp_00)
 	and	#$3FFF
 	clc
@@ -953,21 +953,21 @@ loc_00CABB:
 	lda	(zp_00)
 	and	#$C000
 	cmp	zp_0C
-	beq	loc_00CAEF
+	beq	@same_flip
 	sta	zp_0C
 	xba
 	lsr	a
 	ora	zp_0A
 	tax
-	lda	f:data_00CD8A,x
+	lda	f:metatile_row_offsets,x
 	sta	zp_10
-	lda	f:data_00CD8C,x
+	lda	f:metatile_row_offsets+2,x
 	sta	zp_12
-	lda	f:data_00CD8E,x
+	lda	f:metatile_row_offsets+4,x
 	sta	zp_14
-	lda	f:data_00CD90,x
+	lda	f:metatile_row_offsets+6,x
 	sta	zp_16
-loc_00CAEF:
+@same_flip:
 	ldx	vram_queue_data_ptr
 	lda	(zp_10),y
 	eor	zp_0C
@@ -988,7 +988,7 @@ loc_00CAEF:
 	inc	zp_00
 	inc	zp_00
 	dec	zp_06
-	bne	loc_00CABB
+	bne	@loop
 	jsl	f:end_vram_transfer
 	sep	#$20
 	.a8
@@ -999,7 +999,7 @@ loc_00CAEF:
 	.a16
 	rtl
 
-sub_00CB29:
+draw_bg_column:
 	lda	$32,x
 	asl	a
 	asl	a
@@ -1027,9 +1027,9 @@ sub_00CB29:
 	sta	zp_1A
 	ldy	#$0008
 	cpx	#$1380
-	bne	loc_00CB60
+	bne	@set_count
 	ldy	#$0007
-loc_00CB60:
+@set_count:
 	sty	zp_06
 	lda	#$FFFF
 	sta	zp_0C
@@ -1037,9 +1037,9 @@ loc_00CB60:
 	clc
 	lda	zp_08
 	bit	#$FFE0
-	bne	loc_00CB75
+	bne	@screen_half
 	ldy	#$0100
-loc_00CB75:
+@screen_half:
 	sty	zp_1C
 	and	#$001F
 	sta	zp_04
@@ -1051,14 +1051,14 @@ loc_00CB75:
 	ora	zp_04
 	ldx	zp_FE
 	cpx	#$4000
-	bne	loc_00CB94
+	bne	@bg2
 	clc
 	adc	#$4000
-	bra	loc_00CB98
-loc_00CB94:
+	bra	@queue
+@bg2:
 	clc
 	adc	#$4800
-loc_00CB98:
+@queue:
 	sta	zp_04
 	sep	#$20
 	.a8
@@ -1070,7 +1070,7 @@ loc_00CB98:
 	lda	#$0081
 	ldy	zp_04
 	jsl	f:begin_vram_transfer_vmain
-loc_00CBAB:
+@loop:
 	lda	(zp_02)
 	and	#$3FFF
 	clc
@@ -1080,21 +1080,21 @@ loc_00CBAB:
 	lda	(zp_02)
 	and	#$C000
 	cmp	zp_0C
-	beq	loc_00CBDF
+	beq	@same_flip
 	sta	zp_0C
 	xba
 	lsr	a
 	ora	zp_0A
 	tax
-	lda	f:data_00CD0A,x
+	lda	f:metatile_column_offsets,x
 	sta	zp_10
-	lda	f:data_00CD0C,x
+	lda	f:metatile_column_offsets+2,x
 	sta	zp_12
-	lda	f:data_00CD0E,x
+	lda	f:metatile_column_offsets+4,x
 	sta	zp_14
-	lda	f:data_00CD10,x
+	lda	f:metatile_column_offsets+6,x
 	sta	zp_16
-loc_00CBDF:
+@same_flip:
 	ldx	vram_queue_data_ptr
 	lda	(zp_10),y
 	eor	zp_0C
@@ -1117,7 +1117,7 @@ loc_00CBDF:
 	adc	#$0010
 	sta	zp_02
 	dec	zp_06
-	bne	loc_00CBAB
+	bne	@loop
 	jsl	f:end_vram_transfer
 	sep	#$20
 	.a8
@@ -1128,15 +1128,15 @@ loc_00CBDF:
 	.a16
 	rtl
 
-sub_00CC1D:
+clear_bg1_scroll_deltas:
 	stz	a:wram_138C
-	stz	a:wram_138E
-	stz	a:wram_13A4
-	stz	a:wram_13A6
+	stz	a:bg1_x_delta
+	stz	a:bg1_y_sub
+	stz	a:bg1_y_delta
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_00CC2A:
+clear_bg2_scroll_deltas:
 	; (not executed in the CDL traces)
 	stz	a:wram_13CC
 	stz	a:wram_13CE
@@ -1144,7 +1144,7 @@ sub_00CC2A:
 	stz	a:wram_13E6
 	rtl
 
-sub_00CC37:
+update_bg_collision_map:
 	sep	#$20
 	.a8
 	lda	#$7E
@@ -1156,9 +1156,9 @@ sub_00CC37:
 	ldy	#$0002
 	lda	a:$0000,x
 	cmp	#$0081
-	bne	loc_00CC4F
+	bne	@set_step
 	ldy	#$0040
-loc_00CC4F:
+@set_step:
 	sty	zp_06
 	lda	a:$0004,x
 	and	#$0FFF
@@ -1171,7 +1171,7 @@ loc_00CC4F:
 	lda	a:$0009,x
 	sta	zp_02
 	ldy	#$0000
-loc_00CC6B:
+@loop:
 	lda	(zp_0E),y
 	sta	zp_0A
 	rol	a
@@ -1182,70 +1182,70 @@ loc_00CC6B:
 	lda	zp_0A
 	and	#$03FF
 	cmp	zp_C8
-	bcs	loc_00CC85
+	bcs	@class1
 	lda	#$0000
-	bra	loc_00CCEF
-loc_00CC85:
+	bra	@store
+@class1:
 	cmp	zp_CA
-	bcs	loc_00CC8E
+	bcs	@class2
 	lda	#$2002
-	bra	loc_00CCEF
-loc_00CC8E:
+	bra	@store
+@class2:
 	cmp	zp_CC
-	bcs	loc_00CC97
+	bcs	@class3
 	lda	#$0004
-	bra	loc_00CCEF
-loc_00CC97:
+	bra	@store
+@class3:
 	cmp	zp_CE
-	bcs	loc_00CCA0
+	bcs	@class4
 	lda	#$4008
-	bra	loc_00CCED
-loc_00CCA0:
+	bra	@mirror
+@class4:
 	cmp	zp_D0
-	bcs	loc_00CCA9
+	bcs	@class5
 	lda	#$4010
-	bra	loc_00CCED
-loc_00CCA9:
+	bra	@mirror
+@class5:
 	cmp	zp_D2
-	bcs	loc_00CCB2
+	bcs	@class6
 	lda	#$6020
-	bra	loc_00CCED
-loc_00CCB2:
+	bra	@mirror
+@class6:
 	cmp	zp_D4
-	bcs	loc_00CCBB
+	bcs	@class7
 	lda	#$6040
-	bra	loc_00CCED
-loc_00CCBB:
+	bra	@mirror
+@class7:
 	cmp	zp_D6
-	bcs	loc_00CCC4
+	bcs	@class8
 	lda	#$6080
-	bra	loc_00CCED
-loc_00CCC4:
+	bra	@mirror
+@class8:
 	cmp	zp_D8
-	bcs	loc_00CCCD
+	bcs	@class9
 	lda	#$6100
-	bra	loc_00CCED
-loc_00CCCD:
+	bra	@mirror
+@class9:
 	cmp	zp_DA
-	bcs	loc_00CCD6
+	bcs	@class10
 	lda	#$1200
-	bra	loc_00CCEF
-loc_00CCD6:
+	bra	@store
+@class10:
 	cmp	zp_DC
-	bcs	loc_00CCDF
+	bcs	@class11
 	lda	#$5400
-	bra	loc_00CCED
-loc_00CCDF:
+	bra	@mirror
+@class11:
 	cmp	zp_DE
-	bcs	loc_00CCE8
+	bcs	@class12
 	lda	#$5800
-	bra	loc_00CCED
-loc_00CCE8:
+	bra	@mirror
+@class12:
 	lda	#$A000
-	bra	loc_00CCEF
-loc_00CCED:
+	bra	@store
+@mirror:
 	eor	zp_0C
-loc_00CCEF:
+@store:
 	sta	(zp_00)
 	lda	zp_00
 	clc
@@ -1254,9 +1254,9 @@ loc_00CCEF:
 	iny
 	iny
 	cpy	zp_02
-	bcs	loc_00CD01
-	brl	loc_00CC6B
-loc_00CD01:
+	bcs	@done
+	brl	@loop
+@done:
 	sep	#$20
 	.a8
 	lda	#$05
@@ -1265,17 +1265,11 @@ loc_00CD01:
 	rep	#$20
 	.a16
 	rtl
-data_00CD0A:
-	; CDL: read by sub_00CB29
+metatile_column_offsets:
+	; CDL: read by draw_bg_column
 	.byte	$00, $00
-data_00CD0C:
-	; CDL: read by sub_00CB29
 	.byte	$08, $00
-data_00CD0E:
-	; CDL: read by sub_00CB29
 	.byte	$10, $00
-data_00CD10:
-	; CDL: read by sub_00CB29
 	.byte	$18, $00, $02, $00, $0A, $00, $12, $00, $1A, $00, $04, $00, $0C, $00, $14, $00
 	.byte	$1C, $00, $06, $00, $0E, $00, $16, $00, $1E, $00, $06, $00, $0E, $00, $16, $00
 	.byte	$1E, $00, $04, $00, $0C, $00, $14, $00, $1C, $00, $02, $00, $0A, $00, $12, $00
@@ -1284,17 +1278,11 @@ data_00CD10:
 	.byte	$04, $00, $1E, $00, $16, $00, $0E, $00, $06, $00, $1E, $00, $16, $00, $0E, $00
 	.byte	$06, $00, $1C, $00, $14, $00, $0C, $00, $04, $00, $1A, $00, $12, $00, $0A, $00
 	.byte	$02, $00, $18, $00, $10, $00, $08, $00, $00, $00
-data_00CD8A:
-	; CDL: read by sub_00CA52
+metatile_row_offsets:
+	; CDL: read by draw_bg_row
 	.byte	$00, $00
-data_00CD8C:
-	; CDL: read by sub_00CA52
 	.byte	$02, $00
-data_00CD8E:
-	; CDL: read by sub_00CA52
 	.byte	$04, $00
-data_00CD90:
-	; CDL: read by sub_00CA52
 	.byte	$06, $00, $08, $00, $0A, $00, $0C, $00, $0E, $00, $10, $00, $12, $00, $14, $00
 	.byte	$16, $00, $18, $00, $1A, $00, $1C, $00, $1E, $00, $06, $00, $04, $00, $02, $00
 	.byte	$00, $00, $0E, $00, $0C, $00, $0A, $00, $08, $00, $16, $00, $14, $00, $12, $00
@@ -1305,11 +1293,11 @@ data_00CD90:
 	.byte	$1E, $00, $1C, $00, $1A, $00, $18, $00, $16, $00, $14, $00, $12, $00, $10, $00
 	.byte	$0E, $00, $0C, $00, $0A, $00, $08, $00, $06, $00, $04, $00, $02, $00, $00, $00
 
-sub_00CE0A:
-	lda	a:wram_1380
+init_stage_spawns:
+	lda	a:bg1_x
 	and	#$FF00
-	sta	a:wram_160C
-	lda	a:wram_13BC
+	sta	a:spawn_last_page
+	lda	a:bg1_map_offset
 	lsr	a
 	lsr	a
 	lsr	a
@@ -1318,80 +1306,80 @@ sub_00CE0A:
 	lsr	a
 	sec
 	sbc	#$0002
-	sta	a:wram_1606
-	stz	a:wram_1602
-	stz	a:wram_1608
+	sta	a:spawn_page_index
+	stz	a:spawn_entry_offset
+	stz	a:spawn_pos_invert
 	lda	#$1380
-	sta	a:wram_160A
+	sta	a:spawn_scroll_var
 	lda	stage_number
 	asl	a
 	tay
 	lda	a:data_05947A,y
-	sta	a:wram_1604
+	sta	a:spawn_pages
 	rtl
 
-sub_00CE3A:
-	lda	a:wram_160A
+spawn_stage_objects:
+	lda	a:spawn_scroll_var
 	sta	zp_02
-	lda	a:wram_1608
+	lda	a:spawn_pos_invert
 	and	#$0001
 	sta	zp_04
 	lda	(zp_02)
 	and	#$FF00
-	cmp	a:wram_160C
-	beq	loc_00CE6C
-	sta	a:wram_160C
-loc_00CE54:
+	cmp	a:spawn_last_page
+	beq	@current_pos
+	sta	a:spawn_last_page
+@flush_page:
 	lda	#$00FF
-	jsl	f:sub_00CE6E
+	jsl	f:spawn_next_stage_object
 	lda	a:$0000,y
 	cmp	#$00FF
-	bne	loc_00CE54
-	inc	a:wram_1606
-	inc	a:wram_1606
-	stz	a:wram_1602
-loc_00CE6C:
+	bne	@flush_page
+	inc	a:spawn_page_index
+	inc	a:spawn_page_index
+	stz	a:spawn_entry_offset
+@current_pos:
 	lda	(zp_02)
 
-sub_00CE6E:
-	eor	a:wram_1608
+spawn_next_stage_object:
+	eor	a:spawn_pos_invert
 	clc
 	adc	zp_04
 	and	#$00FF
 	sta	zp_0C
-	lda	a:wram_1606
+	lda	a:spawn_page_index
 	sta	zp_00
-	ldy	a:wram_1604
+	ldy	a:spawn_pages
 	lda	(zp_00),y
 	clc
-	adc	a:wram_1602
+	adc	a:spawn_entry_offset
 	tay
 	lda	a:$0000,y
 	and	#$00FF
 	cmp	#$00FF
-	beq	loc_00CEE4
+	beq	@done
 	cmp	zp_0C
-	beq	loc_00CE99
-	bcs	loc_00CEE4
-loc_00CE99:
+	beq	@spawn
+	bcs	@done
+@spawn:
 	sta	zp_06
-	jsr	a:sub_00CEE5
-	bcs	loc_00CEE4
-	lda	a:wram_1608
-	bmi	loc_00CEB0
+	jsr	a:find_free_object_slot_in_range
+	bcs	@done
+	lda	a:spawn_pos_invert
+	bmi	@inverted
 	sec
 	lda	zp_0C
 	sbc	zp_06
 	stz	zp_0A
 	sta	zp_08
-	bra	loc_00CEB9
-loc_00CEB0:
+	bra	@set_fields
+@inverted:
 	sec
 	lda	zp_06
 	sbc	zp_0C
 	stz	zp_08
 	sta	zp_0A
-loc_00CEB9:
+@set_fields:
 	lda	a:$0001,y
 	and	#$00FF
 	sta	$10,x
@@ -1408,13 +1396,13 @@ loc_00CEB9:
 	stz	$06,x
 	stz	$16,x
 	clc
-	lda	a:wram_1602
+	lda	a:spawn_entry_offset
 	adc	#$000A
-	sta	a:wram_1602
-loc_00CEE4:
+	sta	a:spawn_entry_offset
+@done:
 	rtl
 
-sub_00CEE5:
+find_free_object_slot_in_range:
 	lda	a:$0003,y
 	and	#$00FF
 	asl	a
@@ -1430,14 +1418,14 @@ sub_00CEE5:
 	asl	a
 	sta	zp_FC
 	clc
-loc_00CEFD:
+@loop:
 	lda	$10,x
-	beq	loc_00CF0B
+	beq	@done
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	zp_FC
-	bcc	loc_00CEFD
-loc_00CF0B:
+	bcc	@loop
+@done:
 	rts

@@ -181,7 +181,7 @@ loc_00DEF0:
 	adc	a:$000E,y
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	lsr	a
 	and	#$00FE
 	sta	zp_0A
@@ -560,10 +560,10 @@ sub_00E16E:
 	cmp	#$00E0
 	bcs	loc_00E16A
 	clc
-	adc	a:wram_1398
+	adc	a:bg1_y
 	and	#$00FF
 	sta	zp_0A
-	lda	a:wram_1380
+	lda	a:bg1_x
 	clc
 	adc	$0A,x
 	clc

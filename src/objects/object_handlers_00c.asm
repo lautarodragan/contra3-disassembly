@@ -61,7 +61,7 @@ sub_00F2C4:
 	jml	f:sub_00CFAF
 
 sub_00F2EF:
-	lda	a:wram_13BA
+	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	loc_00F319
 	stz	hdma_preset
@@ -72,7 +72,7 @@ sub_00F2EF:
 	ldx	#.loword(data_05AA1F)
 	jsl	f:load_data_list
 	ldy	#$AA28
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	ldx	zp_FC
 	jsl	f:sub_00FF30
 	jsr	a:sub_00F65E
@@ -129,7 +129,7 @@ loc_00F362:
 	lda	#$0030
 loc_00F383:
 	sta	zp_08
-	lda	a:wram_1380
+	lda	a:bg1_x
 	bit	#$0100
 	beq	loc_00F395
 	clc
@@ -825,11 +825,11 @@ sub_00F8E2:
 	sec
 	lda	#$01C0
 	sbc	a:wram_030A
-	sta	a:wram_13C0
+	sta	a:bg2_x
 	sec
 	lda	#$009C
 	sbc	a:wram_030E
-	sta	a:wram_13D8
+	sta	a:bg2_y
 loc_00F8F6:
 	lda	a:wram_030A
 	adc	#$FFE0

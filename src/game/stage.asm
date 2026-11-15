@@ -55,12 +55,12 @@ stage_init:
 	sta	a:stage_layout
 @no_checkpoint:
 	ldy	#$8AC7
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	ldy	a:stage_layout
 	lda	a:data_0589D3,y
-	sta	a:wram_13BC
+	sta	a:bg1_map_offset
 	lda	a:data_0589E7,y
-	sta	a:wram_13FC
+	sta	a:bg2_map_offset
 	ldy	a:stage_layout_base
 	ldx	a:data_058A03,y
 	jsl	f:load_stage_dp_params
@@ -84,7 +84,7 @@ stage_init:
 	lda	a:data_058A21,y
 	tay
 	ldx	#$1210
-	jsl	f:sub_009985
+	jsl	f:start_palette_task_at
 	lda	button_fire
 	ora	button_stand_still
 	sta	a:wram_1628
@@ -120,7 +120,7 @@ stage_init:
 	lda	#$0280
 	sta	a:wram_1646
 	stz	a:wram_16B2
-	stz	a:wram_1676
+	stz	a:scroll_split_pattern
 	stz	a:wram_167A
 	stz	a:wram_167C
 	stz	a:wram_167E
@@ -168,26 +168,26 @@ stage_setup_video:
 	jsl	f:load_data_list
 	ldx	#$1380
 	ldy	#$4000
-	jsl	f:sub_00C612
+	jsl	f:fill_bg_screen
 	ldx	#$13C0
 	ldy	#$A000
-	jsl	f:sub_00C612
+	jsl	f:fill_bg_screen
 	lda	stage_number
 	cmp	#$0004
 	bne	@not_stage4
-	jsl	f:sub_00C575
+	jsl	f:draw_bg3_block_map
 @not_stage4:
-	jsl	f:sub_00E369
+	jsl	f:init_hud
 	jsl	f:stage_layout_init
 	stz	a:wram_168A
-	jsl	f:sub_00CE0A
+	jsl	f:init_stage_spawns
 	stz	a:inidisp_shadow
 	stz	a:stage_exit_request
 	stz	a:stage_pause_disabled
 
-; Empties the per-frame VRAM update lists ($1800 list, zp_B6, zp_B0).
+; Empties the per-frame VRAM update lists ($1800 list, zp_B6, bg_dma_vram_addr).
 reset_vram_update_queues:
-	stz	zp_B0
+	stz	bg_dma_vram_addr
 	stz	zp_B6
 	stz	a:wram_1800
 	stz	a:wram_1808
@@ -286,7 +286,7 @@ stage_frame:
 	stz	a:wram_1544
 	lda	a:wram_16B6
 	bne	@objects
-	jsl	f:sub_00CE3A
+	jsl	f:spawn_stage_objects
 @objects:
 	lda	stage_frame_odd
 	bne	@odd_frame
@@ -367,7 +367,7 @@ tbl_stage_layout_inits:
 
 layout_init_stage1_checkpoint:
 	lda	#$0000
-	sta	a:wram_13FA
+	sta	a:bg2_scroll_mode
 	bra	layout_init_stage1_common
 
 layout_init_stage1:
@@ -375,7 +375,7 @@ layout_init_stage1:
 	lda	#$0003
 	sta	hdma_preset
 	lda	#$0004
-	sta	a:wram_13FA
+	sta	a:bg2_scroll_mode
 layout_init_stage1_common:
 	lda	#$00C1
 	sta	a:m7sel_shadow
@@ -385,9 +385,9 @@ layout_init_stage1_common:
 
 layout_init_stage3_checkpoint:
 	; (not executed in the CDL traces)
-	stz	a:wram_13FA
-	stz	a:wram_13C0
-	stz	a:wram_13D8
+	stz	a:bg2_scroll_mode
+	stz	a:bg2_x
+	stz	a:bg2_y
 	bra	layout_init_stage3_common
 
 layout_init_stage3:
@@ -436,9 +436,9 @@ layout_init_stage4_common:
 	lda	#$004A
 	sta	a:bg2sc_shadow
 	lda	#$0004
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	lda	#$000A
-	sta	a:wram_13FA
+	sta	a:bg2_scroll_mode
 	rtl
 
 layout_init_stage6:
@@ -496,8 +496,8 @@ stage_cinematic:
 	sta	oam_hi_bits
 	jsl	f:reset_vram_update_queues
 	jsr	a:update_stage_frame_counters
-	jsl	f:sub_00C67D
-	jsl	f:sub_00C917
+	jsl	f:run_bg1_scroll_mode
+	jsl	f:run_bg2_scroll_mode
 	jsl	f:run_opening_cinematic
 	jsl	f:update_objects
 	jsl	f:update_objects_0280

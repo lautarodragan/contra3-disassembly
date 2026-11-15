@@ -265,7 +265,7 @@ opening_shake_title:
 	inc	a
 	tay
 @store_offset:
-	sty	a:wram_1398
+	sty	a:bg1_y
 	sty	a:wram_1418
 	lda	a:title_shake
 	beq	@to_title_menu
@@ -527,7 +527,7 @@ game_mode_stage_select:
 	ldx	#.loword(data_05CF41)
 	jsl	f:load_data_list
 	ldy	#$8412
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	ldx	#$841B
 	lda	#$2400
 	jsl	f:draw_text_attr
@@ -628,7 +628,7 @@ game_mode_stage_card:
 	ldx	#.loword(data_05CF41)
 	jsl	f:load_data_list
 	ldy	#$8412
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	jsl	f:draw_score_board
 	lda	stage_number
 	asl	a
@@ -798,7 +798,7 @@ game_over_init:
 	ldx	#.loword(data_05CF41)
 	jsl	f:load_data_list
 	ldy	#$8412
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	jsl	f:draw_score_board
 	ldx	#$8472
 	lda	#$2400

@@ -756,7 +756,7 @@ td_player_state_dying:
 	lda	#$003F
 	jsl	f:queue_sound
 	lda	#$0020
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 	stz	$24,x
 	lda	#$0001
 	sta	a:$064A,x
@@ -1276,7 +1276,7 @@ td_get_muzzle_position:
 	lda	$04,x
 	clc
 	adc	zp_10
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	lda	zp_08
 	sta	zp_0C
 	clc
@@ -1776,7 +1776,7 @@ loc_029AA2:
 	sec
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DAD3C
+	jsl	f:half_distance_squared
 	sta	zp_18
 	lda	a:wram_0F0A
 	sec
@@ -1786,7 +1786,7 @@ loc_029AA2:
 	sec
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DAD3C
+	jsl	f:half_distance_squared
 	cmp	zp_18
 	bne	loc_029ADE
 	lda	stage_frame_counter
@@ -1834,7 +1834,7 @@ loc_029B0D:
 	sec
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	clc
 	rtl
 
@@ -2083,7 +2083,7 @@ loc_029C7E:
 	rtl
 
 sub_029C7F:
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 
 ; Adds the velocity (+$18/+$1A, +$1C/+$1E) to the position (+$08/+$0A, +$0C/+$0E).
 move_topdown_object:
@@ -2303,7 +2303,7 @@ loc_029DE0:
 	sec
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	sta	zp_10
 	clc
 	rts
@@ -2337,7 +2337,7 @@ loc_029E16:
 
 sub_029E1F:
 	lda	#$000C
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 	jsl	f:move_topdown_object
 	jsl	f:sub_02C086
 	rts
@@ -2379,7 +2379,7 @@ sub_029E45:
 	phy
 	tay
 	lda	$04,x
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	ply
 	lda	$0A,x
 	clc
@@ -2398,7 +2398,7 @@ sub_029E45:
 	phy
 	tyx
 	lda	#$0020
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 	ply
 	plx
 	lda	#$FFFF
@@ -2904,7 +2904,7 @@ sub_02A21A:
 	lda	$04,x
 	clc
 	adc	#$FFEC
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	lda	zp_08
 	sta	zp_FC
 	lda	zp_0A
@@ -2921,7 +2921,7 @@ sub_02A21A:
 	lda	$04,x
 	sta	a:$0004,y
 	lda	#$0020
-	jsl	f:sub_1DAD80
+	jsl	f:set_velocity_from_angle_y
 	lda	#$FFFF
 	sta	a:$0004,y
 loc_02A27D:
@@ -3394,7 +3394,7 @@ sub_02A5FB:
 	lda	$38,x
 	sta	$04,x
 	lda	$24,x
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 	jsl	f:move_topdown_object
 	pla
 	clc
@@ -3891,7 +3891,7 @@ sub_02A9A6:
 	sta	a:$0004,y
 	phy
 	ldy	#$000C
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	ply
 	lda	$0A,x
 	clc
@@ -4515,7 +4515,7 @@ sub_02AE1C:
 	rtl
 loc_02AE22:
 	lda	#$0018
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 	lda	#$0060
 	sta	$24,x
 	inc	$12,x
@@ -4549,7 +4549,7 @@ loc_02AE46:
 	sec
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	sec
 	sbc	$04,x
 	bit	#$0080
@@ -5006,7 +5006,7 @@ loc_02B1B0:
 	sec
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DAD3C
+	jsl	f:half_distance_squared
 	sta	zp_0C
 loc_02B1D2:
 	lda	a:p2_lives
@@ -5020,7 +5020,7 @@ loc_02B1D2:
 	sec
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DAD3C
+	jsl	f:half_distance_squared
 	sta	zp_0E
 loc_02B1ED:
 	lda	zp_0C
@@ -5055,7 +5055,7 @@ sub_02B210:
 	sec
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	sec
 	sbc	$04,x
 	and	#$00FF
@@ -5089,7 +5089,7 @@ sub_02B24B:
 	sec
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	cmp	$04,x
 	bne	loc_02B268
 	clc
@@ -5110,11 +5110,11 @@ sub_02B26A:
 	sec
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	sta	$04,x
 	ldy	difficulty
 	lda	a:data_05D7C8,y
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 	pla
 	sta	$04,x
 	rts
@@ -5728,7 +5728,7 @@ loc_02B6E4:
 sub_02B6E5:
 	lda	a:wram_0AC4
 	ldy	#$003A
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	lda	zp_08
 	clc
 	adc	a:wram_0ACA
@@ -6042,7 +6042,7 @@ sub_02B91C:
 	lda	#$0002
 	sta	$06,x
 	lda	#$0080
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 	stz	$08,x
 	stz	$0C,x
 	lda	#$FFFF
@@ -6089,7 +6089,7 @@ sub_02B977:
 	lda	#$0002
 	sta	$06,x
 	lda	#$0080
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 	stz	$08,x
 	stz	$0C,x
 	lda	#$FFFF
@@ -6139,7 +6139,7 @@ loc_02B9D0:
 	stz	$08,x
 	stz	$0C,x
 	lda	#$0080
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 	lda	a:wram_15A8
 	bne	loc_02BA3F
 	ldy	a:wram_1596
@@ -6242,7 +6242,7 @@ sub_02BAA5:
 	sec
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	sec
 	sbc	$04,x
 	beq	loc_02BAE3
@@ -6265,7 +6265,7 @@ loc_02BAE3:
 
 sub_02BAE4:
 	lda	#$0080
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 	rtl
 
 sub_02BAEC:
@@ -6289,7 +6289,7 @@ loc_02BB08:
 	pha
 	jsr	a:sub_02BB80
 	pla
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	lda	zp_08
 	sta	zp_FC
 	lda	zp_0A
@@ -6308,7 +6308,7 @@ loc_02BB08:
 	lda	a:data_05DC62,y
 	tay
 	lda	$04,x
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	ldy	zp_18
 	lda	a:$000A,y
 	clc
@@ -6402,7 +6402,7 @@ loc_02BBD3:
 	tay
 	lda	$14,x
 	sta	$18,x
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	lda	$08,x
 	sta	$1A,x
 	clc
@@ -6471,7 +6471,7 @@ loc_02BC6D:
 	lda	$1E,x
 	pha
 	lda	#$0080
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 	jsl	f:sub_02B95C
 	pla
 	sta	$1E,x
@@ -6640,7 +6640,7 @@ loc_02BDC1:
 	tay
 	lda	a:wram_0B84
 	sta	$04,x
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	lda	a:wram_0B8A
 	clc
 	adc	zp_08
@@ -6752,7 +6752,7 @@ loc_02BE96:
 	and	#$00FF
 	sta	$04,x
 	lda	#$0020
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 	lda	$04,x
 	ora	#$FF00
 	sta	$04,x
@@ -6784,7 +6784,7 @@ loc_02BEE1:
 	sta	$04,x
 	jsr	a:sub_02BF01
 	lda	#$0020
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 	lda	$04,x
 	ora	#$FF00
 	sta	$04,x
@@ -6801,7 +6801,7 @@ sub_02BF01:
 	sec
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	sec
 	sbc	$04,x
 	bit	#$0080
@@ -8568,7 +8568,7 @@ loc_02CB91:
 	sbc	#$0010
 	sta	zp_0A
 	sta	zp_FE
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	pha
 	lda	zp_FE
 	bpl	loc_02CBB5
@@ -8600,7 +8600,7 @@ loc_02CBD7:
 	phy
 	inc	a
 	and	#$00FF
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	lda	$0A,x
 	and	#$FFE0
 	clc
@@ -8638,14 +8638,14 @@ sub_02CC00:
 loc_02CC1F:
 	lda	#$0001
 	sta	a:$0672,x
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	pha
 	lda	zp_FC
 	sta	zp_08
 	lda	zp_FE
 	sta	zp_0A
 loc_02CC32:
-	jsl	f:sub_1DAED0
+	jsl	f:calc_distance
 	tay
 	iny
 	pla
@@ -8653,7 +8653,7 @@ loc_02CC32:
 	inc	a
 	and	#$00FF
 	sta	a:$0670,x
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 	lda	#$0200
 	clc
 	adc	zp_08
@@ -9387,7 +9387,7 @@ td_check_nearest_target:
 	sec
 	sbc	a:p1_view_y
 	sta	zp_0A
-	jsl	f:sub_1DAD3C
+	jsl	f:half_distance_squared
 	cmp	zp_18
 	bcs	loc_02D205
 	sta	zp_18
@@ -9403,7 +9403,7 @@ loc_02D206:
 	sta	zp_08
 	lda	zp_1E
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	sec
 	sbc	a:p1_view_angle
 	clc
@@ -10390,7 +10390,7 @@ sub_02D9CF:
 	sec
 	sbc	a:p2_view_y
 	sta	zp_0A
-	jsl	f:sub_1DAD3C
+	jsl	f:half_distance_squared
 	cmp	zp_18
 	bcs	loc_02D9F7
 	sta	zp_18
@@ -10406,7 +10406,7 @@ loc_02D9F8:
 	sta	zp_08
 	lda	zp_1E
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	sec
 	sbc	a:p2_view_angle
 	clc

@@ -1386,7 +1386,7 @@ set_intro_scroll:
 load_topdown_common_assets:
 	ldx	#.loword(data_05CF33)
 	jsl	f:load_data_list
-	jsl	f:sub_00E369
+	jsl	f:init_hud
 	ldx	#.loword(data_05CF41)
 	jsl	f:load_data_list
 	jsl	f:run_vram_queue
@@ -1511,7 +1511,7 @@ load_stage2_assets:
 	ldx	#.loword(data_05CF2A)
 	jsl	f:load_data_list
 	ldy	#$CFB2
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	jsl	f:build_m7_tilemap
 	rts
 
@@ -1520,7 +1520,7 @@ load_stage5_assets:
 	ldx	#.loword(data_05D01F)
 	jsl	f:load_data_list
 	ldy	#$D056
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	jsl	f:build_m7_tilemap
 	rts
 
@@ -1533,7 +1533,7 @@ load_stage2_boss_assets:
 	ldx	#.loword(data_05CFD8)
 	jsl	f:load_data_list
 	ldy	#$D006
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	jsl	f:build_m7_tilemap
 	rts
 
@@ -1546,7 +1546,7 @@ load_stage5_boss_assets:
 	ldx	#.loword(data_05D07C)
 	jsl	f:load_data_list
 	ldy	#$D0AA
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	jsl	f:build_m7_tilemap
 	rts
 

@@ -43,12 +43,12 @@ start_stage2_palette_tasks:
 	lda	a:wram_1584
 	bne	loc_04DA42
 	ldy	#$F576
-	jml	f:sub_009982
+	jml	f:start_palette_task
 loc_04DA42:
 	cmp	#$0020
 	bne	loc_04DA4E
 	ldy	#$F57C
-	jml	f:sub_009982
+	jml	f:start_palette_task
 loc_04DA4E:
 	rtl
 
@@ -57,12 +57,12 @@ start_stage5_palette_tasks:
 	lda	a:wram_1584
 	bne	loc_04DA5B
 	ldy	#$F582
-	jml	f:sub_009982
+	jml	f:start_palette_task
 loc_04DA5B:
 	cmp	#$0020
 	bne	loc_04DA67
 	ldy	#$F588
-	jml	f:sub_009982
+	jml	f:start_palette_task
 loc_04DA67:
 	rtl
 loc_04DA68:

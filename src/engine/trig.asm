@@ -1,16 +1,16 @@
 ; engine/trig.asm -- Angle and trigonometry helpers
 ; Bank $1D, $1D:ABA0-$1D:AF26. Included by main.asm in segment BANK1D.
 ;
-; sub_1DABA0: angle (0-255) of a vector; sub_1DACA4, sub_1DAD8A...: multiply
+; calc_angle: angle (0-255) of a vector; polar_to_xy, set_velocity_from_angle...: multiply
 ; by sine/cosine (tables data_05F794/data_05F814) with the hardware
 ; multiplier.
 
-sub_1DABA0:
+calc_angle:
 	.a16
 	.i16
 	phx
 	phy
-	jsr	a:sub_1DABAD
+	jsr	a:calc_angle_8
 	.a8
 	.i8
 	rep	#$30
@@ -21,71 +21,71 @@ sub_1DABA0:
 	plx
 	rtl
 
-sub_1DABAD:
+calc_angle_8:
 	sep	#$30
 	.a8
 	.i8
 	lda	zp_08
-	bne	loc_1DABBB
+	bne	@dx_nonzero
 	ldy	zp_0B
-	bpl	loc_1DABB8
+	bpl	@down
 	rts
-loc_1DABB8:
+@down:
 	lda	#$80
 	rts
-loc_1DABBB:
+@dx_nonzero:
 	lda	zp_0A
-	bne	loc_1DABC9
+	bne	@general
 	lda	zp_09
-	bmi	loc_1DABC6
+	bmi	@left
 	lda	#$40
 	rts
-loc_1DABC6:
+@left:
 	lda	#$C0
 	rts
-loc_1DABC9:
+@general:
 	lda	zp_09
-	bmi	loc_1DAC44
+	bmi	@dx_negative
 	lda	zp_0B
-	bpl	loc_1DABFD
+	bpl	@dy_positive_right
 	lda	zp_0A
 	eor	#$FF
 	inc	a
 	sta	zp_0A
 	cmp	zp_08
-	bne	loc_1DABDF
+	bne	@not_diagonal_ne
 	lda	#$20
 	rts
-loc_1DABDF:
-	bcc	loc_1DABEF
+@not_diagonal_ne:
+	bcc	@ne_steep
 	lda	zp_08
 	sta	a:WRDIVH
 	stz	a:WRDIVL
 	stz	zp_0C
 	lda	zp_0A
-	bra	loc_1DAC33
-loc_1DABEF:
+	bra	@divide_add
+@ne_steep:
 	sta	a:WRDIVH
 	stz	a:WRDIVL
 	lda	#$40
 	sta	zp_0C
 	lda	zp_08
-	bra	loc_1DAC16
-loc_1DABFD:
+	bra	@divide_subtract
+@dy_positive_right:
 	lda	zp_0A
 	cmp	zp_08
-	bne	loc_1DAC06
+	bne	@not_diagonal_se
 	lda	#$60
 	rts
-loc_1DAC06:
-	bcc	loc_1DAC27
+@not_diagonal_se:
+	bcc	@se_steep
 	lda	zp_08
 	sta	a:WRDIVH
 	stz	a:WRDIVL
 	lda	#$80
 	sta	zp_0C
 	lda	zp_0A
-loc_1DAC16:
+@divide_subtract:
 	sta	a:WRDIVB
 	nop
 	nop
@@ -94,15 +94,15 @@ loc_1DAC16:
 	sec
 	lda	zp_0C
 	ldy	a:RDDIVL
-	sbc	a:data_05F694,y
+	sbc	a:atan_table,y
 	rts
-loc_1DAC27:
+@se_steep:
 	sta	a:WRDIVH
 	stz	a:WRDIVL
 	lda	#$40
 	sta	zp_0C
 	lda	zp_08
-loc_1DAC33:
+@divide_add:
 	sta	a:WRDIVB
 	nop
 	nop
@@ -111,93 +111,93 @@ loc_1DAC33:
 	clc
 	lda	zp_0C
 	ldy	a:RDDIVL
-	adc	a:data_05F694,y
+	adc	a:atan_table,y
 	rts
-loc_1DAC44:
+@dx_negative:
 	lda	zp_08
 	eor	#$FF
 	inc	a
 	sta	zp_08
 	lda	zp_0B
-	bmi	loc_1DAC78
+	bmi	@dy_negative_left
 	lda	zp_0A
 	cmp	zp_08
-	bne	loc_1DAC58
+	bne	@not_diagonal_sw
 	lda	#$A0
 	rts
-loc_1DAC58:
-	bcc	loc_1DAC6A
+@not_diagonal_sw:
+	bcc	@sw_steep
 	lda	zp_08
 	sta	a:WRDIVH
 	stz	a:WRDIVL
 	lda	#$80
 	sta	zp_0C
 	lda	zp_0A
-	bra	loc_1DAC33
-loc_1DAC6A:
+	bra	@divide_add
+@sw_steep:
 	sta	a:WRDIVH
 	stz	a:WRDIVL
 	lda	#$C0
 	sta	zp_0C
 	lda	zp_08
-	bra	loc_1DAC16
-loc_1DAC78:
+	bra	@divide_subtract
+@dy_negative_left:
 	lda	zp_0A
 	eor	#$FF
 	inc	a
 	sta	zp_0A
 	cmp	zp_08
-	bne	loc_1DAC86
+	bne	@not_diagonal_nw
 	lda	#$E0
 	rts
-loc_1DAC86:
-	bcc	loc_1DAC96
+@not_diagonal_nw:
+	bcc	@nw_steep
 	lda	zp_08
 	sta	a:WRDIVH
 	stz	a:WRDIVL
 	stz	zp_0C
 	lda	zp_0A
-	bra	loc_1DAC16
-loc_1DAC96:
+	bra	@divide_subtract
+@nw_steep:
 	sta	a:WRDIVH
 	stz	a:WRDIVL
 	lda	#$C0
 	sta	zp_0C
 	lda	zp_08
-	bra	loc_1DAC33
+	bra	@divide_add
 
-sub_1DACA4:
+polar_to_xy:
 	.a16
 	.i16
 	sty	a:WRMPYA
 	bit	#$0080
-	bne	loc_1DACC9
+	bne	@quadrant23
 	bit	#$0040
-	bne	loc_1DACBD
-	jsr	a:sub_1DACEF
+	bne	@quadrant1
+	jsr	a:scale_sine_cosine
 	lda	#$0000
 	sec
 	sbc	zp_0A
 	sta	zp_0A
 	rtl
-loc_1DACBD:
-	jsr	a:sub_1DACEF
+@quadrant1:
+	jsr	a:scale_sine_cosine
 	lda	zp_08
 	ldy	zp_0A
 	sty	zp_08
 	sta	zp_0A
 	rtl
-loc_1DACC9:
+@quadrant23:
 	bit	#$0040
-	bne	loc_1DACDA
-	jsr	a:sub_1DACEF
+	bne	@quadrant3
+	jsr	a:scale_sine_cosine
 	lda	#$0000
 	sec
 	sbc	zp_08
 	sta	zp_08
 	rtl
-loc_1DACDA:
-	jsr	a:sub_1DACEF
+@quadrant3:
+	jsr	a:scale_sine_cosine
 	lda	#$0000
 	sec
 	sbc	zp_08
@@ -209,18 +209,18 @@ loc_1DACDA:
 	sty	zp_0A
 	rtl
 
-sub_1DACEF:
+scale_sine_cosine:
 	and	#$003F
 	tay
 	sep	#$20
 	.a8
-	lda	a:data_05F794,y
+	lda	a:quarter_sine_lo,y
 	sta	a:WRMPYB
 	nop
 	stz	zp_09
 	lda	a:RDMPYH
 	sta	zp_08
-	lda	a:data_05F814,y
+	lda	a:quarter_sine,y
 	sta	a:WRMPYB
 	rep	#$20
 	.a16
@@ -232,13 +232,13 @@ sub_1DACEF:
 	sta	zp_08
 	sep	#$20
 	.a8
-	lda	a:data_05F7D4,y
+	lda	a:quarter_cosine_lo,y
 	sta	a:WRMPYB
 	nop
 	stz	zp_0B
 	lda	a:RDMPYH
 	sta	zp_0A
-	lda	a:data_05F854,y
+	lda	a:quarter_cosine,y
 	sta	a:WRMPYB
 	rep	#$20
 	.a16
@@ -250,15 +250,15 @@ sub_1DACEF:
 	sta	zp_0A
 	rts
 
-sub_1DAD3C:
+half_distance_squared:
 	phy
 	lda	zp_08
-	bpl	loc_1DAD45
+	bpl	@dx_abs
 	eor	#$FFFF
 	inc	a
-loc_1DAD45:
+@dx_abs:
 	cmp	#$0100
-	bcs	loc_1DAD7B
+	bcs	@too_far
 	sep	#$20
 	.a8
 	sta	a:WRMPYA
@@ -266,12 +266,12 @@ loc_1DAD45:
 	rep	#$20
 	.a16
 	lda	zp_0A
-	bpl	loc_1DAD5C
+	bpl	@dy_abs
 	eor	#$FFFF
 	inc	a
-loc_1DAD5C:
+@dy_abs:
 	cmp	#$0100
-	bcs	loc_1DAD7B
+	bcs	@too_far
 	ldy	a:RDMPYL
 	sep	#$20
 	.a8
@@ -288,34 +288,34 @@ loc_1DAD5C:
 	adc	zp_FA
 	ply
 	rtl
-loc_1DAD7B:
+@too_far:
 	lda	#$FFFE
 	ply
 	rtl
 
-sub_1DAD80:
+set_velocity_from_angle_y:
 	phx
 	phy
 	tyx
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 	ply
 	plx
 	rtl
 
-sub_1DAD8A:
+set_velocity_from_angle:
 	sep	#$20
 	.a8
 	sta	a:WRMPYA
 	lda	$04,x
 	bit	#$80
-	beq	loc_1DAD98
-	brl	loc_1DAE2A
-loc_1DAD98:
+	beq	@quadrant01
+	brl	@quadrant23
+@quadrant01:
 	bit	#$40
-	bne	loc_1DADE8
+	bne	@quadrant1
 	and	#$3F
 	tay
-	lda	a:data_05F814,y
+	lda	a:quarter_sine,y
 	sta	a:WRMPYB
 	nop
 	rep	#$20
@@ -335,7 +335,7 @@ loc_1DAD98:
 	sta	$18,x
 	sep	#$20
 	.a8
-	lda	a:data_05F854,y
+	lda	a:quarter_cosine,y
 	sta	a:WRMPYB
 	nop
 	rep	#$20
@@ -355,16 +355,16 @@ loc_1DAD98:
 	asl	a
 	eor	#$FFFF
 	sta	$1C,x
-	bne	loc_1DADE7
+	bne	@done
 	; (not executed in the CDL traces)
 	inc	$1E,x
-loc_1DADE7:
+@done:
 	rtl
-loc_1DADE8:
+@quadrant1:
 	.a8
 	and	#$3F
 	tay
-	lda	a:data_05F854,y
+	lda	a:quarter_cosine,y
 	sta	a:WRMPYB
 	nop
 	rep	#$20
@@ -384,7 +384,7 @@ loc_1DADE8:
 	sta	$18,x
 	sep	#$20
 	.a8
-	lda	a:data_05F814,y
+	lda	a:quarter_sine,y
 	sta	a:WRMPYB
 	nop
 	rep	#$20
@@ -403,13 +403,13 @@ loc_1DADE8:
 	asl	a
 	sta	$1C,x
 	rtl
-loc_1DAE2A:
+@quadrant23:
 	.a8
 	bit	#$40
-	bne	loc_1DAE7A
+	bne	@quadrant3
 	and	#$3F
 	tay
-	lda	a:data_05F814,y
+	lda	a:quarter_sine,y
 	sta	a:WRMPYB
 	nop
 	rep	#$20
@@ -429,13 +429,13 @@ loc_1DAE2A:
 	asl	a
 	eor	#$FFFF
 	sta	$18,x
-	bne	loc_1DAE59
+	bne	@q2_y
 	; (not executed in the CDL traces)
 	inc	$1A,x
-loc_1DAE59:
+@q2_y:
 	sep	#$20
 	.a8
-	lda	a:data_05F854,y
+	lda	a:quarter_cosine,y
 	sta	a:WRMPYB
 	nop
 	rep	#$20
@@ -454,11 +454,11 @@ loc_1DAE59:
 	asl	a
 	sta	$1C,x
 	rtl
-loc_1DAE7A:
+@quadrant3:
 	.a8
 	and	#$3F
 	tay
-	lda	a:data_05F854,y
+	lda	a:quarter_cosine,y
 	sta	a:WRMPYB
 	nop
 	rep	#$20
@@ -478,13 +478,13 @@ loc_1DAE7A:
 	asl	a
 	eor	#$FFFF
 	sta	$18,x
-	bne	loc_1DAEA5
+	bne	@q3_y
 	; (not executed in the CDL traces)
 	inc	$1A,x
-loc_1DAEA5:
+@q3_y:
 	sep	#$20
 	.a8
-	lda	a:data_05F814,y
+	lda	a:quarter_sine,y
 	sta	a:WRMPYB
 	nop
 	rep	#$20
@@ -504,21 +504,21 @@ loc_1DAEA5:
 	asl	a
 	eor	#$FFFF
 	sta	$1C,x
-	bne	loc_1DAECF
+	bne	@q3_done
 	; (not executed in the CDL traces)
 	inc	$1E,x
-loc_1DAECF:
+@q3_done:
 	rtl
 
-sub_1DAED0:
+calc_distance:
 	phy
 	lda	zp_08
-	bpl	loc_1DAED9
+	bpl	@dx_abs
 	eor	#$FFFF
 	inc	a
-loc_1DAED9:
+@dx_abs:
 	cmp	#$0100
-	bcs	loc_1DAF10
+	bcs	@too_far
 	sep	#$20
 	.a8
 	sta	a:WRMPYA
@@ -526,12 +526,12 @@ loc_1DAED9:
 	rep	#$20
 	.a16
 	lda	zp_0A
-	bpl	loc_1DAEF0
+	bpl	@dy_abs
 	eor	#$FFFF
 	inc	a
-loc_1DAEF0:
+@dy_abs:
 	cmp	#$0100
-	bcs	loc_1DAF10
+	bcs	@too_far
 	ldy	a:RDMPYL
 	sep	#$20
 	.a8
@@ -544,24 +544,24 @@ loc_1DAEF0:
 	lda	a:RDMPYL
 	clc
 	adc	zp_FA
-	bcs	loc_1DAF10
+	bcs	@too_far
 	ply
-	bra	loc_1DAF15
-loc_1DAF10:
+	bra	@sqrt
+@too_far:
 	; (not executed in the CDL traces)
 	lda	#$00FF
 	ply
 	rtl
-loc_1DAF15:
+@sqrt:
 	phy
 	ldy	#$FFFF
-loc_1DAF19:
+@sqrt_loop:
 	iny
 	iny
 	sty	zp_FA
 	sec
 	sbc	zp_FA
-	bcs	loc_1DAF19
+	bcs	@sqrt_loop
 	lda	zp_FA
 	lsr	a
 	ply

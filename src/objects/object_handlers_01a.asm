@@ -46,11 +46,11 @@ loc_01B1EE:
 	sec
 	lda	#$00A8
 	sbc	$0E,x
-	sta	a:wram_13D8
+	sta	a:bg2_y
 	sec
 	lda	#$015C
 	sbc	$0A,x
-	sta	a:wram_13C0
+	sta	a:bg2_x
 loc_01B200:
 	pla
 	phx
@@ -76,10 +76,10 @@ tbl_01B20E:
 sub_01B224:
 	lda	#$8000
 	sta	a:wram_09D6
-	lda	a:wram_13BA
+	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	loc_01B266
-	lda	a:wram_13FE
+	lda	a:bg2_screen_drawn
 	beq	loc_01B266
 	lda	#$0050
 	sta	$28,x
@@ -144,7 +144,7 @@ loc_01B2A5:
 	lda	#$0200
 	sta	zp_0C
 loc_01B2C8:
-	lda	a:wram_1380
+	lda	a:bg1_x
 	bit	#$0100
 	beq	loc_01B2D8
 	clc
@@ -441,11 +441,11 @@ loc_01B520:
 
 sub_01B521:
 	lda	#$0000
-	sta	a:wram_13C0
+	sta	a:bg2_x
 	lda	#$8000
 	sta	$16,x
 	lda	#$0001
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	lda	#$0001
 	sta	a:stage_checkpoint
 	rtl
@@ -540,7 +540,7 @@ sub_01B5B1:
 	jsl	f:sub_00FEA3
 	plx
 	lda	#$0008
-	sta	a:wram_1398
+	sta	a:bg1_y
 	rtl
 
 sub_01B5E6:
@@ -627,7 +627,7 @@ loc_01B682:
 	sec
 	lda	#$0140
 	sbc	$0A,x
-	sta	a:wram_1380
+	sta	a:bg1_x
 	lda	#$0003
 	sta	zp_02
 	lda	#$0018
@@ -668,12 +668,12 @@ loc_01B6D1:
 	sec
 	lda	#$0140
 	sbc	$0A,x
-	sta	a:wram_1380
+	sta	a:bg1_x
 	lda	#$C5B8
 	bra	loc_01B6E9
 loc_01B6E3:
 	lda	#$C4CE
-	stz	a:wram_1380
+	stz	a:bg1_x
 loc_01B6E9:
 	pha
 	jsl	f:sub_00FD92
@@ -891,12 +891,12 @@ loc_01B89B:
 	rtl
 
 sub_01B89C:
-	lda	a:wram_13FA
+	lda	a:bg2_scroll_mode
 	cmp	#$0002
 	bne	loc_01B8B5
 	lda	#$0000
 	sta	f:wram_7E3807
-	stz	a:wram_13C0
+	stz	a:bg2_x
 	stz	hdma_preset
 	lda	#$8000
 	sta	$16,x
@@ -1937,7 +1937,7 @@ sub_01C080:
 sub_01C09F:
 	sec
 	lda	#$0080
-	sbc	a:wram_1398
+	sbc	a:bg1_y
 	sta	$0E,x
 	lda	rng_hi
 	bit	#$0007
@@ -2064,7 +2064,7 @@ sub_01C184:
 	sta	$1E,x
 	sec
 	lda	#$0080
-	sbc	a:wram_1398
+	sbc	a:bg1_y
 	cmp	$0E,x
 	bcs	loc_01C1B5
 	lda	#$401F
@@ -2083,7 +2083,7 @@ loc_01C1B5:
 sub_01C1B6:
 	sec
 	lda	#$0080
-	sbc	a:wram_1398
+	sbc	a:bg1_y
 	sta	$0E,x
 	lda	#$0080
 	jsl	f:pick_target_player
@@ -2352,7 +2352,7 @@ sub_01C3A0:
 	sta	$28,x
 	lda	#$0015
 	sta	$24,x
-	lda	a:wram_1380
+	lda	a:bg1_x
 	and	#$0100
 	asl	a
 	asl	a
@@ -2364,7 +2364,7 @@ sub_01C3A0:
 	rtl
 
 sub_01C3D0:
-	lda	a:wram_13BA
+	lda	a:bg1_scroll_mode
 	cmp	#$0003
 	bne	loc_01C3E2
 	lda	$0E,x
@@ -2414,7 +2414,7 @@ loc_01C423:
 	rtl
 
 sub_01C424:
-	lda	a:wram_13BA
+	lda	a:bg1_scroll_mode
 	cmp	#$0003
 	bne	loc_01C435
 	lda	$0E,x
@@ -2534,7 +2534,7 @@ loc_01C4FA:
 
 sub_01C4FB:
 	jsl	f:sub_01B956
-	lda	a:wram_13BA
+	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	loc_01C4FA
 	sep	#$20
@@ -2754,7 +2754,7 @@ loc_01C6B2:
 	lda	#$8000
 	sta	$16,x
 	lda	#$0001
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 
 sub_01C6EB:
 	rtl
@@ -3379,7 +3379,7 @@ sub_01CB95:
 	sta	$06,x
 	rtl
 loc_01CBB0:
-	lda	a:wram_13BA
+	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	loc_01CBBD
 	lda	#$4051
@@ -3404,7 +3404,7 @@ loc_01CBBD:
 	sta	zp_02
 	lda	#$0020
 	sta	zp_08
-	lda	a:wram_1380
+	lda	a:bg1_x
 	and	#$0100
 	asl	a
 	asl	a
@@ -3417,7 +3417,7 @@ loc_01CBBD:
 	lda	#$8000
 	sta	$16,x
 	lda	#$0001
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	rtl
 loc_01CC13:
 	lda	$26,x
@@ -3817,7 +3817,7 @@ loc_01CEEE:
 	sec
 	sbc	$0E,x
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	sta	$34,x
 	clc
 	adc	#$0010

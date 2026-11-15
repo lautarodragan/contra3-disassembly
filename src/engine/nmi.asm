@@ -107,9 +107,9 @@ nmi_frame_default:
 	stz	sound_last_queued
 	jsl	f:run_game_mode
 	jsl	f:next_random
-	jsl	f:sub_009995
+	jsl	f:run_palette_tasks
 	jsl	f:run_pending_loads
-	jsl	f:sub_009B76
+	jsl	f:run_vram_tasks
 	jsl	f:send_queued_sound
 	rts
 
@@ -226,13 +226,13 @@ nmi_frame_side_view:
 	rep	#$20
 	.a16
 	jsl	f:run_vram_queue
-	jsl	f:sub_00E4F6
+	jsl	f:upload_p1_hud
 	lda	a:title_menu_cursor
 	beq	@one_player
-	jsl	f:sub_00E535
+	jsl	f:upload_p2_hud
 @one_player:
-	jsl	f:sub_00E575
-	jsl	f:sub_00C283
+	jsl	f:setup_stage_hdma
+	jsl	f:dma_bg_tilemap_updates
 	lda	a:w12sel_shadow
 	sta	a:W12SEL
 	lda	a:wobjsel_shadow
@@ -268,24 +268,24 @@ nmi_frame_side_view:
 	plb
 	jsl	f:read_joypads
 	jsl	f:update_player_window
-	jsl	f:sub_00E5F7
+	jsl	f:build_scroll_split_hdma
 	stz	sound_last_queued
 	jsl	f:run_game_mode
 	jsl	f:next_random
-	jsl	f:sub_009995
+	jsl	f:run_palette_tasks
 	jsl	f:run_pending_loads
-	jsl	f:sub_009B76
+	jsl	f:run_vram_tasks
 	jsl	f:send_queued_sound
 	lda	frame_counter
 	bit	#$0001
 	bne	@odd_frame
-	jsl	f:sub_00E3DA
+	jsl	f:update_p1_hud
 @done:
 	rts
 @odd_frame:
 	lda	a:title_menu_cursor
 	beq	@done
-	jsl	f:sub_00E464
+	jsl	f:update_p2_hud
 	rts
 
 ; Frame handler for nmi_mode 4 (top-down stages): Mode 7, split screen for
@@ -306,7 +306,7 @@ nmi_frame_top_down:
 	.a16
 	jsl	f:sub_02DDC6
 	jsl	f:upload_m7_block_patches
-	jsl	f:sub_00E4EE
+	jsl	f:upload_hud_alternating
 	jsl	f:stream_topdown_sprite_gfx
 	jsr	a:dma_oam_and_palette
 	lda	force_blank_frames
@@ -351,10 +351,10 @@ nmi_frame_top_down:
 	stz	sound_last_queued
 	jsl	f:run_game_mode
 	jsl	f:next_random
-	jsl	f:sub_00E3CD
+	jsl	f:update_hud_alternating
 	jsl	f:compute_m7_matrix
 	jsl	f:draw_topdown_sprites
-	jsl	f:sub_009995
+	jsl	f:run_palette_tasks
 	jsl	f:run_pending_loads
 	jsl	f:send_queued_sound
 	rts

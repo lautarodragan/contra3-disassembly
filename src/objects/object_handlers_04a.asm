@@ -34,7 +34,7 @@ update_stage3_boss:
 loc_048023:
 	clc
 	adc	#$0100
-	sta	a:wram_13D8
+	sta	a:bg2_y
 loc_04802A:
 	inc	a:wram_1636
 	jsr	a:sub_048605
@@ -118,12 +118,12 @@ stage3_robot_state_00:
 	stz	$38,x
 	phx
 	ldy	#$E7E2
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	plx
 	rtl
 
 stage3_robot_state_01:
-	lda	a:wram_13BA
+	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	loc_0480E1
 	inc	OBJ_STATE,x
@@ -625,7 +625,7 @@ stage3_robot_cables_state_02:
 	sta	zp_04
 	lda	#$2002
 	sta	zp_02
-	lda	a:wram_1380
+	lda	a:bg1_x
 	and	#$0100
 	asl	a
 	asl	a
@@ -643,7 +643,7 @@ loc_0484B8:
 	sta	zp_02
 	lda	#$0018
 	sta	zp_08
-	lda	a:wram_1380
+	lda	a:bg1_x
 	and	#$0100
 	asl	a
 	asl	a
@@ -685,7 +685,7 @@ loc_048501:
 	sta	zp_02
 	lda	#$0010
 	sta	zp_08
-	lda	a:wram_1380
+	lda	a:bg1_x
 	and	#$0100
 	asl	a
 	asl	a
@@ -893,7 +893,7 @@ stage3_boss_state_0B:
 	jsl	f:queue_sound
 	inc	OBJ_STATE,x
 	lda	#$0100
-	sta	a:wram_13D8
+	sta	a:bg2_y
 	stz	a:wram_163C
 	stz	a:wram_1638
 	lda	#$0002
@@ -947,7 +947,7 @@ loc_048704:
 	lsr	a
 	and	#$0002
 	tay
-	lda	a:wram_1380
+	lda	a:bg1_x
 	and	#$0100
 	asl	a
 	asl	a
@@ -979,7 +979,7 @@ loc_048751:
 	phx
 	ldy	#$CD35
 	ldx	#$1210
-	jsl	f:sub_009985
+	jsl	f:start_palette_task_at
 	plx
 loc_048765:
 	rtl
@@ -1210,7 +1210,7 @@ loc_048929:
 	phx
 	ldy	#$CD3B
 	ldx	#$1210
-	jsl	f:sub_009985
+	jsl	f:start_palette_task_at
 	plx
 loc_04893D:
 	rtl
@@ -1246,7 +1246,7 @@ loc_04895C:
 	clc
 	adc	#$0008
 	sta	zp_FE
-	lda	a:wram_1380
+	lda	a:bg1_x
 	and	#$0100
 	asl	a
 	asl	a
@@ -1732,11 +1732,11 @@ stage4_controller_state_04:
 
 stage4_controller_state_05:
 	jsr	a:sub_0497E0
-	lda	a:wram_1380
+	lda	a:bg1_x
 	and	#$00FF
 	cmp	#$0010
 	bne	loc_048D96
-	stz	a:wram_1380
+	stz	a:bg1_x
 	lda	#$0041
 	sta	a:bg1sc_shadow
 	lda	#$000A
@@ -1756,14 +1756,14 @@ stage4_controller_state_05:
 	plx
 	inc	OBJ_STATE,x
 	lda	#$0010
-	sta	a:wram_1380
+	sta	a:bg1_x
 	sta	a:wram_138A
 	jml	f:loc_00D5ED
 loc_048D96:
 	rtl
 
 stage4_controller_state_06:
-	lda	a:wram_1380
+	lda	a:bg1_x
 	clc
 	adc	#$0010
 	and	#$00FF
@@ -1775,7 +1775,7 @@ stage4_controller_state_06:
 	sta	OBJ_TIMER,x
 	lda	#$0100
 loc_048DB2:
-	sta	a:wram_1380
+	sta	a:bg1_x
 	jml	f:loc_00D5ED
 
 stage4_controller_state_07:
@@ -1795,7 +1795,7 @@ stage4_controller_state_07:
 	cmp	#$4300
 	bcc	loc_048DE0
 	inc	OBJ_STATE,x
-	stz	a:wram_1380
+	stz	a:bg1_x
 loc_048DE0:
 	jml	f:loc_00D5ED
 
@@ -1836,11 +1836,11 @@ stage4_controller_state_0B:
 	lda	#$8000
 	sta	a:wram_168C
 	lda	#$0005
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	lda	#$0008
 	sta	a:wram_13B2
 	lda	#$0B80
-	sta	a:wram_1380
+	sta	a:bg1_x
 	stz	OBJ_TIMER,x
 	stz	$36,x
 	inc	OBJ_STATE,x
@@ -1848,7 +1848,7 @@ stage4_controller_state_0B:
 
 stage4_controller_state_0C:
 	ldy	OBJ_TIMER,x
-	lda	a:wram_1380
+	lda	a:bg1_x
 	cmp	#$01E0
 	bcs	loc_048E56
 	lda	#$0040
@@ -1883,7 +1883,7 @@ loc_048E7E:
 loc_048E91:
 	ldy	$36,x
 	bne	loc_048EBE
-	lda	a:wram_1398
+	lda	a:bg1_y
 	cmp	#$000C
 	bcs	loc_048E9F
 	inc	$36,x
@@ -1902,7 +1902,7 @@ loc_048EA9:
 	sta	a:wram_1692
 	bra	loc_048EE7
 loc_048EBE:
-	lda	a:wram_1398
+	lda	a:bg1_y
 	bmi	loc_048ECA
 	cmp	#$0010
 	bcc	loc_048ECA
@@ -1957,7 +1957,7 @@ stage4_controller_state_0F:
 	lda	#$0084
 	sta	a:wram_0910
 	lda	#$0004
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 loc_048F35:
 	jsr	a:sub_049BD5
 	jml	f:loc_00D5ED
@@ -1979,14 +1979,14 @@ stage4_controller_state_10:
 	sta	a:$001A,y
 	lda	#$FF80
 	sta	a:$000A,y
-	stz	a:wram_1398
+	stz	a:bg1_y
 	jml	f:sub_00D610
 
 stage4_controller_state_11:
 	sec
 	lda	#$0140
 	sbc	a:wram_080A
-	sta	a:wram_1380
+	sta	a:bg1_x
 	lda	a:wram_080A
 	bmi	loc_048F91
 	cmp	#$0040
@@ -2018,7 +2018,7 @@ loc_048FB4:
 	stz	a:wram_0822
 	stz	a:wram_0800
 	lda	#$000B
-	sta	a:wram_13FA
+	sta	a:bg2_scroll_mode
 	stz	$30,x
 loc_048FC7:
 	jml	f:sub_00D610
@@ -2028,14 +2028,14 @@ stage4_controller_state_13:
 	bra	loc_048FE1
 
 stage4_controller_state_14:
-	lda	a:wram_13D8
+	lda	a:bg2_y
 	cmp	#$FE00
 	bne	loc_048FE1
 	lda	#$000A
-	sta	a:wram_13FA
+	sta	a:bg2_scroll_mode
 	inc	OBJ_STATE,x
 loc_048FE1:
-	lda	a:wram_1398
+	lda	a:bg1_y
 	cmp	#$0010
 	beq	loc_049000
 	lda	#$C000
@@ -2045,7 +2045,7 @@ loc_048FE1:
 	sec
 	lda	#$0078
 	sbc	a:wram_080E
-	sta	a:wram_1398
+	sta	a:bg1_y
 	rtl
 loc_049000:
 	stz	a:wram_081C
@@ -2102,10 +2102,10 @@ stage4_controller_state_16:
 	lda	#$7F00
 	sta	a:$3822
 	stz	a:$3826
-	lda	a:wram_13C0
+	lda	a:bg2_x
 	sta	a:$3824
-	lda	a:wram_13C4
-	sta	a:wram_13C4
+	lda	a:bg2_x_sub
+	sta	a:bg2_x_sub
 	sep	#$20
 	.a8
 	lda	#$05
@@ -2114,10 +2114,10 @@ stage4_controller_state_16:
 	rep	#$20
 	.a16
 	lda	#$0180
-	sta	a:wram_13FC
+	sta	a:bg2_map_offset
 	lda	#$0001
-	sta	a:wram_13FA
-	stz	a:wram_13FE
+	sta	a:bg2_scroll_mode
+	stz	a:bg2_screen_drawn
 	lda	#$0015
 	sta	a:tm_shadow
 	lda	#$2000
@@ -2127,10 +2127,10 @@ stage4_controller_state_16:
 	rtl
 
 stage4_controller_state_17:
-	lda	a:wram_13FE
+	lda	a:bg2_screen_drawn
 	beq	loc_0490DE
 	inc	OBJ_STATE,x
-	stz	a:wram_13FA
+	stz	a:bg2_scroll_mode
 	lda	#$0002
 	sta	a:wram_0812
 	lda	#$FFFC
@@ -2226,7 +2226,7 @@ stage4_controller_state_1C:
 	lda	#$0003
 	sta	a:player_autopilot_mode
 	lda	#$FFD8
-	sta	a:wram_1398
+	sta	a:bg1_y
 	lda	#$4580
 	jsr	a:sub_049864
 	lda	#$000C
@@ -2600,7 +2600,7 @@ rideable_missile_state_08:
 	sec
 	lda	#$0140
 	sbc	a:$000A,x
-	sta	a:wram_1380
+	sta	a:bg1_x
 	brl	rideable_missile_state_01
 
 ; Object type $69. Stage 4 boss: the green armoured flying fortress with a red
@@ -2609,7 +2609,7 @@ rideable_missile_state_08:
 update_stage4_boss:
 	lda	OBJ_FLAGS,x
 	bpl	loc_04949D
-	stz	a:wram_13C0
+	stz	a:bg2_x
 	rtl
 loc_04949D:
 	lda	OBJ_STATE,x
@@ -3030,10 +3030,10 @@ loc_0497DF:
 
 sub_0497E0:
 	clc
-	lda	a:wram_1380
+	lda	a:bg1_x
 	adc	#$0010
-	sta	a:wram_1380
-	sta	a:wram_13C0
+	sta	a:bg1_x
+	sta	a:bg2_x
 	rts
 
 sub_0497EE:
@@ -3178,7 +3178,7 @@ loc_0498FE:
 	sec
 	lda	#$01A0
 	sbc	OBJ_X,x
-	sta	a:wram_13C0
+	sta	a:bg2_x
 	lda	stage_frame_counter
 	lsr	a
 	lsr	a
@@ -3193,7 +3193,7 @@ loc_049918:
 	sta	zp_02
 	clc
 	adc	#$0000
-	sta	a:wram_13D8
+	sta	a:bg2_y
 	sec
 	lda	OBJ_X,x
 	sbc	#$0020
@@ -3575,13 +3575,13 @@ tbl_winged_alien_states:
 winged_alien_state_00:
 	lda	#$004A
 	sta	a:bg2sc_shadow
-	stz	a:wram_13C0
-	stz	a:wram_13D8
+	stz	a:bg2_x
+	stz	a:bg2_y
 	inc	OBJ_STATE,x
 	rtl
 
 winged_alien_state_01:
-	lda	a:wram_13BA
+	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	beq	loc_049C61
 	rtl
@@ -4133,11 +4133,11 @@ loc_04A084:
 	rtl
 loc_04A088:
 	lda	#$0002
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	lda	#$0049
 	sta	a:bg2sc_shadow
-	stz	a:wram_13C0
-	stz	a:wram_13D8
+	stz	a:bg2_x
+	stz	a:bg2_y
 	lda	#$0082
 	jsl	f:queue_sound
 	lda	#$8000
@@ -4268,12 +4268,12 @@ sub_04A1B9:
 	sec
 	sbc	OBJ_X,x
 	and	#$00FF
-	sta	a:wram_13C0
+	sta	a:bg2_x
 	lda	#$0175
 	sec
 	sbc	OBJ_Y,x
 	and	#$01FF
-	sta	a:wram_13D8
+	sta	a:bg2_y
 	rts
 
 ; Object type $8D. Stage 6, winged_alien: the tip of the tail.
@@ -4509,7 +4509,7 @@ sub_04A34A:
 	ldx	#$0000
 	lda	#$00F0
 	clc
-	adc	a:wram_13D8
+	adc	a:bg2_y
 	and	#$01FF
 loc_04A358:
 	sta	f:$7EE880,x
@@ -4691,7 +4691,7 @@ face_boss_state_00:
 	sta	OBJ_STATE,x
 
 face_boss_state_01:
-	lda	a:wram_13BA
+	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	beq	loc_04A4F5
 	rtl
@@ -5148,12 +5148,12 @@ sub_04A810:
 	rts
 
 sub_04A8AF:
-	stz	a:wram_13C0
+	stz	a:bg2_x
 	lda	#$0124
 	sec
 	sbc	OBJ_Y,x
 	and	#$01FF
-	sta	a:wram_13D8
+	sta	a:bg2_y
 	lda	OBJ_X,x
 	sec
 	sbc	#$0074
@@ -5533,7 +5533,7 @@ sub_04AB6A:
 	clc
 	adc	#$0010
 	clc
-	adc	a:wram_1380
+	adc	a:bg1_x
 	sta	zp_02
 	and	#$00E0
 	lsr	a
@@ -5544,7 +5544,7 @@ sub_04AB6A:
 	sec
 	sbc	#$0010
 	clc
-	adc	a:wram_1398
+	adc	a:bg1_y
 	and	#$00E0
 	asl	a
 	asl	a
@@ -5674,7 +5674,7 @@ aim_velocity_at_player:
 	lda	a:$1314,y
 	sbc	zp_02
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	lsr	a
 	lsr	a
 	and	#$00FE
@@ -5804,7 +5804,7 @@ wall_worm_larva_state_01:
 	dec	OBJ_TIMER,x
 	bmi	loc_04AD5C
 	lda	#$0010
-	jml	f:sub_1DAD8A
+	jml	f:set_velocity_from_angle
 loc_04AD5C:
 	lda	#$0002
 	sta	OBJ_STATE,x
@@ -5812,7 +5812,7 @@ loc_04AD5C:
 larva_state_02:
 	jsr	a:sub_04AD84
 	lda	#$0010
-	jml	f:sub_1DAD8A
+	jml	f:set_velocity_from_angle
 loc_04AD6B:
 	lda	#$000C
 	jsl	f:queue_sound
@@ -5838,7 +5838,7 @@ sub_04AD84:
 	sec
 	sbc	OBJ_Y,x
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	sep	#$20
 	.a8
 	sec
@@ -5926,7 +5926,7 @@ face_boss_larva_state_01:
 	bmi	loc_04AE2A
 	jsr	a:sub_04AD84
 	lda	#$0010
-	jml	f:sub_1DAD8A
+	jml	f:set_velocity_from_angle
 loc_04AE2A:
 	lda	#$0001
 	sta	$30,x
@@ -5943,7 +5943,7 @@ face_boss_larva_state_02:
 	lda	#$0010
 	jsr	a:sub_04AE4F
 	lda	#$0010
-	jml	f:sub_1DAD8A
+	jml	f:set_velocity_from_angle
 
 sub_04AE4F:
 	sta	zp_00
@@ -5959,7 +5959,7 @@ sub_04AE4F:
 	sec
 	sbc	OBJ_Y,x
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	sep	#$20
 	.a8
 	sec
@@ -6235,18 +6235,18 @@ heart_boss_state_00:
 	lda	#$0049
 	sta	a:bg2sc_shadow
 	lda	#$0080
-	sta	a:wram_13C0
-	stz	a:wram_13D8
+	sta	a:bg2_x
+	stz	a:bg2_y
 	jsr	a:sub_04B17C
 	lda	#$0001
 	sta	a:stage_checkpoint
 	jsr	a:sub_04B1C3
 	lda	#$0009
-	sta	a:wram_13FA
+	sta	a:bg2_scroll_mode
 	inc	OBJ_STATE,x
 
 heart_boss_state_01:
-	lda	a:wram_13BA
+	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	beq	loc_04B084
 	jsr	a:sub_04B14B
@@ -6333,7 +6333,7 @@ heart_boss_state_06:
 	beq	loc_04B12D
 	lda	#$0069
 	jsl	f:queue_sound
-	stz	a:wram_13BA
+	stz	a:bg1_scroll_mode
 	lda	#$8000
 	sta	OBJ_FLAGS,x
 loc_04B12D:
@@ -6649,7 +6649,7 @@ wall_worm_state_00:
 	inc	OBJ_STATE,x
 
 wall_worm_state_01:
-	lda	a:wram_13BA
+	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	beq	loc_04B369
 loc_04B368:
@@ -6713,7 +6713,7 @@ wall_worm_state_04:
 	jsr	a:sub_04B469
 	dec	OBJ_TIMER,x
 	bne	loc_04B368
-	stz	a:wram_13BA
+	stz	a:bg1_scroll_mode
 	lda	#$8000
 	sta	OBJ_FLAGS,x
 	rtl
@@ -6960,13 +6960,13 @@ cave_beast_state_00:
 	sta	a:wram_1672
 	lda	#$004A
 	sta	a:bg2sc_shadow
-	stz	a:wram_13C0
-	stz	a:wram_13D8
+	stz	a:bg2_x
+	stz	a:bg2_y
 	inc	OBJ_STATE,x
 	rtl
 
 cave_beast_state_01:
-	lda	a:wram_13BA
+	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	loc_04B5D8
 	inc	OBJ_STATE,x
@@ -7197,7 +7197,7 @@ loc_04B7B2:
 	lda	#$00B8
 	sta	OBJ_Y,x
 	sta	$32,x
-	lda	a:wram_1398
+	lda	a:bg1_y
 	sta	$30,x
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
@@ -7659,7 +7659,7 @@ loc_04BB6E:
 	bcs	loc_04BB78
 	jmp	a:loc_04B6BC
 loc_04BB78:
-	stz	a:wram_13BA
+	stz	a:bg1_scroll_mode
 	lda	#$8000
 	sta	OBJ_FLAGS,x
 	ldy	#$0840
@@ -7727,13 +7727,13 @@ sub_04BBF5:
 	sbc	#$00AD
 	eor	#$FFFF
 	inc	a
-	sta	a:wram_13C0
+	sta	a:bg2_x
 	lda	OBJ_Y,x
 	sec
 	sbc	#$01C0
 	eor	#$FFFF
 	inc	a
-	sta	a:wram_13D8
+	sta	a:bg2_y
 	rts
 
 sub_04BC10:
@@ -8172,7 +8172,7 @@ face_boss_side_head_state_03:
 	sec
 	sbc	OBJ_Y,x
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	rep	#$20
 	sec
 	sbc	OBJ_FACING,x
@@ -8192,7 +8192,7 @@ loc_04BF49:
 	sta	OBJ_FACING,x
 loc_04BF4E:
 	lda	#$0020
-	jsl	f:sub_1DAD8A
+	jsl	f:set_velocity_from_angle
 	rtl
 
 sub_04BF56:
@@ -10660,7 +10660,7 @@ tbl_helicopter_rope_states:
 	.addr	helicopter_rope_state_0C
 
 helicopter_rope_state_00:
-	lda	a:wram_13FA
+	lda	a:bg2_scroll_mode
 	cmp	#$000B
 	bne	loc_04D32E
 	inc	OBJ_STATE,x

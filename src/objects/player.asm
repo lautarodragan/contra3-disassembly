@@ -177,8 +177,8 @@ loc_01A683:
 	jsl	f:read_player_input
 loc_01A687:
 	jsr	a:update_bomb
-	jsl	f:sub_00C67D
-	jsl	f:sub_00C917
+	jsl	f:run_bg1_scroll_mode
+	jsl	f:run_bg2_scroll_mode
 	lda	a:p1_lives
 	beq	loc_01A6B0
 	ldx	#$0200
@@ -693,11 +693,11 @@ loc_01AA61:
 run_player_state:
 	sec
 	lda	a:OBJ_X,x
-	sbc	a:wram_138E
+	sbc	a:bg1_x_delta
 	sta	a:OBJ_X,x
 	sec
 	lda	a:OBJ_Y,x
-	sbc	a:wram_13A6
+	sbc	a:bg1_y_delta
 	sta	a:OBJ_Y,x
 	bmi	loc_01AA8A
 	cmp	#$00FF

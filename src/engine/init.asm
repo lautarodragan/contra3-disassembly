@@ -224,7 +224,7 @@ clear_ram_1200_1aff:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:wram_1200
+	sta	f:palette_tasks
 	lda	#$08FE
 	ldx	#$1200
 	txy
@@ -242,7 +242,7 @@ clear_bg_scroll_state:
 	.i16
 	phb
 	lda	#$0000
-	sta	f:wram_1380
+	sta	f:bg1_x
 	lda	#$00FE
 	ldx	#$1380
 	txy
@@ -284,7 +284,7 @@ clear_palette_tasks_and_buffer:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:wram_1200
+	sta	f:palette_tasks
 	lda	#$007E
 	ldx	#$1200
 	txy
@@ -308,7 +308,7 @@ clear_vram_tasks:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:wram_1280
+	sta	f:vram_tasks
 	lda	#$007E
 	ldx	#$1280
 	txy

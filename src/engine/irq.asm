@@ -6,7 +6,7 @@
 ; vector) acknowledges TIMEUP, masks the H/V IRQ in NMITIMEN and dispatches
 ; on irq_mode through tbl_irq_handlers. The two handlers serve the two-player
 ; split screen of the top-down stages: irq_mode7_top_view loads player 1's
-; Mode 7 matrix and BG1 scroll ($1FA4-$1FB3) and, when zp_40 is set,
+; Mode 7 matrix and BG1 scroll ($1FA4-$1FB3) and, when m7_split_screen is set,
 ; schedules irq_mode7_bottom_view at line $70, which loads player 2's
 ; ($1FE4-$1FF3).
 ; reset_vram_queue (end of the file) belongs to engine/vram.asm.

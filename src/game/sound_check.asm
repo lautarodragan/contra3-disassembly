@@ -29,7 +29,7 @@ sound_check_init:
 	ldx	#.loword(data_05CF41)
 	jsl	f:load_data_list
 	ldy	#$8412
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	inc	a:mode_step
 
 sound_check_fade_in:

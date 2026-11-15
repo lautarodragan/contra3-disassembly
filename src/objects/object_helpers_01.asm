@@ -411,7 +411,7 @@ sub_01A0BD:
 sub_01A0C7:
 	rtl
 
-; A = angle (0-255, sub_1DABA0) from the centre of the hitbox of the object
+; A = angle (0-255, calc_angle) from the centre of the hitbox of the object
 ; at X to PLAYER_CENTER_X/Y of the player at Y, plus $80.
 angle_to_player:
 	lda	OBJ_HITBOX_W,x
@@ -425,7 +425,7 @@ angle_to_player:
 	adc	OBJ_Y,x
 	sbc	a:PLAYER_CENTER_Y,y
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	clc
 	adc	#$0080
 	and	#$00FF
@@ -453,7 +453,7 @@ loc_01A105:
 	lda	a:PLAYER_CENTER_Y,y
 	sbc	zp_02
 	sta	zp_0A
-	jsl	f:sub_1DABA0
+	jsl	f:calc_angle
 	lsr	a
 	lsr	a
 	and	#$00FE

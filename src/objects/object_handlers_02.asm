@@ -397,7 +397,7 @@ radial_spark_velocity:
 	adc	#$0010
 	and	#$00FF
 	sta	zp_00
-	jsl	f:sub_1DACA4
+	jsl	f:polar_to_xy
 loc_02FF4B:
 	lda	zp_08
 	bmi	loc_02FF54

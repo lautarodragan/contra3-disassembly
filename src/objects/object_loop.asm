@@ -75,7 +75,7 @@ loc_00E99E:
 	lda	OBJ_X,x
 	adc	OBJ_X_VEL,x
 	sec
-	sbc	a:wram_138E
+	sbc	a:bg1_x_delta
 	sta	OBJ_X,x
 	clc
 	lda	OBJ_Y_SUB,x
@@ -84,7 +84,7 @@ loc_00E99E:
 	lda	OBJ_Y,x
 	adc	OBJ_Y_VEL,x
 	sec
-	sbc	a:wram_13A6
+	sbc	a:bg1_y_delta
 	sta	OBJ_Y,x
 	lda	OBJ_FLAGS,x
 loc_00E9C9:

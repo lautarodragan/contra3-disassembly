@@ -10,9 +10,9 @@
 ; Stage layout init of the opening (stage 0).
 layout_init_opening:
 	lda	#$0005
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	lda	#$000C
-	sta	a:wram_13FA
+	sta	a:bg2_scroll_mode
 	lda	#$0001
 	sta	a:cgadsub_shadow
 	rtl
@@ -49,7 +49,7 @@ opening_cinematic_init:
 	ldx	#.loword(data_05A84B)
 	jsl	f:load_data_list
 	ldy	#$A815
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	stz	a:opening_frame_counter
 	lda	#$0020
 	sta	a:CGWSEL
@@ -98,15 +98,15 @@ opening_scene_blank:
 	cmp	#$0004
 	beq	@last_scene
 	lda	#$0004
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	lda	#$0000
-	sta	a:wram_13FA
+	sta	a:bg2_scroll_mode
 	rtl
 @last_scene:
 	lda	#$0005
-	sta	a:wram_13BA
+	sta	a:bg1_scroll_mode
 	lda	#$000C
-	sta	a:wram_13FA
+	sta	a:bg2_scroll_mode
 	rtl
 
 opening_scene_load:
@@ -237,14 +237,14 @@ opening_city_init:
 	bcc	@loop
 	lda	#$000D
 	sta	hdma_preset
-	stz	a:wram_1384
+	stz	a:bg1_x_sub
 	lda	#$0100
-	sta	a:wram_1380
-	stz	a:wram_13DC
-	stz	a:wram_13D8
+	sta	a:bg1_x
+	stz	a:bg2_y_sub
+	stz	a:bg2_y
 	jsr	a:opening_set_layers_flash
 	ldy	#$A830
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	ldx	#$0300
 	lda	#$0053
 	sta	$10,x
@@ -264,7 +264,7 @@ opening_city_wait:
 	jsr	a:opening_is_scene_ending
 	bcc	opening_city_idle
 	ldy	#$A836
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	inc	a:opening_step
 
 opening_city_idle:
@@ -292,16 +292,16 @@ opening_vortex_init:
 	rts
 
 opening_vortex_scroll:
-	lda	a:wram_13D8
+	lda	a:bg2_y
 	and	#$00FF
 	cmp	#$00E0
 	beq	@stop_scroll
-	lda	a:wram_13DC
+	lda	a:bg2_y_sub
 	sec
 	sbc	#$1000
-	sta	a:wram_13DC
+	sta	a:bg2_y_sub
 	bcs	@update
-	dec	a:wram_13D8
+	dec	a:bg2_y
 @update:
 	jsr	a:opening_update_parallax
 	rts
@@ -337,7 +337,7 @@ opening_vortex_spawn_objects:
 	cpy	#$0020
 	bcc	@loop
 	ldy	#$A845
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	inc	a:opening_step
 
 opening_vortex_idle:
@@ -458,7 +458,7 @@ tbl_opening_ruins_steps:
 
 opening_ruins_init:
 	lda	#$0000
-	sta	a:wram_1380
+	sta	a:bg1_x
 	lda	#$0040
 	sta	a:BG1SC
 	sta	a:bg1sc_shadow
@@ -520,7 +520,7 @@ opening_ruins_spawn_alien:
 	lda	#$CEC8
 	sta	$00,x
 	ldy	#$A82A
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	stz	a:opening_step_timer
 	inc	a:opening_step
 @return:
@@ -558,10 +558,10 @@ opening_scene_scrolling_text:
 	inc	a:opening_step
 	rts
 @scroll:
-	lda	a:wram_1380
+	lda	a:bg1_x
 	clc
 	adc	#$0004
-	sta	a:wram_1380
+	sta	a:bg1_x
 	cmp	#$0900
 	bcc	@return
 	; (not executed in the CDL traces)
@@ -575,8 +575,8 @@ opening_scene_scrolling_text:
 opening_scene_hero_face:
 	lda	a:opening_step
 	bne	@caption
-	stz	a:wram_13D8
-	stz	a:wram_1380
+	stz	a:bg2_y
+	stz	a:bg1_x
 	stz	a:opening_caption_index
 	stz	a:opening_caption_timer
 	inc	a:opening_step
@@ -598,7 +598,7 @@ opening_scene_hero_face:
 	cmp	#$0001
 	bne	opening_caption_next
 	ldy	#$A83C
-	jsl	f:sub_009982
+	jsl	f:start_palette_task
 	ldx	#$0300
 	lda	#$0053
 	sta	$10,x
@@ -630,10 +630,10 @@ opening_scene_heroes:
 	inc	a:opening_step
 	rts
 @scroll:
-	lda	a:wram_1380
+	lda	a:bg1_x
 	clc
 	adc	#$0004
-	sta	a:wram_1380
+	sta	a:bg1_x
 	cmp	#$0080
 	bcc	@return
 	stz	a:opening_caption_index
@@ -707,9 +707,9 @@ opening_is_scene_ending:
 	cmp	a:opening_scene_durations,y
 	rts
 
-; Writes the HDMA scroll table at $7E:A000 from wram_1380 and opening_frame_counter.
+; Writes the HDMA scroll table at $7E:A000 from bg1_x and opening_frame_counter.
 opening_update_parallax:
-	lda	a:wram_1380
+	lda	a:bg1_x
 	sta	f:wram_7EA013
 	lda	a:opening_frame_counter
 	lsr	a
@@ -838,9 +838,9 @@ opening_init_ruins_wave:
 	iny
 	cpy	#$0009
 	bcc	@loop2
-	lda	a:wram_1380
+	lda	a:bg1_x
 	sta	f:wram_7EA010
-	lda	a:wram_1398
+	lda	a:bg1_y
 	inc	a
 	sta	f:wram_7EA410
 	ldy	#$AA0D

@@ -220,7 +220,7 @@ loc_04E372:
 place_ending_crowd_member:
 	lda	#$0100
 	sec
-	sbc	a:wram_1398
+	sbc	a:bg1_y
 	clc
 	adc	$32,x
 	sta	OBJ_Y,x

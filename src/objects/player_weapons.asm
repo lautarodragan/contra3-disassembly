@@ -2521,11 +2521,11 @@ loc_0193D7:
 	stz	OBJ_X_VEL,x
 
 ; Moves the object up to the top of its 8-pixel BG tile row (taking the BG
-; scroll wram_1398 into account) and stops its vertical motion: landing.
+; scroll bg1_y into account) and stops its vertical motion: landing.
 ; Used by the players and by object handlers.  In: X = slot.
 snap_y_up_to_tile:
 	clc
-	lda	a:wram_1398
+	lda	a:bg1_y
 	adc	OBJ_Y,x
 	and	#$0007
 	sta	zp_0E
@@ -2545,7 +2545,7 @@ snap_y_down_to_tile:
 	stz	OBJ_Y_VEL_SUB,x
 	stz	OBJ_Y_SUB,x
 	clc
-	lda	a:wram_1398
+	lda	a:bg1_y
 	adc	OBJ_Y,x
 	eor	#$FFFF
 	and	#$0007
@@ -2561,12 +2561,12 @@ sub_019410:
 	bmi	loc_01942E
 
 ; Moves the object left to the left edge of its tile column (offset zp_00,
-; BG scroll wram_1380) and stops its horizontal motion: a wall on the right.
+; BG scroll bg1_x) and stops its horizontal motion: a wall on the right.
 snap_x_left_to_tile:
 	clc
 	lda	OBJ_X,x
 	adc	zp_00
-	adc	a:wram_1380
+	adc	a:bg1_x
 	and	#$0007
 	sta	zp_0E
 	sec
@@ -2588,7 +2588,7 @@ sub_01942F:
 snap_x_right_to_tile:
 	lda	OBJ_X,x
 	clc
-	adc	a:wram_1380
+	adc	a:bg1_x
 	and	#$0007
 	sta	zp_0E
 	sec
@@ -2605,12 +2605,12 @@ loc_01944F:
 loc_019450:
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
-	lda	a:wram_1398
+	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
 	lda	OBJ_X,x
 	clc
-	adc	a:wram_1380
+	adc	a:bg1_x
 	and	#$000F
 	lsr	a
 	eor	#$FFFF
@@ -2628,12 +2628,12 @@ loc_019450:
 	sta	OBJ_Y,x
 	rtl
 loc_019480:
-	lda	a:wram_1398
+	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
 	lda	OBJ_X,x
 	clc
-	adc	a:wram_1380
+	adc	a:bg1_x
 	and	#$000F
 	lsr	a
 	eor	#$FFFF
@@ -2652,12 +2652,12 @@ loc_019480:
 loc_0194AB:
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
-	lda	a:wram_1398
+	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
 	lda	OBJ_X,x
 	clc
-	adc	a:wram_1380
+	adc	a:bg1_x
 	and	#$000F
 	lsr	a
 	clc
@@ -2677,12 +2677,12 @@ loc_0194AB:
 	sta	OBJ_Y,x
 	rtl
 loc_0194DD:
-	lda	a:wram_1398
+	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
 	lda	OBJ_X,x
 	clc
-	adc	a:wram_1380
+	adc	a:bg1_x
 	and	#$000F
 	lsr	a
 	clc
@@ -2699,12 +2699,12 @@ loc_0194DD:
 loc_019502:
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
-	lda	a:wram_1398
+	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
 	lda	OBJ_X,x
 	clc
-	adc	a:wram_1380
+	adc	a:bg1_x
 	and	#$000F
 	eor	#$FFFF
 	lsr	a
@@ -2724,12 +2724,12 @@ loc_019502:
 	sta	OBJ_Y,x
 	rtl
 loc_019536:
-	lda	a:wram_1398
+	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
 	lda	OBJ_X,x
 	clc
-	adc	a:wram_1380
+	adc	a:bg1_x
 	and	#$000F
 	eor	#$FFFF
 	lsr	a
@@ -2750,14 +2750,14 @@ loc_019536:
 loc_019565:
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
-	lda	a:wram_1398
+	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
 	lda	OBJ_X,x
 	clc
 	adc	zp_00
 	clc
-	adc	a:wram_1380
+	adc	a:bg1_x
 	and	#$000F
 	lsr	a
 	sec
@@ -2773,14 +2773,14 @@ loc_019565:
 	sta	OBJ_Y,x
 	rtl
 loc_019592:
-	lda	a:wram_1398
+	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
 	lda	OBJ_X,x
 	clc
 	adc	zp_00
 	clc
-	adc	a:wram_1380
+	adc	a:bg1_x
 	and	#$000F
 	lsr	a
 	sec
@@ -2797,14 +2797,14 @@ loc_019592:
 loc_0195BA:
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
-	lda	a:wram_1398
+	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
 	lda	OBJ_X,x
 	clc
 	adc	zp_00
 	clc
-	adc	a:wram_1380
+	adc	a:bg1_x
 	eor	#$FFFF
 	lsr	a
 	and	#$0007
@@ -2825,14 +2825,14 @@ loc_0195BA:
 	sta	OBJ_Y,x
 	rtl
 loc_0195F2:
-	lda	a:wram_1398
+	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
 	lda	OBJ_X,x
 	clc
 	adc	zp_00
 	clc
-	adc	a:wram_1380
+	adc	a:bg1_x
 	eor	#$FFFF
 	lsr	a
 	and	#$0007
@@ -2850,14 +2850,14 @@ loc_0195F2:
 loc_01961D:
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
-	lda	a:wram_1398
+	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
 	lda	OBJ_X,x
 	clc
 	adc	zp_00
 	clc
-	adc	a:wram_1380
+	adc	a:bg1_x
 	and	#$000F
 	lsr	a
 	and	#$0007
@@ -2876,14 +2876,14 @@ loc_01961D:
 	sta	OBJ_Y,x
 	rtl
 loc_019651:
-	lda	a:wram_1398
+	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
 	lda	OBJ_X,x
 	clc
 	adc	zp_00
 	clc
-	adc	a:wram_1380
+	adc	a:bg1_x
 	and	#$000F
 	lsr	a
 	and	#$0007
@@ -3728,7 +3728,7 @@ loc_019C99:
 	stx	zp_FC
 	stz	zp_04
 	clc
-	adc	a:wram_1380
+	adc	a:bg1_x
 	bit	#$0100
 	beq	loc_019CAB
 	ldy	#$0800
@@ -3738,7 +3738,7 @@ loc_019CAB:
 	lsr	a
 	and	#$003E
 	sta	zp_00
-	lda	a:wram_1398
+	lda	a:bg1_y
 	clc
 	adc	zp_0E
 	asl	a
@@ -3765,7 +3765,7 @@ loc_019CC6:
 	lsr	a
 	lsr	a
 	sec
-	sbc	a:wram_1398
+	sbc	a:bg1_y
 	and	#$00FF
 	ldx	zp_FC
 	sec
@@ -3779,7 +3779,7 @@ loc_019CF3:
 	sta	OBJ_Y,x
 	sec
 	lda	zp_00
-	sbc	a:wram_1380
+	sbc	a:bg1_x
 	and	#$00FF
 	sta	OBJ_X,x
 	brl	respawn_player
