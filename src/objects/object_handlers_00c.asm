@@ -75,9 +75,9 @@ stage1_boss_controller_state_01:
 	cmp	#$0004
 	bne	@return
 	stz	hdma_preset
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0080
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	stx	zp_FC
 	ldx	#.loword(data_05AA1F)
 	jsl	f:load_data_list
@@ -90,9 +90,9 @@ stage1_boss_controller_state_01:
 	rtl
 
 stage1_boss_controller_state_02:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	bmi	loc_00F322
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_00F34B
 loc_00F322:
 	lda	a:song_change_state
@@ -113,7 +113,7 @@ loc_00F34B:
 	rtl
 
 stage1_boss_controller_state_03:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	beq	loc_00F362
 	phx
 	jsr	a:spawn_stage1_boss_falling_debris
@@ -168,11 +168,11 @@ loc_00F3B1:
 	rtl
 
 stage1_boss_controller_state_05:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	loc_00F3DF
 	lda	#$0006
 	sta	hdma_preset
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0020
 	sta	a:boss_work_0
 	stz	$36,x
@@ -240,7 +240,7 @@ stage1_boss_controller_state_08:
 	lda	#$0020
 	sta	a:boss_work_0
 	lda	#$0006
-	sta	$12,x
+	sta	OBJ_STATE,x
 	rtl
 loc_00F45A:
 	dec	$12,x
@@ -1075,7 +1075,7 @@ stage1_boss_fire_falling_shot:
 ; Object type $26: stage 1 boss projectile that follows the player's height
 ; (speed data_05AB46 by difficulty).
 update_stage1_boss_tracking_shot:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_00FAD3
 	lda	#$000C
 	jsl	f:queue_sound
@@ -1122,7 +1122,7 @@ loc_00FB05:
 ; Object type $27: stage 1 boss projectile that falls, then rolls on the
 ; floor.
 update_stage1_boss_falling_shot:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_00FB2A
 	lda	#$000C
 	jsl	f:queue_sound
@@ -1218,10 +1218,10 @@ stage1_boss_spawn_fire_stream_shot:
 ; down to $E0), else it comes out again (up to $100, or $130 while
 ; OBJ_TIMER is set).
 update_stage1_boss_head:
-	lda	$14,x
+	lda	OBJ_HIT,x
 	bne	loc_00FC0B
 	ldy	#$0130
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	bne	loc_00FBF8
 	ldy	#$0100
 	lda	a:boss_work_1
@@ -1262,10 +1262,10 @@ update_stage1_boss:
 	and	#$007F
 	adc	a:data_05AB4C,y
 	sta	$34,x
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$FFF8
 	sta	zp_02
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$0010
 	sta	zp_00
 	jsl	f:fire_bullet_at_player
@@ -1304,11 +1304,11 @@ update_stage1_boss_part:
 	sbc	f:wram_7EA068
 	and	#$00FF
 	sta	a:$000E,x
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_00FCC9
 	lda	a:wram_0932
 	bne	loc_00FCA0
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_00FCBD
 loc_00FCA0:
 	lda	#$0030
@@ -1369,12 +1369,12 @@ update_stage1_boss_wall_chunk:
 	lda	$30,x
 	beq	loc_00FD25
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$1000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 loc_00FD25:
 	inc	$24,x
 	ldy	#$0000
@@ -1398,11 +1398,11 @@ loc_00FD40:
 ; Object type $23: falling wall debris (stage 1 boss, the turtle breaking
 ; through the wall); explodes at y >= $C8.
 update_falling_debris:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00C8
 	bcc	loc_00FD5A
 	lda	#$FFFC
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	txy
 	lda	#.loword(anim_05C69C)
 	jml	f:make_effect_object
@@ -1419,10 +1419,10 @@ loc_00FD5A:
 ; Object type $38: stage 1 boss fire breath (spawned near the boss by
 ; stage1_boss_spawn_fire).
 update_stage1_boss_fire:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	loc_00FD73
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 loc_00FD73:
 	lda	a:wram_044A
 	sta	$0A,x

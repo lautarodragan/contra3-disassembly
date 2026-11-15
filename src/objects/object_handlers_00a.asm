@@ -89,7 +89,7 @@ update_object_type_57:
 	ora	$3A,x
 	sta	a:bg2sc_shadow
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 
 ; Object type $28: the handler is a fill routine (also called directly as a
@@ -127,7 +127,7 @@ update_object_type_28:
 ; bg1_autoscroll, sets bg1_scroll_mode = 4 and adjusts the scroll target.
 update_object_type_08:
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	stz	a:bg1_autoscroll
 	lda	#$0004
 	sta	a:bg1_scroll_mode
@@ -145,7 +145,7 @@ update_object_type_08:
 ; Object type $89: not seen. Not identified.
 update_object_type_89:
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0001
 	sta	a:stage_checkpoint
 	rtl
@@ -154,14 +154,14 @@ update_object_type_89:
 ; field $3A, waits for bg2_screen_drawn, then sets bg2_scroll_mode (low
 ; nibble of field $3A) and deletes itself.
 update_bg2_scroll_mode_trigger:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_00D019
 	lda	#$0001
 	sta	a:bg2_scroll_mode
 	lda	$3A,x
 	and	#$FFF0
 	sta	a:bg2_map_offset
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	a:bg2_screen_drawn
 	rtl
 loc_00D019:
@@ -180,7 +180,7 @@ update_bg1_autoscroll_trigger:
 	lda	#$0001
 	sta	a:bg1_autoscroll
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 
 ; Object type $3B: stage trigger: sets bg2_scroll_mode from field $3B (and
@@ -213,14 +213,14 @@ update_bg1_scroll_mode_trigger:
 	and	#$FF00
 	sta	a:bg1_y
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 
 ; Object type $07: stage trigger: loads the list
 ; data_059E4A[field $3A] with load_data_list and deletes itself.
 update_load_list_trigger:
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	$3A,x
 	tay
 	stx	zp_FA
@@ -252,7 +252,7 @@ update_object_type_42:
 update_song_change_trigger:
 	; (not executed in the CDL traces)
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	ldy	$3A,x
 	lda	a:data_059F06,y
 	sta	a:song_change_mode
@@ -263,7 +263,7 @@ update_song_change_trigger:
 ; Object type $06: stage 1 scripted scene (section 9): BG/HDMA effect with 9
 ; states. Not identified.
 update_object_type_06:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -286,7 +286,7 @@ object_type_06_state_00:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	@return
-	inc	$12,x
+	inc	OBJ_STATE,x
 @return:
 	rtl
 
@@ -299,7 +299,7 @@ object_type_06_state_01:
 	sta	a:wram_161C
 	stz	a:wram_1620
 	stz	a:wram_1622
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0005
 	sta	a:bg2_scroll_mode
 	rtl
@@ -589,8 +589,8 @@ loc_00D37B:
 object_type_06_state_06:
 	lda	#$0003
 	sta	a:shake_timer
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$0100
 	bcs	loc_00D394
 	cmp	#$00D8
@@ -769,7 +769,7 @@ loc_00D4EE:
 update_bomber_bomb:
 	lda	stage_frame_odd
 	bne	loc_00D530
-	ldy	$20,x
+	ldy	OBJ_ANIM,x
 	lda	a:$0004,y
 	sta	zp_00
 	ldy	#$0840
@@ -924,7 +924,7 @@ update_stage4_line_scroll:
 	sta	a:scroll_split_y
 	cmp	#$0002
 	bcs	loc_00D630
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	a:scroll_split_pattern
 	stz	a:scroll_split_y
 	stz	hdma_preset

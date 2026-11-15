@@ -7,12 +7,12 @@
 ; Object type $02: seen once in stage 1 (section 8); sets OBJ_HP to $100 in
 ; state 0 and runs 11 states. Not identified.
 update_object_type_02:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	pha
 	beq	loc_01B200
 	cmp	#$0008
 	bcs	loc_01B1EE
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01B1E0
 	pla
 	lda	#$0042
@@ -84,21 +84,21 @@ object_type_02_state_00:
 	lda	a:bg2_screen_drawn
 	beq	@return
 	lda	#$0050
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFC0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$0100
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0080
 	sta	a:boss_work_0
 	lda	#$009C
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$00A8
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$ACDF
 	sta	$30,x
-	stz	$24,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	lda	#$0044
 	jsl	f:queue_sound
 @return:
@@ -184,19 +184,19 @@ loc_01B30F:
 	rtl
 
 object_type_02_state_02:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	@return
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0001
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$4000
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	lda	#$8000
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	#$FFFF
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	#$0001
-	sta	$04,x
+	sta	OBJ_FACING,x
 	lda	#$001E
 	jsl	f:queue_sound
 @return:
@@ -204,16 +204,16 @@ object_type_02_state_02:
 
 object_type_02_state_03:
 	inc	a:shake_continuous
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00C8
 	bcc	loc_01B353
 	lda	#$401D
-	sta	$16,x
-	stz	$1C,x
-	stz	$1E,x
+	sta	OBJ_FLAGS,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	lda	#$0001
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 loc_01B353:
 	ldy	#$AC97
 	lda	stage_frame_bit1
@@ -231,10 +231,10 @@ loc_01B35D:
 	rtl
 
 object_type_02_state_04:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	bne	loc_01B383
 	ldy	#$ACB7
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$4D88
 	pha
 	lda	#$0040
@@ -257,21 +257,21 @@ loc_01B38F:
 
 object_type_02_state_05:
 	inc	a:shake_continuous
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$0028
 	bcs	loc_01B3E0
-	inc	$12,x
-	stz	$1A,x
-	stz	$04,x
+	inc	OBJ_STATE,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_FACING,x
 	lda	#$0001
 	sta	$38,x
 	rtl
 
 object_type_02_state_06:
 	inc	a:shake_continuous
-	lda	$04,x
+	lda	OBJ_FACING,x
 	beq	loc_01B3C3
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	$34,x
 	bcs	loc_01B3E0
 	bcc	loc_01B3CA
@@ -445,7 +445,7 @@ object_type_02_state_0A:
 	lda	#$0000
 	sta	a:bg2_x
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0001
 	sta	a:bg1_scroll_mode
 	lda	#$0001
@@ -455,12 +455,12 @@ object_type_02_state_0A:
 ; Object type $1C: falling fragment (sprite by vertical speed) that explodes
 ; on the floor or when shot (stage 1 section 9). Not identified.
 update_object_type_1C:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00C8
 	bcc	loc_01B549
-	stz	$1C,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	#$FFFE
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	bra	loc_01B54D
 loc_01B549:
 	lda	$14,x
@@ -511,7 +511,7 @@ loc_01B599:
 ; Object type $6E: stage 4: the tank at the start (HP 315; seen in the
 ; emulator).
 update_stage4_tank:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -526,16 +526,16 @@ tbl_stage4_tank_states:
 	.addr	stage4_tank_state_03
 
 stage4_tank_state_00:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0180
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$00C0
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0060
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFC0
-	sta	$2A,x
-	stz	$24,x
+	sta	OBJ_HITBOX_H,x
+	stz	OBJ_TIMER,x
 	lda	#$0003
 	sta	zp_02
 	lda	#$0030
@@ -550,27 +550,27 @@ stage4_tank_state_00:
 	rtl
 
 stage4_tank_state_01:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	@return
 	lda	#$0100
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$401D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$1000
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0140
-	sta	$06,x
-	inc	$12,x
+	sta	OBJ_HP,x
+	inc	OBJ_STATE,x
 @return:
 	rtl
 
 stage4_tank_state_02:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01B60F
-	inc	$12,x
-	stz	$16,x
+	inc	OBJ_STATE,x
+	stz	OBJ_FLAGS,x
 	lda	#$0080
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	rtl
 loc_01B60F:
 	lda	$26,x
@@ -652,12 +652,12 @@ loc_01B6A1:
 	rtl
 
 stage4_tank_state_03:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_01B6D1
 	lda	#$0200
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0004
 	sta	zp_02
 	lda	#$0040
@@ -708,7 +708,7 @@ loc_01B6E9:
 ; The tank's damage counter is wram_09C6 (OBJ_HP of slot $09C0): objects
 ; with OBJ_FLAGS bit $1000 touching it decrement it.
 update_player_tank:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	cmp	#$0003
 	beq	loc_01B723
 	lda	a:wram_09C6
@@ -752,18 +752,18 @@ tbl_player_tank_states:
 player_tank_state_00:
 	stz	a:wram_16AE
 	lda	#$0041
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$FFDA
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$0058
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	stz	$34,x
 	lda	#$AF3D
 	sta	$3A,x
 	lda	#$0010
-	sta	$06,x
+	sta	OBJ_HP,x
 	stz	$38,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0200
 	sta	a:tank_driver
 	stz	a:wram_165A
@@ -791,11 +791,11 @@ player_tank_state_02:
 	lda	a:tank_driver
 	tay
 	lda	a:$1306,y
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	clc
 	lda	a:$000A,y
 	adc	#$FFD8
-	sta	$0A,x
+	sta	OBJ_X,x
 	tya
 	eor	#$0040
 	tay
@@ -912,15 +912,15 @@ player_tank_state_04:
 	stz	a:bg2_x
 	stz	hdma_preset
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 @return:
 	rtl
 
 player_tank_state_03:
 	; (not executed in the CDL traces)
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	beq	loc_01B8C6
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$FF80
 	bcs	loc_01B8D5
 	cmp	#$FF00
@@ -1212,7 +1212,7 @@ loc_01BADA:
 update_foot_soldier:
 	lda	$30,x
 	bmi	loc_01BAF4
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01BAFF
 loc_01BAF4:
 	stz	$06,x
@@ -1291,7 +1291,7 @@ loc_01BB68:
 	bra	loc_01BB7E
 
 foot_soldier_state_00:
-	stz	$06,x
+	stz	OBJ_HP,x
 	lda	#$3400
 loc_01BB7E:
 	sta	$02,x
@@ -1313,22 +1313,22 @@ loc_01BB7E:
 	rtl
 
 foot_soldier_state_02:
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$0020
 	bcc	foot_soldier_state_01
 	cmp	#$00D0
 	bcs	foot_soldier_state_01
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	foot_soldier_state_01
 	lda	#$0006
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	$3E,x
 	bne	loc_01BBCE
 	lda	#$AFB6
-	sta	$20,x
-	stz	$18,x
-	stz	$1A,x
-	inc	$12,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
+	inc	OBJ_STATE,x
 
 foot_soldier_state_01:
 	lda	$3E,x
@@ -1418,7 +1418,7 @@ loc_01BC6E:
 
 ; Object type $35: stage 1 (the cafe front), HP 1. Not identified.
 update_object_type_35:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01BC76
 	brl	loc_01BAF4
 loc_01BC76:
@@ -1441,19 +1441,19 @@ object_type_35_state_00:
 	lda	#$AFCE
 	sta	$32,x
 	lda	#$0001
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	sta	$34,x
 	ldy	difficulty
 	lda	a:soldier_hp,y
-	sta	$06,x
-	inc	$12,x
+	sta	OBJ_HP,x
+	inc	OBJ_STATE,x
 	rtl
 
 object_type_35_state_01:
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$00D0
 	bcs	@return
-	inc	$12,x
+	inc	OBJ_STATE,x
 @return:
 	rtl
 
@@ -1461,14 +1461,14 @@ object_type_35_state_02:
 	lda	$34,x
 	bne	loc_01BD30
 	lda	#$0003
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$FFFD
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	#.loword(metasprite_06B1C1)
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$3600
-	sta	$02,x
-	lda	$0A,x
+	sta	OBJ_ATTR,x
+	lda	OBJ_X,x
 	sta	zp_10
 	phx
 	ldx	#$000A
@@ -1522,15 +1522,15 @@ loc_01BD30:
 	rtl
 
 object_type_35_state_03:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_01BD62
 	lda	#$081F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFE0
-	sta	$2A,x
-	inc	$12,x
+	sta	OBJ_HITBOX_H,x
+	inc	OBJ_STATE,x
 
 object_type_35_state_04:
 	lda	$3E,x
@@ -1552,15 +1552,15 @@ loc_01BD62:
 	rtl
 
 foot_soldier_state_04:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_01BD8C
-	stz	$22,x
-	stz	$20,x
+	stz	OBJ_ANIM_TIMER,x
+	stz	OBJ_ANIM,x
 	lda	#$FFFE
-	sta	$1E,x
-	inc	$12,x
+	sta	OBJ_Y_VEL,x
+	inc	OBJ_STATE,x
 	ldy	#$B16D
-	lda	$04,x
+	lda	OBJ_FACING,x
 	beq	loc_01BD8A
 	ldy	#$B427
 loc_01BD8A:
@@ -1570,15 +1570,15 @@ loc_01BD8C:
 
 foot_soldier_state_05:
 	lda	#$00C8
-	cmp	$0E,x
+	cmp	OBJ_Y,x
 	bcs	loc_01BDA5
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0001
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#.loword(anim_05AF9C)
-	sta	$20,x
-	stz	$1E,x
-	stz	$1C,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	rtl
 loc_01BDA5:
 	lda	$1C,x
@@ -1595,13 +1595,13 @@ loc_01BDA5:
 ; enemy (OBJ_FLAGS bit $0040, slots $0900-$09FF) is near that edge; some
 ; get HP (init_foot_soldier_with_hp), the others die at the first hit.
 update_soldier_spawner:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01BDC4
 	lda	#$0040
 	sta	$32,x
 	lda	#$0080
 	sta	$34,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 loc_01BDC4:
 	dec	$32,x
 	bne	loc_01BE16
@@ -1695,7 +1695,7 @@ loc_01BE72:
 update_object_type_73:
 	lda	a:wram_1688
 	bne	loc_01BE83
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01BE98
 	bmi	loc_01BE8C
 loc_01BE83:
@@ -1726,9 +1726,9 @@ tbl_object_type_73_states:
 	.addr	object_type_73_state_03
 
 object_type_73_state_00:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#.loword(metasprite_06C5CF)
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$3600
 	cpy	difficulty
 	beq	loc_01BEC4
@@ -1759,20 +1759,20 @@ loc_01BEC4:
 
 object_type_73_state_01:
 	clc
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	adc	#$2000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	adc	#$0000
-	sta	$1A,x
-	lda	$1E,x
+	sta	OBJ_X_VEL,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_01BF16
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0013
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#.loword(anim_05B002)
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 loc_01BF16:
 	clc
 	lda	$1C,x
@@ -1802,29 +1802,29 @@ loc_01BF16:
 
 object_type_73_state_02:
 	sec
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	sbc	#$6000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	sbc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	bpl	@return
-	inc	$12,x
+	inc	OBJ_STATE,x
 @return:
 	rtl
 
 object_type_73_state_03:
 	stz	zp_00
 	stz	zp_02
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bpl	loc_01BF80
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$2800
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	bra	loc_01BFA6
 loc_01BF80:
 	lda	#$3000
@@ -1920,7 +1920,7 @@ loc_01C03B:
 update_object_type_7E:
 	lda	a:wram_1688
 	bne	loc_01C045
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01C061
 loc_01C045:
 	lda	$34,x
@@ -1972,17 +1972,17 @@ object_type_7E_state_02:
 	sec
 	lda	#$0080
 	sbc	a:bg1_y
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	rng_hi
 	bit	#$0007
 	bne	loc_01C0BF
-	dec	$12,x
+	dec	OBJ_STATE,x
 	lda	#$FFFC
-	sta	$1E,x
-	stz	$20,x
-	stz	$22,x
+	sta	OBJ_Y_VEL,x
+	stz	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	lda	#.loword(metasprite_06C697)
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 loc_01C0BF:
 	lda	$30,x
 	bne	loc_01C0DD
@@ -2014,10 +2014,10 @@ loc_01C0E6:
 	sta	$1A,x
 
 object_type_7E_state_01:
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$00E0
 	bcc	loc_01C102
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	bpl	loc_01C111
 	bmi	loc_01C10B
 loc_01C102:
@@ -2071,7 +2071,7 @@ loc_01C162:
 	bra	object_type_7E_state_04
 
 object_type_7E_state_03:
-	inc	$12,x
+	inc	OBJ_STATE,x
 
 object_type_7E_reset_sprite:
 	lda	#$0001
@@ -2090,27 +2090,27 @@ object_type_7E_reset_sprite:
 
 object_type_7E_state_04:
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$2000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	sec
 	lda	#$0080
 	sbc	a:bg1_y
-	cmp	$0E,x
+	cmp	OBJ_Y,x
 	bcs	@return
 	lda	#$401F
-	sta	$16,x
-	lda	$02,x
+	sta	OBJ_FLAGS,x
+	lda	OBJ_ATTR,x
 	ora	#$3000
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#.loword(anim_05B01A)
-	sta	$20,x
-	inc	$12,x
-	stz	$1C,x
-	stz	$1E,x
+	sta	OBJ_ANIM,x
+	inc	OBJ_STATE,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 @return:
 	rtl
 
@@ -2118,7 +2118,7 @@ object_type_7E_state_05:
 	sec
 	lda	#$0080
 	sbc	a:bg1_y
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0080
 	jsl	f:pick_target_player
 	sec
@@ -2144,26 +2144,26 @@ loc_01C1E9:
 
 object_type_7E_state_06:
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$3000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
-	lda	$0E,x
+	sta	OBJ_Y_VEL,x
+	lda	OBJ_Y,x
 	cmp	#$00B0
 	bcc	@return
 	lda	#$0003
-	sta	$16,x
-	inc	$12,x
+	sta	OBJ_FLAGS,x
+	inc	OBJ_STATE,x
 	lda	#.loword(anim_05B01A)
-	sta	$20,x
+	sta	OBJ_ANIM,x
 	lda	#$0002
-	sta	$04,x
-	stz	$1C,x
-	stz	$1E,x
+	sta	OBJ_FACING,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
 	lda	#$FFF8
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 @return:
 	rtl
 
@@ -2175,7 +2175,7 @@ object_type_7E_state_07:
 update_popup_turret:
 	lda	$3E,x
 	bne	loc_01C226
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01C24A
 loc_01C226:
 	lda	#$0030
@@ -2211,23 +2211,23 @@ tbl_popup_turret_states:
 
 popup_turret_state_00:
 	lda	#$0003
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0020
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$0010
-	sta	$06,x
-	inc	$12,x
+	sta	OBJ_HP,x
+	inc	OBJ_STATE,x
 	rtl
 
 popup_turret_state_01:
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$00E8
 	bcs	@return
 	lda	#$B046
 	sta	$32,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 @return:
 	rtl
 
@@ -2251,20 +2251,20 @@ popup_turret_state_02:
 	rtl
 
 popup_turret_state_03:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	@return
 	lda	#$0021
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 @return:
 	rtl
 
 popup_turret_state_04:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	loc_01C2C8
 	lda	#$0080
-	sta	$24,x
-	dec	$12,x
+	sta	OBJ_TIMER,x
+	dec	OBJ_STATE,x
 	rtl
 loc_01C2C8:
 	lda	$24,x
@@ -2343,7 +2343,7 @@ loc_01C32E:
 ; Object type $50: stage 3: wall hatch (HP 8; seen in the emulator).
 update_wall_hatch:
 	inc	$34,x
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01C385
 	lda	#$0030
 	jsl	f:queue_sound
@@ -2379,18 +2379,18 @@ tbl_wall_hatch_states:
 	.addr	wall_hatch_state_05
 
 wall_hatch_state_00:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	ldy	difficulty
 	lda	a:wall_hatch_hp,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0003
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$FFE0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$0020
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$0015
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	a:bg1_x
 	and	#$0100
 	asl	a
@@ -2406,7 +2406,7 @@ wall_hatch_state_01:
 	lda	a:bg1_scroll_mode
 	cmp	#$0003
 	bne	loc_01C3E2
-	lda	$0E,x
+	lda	OBJ_Y,x
 	bmi	loc_01C3F0
 	cmp	#$0020
 	bcs	loc_01C3EE
@@ -2423,14 +2423,14 @@ loc_01C3F0:
 	rtl
 
 wall_hatch_state_02:
-	dec	$24,x
-	lda	$24,x
+	dec	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	bpl	loc_01C404
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0030
 	sta	$34,x
 	lda	#$4013
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_01C404:
 	bit	#$0007
@@ -2456,7 +2456,7 @@ wall_hatch_state_03:
 	lda	a:bg1_scroll_mode
 	cmp	#$0003
 	bne	loc_01C435
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00C0
 	bcc	loc_01C44E
 	bcs	loc_01C441
@@ -2540,13 +2540,13 @@ loc_01C48F:
 
 wall_hatch_state_05:
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 
 ; Object types $04 and $54: seen in stage 1 (section 4, a red soldier on a
 ; building ledge, probably). Not identified with certainty.
 update_object_type_04:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -2564,12 +2564,12 @@ tbl_object_type_04_states:
 
 object_type_04_state_00:
 	lda	#$0041
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0060
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FF10
-	sta	$2A,x
-	inc	$12,x
+	sta	OBJ_HITBOX_H,x
+	inc	OBJ_STATE,x
 loc_01C4FA:
 	rtl
 
@@ -2803,7 +2803,7 @@ object_type_04_collapse_wait:
 ; Object type $14: stage 1 section 4: part of the wall structure, HP 64
 ; (flashes its palette when hit). Not identified exactly.
 update_object_type_14:
-	lda	$26,x
+	lda	OBJ_SAVED_ATTR,x
 	beq	@return
 	lda	#.loword(palette_05914A)
 	sta	cgram_upload_src
@@ -2815,13 +2815,13 @@ update_object_type_14:
 ; Object type $15: stage 1 section 4: destructible wall gun, HP 40;
 ; destroyed: a burst of explosions. Not identified exactly.
 update_object_type_15:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	beq	loc_01C731
 	lda	stage_frame_mod4
 	bne	@return
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	zp_02
 	lda	#$000F
 	sta	zp_04
@@ -2904,15 +2904,15 @@ loc_01C7B5:
 ; Object type $16: falls with gravity and explodes on the floor or on
 ; contact (stage 1 section 4).
 update_object_type_16:
-	lda	$3C,x
+	lda	OBJ_TOUCHED_BY,x
 	bne	loc_01C7CF
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$2000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
-	lda	$0E,x
+	sta	OBJ_Y_VEL,x
+	lda	OBJ_Y,x
 	cmp	#$00C8
 	bcc	loc_01C7E0
 loc_01C7CF:
@@ -2929,7 +2929,7 @@ loc_01C7E0:
 ; Object type $0F: flying weapon capsule: shot down, it drops a falcon
 ; weapon item (all side-view stages; seen in the emulator).
 update_weapon_capsule:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -2946,12 +2946,12 @@ tbl_weapon_capsule_states:
 
 weapon_capsule_state_00:
 	lda	#$3E00
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF0
-	sta	$2A,x
-	inc	$12,x
+	sta	OBJ_HITBOX_H,x
+	inc	OBJ_STATE,x
 	lda	$3E,x
 	beq	loc_01C813
 	jsr	a:weapon_capsule_set_kind
@@ -3015,7 +3015,7 @@ loc_01C869:
 	rtl
 
 weapon_capsule_state_02:
-	ldy	$3C,x
+	ldy	OBJ_TOUCHED_BY,x
 	beq	loc_01C8AB
 	lda	#$0012
 	jsl	f:queue_sound
@@ -3038,7 +3038,7 @@ loc_01C8AB:
 	brl	loc_01C8F5
 
 weapon_capsule_state_03:
-	ldy	$3C,x
+	ldy	OBJ_TOUCHED_BY,x
 	beq	loc_01C8C4
 	lda	#$0012
 	jsl	f:queue_sound
@@ -3214,7 +3214,7 @@ loc_01C9ED:
 
 ; Object type $11: stage 1, HP 16. Not identified.
 update_object_type_11:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -3229,11 +3229,11 @@ tbl_object_type_11_states:
 
 object_type_11_state_00:
 	lda	#.loword(metasprite_06B374)
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$4013
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$3E00
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$0080
 	sta	$30,x
 	lda	#$0200
@@ -3241,18 +3241,18 @@ object_type_11_state_00:
 	lda	#$0400
 	sta	$36,x
 	lda	#$0010
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$FFD8
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$0034
-	sta	$28,x
-	inc	$12,x
+	sta	OBJ_HITBOX_W,x
+	inc	OBJ_STATE,x
 	rtl
 loc_01CA3F:
 	jml	f:solid_object_vs_players_and_soldiers
 
 object_type_11_state_01:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01CA3F
 	lda	#$0042
 	jsl	f:queue_sound
@@ -3321,9 +3321,9 @@ loc_01CA92:
 object_type_11_state_02:
 	lda	stage_frame_odd
 	bne	loc_01CAF1
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	zp_02
 	lda	#$003F
 	sta	zp_04
@@ -3376,10 +3376,10 @@ loc_01CB43:
 ; Object type $10: debris that falls, bounces off the floor
 ; (get_bg_tile_at_object) and blinks out (stage 1, the wrecked car).
 update_bouncing_debris:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	loc_01CB54
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_01CB54:
 	lda	$24,x
@@ -3421,17 +3421,17 @@ loc_01CB92:
 
 ; Object type $43: stage 3 section 9, HP 64. Not identified.
 update_object_type_43:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01CBB0
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$4071
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$FF00
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$0020
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$0040
-	sta	$06,x
+	sta	OBJ_HP,x
 	rtl
 loc_01CBB0:
 	lda	a:bg1_scroll_mode
@@ -3515,50 +3515,50 @@ tbl_object_type_12_states:
 
 object_type_12_state_00:
 	lda	#$3400
-	sta	$02,x
-	stz	$26,x
-	stz	$20,x
+	sta	OBJ_ATTR,x
+	stz	OBJ_SAVED_ATTR,x
+	stz	OBJ_ANIM,x
 	lda	#$001F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFE0
-	sta	$2A,x
-	stz	$1A,x
-	stz	$18,x
-	stz	$1E,x
-	stz	$1C,x
+	sta	OBJ_HITBOX_H,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	ldy	difficulty
 	lda	a:object_type_12_hp,y
-	sta	$06,x
-	inc	$12,x
+	sta	OBJ_HP,x
+	inc	OBJ_STATE,x
 
 object_type_12_state_01:
-	ldy	$04,x
+	ldy	OBJ_FACING,x
 	lda	a:data_05B278,y
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	ldy	difficulty
 	lda	a:data_05B1CE,y
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0002
-	sta	$12,x
+	sta	OBJ_STATE,x
 	rtl
 
 object_type_12_state_02:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	@return
-	inc	$12,x
+	inc	OBJ_STATE,x
 @return:
 	rtl
 
 object_type_12_state_03:
-	ldy	$04,x
+	ldy	OBJ_FACING,x
 	lda	a:data_05B27C,y
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$000C
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0004
-	sta	$12,x
+	sta	OBJ_STATE,x
 	lda	#$0016
 	jml	f:queue_sound
 
@@ -3669,20 +3669,20 @@ loc_01CD76:
 ; Object type $13: grenade/shell thrown by soldiers: explodes into type $1A
 ; when it touches a player or a solid BG tile (bit $2000).
 update_grenade:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01CD99
 	lda	#$3000
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$180D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0008
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF8
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#.loword(anim_05B284)
-	sta	$20,x
-	stz	$22,x
-	inc	$12,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
+	inc	OBJ_STATE,x
 	rtl
 loc_01CD99:
 	lda	$3C,x
@@ -3725,7 +3725,7 @@ loc_01CDCA:
 ; Object type $17: sniper in a window (stage 1 and 3, HP 6; seen in the
 ; emulator).
 update_window_sniper:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	cmp	#$0003
 	bcs	loc_01CDF3
 	jsr	a:window_sniper_aim_at_nearest_player
@@ -3756,42 +3756,42 @@ tbl_window_sniper_states:
 
 window_sniper_state_00:
 	lda	#$2600
-	sta	$02,x
-	stz	$26,x
+	sta	OBJ_ATTR,x
+	stz	OBJ_SAVED_ATTR,x
 	lda	#$001F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFE0
-	sta	$2A,x
-	stz	$1A,x
-	stz	$18,x
-	stz	$1E,x
-	stz	$1C,x
+	sta	OBJ_HITBOX_H,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	ldy	difficulty
 	lda	a:window_sniper_hp,y
-	sta	$06,x
-	inc	$12,x
+	sta	OBJ_HP,x
+	inc	OBJ_STATE,x
 
 window_sniper_state_01:
 	ldy	difficulty
 	lda	a:data_05C444,y
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0002
-	sta	$12,x
+	sta	OBJ_STATE,x
 	rtl
 
 window_sniper_state_02:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	@return
-	inc	$12,x
+	inc	OBJ_STATE,x
 @return:
 	rtl
 
 window_sniper_state_03:
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	zp_18
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	zp_1A
 	lda	$34,x
 	sta	zp_1C

@@ -69,10 +69,10 @@ loc_01CFF4:
 ; Object type $1D: effect (explosion, spark, fire): plays OBJ_ANIM and frees
 ; itself when the script ends (make_effect_object).
 update_effect:
-	ldy	$20,x
+	ldy	OBJ_ANIM,x
 	bne	loc_01CFFF
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_01CFFF:
 	lda	a:$0004,y
@@ -127,7 +127,7 @@ loc_01D05B:
 ; Object type $1E: alien dog that jumps out at the player (stage 1 sections
 ; 2-3; seen in the emulator).
 update_alien_dog:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01D064
 	jmp	a:loc_01D149
 loc_01D064:
@@ -149,19 +149,19 @@ tbl_alien_dog_states:
 
 alien_dog_state_00:
 	lda	#$0003
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$3800
-	sta	$02,x
-	stz	$26,x
-	stz	$1A,x
-	stz	$18,x
-	stz	$1E,x
-	stz	$1C,x
-	stz	$04,x
+	sta	OBJ_ATTR,x
+	stz	OBJ_SAVED_ATTR,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
+	stz	OBJ_FACING,x
 	lda	#.loword(anim_05C714)
-	sta	$20,x
-	stz	$22,x
-	inc	$12,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
+	inc	OBJ_STATE,x
 
 alien_dog_state_01:
 	jsr	a:alien_dog_check_player_close
@@ -248,7 +248,7 @@ loc_01D0FD:
 	inc	$12,x
 
 alien_dog_state_03:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00C8
 	bcs	loc_01D13A
 	rtl
@@ -290,18 +290,18 @@ loc_01D149:
 	rtl
 
 alien_dog_state_05:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bne	loc_01D1A1
-	lda	$0A,x
-	sta	$0A,x
-	lda	$0E,x
+	lda	OBJ_X,x
+	sta	OBJ_X,x
+	lda	OBJ_Y,x
 	sec
 	sbc	#$0010
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$FFFF
-	sta	$1E,x
-	stz	$18,x
-	stz	$1A,x
+	sta	OBJ_Y_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_X_VEL,x
 	txy
 	lda	#.loword(anim_05C4CE)
 	jsl	f:make_effect_object
@@ -319,10 +319,10 @@ loc_01D1A1:
 ; Object type $18: enemy bullet (spawn_enemy_bullet allocates them); deleted when it
 ; touches a player.
 update_enemy_bullet:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01D1D2
 	lda	#$180F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	jsl	f:enemy_bullet_cycle_palette
 	lda	#$0008
 	sta	$28,x
@@ -350,7 +350,7 @@ enemy_bullet_cycle_palette:
 ; Object type $1B: killed soldier thrown back (start_dying_soldier*), then
 ; an explosion effect.
 update_dying_soldier:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01D23C
 ; Entry points used by soldier handlers when killed: turn the object into
 ; type $1B (thrown back, then an explosion). With sprite A and sound $0E
@@ -428,21 +428,21 @@ loc_01D25E:
 ; CDL traces.
 update_object_type_19:
 	; (not executed in the CDL traces)
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01D291
-	stz	$1A,x
-	stz	$18,x
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	#$3E00
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$0003
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$C7A6
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 	lda	#$0001
-	sta	$12,x
+	sta	OBJ_STATE,x
 	rtl
 loc_01D291:
 	lda	$20,x
@@ -456,7 +456,7 @@ loc_01D291:
 ; Object type $1A: explosion of a grenade (type $13): harmful for $20
 ; frames, spawns type $1D sparks.
 update_grenade_blast:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01D2D8
 ; Turns the object into a grenade blast (type $1A, also entered from
 ; update_grenade).
@@ -569,13 +569,13 @@ loc_01D369:
 ; Object type $2F: stage 1 burning section: spawns type $30 (falling fire).
 ; Not identified exactly.
 update_object_type_2F:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01D383
 	lda	#$0004
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0001
-	sta	$16,x
-	inc	$12,x
+	sta	OBJ_FLAGS,x
+	inc	OBJ_STATE,x
 	stz	$32,x
 loc_01D382:
 	rtl
@@ -622,19 +622,19 @@ loc_01D3B0:
 
 ; Object type $2B: stage 1 burning section. Not identified.
 update_object_type_2B:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01D3FE
 	lda	$3A,x
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0003
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$FFFD
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	#.loword(metasprite_06AEA5)
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$3E00
-	sta	$02,x
-	inc	$12,x
+	sta	OBJ_ATTR,x
+	inc	OBJ_STATE,x
 	rtl
 loc_01D3FE:
 	clc
@@ -690,24 +690,24 @@ loc_01D46E:
 ; exactly.
 update_object_type_30:
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$3000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 
 ; Object type $2E: stage 1 burning section: fireball. Not identified
 ; exactly.
 update_object_type_2E:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00B8
 	bcc	loc_01D4BE
 	txa
 	bit	#$0040
 	bne	loc_01D491
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_01D491:
 	lda	#$0001
@@ -736,7 +736,7 @@ loc_01D4BE:
 ; Object type $31: stage 1 burning section: flying fireball enemy, HP 64.
 ; Not identified exactly.
 update_object_type_31:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01D4EF
 	ldy	difficulty
 	lda	$3A,x
@@ -747,14 +747,14 @@ update_object_type_31:
 	ora	#$FF00
 	sta	$34,x
 	lda	#$0004
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	lda	a:data_05C81C,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	brl	loc_01D591
 loc_01D4EF:
 	lda	$30,x
@@ -849,20 +849,20 @@ loc_01D5B0:
 
 ; Object type $32: stage 1 section 10: fireballs. Not identified exactly.
 update_object_type_32:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bmi	loc_01D5D0
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$2000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
-	lda	$0E,x
+	sta	OBJ_Y_VEL,x
+	lda	OBJ_Y,x
 	cmp	#$00CC
 	bcc	loc_01D5E1
 	lda	#$FFFE
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 loc_01D5D0:
 	lda	#$0001
 	sta	$16,x
@@ -876,12 +876,12 @@ loc_01D5E1:
 
 ; Object type $33: stage 1 section 10. Not identified.
 update_object_type_33:
-	lda	$16,x
+	lda	OBJ_FLAGS,x
 	bne	loc_01D5F1
 	lda	#$0003
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$FFFF
-	sta	$24,x
+	sta	OBJ_TIMER,x
 loc_01D5F0:
 	rtl
 loc_01D5F1:
@@ -967,19 +967,19 @@ loc_01D693:
 ; Object type $2C: stage 1 burning section: fire pillar. Not identified
 ; exactly.
 update_object_type_2C:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01D6C5
 	ldy	difficulty
 	sec
 	lda	$3A,x
 	sbc	a:data_05C822,y
 	sta	$30,x
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	lda	#$0003
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$00C8
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$FFFD
 	sta	$34,x
 	rtl
@@ -1050,17 +1050,17 @@ loc_01D712:
 ; Object type $2D: stage 1 burning section: fire. Not identified exactly.
 update_object_type_2D:
 	clc
-	lda	$1C,x
+	lda	OBJ_Y_VEL_SUB,x
 	adc	#$C000
-	sta	$1C,x
-	lda	$1E,x
+	sta	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y_VEL,x
 	adc	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	jml	f:update_effect
 
 ; Object type $34: stage 1 section 2. Not identified.
 update_object_type_34:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -1077,9 +1077,9 @@ tbl_object_type_34_states:
 	.addr	object_type_34_state_05
 
 object_type_34_state_00:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0003
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	sta	$38,x
 	lda	#$003F
 	sta	$34,x
@@ -1128,7 +1128,7 @@ object_type_34_state_02:
 	lda	stage_frame_mod4
 	cmp	#$0002
 	bne	@return
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0030
 	sta	zp_08
 	lda	#$0002
@@ -1148,9 +1148,9 @@ object_type_34_state_02:
 object_type_34_state_05:
 	lda	stage_frame_mod8
 	bne	@return
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	zp_02
 	lda	$34,x
 	sta	zp_04
@@ -1238,11 +1238,11 @@ sub_01D8AA:
 ; is this pivot around it (swing_carry_player); up/down moves them along
 ; the arm (swing_player_climb), past its end they drop.
 update_swing_pivot:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01D8C0
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0001
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	txa
 	sta	$3E,x
 	jsr	a:init_swing_pivot
@@ -1606,9 +1606,9 @@ loc_01DB63:
 ; Object types $48 and $51: stage 3 (type $51: the flying machine with a
 ; searchlight, section 8). Not identified exactly.
 update_object_type_48:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01DB72
-	stz	$06,x
+	stz	OBJ_HP,x
 	lda	#$C1CC
 	jml	f:start_dying_soldier_sprite
 loc_01DB72:
@@ -1629,17 +1629,17 @@ tbl_object_type_48_states:
 
 object_type_48_state_00:
 	lda	#$001F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$3800
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFE0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	ldy	difficulty
 	lda	a:object_type_48_hp,y
-	sta	$06,x
-	lda	$10,x
+	sta	OBJ_HP,x
+	lda	OBJ_TYPE,x
 	cmp	#$0051
 	bne	loc_01DBB0
 	jmp	a:loc_01DC45
@@ -1670,7 +1670,7 @@ loc_01DBD9:
 	rtl
 
 object_type_48_state_01:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	beq	loc_01DC1F
 	lda	#$0004
 	sta	zp_02
@@ -1739,7 +1739,7 @@ object_type_48_state_02:
 	lda	$32,x
 	clc
 	adc	#$0020
-	cmp	$0E,x
+	cmp	OBJ_Y,x
 	bcs	loc_01DC82
 	stz	zp_00
 	stz	zp_02
@@ -1794,11 +1794,11 @@ loc_01DCCF:
 ; Object type $49: stage 3 section 10: green shielded soldiers. Not
 ; identified exactly.
 update_object_type_49:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00E8
 	bcc	loc_01DCDD
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	rtl
 loc_01DCDD:
 	lda	$12,x
@@ -1816,11 +1816,11 @@ tbl_object_type_49_states:
 
 object_type_49_state_00:
 	lda	#$0003
-	sta	$16,x
-	stz	$24,x
+	sta	OBJ_FLAGS,x
+	stz	OBJ_TIMER,x
 	stz	$30,x
 	stz	$32,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 
 object_type_49_state_01:
@@ -1864,20 +1864,20 @@ object_type_49_state_02:
 	lda	$32,x
 	cmp	#$0018
 	bcs	@return
-	inc	$24,x
+	inc	OBJ_TIMER,x
 	ldy	difficulty
 	lda	a:data_05C956,y
-	cmp	$24,x
+	cmp	OBJ_TIMER,x
 	bcs	@return
 	stz	$30,x
-	stz	$24,x
-	stz	$12,x
+	stz	OBJ_TIMER,x
+	stz	OBJ_STATE,x
 @return:
 	rtl
 
 ; Object type $4A: stage 3: rolling disc (HP 6; seen in the emulator).
 update_rolling_mine:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01DD81
 	lda	#$0030
 	jsl	f:queue_sound
@@ -1906,31 +1906,31 @@ tbl_rolling_mine_states:
 rolling_mine_state_00:
 	ldy	difficulty
 	lda	#$003F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	a:rolling_mine_hp,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$3800
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFE4
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	ldy	$3A,x
-	sty	$04,x
+	sty	OBJ_FACING,x
 	lda	a:data_05C964,y
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	a:data_05C968,y
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	stz	$32,x
 	lda	#.loword(anim_05C96C)
-	sta	$20,x
-	inc	$12,x
+	sta	OBJ_ANIM,x
+	inc	OBJ_STATE,x
 	rtl
 
 rolling_mine_state_01:
-	lda	$24,x
+	lda	OBJ_TIMER,x
 	bmi	loc_01DDD5
-	dec	$24,x
+	dec	OBJ_TIMER,x
 loc_01DDD5:
 	jsl	f:object_follow_floor
 	lda	zp_FC
@@ -1962,7 +1962,7 @@ loc_01DE0C:
 	rtl
 
 rolling_mine_state_02:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_01DE16
 	cmp	#$0005
 	bcs	loc_01DE25
@@ -1998,31 +1998,31 @@ loc_01DE4E:
 	rtl
 
 rolling_mine_state_03:
-	lda	$20,x
+	lda	OBJ_ANIM,x
 	bne	@return
 	lda	#$0040
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	stz	$30,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 @return:
 	rtl
 
 rolling_mine_state_05:
-	lda	$20,x
+	lda	OBJ_ANIM,x
 	bne	@return
 	lda	#$0080
-	sta	$24,x
-	ldy	$04,x
+	sta	OBJ_TIMER,x
+	ldy	OBJ_FACING,x
 	lda	a:data_05C964,y
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	a:data_05C968,y
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	#$003F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#.loword(anim_05C96C)
-	sta	$20,x
+	sta	OBJ_ANIM,x
 	lda	#$0001
-	sta	$12,x
+	sta	OBJ_STATE,x
 @return:
 	rtl
 
@@ -2114,10 +2114,10 @@ loc_01DF11:
 ; Object type $4E: stage 3 section 7, 27 states (a mid-boss, probably). Not
 ; identified.
 update_object_type_4E:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01DF32
 	lda	#$0018
-	sta	$12,x
+	sta	OBJ_STATE,x
 loc_01DF32:
 	lda	$26,x
 	beq	loc_01DF40
@@ -2167,39 +2167,39 @@ tbl_object_type_4E_states:
 
 object_type_4E_state_00:
 	lda	#$0000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0006
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF8
-	sta	$2A,x
-	stz	$08,x
-	stz	$0C,x
-	stz	$1A,x
-	stz	$18,x
-	stz	$1E,x
-	stz	$1C,x
+	sta	OBJ_HITBOX_H,x
+	stz	OBJ_X_SUB,x
+	stz	OBJ_Y_SUB,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	stz	$30,x
 	stz	$32,x
 	stz	$34,x
 	stz	$36,x
 	stz	$38,x
-	stz	$20,x
-	stz	$00,x
-	inc	$12,x
+	stz	OBJ_ANIM,x
+	stz	OBJ_SPRITE,x
+	inc	OBJ_STATE,x
 	rtl
 
 object_type_4E_state_01:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bcc	@return
-	inc	$12,x
+	inc	OBJ_STATE,x
 @return:
 	rtl
 
 object_type_4E_state_04:
 	stz	$36,x
 	stz	$38,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 
 object_type_4E_state_05:
@@ -2236,12 +2236,12 @@ object_type_4E_state_05:
 
 object_type_4E_state_02:
 	lda	#$0001
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$FFFF
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	stz	a:bg2_x
 	stz	a:bg2_y
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 
 object_type_4E_state_03:
@@ -2272,10 +2272,10 @@ object_type_4E_set_bg2_scroll:
 
 object_type_4E_state_06:
 	lda	#$0001
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0001
-	sta	$1E,x
-	inc	$12,x
+	sta	OBJ_Y_VEL,x
+	inc	OBJ_STATE,x
 	rtl
 
 object_type_4E_state_07:
@@ -2314,12 +2314,12 @@ object_type_4E_state_08:
 
 object_type_4E_state_09:
 	lda	#$400D
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	ldy	difficulty
 	lda	a:object_type_4E_hp,y
-	sta	$06,x
-	inc	$12,x
-	stz	$24,x
+	sta	OBJ_HP,x
+	inc	OBJ_STATE,x
+	stz	OBJ_TIMER,x
 	stz	$30,x
 	stz	$32,x
 	lda	#$0008
@@ -2329,11 +2329,11 @@ object_type_4E_state_09:
 object_type_4E_state_0A:
 	lda	#$006D
 	sta	zp_06
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	zp_04
 	lda	#$00B6
 	sta	zp_02
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	zp_00
 	phx
 	jsr	a:build_bg2_slant_table
@@ -2496,11 +2496,11 @@ object_type_4E_state_0F:
 	rtl
 
 object_type_4E_state_12:
-	lda	$16,x
+	lda	OBJ_FLAGS,x
 	ora	#$0010
-	sta	$16,x
-	stz	$08,x
-	lda	$0A,x
+	sta	OBJ_FLAGS,x
+	stz	OBJ_X_SUB,x
+	lda	OBJ_X,x
 	cmp	#$0080
 	bcs	loc_01E1FF
 	lda	#$0000
@@ -2524,13 +2524,13 @@ loc_01E202:
 	rtl
 
 object_type_4E_state_13:
-	inc	$24,x
-	lda	$24,x
+	inc	OBJ_TIMER,x
+	lda	OBJ_TIMER,x
 	cmp	#$0258
 	bcc	loc_01E232
-	stz	$24,x
-	stz	$1A,x
-	inc	$12,x
+	stz	OBJ_TIMER,x
+	stz	OBJ_X_VEL,x
+	inc	OBJ_STATE,x
 	rtl
 loc_01E232:
 	lda	stage_frame_counter
@@ -2621,9 +2621,9 @@ object_type_4E_state_10:
 	rtl
 
 object_type_4E_state_15:
-	lda	$16,x
+	lda	OBJ_FLAGS,x
 	and	#$FFEF
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0002
 	sta	zp_02
 	lda	#$0020
@@ -2640,7 +2640,7 @@ object_type_4E_state_15:
 
 object_type_4E_state_17:
 	lda	#$000A
-	sta	$12,x
+	sta	OBJ_STATE,x
 	rtl
 
 ; Builds per-line BG2 horizontal offsets at $7E:A100 for a slanted line from
@@ -2909,7 +2909,7 @@ update_stage3_winged_bug:
 	inc	$32,x
 	lda	a:wram_1688
 	bne	loc_01E4FE
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01E52D
 loc_01E4FE:
 	lda	#$000C
@@ -2947,14 +2947,14 @@ tbl_stage3_winged_bug_states:
 	.addr	stage3_winged_bug_state_04
 
 stage3_winged_bug_state_01:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	bmi	loc_01E557
 	cmp	$30,x
 	bcc	loc_01E557
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#.loword(anim_05CAA1)
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 loc_01E557:
 	lda	$1E,x
 	bmi	loc_01E560
@@ -2978,12 +2978,12 @@ stage3_winged_bug_state_02:
 	clc
 	lda	$30,x
 	adc	#$FFF0
-	cmp	$0E,x
+	cmp	OBJ_Y,x
 	bcc	loc_01E58C
-	dec	$12,x
+	dec	OBJ_STATE,x
 	lda	#.loword(anim_05CAAF)
-	sta	$20,x
-	stz	$22,x
+	sta	OBJ_ANIM,x
+	stz	OBJ_ANIM_TIMER,x
 loc_01E58C:
 	lda	$1E,x
 	bpl	loc_01E595
@@ -3052,10 +3052,10 @@ stage3_winged_bug_state_03:
 stage3_winged_bug_state_04:
 	lda	stage_frame_mod8
 	bne	loc_01E629
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$FFFE
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	zp_02
 	lda	#$0007
 	sta	zp_04
@@ -3225,10 +3225,10 @@ stage3_winged_bug_count_down:
 
 ; Object type $56: stage 6. Not identified.
 update_object_type_56:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01E782
-	stz	$06,x
-	lda	$04,x
+	stz	OBJ_HP,x
+	lda	OBJ_FACING,x
 	tay
 	lda	a:data_05CB19,y
 	jml	f:start_dying_soldier_sound_0E
@@ -3249,15 +3249,15 @@ tbl_object_type_56_states:
 object_type_56_state_00:
 	ldy	difficulty
 	lda	#$001F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	a:object_type_56_hp,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$3400
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFE0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	jsr	a:pick_random_player_local
 	lda	a:$000A,y
 	cmp	$0A,x
@@ -3320,7 +3320,7 @@ object_type_56_state_01:
 	rtl
 
 object_type_56_state_02:
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bmi	loc_01E82B
 	cmp	#$0004
 	bcs	loc_01E837
@@ -3380,15 +3380,15 @@ loc_01E883:
 ; data_05CB23 + rnd frames one from the left, dropped onto the floor
 ; (drop_object_to_floor); none while a big enemy is near the right edge.
 update_alien_soldier_spawner:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01E89A
 	lda	#$0003
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0010
 	sta	$30,x
 	lda	#$0078
 	sta	$32,x
-	inc	$12,x
+	inc	OBJ_STATE,x
 	rtl
 loc_01E89A:
 	dec	$30,x
@@ -3490,10 +3490,10 @@ loc_01E940:
 
 ; Object type $24: stage 6 alien soldier (seen in the emulator).
 update_object_type_24:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01E95F
-	stz	$06,x
-	lda	$04,x
+	stz	OBJ_HP,x
+	lda	OBJ_FACING,x
 	tay
 	lda	a:data_05CB19,y
 	jml	f:start_dying_soldier_sound_0E
@@ -3514,15 +3514,15 @@ tbl_object_type_24_states:
 object_type_24_state_00:
 	ldy	difficulty
 	lda	#$001F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	a:object_type_56_hp,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$2400
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$0010
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFE0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	jsr	a:pick_random_player_local
 	lda	a:$000A,y
 	cmp	$0A,x
@@ -3572,7 +3572,7 @@ sub_01E9D8:
 ; Object type $3D: stage 3 mid-boss: the spiked machine climbing the girder
 ; (HP 160; seen in the emulator).
 update_stage3_spiked_climber:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
@@ -3603,19 +3603,19 @@ tbl_stage3_spiked_climber_states:
 	.addr	stage3_spiked_climber_state_13
 
 stage3_spiked_climber_state_01:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0060
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	lda	#$0002
 	sta	a:wram_1688
 	rtl
 
 stage3_spiked_climber_state_02:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	@return
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0060
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	phx
 	ldx	#.loword(data_059E95)
 	jsl	f:load_data_list
@@ -3627,7 +3627,7 @@ stage3_spiked_climber_state_00:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	loc_01EA58
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$FFF8
 	sta	a:boss_work_0
 	lda	#$0200
@@ -3640,19 +3640,19 @@ loc_01EA58:
 	rtl
 
 stage3_spiked_climber_state_03:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_01EA58
 	lda	#$0108
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0078
-	sta	$0A,x
+	sta	OBJ_X,x
 	lda	#$0001
-	sta	$16,x
-	inc	$12,x
+	sta	OBJ_FLAGS,x
+	inc	OBJ_STATE,x
 	lda	#$0008
 	sta	$3A,x
 	lda	#$FFFE
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	txa
 	sta	$3E,x
 	phx
@@ -3679,11 +3679,11 @@ stage3_spiked_climber_state_03:
 	rtl
 
 stage3_spiked_climber_state_04:
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$0080
 	bcs	stage3_spiked_climber_state_05
-	inc	$12,x
-	stz	$1E,x
+	inc	OBJ_STATE,x
+	stz	OBJ_Y_VEL,x
 
 stage3_spiked_climber_state_05:
 	lda	a:boss_work_6
@@ -3745,7 +3745,7 @@ stage3_spiked_climber_state_06:
 	bpl	@return
 	cmp	#$FF58
 	bcs	@return
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0002
 	sta	a:wram_1672
 	lda	#$0001
@@ -3760,7 +3760,7 @@ stage3_spiked_climber_state_06:
 stage3_spiked_climber_state_07:
 	lda	a:wram_035E
 	bne	loc_01EB69
-	inc	$12,x
+	inc	OBJ_STATE,x
 	stz	a:wram_035C
 	stz	a:wram_035E
 	stz	a:wram_0358
@@ -3791,7 +3791,7 @@ update_object_type_3E:
 update_stage3_spiked_climber_core:
 	lda	a:boss_work_6
 	bne	loc_01EBAD
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01EBAD
 	inc	a:boss_work_6
 	lda	#$0030
@@ -4024,8 +4024,8 @@ loc_01ED3E:
 ; Object type $59: not seen. Not identified.
 update_object_type_59:
 	lda	#$004E
-	sta	$24,x
-	inc	$12,x
+	sta	OBJ_TIMER,x
+	inc	OBJ_STATE,x
 	stz	zp_04
 	stx	zp_FC
 	ldx	#$03C0
@@ -4111,7 +4111,7 @@ stage3_spiked_climber_state_0A:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	loc_01EE44
-	inc	$12,x
+	inc	OBJ_STATE,x
 	inc	a:boss_work_0
 	rtl
 loc_01EE44:
@@ -4248,11 +4248,11 @@ object_type_5A_state_00:
 	clc
 	lda	a:wram_034A
 	adc	a:data_05CBAF,y
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
 	lda	a:wram_034E
 	adc	a:data_05CBC5,y
-	sta	$0E,x
+	sta	OBJ_Y,x
 
 object_type_5A_state_01:
 	ldy	$32,x
@@ -4264,12 +4264,12 @@ object_type_5A_state_01:
 	tay
 	sec
 	lda	(zp_00)
-	sbc	$0E,x
+	sbc	OBJ_Y,x
 	sec
 	sbc	a:data_05CBDF,y
 	beq	loc_01EF77
 	bpl	loc_01EF75
-	dec	$0E,x
+	dec	OBJ_Y,x
 	bra	loc_01EF77
 loc_01EF75:
 	inc	$0E,x
@@ -4305,9 +4305,9 @@ loc_01EF9E:
 
 object_type_5A_state_02:
 	lda	a:wram_060A
-	cmp	$0A,x
+	cmp	OBJ_X,x
 	bcs	@return
-	sta	$0A,x
+	sta	OBJ_X,x
 @return:
 	rtl
 
@@ -4332,7 +4332,7 @@ update_object_type_52:
 	rtl
 
 stage3_spiked_climber_state_0C:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	clc
 	lda	$30,x
 	adc	#$4280
@@ -4619,10 +4619,10 @@ loc_01F24A:
 	rtl
 
 stage3_spiked_climber_state_13:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	@return
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0002
 	sta	a:bg1_scroll_mode
 	lda	#$0007
@@ -4847,7 +4847,7 @@ spiked_climber_kill_players_outside:
 ; Object type $74: stage 4: enemy on a hover bike (HP 16; seen in the
 ; emulator).
 update_hoverbike_rider:
-	lda	$06,x
+	lda	OBJ_HP,x
 	bpl	loc_01F419
 	lda	#$0013
 	jsl	f:queue_sound
@@ -4886,38 +4886,38 @@ tbl_hoverbike_rider_states:
 	.addr	hoverbike_rider_state_06
 
 hoverbike_rider_state_00:
-	inc	$12,x
+	inc	OBJ_STATE,x
 	ldy	difficulty
 	lda	#$4013
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	a:hoverbike_rider_hp,y
-	sta	$06,x
+	sta	OBJ_HP,x
 	lda	#$0020
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFE0
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	ldy	$30,x
 	lda	a:data_05CD07,y
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$3800
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	rng_lo
 	and	#$003F
 	adc	#$0010
-	sta	$24,x
+	sta	OBJ_TIMER,x
 	and	#$0001
 	dec	a
 	eor	#$0000
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	rng_hi
 	and	#$3F00
 	adc	#$8000
-	sta	$1C,x
-	sta	$18,x
+	sta	OBJ_Y_VEL_SUB,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	rng_lo
 	and	#$0001
 	adc	#$FFFC
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	#$0028
 	sta	$32,x
 	lda	#$0004
@@ -4931,7 +4931,7 @@ hoverbike_rider_state_01:
 	lsr	a
 	inc	a
 	inc	a
-	sta	$12,x
+	sta	OBJ_STATE,x
 loc_01F49F:
 	jsr	a:hoverbike_rider_keep_in_bounds
 	rtl
@@ -4947,10 +4947,10 @@ hoverbike_rider_state_02:
 	rtl
 
 hoverbike_rider_state_04:
-	dec	$24,x
+	dec	OBJ_TIMER,x
 	bpl	loc_01F4BA
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 loc_01F4BA:
 	lda	stage_frame_odd
 	bne	@return
@@ -4975,27 +4975,27 @@ loc_01F4BA:
 
 hoverbike_rider_state_05:
 	sec
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	sbc	#$2000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	sbc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	bne	@return
 	lda	#.loword(anim_05CD0B)
-	sta	$20,x
-	inc	$12,x
+	sta	OBJ_ANIM,x
+	inc	OBJ_STATE,x
 @return:
 	rtl
 
 hoverbike_rider_state_06:
 	clc
-	lda	$18,x
+	lda	OBJ_X_VEL_SUB,x
 	adc	#$3000
-	sta	$18,x
-	lda	$1A,x
+	sta	OBJ_X_VEL_SUB,x
+	lda	OBJ_X_VEL,x
 	adc	#$0000
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	ldy	#$0400
 	lda	#.loword(anim_05C61E)
 	jsl	f:spawn_effect
@@ -5097,21 +5097,21 @@ hoverbike_rider_drop_bomb:
 
 ; Object type $76: stage 4: projectile. Not identified exactly.
 update_object_type_76:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01F608
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#$0001
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#.loword(anim_05B284)
-	sta	$20,x
+	sta	OBJ_ANIM,x
 	lda	#$3000
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$4000
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	lda	#$0008
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF8
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	rtl
 loc_01F608:
 	cmp	#$0002
@@ -5162,22 +5162,22 @@ loc_01F642:
 
 ; Object type $78: stage 4: projectile. Not identified exactly.
 update_object_type_78:
-	lda	$12,x
+	lda	OBJ_STATE,x
 	bne	loc_01F692
-	inc	$12,x
+	inc	OBJ_STATE,x
 	lda	#.loword(metasprite_06B13F)
-	sta	$00,x
+	sta	OBJ_SPRITE,x
 	lda	#$3000
-	sta	$02,x
+	sta	OBJ_ATTR,x
 	lda	#$0008
-	sta	$28,x
+	sta	OBJ_HITBOX_W,x
 	lda	#$FFF8
-	sta	$2A,x
+	sta	OBJ_HITBOX_H,x
 	lda	#$000F
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	lda	#$0004
-	sta	$1A,x
-	sta	$1E,x
+	sta	OBJ_X_VEL,x
+	sta	OBJ_Y_VEL,x
 loc_01F691:
 	rtl
 loc_01F692:
