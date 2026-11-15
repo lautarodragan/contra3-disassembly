@@ -6949,7 +6949,7 @@ loc_02C007:
 	sbc	$06,x
 	sta	a:$0006,y
 	bpl	loc_02C02C
-	jsl	f:sub_02EB75
+	jsl	f:td_score_shot_kill
 loc_02C02C:
 	sec
 	rts
@@ -8513,7 +8513,7 @@ sub_02CB27:
 	clc
 	adc	#$10C0
 	tay
-	jsl	f:sub_02EBBF
+	jsl	f:td_score_kill
 	ply
 	plx
 loc_02CB57:
@@ -8664,20 +8664,22 @@ loc_02CC32:
 	sta	$0E,x
 	ply
 	rts
-loc_02CC57:
+; Player 1: target arrow, shots vs enemies, body vs enemies, bomb vs map objects
+; (each map has its own set).
+td_run_p1_collisions:
 	rep	#$30
 	lda	a:topdown_map
 	cmp	#TD_MAP_STAGE2_BOSS
 	beq	loc_02CC79
 	cmp	#TD_MAP_STAGE5_BOSS
 	beq	loc_02CC89
-	jsr	a:sub_02D18D
-	jsr	a:sub_02CC99
-	jsr	a:sub_02CD67
+	jsr	a:td_aim_p1_target_arrow
+	jsr	a:td_p1_shots_vs_enemies
+	jsr	a:td_p1_vs_enemies
 	lda	a:wram_0F50
 	dec	a
 	bne	loc_02CC78
-	jsr	a:sub_02D106
+	jsr	a:td_p1_bomb_vs_map_objects
 loc_02CC78:
 	rtl
 loc_02CC79:
@@ -8695,11 +8697,12 @@ loc_02CC89:
 	lda	a:wram_0F50
 	dec	a
 	bne	loc_02CC98
-	jsr	a:sub_02D106
+	jsr	a:td_p1_bomb_vs_map_objects
 loc_02CC98:
 	rtl
 
-sub_02CC99:
+; Player 1's shots ($0480-) against the enemies ($0D40-$0EBF).
+td_p1_shots_vs_enemies:
 	ldy	#$0D40
 loc_02CC9C:
 	lda	a:$0016,y
@@ -8747,7 +8750,7 @@ loc_02CCC4:
 	sbc	$06,x
 	sta	a:$0006,y
 	bpl	loc_02CD03
-	jsl	f:sub_02EB75
+	jsl	f:td_score_shot_kill
 loc_02CD03:
 	txa
 	clc
@@ -8802,7 +8805,8 @@ loc_02CD58:
 loc_02CD66:
 	rts
 
-sub_02CD67:
+; Player 1's body against the enemies.
+td_p1_vs_enemies:
 	jsr	a:sub_02CE2C
 	lda	a:wram_0ED6
 	bmi	loc_02CD70
@@ -8843,7 +8847,7 @@ loc_02CD85:
 	dec	$06,x
 	bpl	loc_02CDC6
 	ldy	#$1F80
-	jsl	f:sub_02EBBF
+	jsl	f:td_score_kill
 	bra	loc_02CDC6
 loc_02CDC0:
 	lda	#$FFFF
@@ -9011,7 +9015,7 @@ loc_02CEBF:
 	bpl	loc_02CF09
 	; (not executed in the CDL traces)
 	ldy	#$0B40
-	jsl	f:sub_02EB75
+	jsl	f:td_score_shot_kill
 loc_02CF09:
 	lda	a:wram_0ACA
 	clc
@@ -9061,7 +9065,7 @@ loc_02CF3B:
 	bpl	loc_02CF78
 	; (not executed in the CDL traces)
 	ldy	#$0B80
-	jsl	f:sub_02EB75
+	jsl	f:td_score_shot_kill
 loc_02CF78:
 	ldy	#$0BC0
 loc_02CF7B:
@@ -9097,7 +9101,7 @@ loc_02CF7B:
 	sta	a:$0006,y
 	bpl	loc_02CFCA
 	; (not executed in the CDL traces)
-	jsl	f:sub_02EB75
+	jsl	f:td_score_shot_kill
 loc_02CFCA:
 	tya
 	clc
@@ -9145,7 +9149,7 @@ loc_02CFEC:
 	bpl	loc_02D036
 	ldx	#$0B80
 	ldy	#$1F80
-	jsl	f:sub_02EBBF
+	jsl	f:td_score_kill
 	bra	loc_02D036
 loc_02D030:
 	lda	#$FFFF
@@ -9178,7 +9182,7 @@ loc_02D039:
 	dec	$06,x
 	bpl	loc_02D07A
 	ldy	#$1F80
-	jsl	f:sub_02EBBF
+	jsl	f:td_score_kill
 	bra	loc_02D07A
 loc_02D074:
 	lda	#$FFFF
@@ -9219,7 +9223,7 @@ loc_02D0BD:
 	bpl	loc_02D0CC
 	ldx	#$0B40
 	ldy	#$1F80
-	jsl	f:sub_02EBBF
+	jsl	f:td_score_kill
 loc_02D0CC:
 	lda	a:wram_0AD6
 	bpl	loc_02D0FC
@@ -9249,7 +9253,8 @@ sub_02D0FF:
 	sta	zp_1E
 	bra	loc_02D10B
 
-sub_02D106:
+; Player 1's smart bomb against the map objects ($0AC0-).
+td_p1_bomb_vs_map_objects:
 	lda	#$0EC0
 	sta	zp_1E
 loc_02D10B:
@@ -9290,7 +9295,7 @@ loc_02D124:
 	sta	$06,x
 	bpl	loc_02D159
 	ldy	#$1F80
-	jsl	f:sub_02EBBF
+	jsl	f:td_score_kill
 loc_02D159:
 	txa
 	clc
@@ -9323,13 +9328,15 @@ loc_02D181:
 	bcc	loc_02D166
 	rts
 
-sub_02D18D:
+; Points the arrow (objects $0200/$0240) at the nearest map target of
+; $0AC0-$0D3F; when none is left, targets_left_flag = $FFFF.
+td_aim_p1_target_arrow:
 	lda	#$FFFF
 	sta	zp_18
 	stz	zp_1A
 	ldx	#$0AC0
 loc_02D197:
-	jsr	a:sub_02D1DD
+	jsr	a:td_check_nearest_target
 	txa
 	clc
 	adc	#$0040
@@ -9343,7 +9350,7 @@ sub_02D1A7:
 	sta	zp_18
 	stz	zp_1A
 	ldx	#$0AC0
-	jsr	a:sub_02D1DD
+	jsr	a:td_check_nearest_target
 	ldx	zp_1A
 	bne	loc_02D1BB
 	; (not executed in the CDL traces)
@@ -9368,7 +9375,8 @@ loc_02D1D4:
 	sta	$2E,x
 	bra	loc_02D206
 
-sub_02D1DD:
+; Keeps in zp_1A the target X nearer to player 1's view than zp_18.
+td_check_nearest_target:
 	lda	$10,x
 	beq	loc_02D205
 	lda	$0A,x
@@ -9542,7 +9550,7 @@ loc_02D2F9:
 	bpl	loc_02D343
 	; (not executed in the CDL traces)
 	ldy	#$0AC0
-	jsl	f:sub_02EB75
+	jsl	f:td_score_shot_kill
 loc_02D343:
 	ldy	#$0B40
 loc_02D346:
@@ -9577,7 +9585,7 @@ loc_02D346:
 	sbc	$06,x
 	sta	a:$0006,y
 	bpl	loc_02D395
-	jsl	f:sub_02EB9A
+	jsl	f:td_score_shot_kill_enemy
 loc_02D395:
 	tya
 	clc
@@ -9627,7 +9635,7 @@ loc_02D3E8:
 	bpl	loc_02D3F7
 	ldx	#$0AC0
 	ldy	#$1F80
-	jsl	f:sub_02EBBF
+	jsl	f:td_score_kill
 loc_02D3F7:
 	ldx	#$0B40
 loc_02D3FA:
@@ -9669,7 +9677,7 @@ loc_02D43B:
 	cpx	#$0EC0
 	bcc	loc_02D3FA
 	jmp	a:loc_02CDD1
-loc_02D449:
+td_run_p2_collisions:
 	rep	#$30
 	lda	a:topdown_map
 	cmp	#TD_MAP_STAGE2_BOSS
@@ -9753,7 +9761,7 @@ loc_02D4B6:
 	sbc	$06,x
 	sta	a:$0006,y
 	bpl	loc_02D4F5
-	jsl	f:sub_02EB75
+	jsl	f:td_score_shot_kill
 loc_02D4F5:
 	txa
 	clc
@@ -9850,7 +9858,7 @@ loc_02D577:
 	dec	$06,x
 	bpl	loc_02D5B8
 	ldy	#$1FC0
-	jsl	f:sub_02EBBF
+	jsl	f:td_score_kill
 	bra	loc_02D5B8
 loc_02D5B2:
 	lda	#$FFFF
@@ -10017,7 +10025,7 @@ loc_02D6B1:
 	sta	a:wram_0B46
 	bpl	loc_02D6FB
 	ldy	#$0B40
-	jsl	f:sub_02EB75
+	jsl	f:td_score_shot_kill
 loc_02D6FB:
 	lda	a:wram_0ACA
 	clc
@@ -10066,7 +10074,7 @@ loc_02D72D:
 	sta	a:wram_0B86
 	bpl	loc_02D76A
 	ldy	#$0B80
-	jsl	f:sub_02EB75
+	jsl	f:td_score_shot_kill
 loc_02D76A:
 	ldy	#$0BC0
 loc_02D76D:
@@ -10101,7 +10109,7 @@ loc_02D76D:
 	sbc	$06,x
 	sta	a:$0006,y
 	bpl	loc_02D7BC
-	jsl	f:sub_02EB75
+	jsl	f:td_score_shot_kill
 loc_02D7BC:
 	tya
 	clc
@@ -10148,7 +10156,7 @@ loc_02D7DE:
 	bpl	loc_02D828
 	ldx	#$0B80
 	ldy	#$1FC0
-	jsl	f:sub_02EBBF
+	jsl	f:td_score_kill
 	bra	loc_02D828
 loc_02D822:
 	lda	#$FFFF
@@ -10180,7 +10188,7 @@ loc_02D82B:
 	dec	$06,x
 	bpl	loc_02D86C
 	ldy	#$1FC0
-	jsl	f:sub_02EBBF
+	jsl	f:td_score_kill
 	bra	loc_02D86C
 loc_02D866:
 	lda	#$FFFF
@@ -10220,7 +10228,7 @@ loc_02D8AF:
 	bpl	loc_02D8BE
 	ldx	#$0B40
 	ldy	#$1FC0
-	jsl	f:sub_02EBBF
+	jsl	f:td_score_kill
 loc_02D8BE:
 	lda	a:wram_0AD6
 	bpl	loc_02D8EE
@@ -10292,7 +10300,7 @@ loc_02D916:
 	sta	$06,x
 	bpl	loc_02D94B
 	ldy	#$1FC0
-	jsl	f:sub_02EBBF
+	jsl	f:td_score_kill
 loc_02D94B:
 	txa
 	clc
@@ -10549,7 +10557,7 @@ loc_02DAEB:
 	sta	a:wram_0AC6
 	bpl	loc_02DB35
 	ldy	#$0AC0
-	jsl	f:sub_02EB75
+	jsl	f:td_score_shot_kill
 loc_02DB35:
 	ldy	#$0B40
 loc_02DB38:
@@ -10584,7 +10592,7 @@ loc_02DB38:
 	sbc	$06,x
 	sta	a:$0006,y
 	bpl	loc_02DB87
-	jsl	f:sub_02EB9A
+	jsl	f:td_score_shot_kill_enemy
 loc_02DB87:
 	tya
 	clc
@@ -10633,7 +10641,7 @@ loc_02DBDA:
 	bpl	loc_02DBE9
 	ldx	#$0AC0
 	ldy	#$1FC0
-	jsl	f:sub_02EBBF
+	jsl	f:td_score_kill
 loc_02DBE9:
 	ldx	#$0B40
 loc_02DBEC:
@@ -10675,7 +10683,9 @@ loc_02DC2D:
 	bcc	loc_02DBEC
 	jmp	a:loc_02D5C3
 
-sub_02DC3B:
+; Stage 2: block animations of the map (four blocks a frame through the
+; patch slots), and timers at $1880 that redraw a spot and spawn an object.
+td_update_stage2_map_events:
 	lda	a:wram_1800
 	ora	a:wram_1802
 	ora	a:wram_1804

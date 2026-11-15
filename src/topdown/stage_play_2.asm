@@ -4,10 +4,11 @@
 ; More code of the top-down stages (reached from the state handlers), and
 ; compute_m7_matrix, run by their NMI frame handler.
 
-sub_02E65F:
+; Runs the two smart bomb objects ($0F40 player 1, $0F80 player 2).
+td_update_bombs:
 	ldx	#$0F40
 loc_02E662:
-	jsr	a:sub_02E671
+	jsr	a:td_update_bomb
 	txa
 	clc
 	adc	#$0040
@@ -16,7 +17,9 @@ loc_02E662:
 	bcc	loc_02E662
 	rtl
 
-sub_02E671:
+; Smart bomb X (type 1, started by td_check_smart_bomb): grows its radius (+$14)
+; for $70 frames, then the slot is cleared.
+td_update_bomb:
 	lda	$10,x
 	dec	a
 	beq	loc_02E68E
@@ -596,7 +599,8 @@ sub_02EB43:
 	sta	zp_1A
 	rts
 
-sub_02EB56:
+; Collisions of one player per frame (alternating in 2P): shots, body, bomb, target arrow.
+td_run_collisions:
 	rep	#$30
 	lda	a:title_menu_cursor
 	beq	loc_02EB6B
@@ -605,70 +609,74 @@ sub_02EB56:
 	bcs	loc_02EB6B
 	lda	a:wram_0F12
 	beq	loc_02EB74
-	jml	f:loc_02D449
+	jml	f:td_run_p2_collisions
 loc_02EB6B:
 	lda	a:wram_0ED2
 	beq	loc_02EB74
-	jml	f:loc_02CC57
+	jml	f:td_run_p1_collisions
 loc_02EB74:
 	; (not executed in the CDL traces)
 	rtl
 
-sub_02EB75:
+; Adds the points of victim Y to the score of the owner of shot X ($1F80 for
+; player 1's shots below $0700, else $1FC0).
+td_score_shot_kill:
 	phx
 	phy
-	jsr	a:sub_02EB7D
+	jsr	a:td_score_shot_kill_2
 	ply
 	plx
 	rtl
 
-sub_02EB7D:
+td_score_shot_kill_2:
 	cpx	#$0700
 	bcs	loc_02EB8E
 	tyx
-	jsr	a:sub_02EBDD
+	jsr	a:td_get_kill_points
 	ldx	#$1F80
 	jsl	f:add_score
 	rts
 loc_02EB8E:
 	tyx
-	jsr	a:sub_02EBDD
+	jsr	a:td_get_kill_points
 	ldx	#$1FC0
 	jsl	f:add_score
 	rts
 
-sub_02EB9A:
+; As td_score_shot_kill, points from td_enemy_scores.
+td_score_shot_kill_enemy:
 	phx
 	phy
-	jsr	a:sub_02EBA2
+	jsr	a:td_score_shot_kill_enemy_2
 	ply
 	plx
 	rtl
 
-sub_02EBA2:
+td_score_shot_kill_enemy_2:
 	cpx	#$0700
 	bcs	loc_02EBB3
 	tyx
-	jsr	a:sub_02EBEA
+	jsr	a:td_get_enemy_points
 	ldx	#$1F80
 	jsl	f:add_score
 	rts
 loc_02EBB3:
 	; (not executed in the CDL traces)
 	tyx
-	jsr	a:sub_02EBEA
+	jsr	a:td_get_enemy_points
 	ldx	#$1FC0
 	jsl	f:add_score
 	rts
 
-sub_02EBBF:
+; Adds the points of victim X to the score block Y.
+td_score_kill:
 	phx
-	jsr	a:sub_02EBC5
+	jsr	a:td_score_kill_2
 	plx
 	rtl
 
-sub_02EBC5:
-	jsr	a:sub_02EBDD
+td_score_kill_2:
+	jsr	a:td_get_kill_points
 	tyx
 	jsl	f:add_score
 	rts
@@ -682,30 +690,34 @@ sub_02EBCE:
 
 sub_02EBD4:
 	; (not executed in the CDL traces)
-	jsr	a:sub_02EBEA
+	jsr	a:td_get_enemy_points
 	tyx
 	jsl	f:add_score
 	rts
 
-sub_02EBDD:
+; A = points of object X: td_enemy_scores for enemies ($0D40-), else td_map_object_scores.
+td_get_kill_points:
 	cpx	#$0D40
-	bcs	sub_02EBEA
+	bcs	td_get_enemy_points
 	lda	$10,x
 	asl	a
 	tax
-	lda	a:data_05E46E,x
+	lda	a:td_map_object_scores,x
 	rts
 
-sub_02EBEA:
+; A = points of object X by its type (td_enemy_scores).
+td_get_enemy_points:
 	lda	$10,x
 	asl	a
 	tax
-	lda	a:data_05E446,x
+	lda	a:td_enemy_scores,x
 	rts
 
-sub_02EBF2:
+; Sets up the top-down HDMA channels 2-7 and their tables at $7E:3C00/$7E:3E00
+; (window) and $7E:3860-$7E:38E0 (status bar / split screen), by 1P / 2P-A.
+init_topdown_hdma:
 	rep	#$30
-	jsr	a:sub_02ECB4
+	jsr	a:setup_topdown_hdma_channels
 	sep	#$20
 	.a8
 	lda	#$01
@@ -735,54 +747,56 @@ loc_02EC34:
 	ldx	#$E496
 	ldy	#$38E0
 	lda	#$001F
-	jsr	a:sub_02ECAE
+	jsr	a:copy_hdma_table
 	ldx	#$E49F
 	ldy	#$38C0
 	lda	#$001F
-	jsr	a:sub_02ECAE
+	jsr	a:copy_hdma_table
 	ldx	#$E4A8
 	ldy	#$38A0
 	lda	#$001F
-	jsr	a:sub_02ECAE
+	jsr	a:copy_hdma_table
 	ldx	#$E4B1
 	ldy	#$3880
 	lda	#$001F
-	jsr	a:sub_02ECAE
+	jsr	a:copy_hdma_table
 	ldx	#$E4BA
 	ldy	#$3860
 	lda	#$001F
-	jsr	a:sub_02ECAE
+	jsr	a:copy_hdma_table
 	rtl
 loc_02EC71:
 	ldx	#$E4C3
 	ldy	#$38E0
 	lda	#$001F
-	jsr	a:sub_02ECAE
+	jsr	a:copy_hdma_table
 	ldx	#$E4CC
 	ldy	#$38C0
 	lda	#$001F
-	jsr	a:sub_02ECAE
+	jsr	a:copy_hdma_table
 	ldx	#$E4D5
 	ldy	#$38A0
 	lda	#$001F
-	jsr	a:sub_02ECAE
+	jsr	a:copy_hdma_table
 	ldx	#$E4DE
 	ldy	#$3880
 	lda	#$001F
-	jsr	a:sub_02ECAE
+	jsr	a:copy_hdma_table
 	ldx	#$E4E7
 	ldy	#$3860
 	lda	#$001F
-	jsr	a:sub_02ECAE
+	jsr	a:copy_hdma_table
 	rtl
 
-sub_02ECAE:
+; MVN of A+1 bytes from $05:X to $7E:Y.
+copy_hdma_table:
 	phb
 	mvn	#$05, #$7E
 	plb
 	rts
 
-sub_02ECB4:
+; Channel parameters and table addresses of HDMA channels 2-7.
+setup_topdown_hdma_channels:
 	lda	#$0000
 	sta	a:MDMAEN
 	ldx	#$4370

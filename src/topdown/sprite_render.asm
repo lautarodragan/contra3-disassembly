@@ -1229,7 +1229,7 @@ loc_03E956:
 	jsr	a:draw_enemies
 	jsr	a:draw_topdown_players
 	jsr	a:project_map_objects
-	jsr	a:sub_03F161
+	jsr	a:project_td_bombs
 	sep	#$20
 	.a8
 	lda	#$05
@@ -1256,7 +1256,7 @@ loc_03E96E:
 	jsr	a:sub_03EDF6
 	jsr	a:sub_03EEAA
 	jsr	a:project_map_objects
-	jsr	a:sub_03F161
+	jsr	a:project_td_bombs
 	sep	#$20
 	.a8
 	lda	#$05
@@ -1286,7 +1286,7 @@ loc_03E9BC:
 	jsr	a:sub_03F202
 	jsr	a:sub_03F2E3
 	jsr	a:draw_topdown_players
-	jsr	a:sub_03F161
+	jsr	a:project_td_bombs
 	sep	#$20
 	.a8
 	lda	#$05
@@ -2359,7 +2359,8 @@ loc_03F155:
 	bcc	loc_03F0FA
 	rts
 
-sub_03F161:
+; Screen positions (+$38/+$3C) of the smart bombs ($8000 when out of range).
+project_td_bombs:
 	lda	a:wram_0EEC
 	bne	loc_03F188
 	ldx	#$0F40

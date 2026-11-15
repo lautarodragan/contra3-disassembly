@@ -102,17 +102,17 @@ stage2_state_play:
 	rtl
 loc_02809D:
 	jsl	f:update_topdown_players
-	jsl	f:sub_02E65F
+	jsl	f:td_update_bombs
 	jsl	f:update_map_objects
 	jsl	f:td_update_enemies
 	jsl	f:spawn_stage2_enemies
 	jsl	f:sub_02A9F8
 	jsl	f:update_topdown_shots
-	jsl	f:sub_02DC3B
+	jsl	f:td_update_stage2_map_events
 	jsl	f:update_screen_shake
 	jsl	f:animate_topdown_palettes
 	jsl	f:update_topdown_views
-	jsl	f:sub_02EB56
+	jsl	f:td_run_collisions
 	jsr	a:update_topdown_fade
 	jsr	a:check_topdown_game_over
 	bcs	loc_0280D8
@@ -186,7 +186,7 @@ stage2_state_boss_setup:
 	jsr	a:load_stage2_boss_assets
 	lda	#$0068
 	jsl	f:queue_sound
-	jsl	f:sub_02EBF2
+	jsl	f:init_topdown_hdma
 	jsl	f:init_topdown_irq
 	jsr	a:enable_topdown_display
 	stz	pause_disabled
@@ -200,14 +200,14 @@ stage2_state_boss:
 	cmp	#$0002
 	bcs	loc_028199
 	jsl	f:update_topdown_players
-	jsl	f:sub_02E65F
+	jsl	f:td_update_bombs
 	jsl	f:update_map_objects
 	jsl	f:sub_02A9F8
 	jsl	f:update_topdown_shots
 	jsl	f:update_screen_shake
 	jsl	f:animate_topdown_palettes
 	jsl	f:update_topdown_views
-	jsl	f:sub_02EB56
+	jsl	f:td_run_collisions
 loc_028199:
 	jsr	a:update_topdown_fade
 	jsr	a:check_topdown_game_over
@@ -298,7 +298,7 @@ stage5_state_play:
 	rtl
 loc_028235:
 	jsl	f:update_topdown_players
-	jsl	f:sub_02E65F
+	jsl	f:td_update_bombs
 	jsl	f:update_map_objects
 	jsl	f:td_update_enemies
 	jsl	f:spawn_stage5_enemies
@@ -308,7 +308,7 @@ loc_028235:
 	jsl	f:update_screen_shake
 	jsl	f:animate_topdown_palettes
 	jsl	f:update_topdown_views
-	jsl	f:sub_02EB56
+	jsl	f:td_run_collisions
 	jsr	a:update_topdown_fade
 	jsr	a:check_topdown_game_over
 	bcs	loc_028270
@@ -326,7 +326,7 @@ stage5_state_boss_setup:
 	jsr	a:load_stage5_boss_assets
 	lda	#$0068
 	jsl	f:queue_sound
-	jsl	f:sub_02EBF2
+	jsl	f:init_topdown_hdma
 	jsl	f:init_topdown_irq
 	jsr	a:enable_topdown_display
 	stz	pause_disabled
@@ -340,7 +340,7 @@ stage5_state_boss:
 	cmp	#$0002
 	bcs	loc_0282D1
 	jsl	f:update_topdown_players
-	jsl	f:sub_02E65F
+	jsl	f:td_update_bombs
 	jsl	f:sub_02AC09
 	jsl	f:sub_029C9E
 	jsl	f:sub_02A9F8
@@ -348,7 +348,7 @@ stage5_state_boss:
 	jsl	f:update_screen_shake
 	jsl	f:animate_topdown_palettes
 	jsl	f:update_topdown_views
-	jsl	f:sub_02EB56
+	jsl	f:td_run_collisions
 loc_0282D1:
 	jsr	a:update_topdown_fade
 	jsr	a:check_topdown_game_over
@@ -774,7 +774,7 @@ loc_0285E8:
 	lda	#$0002
 	sta	a:intro_phase
 	jsr	a:set_start_points
-	jsl	f:sub_02EBF2
+	jsl	f:init_topdown_hdma
 	sep	#$20
 	.a8
 	lda	#$FC
