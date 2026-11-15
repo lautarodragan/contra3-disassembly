@@ -16,5 +16,6 @@
 - [RAM map](ram-map.md)
 - [Routines](routines.md)
 - [Game flow](game-flow.md)
+- [Top-down stages](topdown.md)
 - [Objects](objects.md)
   - [Enemies and bosses: banks $02, $04, $1D](enemies-late.md)

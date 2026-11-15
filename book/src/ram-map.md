@@ -105,3 +105,14 @@ The variables of the game modes (`mode_result`, the per-mode work area
 `continues_left`, `stage_state`, `stage_layout`, `stage_checkpoint` and
 the opening's state are listed with their meaning in `src/ram.inc`; how
 they are used is in [Game flow](game-flow.md).
+
+## Top-down stage variables
+
+The Mode 7 view of each player (`p1_m7_center_x` ... `p1_view_brightness`,
+in the player stat blocks), the per-player top-down blocks at `$1500` /
+`$1540` (`p1_view_x`, `p1_start_x`, `p1_td_joy_held` ...) and the state
+variables (`topdown_state`, `topdown_map`, `intro_step`, `map_view_step`)
+are described in [Top-down stages](topdown.md). The top-down stages reuse
+`$1780-$17FF` (sprite graphics stream list) and `$1800-$1867` (Mode 7 block
+patches) and the tile attribute map at `$7E:4000` differently from the
+side-view stages, so those addresses keep their placeholder names.

@@ -66,3 +66,9 @@ a header comment in the source:
 | `update_player_window` | `$00:E7EF` | window HDMA of the barrier and the bomb |
 | `update_shake_side_view` | `$00:FF01` | screen shake |
 | `vector_length` | `$00:FF48` | `sqrt(x^2 + y^2)` of two 8-bit values |
+
+## Top-down stages
+
+The routines of stages 2 and 5 (`src/topdown/`) are described in
+[Top-down stages](topdown.md), starting from `run_topdown_stage`; each
+routine has a header comment in the source.
