@@ -82,6 +82,16 @@ they share:
 | `start_grenade_blast` | `$01:D2A1` | an object becomes a grenade blast (type `$1A`) |
 | `get_bg_tile_at_object` | `$00:E16E` | BG map entry under an object: floor/wall collision |
 | `find_free_shot_slot_up_to` | `$00:E122` | free player shot slot from X up to `zp_06` |
+| `solid_object_vs_object` | `$01:BA47` | push an object out of another one |
+| `pick_random_player` | `$01:E860` | Y = a present player, at random when both are |
+| `spawn_homing_missile` | `$01:A2F0` | enemy homing missile (type `$47`) |
+| `spawn_trail_chain` | `$01:A412` | a chain of type `$86` segments following a path |
+| `queue_vram_block` | `$00:FE76` | queue a 4-row tile block for the NMI (`$1800` list) |
+| `queue_vram_blocks` | `$00:FEA3` | queue several blocks (BG-drawn enemies) |
+| `update_song_change` | `$00:FDB4` | music change: fade, stop, load `song_change_set` |
+| `queue_sound_6E_throttled` | `$00:FD8D` | sound `$6E` at most every 12-19 frames (also `$41`, `$30`) |
+| `flash_palette_on_hit` | `$01:9E6E` | hit flash of BG-drawn bosses |
+| `drop_object_to_floor` | `$01:E916` | put an object on the first solid tile below y `$78` |
 
 ## Top-down stages
 

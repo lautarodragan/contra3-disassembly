@@ -55,7 +55,7 @@ when beaten:
   stores `OBJT_ENDING_SEQUENCE`: the ending is the last state machine of the
   final boss.
 
-Objects that should not be killed by shots have `OBJ_HP` = `$0FFF` (4095):
+Objects that should not be killed by shots have `OBJ_HP` = `HP_UNKILLABLE` (`$0FFF`, 4095):
 `update_cave_beast`, `update_snake_robot`; the part that takes damage is a
 separate object (`update_cave_beast_target`, `update_snake_robot_head`).
 
@@ -152,6 +152,25 @@ left the screen) allocates a shot slot (`find_free_shot_slot`) of type
 bursts into 16 sparks (`spawn_firework_sparks`) of one of the types
 `$17-$1A` (`update_spark_random`, `update_spark_radial`,
 `update_spark_radial_fast`), falling under gravity (`apply_spark_gravity`).
+
+## Shared helpers
+
+- Bosses drawn on BG2 flash by uploading a white palette while hit
+  (`boss_flash_palette`, `flash_palette_on_hit`), scroll BG2 to follow their
+  object (`winged_alien_set_bg2_scroll`, `cave_beast_set_bg2_scroll`,
+  `face_boss_place_parts`) and redraw parts of themselves through the VRAM
+  block queue (`queue_vram_blocks`).
+- Chains (the helicopter rope, the brain boss's chain, the skeleton robot's
+  eye fireballs, the claws of the last creature of the ending) are trail
+  chains: `spawn_trail_chain` creates type `$86` segments that replay the
+  positions of the segment before them from ring buffers at `$7E:E000`
+  (`trail_segment_follow`, `trail_pass_to_next`, `delete_trail_chain`).
+- The brain boss picks an attack in `boss_work_0` (0-7):
+  `tbl_brain_boss_attack_starts` starts it, `tbl_brain_boss_attacks` runs it
+  every frame (attacks 4 and 5 are step sequences,
+  `tbl_brain_boss_attack_4_steps`, `tbl_brain_boss_attack_5_steps`).
+- The winged alien runs a script of steps (`winged_alien_run_step`,
+  `tbl_winged_alien_steps`).
 
 ## HP and difficulty
 

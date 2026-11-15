@@ -17,7 +17,7 @@ animation scripts) in the same routines.
 | slots | use | run by |
 |---|---|---|
 | `$0200`, `$0240` | player 1, player 2 (`player1_obj`, `player2_obj`) | `update_players` (players), drawn by `draw_players` |
-| `$0280`, `$02C0` | two more slots | `update_objects_0280` |
+| `$0280`, `$02C0` | two low-priority slots: the players' hover bikes (type `$6D`, stage 4), effects and other objects that must be drawn behind everything | `update_objects_0280` (after the main list and the players, so their sprites come last in OAM) |
 | `$0300-$0ABF` | 30 slots: enemies, bosses, items, enemy bullets, effects | `update_objects` |
 
 New objects are allocated in `$0300-$077F`: `find_free_slot` (X) and
@@ -33,7 +33,8 @@ its `$40` bytes (`OBJF_DELETE`, `OBJF_OFFSCREEN_KILL`, `delete_self_and_linked`)
 | `$00` | `OBJ_SPRITE` | metasprite pointer (bank `$06`), drawn by `draw_metasprite`; 0 = not drawn |
 | `$02` | `OBJ_ATTR` | OAM attribute bits (flip, priority, palette) ORed into every sprite |
 | `$04` | `OBJ_FACING` | 0: animation frames show their first sprite, else the second (mirrored) one |
-| `$06` | `OBJ_HP` | hit points; below 0 = destroyed (also: not a target any more) |
+| `$04` | `OBJ_ANGLE` | the same field used as an 8-bit angle (`$00` up, `$40` right, `$80` down, `$C0` left) by objects moved with `set_velocity_from_angle` (larvae, the face boss's side heads) |
+| `$06` | `OBJ_HP` | hit points; below 0 = destroyed (also: not a target any more); `HP_UNKILLABLE` (`$0FFF`) for bodies whose damage goes to another object |
 | `$08`/`$0A` | `OBJ_X_SUB`/`OBJ_X` | x position (fraction, pixels), screen coordinates |
 | `$0C`/`$0E` | `OBJ_Y_SUB`/`OBJ_Y` | y position |
 | `$10` | `OBJ_TYPE` | type: index of the handler in `tbl_object_types`; 0 = free slot |
@@ -50,7 +51,7 @@ its `$40` bytes (`OBJF_DELETE`, `OBJF_OFFSCREEN_KILL`, `delete_self_and_linked`)
 | `$2A` | `OBJ_HITBOX_H` | hitbox height, negative: y from `OBJ_Y + OBJ_HITBOX_H` to `OBJ_Y` |
 | `$2C` | `OBJ_HITBOX_RIGHT` | `OBJ_X + OBJ_HITBOX_W`, kept up to date for targets |
 | `$2E` | `OBJ_HITBOX_TOP` | `OBJ_Y + OBJ_HITBOX_H`, likewise |
-| `$30-$3B` | | free for the handler |
+| `$30-$3B` | | free for the handler (recurring uses: `$3A` = the parameter given by the stage's spawn list, `$3E` = a linked slot: next segment of a trail chain, the swing a player hangs from) |
 | `$3C` | `OBJ_TOUCHED_BY` | slot of the player touching the object (`OBJF_TOUCH`) |
 
 `OBJ_FLAGS` bits:
@@ -137,22 +138,36 @@ by `run_player_state`). Identified so far (`PLAYER_STATE_*` in
 | `$03` | `PLAYER_STATE_JUMP` | `player_state_jump` | jumping (somersault) |
 | `$04` | `PLAYER_STATE_FALL` | `player_state_fall` | falling; also the drop-in after a respawn |
 | `$05` | | `player_state_climb_left` | climbing a wall on the left |
+| `$06` | `PLAYER_STATE_WAIT_MISSILE` | `respawn_on_missile` | stage 4 sky: waits for a rideable missile to be put on |
 | `$07` | `PLAYER_STATE_DYING` | `player_state_dying` | thrown back |
 | `$08` | `PLAYER_STATE_DEAD` | `player_state_dead` | lying dead, then a life is taken |
+| `$09` | `PLAYER_STATE_ENTER_TANK` | `player_state_enter_tank` | stage 1: dropping into the tank (type `$09`) |
+| `$0A` | `PLAYER_STATE_TANK` | `player_state_tank` | stage 1: driving the tank (`input_tank`) |
 | `$0B` | `PLAYER_STATE_SPIN_STANCE` | `player_state_spin_stance` | L+R held |
 | `$0C` | `PLAYER_STATE_SPIN_JUMP` | `player_state_jump` | spin jump, both weapons fire around |
+| `$0D` | `PLAYER_STATE_HANG_CLIMB` | `player_state_hang_climb` | hanging; a wall at the side starts climbing (seen in stage 6) |
 | `$0E` | `PLAYER_STATE_OUT` | `player_state_out` | waiting to respawn |
 | `$0F` | `PLAYER_STATE_RESPAWN` | `player_state_respawn` | placed by the respawn mode (`wram_1672`) |
+| `$10` | `PLAYER_STATE_HANG_OBJECT` | `player_state_hang_object` | hanging from a swing (types `$39`/`$3A`, stage 3) |
+| `$11` | `PLAYER_STATE_BIKE` | `player_state_bike` | stage 4: riding the hover bike (type `$6D` in slot `$0280`/`$02C0`) |
+| `$12` | `PLAYER_STATE_BIKE_INTRO` | `player_state_bike_intro` | stage 4: driving in on the bike |
+| `$13` | `PLAYER_STATE_ENDING` | `player_state_ending` | ending: posing on the helicopter |
+| `$14` | `PLAYER_STATE_ENDING_WAVE` | `player_state_ending_wave` | ending: pose replayed while Y is held |
 
-States `$06`, `$09`-`$0A`, `$0D` and `$10`-`$14` (scripted moves, other
-hanging variants) are not identified yet. Each state recomputes the body
+States 9-`$12` were seen in the emulator (player 1's state logged every 4
+frames by the random player, with a screenshot at the first frame of each),
+`$13`/`$14` are set by the ending sequence. The respawn mode `wram_1672`
+selects a placement in `tbl_respawn_placement` (`respawn_on_floor`,
+`respawn_on_right_wall`, `respawn_on_bike`, `respawn_on_missile`...) and the
+state from `respawn_states`. Each state recomputes the body
 box (`set_player_box_standing`, `set_player_box_jumping`,
 `set_player_box_hanging`...) and `PLAYER_CENTER_X`/`Y`, and aims and fires
 through a table indexed by `PLAYER_AIM` (`tbl_ground_aim`, `tbl_jump_aim`,
 `tbl_fall_aim`, `tbl_hang_aim`, `tbl_climb_right_aim`,
 `tbl_climb_left_aim`) whose entries choose a pose and call `fire_weapon`
 with the shot angle (`$00` up, `$20` right, `$40` down, `$60` left) and the
-muzzle position.
+muzzle position; the entries are named `<table>_aim_<direction>` (`ground_aim_up_right`,
+`hang_aim_none`...; `none` fires the way the player faces).
 
 ### Getting killed
 
@@ -221,6 +236,9 @@ crush: two shot types, damage 4 and 0.
   normal, a faster one for hard).
 - Respawn invulnerability: 96 frames (`respawn_player`);
   `make_players_invulnerable` is what bosses and stage ends use.
+- The stage 1 boss's body has 352 HP on every difficulty (`spawn_stage1_boss_parts`,
+  `lda #$0160 / sta a:wram_0406`); its shell has `stage1_boss_shell_hp` (128, 256,
+  and `$7FFF` on hard).
 - Unused debug code: `debug_player_keys` (Select + Up: difficulty, Select
   + X: lives, bombs and barrier `$8000`) has no caller.
 

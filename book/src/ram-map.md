@@ -108,6 +108,15 @@ The variables of the game modes (`mode_result`, the per-mode work area
 the opening's state are listed with their meaning in `src/ram.inc`; how
 they are used is in [Game flow](game-flow.md).
 
+## Object variables
+
+Besides the object slots, the object handlers use `song_change_state`,
+`song_change_mode`, `song_change_set`, `song_change_wait` (music changes,
+`update_song_change`), `boss_work_0`-`boss_work_7` (`$1636-$1645`: work
+variables of the big scripted object of the moment: stage 1 boss, spiked
+climber, ending...), `tank_driver` (stage 1 tank) and `trail_buffers_used`
+(which `$7E:E000` ring buffers trail chains use).
+
 ## Top-down stage variables
 
 The Mode 7 view of each player (`p1_m7_center_x` ... `p1_view_brightness`,
