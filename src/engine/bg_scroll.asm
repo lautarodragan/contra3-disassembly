@@ -1353,7 +1353,7 @@ init_stage_spawns:
 	lda	stage_number
 	asl	a
 	tay
-	lda	a:data_05947A,y
+	lda	a:ptrs_stage_spawn_pages,y
 	sta	a:spawn_pages
 	rtl
 
