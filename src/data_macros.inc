@@ -11,6 +11,8 @@
 ; that address in bank $05.
 ; The items of the top-down stages (animate_td_item) use the same format with
 ; metasprites in bank $07 and OAM attributes in the third word.
+; The enemies of the top-down stages (td_animate_enemy, labels td_anim_*) use it
+; with a frame number in the second word and OAM attributes in the third.
 ; ---------------------------------------------------------------------------
 .macro anim_frame frames, sprite, sprite_facing
 	.word	frames

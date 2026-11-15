@@ -3047,15 +3047,15 @@ data_05CB43:
 	; CDL: read by update_objects, stage3_spiked_climber_state_05; partly not accessed
 	.byte	$00, $03, $00, $02, $40, $00
 anim_05CB49:
-	.byte	$03, $00, $22, $B9, $F9, $B8
-	.byte	$03, $00, $43, $B9, $1F, $BB
-	.byte	$03, $00, $8B, $BA, $F6, $BA
-	.byte	$03, $00, $AC, $BA, $D5, $BA
-	.byte	$03, $00, $D5, $BA, $AC, $BA
-	.byte	$03, $00, $F6, $BA, $8B, $BA
-	.byte	$03, $00, $1F, $BB, $43, $B9
-	.byte	$03, $00, $F9, $B8, $22, $B9
-	.byte	$49, $CB
+	anim_frame	$0003, metasprite_06B922, metasprite_06B8F9
+	anim_frame	$0003, metasprite_06B943, metasprite_06BB1F
+	anim_frame	$0003, metasprite_06BA8B, metasprite_06BAF6
+	anim_frame	$0003, metasprite_06BAAC, metasprite_06BAD5
+	anim_frame	$0003, metasprite_06BAD5, metasprite_06BAAC
+	anim_frame	$0003, metasprite_06BAF6, metasprite_06BA8B
+	anim_frame	$0003, metasprite_06BB1F, metasprite_06B943
+	anim_frame	$0003, metasprite_06B8F9, metasprite_06B922
+	anim_goto	anim_05CB49
 data_05CB7B:
 	; CDL: read by stage3_spiked_climber_state_0A
 	.byte	$A0, $00, $80, $00, $80, $00, $80, $00, $40, $00, $80, $00, $40, $00, $80, $00
@@ -3503,27 +3503,46 @@ td_spawn_offsets_x:
 	.byte	$B7, $FF, $BB, $FF, $C0, $FF, $C4, $FF, $C9, $FF, $CD, $FF, $D2, $FF, $D6, $FF
 	.byte	$DB, $FF, $E0, $FF, $E4, $FF, $E9, $FF, $EE, $FF, $F2, $FF, $F7, $FF, $FC, $FF
 	; CDL: read by td_animate_enemy
-	.byte	$02, $00, $00, $00, $00, $0E, $02, $00, $01, $00, $00, $0E, $02, $00, $02, $00
-	.byte	$00, $0E, $02, $00, $03, $00, $00, $0E, $02, $00, $04, $00, $00, $0E, $02, $00
-	.byte	$05, $00, $00, $0E, $02, $00, $06, $00, $00, $0E, $02, $00, $07, $00, $00, $0E
-	.byte	$02, $00, $08, $00, $00, $0E, $02, $00, $09, $00, $00, $0E, $02, $00, $0A, $00
-	.byte	$00, $0E, $00, $00, $0A, $00, $00, $0E
+td_anim_05D45A:
+	anim_frame	$0002, $0000, $0E00
+	anim_frame	$0002, $0001, $0E00
+	anim_frame	$0002, $0002, $0E00
+	anim_frame	$0002, $0003, $0E00
+	anim_frame	$0002, $0004, $0E00
+	anim_frame	$0002, $0005, $0E00
+	anim_frame	$0002, $0006, $0E00
+	anim_frame	$0002, $0007, $0E00
+	anim_frame	$0002, $0008, $0E00
+	anim_frame	$0002, $0009, $0E00
+	anim_frame	$0002, $000A, $0E00
+	anim_end	$000A, $0E00
 td_runner_hp:
 	; CDL: read by td_animate_enemy, td_runner_state_2
-	.byte	$00, $00, $02, $00, $04, $00, $08, $00, $00, $00, $00, $00, $08, $00, $01, $00
-	.byte	$00, $00, $08, $00, $00, $00, $00, $00, $08, $00, $02, $00, $00, $00, $A8, $D4
+	.byte	$00, $00, $02, $00, $04, $00
+td_anim_05D4A8:
+	anim_frame	$0008, $0000, $0000
+	anim_frame	$0008, $0001, $0000
+	anim_frame	$0008, $0000, $0000
+	anim_frame	$0008, $0002, $0000
+	anim_goto	td_anim_05D4A8
 td_gunner_hp:
 	; CDL: read by td_gunner_state_2
 	.byte	$00, $00, $02, $00, $04, $00
 td_gunner_fire_delays:
 	; CDL: read by td_animate_enemy, td_gunner_state_3; partly not accessed
-	.byte	$40, $00, $20, $00, $10, $00, $02, $00, $00, $00, $00, $02, $00, $00, $01, $00
-	.byte	$00, $02
+	.byte	$40, $00, $20, $00, $10, $00
+td_anim_05D4CE:
+	anim_frame	$0002, $0000, $0200
+	anim_end	$0001, $0200
 hatch_turret_hp:
 	; CDL: read by td_animate_enemy, hatch_turret_state_1, update_hatch_turret_sweep
-	.byte	$10, $00, $20, $00, $40, $00, $08, $00, $00, $00, $00, $02, $08, $00, $01, $00
-	.byte	$00, $02, $08, $00, $00, $00, $00
-	.byte	$02, $08, $00, $02, $00, $00, $02, $E0, $D4
+	.byte	$10, $00, $20, $00, $40, $00
+td_anim_05D4E0:
+	anim_frame	$0008, $0000, $0200
+	anim_frame	$0008, $0001, $0200
+	anim_frame	$0008, $0000, $0200
+	anim_frame	$0008, $0002, $0200
+	anim_goto	td_anim_05D4E0
 data_05D4FA:
 	; CDL: read by hatch_turret_aim_state_2
 	.byte	$02, $00, $04, $00, $08, $00
@@ -3551,12 +3570,18 @@ hatch_turret_sweep_fire_masks:
 	.byte	$03, $00, $03, $00, $01, $00
 td_centipede_unused_hp:
 	; CDL: read by td_animate_enemy; partly not accessed
-	.byte	$10, $00, $40, $00, $80, $00, $04, $00, $00, $00, $00, $04, $04, $00, $01, $00
-	.byte	$00, $04, $30, $D5
+	.byte	$10, $00, $40, $00, $80, $00
+td_anim_05D530:
+	anim_frame	$0004, $0000, $0400
+	anim_frame	$0004, $0001, $0400
+	anim_goto	td_anim_05D530
 td_bug_centipede_hp:
 	; CDL: read by td_animate_enemy, td_bug_centipede_state_2
-	.byte	$10, $00, $40, $00, $80, $00, $03, $00, $00, $00, $00, $0E, $03, $00, $01, $00
-	.byte	$00, $0E, $44, $D5
+	.byte	$10, $00, $40, $00, $80, $00
+td_anim_05D544:
+	anim_frame	$0003, $0000, $0E00
+	anim_frame	$0003, $0001, $0E00
+	anim_goto	td_anim_05D544
 td_centipede_bug_hp:
 	; CDL: read by td_centipede_bug_state_0
 	.byte	$02, $00, $04, $00, $08, $00
@@ -3571,15 +3596,25 @@ td_centipede_fire_masks:
 	.byte	$FF, $FF, $01, $00, $00, $00
 td_nest_crawler_hp:
 	; CDL: read by td_animate_enemy, td_nest_crawler_state_0
-	.byte	$02, $00, $10, $00, $20, $00, $08, $00, $00, $00, $00, $00, $08, $00, $01, $00
-	.byte	$00, $00, $08, $00, $00, $00, $00, $00, $08, $00, $02, $00, $00, $00, $70, $D5
+	.byte	$02, $00, $10, $00, $20, $00
+td_anim_05D570:
+	anim_frame	$0008, $0000, $0000
+	anim_frame	$0008, $0001, $0000
+	anim_frame	$0008, $0000, $0000
+	anim_frame	$0008, $0002, $0000
+	anim_goto	td_anim_05D570
 data_05D58A:
 	; CDL: read by td_nest_crawler_state_2
 	.byte	$00, $01, $80, $00, $20, $00
 td_crawler_hp:
 	; CDL: read by td_animate_enemy, td_crawler_state_2
-	.byte	$02, $00, $04, $00, $08, $00, $08, $00, $00, $00, $00, $02, $08, $00, $01, $00
-	.byte	$00, $02, $08, $00, $00, $00, $00, $02, $08, $00, $02, $00, $00, $02, $96, $D5
+	.byte	$02, $00, $04, $00, $08, $00
+td_anim_05D596:
+	anim_frame	$0008, $0000, $0200
+	anim_frame	$0008, $0001, $0200
+	anim_frame	$0008, $0000, $0200
+	anim_frame	$0008, $0002, $0200
+	anim_goto	td_anim_05D596
 td_spitter_hp:
 	; CDL: read by td_spitter_state_2; partly not accessed
 	.byte	$02, $00, $04, $00, $08, $00

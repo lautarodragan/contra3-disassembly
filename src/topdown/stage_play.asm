@@ -2208,7 +2208,7 @@ td_start_explosion:
 	sta	$10,x
 	lda	#$0009
 	sta	$00,x
-	lda	#$D45A
+	lda	#.loword(td_anim_05D45A)
 	sta	$28,x
 	stz	$22,x
 	stz	$16,x
@@ -2499,7 +2499,7 @@ td_runner_state_2:
 	sta	$06,x
 	lda	#$0006
 	sta	$00,x
-	lda	#$D4A8
+	lda	#.loword(td_anim_05D4A8)
 	sta	$28,x
 	lda	#$2000
 	sta	$02,x
@@ -2567,7 +2567,7 @@ td_gunner_state_2:
 	sta	$06,x
 	lda	#$0006
 	sta	$00,x
-	lda	#$D4E0
+	lda	#.loword(td_anim_05D4E0)
 	sta	$28,x
 	lda	#$2200
 	sta	$02,x
@@ -2586,7 +2586,7 @@ loc_029F87:
 loc_029F93:
 	lda	#$A000
 	sta	$16,x
-	lda	#$D4E0
+	lda	#.loword(td_anim_05D4E0)
 	sta	$28,x
 	lda	#$0040
 	sta	$24,x
@@ -2643,7 +2643,7 @@ loc_029FFB:
 	cmp	$24,x
 	bne	@return
 	jsl	f:td_fire_gun_bullet
-	lda	#$D4CE
+	lda	#.loword(td_anim_05D4CE)
 	sta	$28,x
 	stz	$22,x
 	rtl
@@ -2720,7 +2720,7 @@ loc_02A077:
 	sta	$06,x
 	lda	#$A000
 	sta	$16,x
-	lda	#$D4E0
+	lda	#.loword(td_anim_05D4E0)
 	sta	$28,x
 	lda	#$2200
 	sta	$02,x
@@ -2818,7 +2818,7 @@ loc_02A12A:
 	sta	$06,x
 	lda	#$A000
 	sta	$16,x
-	lda	#$D4E0
+	lda	#.loword(td_anim_05D4E0)
 	sta	$28,x
 	lda	#$2200
 	sta	$02,x
@@ -2888,7 +2888,7 @@ loc_02A1AC:
 	sta	$06,x
 	lda	#$A000
 	sta	$16,x
-	lda	#$D4E0
+	lda	#.loword(td_anim_05D4E0)
 	sta	$28,x
 	stz	$24,x
 	lda	#$2200
@@ -3015,7 +3015,7 @@ td_centipede_unused_state_2:
 	sta	a:wram_0E90
 	lda	#$2400
 	sta	$02,x
-	lda	#$D530
+	lda	#.loword(td_anim_05D530)
 	sta	$28,x
 	jsr	a:td_centipede_init_trail
 loc_02A2BB:
@@ -3171,7 +3171,7 @@ td_centipede_segment_state_0:
 	sta	$00,x
 	lda	#$2400
 	sta	$02,x
-	lda	#$D530
+	lda	#.loword(td_anim_05D530)
 	sta	$28,x
 	lda	a:wram_0DC4
 	sta	$04,x
@@ -3273,7 +3273,7 @@ td_bug_centipede_state_2:
 	sta	$04,x
 	lda	#$2E00
 	sta	$02,x
-	lda	#$D544
+	lda	#.loword(td_anim_05D544)
 	sta	$28,x
 	lda	#$0007
 	sta	$00,x
@@ -3386,7 +3386,7 @@ td_bug_centipede_segment_state_0:
 	sta	$00,x
 	lda	#$2E00
 	sta	$02,x
-	lda	#$D544
+	lda	#.loword(td_anim_05D544)
 	sta	$28,x
 	lda	a:wram_0DC4
 	sta	$04,x
@@ -3448,7 +3448,7 @@ td_centipede_bug_state_0:
 	stz	$0C,x
 	lda	#$0007
 	sta	$00,x
-	lda	#$D544
+	lda	#.loword(td_anim_05D544)
 	sta	$28,x
 	lda	#$2E00
 	sta	$02,x
@@ -3562,7 +3562,7 @@ td_centipede_state_2:
 	sta	$04,x
 	lda	#$2400
 	sta	$02,x
-	lda	#$D530
+	lda	#.loword(td_anim_05D530)
 	sta	$28,x
 	lda	#$0007
 	sta	$00,x
@@ -3712,7 +3712,7 @@ td_nest_crawler_state_0:
 	stz	$0C,x
 	lda	#$0005
 	sta	$00,x
-	lda	#$D570
+	lda	#.loword(td_anim_05D570)
 	sta	$28,x
 	lda	#$0000
 	sta	$02,x
@@ -3812,7 +3812,7 @@ td_crawler_state_2:
 	sta	$06,x
 	lda	#$0005
 	sta	$00,x
-	lda	#$D596
+	lda	#.loword(td_anim_05D596)
 	sta	$28,x
 	lda	#$2200
 	sta	$02,x
@@ -3876,7 +3876,7 @@ td_spitter_state_2:
 	sta	$06,x
 	lda	#$0005
 	sta	$00,x
-	lda	#$D570
+	lda	#.loword(td_anim_05D570)
 	sta	$28,x
 	lda	#$2000
 	sta	$02,x
