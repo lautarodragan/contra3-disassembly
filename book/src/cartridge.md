@@ -62,12 +62,23 @@ build reproduces it as it is, since it must match the original.
 
 Because the developer ID at `$FFDA` is not `$33`, there is no extended
 header at `$FFB0-$FFBF`. In fact the code of `sub_00FF48` ends with an `RTL`
-at `$00:FFB1`, inside that area, and `$FFB2-$FFBF` are `$FF`.
+at `$00:FFB1`, inside that area (the CDL confirms that it runs), and
+`$FFB2-$FFBF` are `$FF` that nothing reads.
 
-In `src/bank_00.asm` the header and the vectors are plain `.byte` lines
-right after that routine. (`tools/disasm.py` has an annotated header
-writer, but it only uses it when the data before the header starts exactly
-at `$FFB0`, which isn't the case here.)
+In `src/bank_00.asm` the header starts at `rom_header` (`$00:FFC0`) with
+one line per field and a comment that decodes it:
+
+```
+rom_header:
+	.byte	"CONTRA3 THE ALIEN WAR"	; $FFC0 title (21 bytes, $FFC0-$FFD4)
+	.byte	$53	; $FFD5 map mode: invalid. "S" is the 22nd character of the title, ...
+	.byte	$00	; $FFD6 cartridge type: ROM only
+	...
+	.word	$0C3C	; $FFDE checksum: 16-bit sum of every ROM byte (matches)
+vectors:
+	.word	$FFFF	; $FFE0 native: reserved
+	...
+```
 
 ## Vectors
 
@@ -94,8 +105,12 @@ disassembler's recursive descent.
 disables interrupts, and sets the stack pointer to `$1DFF`,
 the direct page to `$0000` and the data bank to `$05`.
 
-One label sits inside the vector table: `data_00FFF6`, the unused emulation
-vector. It exists because the generator turned an immediate pair in
-`sub_01AE95` (`ldy #.loword(data_00FFF6)` and `lda #^data_00FFF6`) into a
-pointer. Whether that really is a pointer is not known yet: `$FFF6` could
-just as well be the number -10.
+The vector table is at `vectors` in `src/bank_00.asm`, written as
+`.addr reset`, `.addr nmi` and `.addr irq` (and `.word $FFFF` for the
+reserved ones).
+
+Before the CDL pass a generated label, `data_00FFF6`, sat inside the vector
+table: the generator had taken `ldy #$FFF6` and `lda #$0000` in
+`sub_01AE95` for the two halves of a pointer. The CDL showed that the code
+runs but nothing ever reads `$00:FFF6` as data, so it is a number (most
+likely -10) and the label is gone.

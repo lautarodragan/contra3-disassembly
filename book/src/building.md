@@ -45,6 +45,25 @@ Any other result is a failure and `make` exits non-zero. Every change to
 something other than the original (the cheats, see the
 [Introduction](introduction.md#goals)).
 
+## In the emulator
+
+The hash check proves that the ROM is the original; once the source starts
+changing the ROM on purpose (milestone 3 moves code and data around), it is
+not enough. The private companion repository has a test suite that boots a
+ROM in the snes9x libretro core and compares screenshots of the intro, the
+title, the attract demos and the first 600 frames of every stage with
+goldens taken from the original. To run it on `build/contra3.sfc`:
+
+```sh
+make emu-test PRIVATE=path/to/contra3-disassembly-private
+```
+
+`PRIVATE` defaults to `../contra3-disassembly-private`. The target builds
+the ROM (without requiring it to match the hash) and runs `make test
+ROM=...` in that repository, which needs Python 3 with pytest and Pillow and
+builds the core the first time (`make cores` there; it needs network access
+to GitHub). It takes about a minute.
+
 ## CI
 
 `.github/workflows/build.yml` runs on every push to `main`, on pull requests

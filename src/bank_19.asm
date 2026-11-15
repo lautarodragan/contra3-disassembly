@@ -5,6 +5,7 @@
 
 .segment "BANK19"
 
+	; CDL: read by sub_0094A9
 	.byte	$B1, $1A, $FF, $E7, $85, $30, $00, $58, $30, $FF, $EB, $81, $10, $E1, $93, $D6
 	.byte	$1B, $BF, $7D, $FF, $41, $6B, $0D, $6F, $1C, $76, $1C, $3F, $0E, $3B, $0E, $00
 	.byte	$20, $3D, $A0, $41, $01, $82, $10, $04, $AF, $14, $0A, $0A, $80, $80, $80, $80
@@ -2035,7 +2036,8 @@
 	.byte	$0B, $53, $81, $3D, $0C, $5A, $02, $B1, $03, $DB, $03, $F5, $82, $60, $70, $00
 	.byte	$C5, $86, $20, $38, $90, $18, $50, $1C, $00, $07, $82, $80, $84, $08, $CD, $00
 	.byte	$D5, $03, $2D, $83, $E7, $FF, $E3, $04, $16, $81, $7B, $DF, $FF, $DF, $FF, $DF
-	.byte	$FF, $DF, $FF, $DD, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte	$FF, $DF, $FF, $DD, $FF
+	; CDL: not accessed
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
@@ -2053,3 +2055,4 @@
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF

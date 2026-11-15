@@ -26,6 +26,8 @@ labels (`name:`, also cheap locals `@name:`), constants (`name = ...`,
 `.enum`, `.union` names, segment names (`.segment "BANK00"`), and the
 MEMORY/SEGMENTS names of the ld65 config.
 
+Double-quoted strings inside code blocks are text and are not checked.
+
 Lower-case words without an underscore (`reset`, `nmi`) cannot be told apart
 from English and are not checked, nor are `.directives` or `$addresses`.
 
@@ -49,7 +51,8 @@ IGNORE_FILE = ROOT / "book" / "names-ignore.txt"
 
 # files and directories the build makes, which a fresh checkout doesn't have
 GENERATED = {"build", "build/contra3.sfc", "build/contra3.map", "build/contra3.lbl",
-             "build/main.o", "book/book"}
+             "build/main.o", "book/book",
+             "build/disasm", "build/disasm/src", "build/disasm/disasm_report.md"}
 
 AUTO_LABEL = re.compile(r"^(?:sub|loc|tbl|ptrs|data)_[0-9A-F]{6}$")
 IDENT = re.compile(r"@?[A-Za-z_][A-Za-z0-9_]*")
@@ -162,7 +165,8 @@ def main():
             if line.lstrip().startswith("```"):
                 in_block = not in_block
                 continue
-            spans = [line] if in_block else re.findall(r"`([^`]+)`", line)
+            # in code blocks, string literals ("CONTRA3 THE ALIEN WAR") are text
+            spans = [re.sub(r'"[^"]*"', " ", line)] if in_block else re.findall(r"`([^`]+)`", line)
             for span in spans:
                 for chunk in re.split(r"[\s,()\[\]{}|=+*<>;\"']+", span):
                     if not chunk:

@@ -36,6 +36,7 @@ reset:
 	lda	a:$1E0A
 	cmp	#$4A3E
 	bne	loc_008044
+	; (not executed in the CDL traces)
 	lda	a:$1E0C
 	cmp	#$4E49
 	bne	loc_008044
@@ -756,6 +757,7 @@ sub_0085F3:
 loc_008604:
 	lda	$6A
 	beq	loc_00860C
+	; (not executed in the CDL traces)
 	stz	$6A
 	bra	loc_008618
 loc_00860C:
@@ -796,6 +798,7 @@ loc_00862C:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_00863D:
+	; (not executed in the CDL traces)
 	php
 	rep	#$20
 	pha
@@ -833,6 +836,7 @@ sub_00865C:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008670:
+	; (not executed in the CDL traces)
 	lda	#$0001
 	sta	$5A
 loc_008675:
@@ -867,6 +871,7 @@ sub_00868F:
 	stx	$56
 	cpx	$54
 	bne	loc_0086A8
+	; (not executed in the CDL traces)
 	inc	$54
 loc_0086A8:
 	plp
@@ -1018,6 +1023,7 @@ sub_0086AC:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008819:
+	; (not executed in the CDL traces)
 	rep	#$30
 	phb
 	lda	#$0000
@@ -1032,6 +1038,7 @@ sub_008819:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008830:
+	; (not executed in the CDL traces)
 	rep	#$30
 	phb
 	lda	#$0000
@@ -1046,6 +1053,7 @@ sub_008830:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008847:
+	; (not executed in the CDL traces)
 	rep	#$30
 	phb
 	lda	#$0000
@@ -1073,6 +1081,7 @@ sub_00885E:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008875:
+	; (not executed in the CDL traces)
 	rep	#$30
 	phb
 	lda	#$0000
@@ -1087,6 +1096,7 @@ sub_008875:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_00888C:
+	; (not executed in the CDL traces)
 	rep	#$30
 	phb
 	lda	#$0000
@@ -1179,6 +1189,7 @@ sub_008914:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_00892B:
+	; (not executed in the CDL traces)
 	rep	#$30
 	phb
 	lda	#$0000
@@ -1206,6 +1217,7 @@ sub_008942:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008959:
+	; (not executed in the CDL traces)
 	rep	#$30
 	phb
 	lda	#$0000
@@ -1230,6 +1242,7 @@ sub_008959:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008986:
+	; (not executed in the CDL traces)
 	rep	#$10
 	rep	#$20
 	ldy	#$0003
@@ -1279,6 +1292,7 @@ loc_0089CB:
 	rtl
 
 sub_0089E4:
+	; (not executed in the CDL traces)
 	rep	#$30
 	sta	$00
 	stx	$02
@@ -1354,6 +1368,7 @@ loc_008A4C:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008A58:
+	; (not executed in the CDL traces)
 	rep	#$20
 	rep	#$10
 	lda	$00
@@ -1391,6 +1406,7 @@ loc_008A84:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008A92:
+	; (not executed in the CDL traces)
 	phx
 	tyx
 	jsl	f:sub_008A9A
@@ -1398,6 +1414,7 @@ sub_008A92:
 	rtl
 
 sub_008A9A:
+	; (not executed in the CDL traces)
 	stz	$04,x
 	stz	$08,x
 	stz	$0A,x
@@ -1434,6 +1451,7 @@ sub_008A9A:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008ADB:
+	; (not executed in the CDL traces)
 	sep	#$10
 	.i8
 	ldx	$00
@@ -1498,6 +1516,7 @@ loc_008B3E:
 	lda	$20,x
 	cmp	#$3030
 	bne	loc_008B5C
+	; (not executed in the CDL traces)
 	lda	$3E
 	bne	loc_008B5C
 	jmp	a:loc_0080A3
@@ -1510,6 +1529,7 @@ loc_008B5C:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008B64:
+	; (not executed in the CDL traces)
 	rep	#$10
 	rep	#$20
 	lda	$3E
@@ -1537,6 +1557,7 @@ loc_008B91:
 	jml	f:sub_00ABA3
 
 sub_008BA1:
+	; (not executed in the CDL traces)
 	lda	#$0200
 	sta	$68
 	rtl
@@ -1605,7 +1626,9 @@ irq:
 	.a16
 	ldx	$44
 	jsr	(.loword(tbl_008C0E),x)
+	.a8
 	rep	#$30
+	.a16
 	plb
 	pld
 	pla
@@ -1618,6 +1641,7 @@ tbl_008C0E:
 	.addr	sub_008C8C
 
 sub_008C14:
+	; (not executed in the CDL traces)
 	rts
 
 sub_008C15:
@@ -1764,6 +1788,7 @@ sub_008D44:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008D6B:
+	; (not executed in the CDL traces)
 	ldx	$4E
 	lda	#$0000
 	sta	f:$7E0000,x
@@ -1783,6 +1808,7 @@ sub_008D6B:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008D95:
+	; (not executed in the CDL traces)
 	phb
 	sep	#$20
 	.a8
@@ -1853,6 +1879,7 @@ sub_008E0A:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008E17:
+	; (not executed in the CDL traces)
 	rep	#$10
 	ldy	#$0FFF
 	ldx	#$0000
@@ -1861,6 +1888,7 @@ sub_008E17:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008E24:
+	; (not executed in the CDL traces)
 	rep	#$10
 	ldy	#$0FFF
 	ldx	#$1000
@@ -1869,6 +1897,7 @@ sub_008E24:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008E31:
+	; (not executed in the CDL traces)
 	rep	#$10
 	ldy	#$03FF
 	ldx	#$5800
@@ -1877,6 +1906,7 @@ sub_008E31:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008E3E:
+	; (not executed in the CDL traces)
 	rep	#$10
 	ldy	#$03FF
 	ldx	#$5800
@@ -1903,6 +1933,7 @@ loc_008E60:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008E67:
+	; (not executed in the CDL traces)
 	ldx	#$6000
 	ldy	#$4000
 	stx	$08
@@ -1967,6 +1998,7 @@ loc_008E96:
 	rtl
 
 sub_008EE0:
+	; (not executed in the CDL traces)
 	ldy	$08
 	lda	a:$0000,y
 	and	#$00FF
@@ -2001,6 +2033,7 @@ sub_008EE0:
 	jml	f:sub_008F71
 
 sub_008F40:
+	; (not executed in the CDL traces)
 	sep	#$20
 	.a8
 	lda	#$05
@@ -2032,6 +2065,7 @@ sub_008F40:
 	rtl
 
 sub_008F71:
+	; (not executed in the CDL traces)
 	asl	a
 	asl	a
 	asl	a
@@ -2085,6 +2119,7 @@ sub_008F71:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008FE8:
+	; (not executed in the CDL traces)
 	stx	$F4
 	inc	$F6
 	jsl	f:sub_009024
@@ -2092,6 +2127,7 @@ sub_008FE8:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008FF2:
+	; (not executed in the CDL traces)
 	ldx	$F4
 	beq	loc_009012
 	jsl	f:sub_008D41
@@ -2117,6 +2153,7 @@ sub_009015:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_00901E:
+	; (not executed in the CDL traces)
 	stz	$02
 	sta	$04
 	bra	loc_009032
@@ -2125,6 +2162,7 @@ sub_009024:
 	lda	#$0001
 	sta	$02
 	bra	loc_00902D
+	; CDL: not accessed
 	.byte	$64, $02
 loc_00902D:
 	lda	#$2000
@@ -2142,6 +2180,7 @@ loc_009038:
 	jsl	f:sub_008D41
 	lda	$F6
 	beq	loc_00904B
+	; (not executed in the CDL traces)
 	sty	$F2
 loc_00904B:
 	stz	$02
@@ -2165,6 +2204,7 @@ loc_00906E:
 	jsl	f:sub_008DA5
 	lda	$F6
 	beq	loc_00904D
+	; (not executed in the CDL traces)
 	ldx	$00
 	stx	$F4
 	lda	$04
@@ -2224,7 +2264,7 @@ loc_0090DF:
 	rep	#$20
 	.a16
 	jsl	f:sub_0085A9
-	ldx	$18
+	ldx	$18	; $1318 (D=$1300)
 	lda	f:$050000,x
 	cmp	#$FFFF
 	beq	loc_0090F6
@@ -2233,10 +2273,10 @@ loc_0090DF:
 loc_0090F6:
 	jsl	f:sub_0085C1
 loc_0090FA:
-	stz	$16
-	stz	$12
-	stz	$10
-	stz	$1C
+	stz	$16	; $1316 (D=$1300) / $1356 (D=$1340) / $1F16 (D=$1F00)
+	stz	$12	; $1312 (D=$1300) / $1352 (D=$1340) / $1F12 (D=$1F00)
+	stz	$10	; $1310 (D=$1300) / $1350 (D=$1340) / $1F10 (D=$1F00)
+	stz	$1C	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
 loc_009102:
 	pld
 	plp
@@ -2245,7 +2285,7 @@ loc_009105:
 	.a8
 	rep	#$20
 	.a16
-	inc	$12
+	inc	$12	; $1312 (D=$1300)
 	bra	loc_009118
 
 sub_00910B:
@@ -2255,26 +2295,26 @@ sub_00910B:
 	ldy	#$1300
 	phy
 	pld
-	lda	$26
+	lda	$26	; $1326 (D=$1300)
 	bne	loc_009102
 loc_009118:
-	lda	$12
+	lda	$12	; $1312 (D=$1300)
 	beq	loc_009102
-	lda	$10
+	lda	$10	; $1310 (D=$1300)
 	bne	loc_009133
-	ldx	$18
+	ldx	$18	; $1318 (D=$1300)
 	lda	f:$050000,x
 	cmp	#$FFFF
 	beq	loc_0090FA
-	sta	$22
+	sta	$22	; $1322 (D=$1300)
 	inx
 	inx
-	stx	$18
-	stz	$1C
+	stx	$18	; $1318 (D=$1300)
+	stz	$1C	; $131C (D=$1300)
 loc_009133:
-	stz	$26
+	stz	$26	; $1326 (D=$1300)
 	jsl	f:sub_0094A9
-	inc	$26
+	inc	$26	; $1326 (D=$1300)
 	bra	loc_009102
 
 sub_00913D:
@@ -2285,25 +2325,25 @@ sub_00913D:
 	ldy	#$1300
 	phy
 	pld
-	lda	$26
+	lda	$26	; $1326 (D=$1300)
 	beq	loc_009102
-	stz	$26
+	stz	$26	; $1326 (D=$1300)
 	jsl	f:sub_009172
 	brl	loc_009102
 
 sub_009155:
 	rep	#$20
-	stz	$10
-	ldx	$18
+	stz	$10	; $1310 (D=$1300)
+	ldx	$18	; $1318 (D=$1300)
 	lda	f:$050000,x
-	sta	$22
+	sta	$22	; $1322 (D=$1300)
 	inx
 	inx
-	stx	$18
+	stx	$18	; $1318 (D=$1300)
 loc_009165:
 	jsl	f:sub_00949C
 	jsl	f:sub_009172
-	ldx	$10
+	ldx	$10	; $1310 (D=$1300)
 	bne	loc_009165
 	rtl
 
@@ -2316,31 +2356,31 @@ sub_009172:
 	stx	a:VMAIN
 	ldx	#$01
 	stx	a:DMAP0
-	lda	$22
+	lda	$22	; $1322 (D=$1300)
 	sta	a:VMADDL
-	lda	$0C
+	lda	$0C	; $130C (D=$1300)
 	sec
-	sbc	$1A
+	sbc	$1A	; $131A (D=$1300)
 	beq	loc_0091B6
 	lsr	a
 	clc
-	adc	$22
-	sta	$22
+	adc	$22	; $1322 (D=$1300)
+	sta	$22	; $1322 (D=$1300)
 	ldx	#$18
 	stx	a:BBAD0
 loc_009198:
-	lda	$03
+	lda	$03	; $1303 (D=$1300)
 	clc
-	adc	$1A
+	adc	$1A	; $131A (D=$1300)
 	sta	a:A1T0L
-	ldx	$05
+	ldx	$05	; $1305 (D=$1300)
 	stx	a:A1B0
-	lda	$0C
+	lda	$0C	; $130C (D=$1300)
 	sec
-	sbc	$1A
+	sbc	$1A	; $131A (D=$1300)
 	sta	a:DAS0L
-	lda	$0C
-	sta	$1A
+	lda	$0C	; $130C (D=$1300)
+	sta	$1A	; $131A (D=$1300)
 	ldx	#$01
 	stx	a:MDMAEN
 loc_0091B6:
@@ -2363,7 +2403,7 @@ loc_0091CD:
 	rep	#$20
 	.a16
 	jsl	f:sub_0085A9
-	ldx	$18
+	ldx	$18	; $1318 (D=$1300)
 	lda	f:$050000,x
 	cmp	#$FFFF
 	bne	loc_0091E1
@@ -2376,10 +2416,11 @@ loc_0091E7:
 	rep	#$20
 	.a16
 	jsl	f:sub_0085A9
-	ldx	$18
+	ldx	$18	; $1318 (D=$1300)
 	lda	f:$050000,x
 	cmp	#$FFFF
 	bne	loc_0091FB
+	; (not executed in the CDL traces)
 	brl	loc_0090F6
 loc_0091FB:
 	jsl	f:sub_00921E
@@ -2387,33 +2428,33 @@ loc_0091FB:
 
 sub_009201:
 	rep	#$20
-	stz	$10
-	ldx	$18
+	stz	$10	; $1310 (D=$1300)
+	ldx	$18	; $1318 (D=$1300)
 	lda	f:$050000,x
-	sta	$22
+	sta	$22	; $1322 (D=$1300)
 	inx
 	inx
-	stx	$18
+	stx	$18	; $1318 (D=$1300)
 loc_009211:
 	jsl	f:sub_00949C
 	jsl	f:sub_009246
-	ldx	$10
+	ldx	$10	; $1310 (D=$1300)
 	bne	loc_009211
 	rtl
 
 sub_00921E:
 	rep	#$20
-	stz	$10
-	ldx	$18
+	stz	$10	; $1310 (D=$1300)
+	ldx	$18	; $1318 (D=$1300)
 	lda	f:$050000,x
-	sta	$22
+	sta	$22	; $1322 (D=$1300)
 	inx
 	inx
-	stx	$18
+	stx	$18	; $1318 (D=$1300)
 loc_00922E:
 	jsl	f:sub_00949C
 	jsl	f:sub_00923B
-	ldx	$10
+	ldx	$10	; $1310 (D=$1300)
 	bne	loc_00922E
 	rtl
 
@@ -2438,17 +2479,17 @@ loc_00924F:
 	stx	a:VMAIN
 	ldx	#$00
 	stx	a:DMAP0
-	lda	$22
+	lda	$22	; $1322 (D=$1300)
 	sta	a:VMADDL
-	lda	$0C
+	lda	$0C	; $130C (D=$1300)
 	sec
-	sbc	$1A
+	sbc	$1A	; $131A (D=$1300)
 	bne	loc_009266
 	brl	loc_0091B6
 loc_009266:
 	clc
-	adc	$22
-	sta	$22
+	adc	$22	; $1322 (D=$1300)
+	sta	$22	; $1322 (D=$1300)
 	sty	a:BBAD0
 	jmp	a:loc_009198
 
@@ -2456,19 +2497,19 @@ sub_009271:
 	.i16
 	phy
 	pld
-	stz	$10
-	stz	$12
-	stz	$1C
-	sta	$03
+	stz	$10	; $1310 (D=$1300) / $1350 (D=$1340) / $1F10 (D=$1F00)
+	stz	$12	; $1312 (D=$1300) / $1352 (D=$1340) / $1F12 (D=$1F00)
+	stz	$1C	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
+	sta	$03	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
 	sep	#$20
 	.a8
 	lda	#$7E
-	sta	$05
+	sta	$05	; $1305 (D=$1300) / $1345 (D=$1340) / $1F05 (D=$1F00)
 	lda	f:$050000,x
-	sta	$16
+	sta	$16	; $1316 (D=$1300) / $1356 (D=$1340) / $1F16 (D=$1F00)
 	inx
-	stx	$18
-	lda	$16
+	stx	$18	; $1318 (D=$1300) / $1358 (D=$1340) / $1F18 (D=$1F00)
+	lda	$16	; $1316 (D=$1300) / $1356 (D=$1340) / $1F16 (D=$1F00)
 	rep	#$20
 	.a16
 	rts
@@ -2485,7 +2526,7 @@ loc_00928F:
 loc_0092A0:
 	rep	#$20
 	.a16
-	ldx	$18
+	ldx	$18	; $1358 (D=$1340)
 	lda	f:$050000,x
 	cmp	#$FFFF
 	bne	loc_0092B0
@@ -2497,7 +2538,7 @@ loc_0092B6:
 	.a8
 	rep	#$20
 	.a16
-	inc	$12
+	inc	$12	; $1352 (D=$1340)
 	bra	loc_0092C3
 loc_0092BC:
 	php
@@ -2506,30 +2547,30 @@ loc_0092BC:
 	phy
 	pld
 loc_0092C3:
-	lda	$12
+	lda	$12	; $1352 (D=$1340)
 	bne	loc_0092CA
 	brl	loc_009102
 loc_0092CA:
-	lda	$10
+	lda	$10	; $1350 (D=$1340)
 	bne	loc_0092EF
-	ldx	$18
+	ldx	$18	; $1358 (D=$1340)
 	lda	f:$050000,x
 	cmp	#$FFFF
 	bne	loc_0092DC
 	brl	loc_0090FA
 loc_0092DC:
-	sta	$20
+	sta	$20	; $1360 (D=$1340)
 	inx
 	inx
 	sep	#$20
 	.a8
 	lda	f:$050000,x
-	sta	$22
+	sta	$22	; $1362 (D=$1340)
 	inx
-	stx	$18
+	stx	$18	; $1358 (D=$1340)
 	rep	#$20
 	.a16
-	stz	$1C
+	stz	$1C	; $135C (D=$1340)
 loc_0092EF:
 	jsl	f:sub_0094A9
 	jsl	f:sub_009324
@@ -2537,47 +2578,47 @@ loc_0092EF:
 
 sub_0092FA:
 	rep	#$20
-	stz	$10
-	stz	$1C
-	ldx	$18
+	stz	$10	; $1350 (D=$1340)
+	stz	$1C	; $135C (D=$1340)
+	ldx	$18	; $1358 (D=$1340)
 	lda	f:$050000,x
-	sta	$20
+	sta	$20	; $1360 (D=$1340)
 	inx
 	inx
 	sep	#$20
 	.a8
 	lda	f:$050000,x
-	sta	$22
+	sta	$22	; $1362 (D=$1340)
 	inx
-	stx	$18
+	stx	$18	; $1358 (D=$1340)
 	rep	#$20
 loc_009317:
 	.a16
 	jsl	f:sub_00949C
 	jsl	f:sub_009324
-	ldx	$10
+	ldx	$10	; $1350 (D=$1340)
 	bne	loc_009317
 	rtl
 
 sub_009324:
-	ldy	$1A
-	cpy	$0C
+	ldy	$1A	; $135A (D=$1340)
+	cpy	$0C	; $134C (D=$1340)
 	beq	loc_009340
 	sep	#$20
 loc_00932C:
 	.a8
-	lda	[$03],y
-	sta	[$20]
-	ldx	$20
+	lda	[$03],y	; $1343 (D=$1340)
+	sta	[$20]	; $1360 (D=$1340)
+	ldx	$20	; $1360 (D=$1340)
 	inx
-	stx	$20
+	stx	$20	; $1360 (D=$1340)
 	iny
-	cpy	$0C
+	cpy	$0C	; $134C (D=$1340)
 	bne	loc_00932C
 	rep	#$20
 	.a16
-	lda	$0C
-	sta	$1A
+	lda	$0C	; $134C (D=$1340)
+	sta	$1A	; $135A (D=$1340)
 loc_009340:
 	rtl
 
@@ -2588,14 +2629,15 @@ sub_009341:
 	lda	#$2C00
 	jsr	a:sub_009271
 	and	#$0001
-	sta	$16
+	sta	$16	; $1F16 (D=$1F00)
 	beq	loc_009356
+	; (not executed in the CDL traces)
 	brl	loc_009102
 loc_009356:
 	jsl	f:sub_00937B
 loc_00935A:
 	rep	#$20
-	ldx	$18
+	ldx	$18	; $1F18 (D=$1F00)
 	lda	f:$050000,x
 	cmp	#$FFFF
 	bne	loc_00936A
@@ -2612,7 +2654,7 @@ loc_009375:
 sub_00937B:
 	rep	#$20
 	lda	#$BBAA
-	stz	$20
+	stz	$20	; $1F20 (D=$1F00)
 loc_009382:
 	cmp	a:APUIO0
 	bne	loc_009382
@@ -2629,7 +2671,7 @@ loc_009382:
 	rep	#$20
 	.a16
 	lda	#$0001
-	sta	$20
+	sta	$20	; $1F20 (D=$1F00)
 	rtl
 
 sub_0093A6:
@@ -2642,56 +2684,56 @@ sub_0093AC:
 	.a16
 	rep	#$20
 	rep	#$10
-	lda	$22
+	lda	$22	; $1F22 (D=$1F00)
 	sta	a:APUIO2
 	sep	#$20
 	.a8
 	lda	#$01
 	sta	a:APUIO1
-	lda	$20
+	lda	$20	; $1F20 (D=$1F00)
 	inc	a
 	sta	a:APUIO0
 	jsr	a:sub_0093A6
-	stz	$20
+	stz	$20	; $1F20 (D=$1F00)
 	rep	#$20
 	.a16
 	rtl
 
 sub_0093CA:
 	rep	#$20
-	ldy	$1A
-	cpy	$0C
+	ldy	$1A	; $1F1A (D=$1F00)
+	cpy	$0C	; $1F0C (D=$1F00)
 	beq	loc_0093ED
 	sep	#$20
 loc_0093D4:
 	.a8
-	lda	[$03],y
+	lda	[$03],y	; $1F03 (D=$1F00)
 	iny
 	sta	a:APUIO1
 	xba
-	lda	$20
+	lda	$20	; $1F20 (D=$1F00)
 	rep	#$20
 	.a16
-	inc	$20
+	inc	$20	; $1F20 (D=$1F00)
 	sta	a:APUIO0
 	sep	#$20
 	.a8
 	jsr	a:sub_0093A6
-	cpy	$0C
+	cpy	$0C	; $1F0C (D=$1F00)
 	bne	loc_0093D4
 loc_0093ED:
-	lda	$10
+	lda	$10	; $1F10 (D=$1F00)
 	beq	loc_0093F8
 	rep	#$20
 	.a16
-	lda	$0C
-	sta	$1A
+	lda	$0C	; $1F0C (D=$1F00)
+	sta	$1A	; $1F1A (D=$1F00)
 	rtl
 loc_0093F8:
 	.a8
 	rep	#$20
 	.a16
-	ldx	$18
+	ldx	$18	; $1F18 (D=$1F00)
 	lda	f:$050000,x
 	cmp	#$FFFF
 	bne	loc_009408
@@ -2701,14 +2743,14 @@ loc_009408:
 	rtl
 loc_00940B:
 	rep	#$20
-	lda	$22
+	lda	$22	; $1F22 (D=$1F00)
 	sta	a:APUIO2
 	sep	#$20
 	.a8
-	inc	$20
+	inc	$20	; $1F20 (D=$1F00)
 	lda	#$00
 	sta	a:APUIO1
-	lda	$20
+	lda	$20	; $1F20 (D=$1F00)
 	sta	a:APUIO0
 	jsr	a:sub_0093A6
 	stz	a:APUIO0
@@ -2718,82 +2760,82 @@ loc_00940B:
 
 sub_009429:
 	rep	#$20
-	stz	$10
-	stz	$1C
-	ldx	$18
+	stz	$10	; $1F10 (D=$1F00)
+	stz	$1C	; $1F1C (D=$1F00)
+	ldx	$18	; $1F18 (D=$1F00)
 	lda	f:$050002,x
-	sta	$22
+	sta	$22	; $1F22 (D=$1F00)
 	lda	f:$050004,x
-	sta	$00
+	sta	$00	; $1F00 (D=$1F00)
 	sep	#$20
 	.a8
 	lda	f:$050006,x
-	sta	$02
+	sta	$02	; $1F02 (D=$1F00)
 	rep	#$20
 	.a16
 	lda	f:$050007,x
-	sta	$06
+	sta	$06	; $1F06 (D=$1F00)
 	txa
 	clc
 	adc	#$0009
-	sta	$18
+	sta	$18	; $1F18 (D=$1F00)
 	jsl	f:sub_0093AC
 	ldy	#$0000
 	sep	#$20
 loc_00945D:
 	.a8
-	lda	[$00],y
+	lda	[$00],y	; $1F00 (D=$1F00)
 	iny
 	sta	a:APUIO1
 	xba
-	lda	$20
+	lda	$20	; $1F20 (D=$1F00)
 	rep	#$20
 	.a16
-	inc	$20
+	inc	$20	; $1F20 (D=$1F00)
 	sta	a:APUIO0
 	sep	#$20
 	.a8
 	jsr	a:sub_0093A6
-	cpy	$06
+	cpy	$06	; $1F06 (D=$1F00)
 	bne	loc_00945D
 	brl	loc_0093F8
 
 sub_009479:
 	.a16
 	rep	#$20
-	stz	$10
-	stz	$1C
-	ldx	$18
+	stz	$10	; $1F10 (D=$1F00)
+	stz	$1C	; $1F1C (D=$1F00)
+	ldx	$18	; $1F18 (D=$1F00)
 	lda	f:$050000,x
-	sta	$22
+	sta	$22	; $1F22 (D=$1F00)
 	inx
 	inx
-	stx	$18
+	stx	$18	; $1F18 (D=$1F00)
 	jsl	f:sub_0093AC
 loc_00948F:
 	jsl	f:sub_00949C
 	jsl	f:sub_0093CA
-	ldx	$10
+	ldx	$10	; $1F10 (D=$1F00)
 	bne	loc_00948F
 	rtl
 
 sub_00949C:
 	rep	#$20
 	lda	#$0400
-	sta	$1C
-	stz	$0C
-	stz	$1A
+	sta	$1C	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
+	stz	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	stz	$1A	; $131A (D=$1300) / $135A (D=$1340) / $1F1A (D=$1F00)
 	bra	loc_0094BA
 
 sub_0094A9:
 	rep	#$20
-	lda	$1C
+	lda	$1C	; $131C (D=$1300) / $135C (D=$1340)
 	and	#$03FF
-	sta	$0C
-	sta	$1A
+	sta	$0C	; $130C (D=$1300) / $134C (D=$1340)
+	sta	$1A	; $131A (D=$1300) / $135A (D=$1340)
 	clc
 	adc	#$0080
-	sta	$1C
+	sta	$1C	; $131C (D=$1300) / $135C (D=$1340)
 loc_0094BA:
 	sep	#$20
 	.a8
@@ -2803,41 +2845,41 @@ loc_0094BA:
 	plb
 	rep	#$30
 	.a16
-	lda	$10
+	lda	$10	; $1310 (D=$1300) / $1350 (D=$1340) / $1F10 (D=$1F00)
 	bne	loc_009503
-	inc	$10
-	ldx	$18
+	inc	$10	; $1310 (D=$1300) / $1350 (D=$1340) / $1F10 (D=$1F00)
+	ldx	$18	; $1318 (D=$1300) / $1358 (D=$1340) / $1F18 (D=$1F00)
 	lda	f:$050000,x
-	sta	$00
+	sta	$00	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
 	inx
 	inx
 	sep	#$20
 	.a8
 	lda	f:$050000,x
-	sta	$02
+	sta	$02	; $1302 (D=$1300) / $1342 (D=$1340) / $1F02 (D=$1F00)
 	inx
-	stx	$18
+	stx	$18	; $1318 (D=$1300) / $1358 (D=$1340) / $1F18 (D=$1F00)
 	ldy	#$0000
-	stz	$14
-	sty	$0C
+	stz	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
+	sty	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
 	rep	#$20
 	.a16
-	lda	[$00],y
-	sta	$08
+	lda	[$00],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
+	sta	$08	; $1308 (D=$1300) / $1348 (D=$1340) / $1F08 (D=$1F00)
 	iny
 	iny
-	sty	$06
+	sty	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
 	ldy	#$03FE
 	lda	#$0000
 loc_0094F5:
-	sta	[$03],y
+	sta	[$03],y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
 	dey
 	dey
 	bpl	loc_0094F5
 	bra	loc_009503
 loc_0094FD:
 	.a8
-	stz	$10
+	stz	$10	; $1310 (D=$1300) / $1350 (D=$1340) / $1F10 (D=$1F00)
 loc_0094FF:
 	plb
 	rep	#$20
@@ -2846,7 +2888,7 @@ loc_0094FF:
 loc_009503:
 	sep	#$20
 	.a8
-	lda	$14
+	lda	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
 	beq	loc_009526
 	cmp	#$01
 	bne	loc_009510
@@ -2865,12 +2907,12 @@ loc_00951E:
 	cmp	#$05
 	beq	loc_009565
 loc_009526:
-	ldy	$06
-	cpy	$08
+	ldy	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	cpy	$08	; $1308 (D=$1300) / $1348 (D=$1340) / $1F08 (D=$1F00)
 	bcs	loc_0094FD
-	lda	[$00],y
+	lda	[$00],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
 	iny
-	sty	$06
+	sty	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
 	cmp	#$80
 	bcs	loc_009538
 	brl	loc_0095D4
@@ -2886,146 +2928,147 @@ loc_009546:
 	and	#$1F
 	clc
 	adc	#$02
-	sta	$0E
+	sta	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
 loc_00954D:
-	dec	$0E
+	dec	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
 	bpl	loc_009554
 	brl	loc_009620
 loc_009554:
 	lda	#$05
-	sta	$14
+	sta	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
 	lda	#$00
-	ldy	$0C
-	sta	($03),y
+	ldy	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	sta	($03),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
 	iny
-	sty	$0C
-	cpy	$1C
+	sty	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	cpy	$1C	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
 	bcs	loc_0094FF
 loc_009565:
 	lda	#$04
-	sta	$14
-	ldy	$06
-	lda	[$00],y
+	sta	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
+	ldy	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	lda	[$00],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
 	iny
-	sty	$06
-	ldy	$0C
-	sta	($03),y
+	sty	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	ldy	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	sta	($03),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
 	iny
-	sty	$0C
-	cpy	$1C
+	sty	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	cpy	$1C	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
 	bcc	loc_00954D
 	bra	loc_0094FF
 loc_00957D:
 	pha
-	ldy	$06
-	lda	[$00],y
+	ldy	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	lda	[$00],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
 	iny
-	sty	$06
+	sty	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
 	bra	loc_00958A
 loc_009587:
 	pha
 	lda	#$00
 loc_00958A:
-	sta	$0A
+	sta	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
 	lda	#$03
-	sta	$14
+	sta	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
 	pla
 	and	#$1F
 	clc
 	adc	#$02
-	sta	$0E
+	sta	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
 loc_009598:
-	lda	$0A
-	ldy	$0C
+	lda	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
+	ldy	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
 loc_00959C:
-	dec	$0E
+	dec	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
 	bmi	loc_0095AC
-	sta	($03),y
+	sta	($03),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
 	iny
-	cpy	$1C
+	cpy	$1C	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
 	bcc	loc_00959C
-	sty	$0C
+	sty	$0C	; $130C (D=$1300) / $134C (D=$1340)
 	brl	loc_0094FF
 loc_0095AC:
-	sty	$0C
+	sty	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
 	brl	loc_009620
 loc_0095B1:
 	and	#$1F
-	sta	$0E
+	sta	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
 	lda	#$02
-	sta	$14
+	sta	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
 loc_0095B9:
-	ldx	$06
+	ldx	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
 loc_0095BB:
-	dec	$0E
+	dec	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
 	bmi	loc_00961C
 	txy
-	lda	[$00],y
+	lda	[$00],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
 	iny
 	tyx
-	ldy	$0C
-	sta	($03),y
+	ldy	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	sta	($03),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
 	iny
-	sty	$0C
-	cpy	$1C
+	sty	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	cpy	$1C	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
 	bcc	loc_0095BB
-	stx	$06
+	stx	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
 	brl	loc_0094FF
 loc_0095D4:
-	sta	$0B
+	sta	$0B	; $130B (D=$1300) / $134B (D=$1340) / $1F0B (D=$1F00)
 	lsr	a
 	lsr	a
 	clc
 	adc	#$02
-	sta	$0E
-	ldy	$06
-	lda	[$00],y
+	sta	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
+	ldy	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	lda	[$00],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
 	iny
-	sty	$06
-	sta	$0A
+	sty	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	sta	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
 	rep	#$20
 	.a16
-	lda	$0A
+	lda	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
 	sec
 	sbc	#$03DF
 	and	#$03FF
-	sta	$0A
+	sta	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
 	sep	#$20
 	.a8
 	lda	#$01
-	sta	$14
+	sta	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
 loc_0095F9:
-	ldx	$0A
+	ldx	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
 loc_0095FB:
-	dec	$0E
+	dec	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
 	bmi	loc_009620
 	txy
-	lda	($03),y
+	lda	($03),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
 	iny
 	cpy	#$0400
 	bcc	loc_00960B
 	ldy	#$0000
 loc_00960B:
 	tyx
-	ldy	$0C
-	sta	($03),y
+	ldy	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	sta	($03),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
 	iny
-	sty	$0C
-	cpy	$1C
+	sty	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	cpy	$1C	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
 	bcc	loc_0095FB
-	stx	$0A
+	stx	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
 	brl	loc_0094FF
 loc_00961C:
-	stx	$06
+	stx	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
 	bra	loc_009622
 loc_009620:
-	stz	$0A
+	stz	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
 loc_009622:
-	stz	$14
+	stz	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
 	brl	loc_009526
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_009627:
+	; (not executed in the CDL traces)
 	.a16
 	lda	f:$050000,x
 	and	#$00FF
@@ -3074,6 +3117,7 @@ loc_009672:
 	rtl
 
 sub_00967D:
+	; (not executed in the CDL traces)
 	lda	#$0001
 	sta	$26
 	stz	$10
@@ -3115,6 +3159,7 @@ loc_0096B8:
 	rts
 
 sub_0096CA:
+	; (not executed in the CDL traces)
 	ldy	$1A
 	cpy	$0C
 	beq	loc_0096EA
@@ -3141,6 +3186,7 @@ loc_0096EA:
 	rts
 
 sub_0096EF:
+	; (not executed in the CDL traces)
 	sta	a:APUIO2
 loc_0096F2:
 	cmp	a:APUIO2
@@ -3166,6 +3212,7 @@ loc_009710:
 	rtl
 
 sub_009713:
+	; (not executed in the CDL traces)
 	stz	$20
 	lda	#$AABB
 	jsr	a:sub_0096EF
@@ -3217,6 +3264,7 @@ sub_009713:
 	rts
 
 sub_00976E:
+	; (not executed in the CDL traces)
 	ldy	#$0000
 loc_009771:
 	sep	#$20
@@ -3250,6 +3298,7 @@ loc_00978C:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_0097A6:
+	; (not executed in the CDL traces)
 	phd
 	ldy	#$1F00
 	phy
@@ -3357,6 +3406,7 @@ loc_00985D:
 	rtl
 
 sub_00987B:
+	; (not executed in the CDL traces)
 	rep	#$20
 	sta	$28
 loc_00987F:
@@ -3370,6 +3420,7 @@ loc_00988D:
 	rtl
 
 sub_00988E:
+	; (not executed in the CDL traces)
 	rep	#$20
 	ldy	$1A
 	cpy	$0C
@@ -3403,6 +3454,7 @@ loc_0098B8:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_0098BF:
+	; (not executed in the CDL traces)
 	rep	#$20
 	lda	a:$1F2C
 	bne	loc_0098D3
@@ -3437,10 +3489,10 @@ sub_0098E2:
 	jsr	a:sub_009271
 	rep	#$20
 	and	#$0001
-	sta	$16
+	sta	$16	; $1F16 (D=$1F00)
 	jsr	a:sub_00990E
 	lda	#$0001
-	sta	$20
+	sta	$20	; $1F20 (D=$1F00)
 	jmp	a:loc_00935A
 
 sub_00990E:
@@ -3560,6 +3612,7 @@ tbl_0099C1:
 sub_0099C9:
 	lda	$08,x
 	beq	loc_0099D0
+	; (not executed in the CDL traces)
 	dec	$08,x
 	rtl
 loc_0099D0:
@@ -3603,6 +3656,7 @@ loc_009A03:
 	jmp	a:sub_009971
 
 sub_009A19:
+	; (not executed in the CDL traces)
 	ldy	$02,x
 	lda	$04,x
 	xba
@@ -3638,6 +3692,7 @@ loc_009A52:
 	rtl
 
 sub_009A53:
+	; (not executed in the CDL traces)
 	lda	a:$0003,y
 	sta	$00
 	ldx	a:$0001,y
@@ -3668,6 +3723,7 @@ sub_009A81:
 	lda	a:$0000,y
 	and	#$00FF
 	bne	loc_009A8E
+	; (not executed in the CDL traces)
 	lda	#$0010
 loc_009A8E:
 	asl	a
@@ -3690,6 +3746,7 @@ sub_009AA5:
 	lda	a:$0000,y
 	and	#$00FF
 	bne	loc_009AB2
+	; (not executed in the CDL traces)
 	lda	#$0010
 loc_009AB2:
 	asl	a
@@ -3777,6 +3834,7 @@ loc_009B1E:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_009B37:
+	; (not executed in the CDL traces)
 	jsl	f:sub_009B4A
 	bne	loc_009B46
 	ldy	$FC
@@ -3785,9 +3843,11 @@ sub_009B37:
 	sta	$0C,x
 loc_009B46:
 	rtl
+	; CDL: not accessed
 	.byte	$A2, $80, $12
 
 sub_009B4A:
+	; (not executed in the CDL traces)
 	lda	a:$0000,y
 	beq	loc_009B53
 	lda	$00,x
@@ -3803,6 +3863,7 @@ loc_009B64:
 	rtl
 
 sub_009B65:
+	; (not executed in the CDL traces)
 	stz	$00,x
 	stz	$02,x
 	stz	$04,x
@@ -3823,6 +3884,7 @@ loc_009B81:
 	stx	$FC
 	lda	$00,x
 	beq	loc_009B8B
+	; (not executed in the CDL traces)
 	jsl	f:sub_009B98
 loc_009B8B:
 	clc
@@ -3834,6 +3896,7 @@ loc_009B8B:
 	rtl
 
 sub_009B98:
+	; (not executed in the CDL traces)
 	dec	a
 	phx
 	asl	a
@@ -3846,6 +3909,7 @@ tbl_009BA6:
 	.addr	sub_009BA8
 
 sub_009BA8:
+	; (not executed in the CDL traces)
 	lda	$08,x
 	beq	loc_009BAF
 	dec	$08,x
@@ -4203,10 +4267,12 @@ loc_009F45:
 	lda	a:$1594
 	cmp	#$0002
 	bne	loc_009F50
+	; (not executed in the CDL traces)
 	brl	loc_00A093
 loc_009F50:
 	cmp	#$0006
 	bne	loc_009F58
+	; (not executed in the CDL traces)
 	brl	loc_00A189
 loc_009F58:
 	sep	#$10
@@ -4319,6 +4385,7 @@ loc_009F58:
 	.i16
 	rtl
 loc_00A093:
+	; (not executed in the CDL traces)
 	sep	#$10
 	.i8
 	ldx	#$80
@@ -4644,6 +4711,7 @@ loc_00A3C1:
 	ora	$2A
 	bit	#$1000
 	beq	loc_00A3D9
+	; (not executed in the CDL traces)
 	lda	#$0002
 	sta	$3E
 	lda	#$0003
@@ -4655,6 +4723,7 @@ loc_00A3D9:
 	brl	sub_00ABA3
 
 sub_00A3E4:
+	; (not executed in the CDL traces)
 	rtl
 
 sub_00A3E5:
@@ -4705,6 +4774,7 @@ sub_00A43B:
 	ora	$2A
 	bit	#$1000
 	beq	loc_00A44B
+	; (not executed in the CDL traces)
 	stz	$42
 	stz	$46
 	brl	loc_00ABA0
@@ -4889,6 +4959,7 @@ sub_00A5D3:
 	brl	sub_00ABA3
 
 sub_00A5D9:
+	; (not executed in the CDL traces)
 	lda	#$0005
 	brl	sub_00ABA3
 
@@ -4925,12 +4996,14 @@ loc_00A60D:
 	lda	#$0000
 	brl	sub_00ABA3
 loc_00A61E:
+	; (not executed in the CDL traces)
 	lda	#$0003
 	brl	sub_00ABA3
 loc_00A624:
 	rtl
 
 sub_00A625:
+	; (not executed in the CDL traces)
 	lda	$34
 	bne	loc_00A63B
 	jsl	f:sub_00865C
@@ -4994,6 +5067,7 @@ loc_00A692:
 	bcs	loc_00A6BA
 	lda	a:$1E60
 	beq	loc_00A6B4
+	; (not executed in the CDL traces)
 	lda	#$0007
 	brl	sub_00ABA3
 loc_00A6B4:
@@ -5055,6 +5129,7 @@ sub_00A734:
 	rts
 
 sub_00A73D:
+	; (not executed in the CDL traces)
 	lda	$34
 	dec	a
 	beq	loc_00A77C
@@ -5276,6 +5351,7 @@ loc_00A8FB:
 	lda	#$000E
 	brl	sub_00ABA3
 loc_00A91A:
+	; (not executed in the CDL traces)
 	sta	a:$1E3E
 	sta	$84
 	stz	a:$1E4C
@@ -5364,6 +5440,7 @@ loc_00A9BD:
 	sta	$76
 	brl	loc_00AB9B
 loc_00A9D2:
+	; (not executed in the CDL traces)
 	lda	#$0180
 	sta	$76
 	lda	#$0003
@@ -5378,6 +5455,7 @@ loc_00A9E4:
 	rtl
 
 sub_00A9E5:
+	; (not executed in the CDL traces)
 	dec	$76
 	bne	loc_00A9EC
 	brl	loc_00AB9B
@@ -5385,6 +5463,7 @@ loc_00A9EC:
 	rtl
 
 sub_00A9ED:
+	; (not executed in the CDL traces)
 	php
 	rep	#$20
 	lda	a:$1E80
@@ -5428,6 +5507,7 @@ sub_00AA25:
 	jsl	f:sub_00868F
 	lda	a:$1C00
 	beq	loc_00AA46
+	; (not executed in the CDL traces)
 	lda	#$0003
 	brl	loc_00ABAA
 loc_00AA46:
@@ -5477,6 +5557,7 @@ loc_00AA93:
 	lda	#$0008
 	brl	sub_00ABA3
 loc_00AAA8:
+	; (not executed in the CDL traces)
 	stz	a:$1E40
 	lda	#$0003
 	brl	sub_00ABA3
@@ -5591,10 +5672,12 @@ loc_00AB88:
 	jsl	f:sub_00BC38
 	lda	$36
 	beq	loc_00AB95
+	; (not executed in the CDL traces)
 	lda	#$0002
 	bra	sub_00ABA3
 loc_00AB95:
 	rtl
+	; CDL: not accessed
 	.byte	$A2, $80, $00
 loc_00AB99:
 	stx	$68
@@ -5629,12 +5712,14 @@ loc_00ABBC:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_00ABBD:
+	; (not executed in the CDL traces)
 	jsl	f:sub_00ABC6
 	rep	#$20
 	stz	$4A
 	rtl
 
 sub_00ABC6:
+	; (not executed in the CDL traces)
 	rep	#$10
 	rep	#$20
 	stz	$66
@@ -5785,6 +5870,7 @@ sub_00ACE2:
 	sec
 	sbc	#$0004
 	bpl	loc_00ACF6
+	; (not executed in the CDL traces)
 	lda	#$0000
 loc_00ACF6:
 	sta	a:$1E80
@@ -5830,6 +5916,7 @@ sub_00AD2A:
 sub_00AD3A:
 	lda	a:$1F8A
 	bne	loc_00AD5A
+	; (not executed in the CDL traces)
 	lda	$28
 	bit	#$0080
 	beq	loc_00AD5A
@@ -5845,6 +5932,7 @@ loc_00AD5A:
 loc_00AD5B:
 	lda	a:$1FCA
 	bne	loc_00AD7B
+	; (not executed in the CDL traces)
 	lda	$2A
 	bit	#$0080
 	beq	loc_00AD7B
@@ -5913,6 +6001,7 @@ sub_00ADD1:
 	jsl	f:sub_00ABE0
 	lda	a:$1E4A
 	beq	loc_00ADFA
+	; (not executed in the CDL traces)
 	lda	a:$1C08
 	cmp	#$0400
 	bcs	loc_00ADFF
@@ -5930,6 +6019,7 @@ loc_00ADFF:
 	inc	a:$1C00
 	rtl
 loc_00AE0B:
+	; (not executed in the CDL traces)
 	lda	#$0002
 	sta	a:$1C02
 	inc	a:$1C00
@@ -5957,10 +6047,12 @@ loc_00AE38:
 sub_00AE39:
 	lda	a:$1E4A
 	beq	loc_00AEB2
+	; (not executed in the CDL traces)
 	jsr	a:sub_00AE44
 	jmp	a:loc_00AE7B
 
 sub_00AE44:
+	; (not executed in the CDL traces)
 	inc	a:$1C04
 	lda	$20
 	cmp	a:$1C0E
@@ -6155,6 +6247,7 @@ sub_00AFE4:
 	stz	a:$1C10
 	lda	a:$1E4A
 	beq	loc_00B00F
+	; (not executed in the CDL traces)
 	lda	#$0000
 	sta	a:$1C08
 	lda	#$0400
@@ -6212,6 +6305,7 @@ loc_00B055:
 	and	#$000F
 	dec	a
 	bpl	loc_00B06F
+	; (not executed in the CDL traces)
 	lda	#$0080
 loc_00B06F:
 	sta	a:$1FB4
@@ -6219,6 +6313,7 @@ loc_00B06F:
 	and	#$000F
 	dec	a
 	bpl	loc_00B07E
+	; (not executed in the CDL traces)
 	lda	#$0080
 loc_00B07E:
 	sta	a:$1FF4
@@ -6323,6 +6418,7 @@ sub_00B153:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_00B17B:
+	; (not executed in the CDL traces)
 	ldy	#$84FE
 	jsl	f:sub_00B183
 	rts
@@ -6386,6 +6482,7 @@ sub_00B1E8:
 	lda	a:$1E80
 	bit	#$0080
 	beq	loc_00B1F7
+	; (not executed in the CDL traces)
 	and	#$000F
 	sta	a:$1E80
 loc_00B1F7:
@@ -6416,10 +6513,12 @@ loc_00B21F:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_00B220:
+	; (not executed in the CDL traces)
 	lda	#$0003
 	sta	a:$1C00
 
 sub_00B226:
+	; (not executed in the CDL traces)
 	php
 	rep	#$20
 	lda	a:$1E80
@@ -6516,8 +6615,14 @@ sub_00B2DD:
 	jsl	f:sub_0090A8
 	rts
 
+; sub_00B2F3, sub_00B346, sub_00B39F: never executed in the CDL traces (found
+; by the unreferenced-routine heuristic).  Each compares the d-pad bits of the
+; joypads ($20/$22 & $0F00) with a 3-entry sequence and then checks a button:
+; probably button-code checks.  DB is assumed to be $05, the game's usual data
+; bank (hint): the sequences are then d-pad masks at $05:86D3/86D9/86DF.
 ; (no caller found; decoded because it follows the end of a routine)
 sub_00B2F3:
+	; (not executed in the CDL traces)
 	lda	a:$1C0A
 	bne	loc_00B300
 	ldy	#$0000
@@ -6532,7 +6637,7 @@ loc_00B30B:
 	lda	$20
 	ora	$22
 	and	#$0F00
-	cmp	a:$86D3,y
+	cmp	a:data_0586D3,y
 	bne	loc_00B33B
 	cpy	#$0000
 	bne	loc_00B322
@@ -6562,6 +6667,7 @@ loc_00B33D:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_00B346:
+	; (not executed in the CDL traces)
 	lda	a:$1C0E
 	bne	loc_00B353
 	ldy	#$0000
@@ -6576,7 +6682,7 @@ loc_00B35E:
 	lda	$20
 	ora	$22
 	and	#$0F00
-	cmp	a:$86D9,y
+	cmp	a:data_0586D9,y
 	bne	loc_00B38E
 	cpy	#$0000
 	bne	loc_00B375
@@ -6608,6 +6714,7 @@ loc_00B390:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_00B39F:
+	; (not executed in the CDL traces)
 	lda	a:$1C12
 	bne	loc_00B3AC
 	ldy	#$0000
@@ -6622,7 +6729,7 @@ loc_00B3B7:
 	lda	$20
 	ora	$22
 	and	#$0F00
-	cmp	a:$86DF,y
+	cmp	a:data_0586DF,y
 	bne	loc_00B3E7
 	cpy	#$0000
 	bne	loc_00B3CE
@@ -7030,6 +7137,7 @@ sub_00B6F4:
 	inc	a
 	cmp	#$0007
 	bcc	loc_00B6FF
+	; (not executed in the CDL traces)
 	lda	#$0001
 loc_00B6FF:
 	jsl	f:sub_00B99F
@@ -7087,6 +7195,7 @@ loc_00B763:
 sub_00B76C:
 	dec	$76
 	bpl	loc_00B773
+	; (not executed in the CDL traces)
 	brl	loc_00B77D
 loc_00B773:
 	lda	$28
@@ -7117,6 +7226,7 @@ loc_00B794:
 	lda	$86
 	cmp	#$0007
 	bcc	loc_00B7AC
+	; (not executed in the CDL traces)
 	lda	#$0001
 	sta	$86
 loc_00B7AC:
@@ -7201,6 +7311,7 @@ loc_00B854:
 	inc	a
 	cmp	#$001E
 	bcc	loc_00B866
+	; (not executed in the CDL traces)
 	lda	#$001E
 loc_00B866:
 	sta	$0A,x
@@ -7225,6 +7336,7 @@ loc_00B877:
 	lda	$22,x
 	sbc	#$0999
 	bcc	loc_00B89C
+	; (not executed in the CDL traces)
 	lda	#$9999
 	sta	$20,x
 	lda	#$0999
@@ -7272,6 +7384,7 @@ sub_00B8ED:
 	plx
 	lda	$00,x
 	bpl	loc_00B8FC
+	; (not executed in the CDL traces)
 	lda	#$0000
 loc_00B8FC:
 	sta	a:WRDIVL
@@ -7320,6 +7433,7 @@ sub_00B934:
 loc_00B943:
 	lda	a:$1FCA
 	beq	loc_00B952
+	; (not executed in the CDL traces)
 	lda	#$0100
 	ldx	#$1FC0
 	jsl	f:sub_00B83B
@@ -7353,6 +7467,7 @@ loc_00B983:
 	lda	a:$1E46
 	sbc	a:$1FE2
 	bcs	loc_00B99E
+	; (not executed in the CDL traces)
 	lda	a:$1FE0
 	sta	a:$1E44
 	lda	a:$1FE2
@@ -7404,11 +7519,13 @@ sub_00B9EB:
 	lda	a:$1E80
 	bit	#$0080
 	beq	loc_00B9FA
+	; (not executed in the CDL traces)
 	and	#$000F
 	sta	a:$1E80
 loc_00B9FA:
 	cmp	#$000F
 	bcs	loc_00BA04
+	; (not executed in the CDL traces)
 	inc	a:$1E80
 	plp
 	rtl
@@ -7464,6 +7581,7 @@ sub_00BA4B:
 	inc	a
 	cmp	#$0004
 	bcc	loc_00BA6E
+	; (not executed in the CDL traces)
 	lda	#$0000
 loc_00BA6E:
 	sta	a:$1C02
@@ -7546,6 +7664,7 @@ sub_00BB0E:
 	ora	$2A
 	bit	#$0300
 	beq	loc_00BB41
+	; (not executed in the CDL traces)
 	pha
 	lda	#$0001
 	jsl	f:sub_00868F
@@ -7583,6 +7702,7 @@ sub_00BB4E:
 	lda	a:$1E3C
 	cmp	#$0003
 	beq	loc_00BB66
+	; (not executed in the CDL traces)
 	iny
 	cmp	#$0005
 	beq	loc_00BB66
@@ -7598,6 +7718,7 @@ loc_00BB6A:
 	lda	a:$1E3C
 	cmp	#$0063
 	bcc	loc_00BB78
+	; (not executed in the CDL traces)
 	lda	#$0063
 loc_00BB78:
 	sta	a:WRDIVL
@@ -7632,6 +7753,7 @@ sub_00BBA9:
 	pla
 	bit	#$0100
 	bne	loc_00BBCE
+	; (not executed in the CDL traces)
 	lda	a:$1E3E
 	dec	a
 	dec	a
@@ -7662,6 +7784,7 @@ sub_00BBEA:
 	ora	$2A
 	bit	#$0300
 	beq	loc_00BC11
+	; (not executed in the CDL traces)
 	pha
 	lda	#$0001
 	jsl	f:sub_00868F
@@ -7679,6 +7802,7 @@ loc_00BC0B:
 loc_00BC11:
 	rts
 loc_00BC12:
+	; (not executed in the CDL traces)
 	lda	a:$1E54
 	inc	a
 	inc	a
@@ -7689,6 +7813,7 @@ loc_00BC1F:
 	sta	a:$1E54
 
 sub_00BC22:
+	; (not executed in the CDL traces)
 	ldy	a:$1E54
 	lda	a:data_05892A,y
 	jsl	f:sub_00868F
@@ -7757,11 +7882,13 @@ sub_00BC9C:
 	ora	$2A
 	bit	#$1000
 	beq	loc_00BCA8
+	; (not executed in the CDL traces)
 	inc	a:$1C00
 loc_00BCA8:
 	rtl
 
 sub_00BCA9:
+	; (not executed in the CDL traces)
 	php
 	rep	#$20
 	lda	a:$1E80
@@ -8178,6 +8305,7 @@ loc_00C07D:
 	jml	f:sub_00868F
 
 sub_00C08D:
+	; (not executed in the CDL traces)
 	stz	a:$13FA
 	stz	a:$13C0
 	stz	a:$13D8
@@ -8195,6 +8323,7 @@ loc_00C0A3:
 	jml	f:sub_00868F
 
 sub_00C0B0:
+	; (not executed in the CDL traces)
 	lda	#$0063
 	jsl	f:sub_00868F
 	lda	#$000D
@@ -8341,6 +8470,7 @@ sub_00C1F4:
 	ldy	#$0000
 	cpx	#$0200
 	beq	loc_00C204
+	; (not executed in the CDL traces)
 	ldy	#$0002
 loc_00C204:
 	stz	$2C,x
@@ -9031,6 +9161,7 @@ loc_00C83D:
 loc_00C846:
 	lda	a:$1FCA
 	beq	loc_00C823
+	; (not executed in the CDL traces)
 	lda	a:$024E
 	bmi	loc_00C854
 	cmp	$A6
@@ -9210,6 +9341,7 @@ sub_00C99B:
 	rtl
 
 sub_00C9AB:
+	; (not executed in the CDL traces)
 	rtl
 
 sub_00C9AC:
@@ -9286,6 +9418,7 @@ loc_00CA39:
 	brl	sub_00CA52
 
 sub_00CA3C:
+	; (not executed in the CDL traces)
 	rtl
 
 sub_00CA3D:
@@ -9549,6 +9682,7 @@ sub_00CC1D:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_00CC2A:
+	; (not executed in the CDL traces)
 	stz	a:$13CC
 	stz	a:$13CE
 	stz	a:$13E4
@@ -9677,12 +9811,16 @@ loc_00CD01:
 	.a16
 	rtl
 data_00CD0A:
+	; CDL: read by sub_00CB29
 	.byte	$00, $00
 data_00CD0C:
+	; CDL: read by sub_00CB29
 	.byte	$08, $00
 data_00CD0E:
+	; CDL: read by sub_00CB29
 	.byte	$10, $00
 data_00CD10:
+	; CDL: read by sub_00CB29
 	.byte	$18, $00, $02, $00, $0A, $00, $12, $00, $1A, $00, $04, $00, $0C, $00, $14, $00
 	.byte	$1C, $00, $06, $00, $0E, $00, $16, $00, $1E, $00, $06, $00, $0E, $00, $16, $00
 	.byte	$1E, $00, $04, $00, $0C, $00, $14, $00, $1C, $00, $02, $00, $0A, $00, $12, $00
@@ -9692,20 +9830,25 @@ data_00CD10:
 	.byte	$06, $00, $1C, $00, $14, $00, $0C, $00, $04, $00, $1A, $00, $12, $00, $0A, $00
 	.byte	$02, $00, $18, $00, $10, $00, $08, $00, $00, $00
 data_00CD8A:
+	; CDL: read by sub_00CA52
 	.byte	$00, $00
 data_00CD8C:
+	; CDL: read by sub_00CA52
 	.byte	$02, $00
 data_00CD8E:
+	; CDL: read by sub_00CA52
 	.byte	$04, $00
 data_00CD90:
+	; CDL: read by sub_00CA52
 	.byte	$06, $00, $08, $00, $0A, $00, $0C, $00, $0E, $00, $10, $00, $12, $00, $14, $00
 	.byte	$16, $00, $18, $00, $1A, $00, $1C, $00, $1E, $00, $06, $00, $04, $00, $02, $00
 	.byte	$00, $00, $0E, $00, $0C, $00, $0A, $00, $08, $00, $16, $00, $14, $00, $12, $00
 	.byte	$10, $00, $1E, $00, $1C, $00, $1A, $00, $18, $00, $18, $00, $1A, $00, $1C, $00
 	.byte	$1E, $00, $10, $00, $12, $00, $14, $00, $16, $00, $08, $00, $0A, $00, $0C, $00
-	.byte	$0E, $00, $00, $00, $02, $00, $04, $00, $06, $00, $1E, $00, $1C, $00, $1A, $00
-	.byte	$18, $00, $16, $00, $14, $00, $12, $00, $10, $00, $0E, $00, $0C, $00, $0A, $00
-	.byte	$08, $00, $06, $00, $04, $00, $02, $00, $00, $00
+	.byte	$0E, $00, $00, $00, $02, $00, $04, $00, $06, $00
+	; CDL: not accessed
+	.byte	$1E, $00, $1C, $00, $1A, $00, $18, $00, $16, $00, $14, $00, $12, $00, $10, $00
+	.byte	$0E, $00, $0C, $00, $0A, $00, $08, $00, $06, $00, $04, $00, $02, $00, $00, $00
 
 sub_00CE0A:
 	lda	a:$1380
@@ -9875,6 +10018,7 @@ sub_00CF0C:
 	ldx	#$0600
 	jsl	f:sub_019E86
 	bcc	loc_00CF59
+	; (not executed in the CDL traces)
 	plx
 	rtl
 loc_00CF59:
@@ -9919,6 +10063,7 @@ loc_00CF9D:
 	rtl
 
 sub_00CF9E:
+	; (not executed in the CDL traces)
 	lda	a:$1E8E
 	and	#$FFFC
 	ora	$3A,x
@@ -10065,6 +10210,7 @@ sub_00D08C:
 	rtl
 
 sub_00D0A6:
+	; (not executed in the CDL traces)
 	lda	#$8000
 	sta	$16,x
 	ldy	$3A,x
@@ -10548,6 +10694,7 @@ loc_00D4BF:
 	lda	a:$0010,y
 	cmp	#$0006
 	beq	loc_00D4D2
+	; (not executed in the CDL traces)
 	tya
 	clc
 	adc	#$0040
@@ -10565,6 +10712,7 @@ loc_00D4E1:
 	lda	a:$0010,y
 	cmp	#$002F
 	beq	loc_00D4EE
+	; (not executed in the CDL traces)
 	ldy	#$02C0
 	bra	loc_00D4E1
 loc_00D4EE:
@@ -10747,6 +10895,7 @@ loc_00D630:
 	lda	#$6000
 	sta	$08
 	brl	loc_00D5AA
+	; CDL: not accessed
 	.byte	$6B
 loc_00D655:
 	rtl
@@ -10758,7 +10907,7 @@ sub_00D656:
 	pha
 	asl	a
 	tay
-	lda	a:$A008,y
+	lda	a:data_05A008,y
 	sta	$3A,x
 	txy
 	lda	#$0AC0
@@ -10793,7 +10942,7 @@ sub_00D692:
 	pha
 	asl	a
 	tay
-	lda	a:$A008,y
+	lda	a:data_05A008,y
 	sta	$14,x
 	txy
 	lda	#$0C00
@@ -10841,7 +10990,7 @@ loc_00D6E2:
 	pha
 	asl	a
 	tay
-	lda	a:$A008,y
+	lda	a:data_05A008,y
 	sta	$3A,x
 	txy
 	lda	#$0AC0
@@ -10875,7 +11024,7 @@ loc_00D723:
 	pha
 	asl	a
 	tay
-	lda	a:$A008,y
+	lda	a:data_05A008,y
 	sta	$14,x
 	txy
 	lda	#$0C00
@@ -10928,13 +11077,13 @@ sub_00D76B:
 loc_00D78F:
 	sty	$02,x
 	ldy	$12
-	lda	a:$8E1A,y
+	lda	a:data_058E1A,y
 	sta	$18,x
-	lda	a:$8D7A,y
+	lda	a:data_058D7A,y
 	sta	$1A,x
-	lda	a:$8DFA,y
+	lda	a:data_058DFA,y
 	sta	$1C,x
-	lda	a:$8D5A,y
+	lda	a:data_058D5A,y
 	sta	$1E,x
 	ply
 	clc
@@ -10968,6 +11117,7 @@ loc_00D7CC:
 	bra	loc_00D820
 
 sub_00D7E3:
+	; (not executed in the CDL traces)
 	jsr	a:sub_00D7FA
 	beq	loc_00D7E9
 	rtl
@@ -11031,13 +11181,13 @@ loc_00D830:
 	and	#$007E
 	sta	$12
 	tay
-	lda	a:$8E1A,y
+	lda	a:data_058E1A,y
 	sta	$18,x
-	lda	a:$8D7A,y
+	lda	a:data_058D7A,y
 	sta	$1A,x
-	lda	a:$8DFA,y
+	lda	a:data_058DFA,y
 	sta	$1C,x
-	lda	a:$8D5A,y
+	lda	a:data_058D5A,y
 	sta	$1E,x
 	ldy	$FE
 	clc
@@ -11125,16 +11275,16 @@ loc_00D8E9:
 	lsr	a
 	pha
 	sta	$00,x
-	lda	a:$8E1A,y
+	lda	a:data_058E1A,y
 	sta	$18,x
-	lda	a:$8D7A,y
+	lda	a:data_058D7A,y
 	sta	$1A,x
-	lda	a:$8DFA,y
+	lda	a:data_058DFA,y
 	sta	$1C,x
-	lda	a:$8D5A,y
+	lda	a:data_058D5A,y
 	sta	$1E,x
 	ply
-	lda	a:$A014,y
+	lda	a:data_05A014,y
 	sta	$02,x
 	ldy	$FE
 	clc
@@ -11173,6 +11323,7 @@ loc_00D94A:
 	bra	loc_00D982
 
 sub_00D961:
+	; (not executed in the CDL traces)
 	jsl	f:sub_00E134
 	bcc	loc_00D969
 	tyx
@@ -11213,13 +11364,13 @@ loc_00D982:
 	and	#$007E
 	tay
 	sta	$04,x
-	lda	a:$8E1A,y
+	lda	a:data_058E1A,y
 	sta	$18,x
-	lda	a:$8D7A,y
+	lda	a:data_058D7A,y
 	sta	$1A,x
-	lda	a:$8DFA,y
+	lda	a:data_058DFA,y
 	sta	$1C,x
-	lda	a:$8D5A,y
+	lda	a:data_058D5A,y
 	sta	$1E,x
 	ply
 	clc
@@ -11251,6 +11402,7 @@ sub_00D9DE:
 	bra	sub_00DA08
 
 sub_00D9F5:
+	; (not executed in the CDL traces)
 	clc
 	lda	a:$0036,y
 	adc	#$0004
@@ -11314,12 +11466,12 @@ loc_00DA0F:
 	clc
 	lda	$0A,x
 	adc	$14
-	adc	a:$A024,y
+	adc	a:data_05A024,y
 	sta	$00
 	clc
 	lda	$0E,x
 	adc	$16
-	adc	a:$A034,y
+	adc	a:data_05A034,y
 	ply
 	sta	a:$000E,y
 	lda	$00
@@ -11437,69 +11589,69 @@ loc_00DB40:
 	lda	$F4,x
 	tay
 	clc
-	lda	a:$8E9A,y
+	lda	a:data_058E9A,y
 	adc	$CE,x
 	sta	$EE,x
 	clc
 	adc	#$FFF0
 	sta	a:$012E,x
 	clc
-	lda	a:$8F1A,y
+	lda	a:data_058F1A,y
 	adc	$CA,x
 	sta	$EA,x
 	sta	a:$012A,x
 	lda	$D4,x
 	tay
 	clc
-	lda	a:$8E9A,y
+	lda	a:data_058E9A,y
 	adc	$AE,x
 	sta	$CE,x
 	clc
 	adc	#$FFF4
 	sta	a:$010E,x
 	clc
-	lda	a:$8F1A,y
+	lda	a:data_058F1A,y
 	adc	$AA,x
 	sta	$CA,x
 	sta	a:$010A,x
 	lda	$B4,x
 	tay
 	clc
-	lda	a:$8E9A,y
+	lda	a:data_058E9A,y
 	adc	$8E,x
 	sta	$AE,x
 	clc
-	lda	a:$8F1A,y
+	lda	a:data_058F1A,y
 	adc	$8A,x
 	sta	$AA,x
 	lda	$94,x
 	tay
 	clc
-	lda	a:$8E9A,y
+	lda	a:data_058E9A,y
 	adc	$6E,x
 	sta	$8E,x
 	clc
-	lda	a:$8F1A,y
+	lda	a:data_058F1A,y
 	adc	$6A,x
 	sta	$8A,x
 	lda	$74,x
 	tay
 	clc
-	lda	a:$8E9A,y
+	lda	a:data_058E9A,y
 	adc	$4E,x
 	sta	$6E,x
 	clc
-	lda	a:$8F1A,y
+	lda	a:data_058F1A,y
 	adc	$4A,x
 	sta	$6A,x
 	lda	$54,x
 	tay
 	clc
-	lda	a:$8E9A,y
+	lda	a:data_058E9A,y
 	adc	$2E,x
 	sta	$4E,x
 	clc
-	lda	a:$8F1A,y
+	lda	a:data_058F1A,y
 	adc	$2A,x
 	sta	$4A,x
 	lda	$14,x
@@ -11622,7 +11774,7 @@ loc_00DC8E:
 	sta	a:$0110,x
 	sty	$FE
 	ldy	$12
-	lda	a:$8E1A,y
+	lda	a:data_058E1A,y
 	sta	$18,x
 	sta	$58,x
 	sta	$78,x
@@ -11631,7 +11783,7 @@ loc_00DC8E:
 	sta	$D8,x
 	sta	$F8,x
 	sta	a:$0118,x
-	lda	a:$8D7A,y
+	lda	a:data_058D7A,y
 	sta	$1A,x
 	sta	$5A,x
 	sta	$7A,x
@@ -11640,7 +11792,7 @@ loc_00DC8E:
 	sta	$DA,x
 	sta	$FA,x
 	sta	a:$011A,x
-	lda	a:$8DFA,y
+	lda	a:data_058DFA,y
 	sta	$1C,x
 	sta	$5C,x
 	sta	$7C,x
@@ -11649,7 +11801,7 @@ loc_00DC8E:
 	sta	$DC,x
 	sta	$FC,x
 	sta	a:$011C,x
-	lda	a:$8D5A,y
+	lda	a:data_058D5A,y
 	sta	$1E,x
 	sta	$5E,x
 	sta	$7E,x
@@ -11663,11 +11815,11 @@ loc_00DC8E:
 	lsr	a
 	lsr	a
 	tay
-	lda	a:$A064,y
+	lda	a:data_05A064,y
 	sta	$02,x
-	lda	a:$A044,y
+	lda	a:data_05A044,y
 	sta	$00
-	lda	a:$A054,y
+	lda	a:data_05A054,y
 	sta	$02
 	lda	#$0004
 	sta	$44,x
@@ -11692,7 +11844,7 @@ loc_00DC8E:
 	inc	a
 	sta	a:$0104,x
 	sta	$24,x
-	lda	a:$A064,y
+	lda	a:data_05A064,y
 	sta	$54,x
 	sta	$74,x
 	sta	$94,x
@@ -11896,6 +12048,7 @@ loc_00DEA3:
 	txa
 	bit	#$0020
 	beq	loc_00DEB5
+	; (not executed in the CDL traces)
 	rtl
 loc_00DEAE:
 	txa
@@ -12028,6 +12181,7 @@ loc_00DF92:
 	sta	$02,x
 	rtl
 loc_00DF9A:
+	; (not executed in the CDL traces)
 	dec	$14,x
 	bpl	loc_00DFA9
 	lda	#$3E00
@@ -12130,6 +12284,7 @@ sub_00E04A:
 	sta	$0A,x
 	rtl
 loc_00E054:
+	; (not executed in the CDL traces)
 	lda	$04,x
 	and	#$0006
 	tay
@@ -12209,6 +12364,7 @@ loc_00E0C7:
 	rtl
 
 sub_00E0D3:
+	; (not executed in the CDL traces)
 	dec	$04,x
 	bne	loc_00E0DC
 	lda	#$8000
@@ -12238,6 +12394,7 @@ loc_00E0FC:
 	rtl
 
 sub_00E102:
+	; (not executed in the CDL traces)
 	dec	$04,x
 	bne	loc_00E10B
 	lda	#$8000
@@ -12590,7 +12747,7 @@ sub_00E355:
 	tay
 	lda	a:tbl_05A0B4,y
 	sta	$00
-	lda	a:data_05A0B6,y
+	lda	a:tbl_05A0B4+2,y
 	sta	$02
 	jml	[$0000]
 
@@ -13076,6 +13233,7 @@ sub_00E6FD:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_00E705:
+	; (not executed in the CDL traces)
 	lda	#$0007
 	sta	$46
 	lda	$20
@@ -13225,6 +13383,7 @@ sub_00E7EF:
 	sta	$FE
 	bra	loc_00E811
 loc_00E805:
+	; (not executed in the CDL traces)
 	ldx	#$0240
 	stx	$FE
 	bra	loc_00E811
@@ -13342,6 +13501,7 @@ loc_00E8E4:
 	inx
 	cpx	$FC
 	bcc	loc_00E8E4
+	; (not executed in the CDL traces)
 	sep	#$20
 	lda	#$05
 	pha
@@ -13540,6 +13700,7 @@ loc_00EA1A:
 	lda	$16,x
 	bit	#$0010
 	beq	loc_00EA69
+	; (not executed in the CDL traces)
 	bit	#$0020
 	bne	loc_00EA69
 	lda	$06,x
@@ -13650,7 +13811,7 @@ sub_00EB04:
 	tay
 	lda	a:tbl_05A48A,y
 	sta	$00
-	lda	a:data_05A48C,y
+	lda	a:tbl_05A48A+2,y
 	sta	$02
 	jml	[$0000]
 
@@ -13756,6 +13917,7 @@ loc_00EBA9:
 	.a16
 	rts
 loc_00EBBA:
+	; (not executed in the CDL traces)
 	plx
 	sep	#$20
 	.a8
@@ -13918,6 +14080,7 @@ sub_00ED00:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_00ED19:
+	; (not executed in the CDL traces)
 	cmp	#$0007
 	bcc	loc_00ED21
 	lda	#$0000
@@ -13925,7 +14088,7 @@ loc_00ED21:
 	sta	a:$1C84
 	asl	a
 	tay
-	lda	a:$A7CB,y
+	lda	a:data_05A7CB,y
 	sta	a:$1C80
 	stz	a:$1C86
 loc_00ED2F:
@@ -14297,6 +14460,7 @@ sub_00F00B:
 	beq	loc_00F015
 	dec	a
 	beq	loc_00F026
+	; (not executed in the CDL traces)
 	bne	loc_00F039
 loc_00F015:
 	lda	#$0000
@@ -14313,10 +14477,12 @@ loc_00F026:
 	sta	a:$1380
 	cmp	#$0900
 	bcc	loc_00F038
+	; (not executed in the CDL traces)
 	inc	a:$1C82
 loc_00F038:
 	rts
 loc_00F039:
+	; (not executed in the CDL traces)
 	rts
 
 sub_00F03A:
@@ -14884,7 +15050,7 @@ sub_00F4B7:
 	dec	$3E,x
 	ldy	#$AB30
 loc_00F4C3:
-	lda	#^data_02A000
+	lda	#$0002
 	sta	$02
 	lda	#$0040
 	sta	$08
@@ -14896,7 +15062,7 @@ loc_00F4C3:
 	rts
 
 sub_00F4DA:
-	lda	#.loword(data_02A000)
+	lda	#$A000
 	sta	$00
 	lda	#$0020
 	sta	$E2
@@ -15077,6 +15243,7 @@ loc_00F616:
 	lda	a:RDDIVL
 	ldy	$02
 	bne	loc_00F64C
+	; (not executed in the CDL traces)
 	eor	#$FFFF
 loc_00F64C:
 	sta	$02
@@ -15190,6 +15357,7 @@ loc_00F710:
 	bcc	loc_00F718
 	brl	loc_00F88A
 loc_00F718:
+	; (not executed in the CDL traces)
 	brl	loc_00F882
 
 sub_00F71B:
@@ -15242,6 +15410,7 @@ loc_00F771:
 	bne	loc_00F78F
 	lda	a:$1F8A
 	bne	loc_00F783
+	; (not executed in the CDL traces)
 	brl	loc_00F797
 loc_00F783:
 	sec
@@ -15254,6 +15423,7 @@ loc_00F78F:
 	bne	loc_00F797
 	brl	loc_00F783
 loc_00F797:
+	; (not executed in the CDL traces)
 	sec
 	lda	a:$024E
 	sbc	a:$044E
@@ -15264,6 +15434,7 @@ loc_00F7A3:
 	bcc	loc_00F7AB
 	brl	loc_00F88A
 loc_00F7AB:
+	; (not executed in the CDL traces)
 	brl	loc_00F882
 
 sub_00F7AE:
@@ -16073,8 +16244,11 @@ loc_00FE19:
 loc_00FE23:
 	rtl
 
+; Never executed in the CDL traces (found by the unreferenced-routine heuristic).
+; DB is assumed to be $05, the game's usual data bank (hint).
 ; (no caller found; decoded because it follows the end of a routine)
 sub_00FE24:
+	; (not executed in the CDL traces)
 	sta	$00
 	phx
 	ldx	$04
@@ -16084,7 +16258,7 @@ sub_00FE24:
 	lsr	a
 	and	#$001C
 	sta	$08
-	lda	a:$AB64,x
+	lda	a:data_05AB64,x
 	tay
 	lda	a:$0000,y
 	lsr	a
@@ -16106,7 +16280,7 @@ sub_00FE24:
 	clc
 	adc	$06
 	clc
-	adc	a:$AB68,x
+	adc	a:data_05AB68,x
 	sta	$08
 	lda	$02
 	asl	a
@@ -16307,10 +16481,40 @@ loc_00FFA4:
 	bne	loc_00FF7F
 	lda	$16
 	rtl
-	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $43, $4F
-	.byte	$4E, $54, $52, $41, $33, $20, $54, $48, $45, $20, $41, $4C, $49, $45, $4E, $20
-	.byte	$57, $41, $52, $53, $00, $0A, $00, $01, $A4, $00, $C3, $F3, $3C, $0C, $FF, $FF
-	.byte	$FF, $FF, $E2, $8B, $E2, $8B, $E2, $8B, $9B, $81, $00, $80, $E2, $8B, $FF, $FF
-	.byte	$FF, $FF, $E2, $8B
-data_00FFF6:
-	.byte	$E2, $8B, $E2, $8B, $9B, $81, $00, $80, $E2, $8B
+	; CDL: not accessed
+	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+
+; ---------------------------------------------------------------------------
+; Internal ROM header ($00:FFC0-$00:FFDF) and interrupt vectors
+; ($00:FFE0-$00:FFFF).  Reproduced exactly as in the original ROM.
+; The developer ID at $FFDA is not $33, so there is no extended header:
+; $FFB0-$FFBF above are ordinary ROM bytes (code ends at $FFB1).
+; ---------------------------------------------------------------------------
+rom_header:
+	.byte	"CONTRA3 THE ALIEN WAR"	; $FFC0 title (21 bytes, $FFC0-$FFD4)
+	.byte	$53	; $FFD5 map mode: invalid. "S" is the 22nd character of the title, which overflows the field (LoROM SlowROM would be $20)
+	.byte	$00	; $FFD6 cartridge type: ROM only
+	.byte	$0A	; $FFD7 ROM size: 2^10 KiB = 1024 KiB
+	.byte	$00	; $FFD8 SRAM size: none
+	.byte	$01	; $FFD9 region: North America
+	.byte	$A4	; $FFDA developer (licensee) ID: Konami
+	.byte	$00	; $FFDB version: 1.0
+	.word	$F3C3	; $FFDC checksum complement (checksum ^ $FFFF)
+	.word	$0C3C	; $FFDE checksum: 16-bit sum of every ROM byte (matches)
+vectors:
+	.word	$FFFF	; $FFE0 native: reserved
+	.word	$FFFF	; $FFE2 native: reserved
+	.addr	irq	; $FFE4 native COP
+	.addr	irq	; $FFE6 native BRK
+	.addr	irq	; $FFE8 native ABORT
+	.addr	nmi	; $FFEA native NMI
+	.addr	reset	; $FFEC native: unused
+	.addr	irq	; $FFEE native IRQ
+	.word	$FFFF	; $FFF0 emulation: reserved
+	.word	$FFFF	; $FFF2 emulation: reserved
+	.addr	irq	; $FFF4 emulation COP
+	.addr	irq	; $FFF6 emulation: unused
+	.addr	irq	; $FFF8 emulation ABORT
+	.addr	nmi	; $FFFA emulation NMI
+	.addr	reset	; $FFFC emulation RESET
+	.addr	irq	; $FFFE emulation IRQ/BRK

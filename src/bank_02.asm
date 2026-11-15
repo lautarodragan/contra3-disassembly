@@ -56,6 +56,7 @@ sub_028041:
 	ldy	#$0001
 	lda	a:$1E40
 	beq	loc_028064
+	; (not executed in the CDL traces)
 	ldy	#$0004
 loc_028064:
 	sty	a:$1E42
@@ -85,6 +86,7 @@ loc_028096:
 sub_028097:
 	jsr	a:sub_028338
 	bcc	loc_02809D
+	; (not executed in the CDL traces)
 	rtl
 loc_02809D:
 	jsl	f:sub_028E33
@@ -110,6 +112,7 @@ sub_0280D9:
 	lda	a:$1F8A
 	ora	a:$1FCA
 	bne	loc_028103
+	; (not executed in the CDL traces)
 	lda	a:$1E80
 	beq	loc_0280F7
 	cmp	#$000F
@@ -265,6 +268,7 @@ loc_02822E:
 sub_02822F:
 	jsr	a:sub_028338
 	bcc	loc_028235
+	; (not executed in the CDL traces)
 	rtl
 loc_028235:
 	jsl	f:sub_028E33
@@ -402,6 +406,7 @@ loc_028362:
 loc_028369:
 	bit	#$2000
 	beq	loc_02838D
+	; (not executed in the CDL traces)
 	lda	a:$1E80
 	sta	a:$15D2
 	lda	a:$1FB4
@@ -419,6 +424,7 @@ loc_02838D:
 	rts
 
 sub_02838F:
+	; (not executed in the CDL traces)
 	lda	a:$1E80
 	ora	a:$1FB4
 	ora	a:$1FF4
@@ -444,6 +450,7 @@ loc_0283B4:
 	rts
 
 sub_0283BC:
+	; (not executed in the CDL traces)
 	stz	a:$1586
 	lda	#$0001
 	sta	a:$1590
@@ -488,6 +495,7 @@ sub_0283BC:
 	rts
 
 sub_028427:
+	; (not executed in the CDL traces)
 	lda	a:$1E80
 	cmp	#$000F
 	bcs	loc_02843A
@@ -502,6 +510,7 @@ loc_02843A:
 	rts
 
 sub_02843F:
+	; (not executed in the CDL traces)
 	lda	#$0000
 	ldy	a:$1F8A
 	beq	loc_028449
@@ -519,6 +528,7 @@ loc_028458:
 	rts
 
 sub_02845A:
+	; (not executed in the CDL traces)
 	lda	a:$1E80
 	beq	loc_02846A
 	dec	a:$1E80
@@ -536,6 +546,7 @@ loc_02846A:
 	rts
 
 sub_02847B:
+	; (not executed in the CDL traces)
 	lda	#$0001
 	sta	a:$1586
 	stz	a:$1590
@@ -569,6 +580,7 @@ sub_02847B:
 	rts
 
 sub_0284C4:
+	; (not executed in the CDL traces)
 	lda	a:$1E80
 	cmp	a:$15D2
 	bcs	loc_0284E7
@@ -783,6 +795,7 @@ sub_028669:
 	beq	loc_028698
 	dec	a
 	beq	loc_028688
+	; (not executed in the CDL traces)
 	lda	$E8
 	and	#$0003
 	sta	a:$1526
@@ -817,6 +830,7 @@ loc_0286B1:
 	bne	loc_0286B7
 	brl	loc_02873F
 loc_0286B7:
+	; (not executed in the CDL traces)
 	lda	a:$152A
 	and	a:$156A
 	bne	loc_0286CD
@@ -935,6 +949,7 @@ loc_028799:
 	inc	a
 	cmp	#$0004
 	bcc	loc_0287A5
+	; (not executed in the CDL traces)
 	lda	#$0000
 loc_0287A5:
 	sta	a:$1528
@@ -943,6 +958,7 @@ loc_0287A9:
 	lda	a:$1526
 	dec	a
 	bpl	loc_0287B2
+	; (not executed in the CDL traces)
 	lda	#$0003
 loc_0287B2:
 	sta	a:$1526
@@ -976,6 +992,7 @@ loc_0287DD:
 	pla
 	bit	#$0800
 	bne	loc_028810
+	; (not executed in the CDL traces)
 	bit	#$0400
 	bne	loc_02881D
 	bit	#$0100
@@ -984,6 +1001,7 @@ loc_0287DD:
 loc_0287F7:
 	lda	a:$1F8A
 	bne	loc_028802
+	; (not executed in the CDL traces)
 	lda	#$0002
 	sta	a:$152A
 loc_028802:
@@ -996,11 +1014,13 @@ loc_028810:
 	lda	a:$1568
 	dec	a
 	bpl	loc_028819
+	; (not executed in the CDL traces)
 	lda	#$0003
 loc_028819:
 	sta	a:$1568
 	rts
 loc_02881D:
+	; (not executed in the CDL traces)
 	lda	a:$1568
 	inc	a
 	cmp	#$0004
@@ -1055,6 +1075,7 @@ sub_028887:
 	beq	loc_0288CD
 	dec	a
 	beq	loc_0288FF
+	; (not executed in the CDL traces)
 	lda	#$0080
 	sta	a:$150C
 	sta	a:$154C
@@ -1247,6 +1268,7 @@ sub_028A14:
 	cmp	a:$1566
 	beq	loc_028A2D
 	bpl	loc_028A26
+	; (not executed in the CDL traces)
 	clc
 	adc	#$0002
 	sta	a:$1FD0
@@ -1844,6 +1866,7 @@ sub_028EF2:
 	stz	$12,x
 	lda	a:$1E02
 	beq	loc_028F0C
+	; (not executed in the CDL traces)
 	dec	a
 	bne	loc_028F0D
 	lda	a:$10F4,x
@@ -1852,6 +1875,7 @@ sub_028EF2:
 loc_028F0C:
 	rtl
 loc_028F0D:
+	; (not executed in the CDL traces)
 	jsr	a:sub_028FBB
 	lda	a:$002C,y
 	sta	$2C,x
@@ -1931,6 +1955,7 @@ loc_028FA5:
 	rtl
 
 sub_028FBB:
+	; (not executed in the CDL traces)
 	cpx	#$0EC0
 	bne	loc_028FC4
 	ldy	#$0F00
@@ -1969,6 +1994,7 @@ loc_028FEE:
 	bne	loc_028FD0
 	rts
 loc_028FF3:
+	; (not executed in the CDL traces)
 	lda	$2C,x
 	beq	loc_029036
 	jsr	a:sub_028FBB
@@ -2042,6 +2068,7 @@ sub_02906E:
 	bpl	loc_02907C
 	rts
 loc_029078:
+	; (not executed in the CDL traces)
 	lda	#$0000
 	rts
 loc_02907C:
@@ -2150,6 +2177,7 @@ loc_02912F:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_029130:
+	; (not executed in the CDL traces)
 	lda	a:$066C,x
 	bit	#$0040
 	beq	loc_0291A4
@@ -2769,6 +2797,7 @@ sub_0295CD:
 	dec	a
 	dec	a
 	bne	loc_0295E2
+	; (not executed in the CDL traces)
 	jsr	a:sub_028FBB
 	lda	a:$0012,y
 	beq	loc_0295E2
@@ -2778,6 +2807,7 @@ loc_0295E2:
 	rts
 
 sub_0295E3:
+	; (not executed in the CDL traces)
 	lda	a:$000A,y
 	sec
 	sbc	#$0090
@@ -2801,6 +2831,7 @@ loc_0295FF:
 	rts
 
 sub_029606:
+	; (not executed in the CDL traces)
 	lda	a:$000E,y
 	sec
 	sbc	#$0058
@@ -2875,6 +2906,7 @@ sub_02966C:
 	sta	$04,x
 	rts
 loc_02967D:
+	; (not executed in the CDL traces)
 	lda	$04,x
 	sec
 	sbc	#$0008
@@ -2890,6 +2922,7 @@ sub_029689:
 	beq	loc_0296B0
 	dec	a:$10CA,x
 	bpl	loc_02969D
+	; (not executed in the CDL traces)
 	stz	a:$10CA,x
 loc_02969D:
 	lda	a:$10C2,x
@@ -3104,6 +3137,7 @@ sub_02983C:
 	bcc	loc_029858
 	jsl	f:sub_0298CC
 	bcc	loc_029849
+	; (not executed in the CDL traces)
 	rtl
 loc_029849:
 	jsr	a:sub_02986B
@@ -3210,6 +3244,7 @@ sub_02990A:
 	lda	#$05C0
 	cpx	#$0EC0
 	beq	loc_02991F
+	; (not executed in the CDL traces)
 	ldy	#$0700
 	lda	#$0840
 loc_02991F:
@@ -3220,6 +3255,7 @@ loc_029923:
 	lda	#$0700
 	cpx	#$0EC0
 	beq	loc_029934
+	; (not executed in the CDL traces)
 	ldy	#$0840
 	lda	#$0980
 loc_029934:
@@ -3249,6 +3285,7 @@ sub_029953:
 	lda	#$05C0
 	cpx	#$0EC0
 	beq	loc_029968
+	; (not executed in the CDL traces)
 	ldy	#$0700
 	lda	#$0840
 loc_029968:
@@ -3259,6 +3296,7 @@ loc_02996C:
 	lda	#$0700
 	cpx	#$0EC0
 	beq	loc_02997D
+	; (not executed in the CDL traces)
 	ldy	#$0840
 	lda	#$0980
 loc_02997D:
@@ -3388,6 +3426,7 @@ sub_029A49:
 	bne	loc_029A61
 	lda	a:$1F8A
 	bne	loc_029A55
+	; (not executed in the CDL traces)
 	sec
 	rts
 loc_029A55:
@@ -3404,6 +3443,7 @@ loc_029A61:
 loc_029A66:
 	lda	a:$1F8A
 	bne	loc_029A72
+	; (not executed in the CDL traces)
 	lda	a:$1FCA
 	bne	loc_029A7E
 	sec
@@ -3418,6 +3458,7 @@ loc_029A72:
 loc_029A7E:
 	lda	a:$1FCA
 	bne	loc_029A8A
+	; (not executed in the CDL traces)
 	lda	a:$1F8A
 	bne	loc_029A66
 	sec
@@ -3435,6 +3476,7 @@ sub_029A96:
 	bne	loc_029AA2
 	lda	a:$1F8A
 	bne	loc_029AE0
+	; (not executed in the CDL traces)
 	sec
 	rtl
 loc_029AA2:
@@ -3483,6 +3525,7 @@ loc_029AEC:
 	clc
 	rtl
 loc_029AF8:
+	; (not executed in the CDL traces)
 	lda	a:$1F8A
 	bne	loc_029AE0
 	sec
@@ -3496,6 +3539,7 @@ loc_029AFF:
 sub_029B06:
 	jsl	f:sub_029A96
 	bcc	loc_029B0D
+	; (not executed in the CDL traces)
 	rtl
 loc_029B0D:
 	lda	$18
@@ -3527,6 +3571,7 @@ sub_029B21:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_029B37:
+	; (not executed in the CDL traces)
 	phx
 	phy
 	phb
@@ -3543,6 +3588,7 @@ sub_029B37:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_029B4D:
+	; (not executed in the CDL traces)
 	phx
 	phb
 	ldx	#$1900
@@ -3558,6 +3604,7 @@ sub_029B4D:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_029B62:
+	; (not executed in the CDL traces)
 	ldx	#$0D40
 loc_029B65:
 	lda	$10,x
@@ -3954,6 +4001,7 @@ loc_029DD5:
 sub_029DD9:
 	jsl	f:sub_029A96
 	bcc	loc_029DE0
+	; (not executed in the CDL traces)
 	rts
 loc_029DE0:
 	lda	$18
@@ -4005,6 +4053,7 @@ sub_029E1F:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_029E2F:
+	; (not executed in the CDL traces)
 	lda	$3C,x
 	bne	loc_029E3C
 	lda	$04,x
@@ -4255,7 +4304,6 @@ loc_029FE2:
 loc_029FFB:
 	ldy	$84
 	lda	a:data_05D4C8,y
-data_02A000:
 	lsr	a
 	cmp	$24,x
 	bne	loc_02A011
@@ -4402,6 +4450,7 @@ loc_02A101:
 loc_02A109:
 	cmp	#$0005
 	bne	loc_02A111
+	; (not executed in the CDL traces)
 	brl	loc_02A0D4
 loc_02A111:
 	lda	$12,x
@@ -4588,6 +4637,7 @@ loc_02A27D:
 	rtl
 
 sub_02A27E:
+	; (not executed in the CDL traces)
 	lda	$12,x
 	phx
 	asl	a
@@ -4604,6 +4654,7 @@ tbl_02A28D:
 	.addr	sub_02A31E
 
 sub_02A297:
+	; (not executed in the CDL traces)
 	lda	$00,x
 	bne	loc_02A2BB
 	ldy	$84
@@ -4631,6 +4682,7 @@ loc_02A2C2:
 	rtl
 
 sub_02A2D1:
+	; (not executed in the CDL traces)
 	lda	#$0007
 	sta	$00,x
 	lda	#$1900
@@ -4650,6 +4702,7 @@ loc_02A2F3:
 	inc	$12,x
 
 sub_02A2FA:
+	; (not executed in the CDL traces)
 	jsr	a:sub_02A377
 	bcc	loc_02A302
 	brl	loc_02A39A
@@ -5226,12 +5279,14 @@ loc_02A763:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_02A767:
+	; (not executed in the CDL traces)
 	lda	#$0030
 	jsl	f:sub_00868F
 	lda	#$0005
 	sta	$12,x
 
 sub_02A773:
+	; (not executed in the CDL traces)
 	phx
 	ldx	#$0E00
 	jsl	f:sub_029D0C
@@ -5670,9 +5725,7 @@ sub_02AA86:
 	sec
 	sbc	#$0008
 	clc
-loc_02AAA9:
 	adc	$0E,x
-data_02AAAA = loc_02AAA9 + 1
 	sta	$0E,x
 	lda	#$0001
 	sta	$12,x
@@ -6041,6 +6094,7 @@ loc_02AD0C:
 	bcs	loc_02AD2B
 	lda	a:$0B90
 	bne	loc_02AD20
+	; (not executed in the CDL traces)
 	brl	loc_02AE9A
 loc_02AD20:
 	lda	a:$0B92
@@ -6181,6 +6235,7 @@ loc_02AE3B:
 	lda	a:$15A0
 	cmp	#$3C80
 	bcc	loc_02AE46
+	; (not executed in the CDL traces)
 	brl	loc_02AE0F
 loc_02AE46:
 	lda	$04,x
@@ -6416,6 +6471,7 @@ sub_02B01B:
 	sec
 	sbc	#$0010
 	bpl	loc_02B026
+	; (not executed in the CDL traces)
 	lda	#$0000
 loc_02B026:
 	sta	$2C,x
@@ -6494,6 +6550,7 @@ sub_02B0B2:
 sub_02B0B3:
 	lda	$2C,x
 	beq	loc_02B0C2
+	; (not executed in the CDL traces)
 	sec
 	sbc	#$0020
 	bcs	loc_02B0C0
@@ -6505,6 +6562,7 @@ loc_02B0C2:
 	lda	$1A,x
 	ora	$18,x
 	beq	loc_02B0F6
+	; (not executed in the CDL traces)
 	lda	$1A,x
 	bmi	loc_02B0E5
 	sec
@@ -6535,6 +6593,7 @@ sub_02B0F7:
 	lda	$1E,x
 	ora	$1C,x
 	beq	loc_02B128
+	; (not executed in the CDL traces)
 	lda	$1E,x
 	bmi	loc_02B117
 	sec
@@ -6588,6 +6647,7 @@ sub_02B146:
 loc_02B157:
 	lda	a:$1FCA
 	beq	loc_02B168
+	; (not executed in the CDL traces)
 	lda	a:$0F02
 	and	#$CFFF
 	ora	#$2000
@@ -6605,6 +6665,7 @@ sub_02B169:
 loc_02B17A:
 	lda	a:$1FCA
 	beq	loc_02B18B
+	; (not executed in the CDL traces)
 	lda	a:$0F02
 	and	#$CFFF
 	ora	#$1000
@@ -6634,6 +6695,7 @@ sub_02B1A7:
 	lda	a:$1F8A
 	ora	a:$1FCA
 	bne	loc_02B1B0
+	; (not executed in the CDL traces)
 	rts
 loc_02B1B0:
 	lda	#$FFFF
@@ -6654,6 +6716,7 @@ loc_02B1B0:
 loc_02B1D2:
 	lda	a:$1FCA
 	beq	loc_02B1ED
+	; (not executed in the CDL traces)
 	lda	a:$0F0A
 	sec
 	sbc	$0A,x
@@ -6675,6 +6738,7 @@ loc_02B1F5:
 	sta	a:$15A0
 	rts
 loc_02B1FE:
+	; (not executed in the CDL traces)
 	lda	$78
 	xba
 	lsr	a
@@ -7012,6 +7076,7 @@ loc_02B455:
 	lda	a:$0AD2
 	cmp	#$0011
 	bcc	loc_02B460
+	; (not executed in the CDL traces)
 	brl	loc_02B502
 loc_02B460:
 	cmp	#$0003
@@ -7215,6 +7280,7 @@ loc_02B5C8:
 	lda	a:$0AD2
 	cmp	#$0011
 	bcc	loc_02B5D3
+	; (not executed in the CDL traces)
 	brl	loc_02B66E
 loc_02B5D3:
 	cmp	#$0002
@@ -7412,6 +7478,7 @@ sub_02B71E:
 loc_02B733:
 	rts
 loc_02B734:
+	; (not executed in the CDL traces)
 	jsl	f:sub_029BC2
 	bcs	loc_02B77C
 	lda	$78
@@ -7466,6 +7533,7 @@ sub_02B79B:
 	cmp	#$0000
 	beq	loc_02B7C8
 	bpl	loc_02B7A6
+	; (not executed in the CDL traces)
 	eor	#$FFFF
 	inc	a
 loc_02B7A6:
@@ -7812,6 +7880,7 @@ loc_02BA36:
 	stz	$14,x
 	rtl
 loc_02BA3F:
+	; (not executed in the CDL traces)
 	ldy	a:$1596
 	bne	loc_02BA4A
 	ldy	#$0AC0
@@ -8221,6 +8290,7 @@ sub_02BD21:
 loc_02BD6D:
 	dec	$12,x
 	bne	loc_02BD77
+	; (not executed in the CDL traces)
 	lda	#$FFFF
 	sta	$10,x
 	rtl
@@ -8245,6 +8315,7 @@ sub_02BD7B:
 	rtl
 
 sub_02BD9B:
+	; (not executed in the CDL traces)
 	lda	$12,x
 	bne	loc_02BDC1
 	lda	#$0007
@@ -8560,6 +8631,7 @@ loc_02BFE4:
 	ldy	#$0EC0
 	cpx	#$0700
 	bcc	loc_02BFFD
+	; (not executed in the CDL traces)
 	ldy	#$0F00
 loc_02BFFD:
 	lda	a:$0012,y
@@ -8645,6 +8717,7 @@ loc_02C07F:
 sub_02C086:
 	lda	a:$15A8
 	beq	loc_02C08D
+	; (not executed in the CDL traces)
 	clc
 	rtl
 loc_02C08D:
@@ -9094,6 +9167,7 @@ sub_02C3B7:
 	lda	a:$0090,x
 	cmp	#$0002
 	bne	loc_02C3D0
+	; (not executed in the CDL traces)
 	lda	a:$1594
 	cmp	#$0006
 	beq	loc_02C3DD
@@ -9120,6 +9194,7 @@ sub_02C3E4:
 	dec	a
 	dec	a
 	bne	loc_02C40C
+	; (not executed in the CDL traces)
 	jsr	a:sub_02CB85
 	bcc	loc_02C40B
 	ldy	$84
@@ -9175,6 +9250,7 @@ loc_02C445:
 	dec	a
 	dec	a
 	bne	loc_02C470
+	; (not executed in the CDL traces)
 	jsr	a:sub_02CC00
 	ldy	$84
 	lda	$04,x
@@ -10119,6 +10195,7 @@ loc_02CB11:
 	rts
 
 sub_02CB27:
+	; (not executed in the CDL traces)
 	jsr	a:sub_02CB59
 	lda	a:$0016,y
 	bpl	loc_02CB57
@@ -10462,6 +10539,7 @@ loc_02CD85:
 	bcs	loc_02CDC6
 	lda	a:$1F88
 	beq	loc_02CDC0
+	; (not executed in the CDL traces)
 	lda	$2E,x
 	ora	#$0040
 	sta	$2E,x
@@ -10578,11 +10656,13 @@ loc_02CE8D:
 	inc	a
 	cmp	#$000A
 	bcc	loc_02CE9B
+	; (not executed in the CDL traces)
 	lda	#$0009
 loc_02CE9B:
 	sta	a:$1F8C
 	bra	loc_02CEA6
 loc_02CEA0:
+	; (not executed in the CDL traces)
 	lda	#$0200
 	sta	a:$1F88
 loc_02CEA6:
@@ -10632,6 +10712,7 @@ loc_02CEBF:
 	sbc	$06,x
 	sta	a:$0B46
 	bpl	loc_02CF09
+	; (not executed in the CDL traces)
 	ldy	#$0B40
 	jsl	f:sub_02EB75
 loc_02CF09:
@@ -10681,6 +10762,7 @@ loc_02CF3B:
 	sbc	$06,x
 	sta	a:$0B86
 	bpl	loc_02CF78
+	; (not executed in the CDL traces)
 	ldy	#$0B80
 	jsl	f:sub_02EB75
 loc_02CF78:
@@ -10717,6 +10799,7 @@ loc_02CF7B:
 	sbc	$06,x
 	sta	a:$0006,y
 	bpl	loc_02CFCA
+	; (not executed in the CDL traces)
 	jsl	f:sub_02EB75
 loc_02CFCA:
 	tya
@@ -10757,6 +10840,7 @@ loc_02CFEC:
 	bcs	loc_02D036
 	lda	a:$1F88
 	beq	loc_02D030
+	; (not executed in the CDL traces)
 	lda	a:$0BAE
 	ora	#$0040
 	sta	a:$0BAE
@@ -10788,6 +10872,7 @@ loc_02D039:
 	sbc	a:$0ECE
 	cmp	#$0024
 	bcs	loc_02D07A
+	; (not executed in the CDL traces)
 	lda	a:$1F88
 	beq	loc_02D074
 	lda	$2E,x
@@ -10810,6 +10895,7 @@ loc_02D07A:
 	bcc	loc_02D039
 	lda	a:$1F88
 	beq	loc_02D0CC
+	; (not executed in the CDL traces)
 	lda	a:$0B56
 	bpl	loc_02D0CC
 	lda	a:$0B4A
@@ -10963,6 +11049,7 @@ sub_02D1A7:
 	jsr	a:sub_02D1DD
 	ldx	$1A
 	bne	loc_02D1BB
+	; (not executed in the CDL traces)
 	brl	loc_02D2C8
 loc_02D1BB:
 	bra	loc_02D1C4
@@ -11156,6 +11243,7 @@ loc_02D2F9:
 	sbc	$06,x
 	sta	a:$0AC6
 	bpl	loc_02D343
+	; (not executed in the CDL traces)
 	ldy	#$0AC0
 	jsl	f:sub_02EB75
 loc_02D343:
@@ -11231,6 +11319,7 @@ loc_02D3B5:
 	sbc	a:$0ECE
 	cmp	#$0024
 	bcs	loc_02D3F7
+	; (not executed in the CDL traces)
 	lda	a:$0AEE
 	bit	#$0040
 	bne	loc_02D3E8
@@ -11263,6 +11352,7 @@ loc_02D3FA:
 	bcs	loc_02D43B
 	lda	a:$1F88
 	beq	loc_02D435
+	; (not executed in the CDL traces)
 	lda	$2E,x
 	ora	#$0040
 	sta	$2E,x
@@ -11299,6 +11389,7 @@ loc_02D449:
 loc_02D46A:
 	rtl
 loc_02D46B:
+	; (not executed in the CDL traces)
 	jsr	a:sub_02DA9C
 	jsr	a:sub_02D6A6
 	lda	a:$0F90
@@ -11395,6 +11486,7 @@ loc_02D515:
 	sbc	$0E,x
 	cmp	#$0018
 	bcs	loc_02D53F
+	; (not executed in the CDL traces)
 	lda	a:$002E,y
 	ora	#$0040
 	sta	a:$002E,y
@@ -11454,6 +11546,7 @@ loc_02D577:
 	bcs	loc_02D5B8
 	lda	a:$1FC8
 	beq	loc_02D5B2
+	; (not executed in the CDL traces)
 	lda	$2E,x
 	ora	#$0040
 	sta	$2E,x
@@ -11565,6 +11658,7 @@ loc_02D669:
 	sta	a:$1FC4,y
 	bra	loc_02D698
 loc_02D67F:
+	; (not executed in the CDL traces)
 	beq	loc_02D692
 	lda	a:$1FCC
 	inc	a
@@ -11589,6 +11683,7 @@ loc_02D69A:
 	rts
 
 sub_02D6A6:
+	; (not executed in the CDL traces)
 	ldx	#$0700
 loc_02D6A9:
 	lda	$10,x
@@ -11854,6 +11949,7 @@ loc_02D8EE:
 	jmp	a:loc_02D5C3
 
 sub_02D8F1:
+	; (not executed in the CDL traces)
 	lda	#$0DC0
 	sta	$1E
 	bra	loc_02D8FD
@@ -11948,6 +12044,7 @@ loc_02D989:
 	bra	loc_02D9AF
 
 sub_02D999:
+	; (not executed in the CDL traces)
 	lda	#$FFFF
 	sta	$18
 	stz	$1A
@@ -11961,6 +12058,7 @@ loc_02D9AD:
 loc_02D9AF:
 	ldx	$1A
 	bne	loc_02D9B6
+	; (not executed in the CDL traces)
 	brl	loc_02DA8C
 loc_02D9B6:
 	lda	$18
@@ -12020,6 +12118,7 @@ loc_02DA14:
 	dec	a
 	beq	loc_02DA54
 loc_02DA1C:
+	; (not executed in the CDL traces)
 	lda	a:data_05E096,y
 	beq	loc_02DA32
 	sta	a:$0200
@@ -12070,6 +12169,7 @@ loc_02DA85:
 	sta	a:$02CE
 	rts
 loc_02DA8C:
+	; (not executed in the CDL traces)
 	lda	#$FFFF
 	sta	a:$159A
 	lda	$78
@@ -12079,6 +12179,7 @@ loc_02DA8C:
 	jmp	a:loc_02DA14
 
 sub_02DA9C:
+	; (not executed in the CDL traces)
 	ldx	#$0AC0
 	lda	$12,x
 	cmp	#$0003
@@ -12108,11 +12209,13 @@ loc_02DAC4:
 	jmp	a:loc_02D9F8
 
 sub_02DAD7:
+	; (not executed in the CDL traces)
 	jsr	a:sub_02DAE0
 	jsr	a:sub_02D61E
 	jmp	a:loc_02DBA1
 
 sub_02DAE0:
+	; (not executed in the CDL traces)
 	ldx	#$0700
 loc_02DAE3:
 	lda	$10,x
@@ -12368,6 +12471,7 @@ loc_02DD03:
 	jsl	f:sub_04DCD2
 	plx
 	bcc	loc_02DD14
+	; (not executed in the CDL traces)
 	inc	a:$187E,x
 loc_02DD14:
 	dex
@@ -12896,6 +13000,7 @@ sub_02E053:
 	rtl
 
 sub_02E06F:
+	; (not executed in the CDL traces)
 	ldx	$1E
 	sep	#$20
 	.a8
@@ -12957,6 +13062,7 @@ loc_02E0CD:
 	cmp	#$0100
 	bcc	loc_02E0D7
 loc_02E0D2:
+	; (not executed in the CDL traces)
 	lda	#$0001
 	bra	loc_02E0EE
 loc_02E0D7:
@@ -12967,6 +13073,7 @@ loc_02E0D7:
 	bmi	loc_02E0D2
 	cmp	#$0100
 	bmi	loc_02E0E8
+	; (not executed in the CDL traces)
 	lda	#$00FF
 loc_02E0E8:
 	and	#$00FF
@@ -13011,6 +13118,7 @@ loc_02E108:
 	.a16
 	rtl
 loc_02E133:
+	; (not executed in the CDL traces)
 	ldy	#$0000
 	lda	a:$0EC2
 	bit	#$2000
@@ -13204,6 +13312,7 @@ loc_02E291:
 	bne	loc_02E2DC
 	brl	loc_02E341
 loc_02E2DC:
+	; (not executed in the CDL traces)
 	lda	#$3C20
 	sta	$1C
 	lda	a:$0F78
@@ -13318,6 +13427,7 @@ loc_02E3B9:
 	.a16
 	rtl
 loc_02E3E4:
+	; (not executed in the CDL traces)
 	ldy	#$0000
 	lda	a:$0F02
 	bit	#$2000
@@ -13511,6 +13621,7 @@ loc_02E542:
 	bne	loc_02E58D
 	brl	loc_02E5F2
 loc_02E58D:
+	; (not executed in the CDL traces)
 	lda	#$3E20
 	sta	$1C
 	lda	a:$0FB8
@@ -13615,6 +13726,7 @@ sub_02E671:
 	beq	loc_02E68E
 	lda	a:$1048,x
 	beq	loc_02E68B
+	; (not executed in the CDL traces)
 	dec	a:$1048,x
 	beq	loc_02E68B
 	lda	a:$1048,x
@@ -13670,6 +13782,7 @@ sub_02E6C6:
 	bne	loc_02E6E0
 	brl	loc_02E751
 loc_02E6E0:
+	; (not executed in the CDL traces)
 	lda	a:$1510
 	sta	a:$0ECA
 	stz	a:$0EC8
@@ -13749,6 +13862,7 @@ sub_02E7AF:
 	lda	a:$1590
 	ora	a:$158E
 	beq	loc_02E7BA
+	; (not executed in the CDL traces)
 	rtl
 loc_02E7BA:
 	lda	a:$1E02
@@ -13757,6 +13871,7 @@ loc_02E7BA:
 	bne	loc_02E7C5
 	brl	loc_02E86D
 loc_02E7C5:
+	; (not executed in the CDL traces)
 	brl	loc_02E9C9
 loc_02E7C8:
 	lda	a:$15A8
@@ -13832,6 +13947,7 @@ loc_02E86C:
 loc_02E86D:
 	lda	a:$15A8
 	beq	loc_02E875
+	; (not executed in the CDL traces)
 	brl	loc_02E8F4
 loc_02E875:
 	lda	a:$0ECA
@@ -13886,6 +14002,7 @@ loc_02E8E6:
 	sta	a:$1FD8
 	rtl
 loc_02E8F4:
+	; (not executed in the CDL traces)
 	lda	a:$0ECA
 	sta	a:$1510
 	lda	a:$0ECE
@@ -14068,12 +14185,14 @@ loc_02EAA3:
 	rtl
 
 sub_02EAA4:
+	; (not executed in the CDL traces)
 	jsr	a:sub_02EAEA
 	jsr	a:sub_02EAAE
 	jsr	a:sub_02EAC1
 	rts
 
 sub_02EAAE:
+	; (not executed in the CDL traces)
 	lda	a:$0ED2
 	beq	loc_02EAC0
 	lda	a:$0ECA
@@ -14087,6 +14206,7 @@ loc_02EAC0:
 	rts
 
 sub_02EAC1:
+	; (not executed in the CDL traces)
 	lda	a:$0F12
 	beq	loc_02EAD3
 	lda	a:$0F0A
@@ -14111,6 +14231,7 @@ loc_02EAE0:
 	sta	a:$1550
 
 sub_02EAEA:
+	; (not executed in the CDL traces)
 	lda	a:$1510
 	clc
 	adc	#$0048
@@ -14122,12 +14243,14 @@ sub_02EAEA:
 	rts
 
 sub_02EAFD:
+	; (not executed in the CDL traces)
 	jsr	a:sub_02EB43
 	jsr	a:sub_02EB07
 	jsr	a:sub_02EB1A
 	rts
 
 sub_02EB07:
+	; (not executed in the CDL traces)
 	lda	a:$1F8A
 	beq	loc_02EB19
 	lda	a:$0ECE
@@ -14141,6 +14264,7 @@ loc_02EB19:
 	rts
 
 sub_02EB1A:
+	; (not executed in the CDL traces)
 	lda	a:$1FCA
 	beq	loc_02EB2C
 	lda	a:$0F0E
@@ -14165,6 +14289,7 @@ loc_02EB39:
 	sta	a:$1552
 
 sub_02EB43:
+	; (not executed in the CDL traces)
 	lda	a:$1512
 	clc
 	adc	#$002C
@@ -14190,6 +14315,7 @@ loc_02EB6B:
 	beq	loc_02EB74
 	jml	f:loc_02CC57
 loc_02EB74:
+	; (not executed in the CDL traces)
 	rtl
 
 sub_02EB75:
@@ -14232,6 +14358,7 @@ sub_02EBA2:
 	jsl	f:sub_00B83B
 	rts
 loc_02EBB3:
+	; (not executed in the CDL traces)
 	tyx
 	jsr	a:sub_02EBEA
 	ldx	#$1FC0
@@ -14251,12 +14378,14 @@ sub_02EBC5:
 	rts
 
 sub_02EBCE:
+	; (not executed in the CDL traces)
 	phx
 	jsr	a:sub_02EBD4
 	plx
 	rtl
 
 sub_02EBD4:
+	; (not executed in the CDL traces)
 	jsr	a:sub_02EBEA
 	tyx
 	jsl	f:sub_00B83B
@@ -14676,6 +14805,7 @@ sub_02EEF7:
 	adc	a:RDMPYL
 	sta	$01
 	bcc	loc_02EF24
+	; (not executed in the CDL traces)
 	inc	$03
 loc_02EF24:
 	sep	#$20
@@ -14706,6 +14836,7 @@ loc_02EF3F:
 	adc	a:RDMPYL
 	sta	$02
 	rts
+	; CDL: not accessed
 	.byte	$C2, $30
 
 sub_02EF54:
@@ -14823,6 +14954,7 @@ loc_02F015:
 	bcs	loc_02F02E
 	brl	loc_02F060
 loc_02F02E:
+	; (not executed in the CDL traces)
 	brl	loc_02F07D
 loc_02F031:
 	lda	#$0058
@@ -14877,6 +15009,7 @@ loc_02F07D:
 sub_02F082:
 	jsr	a:sub_02F75F
 	bne	loc_02F08A
+	; (not executed in the CDL traces)
 	brl	loc_02EFF1
 loc_02F08A:
 	jsl	f:sub_02B1A3
@@ -14960,6 +15093,7 @@ sub_02F109:
 	beq	loc_02F164
 	cmp	#$0007
 	beq	loc_02F164
+	; (not executed in the CDL traces)
 	lda	a:$15C0
 	phx
 	asl	a
@@ -14975,6 +15109,7 @@ tbl_02F144:
 	.addr	sub_02F188
 
 sub_02F14C:
+	; (not executed in the CDL traces)
 	stz	a:$1592
 loc_02F14F:
 	lda	#$0001
@@ -15200,6 +15335,7 @@ loc_02F2DC:
 sub_02F300:
 	dec	a:$15CA
 	bmi	loc_02F306
+	; (not executed in the CDL traces)
 	rts
 loc_02F306:
 	lda	#$0020
@@ -15605,6 +15741,7 @@ sub_02F63C:
 	lda	$3A,x
 	cmp	#$18E0
 	bcs	loc_02F650
+	; (not executed in the CDL traces)
 	brl	sub_029B21
 loc_02F650:
 	lda	a:$1900
@@ -15634,6 +15771,7 @@ loc_02F675:
 sub_02F67C:
 	lda	a:$0B50
 	bne	loc_02F684
+	; (not executed in the CDL traces)
 	brl	sub_029B21
 loc_02F684:
 	jsr	a:sub_02F753
@@ -15844,6 +15982,7 @@ sub_02F7F0:
 	beq	loc_02F821
 	cmp	#$0003
 	beq	loc_02F806
+	; (not executed in the CDL traces)
 	lda	$3A,x
 	clc
 	adc	#$0004
@@ -15866,6 +16005,7 @@ loc_02F810:
 	sty	$3A,x
 	rts
 loc_02F821:
+	; (not executed in the CDL traces)
 	ldy	$3A,x
 	dey
 	dey
@@ -16346,6 +16486,7 @@ loc_02FB7F:
 sub_02FB80:
 	lda	$06,x
 	bpl	loc_02FB87
+	; (not executed in the CDL traces)
 	brl	loc_02FAA0
 loc_02FB87:
 	lda	$12,x
@@ -16367,6 +16508,7 @@ tbl_02FB96:
 sub_02FBA2:
 	dec	$24,x
 	bmi	loc_02FBA7
+	; (not executed in the CDL traces)
 	rtl
 loc_02FBA7:
 	stz	$24,x
@@ -16376,6 +16518,7 @@ loc_02FBA7:
 loc_02FBB0:
 	rtl
 loc_02FBB1:
+	; (not executed in the CDL traces)
 	jsl	f:sub_02B1A3
 	ldy	a:$159E
 	lda	a:$152C,y
@@ -16391,6 +16534,7 @@ loc_02FBB1:
 	inc	$12,x
 
 sub_02FBD4:
+	; (not executed in the CDL traces)
 	dec	$24,x
 	bne	loc_02FBDB
 	brl	loc_02FBDC
@@ -16411,6 +16555,7 @@ loc_02FBDC:
 sub_02FBF4:
 	lda	$06,x
 	bpl	loc_02FBFB
+	; (not executed in the CDL traces)
 	brl	loc_02FAA0
 loc_02FBFB:
 	lda	$12,x
@@ -16481,6 +16626,7 @@ sub_02FC71:
 	pha
 	jsl	f:sub_029B77
 	bcc	loc_02FC7B
+	; (not executed in the CDL traces)
 	pla
 	sec
 	rts
@@ -16557,6 +16703,7 @@ loc_02FD09:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_02FD0A:
+	; (not executed in the CDL traces)
 	jsr	a:sub_02FD0E
 	rtl
 
@@ -16567,13 +16714,14 @@ loc_02FD12:
 	txa
 	asl	a
 	tay
-	lda	a:$E6E4,y
+	lda	a:data_05E6E4,y
 	tay
 	lda	a:$0010,y
 	beq	loc_02FD27
 	inx
 	cpx	#$0028
 	bcc	loc_02FD12
+	; (not executed in the CDL traces)
 	sec
 	plx
 	rts
@@ -16940,6 +17088,7 @@ loc_02FF70:
 	asl	a
 	sta	$0A
 	rts
+	; CDL: not accessed
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF

@@ -24,8 +24,9 @@ the original:
    split into files by subsystem.
 3. **Shiftable.** No hard-coded ROM address anywhere, in code or in data
    tables, so code and data can grow or move and the game still works. Today
-   only the operands whose bank the generator could prove are labels; the rest
-   are still numbers (see the last table in [Progress](progress.md)).
+   every absolute and long operand that points into ROM is a label, but many
+   immediates that are really pointers and the pointers inside data tables
+   are still numbers (see [Progress](progress.md)).
 4. **Cheats.** Optional changes to the game, chosen with build flags, on top
    of a source that otherwise still builds the original.
 

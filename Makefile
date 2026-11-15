@@ -14,7 +14,7 @@ LD65FLAGS := -C src/contra3.cfg
 # any file under src/ is a dependency.
 src_files := $(shell find src -name '*.asm' -o -name '*.inc' -o -name '*.bin')
 
-.PHONY: all compare clean disasm book book-check
+.PHONY: all compare clean disasm emu-test book book-check
 
 all: compare
 
@@ -38,11 +38,25 @@ compare: $(rom)
 clean:
 	rm -f build/main.o build/contra3.sfc build/contra3.map build/contra3.lbl
 
-# Regenerate src/ from an original ROM.  This OVERWRITES hand edits in src/:
-# only use it while the generator is still the source of truth (see README).
-#   make disasm BASEROM=path/to/contra3.sfc [CDL=path/to/cdl]
+# Run the generator (tools/disasm.py, a reference/research tool since src/ is
+# the source of truth) into build/disasm/: src/ is never overwritten.  Compare
+# with `diff -r src build/disasm/src` and port improvements by hand.
+#   make disasm BASEROM=path/to/contra3.sfc [CDL=path/to/contra3.cdl]
 disasm:
-	$(PYTHON) tools/disasm.py $(BASEROM) $(if $(CDL),--cdl $(CDL))
+	$(PYTHON) tools/disasm.py $(BASEROM) $(if $(CDL),--cdl $(CDL)) \
+	    --out build/disasm/src --report build/disasm/disasm_report.md
+
+# Run the emulator test suite of the private companion repository (screenshots
+# of the intro, title, demos and every stage start, with the snes9x libretro
+# core) on the ROM built from src/.  Checks a refactor in the emulator, not
+# just by hash.  The private repo needs its cores built (`make cores` there).
+#   make emu-test [PRIVATE=../contra3-disassembly-private]
+PRIVATE ?= ../contra3-disassembly-private
+
+emu-test: $(rom)
+	@test -f "$(PRIVATE)/tests/test_screens.py" || \
+	  { echo "emu-test: no emulator test suite in PRIVATE=$(PRIVATE)"; exit 1; }
+	$(MAKE) -C "$(PRIVATE)" test ROM="$(abspath $(rom))"
 
 # The book (book/, published to GitHub Pages by .github/workflows/book.yml).
 # book-check: every label, constant and path the book names must exist.

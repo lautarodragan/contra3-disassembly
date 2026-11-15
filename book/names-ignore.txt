@@ -5,3 +5,10 @@
 # the CDL the private repository's emulator tracer writes (disassembler.md)
 cdl/contra3.cdl
 contra3.cdl.json
+
+# placeholders in the CDL comment format (disassembler.md)
+sub_X
+sub_Y
+
+# history: a false pointer label inside the vector table, removed by the CDL pass (cartridge.md)
+data_00FFF6

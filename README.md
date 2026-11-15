@@ -5,9 +5,12 @@ the original ROM byte for byte:
 
     build/contra3.sfc  sha1: 265886e3f665adf2507e7b2f08b6b2ed9d0018b2
 
-Status: milestone 1 (matching build from generated source). See
+Status: milestone 1 (matching build), checked against the emulator's
+code/data log (CDL). **`src/` is the source of truth** and is edited by hand;
+the generator in `tools/` is kept for reference and research only. See
 [`docs/disasm_report.md`](docs/disasm_report.md) for how much of the ROM is
-decoded as code vs. data and how many operands are labels vs. numbers.
+decoded as code vs. data, how much of the code the CDL saw run, and how many
+operands are labels vs. numbers.
 
 **[The book](https://lautarodragan.github.io/contra3-disassembly/)** (sources
 in [`book/`](book/)) explains the project at length: goals, building, the
@@ -31,6 +34,23 @@ make clean
 The build does not need the original ROM: all code and data are in `src/`.
 Never commit a ROM (`*.sfc` is ignored).
 
+### Checking in the emulator
+
+`make` proves the ROM is identical to the original. To also run it, use the
+emulator test suite of the private companion repository
+(`contra3-disassembly-private`: snes9x libretro core, screenshots of the
+intro, title, demos and every stage start compared with goldens):
+
+```
+make emu-test [PRIVATE=../contra3-disassembly-private]
+```
+
+It builds `build/contra3.sfc` (without requiring the hash to match, so it
+also checks refactors that move code) and runs `make test ROM=...` in the
+private repository (needs Python 3 + pytest + Pillow there; the first run
+builds the core with `make cores`, which needs network access). About a
+minute.
+
 ## Layout
 
 | path | contents |
@@ -41,10 +61,10 @@ Never commit a ROM (`*.sfc` is ignored).
 | `src/common.inc` | included by every bank (`.p816`, register names) |
 | `src/snes_registers.inc` | SNES hardware register names (`INIDISP`, `NMITIMEN`, `DMAP0`, ...) |
 | `contra3.sha1` | SHA-1 of the original ROM |
-| `tools/disasm.py` | the disassembler that generated `src/` |
+| `tools/disasm.py` | the disassembler that generated `src/` (reference only now) |
 | `tools/disasm_hints.json` | hand-written hints for the disassembler |
-| `tools/cdl.py` | reads the emulator's code/data log (CDL) as hints |
-| `docs/disasm_report.md` | coverage / quality report written by the disassembler (included in the book's Progress page) |
+| `tools/cdl.py` | reads the emulator's code/data log (CDL) for the disassembler |
+| `docs/disasm_report.md` | coverage / quality report written by the disassembler with the CDL (included in the book's Progress page) |
 | `book/` | the book (mdBook): `book.toml`, pages in `book/src/`, `names-ignore.txt` |
 | `tools/check_book_names.py` | checks that every label, constant and path the book names exists |
 
@@ -68,27 +88,43 @@ target), `tbl_` (jump table), `ptrs_` (table of data pointers), `data_`
 - `BRK`/`COP`/`WDM` never appear as code; such bytes are data.
 - Operands that point into ROM are labels whenever the bank is certain:
   branch/jump/call targets, long addresses, absolute addresses with a known
-  data bank (DB is tracked through `PHK/PLB`, `LDA #n/PHA/PLB`, `PEA/PLB`,
-  `MVN`), jump tables, recognised pointer immediates
-  (`#.loword(label)` / `#^label`) and data-pointer tables (`.addr label`).
-  Everything else is still a number; turning those into labels is part of
-  making the source shiftable (milestone 3).
+  data bank (the DB each instruction ran with, from the CDL, or tracked
+  statically through `PHK/PLB`, `LDA #n/PHA/PLB`, `PEA/PLB`, `MVN`), jump
+  tables, recognised pointer immediates (`#.loword(label)` / `#^label`) and
+  data-pointer tables (`.addr label`); a reference into the middle of a table
+  is `table+n`. Everything else is still a number; turning the remaining
+  ROM pointers (immediates, `f:$050000,x` bank bases, pointers inside
+  `.byte` data) into labels is part of making the source shiftable
+  (milestone 3).
+- Comments from the CDL (the emulator's code/data log, see below):
+  `; (not executed in the CDL traces)` where code that never ran in the
+  traces starts; `; $1F8A (D=$1F00)` after a direct-page operand of an
+  instruction that ran with the direct page register D other than 0 (the
+  address really accessed); `; CDL: read by sub_..., DMA (started in
+  sub_...)` or `; CDL: not accessed` above data, naming the routine of the
+  first instruction that read it.
+- The internal header and the vectors at the end of `bank_00.asm`
+  (`rom_header`, `vectors`) have one line per field with a comment.
 
 ## The generator (`tools/disasm.py`)
+
+**`src/` is the source of truth.** The generator produced it (last time
+with the CDL, see below) and is now a reference / research tool: run it into
+a scratch directory, compare, and port improvements to `src/` by hand or by
+a script. By default it writes into `build/disasm/`, never into `src/`.
 
 ```
 make disasm BASEROM=path/to/original.sfc [CDL=path/to/contra3.cdl]
 # or
 python3 tools/disasm.py ROM [--hints tools/disasm_hints.json] [--cdl FILE] \
-                            [--out src] [--report docs/disasm_report.md]
+                            [--out build/disasm/src] [--report build/disasm/disasm_report.md]
+diff -r src build/disasm/src
 ```
 
-It is deterministic: rerunning it on the original ROM with the committed hints
-reproduces `src/` exactly. **After milestone 1 the committed `src/` is the
-source of truth** and is edited by hand (renames, comments, splitting into
-files). From then on, run the generator with `--out` pointing to a scratch
-directory and port its improvements by hand (or by a script) instead of
-overwriting `src/`.
+It is deterministic: with the committed hints and the same CDL it reproduces
+the generated `src/` and `docs/disasm_report.md` exactly (the report records
+the CDL's SHA-1). Without a CDL the output is close but differs (no CDL
+comments, a few operands stay numbers, a few false pointers come back).
 
 What it does (details in the module docstring):
 
@@ -113,22 +149,30 @@ What it does (details in the module docstring):
 ### Hints (`tools/disasm_hints.json`)
 
 The `_doc` key in the file lists every field: extra entry points, names,
-comments, data ranges, M/X overrides, routines' return widths, no-return
+comments, data ranges, M/X/DB overrides, routines' return widths, no-return
 routines, inline tables, jump-table lengths, routines taking ROM pointers in
 registers, and addresses that must not be decoded.
 
 ### Feeding a CDL
 
 The private repository's emulator tracer writes `cdl/contra3.cdl` (+
-`contra3.cdl.json`), format "SNESCDL" v1. Pass it with `--cdl`. The loader
-(`tools/cdl.py`) turns it into hints:
+`contra3.cdl.json`), format "SNESCDL" v1 (spec in that repository's
+`docs/CDL_FORMAT.md`; summary in the docstring of `tools/cdl.py`). Pass it
+with `--cdl`. The generator uses it this way:
 
-- every executed opcode's M/X (when unique) overrides the static guess;
-- bytes only read as data / DMA'd are never decoded as code;
-- call/jump/indirect-jump targets become entry points, and executed code
-  still unreached is seeded;
+- every executed opcode's M/X (per flag, when unique) and DB override the
+  static guesses; D values other than 0 are written as comments;
+- bytes only read as data / DMA'd are never decoded as code (jump tables are
+  read as data too and are still scanned);
+- executed code still unreached is seeded (none for this game);
 - pointer addresses read by indirect jumps give minimum jump-table lengths;
-- the DB seen at an instruction lets its absolute operand become a label.
+- pointer candidates whose code ran but whose target was never read are
+  rejected;
+- the comments described under "Conventions" above.
+
+The result of the comparison (every executed byte was already decoded, no
+conflicts, the numbers per category) is in the report and in the book's
+"The disassembler" page.
 
 ## The book
 

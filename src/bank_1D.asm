@@ -118,6 +118,7 @@
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $90, $24
+	; CDL: read by sub_009429
 	.byte	$02, $00, $00, $00, $00, $00, $00, $00, $00, $C2, $00, $00, $FE, $F4, $3E, $F1
 	.byte	$14, $2C, $C2, $D1, $12, $1C, $D1, $0F, $FC, $E3, $1D, $C2, $DC, $E3, $1C, $DE
 	.byte	$F3, $2D, $E0, $02, $C2, $1C, $E3, $33, $2E, $05, $42, $1E, $06, $C2, $40, $0F
@@ -913,13 +914,13 @@ sub_1DACEF:
 	tay
 	sep	#$20
 	.a8
-	lda	a:$F794,y
+	lda	a:data_05F794,y
 	sta	a:WRMPYB
 	nop
 	stz	$09
 	lda	a:RDMPYH
 	sta	$08
-	lda	a:$F814,y
+	lda	a:data_05F814,y
 	sta	a:WRMPYB
 	rep	#$20
 	.a16
@@ -931,13 +932,13 @@ sub_1DACEF:
 	sta	$08
 	sep	#$20
 	.a8
-	lda	a:$F7D4,y
+	lda	a:data_05F7D4,y
 	sta	a:WRMPYB
 	nop
 	stz	$0B
 	lda	a:RDMPYH
 	sta	$0A
-	lda	a:$F854,y
+	lda	a:data_05F854,y
 	sta	a:WRMPYB
 	rep	#$20
 	.a16
@@ -1055,6 +1056,7 @@ loc_1DAD98:
 	eor	#$FFFF
 	sta	$1C,x
 	bne	loc_1DADE7
+	; (not executed in the CDL traces)
 	inc	$1E,x
 loc_1DADE7:
 	rtl
@@ -1128,6 +1130,7 @@ loc_1DAE2A:
 	eor	#$FFFF
 	sta	$18,x
 	bne	loc_1DAE59
+	; (not executed in the CDL traces)
 	inc	$1A,x
 loc_1DAE59:
 	sep	#$20
@@ -1176,6 +1179,7 @@ loc_1DAE7A:
 	eor	#$FFFF
 	sta	$18,x
 	bne	loc_1DAEA5
+	; (not executed in the CDL traces)
 	inc	$1A,x
 loc_1DAEA5:
 	sep	#$20
@@ -1201,6 +1205,7 @@ loc_1DAEA5:
 	eor	#$FFFF
 	sta	$1C,x
 	bne	loc_1DAECF
+	; (not executed in the CDL traces)
 	inc	$1E,x
 loc_1DAECF:
 	rtl
@@ -1243,6 +1248,7 @@ loc_1DAEF0:
 	ply
 	bra	loc_1DAF15
 loc_1DAF10:
+	; (not executed in the CDL traces)
 	lda	#$00FF
 	ply
 	rtl
@@ -1427,6 +1433,7 @@ sub_1DB087:
 loc_1DB097:
 	lda	a:$1FCA
 	beq	loc_1DB0A4
+	; (not executed in the CDL traces)
 	lda	a:$0252
 	cmp	#$0001
 	bne	loc_1DB0AB
@@ -1815,6 +1822,7 @@ sub_1DB3CB:
 loc_1DB3E2:
 	lda	a:$1FCA
 	beq	loc_1DB3F3
+	; (not executed in the CDL traces)
 	lda	#$0013
 	sta	a:$0252
 	lda	#$0040
@@ -2508,10 +2516,10 @@ loc_1DB940:
 
 sub_1DB952:
 	stz	a:$1644
-	lda	#.loword(data_10FFFF)
+	lda	#$FFFF
 	sta	a:$163E
 	stz	a:$1642
-	lda	#^data_10FFFF
+	lda	#$0010
 	sta	a:$1640
 	jsl	f:sub_00FF30
 	lda	#$0002
@@ -2721,6 +2729,7 @@ sub_1DBAEA:
 loc_1DBB25:
 	ldy	a:$1FCA
 	beq	loc_1DBB2D
+	; (not executed in the CDL traces)
 	sta	a:$024E
 loc_1DBB2D:
 	rtl
@@ -3019,6 +3028,7 @@ loc_1DBD54:
 	rtl
 
 sub_1DBD69:
+	; (not executed in the CDL traces)
 	rtl
 
 sub_1DBD6A:
@@ -3107,6 +3117,7 @@ loc_1DBE03:
 	jsr	a:sub_1DBE61
 	bra	sub_1DBE2C
 loc_1DBE11:
+	; (not executed in the CDL traces)
 	phx
 	ldx	#$FF0A
 	lda	#$0400
@@ -4923,6 +4934,7 @@ loc_1DCBC6:
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_1DCBC7:
+	; (not executed in the CDL traces)
 	lda	#$0040
 	sta	$00
 	lda	#$0080
@@ -5005,6 +5017,7 @@ sub_1DCC58:
 	phx
 	lda	$84
 	bne	loc_1DCC65
+	; (not executed in the CDL traces)
 	ldx	#$0400
 	lda	#$0000
 	bra	loc_1DCC6D
@@ -5039,6 +5052,7 @@ loc_1DCC6F:
 	inc	$00
 	lda	$84
 	bne	loc_1DCCAA
+	; (not executed in the CDL traces)
 	inc	$00
 	inc	$00
 loc_1DCCAA:
@@ -5076,6 +5090,7 @@ sub_1DCCD4:
 	sta	$1E,x
 	rts
 data_1DCCE0:
+	; CDL: not accessed
 	.byte	$01, $02, $03, $04, $05, $06, $07, $08, $09, $0A, $0B, $0C, $0D, $0E, $0F, $10
 	.byte	$11, $12, $13, $14, $15, $16, $17, $1A, $1B, $1C, $1D, $20, $21, $22, $23, $24
 	.byte	$25, $26, $27, $28, $29, $2A, $2B, $2C, $2D, $2E, $2F, $30, $31, $32, $33, $34
