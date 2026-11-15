@@ -18,6 +18,7 @@ IRQ `$8BE2`.
 | `tools/c3emu/retro.py` | ctypes libretro driver: frame-exact run, input on 2 pads, screenshots, save states, WRAM, CDL, write watch |
 | `tools/c3emu/cdl.py` | CDL container: load/save/merge/report (`python3 -m tools.c3emu.cdl report cdl/contra3.cdl`) |
 | `tools/c3emu/game.py` | Contra III knowledge: RAM addresses, attract-mode timeline, `start_game()` |
+| `tools/c3emu/plays.py` | scripted deterministic plays through every stage (`test_play.py`, the disassembly's `tools/shift_diag.py`) |
 | `tools/c3emu/dis.py` | tiny CDL-guided 65816 disassembler for debugging (`python3 -m tools.c3emu.dis 00:8000 00:8040`) |
 | `tools/c3emu/rom.py` | extracts and verifies the ROM; honours `$C3_ROM` |
 | `tools/trace.py` | coverage tracer: plays scenarios, merges CDLs into `cdl/` |
@@ -68,9 +69,26 @@ make goldens                       # rewrite tests/goldens/*.png from the curren
   first 600 frames of each stage (stage chosen by poking `$86`), at 15-bit
   colour precision. On failure the actual frame and a diff go to
   `out/screens/`. A ROM rebuilt byte-exactly must pass unchanged.
+* `test_play.py`: scripted plays (`tools/c3emu/plays.py`): from power-on,
+  pick a stage on the title (poking `$86`, and `$1E40` = 1 to start at the
+  stage's midpoint, which reaches its boss), then play with seeded random
+  input, infinite lives and bombs and the barrier kept on. 15 plays: every
+  stage from its start and from its midpoint (the bosses, the stage
+  transitions, the NORMAL ending of stage 6), 2-player modes A and B (the
+  top-down split screen), HARD; plus the attract sequence. Every 300 frames
+  the screen (15-bit), VRAM and the audio since the last checkpoint are
+  hashed and compared with `tests/goldens/play/<play>.json` (hashes only,
+  taken from the original ROM). On a mismatch the first differing
+  checkpoint is reported and the actual frame, the original ROM's frame and
+  a diff go to `out/play/`. The plays run in parallel (`C3_JOBS`, default
+  the CPU count); about 330,000 frames, 100 s on 4 cores.
 * `test_cdl.py`: sanity checks of the tracer (skipped on a core without it).
 
-The suite runs in about 45 s with snes9x (2 min with bsnes). The goldens
+`make test TESTS="tests/test_screens.py tests/test_play.py"` runs only some
+files (the disassembly's shift test does this: `test_cdl.py` checks the
+reset vector of the original layout).
+
+The screenshot tests run in about 45 s with snes9x (2 min with bsnes). The goldens
 were taken with snes9x. bsnes matches them pixel for pixel except
 `demo_stage4` (frame 18300): by the third attract demo the two cores' timing
 has drifted enough that the recorded demo plays out differently (12437
