@@ -789,13 +789,13 @@ loc_0485DC:
 	clc
 	adc	a:data_05E899,y
 	tay
-	lda	a:data_058DFA,y
+	lda	a:vel8_y_sub,y
 	sta	$1C,x
-	lda	a:data_058D5A,y
+	lda	a:vel8_y,y
 	sta	$1E,x
-	lda	a:data_058E1A,y
+	lda	a:vel8_x_sub,y
 	sta	$18,x
-	lda	a:data_058D7A,y
+	lda	a:vel8_x,y
 	sta	$1A,x
 	plx
 	lda	stage_frame_mod8
@@ -1332,13 +1332,13 @@ sub_0489DC:
 	sta	a:$0028,y
 	lda	#$FFF4
 	sta	a:$002A,y
-	lda	a:data_058D5A,x
+	lda	a:vel8_y,x
 	sta	a:$001E,y
-	lda	a:data_058D7A,x
+	lda	a:vel8_x,x
 	sta	a:$001A,y
-	lda	a:data_058DFA,x
+	lda	a:vel8_y_sub,x
 	sta	a:$001C,y
-	lda	a:data_058E1A,x
+	lda	a:vel8_x_sub,x
 	sta	a:$0018,y
 	txa
 	lsr	a
@@ -1384,13 +1384,13 @@ sub_048A80:
 	ldy	#$0300
 	jsl	f:find_free_slot_from_y
 	bcs	loc_048ADB
-	lda	a:data_058D5A,x
+	lda	a:vel8_y,x
 	sta	a:$001E,y
-	lda	a:data_058D7A,x
+	lda	a:vel8_x,x
 	sta	a:$001A,y
-	lda	a:data_058DFA,x
+	lda	a:vel8_y_sub,x
 	sta	a:$001C,y
-	lda	a:data_058E1A,x
+	lda	a:vel8_x_sub,x
 	sta	a:$0018,y
 	txa
 	clc
@@ -1509,13 +1509,13 @@ loc_048B4F:
 	adc	$32,x
 	and	#$007E
 	tax
-	lda	a:data_058D5A,x
+	lda	a:vel8_y,x
 	sta	a:$001E,y
-	lda	a:data_058D7A,x
+	lda	a:vel8_x,x
 	sta	a:$001A,y
-	lda	a:data_058DFA,x
+	lda	a:vel8_y_sub,x
 	sta	a:$001C,y
-	lda	a:data_058E1A,x
+	lda	a:vel8_x_sub,x
 	sta	a:$0018,y
 	plx
 loc_048BBE:
@@ -5680,7 +5680,7 @@ aim_velocity_at_player:
 	and	#$00FE
 	ldy	difficulty
 	clc
-	adc	a:data_05ABA5,y
+	adc	a:ptrs_enemy_bullet_speeds,y
 	tay
 	lda	a:$0000,y
 	sta	OBJ_Y_VEL,x

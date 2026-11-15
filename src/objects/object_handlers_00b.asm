@@ -208,13 +208,13 @@ loc_00DF33:
 	sta	$04,x
 loc_00DF38:
 	tay
-	lda	a:data_058E1A,y
+	lda	a:vel8_x_sub,y
 	sta	$18,x
-	lda	a:data_058D7A,y
+	lda	a:vel8_x,y
 	sta	$1A,x
-	lda	a:data_058DFA,y
+	lda	a:vel8_y_sub,y
 	sta	$1C,x
-	lda	a:data_058D5A,y
+	lda	a:vel8_y,y
 	sta	$1E,x
 	tya
 	clc

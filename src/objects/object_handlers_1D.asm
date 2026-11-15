@@ -3556,13 +3556,13 @@ sub_1DCAC9:
 	lsr	a
 	and	#$007E
 	tay
-	lda	a:data_058D5A,y
+	lda	a:vel8_y,y
 	sta	OBJ_Y_VEL,x
-	lda	a:data_058D7A,y
+	lda	a:vel8_x,y
 	sta	OBJ_X_VEL,x
-	lda	a:data_058DFA,y
+	lda	a:vel8_y_sub,y
 	sta	OBJ_Y_VEL_SUB,x
-	lda	a:data_058E1A,y
+	lda	a:vel8_x_sub,y
 	sta	OBJ_X_VEL_SUB,x
 	rts
 

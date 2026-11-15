@@ -73,7 +73,7 @@ loc_018062:
 	rtl
 
 ; Looks up the player's frame (PLAYER_POSE + PLAYER_POSE_ADD + $38, 16
-; bytes per frame at data_05B29E): six VRAM source addresses for the
+; bytes per frame at player_frames): six VRAM source addresses for the
 ; player's tiles ($1780-$1796, uploaded by the NMI) and the metasprite of
 ; each facing (OBJ_SPRITE).  Clears $38.  In: X = player.
 set_player_frame:
@@ -87,7 +87,7 @@ set_player_frame:
 	asl	a
 	asl	a
 	tay
-	lda	a:data_05B29E,y
+	lda	a:player_frames,y
 	sta	a:wram_1780
 	clc
 	adc	#$0200
@@ -3925,19 +3925,19 @@ loc_019E13:
 	rtl
 
 ; Sets the state, y velocity and pose of respawn mode wram_1672
-; (data_05AB78/93/81), 96 frames of PLAYER_INVULN_TIMER, OBJ_FLAGS = 3
+; (respawn_states/93/81), 96 frames of PLAYER_INVULN_TIMER, OBJ_FLAGS = 3
 ; (present + PLAYERF_INVULNERABLE).
 respawn_player:
 	ldy	a:wram_1672
-	lda	a:data_05AB78,y
+	lda	a:respawn_states,y
 	and	#$00FF
 	sta	OBJ_STATE,x
 	tya
 	asl	a
 	tay
-	lda	a:data_05AB93,y
+	lda	a:respawn_y_vels,y
 	sta	OBJ_Y_VEL,x
-	lda	a:data_05AB81,y
+	lda	a:respawn_poses,y
 	sta	PLAYER_POSE,x
 	stz	OBJ_FACING,x
 	stz	$32,x

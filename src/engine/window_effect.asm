@@ -42,9 +42,9 @@ loc_00E811:
 	clc
 	adc	#$0020
 	sta	zp_1C
-	lda	a:$1310,x
+	lda	a:PLAYER_BOMB_RADIUS,x
 	bne	loc_00E855
-	lda	a:$1D88,x
+	lda	a:PLAYER_BARRIER,x
 	bne	loc_00E839
 loc_00E82D:
 	stz	zp_9E
@@ -83,9 +83,9 @@ setup_barrier_window:
 	sta	zp_12
 	lda	#$0018
 	sta	zp_10
-	lda	a:$1312,x
+	lda	a:PLAYER_CENTER_X,x
 	sta	zp_14
-	lda	a:$1314,x
+	lda	a:PLAYER_CENTER_Y,x
 	sta	zp_16
 	stz	zp_18
 	lda	#$00E0
@@ -103,9 +103,9 @@ setup_bomb_window:
 	sta	a:w12sel_shadow
 	lda	#$0200
 	sta	a:tmw_shadow
-	lda	a:$131C,x
+	lda	a:PLAYER_BOMB_X,x
 	sta	zp_14
-	lda	a:$131E,x
+	lda	a:PLAYER_BOMB_Y,x
 	sta	zp_16
 	stz	zp_18
 	lda	#$00E0
@@ -182,7 +182,7 @@ sub_00E913:
 	sta	zp_FC
 	ldx	zp_FE
 	ldy	#$8F40
-	lda	a:$1D88,x
+	lda	a:PLAYER_BARRIER,x
 	cmp	#$0060
 	bcs	loc_00E927
 	ldy	#$0F20

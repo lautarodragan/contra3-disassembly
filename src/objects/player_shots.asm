@@ -5,7 +5,7 @@
 ; by weapon (WEAPON_*) through tbl_fire_weapon / tbl_spin_fire_1 /
 ; tbl_spin_fire_2 to the spawners, which allocate slots of the shot list
 ; (sub_00E122 and friends) and set position, velocity (64-direction tables
-; data_058E1A, data_058D7A, data_058DFA, data_058D5A indexed by the angle),
+; vel8_x_sub, vel8_x, vel8_y_sub, vel8_y indexed by the angle),
 ; SHOT_TYPE, SHOT_DAMAGE and SHOT_ATTR.  The shots' handlers are in
 ; objects/object_handlers_00b.asm (tbl_shot_types).
 
@@ -13,14 +13,14 @@
 ; that turns by a weapon-dependent step each shot (kept in the player's
 ; $36).  In: X = player, zp_14/zp_16 = muzzle offset.
 spin_fire_weapon_1:
-	lda	$3A,x
+	lda	PLAYER_FIRE_DELAY_1,x
 	bne	loc_00D655
-	lda	a:$1D84,x
+	lda	a:PLAYER_WEAPON_1,x
 	pha
 	asl	a
 	tay
 	lda	a:weapon_fire_delays,y
-	sta	$3A,x
+	sta	PLAYER_FIRE_DELAY_1,x
 	txy
 	lda	#$0AC0
 	cpy	#$0200
@@ -50,14 +50,14 @@ tbl_spin_fire_1:
 ; Spin jump: the same for PLAYER_WEAPON_2 (angle in $34, offset by half a
 ; turn).
 spin_fire_weapon_2:
-	lda	$14,x
+	lda	PLAYER_FIRE_DELAY_2,x
 	bne	loc_00D655
-	lda	a:$1D86,x
+	lda	a:PLAYER_WEAPON_2,x
 	pha
 	asl	a
 	tay
 	lda	a:weapon_fire_delays,y
-	sta	$14,x
+	sta	PLAYER_FIRE_DELAY_2,x
 	txy
 	lda	#$0C00
 	cpy	#$0200
@@ -84,11 +84,11 @@ tbl_spin_fire_2:
 	.addr	spin_shots_flame_2
 	.addr	spin_shot_laser_2
 loc_00D6CE:
-	lda	$22,x
+	lda	PLAYER_JOY_HELD,x
 	bit	button_fire
 	beq	loc_00D740
 	lda	#$000E
-	sta	a:$1300,x
+	sta	a:PLAYER_POSE_ADD,x
 	bra	loc_00D6E2
 
 ; If button_fire is held: fires the weapon of the active slot
@@ -99,20 +99,20 @@ loc_00D6CE:
 ; $80 per turn), zp_14/zp_16 = muzzle offset from OBJ_X/OBJ_Y.  The
 ; spawners return with X = player and set $38 (shooting pose) to 1.
 fire_weapon:
-	lda	$22,x
+	lda	PLAYER_JOY_HELD,x
 	bit	button_fire
 	beq	loc_00D740
 loc_00D6E2:
-	lda	a:$1D80,x
+	lda	a:PLAYER_WEAPON_SLOT,x
 	beq	loc_00D723
-	lda	$3A,x
+	lda	PLAYER_FIRE_DELAY_1,x
 	bne	loc_00D740
-	lda	a:$1D84,x
+	lda	a:PLAYER_WEAPON_1,x
 	pha
 	asl	a
 	tay
 	lda	a:weapon_fire_delays,y
-	sta	$3A,x
+	sta	PLAYER_FIRE_DELAY_1,x
 	txy
 	lda	#$0AC0
 	cpy	#$0200
@@ -139,14 +139,14 @@ tbl_fire_weapon:
 	.addr	spawn_shots_flame
 	.addr	spawn_shot_laser
 loc_00D723:
-	lda	$14,x
+	lda	PLAYER_FIRE_DELAY_2,x
 	bne	loc_00D740
-	lda	a:$1D86,x
+	lda	a:PLAYER_WEAPON_2,x
 	pha
 	asl	a
 	tay
 	lda	a:weapon_fire_delays,y
-	sta	$14,x
+	sta	PLAYER_FIRE_DELAY_2,x
 	txy
 	lda	#$0C00
 	cpy	#$0200
@@ -158,10 +158,10 @@ loc_00D740:
 
 spin_shot_default_2:
 	clc
-	lda	a:$0034,y
+	lda	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0008
 	and	#$007E
-	sta	a:$0034,y
+	sta	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0040
 	and	#$007E
 	sta	zp_12
@@ -169,10 +169,10 @@ spin_shot_default_2:
 
 spin_shot_default_1:
 	clc
-	lda	a:$0036,y
+	lda	a:PLAYER_SPIN_ANGLE_1,y
 	adc	#$0008
 	and	#$007E
-	sta	a:$0036,y
+	sta	a:PLAYER_SPIN_ANGLE_1,y
 	sta	zp_12
 	bra	spawn_shot_default
 loc_00D769:
@@ -184,41 +184,41 @@ spawn_shot_default:
 	jsl	f:sub_00E122
 	bcs	loc_00D769
 	lda	#$0001
-	sta	$10,x
+	sta	SHOT_TYPE,x
 	sta	$04,x
 	lda	#$0002
-	sta	$06,x
+	sta	SHOT_DAMAGE,x
 	lda	#$3E0C
 	sta	$14,x
-	stz	$16,x
+	stz	SHOT_HIT,x
 	phy
 	ldy	#$3F82
 	lda	stage_frame_odd
 	bne	loc_00D78F
 	ldy	#$3FEC
 loc_00D78F:
-	sty	$02,x
+	sty	SHOT_ATTR,x
 	ldy	zp_12
-	lda	a:data_058E1A,y
-	sta	$18,x
-	lda	a:data_058D7A,y
-	sta	$1A,x
-	lda	a:data_058DFA,y
-	sta	$1C,x
-	lda	a:data_058D5A,y
-	sta	$1E,x
+	lda	a:vel8_x_sub,y
+	sta	OBJ_X_VEL_SUB,x
+	lda	a:vel8_x,y
+	sta	OBJ_X_VEL,x
+	lda	a:vel8_y_sub,y
+	sta	OBJ_Y_VEL_SUB,x
+	lda	a:vel8_y,y
+	sta	OBJ_Y_VEL,x
 	ply
 	clc
-	lda	a:$000A,y
+	lda	a:OBJ_X,y
 	adc	zp_14
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
-	lda	a:$000E,y
+	lda	a:OBJ_Y,y
 	adc	zp_16
-	sta	$0E,x
+	sta	OBJ_Y,x
 	tyx
 	lda	#$0001
-	sta	$38,x
+	sta	PLAYER_SHOT_POSE,x
 	lda	#$0004
 	jsl	f:queue_sound
 	rtl
@@ -229,10 +229,10 @@ spin_shots_spread_2:
 	rtl
 loc_00D7CC:
 	clc
-	lda	a:$0034,y
+	lda	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0020
 	and	#$007E
-	sta	a:$0034,y
+	sta	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0040
 	and	#$007E
 	sta	zp_12
@@ -245,17 +245,17 @@ spin_shots_spread_1:
 	rtl
 loc_00D7E9:
 	clc
-	lda	a:$0036,y
+	lda	a:PLAYER_SPIN_ANGLE_1,y
 	adc	#$0020
 	and	#$007E
-	sta	a:$0036,y
+	sta	a:PLAYER_SPIN_ANGLE_1,y
 	sta	zp_12
 	bra	loc_00D820
 
 ; Returns Z set and X = the first of 5 free shot slots (tries X and X+$A0),
 ; else Z clear and X = Y (the player).
 find_spread_shot_slots:
-	lda	$10,x
+	lda	SHOT_TYPE,x
 	ora	$30,x
 	ora	$50,x
 	ora	$70,x
@@ -265,7 +265,7 @@ find_spread_shot_slots:
 	clc
 	adc	#$00A0
 	tax
-	lda	$10,x
+	lda	SHOT_TYPE,x
 	ora	$30,x
 	ora	$50,x
 	ora	$70,x
@@ -291,15 +291,15 @@ loc_00D820:
 	sta	zp_12
 loc_00D830:
 	lda	#$0002
-	sta	$10,x
+	sta	SHOT_TYPE,x
 	lda	#$3F84
-	sta	$02,x
+	sta	SHOT_ATTR,x
 	lda	#$0001
 	sta	$04,x
 	lda	#$3F0E
 	sta	$14,x
 	lda	#$0002
-	sta	$06,x
+	sta	SHOT_DAMAGE,x
 	sty	zp_FE
 	clc
 	lda	zp_12
@@ -307,23 +307,23 @@ loc_00D830:
 	and	#$007E
 	sta	zp_12
 	tay
-	lda	a:data_058E1A,y
-	sta	$18,x
-	lda	a:data_058D7A,y
-	sta	$1A,x
-	lda	a:data_058DFA,y
-	sta	$1C,x
-	lda	a:data_058D5A,y
-	sta	$1E,x
+	lda	a:vel8_x_sub,y
+	sta	OBJ_X_VEL_SUB,x
+	lda	a:vel8_x,y
+	sta	OBJ_X_VEL,x
+	lda	a:vel8_y_sub,y
+	sta	OBJ_Y_VEL_SUB,x
+	lda	a:vel8_y,y
+	sta	OBJ_Y_VEL,x
 	ldy	zp_FE
 	clc
-	lda	a:$000A,y
+	lda	a:OBJ_X,y
 	adc	zp_14
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
-	lda	a:$000E,y
+	lda	a:OBJ_Y,y
 	adc	zp_16
-	sta	$0E,x
+	sta	OBJ_Y,x
 	txa
 	clc
 	adc	#$0020
@@ -332,7 +332,7 @@ loc_00D830:
 	bne	loc_00D830
 	tyx
 	lda	#$0001
-	sta	$38,x
+	sta	PLAYER_SHOT_POSE,x
 	lda	#$0009
 	jsl	f:queue_sound
 	rtl
@@ -343,10 +343,10 @@ spin_shot_crush_2:
 	rtl
 loc_00D89B:
 	clc
-	lda	a:$0034,y
+	lda	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0010
 	and	#$007E
-	sta	a:$0034,y
+	sta	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0040
 	and	#$007E
 	sta	zp_12
@@ -358,29 +358,29 @@ spin_shot_crush_1:
 	rtl
 loc_00D8B8:
 	clc
-	lda	a:$0036,y
+	lda	a:PLAYER_SPIN_ANGLE_1,y
 	adc	#$0010
 	and	#$007E
-	sta	a:$0036,y
+	sta	a:PLAYER_SPIN_ANGLE_1,y
 	sta	zp_12
 	bra	loc_00D8E9
 
 ; Returns Z set and X = a free slot among X, X+$60, X+$C0, else Z clear and
 ; X = Y.
 find_crush_shot_slot:
-	lda	$10,x
+	lda	SHOT_TYPE,x
 	beq	loc_00D8E2
 	txa
 	clc
 	adc	#$0060
 	tax
-	lda	$10,x
+	lda	SHOT_TYPE,x
 	beq	loc_00D8E2
 	txa
 	clc
 	adc	#$0060
 	tax
-	lda	$10,x
+	lda	SHOT_TYPE,x
 	beq	loc_00D8E2
 	tyx
 loc_00D8E2:
@@ -393,9 +393,9 @@ spawn_shot_crush:
 	rtl
 loc_00D8E9:
 	lda	#$0003
-	sta	$10,x
+	sta	SHOT_TYPE,x
 	lda	#$0004
-	sta	$06,x
+	sta	SHOT_DAMAGE,x
 	sty	zp_FE
 	lda	zp_12
 	tay
@@ -404,33 +404,33 @@ loc_00D8E9:
 	lsr	a
 	pha
 	sta	$00,x
-	lda	a:data_058E1A,y
-	sta	$18,x
-	lda	a:data_058D7A,y
-	sta	$1A,x
-	lda	a:data_058DFA,y
-	sta	$1C,x
-	lda	a:data_058D5A,y
-	sta	$1E,x
+	lda	a:vel8_x_sub,y
+	sta	OBJ_X_VEL_SUB,x
+	lda	a:vel8_x,y
+	sta	OBJ_X_VEL,x
+	lda	a:vel8_y_sub,y
+	sta	OBJ_Y_VEL_SUB,x
+	lda	a:vel8_y,y
+	sta	OBJ_Y_VEL,x
 	ply
 	lda	a:data_05A014,y
-	sta	$02,x
+	sta	SHOT_ATTR,x
 	ldy	zp_FE
 	clc
-	lda	a:$000A,y
+	lda	a:OBJ_X,y
 	adc	zp_14
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
-	lda	a:$000E,y
+	lda	a:OBJ_Y,y
 	adc	zp_16
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$0010
 	sta	$04,x
 	lda	#$0020
 	sta	$14,x
 	tyx
 	lda	#$0001
-	sta	$38,x
+	sta	PLAYER_SHOT_POSE,x
 	lda	#$0007
 	jsl	f:queue_sound
 	rtl
@@ -442,10 +442,10 @@ spin_shot_homing_2:
 	rtl
 loc_00D94A:
 	clc
-	lda	a:$0034,y
+	lda	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0010
 	and	#$007E
-	sta	a:$0034,y
+	sta	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0040
 	and	#$007E
 	sta	zp_12
@@ -459,10 +459,10 @@ spin_shot_homing_1:
 	rtl
 loc_00D969:
 	clc
-	lda	a:$0036,y
+	lda	a:PLAYER_SPIN_ANGLE_1,y
 	adc	#$0010
 	and	#$007E
-	sta	a:$0036,y
+	sta	a:PLAYER_SPIN_ANGLE_1,y
 	sta	zp_12
 	bra	loc_00D982
 
@@ -475,9 +475,9 @@ spawn_shot_homing:
 	rtl
 loc_00D982:
 	lda	#$0004
-	sta	$10,x
+	sta	SHOT_TYPE,x
 	lda	#$0002
-	sta	$06,x
+	sta	SHOT_DAMAGE,x
 	phy
 	stx	zp_04
 	sec
@@ -495,38 +495,38 @@ loc_00D982:
 	and	#$007E
 	tay
 	sta	$04,x
-	lda	a:data_058E1A,y
-	sta	$18,x
-	lda	a:data_058D7A,y
-	sta	$1A,x
-	lda	a:data_058DFA,y
-	sta	$1C,x
-	lda	a:data_058D5A,y
-	sta	$1E,x
+	lda	a:vel8_x_sub,y
+	sta	OBJ_X_VEL_SUB,x
+	lda	a:vel8_x,y
+	sta	OBJ_X_VEL,x
+	lda	a:vel8_y_sub,y
+	sta	OBJ_Y_VEL_SUB,x
+	lda	a:vel8_y,y
+	sta	OBJ_Y_VEL,x
 	ply
 	clc
-	lda	a:$000A,y
+	lda	a:OBJ_X,y
 	adc	zp_14
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
-	lda	a:$000E,y
+	lda	a:OBJ_Y,y
 	adc	zp_16
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	#$305E
-	sta	$02,x
+	sta	SHOT_ATTR,x
 	tyx
 	lda	#$0001
-	sta	$38,x
+	sta	PLAYER_SHOT_POSE,x
 	lda	#$0008
 	jsl	f:queue_sound
 	rtl
 
 spin_shots_flame_2:
 	clc
-	lda	a:$0034,y
+	lda	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0004
 	and	#$007E
-	sta	a:$0034,y
+	sta	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0040
 	and	#$007E
 	sta	zp_12
@@ -535,10 +535,10 @@ spin_shots_flame_2:
 spin_shots_flame_1:
 	; (not executed in the CDL traces)
 	clc
-	lda	a:$0036,y
+	lda	a:PLAYER_SPIN_ANGLE_1,y
 	adc	#$0004
 	and	#$007E
-	sta	a:$0036,y
+	sta	a:PLAYER_SPIN_ANGLE_1,y
 	sta	zp_12
 	bra	spawn_shots_flame
 loc_00DA06:
@@ -552,7 +552,7 @@ spawn_shots_flame:
 	beq	loc_00DA0F
 	brl	loc_00DA80
 loc_00DA0F:
-	lda	$10,x
+	lda	SHOT_TYPE,x
 	ora	$30,x
 	ora	$50,x
 	ora	$70,x
@@ -564,10 +564,10 @@ loc_00DA0F:
 	ora	a:$0130,x
 	bne	loc_00DA06
 	inc	$12,x
-	stz	$1A,x
-	stz	$18,x
-	stz	$1E,x
-	stz	$1C,x
+	stz	OBJ_X_VEL,x
+	stz	OBJ_X_VEL_SUB,x
+	stz	OBJ_Y_VEL,x
+	stz	OBJ_Y_VEL_SUB,x
 	lda	zp_12
 	asl	a
 	asl	a
@@ -597,18 +597,18 @@ loc_00DA0F:
 	lsr	a
 	tay
 	clc
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	zp_14
 	adc	a:data_05A024,y
 	sta	zp_00
 	clc
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	zp_16
 	adc	a:data_05A034,y
 	ply
-	sta	a:$000E,y
+	sta	a:OBJ_Y,y
 	lda	zp_00
-	sta	a:$000A,y
+	sta	a:OBJ_X,y
 	rtl
 loc_00DA80:
 	lda	stage_frame_counter
@@ -632,11 +632,11 @@ loc_00DA8E:
 	lda	$14,x
 	sta	$34,x
 	clc
-	lda	a:$000A,y
+	lda	a:OBJ_X,y
 	adc	zp_14
 	sta	zp_00
 	sec
-	lda	$0A,x
+	lda	OBJ_X,x
 	sbc	zp_00
 	cmp	#$0005
 	bcc	loc_00DAD3
@@ -644,24 +644,24 @@ loc_00DA8E:
 	bcs	loc_00DAD3
 	bmi	loc_00DACB
 	sec
-	lda	$0A,x
+	lda	OBJ_X,x
 	sbc	#$0005
 	bra	loc_00DAD5
 loc_00DACB:
 	clc
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$0005
 	bra	loc_00DAD5
 loc_00DAD3:
 	lda	zp_00
 loc_00DAD5:
-	sta	$0A,x
+	sta	OBJ_X,x
 	clc
-	lda	a:$000E,y
+	lda	a:OBJ_Y,y
 	adc	zp_16
 	sta	zp_00
 	sec
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sbc	zp_00
 	cmp	#$0005
 	bcc	loc_00DB00
@@ -669,18 +669,18 @@ loc_00DAD5:
 	bcs	loc_00DB00
 	bmi	loc_00DAF8
 	sec
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sbc	#$0005
 	bra	loc_00DB02
 loc_00DAF8:
 	clc
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$0005
 	bra	loc_00DB02
 loc_00DB00:
 	lda	zp_00
 loc_00DB02:
-	sta	$0E,x
+	sta	OBJ_Y,x
 	phy
 	lda	zp_12
 	asl	a
@@ -789,12 +789,12 @@ loc_00DB40:
 	sta	$4A,x
 	lda	$14,x
 	sta	$34,x
-	lda	$0E,x
+	lda	OBJ_Y,x
 	sta	$2E,x
-	lda	$0A,x
+	lda	OBJ_X,x
 	sta	$2A,x
 	lda	#$0005
-	sta	$10,x
+	sta	SHOT_TYPE,x
 	lda	#$0006
 	sta	$30,x
 	sta	$50,x
@@ -852,10 +852,10 @@ spin_shot_laser_2:
 	rtl
 loc_00DC43:
 	clc
-	lda	a:$0034,y
+	lda	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0010
 	and	#$007E
-	sta	a:$0034,y
+	sta	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0040
 	and	#$007E
 	sta	zp_12
@@ -867,17 +867,17 @@ spin_shot_laser_1:
 	rtl
 loc_00DC60:
 	clc
-	lda	a:$0036,y
+	lda	a:PLAYER_SPIN_ANGLE_1,y
 	adc	#$0010
 	and	#$007E
-	sta	a:$0036,y
+	sta	a:PLAYER_SPIN_ANGLE_1,y
 	sta	zp_12
 	bra	loc_00DC8E
 
 ; Returns Z set when the 9 shot slots from X are free, else Z clear and X =
 ; Y.
 check_laser_shot_slots:
-	lda	$10,x
+	lda	SHOT_TYPE,x
 	ora	$30,x
 	ora	$50,x
 	ora	$70,x
@@ -901,7 +901,7 @@ loc_00DC8E:
 	lda	#$000C
 	sta	$30,x
 	lda	#$000B
-	sta	$10,x
+	sta	SHOT_TYPE,x
 	sta	$50,x
 	sta	$70,x
 	sta	$90,x
@@ -911,8 +911,8 @@ loc_00DC8E:
 	sta	a:$0110,x
 	sty	zp_FE
 	ldy	zp_12
-	lda	a:data_058E1A,y
-	sta	$18,x
+	lda	a:vel8_x_sub,y
+	sta	OBJ_X_VEL_SUB,x
 	sta	$58,x
 	sta	$78,x
 	sta	$98,x
@@ -920,8 +920,8 @@ loc_00DC8E:
 	sta	$D8,x
 	sta	$F8,x
 	sta	a:$0118,x
-	lda	a:data_058D7A,y
-	sta	$1A,x
+	lda	a:vel8_x,y
+	sta	OBJ_X_VEL,x
 	sta	$5A,x
 	sta	$7A,x
 	sta	$9A,x
@@ -929,8 +929,8 @@ loc_00DC8E:
 	sta	$DA,x
 	sta	$FA,x
 	sta	a:$011A,x
-	lda	a:data_058DFA,y
-	sta	$1C,x
+	lda	a:vel8_y_sub,y
+	sta	OBJ_Y_VEL_SUB,x
 	sta	$5C,x
 	sta	$7C,x
 	sta	$9C,x
@@ -938,8 +938,8 @@ loc_00DC8E:
 	sta	$DC,x
 	sta	$FC,x
 	sta	a:$011C,x
-	lda	a:data_058D5A,y
-	sta	$1E,x
+	lda	a:vel8_y,y
+	sta	OBJ_Y_VEL,x
 	sta	$5E,x
 	sta	$7E,x
 	sta	$9E,x
@@ -953,7 +953,7 @@ loc_00DC8E:
 	lsr	a
 	tay
 	lda	a:data_05A064,y
-	sta	$02,x
+	sta	SHOT_ATTR,x
 	lda	a:data_05A044,y
 	sta	zp_00
 	lda	a:data_05A054,y
@@ -991,9 +991,9 @@ loc_00DC8E:
 	sta	a:$0114,x
 	ldy	zp_FE
 	clc
-	lda	a:$000A,y
+	lda	a:OBJ_X,y
 	adc	zp_14
-	sta	$0A,x
+	sta	OBJ_X,x
 	sta	$2A,x
 	clc
 	adc	zp_00
@@ -1017,9 +1017,9 @@ loc_00DC8E:
 	adc	zp_00
 	sta	a:$010A,x
 	clc
-	lda	a:$000E,y
+	lda	a:OBJ_Y,y
 	adc	zp_16
-	sta	$0E,x
+	sta	OBJ_Y,x
 	sta	$2E,x
 	clc
 	adc	zp_02
@@ -1043,8 +1043,8 @@ loc_00DC8E:
 	adc	zp_02
 	sta	a:$010E,x
 	lda	#$0004
-	sta	$06,x
-	dec	$16,x
+	sta	SHOT_DAMAGE,x
+	dec	SHOT_HIT,x
 	dec	$36,x
 	dec	$56,x
 	dec	$76,x
@@ -1055,7 +1055,7 @@ loc_00DC8E:
 	dec	a:$0116,x
 	tyx
 	lda	#$0001
-	sta	$38,x
+	sta	PLAYER_SHOT_POSE,x
 	lda	#$0005
 	jsl	f:queue_sound
 	rtl

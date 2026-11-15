@@ -104,7 +104,7 @@ meaning, the others differ (`PLAYER_*` in `src/ram.inc`):
 | `$06`, `$10`, `$28`, `$2A` | `PLAYER_HITBOX_LEFT/BOTTOM/RIGHT/TOP` | body box, recomputed by each state |
 | `$14` | `PLAYER_FIRE_DELAY_2` | frames before weapon 2 can fire again |
 | `$16` | `OBJ_FLAGS` | 0 = absent; `PLAYERF_INVULNERABLE` (`$0002`); `PLAYERF_INTANGIBLE` (`$8000`) |
-| `$20` | `PLAYER_POSE` | pose: index of the player frame tables (`data_05B29E`...) |
+| `$20` | `PLAYER_POSE` | pose: index of the player frame tables (`player_frames`...) |
 | `$22` | `PLAYER_JOY_HELD` | the pad's buttons held |
 | `$24` | `PLAYER_INVULN_TIMER` | invulnerability after a respawn (blinking) |
 | `$26` | `PLAYER_AIM` | directions held: 1 right, 2 up, 4 left, 8 down |

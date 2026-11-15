@@ -394,11 +394,16 @@ data_058CE2:
 data_058D52:
 	; CDL: read by sub_00C82A; partly not accessed
 	.byte	$00, $00, $00, $C0, $00, $20, $00, $00
-data_058D5A:
+; Velocity of 8 pixels a frame in 64 directions (index = angle & $7E, $00
+; up, $20 right, $40 down, $60 left): vel8_x (pixels) and vel8_x_sub
+; (fraction); vel8_y / vel8_y_sub are the same sine tables read a
+; quarter turn ($20 bytes) earlier.  Player shots (spawn_shot_default...)
+; and some enemies.
+vel8_y:
 	; CDL: read by spawn_shot_default, spawn_shots_spread, sub_0489DC
 	.byte	$F8, $FF, $F8, $FF, $F8, $FF, $F8, $FF, $F9, $FF, $F9, $FF, $F9, $FF, $FA, $FF
 	.byte	$FA, $FF, $FB, $FF, $FB, $FF, $FC, $FF, $FD, $FF, $FD, $FF, $FE, $FF, $FF, $FF
-data_058D7A:
+vel8_x:
 	; CDL: read by spawn_shot_default, spawn_shots_spread, sub_048589 (+1 more)
 	.byte	$00, $00, $00, $00, $01, $00, $02, $00, $02, $00, $03, $00, $04, $00, $04, $00
 	.byte	$05, $00, $05, $00, $06, $00, $06, $00, $06, $00, $07, $00, $07, $00, $07, $00
@@ -408,11 +413,11 @@ data_058D7A:
 	.byte	$FA, $FF, $FA, $FF, $F9, $FF, $F9, $FF, $F9, $FF, $F8, $FF, $F8, $FF, $F8, $FF
 	.byte	$F8, $FF, $F8, $FF, $F8, $FF, $F8, $FF, $F9, $FF, $F9, $FF, $F9, $FF, $FA, $FF
 	.byte	$FA, $FF, $FB, $FF, $FB, $FF, $FC, $FF, $FD, $FF, $FD, $FF, $FE, $FF, $FF, $FF
-data_058DFA:
+vel8_y_sub:
 	; CDL: read by spawn_shot_default, spawn_shots_spread, sub_0489DC
 	.byte	$9A, $99, $B9, $A2, $01, $BE, $2D, $EB, $CE, $29, $4A, $79, $DE, $D8, $9C, $47
 	.byte	$75, $C4, $35, $4E, $88, $E3, $FD, $82, $0C, $2B, $16, $DA, $6C, $8E, $51, $46
-data_058E1A:
+vel8_x_sub:
 	; CDL: read by spawn_shot_default, spawn_shots_spread, sub_048589 (+1 more)
 	.byte	$00, $00, $AF, $B9, $94, $71, $EA, $25, $F4, $D4, $03, $7D, $78, $1C, $CB, $B1
 	.byte	$8B, $3B, $64, $B8, $22, $27, $B6, $86, $32, $D6, $D3, $14, $FF, $41, $47, $5D
@@ -1297,18 +1302,22 @@ data_05AB70:
 data_05AB74:
 	; CDL: read by set_player_box_jumping
 	.byte	$FF, $FF, $FC, $FF
-data_05AB78:
+; By respawn mode (wram_1672): the player state, pose and y velocity after
+; respawning (respawn_player).
+respawn_states:
 	; CDL: read by respawn_player
 	.byte	$04, $04, $02, $04, $04, $12, $04, $04, $04
-data_05AB81:
+respawn_poses:
 	; CDL: read by respawn_player
 	.byte	$D3, $00, $D3, $00, $54, $00, $D3, $00, $D3, $00, $F0, $00, $D3, $00, $D3, $00
 	.byte	$D3, $00
-data_05AB93:
+respawn_y_vels:
 	; CDL: read by respawn_player
 	.byte	$FE, $FF, $FE, $FF, $00, $00, $FE, $FF, $FE, $FF, $00, $00, $FE, $FF, $FE, $FF
 	.byte	$FE, $FF
-data_05ABA5:
+; Velocity table of the enemy bullets for each difficulty (easy and normal
+; share $05:928A; hard $05:93CA, faster), read by spawn_enemy_bullet.
+ptrs_enemy_bullet_speeds:
 	; CDL: read by spawn_enemy_bullet
 	.byte	$8A, $92, $8A, $92, $CA, $93
 data_05ABAB:
@@ -1559,7 +1568,10 @@ data_05B280:
 	; CDL: read by update_objects, sub_01CCAF
 	.byte	$1A, $B2, $D4, $B4, $06, $00, $91, $AE, $91, $AE, $06, $00, $96, $AE, $96, $AE
 	.byte	$06, $00, $BE, $AF, $BE, $AF, $06, $00, $C3, $AF, $C3, $AF, $84, $B2
-data_05B29E:
+; Player frames, 16 bytes each (index PLAYER_POSE + PLAYER_POSE_ADD + $38):
+; six VRAM source addresses of the tiles, then the metasprite facing right
+; and left (set_player_frame).
+player_frames:
 	; CDL: read by set_player_frame
 	.byte	$00, $00
 data_05B2A0:

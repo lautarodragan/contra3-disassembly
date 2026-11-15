@@ -1292,7 +1292,7 @@ PLAYERF_INTANGIBLE  = $8000	; dying / not on the screen: not touched by objects
 PLAYER_HITBOX_LEFT  = $06	; body box, left (= OBJ_X)
 PLAYER_HITBOX_BOTTOM = $10	; body box, bottom (= OBJ_Y)
 PLAYER_FIRE_DELAY_2 = $14	; frames before PLAYER_WEAPON_2 can fire again (reloaded from weapon_fire_delays[weapon] by spin_fire_weapon_2 / fire_weapon)
-PLAYER_POSE         = $20	; pose (index of the frame tables data_05B29E.., 16 bytes each), not an animation pointer
+PLAYER_POSE         = $20	; pose (index of the frame tables player_frames.., 16 bytes each), not an animation pointer
 PLAYER_JOY_HELD     = $22	; joypad buttons held (copied from joy1_held/joy2_held)
 PLAYER_INVULN_TIMER = $24	; respawn invulnerability: counts down, the player blinks, OBJ_FLAGS bit 1 cleared at 0
 PLAYER_AIM          = $26	; directions held this frame: 1 right, 2 up, 4 left, 8 down (index of the aim tables)
@@ -1300,6 +1300,9 @@ PLAYER_HITBOX_RIGHT = $28	; body box, right
 PLAYER_HITBOX_TOP   = $2A	; body box, top
 PLAYER_JOY_PRESSED  = $2C	; joypad buttons newly pressed (copied from joy1_pressed/joy2_pressed)
 PLAYER_LOCKED       = $2E	; non-zero while the "stand still" button (button_stand_still / wram_1628) is held: no walking
+PLAYER_SPIN_ANGLE_2 = $34	; angle of the next spin-jump shot of PLAYER_WEAPON_2 (spin_shot_*_2); also used by other states
+PLAYER_SPIN_ANGLE_1 = $36	; angle of the next spin-jump shot of PLAYER_WEAPON_1 (spin_shot_*_1)
+PLAYER_SHOT_POSE    = $38	; set to 1 by the shot spawners: added to the frame index (shooting pose) by set_player_frame, which clears it
 PLAYER_FIRE_DELAY_1 = $3A	; frames before PLAYER_WEAPON_1 can fire again (spin_fire_weapon_1 / fire_weapon)
 PLAYER_CONTACT      = $3C	; contact flags, PCONTACT_* bits
 ; Player parallel fields at slot + $1300 ($1500 player 1, $1540 player 2):

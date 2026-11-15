@@ -8,11 +8,11 @@
 ; object (from $0280) whose OBJ_TYPE equals its own $3A.
 delete_self_and_linked:
 	lda	#$8000
-	sta	$16,x
+	sta	OBJ_FLAGS,x
 	txy
 	ldx	#$0280
 loc_019E4D:
-	lda	$10,x
+	lda	OBJ_TYPE,x
 	cmp	a:$003A,y
 	beq	loc_019E61
 	txa
@@ -35,11 +35,11 @@ loc_019E61:
 	rtl
 
 sub_019E6E:
-	lda	$26,x
+	lda	OBJ_SAVED_ATTR,x
 	bne	loc_019E80
-	lda	$14,x
+	lda	OBJ_HIT,x
 	beq	loc_019E7F
-	inc	$26,x
+	inc	OBJ_SAVED_ATTR,x
 	lda	#$912A
 	sta	cgram_upload_src
 	sty	cgram_upload_addr
@@ -47,7 +47,7 @@ loc_019E7F:
 	rtl
 loc_019E80:
 	; (not executed in the CDL traces)
-	stz	$26,x
+	stz	OBJ_SAVED_ATTR,x
 	rtl
 
 ; Returns X = the first free slot (OBJ_TYPE 0) of $0300-$077F, carry clear;
@@ -57,7 +57,7 @@ find_free_slot:
 
 ; The same, starting at X.
 find_free_slot_from_x:
-	lda	$10,x
+	lda	OBJ_TYPE,x
 	beq	loc_019E96
 	txa
 	clc
@@ -74,7 +74,7 @@ loc_019E96:
 ; Y = the first free slot from Y up to $0ABF, carry clear; carry set if
 ; none.
 find_free_slot_y_to_end:
-	lda	a:$0010,y
+	lda	a:OBJ_TYPE,y
 	beq	loc_019EA9
 	tya
 	clc
@@ -94,7 +94,7 @@ find_free_slot_y:
 
 ; The same, starting at Y.
 find_free_slot_from_y:
-	lda	a:$0010,y
+	lda	a:OBJ_TYPE,y
 	beq	loc_019EBF
 	tya
 	clc
@@ -110,7 +110,7 @@ loc_019EBF:
 ; Y = the first free slot from Y down to $0300, carry SET when found,
 ; carry clear if none.
 find_free_slot_y_down:
-	lda	a:$0010,y
+	lda	a:OBJ_TYPE,y
 	beq	loc_019ED2
 	tya
 	sec
@@ -125,7 +125,7 @@ loc_019ED2:
 
 ; X = the first free slot from X down to $0300, carry set when found.
 find_free_slot_x_down:
-	lda	$10,x
+	lda	OBJ_TYPE,x
 	beq	loc_019EE4
 	txa
 	sec
@@ -168,13 +168,13 @@ loc_019F19:
 ; Makes the object at X solid for each present player (solid_object_vs_player).
 solid_object_vs_players:
 	ldy	#$0200
-	lda	a:$0016,y
+	lda	a:OBJ_FLAGS,y
 	beq	loc_019F28
 	stz	zp_0C
 	jsl	f:solid_object_vs_player
 loc_019F28:
 	ldy	#$0240
-	lda	a:$0016,y
+	lda	a:OBJ_FLAGS,y
 	beq	loc_019F36
 	; (not executed in the CDL traces)
 	stz	zp_0C
@@ -189,35 +189,35 @@ loc_019F36:
 ; crushed against the screen edge).  zp_0C = kind of object (0-2).
 solid_object_vs_player:
 	clc
-	lda	$0A,x
-	adc	$28,x
+	lda	OBJ_X,x
+	adc	OBJ_HITBOX_W,x
 	sec
-	sbc	a:$000A,y
+	sbc	a:OBJ_X,y
 	bmi	loc_019F36
 	sta	zp_10
-	lda	a:$0028,y
+	lda	a:PLAYER_HITBOX_RIGHT,y
 	sec
-	sbc	$0A,x
+	sbc	OBJ_X,x
 	bmi	loc_019F36
 	sta	zp_12
 	clc
-	lda	$0E,x
-	adc	$2A,x
+	lda	OBJ_Y,x
+	adc	OBJ_HITBOX_H,x
 	sec
-	sbc	a:$000E,y
+	sbc	a:OBJ_Y,y
 	bpl	loc_019F36
 	eor	#$FFFF
 	inc	a
 	sta	zp_14
-	lda	a:$002A,y
+	lda	a:PLAYER_HITBOX_TOP,y
 	sec
-	sbc	$0E,x
+	sbc	OBJ_Y,x
 	bpl	loc_019F36
 	eor	#$FFFF
 	inc	a
 	sta	zp_16
 	txa
-	sta	a:$1304,y
+	sta	a:PLAYER_PLATFORM,y
 	lda	zp_10
 	cmp	zp_12
 	bcc	loc_019F79
@@ -292,15 +292,15 @@ tbl_019FE5:
 	.addr	sub_01A055
 
 sub_019FEB:
-	lda	a:$001E,y
+	lda	a:OBJ_Y_VEL,y
 	bmi	loc_01A005
 	lda	#$0000
-	sta	a:$001E,y
-	sta	a:$001C,y
+	sta	a:OBJ_Y_VEL,y
+	sta	a:OBJ_Y_VEL_SUB,y
 	jsr	a:sub_01A0A4
 	lda	#$0080
-	ora	a:$003C,y
-	sta	a:$003C,y
+	ora	a:PLAYER_CONTACT,y
+	sta	a:PLAYER_CONTACT,y
 loc_01A005:
 	rtl
 
@@ -309,11 +309,11 @@ sub_01A006:
 	cmp	#$00F1
 	bcs	loc_01A038
 	lda	#$0000
-	sta	a:$001A,y
-	sta	a:$0018,y
+	sta	a:OBJ_X_VEL,y
+	sta	a:OBJ_X_VEL_SUB,y
 	lda	#$0200
-	ora	a:$003C,y
-	sta	a:$003C,y
+	ora	a:PLAYER_CONTACT,y
+	sta	a:PLAYER_CONTACT,y
 	rtl
 
 sub_01A021:
@@ -321,26 +321,26 @@ sub_01A021:
 	jsr	a:sub_01A0BD
 	cmp	#$00F1
 	bcs	loc_01A038
-	lda	a:$001A,y
+	lda	a:OBJ_X_VEL,y
 	bmi	loc_01A038
 	sec
-	sbc	$1A,x
+	sbc	OBJ_X_VEL,x
 	bcs	loc_01A04B
 	cmp	#$FFFF
 	bcs	loc_01A04B
 loc_01A038:
 	lda	#$0000
-	sta	a:$001A,y
-	sta	a:$0018,y
+	sta	a:OBJ_X_VEL,y
+	sta	a:OBJ_X_VEL_SUB,y
 	lda	#$0204
-	ora	a:$003C,y
-	sta	a:$003C,y
+	ora	a:PLAYER_CONTACT,y
+	sta	a:PLAYER_CONTACT,y
 	rtl
 loc_01A04B:
 	; (not executed in the CDL traces)
 	lda	#$0200
-	ora	a:$003C,y
-	sta	a:$003C,y
+	ora	a:PLAYER_CONTACT,y
+	sta	a:PLAYER_CONTACT,y
 	rtl
 
 sub_01A055:
@@ -348,64 +348,64 @@ sub_01A055:
 	cmp	#$0009
 	bcc	loc_01A087
 	lda	#$0000
-	sta	a:$001A,y
-	sta	a:$0018,y
+	sta	a:OBJ_X_VEL,y
+	sta	a:OBJ_X_VEL_SUB,y
 	lda	#$0400
-	ora	a:$003C,y
-	sta	a:$003C,y
+	ora	a:PLAYER_CONTACT,y
+	sta	a:PLAYER_CONTACT,y
 	rtl
 
 sub_01A070:
 	jsr	a:sub_01A0AE
 	cmp	#$0009
 	bcc	loc_01A087
-	lda	a:$001A,y
+	lda	a:OBJ_X_VEL,y
 	bpl	loc_01A087
 	; (not executed in the CDL traces)
 	sec
-	sbc	$1A,x
+	sbc	OBJ_X_VEL,x
 	bcc	loc_01A09A
 	cmp	#$0001
 	bcc	loc_01A09A
 loc_01A087:
 	lda	#$0000
-	sta	a:$001A,y
-	sta	a:$0018,y
+	sta	a:OBJ_X_VEL,y
+	sta	a:OBJ_X_VEL_SUB,y
 	lda	#$0404
-	ora	a:$003C,y
-	sta	a:$003C,y
+	ora	a:PLAYER_CONTACT,y
+	sta	a:PLAYER_CONTACT,y
 	rtl
 loc_01A09A:
 	; (not executed in the CDL traces)
 	lda	#$0400
-	ora	a:$003C,y
-	sta	a:$003C,y
+	ora	a:PLAYER_CONTACT,y
+	sta	a:PLAYER_CONTACT,y
 	rtl
 
 sub_01A0A4:
 	clc
-	lda	$0E,x
-	adc	$2A,x
+	lda	OBJ_Y,x
+	adc	OBJ_HITBOX_H,x
 	inc	a
-	sta	a:$000E,y
+	sta	a:OBJ_Y,y
 	rts
 
 sub_01A0AE:
 	sec
-	lda	a:$000A,y
-	sbc	a:$0028,y
+	lda	a:OBJ_X,y
+	sbc	a:PLAYER_HITBOX_RIGHT,y
 	clc
-	adc	$0A,x
+	adc	OBJ_X,x
 	inc	a
-	sta	a:$000A,y
+	sta	a:OBJ_X,y
 	rts
 
 sub_01A0BD:
 	clc
-	lda	$0A,x
-	adc	$28,x
+	lda	OBJ_X,x
+	adc	OBJ_HITBOX_W,x
 	dec	a
-	sta	a:$000A,y
+	sta	a:OBJ_X,y
 	rts
 
 sub_01A0C7:
@@ -414,16 +414,16 @@ sub_01A0C7:
 ; A = angle (0-255, sub_1DABA0) from the centre of the hitbox of the object
 ; at X to PLAYER_CENTER_X/Y of the player at Y, plus $80.
 angle_to_player:
-	lda	$28,x
+	lda	OBJ_HITBOX_W,x
 	lsr	a
-	adc	$0A,x
-	sbc	a:$1312,y
+	adc	OBJ_X,x
+	sbc	a:PLAYER_CENTER_X,y
 	sta	zp_08
 	sec
-	lda	$2A,x
+	lda	OBJ_HITBOX_H,x
 	ror	a
-	adc	$0E,x
-	sbc	a:$1314,y
+	adc	OBJ_Y,x
+	sbc	a:PLAYER_CENTER_Y,y
 	sta	zp_0A
 	jsl	f:sub_1DABA0
 	clc
@@ -447,10 +447,10 @@ loc_01A0FA:
 	bne	loc_01A105
 	ldy	#$0200
 loc_01A105:
-	lda	a:$1312,y
+	lda	a:PLAYER_CENTER_X,y
 	sbc	zp_00
 	sta	zp_08
-	lda	a:$1314,y
+	lda	a:PLAYER_CENTER_Y,y
 	sbc	zp_02
 	sta	zp_0A
 	jsl	f:sub_1DABA0
@@ -460,34 +460,34 @@ loc_01A105:
 
 ; In: A = direction (x2), zp_00/zp_02 = position.  Allocates a slot
 ; downwards from $0740 and makes it an enemy bullet (type $18) whose
-; velocity comes from the table of the difficulty (data_05ABA5[difficulty]
+; velocity comes from the table of the difficulty (ptrs_enemy_bullet_speeds[difficulty]
 ; + direction): faster bullets on harder levels.  Out: carry set and Y =
 ; bullet if spawned.
 spawn_enemy_bullet:
 	phy
 	ldy	difficulty
 	clc
-	adc	a:data_05ABA5,y
+	adc	a:ptrs_enemy_bullet_speeds,y
 	sta	zp_FC
 	ldy	#$0740
 	jsl	f:find_free_slot_y_down
 	bcc	loc_01A15B
 	lda	#$0018
-	sta	a:$0010,y
+	sta	a:OBJ_TYPE,y
 	lda	zp_00
-	sta	a:$000A,y
+	sta	a:OBJ_X,y
 	lda	zp_02
-	sta	a:$000E,y
+	sta	a:OBJ_Y,y
 	phx
 	ldx	zp_FC
 	lda	a:$0000,x
-	sta	a:$001E,y
+	sta	a:OBJ_Y_VEL,y
 	lda	a:$0010,x
-	sta	a:$001A,y
+	sta	a:OBJ_X_VEL,y
 	lda	a:$0050,x
-	sta	a:$001C,y
+	sta	a:OBJ_Y_VEL_SUB,y
 	lda	a:$0060,x
-	sta	a:$0018,y
+	sta	a:OBJ_X_VEL_SUB,y
 	plx
 	sec
 loc_01A15B:
@@ -684,46 +684,46 @@ kill_players_outside:
 	rtl
 
 kill_player_outside:
-	lda	a:$1D88,y
+	lda	a:PLAYER_BARRIER,y
 	beq	loc_01A2AE
 	; (not executed in the CDL traces)
 	lda	zp_FC
 	beq	loc_01A2EF
 loc_01A2AE:
-	lda	a:$1D8A,y
+	lda	a:PLAYER_LIVES,y
 	beq	loc_01A2EF
-	lda	a:$0016,y
+	lda	a:OBJ_FLAGS,y
 	beq	loc_01A2EF
 	bit	#$8002
 	bne	loc_01A2EF
-	lda	a:$000E,y
+	lda	a:OBJ_Y,y
 	bmi	loc_01A2EF
 	sep	#$20
 	.a8
 	lda	zp_01
 	beq	loc_01A2CD
-	cmp	a:$000E,y
+	cmp	a:OBJ_Y,y
 	bcs	loc_01A2E8
 loc_01A2CD:
 	lda	zp_00
 	beq	loc_01A2D6
-	cmp	a:$000E,y
+	cmp	a:OBJ_Y,y
 	bcc	loc_01A2E8
 loc_01A2D6:
 	lda	zp_02
 	beq	loc_01A2DF
 	; (not executed in the CDL traces)
-	cmp	a:$000A,y
+	cmp	a:OBJ_X,y
 	bcs	loc_01A2E8
 loc_01A2DF:
 	lda	zp_03
 	beq	loc_01A2ED
 	; (not executed in the CDL traces)
-	cmp	a:$000A,y
+	cmp	a:OBJ_X,y
 	bcs	loc_01A2ED
 loc_01A2E8:
 	lda	#$04
-	sta	a:$003C,y
+	sta	a:PLAYER_CONTACT,y
 loc_01A2ED:
 	rep	#$20
 loc_01A2EF:
