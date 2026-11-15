@@ -105,9 +105,10 @@ data_058404:
 data_05840A:
 	; CDL: read by start_palette_task_at, palette_task_animate, game_mode_game_start; partly not accessed
 	.byte	$99, $85, $A6, $85, $B4, $85, $C2, $85
-palette_058412:
-	.byte	$01, $00, $00, $92, $8F, $00, $22, $00
-	.byte	$00
+palette_task_058412:
+	palette_animate	$00, $00
+	palette_copy	palette_088F92, $2200
+	palette_copy_end
 text_05841B:
 	.byte	$2B, $5A, $4D, $4E, $3C, $42, $40, $00, $4D, $40, $47, $40, $3E
 data_058428:
@@ -185,11 +186,15 @@ load_list_058542:
 	load_list	$00, $00
 	load_vram	$5000, gfx_089D7E
 	load_end
-palette_05854B:
-	.byte	$01, $00, $00, $AA, $80, $00, $22
-	.byte	$F6, $8A, $80, $23, $00, $00
-palette_058558:
-	.byte	$01, $00, $00, $1C, $8C, $80, $23, $00, $00
+palette_task_05854B:
+	palette_animate	$00, $00
+	palette_copy	palette_0880AA, $2200
+	palette_copy	palette_088AF6, $2380
+	palette_copy_end
+palette_task_058558:
+	palette_animate	$00, $00
+	palette_copy	palette_088C1C, $2380
+	palette_copy_end
 text_058561:
 	.byte	$21
 	.byte	$5B, $4E, $48, $00, $3C, $49, $3F, $00, $2C, $00, $02, $0A, $0A, $03, $00, $46
@@ -295,20 +300,28 @@ load_list_0587AB:
 	load_vram	$0000, gfx_0891DE
 	load_vram	$0100, gfx_089225
 	load_end
-palette_0587C3:
-	.byte	$01, $00, $00, $00, $80, $60, $22, $22
-	.byte	$80, $00, $22, $22, $80, $20, $22, $22, $80, $40, $22, $00, $00
-palette_0587D8:
-	.byte	$01, $00, $00
-	.byte	$44, $80, $00, $22, $00, $00
-palette_0587E1:
-	.byte	$01, $00, $00, $66, $80, $20, $22, $00, $00
-palette_0587EA:
-	.byte	$01
-	.byte	$00, $00, $88, $80, $40, $22
+palette_task_0587C3:
+	palette_animate	$00, $00
+	palette_copy	gfx_08, $2260
+	palette_copy	palette_088022, $2200
+	palette_copy	palette_088022, $2220
+	palette_copy	palette_088022, $2240
+	palette_copy_end
+palette_task_0587D8:
+	palette_animate	$00, $00
+	palette_copy	palette_088044, $2200
+	palette_copy_end
+palette_task_0587E1:
+	palette_animate	$00, $00
+	palette_copy	palette_088066, $2220
+	palette_copy_end
+palette_task_0587EA:
+	palette_animate	$00, $00
+	palette_copy	palette_088088, $2240
 data_0587F1:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk (+3 more); partly not accessed
-	.byte	$00, $00, $08, $88, $20, $88, $38, $88, $50, $88, $68, $88, $22, $BE, $8D, $00
+	palette_copy_end
+	.byte	$08, $88, $20, $88, $38, $88, $50, $88, $68, $88, $22, $BE, $8D, $00
 	.byte	$A2, $08, $88, $22, $A8, $90, $00
 load_list_058808:
 	load_list	$00, $00
@@ -345,12 +358,14 @@ load_list_058868:
 	load_vram	$0000, gfx_19D779
 	load_vram	$5000, gfx_089D7E
 	load_end
-palette_058880:
-	.byte	$01
-	.byte	$00, $00, $2C, $88, $00, $22, $00, $00
-palette_058889:
-	.byte	$01, $00, $00, $2E, $89, $40, $22, $00
-	.byte	$00
+palette_task_058880:
+	palette_animate	$00, $00
+	palette_copy	palette_08882C, $2200
+	palette_copy_end
+palette_task_058889:
+	palette_animate	$00, $00
+	palette_copy	palette_08892E, $2240
+	palette_copy_end
 	; CDL: read by draw_text
 text_058892:
 	.byte	$6C, $58, $43, $44, $00, $4D, $3E, $4A, $4C, $40, $FF
@@ -418,9 +433,10 @@ load_list_058976:
 	load_vram	$0000, gfx_1EEBD0
 	load_vram	$5000, gfx_089D7E
 	load_end
-palette_05898E:
-	.byte	$01, $00, $00, $7A, $8B, $00, $22, $00
-	.byte	$00
+palette_task_05898E:
+	palette_animate	$00, $00
+	palette_copy	palette_088B7A, $2200
+	palette_copy_end
 	; CDL: read by draw_text
 text_058997:
 	.byte	$AC, $58, $43, $44, $00, $4D, $3E, $4A, $4C, $40, $FF
@@ -478,9 +494,11 @@ load_list_058A93:
 	load_wram	$7FC000, packed_11CDEA
 	load_wram	$7FE000, packed_11DF75
 	load_end
-palette_058AC7:
-	.byte	$01, $00, $00, $B6, $82, $00, $23, $54, $82, $A0, $23, $00
-	.byte	$00
+palette_task_058AC7:
+	palette_animate	$00, $00
+	palette_copy	palette_0882B6, $2300
+	palette_copy	palette_088254, $23A0
+	palette_copy_end
 load_list_058AD4:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk
 	load_list	$00, $00
@@ -518,8 +536,12 @@ load_list_058B2F:
 	load_vram	$3000, gfx_09CD49
 	load_vram	$7000, gfx_0EDD88
 	load_end
-	.byte	$01, $00, $00, $50, $81, $40, $22, $92, $8F, $00
-	.byte	$22, $BA, $83, $40, $23, $00, $00
+palette_task_058B4C:
+	palette_animate	$00, $00
+	palette_copy	palette_088150, $2240
+	palette_copy	palette_088F92, $2200
+	palette_copy	palette_0883BA, $2340
+	palette_copy_end
 load_list_058B5D:
 	; CDL: read by load_data_list, run_pending_loads, init_loader_context (+2 more)
 	load_list	$01, $00
@@ -555,8 +577,12 @@ load_list_058BB6:
 	load_vram	$7800, gfx_0DD6D3
 	load_vram	$7C00, gfx_0E8F5B
 	load_end
-	.byte	$01, $00, $00, $F8, $82, $40, $22, $92, $8F, $00, $22, $02, $86, $40, $23
-	.byte	$00, $00
+palette_task_058BE7:
+	palette_animate	$00, $00
+	palette_copy	palette_0882F8, $2240
+	palette_copy	palette_088F92, $2200
+	palette_copy	palette_088602, $2340
+	palette_copy_end
 load_list_058BF8:
 	; CDL: read by load_data_list, run_pending_loads, init_loader_context (+2 more)
 	load_list	$01, $00
@@ -586,8 +612,11 @@ load_list_058C3B:
 	load_vram	$7000, gfx_0E9584
 	load_vram	$7800, gfx_0DEF88
 	load_end
-	.byte	$01, $00, $00, $3E, $84, $00, $22, $64, $86
-	.byte	$40, $23, $00, $00
+palette_task_058C62:
+	palette_animate	$00, $00
+	palette_copy	palette_08843E, $2200
+	palette_copy	palette_088664, $2340
+	palette_copy_end
 load_list_058C6F:
 	; CDL: read by load_data_list, run_pending_loads, init_loader_context (+4 more)
 	load_list	$01, $00
@@ -611,8 +640,12 @@ load_list_058C97:
 	load_vram	$7C00, gfx_0E8F5B
 	load_vram	$7000, gfx_0EA34B
 	load_end
-	.byte	$01, $00
-	.byte	$00, $40, $85, $40, $22, $92, $8F, $00, $22, $C6, $86, $40, $23, $00, $00
+palette_task_058CCD:
+	palette_animate	$00, $00
+	palette_copy	palette_088540, $2240
+	palette_copy	palette_088F92, $2200
+	palette_copy	palette_0886C6, $2340
+	palette_copy_end
 data_058CDE:
 	; CDL: read by player_autopilot_mode1; partly not accessed
 	.byte	$68, $00, $98, $00
@@ -1453,22 +1486,25 @@ load_list_05A807:
 	load_vram	$4000, gfx_06F313
 	load_vram	$4800, gfx_06F68F
 	load_end
-palette_05A815:
-	.byte	$01, $00
-	.byte	$00, $F0, $89, $00, $22, $B6, $82, $00, $23, $54, $82, $A0, $23, $F6, $8A, $80
-	.byte	$23, $00, $00
-palette_05A82A:
-	.byte	$03, $08, $F6, $8A, $80, $23
-palette_05A830:
-	.byte	$03, $10, $54, $82, $A0, $23
-palette_05A836:
-	.byte	$04
-	.byte	$10, $54, $82, $A0, $23
-palette_05A83C:
-	.byte	$01, $00, $00, $54, $82, $A0, $23, $00, $00
-palette_05A845:
-	.byte	$03, $08
-	.byte	$F2, $8A, $50, $22
+palette_task_05A815:
+	palette_animate	$00, $00
+	palette_copy	palette_0889F0, $2200
+	palette_copy	palette_0882B6, $2300
+	palette_copy	palette_088254, $23A0
+	palette_copy	palette_088AF6, $2380
+	palette_copy_end
+palette_task_05A82A:
+	palette_fade_in	$08, palette_088AF6, $2380
+palette_task_05A830:
+	palette_fade_in	$10, palette_088254, $23A0
+palette_task_05A836:
+	palette_fade_out	$10, palette_088254, $23A0
+palette_task_05A83C:
+	palette_animate	$00, $00
+	palette_copy	palette_088254, $23A0
+	palette_copy_end
+palette_task_05A845:
+	palette_fade_in	$08, palette_088AF2, $2250
 load_list_05A84B:
 	; CDL: read by load_data_list, init_loader_context, load_wram_stream (+1 more)
 	load_list	$01, $00
@@ -1574,9 +1610,11 @@ load_list_05AA1F:
 	load_list	$00, $01
 	load_vram	$7000, gfx_0DE218
 	load_end
-palette_05AA28:
-	.byte	$01, $00, $00, $1C, $84, $80, $23
-	.byte	$00, $00, $70, $43, $00, $05, $44, $AA, $05, $05, $60, $43, $02, $12, $49, $AA
+palette_task_05AA28:
+	palette_animate	$00, $00
+	palette_copy	palette_08841C, $2380
+	palette_copy_end
+	.byte	$70, $43, $00, $05, $44, $AA, $05, $05, $60, $43, $02, $12, $49, $AA
 	.byte	$05, $05, $FF, $FF, $C0, $18, $09, $80, $0A, $00, $18, $00, $00, $80, $80, $00
 	.byte	$00
 data_05AA50:
@@ -2804,14 +2842,24 @@ data_05CD1B:
 	.byte	$29, $CD, $41, $CD
 data_05CD21:
 	; CDL: read by start_palette_task_at, palette_task_fade_out, palette_task_fade_in (+2 more); DMA / HDMA
-	.byte	$4D, $CD, $2F, $CD, $47, $CD, $53, $CD, $03, $10, $2A, $F0, $DA, $22, $04, $10
-	.byte	$2A, $F0, $DA, $22
-palette_05CD35:
-	.byte	$03, $30, $32, $F0, $A2, $22
-palette_05CD3B:
-	.byte	$04, $30, $32, $F0, $A2, $22
-	.byte	$03, $10, $4E, $F0, $C2, $22, $04, $10, $4E, $F0, $C2, $22, $03, $10, $6E, $F0
-	.byte	$C4, $22, $04, $10, $6E, $F0, $C4, $22, $70, $43, $01, $28, $63, $CD, $05, $FF
+	.byte	$4D, $CD, $2F, $CD, $47, $CD, $53, $CD
+palette_task_05CD29:
+	palette_fade_in	$10, palette_08F02A, $22DA
+palette_task_05CD2F:
+	palette_fade_out	$10, palette_08F02A, $22DA
+palette_task_05CD35:
+	palette_fade_in	$30, palette_08F032, $22A2
+palette_task_05CD3B:
+	palette_fade_out	$30, palette_08F032, $22A2
+palette_task_05CD41:
+	palette_fade_in	$10, palette_08F04E, $22C2
+palette_task_05CD47:
+	palette_fade_out	$10, palette_08F04E, $22C2
+palette_task_05CD4D:
+	palette_fade_in	$10, palette_08F06E, $22C4
+palette_task_05CD53:
+	palette_fade_out	$10, palette_08F06E, $22C4
+	.byte	$70, $43, $01, $28, $63, $CD, $05, $FF
 	.byte	$FF, $80, $18, $01, $00, $01, $18, $E8, $00
 topdown_stage_songs:
 	; CDL: read by intro_play_music
@@ -2928,10 +2976,15 @@ load_list_05CF7E:
 	load_wram	$7EC000, packed_1798AD
 	load_wram	$7EE000, packed_17AFDA
 	load_end
-palette_05CFB2:
-	.byte	$01, $00, $00, $3E, $8C, $40, $22, $92, $8F, $00, $22, $50
-	.byte	$8F, $00, $23, $2E, $8F, $40, $23, $0C, $8F, $60, $23, $E0, $8C, $80, $23, $00
-	.byte	$00
+palette_task_05CFB2:
+	palette_animate	$00, $00
+	palette_copy	palette_088C3E, $2240
+	palette_copy	palette_088F92, $2200
+	palette_copy	palette_088F50, $2300
+	palette_copy	palette_088F2E, $2340
+	palette_copy	palette_088F0C, $2360
+	palette_copy	palette_088CE0, $2380
+	palette_copy_end
 load_list_05CFCF:
 	; CDL: read by load_data_list, dma_ring_to_vram, decompress_chunk
 	load_list	$03, $00
@@ -2948,10 +3001,14 @@ load_list_05CFD8:
 	load_wram	$7EA000, packed_149C93
 	load_wram	$7EC000, packed_1497F0
 	load_end
-palette_05D006:
-	.byte	$01, $00
-	.byte	$00, $3E, $8C, $40, $22, $92, $8F, $00, $22, $82, $8D, $00, $23, $0C, $8F, $60
-	.byte	$23, $E0, $8C, $80, $23, $00, $00
+palette_task_05D006:
+	palette_animate	$00, $00
+	palette_copy	palette_088C3E, $2240
+	palette_copy	palette_088F92, $2200
+	palette_copy	palette_088D82, $2300
+	palette_copy	palette_088F0C, $2360
+	palette_copy	palette_088CE0, $2380
+	palette_copy_end
 load_list_05D01F:
 	; CDL: read by load_data_list, dma_ring_to_vram, decompress_chunk
 	load_list	$03, $00
@@ -2968,10 +3025,15 @@ load_list_05D028:
 	load_wram	$7EA000, packed_15AE2E
 	load_wram	$7EC000, packed_15C2B3
 	load_end
-palette_05D056:
-	.byte	$01, $00
-	.byte	$00, $A4, $8D, $40, $22, $92, $8F, $00, $22, $CA, $8E, $00, $23, $2E, $8F, $40
-	.byte	$23, $0C, $8F, $60, $23, $E0, $8C, $80, $23, $00, $00
+palette_task_05D056:
+	palette_animate	$00, $00
+	palette_copy	palette_088DA4, $2240
+	palette_copy	palette_088F92, $2200
+	palette_copy	palette_088ECA, $2300
+	palette_copy	palette_088F2E, $2340
+	palette_copy	palette_088F0C, $2360
+	palette_copy	palette_088CE0, $2380
+	palette_copy_end
 load_list_05D073:
 	; CDL: read by load_data_list, dma_ring_to_vram, decompress_chunk
 	load_list	$03, $00
@@ -2988,10 +3050,15 @@ load_list_05D07C:
 	load_wram	$7EA000, packed_16B623
 	load_wram	$7EC000, packed_16B174
 	load_end
-palette_05D0AA:
-	.byte	$01, $00
-	.byte	$00, $A4, $8D, $40, $22, $92, $8F, $00, $22, $46, $8E, $00, $23, $0C, $8F, $60
-	.byte	$23, $E0, $8C, $80, $23, $00, $00, $00, $01, $00, $30, $7B, $97, $1C, $FF, $FF
+palette_task_05D0AA:
+	palette_animate	$00, $00
+	palette_copy	palette_088DA4, $2240
+	palette_copy	palette_088F92, $2200
+	palette_copy	palette_088E46, $2300
+	palette_copy	palette_088F0C, $2360
+	palette_copy	palette_088CE0, $2380
+	palette_copy_end
+	.byte	$00, $01, $00, $30, $7B, $97, $1C, $FF, $FF
 	.byte	$00, $01, $00, $30, $CC, $A9, $1A, $FF, $FF, $00, $01, $00, $30, $A6, $BC, $1A
 	.byte	$FF, $FF
 start_points_x:
@@ -3880,8 +3947,10 @@ data_05E7C0:
 	.byte	$28, $3F, $28, $37, $2E, $3D, $2E, $3F, $A0, $73, $20, $74, $E0, $73, $C0, $73
 	.byte	$40, $74, $E0, $73, $00, $72, $80, $72, $00, $73, $60, $74, $80, $74, $00, $6D
 	.byte	$20, $6D
-palette_05E7E2:
-	.byte	$01, $00, $00, $28, $87, $40, $23, $00, $00
+palette_task_05E7E2:
+	palette_animate	$00, $00
+	palette_copy	palette_088728, $2340
+	palette_copy_end
 anim_05E7EB:
 	anim_frame	$0008, metasprite_06BE3E, $0000
 	anim_frame	$0006, metasprite_06BE5B, $0000
@@ -4702,16 +4771,14 @@ load_list_05F55B:
 	load_spc_raw	$5100, spc_block_1B8002, $5F8E
 	load_spc	$0200, spc_data_1A8002
 	load_end
-palette_05F576:
-	.byte	$04, $08, $62, $8D, $8A
-	.byte	$22
-palette_05F57C:
-	.byte	$03, $10, $62, $8D, $8A, $22
-palette_05F582:
-	.byte	$04, $08, $7A, $8D, $60, $22
-palette_05F588:
-	.byte	$03, $10, $7A
-	.byte	$8D, $60, $22
+palette_task_05F576:
+	palette_fade_out	$08, palette_088D62, $228A
+palette_task_05F57C:
+	palette_fade_in	$10, palette_088D62, $228A
+palette_task_05F582:
+	palette_fade_out	$08, palette_088D7A, $2260
+palette_task_05F588:
+	palette_fade_in	$10, palette_088D7A, $2260
 data_05F58E:
 	; CDL: read by spawn_ending_crowd
 	.byte	$9A, $00
@@ -4849,11 +4916,14 @@ load_list_05F8D1:
 	load_list	$00, $01
 	load_vram	$3000, gfx_15DCD9
 	load_end
-palette_05F8DA:
-	.byte	$01, $00, $00, $8A, $87, $40, $22
-	.byte	$00, $00
-palette_05F8E3:
-	.byte	$01, $00, $00, $CA, $EF, $00, $22, $00, $00
+palette_task_05F8DA:
+	palette_animate	$00, $00
+	palette_copy	palette_08878A, $2240
+	palette_copy_end
+palette_task_05F8E3:
+	palette_animate	$00, $00
+	palette_copy	palette_08EFCA, $2200
+	palette_copy_end
 data_05F8EC:
 	; CDL: read by ending_queue_tile_changes
 	.byte	$10, $10, $00, $14, $00, $24, $00, $04, $58, $00, $04, $A8, $04, $08, $FC, $04
@@ -5013,24 +5083,23 @@ data_05FDFB:
 	.byte	$C0, $CD, $E0, $CD, $00, $CE, $20, $CE, $40, $CE, $60, $CE, $00, $B0, $00, $B0
 	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0
 	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0
-palette_05FEC7:
-	.byte	$03, $12, $1A, $F0
-	.byte	$02, $22
-palette_05FECD:
-	.byte	$04, $12, $1A, $F0, $02, $22
-palette_05FED3:
-	.byte	$03, $12, $0C, $F0, $B4, $22
-palette_05FED9:
-	.byte	$04, $12
-	.byte	$0C, $F0, $B4, $22
+palette_task_05FEC7:
+	palette_fade_in	$12, palette_08F01A, $2202
+palette_task_05FECD:
+	palette_fade_out	$12, palette_08F01A, $2202
+palette_task_05FED3:
+	palette_fade_in	$12, palette_08F00C, $22B4
+palette_task_05FED9:
+	palette_fade_out	$12, palette_08F00C, $22B4
 load_list_05FEDF:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk (+2 more)
 	load_list	$00, $01
 	load_vram	$7000, gfx_0BE86E
 	load_end
-palette_05FEE8:
-	.byte	$01, $00, $00, $18, $8B, $40, $23
-	.byte	$00, $00
+palette_task_05FEE8:
+	palette_animate	$00, $00
+	palette_copy	palette_088B18, $2340
+	palette_copy_end
 data_05FEF1:
 	; CDL: read by sub_1DBDA0
 	.byte	$00, $E0, $00, $20

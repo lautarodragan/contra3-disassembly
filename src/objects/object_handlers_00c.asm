@@ -81,7 +81,7 @@ stage1_boss_controller_state_01:
 	stx	zp_FC
 	ldx	#.loword(load_list_05AA1F)
 	jsl	f:load_data_list
-	ldy	#.loword(palette_05AA28)
+	ldy	#.loword(palette_task_05AA28)
 	jsl	f:start_palette_task
 	ldx	zp_FC
 	jsl	f:clear_hdma_line_buffer

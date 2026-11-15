@@ -48,7 +48,7 @@ opening_cinematic_init:
 	jsl	f:queue_sound
 	ldx	#.loword(load_list_05A84B)
 	jsl	f:load_data_list
-	ldy	#.loword(palette_05A815)
+	ldy	#.loword(palette_task_05A815)
 	jsl	f:start_palette_task
 	stz	a:opening_frame_counter
 	lda	#$0020
@@ -243,7 +243,7 @@ opening_city_init:
 	stz	a:bg2_y_sub
 	stz	a:bg2_y
 	jsr	a:opening_set_layers_flash
-	ldy	#.loword(palette_05A830)
+	ldy	#.loword(palette_task_05A830)
 	jsl	f:start_palette_task
 	ldx	#$0300
 	lda	#$0053
@@ -263,7 +263,7 @@ opening_city_init:
 opening_city_wait:
 	jsr	a:opening_is_scene_ending
 	bcc	opening_city_idle
-	ldy	#.loword(palette_05A836)
+	ldy	#.loword(palette_task_05A836)
 	jsl	f:start_palette_task
 	inc	a:opening_step
 
@@ -336,7 +336,7 @@ opening_vortex_spawn_objects:
 	iny
 	cpy	#$0020
 	bcc	@loop
-	ldy	#.loword(palette_05A845)
+	ldy	#.loword(palette_task_05A845)
 	jsl	f:start_palette_task
 	inc	a:opening_step
 
@@ -519,7 +519,7 @@ opening_ruins_spawn_alien:
 	sta	$02,x
 	lda	#.loword(metasprite_06CEC8)
 	sta	$00,x
-	ldy	#.loword(palette_05A82A)
+	ldy	#.loword(palette_task_05A82A)
 	jsl	f:start_palette_task
 	stz	a:opening_step_timer
 	inc	a:opening_step
@@ -597,7 +597,7 @@ opening_scene_hero_face:
 	lda	a:opening_caption_index
 	cmp	#$0001
 	bne	opening_caption_next
-	ldy	#.loword(palette_05A83C)
+	ldy	#.loword(palette_task_05A83C)
 	jsl	f:start_palette_task
 	ldx	#$0300
 	lda	#$0053

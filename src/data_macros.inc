@@ -71,3 +71,37 @@
 	.word	tiles0, tiles1, tiles2, tiles3, tiles4, tiles5
 	.addr	sprite, sprite_facing
 .endmacro
+
+; ---------------------------------------------------------------------------
+; Palette task scripts (bank $05; start_palette_task, engine/palette_tasks.asm).
+; The palettes they copy are in bank $08: a word (number of bytes - 1), then
+; the colours.
+; ---------------------------------------------------------------------------
+; Type 1: every delay+1 frames, copies the next palette of the list to the
+; buffer in $7E; repeat times through the list (bit 7: forever).
+.macro palette_animate delay, repeat
+	.byte	1, delay, repeat
+.endmacro
+
+.macro palette_copy palette, destination
+	.addr	palette
+	.word	destination
+.endmacro
+
+.macro palette_copy_end
+	.word	0
+.endmacro
+
+; Types 3 and 4: fades the colours of palette in (from black) or out at
+; destination in $7E; speed 0 = 16 (1/16 level per frame per unit).
+.macro palette_fade_in speed, palette, destination
+	.byte	3, speed
+	.addr	palette
+	.word	destination
+.endmacro
+
+.macro palette_fade_out speed, palette, destination
+	.byte	4, speed
+	.addr	palette
+	.word	destination
+.endmacro

@@ -1510,7 +1510,7 @@ reset_m7_block_patches:
 load_stage2_assets:
 	ldx	#.loword(load_list_05CF2A)
 	jsl	f:load_data_list
-	ldy	#.loword(palette_05CFB2)
+	ldy	#.loword(palette_task_05CFB2)
 	jsl	f:start_palette_task
 	jsl	f:build_m7_tilemap
 	rts
@@ -1519,7 +1519,7 @@ load_stage2_assets:
 load_stage5_assets:
 	ldx	#.loword(load_list_05D01F)
 	jsl	f:load_data_list
-	ldy	#.loword(palette_05D056)
+	ldy	#.loword(palette_task_05D056)
 	jsl	f:start_palette_task
 	jsl	f:build_m7_tilemap
 	rts
@@ -1532,7 +1532,7 @@ load_stage2_boss_assets:
 	jsl	f:load_data_list
 	ldx	#.loword(load_list_05CFD8)
 	jsl	f:load_data_list
-	ldy	#.loword(palette_05D006)
+	ldy	#.loword(palette_task_05D006)
 	jsl	f:start_palette_task
 	jsl	f:build_m7_tilemap
 	rts
@@ -1545,7 +1545,7 @@ load_stage5_boss_assets:
 	jsl	f:load_data_list
 	ldx	#.loword(load_list_05D07C)
 	jsl	f:load_data_list
-	ldy	#.loword(palette_05D0AA)
+	ldy	#.loword(palette_task_05D0AA)
 	jsl	f:start_palette_task
 	jsl	f:build_m7_tilemap
 	rts

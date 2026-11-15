@@ -28,7 +28,7 @@ sound_check_init:
 	; (not executed in the CDL traces)
 	ldx	#.loword(load_list_05CF41)
 	jsl	f:load_data_list
-	ldy	#.loword(palette_058412)
+	ldy	#.loword(palette_task_058412)
 	jsl	f:start_palette_task
 	inc	a:mode_step
 

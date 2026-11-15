@@ -526,7 +526,7 @@ game_mode_stage_select:
 	.a16
 	ldx	#.loword(load_list_05CF41)
 	jsl	f:load_data_list
-	ldy	#.loword(palette_058412)
+	ldy	#.loword(palette_task_058412)
 	jsl	f:start_palette_task
 	ldx	#.loword(text_05841B)
 	lda	#$2400
@@ -627,7 +627,7 @@ game_mode_stage_card:
 	.a16
 	ldx	#.loword(load_list_05CF41)
 	jsl	f:load_data_list
-	ldy	#.loword(palette_058412)
+	ldy	#.loword(palette_task_058412)
 	jsl	f:start_palette_task
 	jsl	f:draw_score_board
 	lda	stage_number
@@ -797,7 +797,7 @@ game_over_init:
 	.a16
 	ldx	#.loword(load_list_05CF41)
 	jsl	f:load_data_list
-	ldy	#.loword(palette_058412)
+	ldy	#.loword(palette_task_058412)
 	jsl	f:start_palette_task
 	jsl	f:draw_score_board
 	ldx	#.loword(text_058472)

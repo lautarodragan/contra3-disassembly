@@ -117,7 +117,7 @@ stage3_robot_state_00:
 	sta	OBJ_HP,x
 	stz	$38,x
 	phx
-	ldy	#.loword(palette_05E7E2)
+	ldy	#.loword(palette_task_05E7E2)
 	jsl	f:start_palette_task
 	plx
 	rtl
@@ -977,7 +977,7 @@ loc_048751:
 	cmp	#$0040
 	bcc	@return
 	phx
-	ldy	#.loword(palette_05CD35)
+	ldy	#.loword(palette_task_05CD35)
 	ldx	#$1210
 	jsl	f:start_palette_task_at
 	plx
@@ -1208,7 +1208,7 @@ loc_048929:
 	cmp	#$0004
 	bne	@return
 	phx
-	ldy	#.loword(palette_05CD3B)
+	ldy	#.loword(palette_task_05CD3B)
 	ldx	#$1210
 	jsl	f:start_palette_task_at
 	plx

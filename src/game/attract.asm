@@ -446,10 +446,10 @@ load_title_screen:
 	rtl
 
 load_title_graphics:
-	ldy	#.loword(palette_058558)
+	ldy	#.loword(palette_task_058558)
 	ldx	#$1210
 	jsl	f:start_palette_task_at
-	ldy	#.loword(palette_05854B)
+	ldy	#.loword(palette_task_05854B)
 	jsl	f:start_palette_task
 	ldx	#.loword(load_list_058527)
 	jsl	f:load_data_list
@@ -1002,7 +1002,7 @@ konami_logo_init:
 	lda	#$0001
 	ldx	#.loword(load_list_0587AB)
 	jsl	f:load_data_list
-	ldy	#.loword(palette_0587C3)
+	ldy	#.loword(palette_task_0587C3)
 	jsl	f:start_palette_task
 	lda	#$0400
 	sta	a:bg1_y
@@ -1071,7 +1071,7 @@ konami_logo_start_shine:
 	sta	a:konami_logo_count1
 	sta	a:konami_logo_count2
 	sta	a:konami_logo_count3
-	ldy	#.loword(palette_0587E1)
+	ldy	#.loword(palette_task_0587E1)
 	jsl	f:start_palette_task
 	lda	#$0072
 	jsl	f:queue_sound
@@ -1084,7 +1084,7 @@ konami_logo_shine:
 	beq	@check_count2
 	cmp	#$000A
 	bne	@rotate_row1
-	ldy	#.loword(palette_0587EA)
+	ldy	#.loword(palette_task_0587EA)
 	jsl	f:start_palette_task
 @rotate_row1:
 	dec	a:konami_logo_count1
@@ -1104,7 +1104,7 @@ konami_logo_shine:
 	beq	@check_count3
 	dec	a:konami_logo_timer
 	bne	@return
-	ldy	#.loword(palette_0587D8)
+	ldy	#.loword(palette_task_0587D8)
 	jmp	a:start_palette_task
 @check_count3:
 	lda	a:konami_logo_count3

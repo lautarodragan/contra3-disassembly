@@ -49,7 +49,7 @@ stage_clear_init:
 	lda	a:data_0587F1,y
 	tax
 	jsl	f:load_data_list
-	ldy	#.loword(palette_058880)
+	ldy	#.loword(palette_task_058880)
 	jsl	f:start_palette_task
 	inc	a:mode_step
 	rtl
@@ -97,7 +97,7 @@ stage_clear_show_scores:
 	lda	#$0000
 	sta	a:stage_bonus
 	jsr	a:draw_stage_bonus
-	ldy	#.loword(palette_058889)
+	ldy	#.loword(palette_task_058889)
 	jsl	f:start_palette_task
 	lda	#$0040
 	sta	mode_timer
@@ -465,7 +465,7 @@ tbl_options_steps:
 options_init:
 	ldx	#.loword(load_list_05CF41)
 	jsl	f:load_data_list
-	ldy	#.loword(palette_058412)
+	ldy	#.loword(palette_task_058412)
 	jsl	f:start_palette_task
 	jsr	a:options_get_lives_index
 	ldx	#.loword(text_058948)
@@ -814,7 +814,7 @@ final_score_init:
 	sta	a:tm_shadow
 	ldx	#.loword(load_list_058976)
 	jsl	f:load_data_list
-	ldy	#.loword(palette_05898E)
+	ldy	#.loword(palette_task_05898E)
 	jsl	f:start_palette_task
 	jsl	f:draw_final_scores
 	inc	a:mode_step

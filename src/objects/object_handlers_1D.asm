@@ -446,7 +446,7 @@ ending_sequence_state_10:
 	phx
 	ldx	#.loword(load_list_05F8C3)
 	jsl	f:load_data_list
-	ldy	#.loword(palette_05F8DA)
+	ldy	#.loword(palette_task_05F8DA)
 	jsl	f:start_palette_task
 	plx
 	stz	OBJ_X,x
@@ -1282,7 +1282,7 @@ update_enemy_type_97:
 	lda	#$0001
 	sta	a:bgmode_shadow
 	phx
-	ldy	#.loword(palette_05F8E3)
+	ldy	#.loword(palette_task_05F8E3)
 	jsl	f:start_palette_task
 	plx
 	phx
@@ -1444,10 +1444,10 @@ loc_1DBAB4:
 	lda	#$0024
 	sta	OBJ_TIMER,x
 	phx
-	ldy	#.loword(palette_05FECD)
+	ldy	#.loword(palette_task_05FECD)
 	jsl	f:start_palette_task
 	ldx	#$1210
-	ldy	#.loword(palette_05FED9)
+	ldy	#.loword(palette_task_05FED9)
 	jsl	f:start_palette_task_at
 	plx
 	stz	a:boss_work_4
@@ -1465,7 +1465,7 @@ ending_sequence_state_17:
 	ldy	difficulty
 	ldx	a:data_05FD9B,y
 	jsl	f:load_data_list
-	ldy	#.loword(palette_05FEE8)
+	ldy	#.loword(palette_task_05FEE8)
 	jsl	f:start_palette_task
 	plx
 	inc	OBJ_STATE,x
@@ -1506,7 +1506,7 @@ loc_1DBB47:
 	jsl	f:load_song_set
 	lda	#$0071
 	jsl	f:queue_sound
-	ldy	#.loword(palette_05FEC7)
+	ldy	#.loword(palette_task_05FEC7)
 	jsl	f:start_palette_task
 	ldx	#.loword(load_list_05FEDF)
 	jsl	f:load_data_list
@@ -1548,7 +1548,7 @@ ending_sequence_state_1B:
 	inc	OBJ_STATE,x
 	phx
 	ldx	#$1210
-	ldy	#.loword(palette_05FED3)
+	ldy	#.loword(palette_task_05FED3)
 	jsl	f:start_palette_task_at
 	plx
 	rtl
@@ -1588,7 +1588,7 @@ ending_sequence_state_1C:
 	sta	OBJ_STATE,x
 	phx
 	ldx	#$1210
-	ldy	#.loword(palette_05FED9)
+	ldy	#.loword(palette_task_05FED9)
 	jsl	f:start_palette_task_at
 	plx
 	inc	a:boss_work_4
@@ -1601,7 +1601,7 @@ ending_sequence_state_1C:
 	lda	#$001D
 	sta	OBJ_STATE,x
 	phx
-	ldy	#.loword(palette_05FECD)
+	ldy	#.loword(palette_task_05FECD)
 	jsl	f:start_palette_task
 	plx
 @return:
