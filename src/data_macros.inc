@@ -131,3 +131,19 @@
 	.word	$FFFF
 	.byte	hdmaen
 .endmacro
+
+; ---------------------------------------------------------------------------
+; Top-down sprite tiles (bank $07; draw_enemies, draw_topdown_players...):
+; where the tiles of one rotated frame are, for stream_topdown_sprite_gfx,
+; which DMAs $100 bytes from each half to VRAM.  A long address (in WRAM,
+; where the player's tiles are decompressed, or in a ROM block of raw tiles,
+; td_sprite_tiles_13 ...) for the top row of tiles, then the bottom row's,
+; in the same bank.  The record is the address, the bank as a word and the
+; second address.
+; ---------------------------------------------------------------------------
+.macro td_tiles top, bottom
+	.assert	^(top) = ^(bottom), error, "td_tiles: both halves must be in one bank"
+	.addr	.loword(top)
+	.word	^(top)
+	.addr	.loword(bottom)
+.endmacro

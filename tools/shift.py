@@ -21,7 +21,9 @@ it ever runs.  Insertion points:
   * --labels P: also one byte before a fraction P of the data labels (a
     label whose next statement is data, after a .byte line), chosen with
     --seed, within each bank's free space.  This moves data blocks relative to each other: it
-    catches tables indexed past their label into the next block.
+    catches tables indexed past their label into the next block.  Labels
+    with a "; LAYOUT:" comment are not moved (the block before is read past
+    its end into them on purpose).
 
 The space comes from the free space at the end of each bank, which the
 linker fills ($FF), so the shifted build fits as long as the amounts do.
@@ -123,16 +125,20 @@ def bank_files(main_asm):
 
 
 def data_labels(path):
-    """Line indexes of labels whose next statement is data."""
+    """Line indexes of labels whose next statement is data.  A label followed
+    by a comment with "LAYOUT:" is left out: the code reads the data before
+    it past its end into this block (a fixed layout, explained there)."""
     lines = open(path).read().split("\n")
     found = []
     for i, line in enumerate(lines):
         if not LABEL_RE.match(line):
             continue
         j = i + 1
+        fixed = False
         while j < len(lines) and (not lines[j].strip() or lines[j].strip().startswith(";")):
+            fixed = fixed or "LAYOUT:" in lines[j]
             j += 1
-        if j < len(lines) and DATA_RE.match(lines[j]):
+        if j < len(lines) and DATA_RE.match(lines[j]) and not fixed:
             found.append(i)
     return found
 

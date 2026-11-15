@@ -11,8 +11,10 @@ Needs the build of `tools/shift.py build` in OUT (OUT/contra3.sfc and the
 normal build in OUT/base/) and the private companion repository (patched
 snes9x core with the CDL tracer, tools/c3emu).
 
-Both ROMs play the same scenario from power-on: `attract` (no input) or
-`stageN` (start the game at stage N, as the screenshot tests do).  Every
+Both ROMs play the same scenario from power-on: `attract` (no input),
+`stageN` (start the game at stage N, as the screenshot tests do) or one of
+the scripted plays of the private repository (`tools/c3emu/plays.py`, as
+`tests/test_play.py` runs them: `stage2_boss`, `stage6`...).  Every
 ROM byte the shifted build reads as data is mapped back to the source line
 and byte it came from (through the two builds' debug files) and so to its
 address in the normal build.  Reads that the normal build never makes in
@@ -45,9 +47,27 @@ def lorom_addr(off):
     return (off >> 15) << 16 | 0x8000 | (off & 0x7FFF)
 
 
-def _start(c, game, scenario):
+def _chunks(c, scenario, frames, chunk):
+    """Runs the scenario, yielding after every `chunk` frames (up to `frames`):
+    `attract` (no input), `stageN` (the game started at stage N, no input),
+    or a scripted play of the private repository (tools/c3emu/plays.py:
+    seeded random play through a stage, e.g. `stage2_boss`)."""
+    from tools.c3emu import game, plays
+    if scenario in plays.PLAYS:
+        done = 0
+        for done in plays.run(c, plays.PLAYS[scenario], every=chunk):
+            yield
+            if done >= frames:
+                return
+        return
     if scenario.startswith("stage"):
         game.start_game(c, stage=int(scenario[5:]))
+    done = 0
+    while done < frames:
+        n = min(chunk, frames - done)
+        c.run(n)
+        done += n
+        yield
 
 
 def _plane_a(c):
@@ -67,15 +87,17 @@ def _readers(c):
 
 def run_reference(private, rom, scenario, frames, q, wram_at=None):
     sys.path.insert(0, private)
-    from tools.c3emu import game, retro
+    from tools.c3emu import retro
     c = retro.Console(rom)
     c.cdl_enable(True)
-    _start(c, game, scenario)
     if wram_at is not None:
-        c.run(wram_at - c.frame_count)
+        for _ in _chunks(c, scenario, frames, 1):
+            if c.frame_count >= wram_at:
+                break
         q.put(bytes(c.ram(0, 0x2000)))
     else:
-        c.run(frames)
+        for _ in _chunks(c, scenario, frames, 60):
+            pass
         L = c.lib
         L.retro_cdl_readers.restype = ctypes.c_void_p
         q.put((_plane_a(c), ctypes.string_at(L.retro_cdl_readers(), 4 * len(_plane_a(c)))))
@@ -85,20 +107,20 @@ def run_reference(private, rom, scenario, frames, q, wram_at=None):
 def run_shifted(private, rom, scenario, frames, chunk, ref, ref_readers, mapping, q):
     """Stops at the first chunk with anomalies; returns them with readers."""
     sys.path.insert(0, private)
-    from tools.c3emu import game, retro
+    from tools.c3emu import retro
     c = retro.Console(rom)
     c.cdl_enable(True)
-    _start(c, game, scenario)
     seen = bytearray(len(ref))
-    done = 0
-    while done < frames:
-        n = min(chunk, frames - done)
-        c.run(n)
-        done += n
+    prev = bytes(len(ref))
+    for _ in _chunks(c, scenario, frames, chunk):
         a = _plane_a(c)
         rd = _readers(c)
         bad = []
-        for off in range(len(a)):
+        # only the 4 KB blocks where plane A changed since the last chunk
+        offs = [off for blk in range(0, len(a), 4096) if a[blk:blk + 4096] != prev[blk:blk + 4096]
+                for off in range(blk, min(blk + 4096, len(a)))]
+        prev = a
+        for off in offs:
             if a[off] & DATA and not seen[off]:
                 seen[off] = 1
                 orig = mapping.get(off, -1)
@@ -170,12 +192,17 @@ def main(argv):
     ap.add_argument("--private", default=os.environ.get("PRIVATE", "../contra3-disassembly-private"))
     ap.add_argument("--out", default="build/shift")
     ap.add_argument("--scenario", default="attract")
-    ap.add_argument("--frames", type=int, default=18300)
+    ap.add_argument("--frames", type=int, default=None,
+                    help="frames to run (default: the play's length, or 18300)")
     ap.add_argument("--chunk", type=int, default=60)
     ap.add_argument("--max", type=int, default=40)
     ap.add_argument("-v", "--verbose", action="store_true", help="dump the object slots of both runs")
     args = ap.parse_args(argv[1:])
     private = os.path.abspath(args.private)
+    if args.frames is None:
+        sys.path.insert(0, private)
+        from tools.c3emu import plays
+        args.frames = plays.PLAYS[args.scenario].frames if args.scenario in plays.PLAYS else 18300
     mapping, base = build_mapping(args.out)
     ctx = mp.get_context("spawn")
     q = ctx.Queue()

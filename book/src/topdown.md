@@ -409,7 +409,7 @@ Many state routines are named only by number (`stage2_boss_state_0B`
 watched in the emulator; shot type 1 shares the default shot's handler
 but nothing fires it. Data that milestone 3 must turn into labels: the
 pointers in `sprite_data_07.asm` (metasprites and stream tables read
-through `ptrs_td_metasprite_sets` / `ptrs_td_stream_sets`), the per-angle
+through `ptrs_td_metasprite_sets` / `ptrs_td_tile_lists`), the per-angle
 walking vectors (`td_walk_y_int`, `td_walk_x_int`, `td_walk_y_frac`,
 `td_walk_x_frac`), the stream-list pointers built from immediates in
 `draw_enemies`, the animation scripts loaded as immediates into `+$28` by

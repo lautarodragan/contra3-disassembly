@@ -66,7 +66,8 @@ emu-test: $(rom)
 # Shift test (milestone 3): build a copy of src/ with filler bytes inserted at
 # the start of every bank (a different amount per bank) and, with
 # SHIFT_FLAGS="--labels 0.3 --seed N", before some data labels, then run the
-# emulator suite on it.  It passes only if every reference between code and
+# emulator suite on it (the screenshots and the scripted plays through every
+# stage; not test_cdl.py, which checks the original reset vector).  It passes only if every reference between code and
 # data is a label.  See tools/shift.py and the book's Shiftability page.
 #   make shift-test [SHIFT=default|alt|N|BB=N,...] [SHIFT_FLAGS=...] [PRIVATE=...]
 SHIFT       ?= default
@@ -79,7 +80,8 @@ shift-build:
 shift-test: shift-build
 	@test -f "$(PRIVATE)/tests/test_screens.py" || \
 	  { echo "shift-test: no emulator test suite in PRIVATE=$(PRIVATE)"; exit 1; }
-	$(MAKE) -C "$(PRIVATE)" test ROM="$(abspath build/shift/contra3.sfc)"
+	$(MAKE) -C "$(PRIVATE)" test ROM="$(abspath build/shift/contra3.sfc)" \
+	    TESTS="tests/test_screens.py tests/test_play.py"
 
 # The book (book/, published to GitHub Pages by .github/workflows/book.yml).
 # book-check: every label, constant and path the book names must exist.

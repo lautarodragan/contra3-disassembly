@@ -1188,6 +1188,10 @@ gfx_16BE91:
 	.byte	$00, $4D, $04, $4D, $0A, $3F, $06, $46, $C2, $9C, $CA, $9F, $82, $9C, $FF, $02
 	.byte	$5B
 	; CDL: DMA (started in stream_topdown_sprite_gfx)
+; Raw sprite tiles (4bpp) of the top-down objects, DMA'd to VRAM by
+; stream_topdown_sprite_gfx: the td_tiles records of bank $07 give
+; addresses in this block (as offsets from its label).
+td_sprite_tiles_16:
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $27, $27

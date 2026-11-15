@@ -990,6 +990,10 @@ gfx_14A86D:
 	.byte	$BD, $81, $40, $03, $B7, $E0, $07, $C3, $A7, $08, $52, $80, $40, $10, $00, $80
 	.byte	$00, $00
 	; CDL: DMA (started in stream_topdown_sprite_gfx)
+; Raw sprite tiles (4bpp) of the top-down objects, DMA'd to VRAM by
+; stream_topdown_sprite_gfx: the td_tiles records of bank $07 give
+; addresses in this block (as offsets from its label).
+td_sprite_tiles_14:
 	.byte	$00, $00, $00, $00, $00, $00, $0F, $0F, $0C, $0F, $06, $06, $01, $01, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $0F, $0F, $08, $0F, $07, $07, $01, $01, $00, $00
 	.byte	$02, $03, $05, $06, $0A, $0C, $8F, $8B, $CC, $4C, $3A, $7B, $DD, $FD, $B2, $DC
@@ -1504,6 +1508,8 @@ gfx_14A86D:
 	.byte	$E0, $E0, $E0, $60, $E0, $20, $E0, $E0, $FC, $7C, $DE, $72, $EF, $39, $AF, $18
 	; CDL: read by stream_topdown_sprite_gfx
 gfx_14DC62:
+	; LAYOUT: the last td_tiles record of the centipede (td_tiles_07A3EA) DMAs
+	; $100 bytes from td_sprite_tiles_14 + $1F80, $80 of them from here.
 	; ASSET: compressed graphics (VRAM), $14:DC62-$14:F0F7 (from its length word), loaded by load_list_05FDCF
 	.byte	$96, $14, $DE, $FF, $93, $CD, $C2, $9E, $80, $34, $08, $69, $11, $52, $23, $A4
 	.byte	$47, $88, $4E, $D0, $19, $3F, $FF, $7F, $C1, $FF, $94, $FE, $FF, $FC, $FF, $F8

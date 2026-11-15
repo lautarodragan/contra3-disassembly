@@ -1572,7 +1572,7 @@ loc_03EBB3:
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:ptrs_td_stream_sets,y
+	lda	a:ptrs_td_tile_lists,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
@@ -1694,7 +1694,7 @@ loc_03EC93:
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:ptrs_td_stream_sets,y
+	lda	a:ptrs_td_tile_lists,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
@@ -1811,7 +1811,7 @@ loc_03ED6D:
 	ldy	#$0004
 	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:ptrs_td_stream_sets,y
+	lda	a:ptrs_td_tile_lists,y
 	sta	zp_C6
 	lda	$20,x
 	xba
@@ -1895,7 +1895,7 @@ loc_03EE0A:
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:ptrs_td_stream_sets,y
+	lda	a:ptrs_td_tile_lists,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
@@ -2008,7 +2008,7 @@ loc_03EECB:
 	tay
 	lda	a:stage2_arena_rubble_metasprites,y
 	sta	zp_CA
-	lda	a:stage2_arena_rubble_streams,y
+	lda	a:stage2_arena_rubble_tile_list,y
 	ldy	#$0020
 	tax
 	lda	a:$0000,x
@@ -2029,7 +2029,7 @@ loc_03EF11:
 	ldx	zp_08
 	lda	zp_C4
 	clc
-	adc	a:$7FFE,x
+	adc	a:stage2_arena_rubble_x - 2,x
 	tay
 	lda	zp_C6
 	clc
@@ -2055,7 +2055,7 @@ loc_03EF2A:
 loc_03EF46:
 	sty	zp_06
 	tay
-	lda	a:stage2_arena_debris_streams,y
+	lda	a:stage2_arena_debris_tile_list,y
 	ldy	#$0018
 	tax
 	lda	a:$0000,x
@@ -2489,7 +2489,7 @@ loc_03F23B:
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:ptrs_td_stream_sets,y
+	lda	a:ptrs_td_tile_lists,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
@@ -3069,7 +3069,7 @@ loc_03F64D:
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:ptrs_td_stream_sets,y
+	lda	a:ptrs_td_tile_lists,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
@@ -3190,7 +3190,7 @@ loc_03F72D:
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:ptrs_td_stream_sets,y
+	lda	a:ptrs_td_tile_lists,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
@@ -3307,7 +3307,7 @@ loc_03F807:
 	ldy	#$0004
 	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:ptrs_td_stream_sets,y
+	lda	a:ptrs_td_tile_lists,y
 	sta	zp_C6
 	lda	$20,x
 	xba
@@ -3392,7 +3392,7 @@ loc_03F8A4:
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:ptrs_td_stream_sets,y
+	lda	a:ptrs_td_tile_lists,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
@@ -3504,7 +3504,7 @@ loc_03F965:
 	tay
 	lda	a:stage2_arena_rubble_metasprites,y
 	sta	zp_CA
-	lda	a:stage2_arena_rubble_streams,y
+	lda	a:stage2_arena_rubble_tile_list,y
 	ldy	#$0060
 	tax
 	lda	a:$0000,x
@@ -3525,7 +3525,7 @@ loc_03F9AB:
 	ldx	zp_08
 	lda	zp_C4
 	clc
-	adc	a:$7FFE,x
+	adc	a:stage2_arena_rubble_x - 2,x
 	tay
 	lda	zp_C6
 	clc
@@ -3551,7 +3551,7 @@ loc_03F9C4:
 loc_03F9E0:
 	sty	zp_06
 	tay
-	lda	a:stage2_arena_debris_streams,y
+	lda	a:stage2_arena_debris_tile_list,y
 	ldy	#$0058
 	tax
 	lda	a:$0000,x
@@ -3984,7 +3984,7 @@ loc_03FCD5:
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:ptrs_td_stream_sets,y
+	lda	a:ptrs_td_tile_lists,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
