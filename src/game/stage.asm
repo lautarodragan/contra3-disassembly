@@ -62,7 +62,7 @@ stage_init:
 	lda	a:data_0589E7,y
 	sta	a:bg2_map_offset
 	ldy	a:stage_layout_base
-	ldx	a:data_058A03,y
+	ldx	a:ptrs_stage_dp_params,y
 	jsl	f:load_stage_dp_params
 	lda	a:data_0589FB,y
 	sta	a:wram_1672
@@ -81,7 +81,7 @@ stage_init:
 	stz	a:palette_anim_timer
 	stz	a:life_transfer_disabled
 	ldy	a:stage_layout_base
-	lda	a:data_058A21,y
+	lda	a:ptrs_stage_palette_tasks,y
 	tay
 	ldx	#$1210
 	jsl	f:start_palette_task_at
@@ -164,7 +164,7 @@ stage_setup_video:
 	ldx	#.loword(load_list_058AD4)
 	jsl	f:load_data_list
 	ldy	a:stage_layout
-	ldx	a:data_058A0D,y
+	ldx	a:ptrs_stage_load_lists,y
 	jsl	f:load_data_list
 	ldx	#$1380
 	ldy	#$4000
@@ -452,7 +452,7 @@ layout_init_stage6:
 	lda	#$0062
 	jml	f:queue_sound
 
-; Copies 12 words from X to zp_C8-zp_DF (per-layout parameters, data_058A03).
+; Copies 12 words from X to zp_C8-zp_DF (per-layout parameters, ptrs_stage_dp_params).
 load_stage_dp_params:
 	lda	a:$0000,x
 	sta	zp_C8

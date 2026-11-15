@@ -493,22 +493,30 @@ data_0589E7:
 data_0589FB:
 	; CDL: read by stage_init
 	.byte	$00, $00, $00, $00, $05, $00, $00, $00
-data_058A03:
+ptrs_stage_dp_params:
 	; CDL: read by stage_init
-	.byte	$2B, $8A, $45, $8A, $5F, $8A, $79, $8A, $5F, $8A
-data_058A0D:
+	.addr	stage_dp_params_058A2B, stage_dp_params_058A45, stage_dp_params_058A5F, stage_dp_params_058A79, stage_dp_params_058A5F
+ptrs_stage_load_lists:
 	; CDL: read by stage_setup_video; partly not accessed
 	.addr	load_list_058B08, load_list_058B85, load_list_058C14, load_list_058C97
 	.addr	load_list_058B08, load_list_058B2F, load_list_058BB6, load_list_058C3B
 	.addr	load_list_058C97, load_list_058B08
-data_058A21:
+ptrs_stage_palette_tasks:
 	; CDL: read by stage_init, load_stage_dp_params; partly not accessed
-	.byte	$4C, $8B, $E7, $8B, $62, $8C, $CD, $8C, $4C, $8B, $91, $03, $ED, $03, $F4, $03
+	.addr	palette_task_058B4C, palette_task_058BE7, palette_task_058C62, palette_task_058CCD, palette_task_058B4C
+stage_dp_params_058A2B:
+	.byte	$91, $03, $ED, $03, $F4, $03
 	.byte	$F8, $03, $FA, $03, $00, $00, $00, $00, $00, $00, $00, $00, $FC, $03, $FE, $03
-	.byte	$00, $04, $00, $00, $68, $03, $D4, $03, $D7, $03, $00, $00, $00, $00, $E0, $03
-	.byte	$E9, $03, $EC, $03, $EF, $03, $F1, $03, $F3, $03, $F5, $03, $00, $04, $00, $04
+	.byte	$00, $04, $00, $00
+stage_dp_params_058A45:
+	.byte	$68, $03, $D4, $03, $D7, $03, $00, $00, $00, $00, $E0, $03
+	.byte	$E9, $03, $EC, $03, $EF, $03, $F1, $03, $F3, $03, $F5, $03, $00, $04
+stage_dp_params_058A5F:
+	.byte	$00, $04
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $B5, $03, $EA, $03, $F2, $03, $F8, $03
+	.byte	$00, $00, $00, $00, $00, $00, $00, $00
+stage_dp_params_058A79:
+	.byte	$B5, $03, $EA, $03, $F2, $03, $F8, $03
 	.byte	$00, $04, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00
 load_list_058A93:
