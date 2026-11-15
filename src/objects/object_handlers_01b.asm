@@ -24,7 +24,7 @@ update_debris_explosion:
 	lda	#$C59A
 	sta	$20,x
 	stz	$22,x
-	lda	#$001D
+	lda	#OBJT_EFFECT
 	sta	$10,x
 	lda	#$0003
 	sta	$16,x
@@ -46,7 +46,7 @@ sub_01CFC5:
 	lda	#$C672
 	sta	$20,x
 	stz	$22,x
-	lda	#$001D
+	lda	#OBJT_EFFECT
 	sta	$10,x
 	lda	#$0003
 	sta	$16,x
@@ -231,7 +231,7 @@ loc_01D0FD:
 	lda	#$FFF0
 	sta	$2A,x
 	ldy	difficulty
-	lda	a:data_05C70E,y
+	lda	a:alien_dog_hp,y
 	sta	$06,x
 	lda	#$0002
 	sta	$1A,x
@@ -379,7 +379,7 @@ loc_01D208:
 	jsl	f:queue_sound
 loc_01D20F:
 	ldy	$04,x
-	lda	#$001B
+	lda	#OBJT_DYING_SOLDIER
 	sta	$10,x
 	stz	$20,x
 	lda	#$0003
@@ -517,7 +517,7 @@ loc_01D302:
 	bne	loc_01D353
 	jsl	f:find_free_slot_y
 	bcs	loc_01D353
-	lda	#$001D
+	lda	#OBJT_EFFECT
 	sta	a:$0010,y
 	lda	#$0001
 	sta	a:$0006,y
@@ -714,7 +714,7 @@ loc_01D491:
 	sta	$16,x
 	lda	#$C4CE
 	sta	$20,x
-	lda	#$001D
+	lda	#OBJT_EFFECT
 	sta	$10,x
 	stz	$22,x
 	lda	#$FFFE
@@ -808,7 +808,7 @@ loc_01D53D:
 	ldy	#$0840
 	jsl	f:find_free_slot_y_down
 	bcc	loc_01D58A
-	lda	#$001D
+	lda	#OBJT_EFFECT
 	sta	a:$0010,y
 	lda	#$0002
 	sta	a:$001E,y
@@ -868,7 +868,7 @@ loc_01D5D0:
 	sta	$16,x
 	lda	#$C59A
 	sta	$20,x
-	lda	#$001D
+	lda	#OBJT_EFFECT
 	sta	$10,x
 	stz	$22,x
 loc_01D5E1:
@@ -917,7 +917,7 @@ loc_01D625:
 	tya
 	bit	#$0040
 	beq	loc_01D64E
-	lda	#$001D
+	lda	#OBJT_EFFECT
 	sta	a:$0010,y
 	lda	#$0001
 	sta	a:$0016,y
@@ -1628,7 +1628,7 @@ sub_01DB8B:
 	lda	#$FFE0
 	sta	$2A,x
 	ldy	difficulty
-	lda	a:data_05C90E,y
+	lda	a:object_type_48_hp,y
 	sta	$06,x
 	lda	$10,x
 	cmp	#$0051
@@ -1898,7 +1898,7 @@ rolling_mine_state_00:
 	ldy	difficulty
 	lda	#$003F
 	sta	$16,x
-	lda	a:data_05C95E,y
+	lda	a:rolling_mine_hp,y
 	sta	$06,x
 	lda	#$3800
 	sta	$02,x
@@ -2307,7 +2307,7 @@ object_type_4E_state_09:
 	lda	#$400D
 	sta	$16,x
 	ldy	difficulty
-	lda	a:data_05CA64,y
+	lda	a:object_type_4E_hp,y
 	sta	$06,x
 	inc	$12,x
 	stz	$24,x
@@ -2398,7 +2398,7 @@ object_type_4E_state_0D:
 	lda	#$0016
 	jsl	f:queue_sound
 loc_01E137:
-	lda	#$0013
+	lda	#OBJT_GRENADE
 	sta	a:$0010,y
 	lda	rng_lo
 	and	#$0001
@@ -3162,7 +3162,7 @@ stage3_winged_bug_state_00:
 	ldy	#$04C0
 	jsl	f:find_free_slot_y_down
 	bcc	loc_01E762
-	lda	#$004F
+	lda	#OBJT_STAGE3_WINGED_BUG
 	sta	a:$0010,y
 	lda	#$001B
 	sta	a:$0016,y
@@ -3238,7 +3238,7 @@ object_type_56_state_00:
 	ldy	difficulty
 	lda	#$001F
 	sta	$16,x
-	lda	a:data_05CACB,y
+	lda	a:object_type_56_hp,y
 	sta	$06,x
 	lda	#$3400
 	sta	$02,x
@@ -3497,7 +3497,7 @@ object_type_24_state_00:
 	ldy	difficulty
 	lda	#$001F
 	sta	$16,x
-	lda	a:data_05CACB,y
+	lda	a:object_type_56_hp,y
 	sta	$06,x
 	lda	#$2400
 	sta	$02,x
@@ -3652,7 +3652,7 @@ stage3_spiked_climber_state_03:
 	lda	#$4010
 	sta	$16,x
 	ldy	difficulty
-	lda	a:data_05CCF5,y
+	lda	a:stage3_spiked_climber_core_hp,y
 	sta	$06,x
 	lda	#$FFF8
 	sta	$2A,x
@@ -4406,7 +4406,7 @@ stage3_spiked_climber_state_0F:
 	lda	#$401D
 	sta	$16,x
 	ldy	difficulty
-	lda	a:data_05CCFB,y
+	lda	a:stage3_spiked_climber_hp,y
 	sta	$06,x
 	jsr	a:sub_01F2FF
 	plx
@@ -4870,7 +4870,7 @@ hoverbike_rider_state_00:
 	ldy	difficulty
 	lda	#$4013
 	sta	$16,x
-	lda	a:data_05CD01,y
+	lda	a:hoverbike_rider_hp,y
 	sta	$06,x
 	lda	#$0020
 	sta	$28,x

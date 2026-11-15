@@ -497,7 +497,7 @@ loc_00D29A:
 	ldy	#$0300
 	ldx	#$0004
 loc_00D2B7:
-	lda	#$000C
+	lda	#OBJT_BOMBER_BOMB
 	sta	a:$0010,y
 	lda	#$9F12
 	sta	a:$0020,y
@@ -786,7 +786,7 @@ update_bomber_bomb:
 	sta	a:$001E,y
 	lda	#$0003
 	sta	a:$0016,y
-	lda	#$001D
+	lda	#OBJT_EFFECT
 	sta	a:$0010,y
 loc_00D530:
 	sec

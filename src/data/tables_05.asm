@@ -1455,7 +1455,8 @@ data_05AFD8:
 data_05AFDE:
 	; CDL: read by update_object_type_0B
 	.byte	$02, $00, $04, $00, $0C, $00
-data_05AFE4:
+; OBJ_HP of update_foot_soldier and type $35 by difficulty (easy, normal, hard)
+soldier_hp:
 	; CDL: read by sub_01BB61
 	.byte	$00, $00, $01, $00, $03, $00
 data_05AFEA:
@@ -1481,7 +1482,8 @@ data_05B036:
 	.byte	$9C, $42, $9C, $46, $80, $46, $88, $46, $18, $42, $00, $46, $0C, $42, $18, $42
 	.byte	$00, $51, $60, $83, $80, $83, $A0, $83, $C0, $83, $E0, $83, $20, $84, $40, $84
 	.byte	$00, $51, $00, $84
-data_05B05A:
+; OBJ_HP of update_wall_hatch by difficulty (easy, normal, hard)
+wall_hatch_hp:
 	; CDL: read by wall_hatch_state_00; partly not accessed
 	.byte	$04, $00, $08, $00, $10, $00
 data_05B060:
@@ -1533,7 +1535,8 @@ data_05B1B4:
 	; CDL: read by sub_00FEAA, object_type_11_state_01; partly not accessed
 	.byte	$03, $00, $02, $00, $01, $00, $FF, $FF, $FE, $FF, $FD, $FF, $A0, $63, $60, $63
 	.byte	$E0, $63, $80, $65
-data_05B1C8:
+; OBJ_HP of update_object_type_12 by difficulty (easy, normal, hard)
+object_type_12_hp:
 	; CDL: read by object_type_12_state_00
 	.byte	$04, $00, $06, $00, $08, $00
 data_05B1CE:
@@ -1898,7 +1901,8 @@ data_05B2AC:
 	.byte	$00, $61, $40, $61, $00, $64, $40, $64, $00, $01, $40, $01, $7F, $98, $39, $AC
 	.byte	$80, $61, $C0, $61, $00, $64, $40, $64, $00, $01, $40, $01, $98, $98, $52, $AC
 	.byte	$80, $64, $C0, $64, $00, $65, $40, $65, $00, $01, $40, $01, $B1, $98, $6B, $AC
-data_05C43E:
+; OBJ_HP of update_window_sniper by difficulty (easy, normal, hard)
+window_sniper_hp:
 	; CDL: read by window_sniper_state_00
 	.byte	$04, $00, $06, $00, $08, $00
 data_05C444:
@@ -1959,7 +1963,8 @@ data_05C4AE:
 	.byte	$08, $00, $4E, $B1, $00, $32, $08, $00, $4E, $B1, $00, $3E, $08, $00, $4E, $B1
 	.byte	$00, $32, $08, $00, $4E, $B1, $00, $3E, $08, $00, $4E, $B1, $00, $32, $08, $00
 	.byte	$4E, $B1, $00, $30, $08, $00, $4E, $B1, $00, $32, $08, $00, $4E, $B1, $00, $30
-data_05C70E:
+; OBJ_HP of update_alien_dog (the first 3 words; other data follows) by difficulty (easy, normal, hard)
+alien_dog_hp:
 	; CDL: read by update_objects, alien_dog_state_02; partly not accessed
 	.byte	$00, $00, $02, $00, $08, $00, $60, $00, $01, $B3, $01, $B3, $08, $00, $12, $B3
 	.byte	$12, $B3, $08, $00, $01, $B3, $01, $B3, $08, $00, $12, $B3, $12, $B3, $20, $00
@@ -2029,7 +2034,8 @@ data_05C8CE:
 	.byte	$99, $99, $BA, $91, $6B, $7A, $91, $54, $A1, $21, $8F, $E3, $BF, $9C, $E8, $4F
 	.byte	$00, $00, $18, $B0, $41, $63, $71, $1C, $5F, $DE, $6F, $AB, $95, $85, $46, $6E
 	.byte	$67, $66, $46, $6E, $95, $85, $6F, $AB, $5F, $DE, $71, $1C, $41, $63, $18, $B0
-data_05C90E:
+; OBJ_HP of types $48 and $51 (a 4th word unused) by difficulty (easy, normal, hard)
+object_type_48_hp:
 	; CDL: read by sub_01DB8B; partly not accessed
 	.byte	$00, $00, $00, $00, $01, $00, $01, $00
 data_05C916:
@@ -2046,7 +2052,8 @@ data_05C94E:
 data_05C956:
 	; CDL: read by object_type_49_state_02; partly not accessed
 	.byte	$D2, $00, $B4, $00, $96, $00, $78, $00
-data_05C95E:
+; OBJ_HP of update_rolling_mine by difficulty (easy, normal, hard)
+rolling_mine_hp:
 	; CDL: read by rolling_mine_state_00
 	.byte	$04, $00, $06, $00, $10, $00
 data_05C964:
@@ -2083,7 +2090,8 @@ data_05CA02:
 data_05CA5C:
 	; CDL: read by object_type_4E_state_08
 	.byte	$6D, $08, $A0, $E0, $00, $A1, $00, $00
-data_05CA64:
+; OBJ_HP of update_object_type_4E (the first 3 words; other data follows) by difficulty (easy, normal, hard)
+object_type_4E_hp:
 	; CDL: read by update_objects, sub_00FEAA, object_type_4E_state_09; DMA / HDMA; partly not accessed
 	.byte	$40, $00, $48, $00, $50, $00, $58, $00, $60, $B8, $80, $B8, $E0, $B8, $00, $B9
 	.byte	$20, $B9, $40, $B9, $A0, $B7, $C0, $B7, $80, $C2, $80, $C2, $80, $C2, $80, $C2
@@ -2094,7 +2102,8 @@ data_05CA64:
 data_05CABF:
 	; CDL: read by stage3_winged_bug_state_00; partly not accessed
 	.byte	$9F, $00, $2F, $00, $07, $00, $00, $00, $04, $00, $08, $00
-data_05CACB:
+; OBJ_HP of types $56 and $24 (a 4th word unused) by difficulty (easy, normal, hard)
+object_type_56_hp:
 	; CDL: read by object_type_56_state_00; partly not accessed
 	.byte	$01, $00, $02, $00, $03, $00, $04, $00
 data_05CAD3:
@@ -2222,13 +2231,16 @@ data_05CCD7:
 	; CDL: read by update_objects, stage3_spiked_climber_state_10; partly not accessed
 	.byte	$28, $00, $60, $00, $98, $00, $04, $00, $43, $B9, $95, $B9, $04, $00, $6C, $B9
 	.byte	$6C, $B9, $00, $00, $95, $B9, $43, $B9, $30, $00, $40, $00, $60, $00
-data_05CCF5:
+; OBJ_HP of the stage 3 spiked climber's core (type $40) by difficulty (easy, normal, hard)
+stage3_spiked_climber_core_hp:
 	; CDL: read by stage3_spiked_climber_state_03
 	.byte	$38, $00, $50, $00, $80, $00
-data_05CCFB:
+; OBJ_HP of update_stage3_spiked_climber by difficulty (easy, normal, hard)
+stage3_spiked_climber_hp:
 	; CDL: read by stage3_spiked_climber_state_0F
 	.byte	$60, $00, $A0, $00, $B8, $00
-data_05CD01:
+; OBJ_HP of update_hoverbike_rider by difficulty (easy, normal, hard)
+hoverbike_rider_hp:
 	; CDL: read by hoverbike_rider_state_00
 	.byte	$08, $00, $10, $00, $20, $00
 data_05CD07:

@@ -1202,7 +1202,7 @@ update_foot_soldier:
 	bpl	loc_01BAFF
 loc_01BAF4:
 	stz	$06,x
-	lda	#$001B
+	lda	#OBJT_DYING_SOLDIER
 	sta	$10,x
 	jml	f:start_dying_soldier
 loc_01BAFF:
@@ -1267,7 +1267,7 @@ sub_01BB61:
 	sta	$24,x
 loc_01BB68:
 	ldy	difficulty
-	lda	a:data_05AFE4,y
+	lda	a:soldier_hp,y
 	sta	$06,x
 	lda	#$0001
 	sta	$12,x
@@ -1279,7 +1279,7 @@ foot_soldier_state_00:
 	lda	#$3400
 loc_01BB7E:
 	sta	$02,x
-	lda	#$000A
+	lda	#OBJT_FOOT_SOLDIER
 	sta	$10,x
 	lda	#$00C8
 	sta	$0E,x
@@ -1428,7 +1428,7 @@ object_type_35_state_00:
 	sta	$16,x
 	sta	$34,x
 	ldy	difficulty
-	lda	a:data_05AFE4,y
+	lda	a:soldier_hp,y
 	sta	$06,x
 	inc	$12,x
 	rtl
@@ -1474,7 +1474,7 @@ loc_01BCD8:
 	inc	$12,x
 	rtl
 loc_01BCED:
-	lda	#$0010
+	lda	#OBJT_BOUNCING_DEBRIS
 	sta	a:$0010,y
 	lda	#$0001
 	sta	a:$0016,y
@@ -1685,7 +1685,7 @@ loc_01BE83:
 	lda	#$3800
 	sta	$02,x
 loc_01BE8C:
-	lda	#$001B
+	lda	#OBJT_DYING_SOLDIER
 	sta	$10,x
 	lda	#$C7EA
 	jml	f:start_dying_soldier_sprite
@@ -1910,7 +1910,7 @@ loc_01C045:
 	inc	a:wram_0964
 	inc	a:wram_0964
 loc_01C055:
-	lda	#$001B
+	lda	#OBJT_DYING_SOLDIER
 	sta	$10,x
 	lda	#$C7EA
 	jml	f:start_dying_soldier_sound_0D
@@ -2359,7 +2359,7 @@ tbl_wall_hatch_states:
 wall_hatch_state_00:
 	inc	$12,x
 	ldy	difficulty
-	lda	a:data_05B05A,y
+	lda	a:wall_hatch_hp,y
 	sta	$06,x
 	lda	#$0003
 	sta	$16,x
@@ -3273,7 +3273,7 @@ loc_01CA92:
 	sta	$32,x
 	lda	#$0003
 	sta	$16,x
-	lda	#$0010
+	lda	#OBJT_BOUNCING_DEBRIS
 	sta	$10,x
 	lda	#$3E00
 	sta	$02,x
@@ -3319,7 +3319,7 @@ loc_01CAF1:
 	ldy	#$0740
 	jsl	f:find_free_slot_y_down
 	bcc	update_bouncing_debris
-	lda	#$0010
+	lda	#OBJT_BOUNCING_DEBRIS
 	sta	a:$0010,y
 	lda	#$0001
 	sta	a:$0016,y
@@ -3467,7 +3467,7 @@ update_object_type_12:
 	lda	$06,x
 	bpl	loc_01CC34
 	stz	$06,x
-	lda	#$001B
+	lda	#OBJT_DYING_SOLDIER
 	sta	$10,x
 	jml	f:start_dying_soldier
 loc_01CC34:
@@ -3505,7 +3505,7 @@ object_type_12_state_00:
 	stz	$1E,x
 	stz	$1C,x
 	ldy	difficulty
-	lda	a:data_05B1C8,y
+	lda	a:object_type_12_hp,y
 	sta	$06,x
 	inc	$12,x
 
@@ -3541,7 +3541,7 @@ object_type_12_state_03:
 object_type_12_state_05:
 	jsl	f:find_free_slot_y
 	bcs	loc_01CD06
-	lda	#$0013
+	lda	#OBJT_GRENADE
 	sta	a:$0010,y
 	lda	$0A,x
 	clc
@@ -3669,7 +3669,7 @@ loc_01CD99:
 	bit	#$2000
 	beq	loc_01CDCA
 loc_01CDAA:
-	lda	#$001A
+	lda	#OBJT_GRENADE_BLAST
 	sta	$10,x
 	lda	$0A,x
 	clc
@@ -3710,7 +3710,7 @@ loc_01CDF3:
 	lda	$06,x
 	bpl	loc_01CE02
 	stz	$06,x
-	lda	#$001B
+	lda	#OBJT_DYING_SOLDIER
 	sta	$10,x
 	jml	f:start_dying_soldier
 loc_01CE02:
@@ -3745,7 +3745,7 @@ window_sniper_state_00:
 	stz	$1E,x
 	stz	$1C,x
 	ldy	difficulty
-	lda	a:data_05C43E,y
+	lda	a:window_sniper_hp,y
 	sta	$06,x
 	inc	$12,x
 
@@ -3932,7 +3932,7 @@ make_effect_object:
 	sta	a:$0020,y
 	lda	#$0003
 	sta	a:$0016,y
-	lda	#$001D
+	lda	#OBJT_EFFECT
 	sta	a:$0010,y
 	lda	#$AEA0
 	sta	a:$0000,y

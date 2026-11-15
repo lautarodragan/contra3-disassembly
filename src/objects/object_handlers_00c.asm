@@ -947,7 +947,7 @@ loc_00F9CB:
 	sta	$0E,x
 	lda	#$00D0
 	sta	$0A,x
-	lda	#$0023
+	lda	#OBJT_FALLING_DEBRIS
 	sta	$10,x
 	lda	#$0003
 	sta	$16,x
@@ -979,7 +979,7 @@ sub_00F9FD:
 	jsl	f:find_free_slot_from_y
 	bcs	loc_00FA54
 	phx
-	lda	#$0026
+	lda	#OBJT_STAGE1_BOSS_TRACKING_SHOT
 	sta	a:$0010,y
 	lda	#$001F
 	sta	a:$0016,y
@@ -1013,7 +1013,7 @@ sub_00FA55:
 	jsl	f:find_free_slot_from_y
 	bcs	loc_00FABF
 	phx
-	lda	#$0027
+	lda	#OBJT_STAGE1_BOSS_FALLING_SHOT
 	sta	a:$0010,y
 	lda	#$001F
 	sta	a:$0016,y
@@ -1151,7 +1151,7 @@ sub_00FB71:
 	ldy	#$0500
 	jsl	f:spawn_effect
 	bcs	loc_00FBAA
-	lda	#$0038
+	lda	#OBJT_STAGE1_BOSS_FIRE
 	sta	a:$0010,y
 	lda	#$1200
 	sta	a:$0002,y
