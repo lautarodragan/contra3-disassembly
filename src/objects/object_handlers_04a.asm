@@ -4798,7 +4798,7 @@ loc_04A5AC:
 	sta	$36,x
 loc_04A5BA:
 	ldy	#$0300
-	jsr	a:sub_04A7D1
+	jsr	a:face_boss_spit_larva
 	jsr	a:sub_04A93B
 	jsr	a:sub_04A907
 	lda	#$0002
@@ -4843,7 +4843,7 @@ loc_04A60D:
 	sta	a:shake_timer
 	jsr	a:sub_04A74A
 	ldy	#$0700
-	jsr	a:sub_04A7D1
+	jsr	a:face_boss_spit_larva
 	jsr	a:sub_04A93B
 	jsr	a:sub_04A907
 	jsr	a:sub_04A997
@@ -5060,7 +5060,7 @@ loc_04A7B3:
 	jsl	f:make_effect_object
 	rts
 
-sub_04A7D1:
+face_boss_spit_larva:
 	lda	$36,x
 	beq	loc_04A7E9
 	cmp	#$0020
@@ -5818,7 +5818,7 @@ loc_04AD5C:
 	sta	OBJ_STATE,x
 
 larva_state_02:
-	jsr	a:sub_04AD84
+	jsr	a:larva_turn_toward_player
 	lda	#$0010
 	jml	f:set_velocity_from_angle
 loc_04AD6B:
@@ -5836,8 +5836,10 @@ larva_state_03:
 	; (not executed in the CDL traces)
 	rtl
 
-sub_04AD84:
-	jsr	a:sub_04ADAC
+; Turns OBJ_ANGLE one step towards the target player (larva_pick_player);
+; the caller then moves along it (set_velocity_from_angle).
+larva_turn_toward_player:
+	jsr	a:larva_pick_player
 	lda	a:$000A,y
 	sec
 	sbc	OBJ_X,x
@@ -5863,7 +5865,9 @@ loc_04ADA7:
 	.a16
 	rts
 
-sub_04ADAC:
+; Y = the player the larva chases: the one in play, or by the parity of the
+; slot when both are.
+larva_pick_player:
 	lda	a:p2_lives
 	bne	loc_04ADB5
 loc_04ADB1:
@@ -5932,7 +5936,7 @@ loc_04AE0B:
 face_boss_larva_state_01:
 	dec	OBJ_TIMER,x
 	bmi	loc_04AE2A
-	jsr	a:sub_04AD84
+	jsr	a:larva_turn_toward_player
 	lda	#$0010
 	jml	f:set_velocity_from_angle
 loc_04AE2A:
@@ -5949,11 +5953,13 @@ face_boss_larva_state_02:
 	dec	OBJ_TIMER,x
 	bmi	loc_04AE0B
 	lda	#$0010
-	jsr	a:sub_04AE4F
+	jsr	a:face_boss_larva_turn_toward_boss
 	lda	#$0010
 	jml	f:set_velocity_from_angle
 
-sub_04AE4F:
+; Turns OBJ_ANGLE by zp_00 towards the face boss (slot $0900): the larvae
+; return to the mouth.
+face_boss_larva_turn_toward_boss:
 	sta	zp_00
 	lda	a:wram_090A
 	sec
