@@ -1130,7 +1130,7 @@ spawn_pages_0597E6:
 	.addr	spawn_list_0599EE, spawn_list_059A5E, spawn_list_059A88, spawn_list_059AB2
 	.addr	spawn_list_059ADC, spawn_list_059B10, spawn_list_059B44, spawn_list_059B50
 	.addr	spawn_list_059B7A
-	.byte	$DA, $97
+	.addr	spawn_list_0597DA
 spawn_list_05981A:
 	.byte	$40, $0F, $78, $30, $10
 	.byte	$01, $60, $00, $04, $00, $98, $0F, $78, $30, $F0, $FF, $40, $00, $07, $00, $A0
