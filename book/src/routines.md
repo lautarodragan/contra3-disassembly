@@ -67,6 +67,22 @@ a header comment in the source:
 | `update_shake_side_view` | `$00:FF01` | screen shake |
 | `vector_length` | `$00:FF48` | `sqrt(x^2 + y^2)` of two 8-bit values |
 
+### Object handlers, banks $00 and $01
+
+The per-type handlers (`update_<enemy>`, states `<enemy>_state_NN`) are
+listed in [Enemies and objects: banks $00, $01](enemies-early.md). Helpers
+they share:
+
+| label | address | what |
+|---|---|---|
+| `update_effect` | `$01:CFF5` | type `$1D`: plays an animation, then frees the slot |
+| `make_effect_object` | `$01:CF66` | turns the slot in Y into an effect playing animation A |
+| `spawn_effect` / `spawn_effect_random_offset` | `$01:CF25` / `$01:CF3C` | allocate an effect (at a random offset) |
+| `start_dying_soldier` ... | `$01:D201`... | a killed soldier becomes type `$1B` (thrown back, explodes) |
+| `start_grenade_blast` | `$01:D2A1` | an object becomes a grenade blast (type `$1A`) |
+| `get_bg_tile_at_object` | `$00:E16E` | BG map entry under an object: floor/wall collision |
+| `find_free_shot_slot_up_to` | `$00:E122` | free player shot slot from X up to `zp_06` |
+
 ## Top-down stages
 
 The routines of stages 2 and 5 (`src/topdown/`) are described in
