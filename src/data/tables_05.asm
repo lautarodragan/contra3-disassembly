@@ -3119,7 +3119,7 @@ data_05E6DE:
 	; CDL: read by sub_02FC51; partly not accessed
 	.byte	$80, $00, $60, $00, $40, $00
 data_05E6E4:
-	; CDL: read by find_free_secondary_slot
+	; CDL: read by find_free_shot_slot
 	.byte	$C0, $0A, $E0, $0A, $00, $0B, $20, $0B, $40, $0B, $60, $0B, $80, $0B, $A0, $0B
 	.byte	$C0, $0B, $E0, $0B, $00, $0C, $20, $0C, $40, $0C, $60, $0C, $80, $0C, $A0, $0C
 	.byte	$C0, $0C

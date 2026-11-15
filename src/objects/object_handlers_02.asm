@@ -1,15 +1,16 @@
 ; objects/object_handlers_02.asm -- Object handlers (bank $02)
 ; Bank $02, $02:FCCB-$02:FFFF. Included by main.asm in segment BANK02.
 ;
-; The ending fireworks: handlers of secondary-list types $16-$1A
-; (tbl_shot_types), spawn_ending_firework (called by ending_sequence in bank
-; $1D) and find_free_secondary_slot.
+; The ending fireworks. They run in the player-shot list (free during the
+; ending) as shot types $16-$1A of tbl_shot_types: spawn_ending_firework
+; (called by ending_sequence in bank $1D), their handlers and
+; find_free_shot_slot.
 
 spawn_ending_firework:
 	lda	stage_frame_counter
 	and	#$007F
 	bne	loc_02FD09
-	jsr	a:find_free_secondary_slot
+	jsr	a:find_free_shot_slot
 	bcs	loc_02FD09
 	lda	stage_frame_counter
 	and	#$0180
@@ -35,12 +36,12 @@ loc_02FD09:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-find_free_secondary_slot_long:
+find_free_shot_slot_long:
 	; (not executed in the CDL traces)
-	jsr	a:find_free_secondary_slot
+	jsr	a:find_free_shot_slot
 	rtl
 
-find_free_secondary_slot:
+find_free_shot_slot:
 	phx
 	ldx	#$0000
 loc_02FD12:
@@ -63,8 +64,8 @@ loc_02FD27:
 	plx
 	rts
 
-; Object type $16 (secondary list). Ending: a firework rocket; after 15 frames
-; it bursts into 15 sparks of type $17-$1A (chosen by +$14) and clears itself.
+; Shot type $16 (tbl_shot_types). Ending: a firework rocket; after 15 frames
+; it bursts into 16 sparks of type $17-$1A (chosen by +$14) and clears itself.
 ; Spawned by spawn_ending_firework once the helicopter has left the screen
 ; (seen at the end of stage 6).
 update_ending_firework:
@@ -115,7 +116,7 @@ loc_02FD73:
 spawn_firework_sparks:
 	stz	zp_00
 loc_02FD76:
-	jsr	a:find_free_secondary_slot
+	jsr	a:find_free_shot_slot
 	bcs	loc_02FDB5
 	sty	zp_02
 	lda	$14,x
@@ -162,7 +163,7 @@ apply_spark_gravity:
 loc_02FDD2:
 	rts
 
-; Object type $17, $1A (secondary list). Ending firework spark with a random
+; Shot type $17, $1A (tbl_shot_types). Ending firework spark with a random
 ; velocity (random_spark_velocity), falling under gravity, blinking out after
 ; 60 frames.
 update_spark_random:
@@ -234,7 +235,7 @@ loc_02FE3B:
 loc_02FE44:
 	rtl
 
-; Object type $18 (secondary list). Ending firework spark thrown in one of 16
+; Shot type $18 (tbl_shot_types). Ending firework spark thrown in one of 16
 ; directions (+$04, radial_spark_velocity), falling under gravity; cleared
 ; after 70 frames.
 update_spark_radial:
@@ -307,7 +308,7 @@ loc_02FEAD:
 loc_02FEB6:
 	rtl
 
-; Object type $19 (secondary list). As spark_radial at twice the speed, other
+; Shot type $19 (tbl_shot_types). As spark_radial at twice the speed, other
 ; palette.
 update_spark_radial_fast:
 	jsr	a:apply_spark_gravity
