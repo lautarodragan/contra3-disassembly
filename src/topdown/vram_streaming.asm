@@ -10,7 +10,7 @@
 ; rotated frames of the players and enemies chosen by draw_topdown_sprites,
 ; listed at $1780 (player 1's view, to VRAM $4000) or $17C0 (player 2's view,
 ; to $4800, odd frames in 2P-A). On the boss maps also the boss's Mode 7
-; characters (wram_158C/wram_15AC, boss_chr_stream_size bytes to VRAM boss_chr_stream_vram).
+; characters (boss_chr_stream_size bytes from boss_chr_stream_src to boss_chr_stream_vram).
 ; Nothing during the intro and the map view.
 stream_topdown_sprite_gfx:
 	lda	a:intro_phase

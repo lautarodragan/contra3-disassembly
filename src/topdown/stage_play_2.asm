@@ -69,6 +69,7 @@ loc_02E6B7:
 	sta	$14,x
 	rts
 
+; Scale 1:1, the players at their start points, view anchors and angles by 1P / 2P mode.
 init_topdown_views:
 	lda	#M7_SCALE_1X
 	sta	a:p1_m7_scale_x
@@ -156,6 +157,8 @@ loc_02E751:
 	sta	a:wram_0F04
 	rtl
 
+; Each view's Mode 7 centre, scroll and angle from its player (1P, 2P-A
+; split, 2P-B shared), or around the boss when boss_centered_view is set.
 update_topdown_views:
 	rep	#$30
 	lda	a:map_view_active
@@ -715,6 +718,9 @@ td_get_enemy_points:
 
 ; Sets up the top-down HDMA channels 2-7 and their tables at $7E:3C00/$7E:3E00
 ; (window, indirect) and $7E:3860-$7E:38E0 (CGADSUB, TM, INIDISP, SETINI, BGMODE by screen section), by 1P / 2P-A.
+; Sets up HDMA channels 2-7: the window (indirect, tables $7E:3C00/$7E:3E00) and
+; per screen section CGADSUB, TM, INIDISP, SETINI and BGMODE ($7E:3860-$7E:38E0),
+; with the tables for 1P or 2P-A.
 init_topdown_hdma:
 	rep	#$30
 	jsr	a:setup_topdown_hdma_channels
@@ -868,6 +874,7 @@ setup_topdown_hdma_channels:
 	.a16
 	rts
 
+; IRQ for the Mode 7 matrix: line 8 (1P, 2P-B) or line 0 with m7_split_screen (2P-A).
 init_topdown_irq:
 	lda	a:title_menu_cursor
 	beq	loc_02ED43
@@ -896,6 +903,9 @@ loc_02ED5D:
 	sta	m7_split_screen
 	rtl
 
+; NMI: player 1's Mode 7 matrix from p1_m7_angle and the scales (sine_table,
+; cosine_table, multiply_sine_scale), and the centre and scroll register values
+; (vertical scroll minus screen_shake_offset); player 2's too in 2P-A.
 compute_m7_matrix:
 	rep	#$30
 	lda	a:title_menu_cursor
@@ -996,6 +1006,7 @@ loc_02EE1E:
 	sta	a:p1_bg1vofs
 	rtl
 
+; Player 2's Mode 7 matrix (2P-A split screen).
 compute_p2_m7_matrix:
 	lda	a:p2_m7_angle
 	clc
@@ -1089,6 +1100,7 @@ loc_02EED7:
 	sta	a:p2_bg1vofs
 	rtl
 
+; zp_00-zp_03 = zp_0A (sine) * zp_08 (scale), 16 x 16 bits with the hardware multiplier.
 multiply_sine_scale:
 	sep	#$20
 	.a8
@@ -1149,6 +1161,8 @@ loc_02EF3F:
 	; CDL: not accessed
 	.byte	$C2, $30
 
+; Counts screen_shake_timer down and makes screen_shake_offset alternate sign
+; every other frame, decaying when the timer is over.
 update_screen_shake:
 	lda	a:screen_shake_timer
 	beq	loc_02EF6E
