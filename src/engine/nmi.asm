@@ -128,7 +128,7 @@ nmi_frame_side_view:
 	.a16
 	rep	#$30
 	ldx	#$1380
-	lda	$0A,x
+	lda	BG_HOFS_LATCH,x
 	sep	#$20
 	.a8
 	sta	a:BG1HOFS
@@ -136,9 +136,9 @@ nmi_frame_side_view:
 	sta	a:BG1HOFS
 	rep	#$20
 	.a16
-	lda	$00,x
-	sta	$0A,x
-	lda	$22,x
+	lda	BG_X,x
+	sta	BG_HOFS_LATCH,x
+	lda	BG_VOFS_LATCH,x
 	dec	a
 	sep	#$20
 	.a8
@@ -147,12 +147,12 @@ nmi_frame_side_view:
 	sta	a:BG1VOFS
 	rep	#$20
 	.a16
-	lda	$18,x
+	lda	BG_Y,x
 	sec
 	sbc	shake_bg1_y
-	sta	$22,x
+	sta	BG_VOFS_LATCH,x
 	ldx	#$13C0
-	lda	$0A,x
+	lda	BG_HOFS_LATCH,x
 	sep	#$20
 	.a8
 	sta	a:BG2HOFS
@@ -160,9 +160,9 @@ nmi_frame_side_view:
 	sta	a:BG2HOFS
 	rep	#$20
 	.a16
-	lda	$00,x
-	sta	$0A,x
-	lda	$22,x
+	lda	BG_X,x
+	sta	BG_HOFS_LATCH,x
+	lda	BG_VOFS_LATCH,x
 	dec	a
 	sep	#$20
 	.a8
@@ -171,20 +171,20 @@ nmi_frame_side_view:
 	sta	a:BG2VOFS
 	rep	#$20
 	.a16
-	lda	$18,x
+	lda	BG_Y,x
 	sec
 	sbc	shake_bg2_y
-	sta	$22,x
+	sta	BG_VOFS_LATCH,x
 	ldx	#$1400
 	sep	#$20
 	.a8
-	lda	$00,x
+	lda	BG_X,x
 	sta	a:BG3HOFS
-	lda	$01,x
+	lda	BG_X+1,x
 	sta	a:BG3HOFS
 	rep	#$20
 	.a16
-	lda	$18,x
+	lda	BG_Y,x
 	dec	a
 	sep	#$20
 	.a8
@@ -481,13 +481,13 @@ write_bg_scroll_regs:
 	ldx	#$1380
 	sep	#$20
 	.a8
-	lda	$00,x
+	lda	BG_X,x
 	sta	a:BG1HOFS
-	lda	$01,x
+	lda	BG_X+1,x
 	sta	a:BG1HOFS
 	rep	#$20
 	.a16
-	lda	$18,x
+	lda	BG_Y,x
 	dec	a
 	sep	#$20
 	.a8
@@ -499,13 +499,13 @@ write_bg_scroll_regs:
 	ldx	#$13C0
 	sep	#$20
 	.a8
-	lda	$00,x
+	lda	BG_X,x
 	sta	a:BG2HOFS
-	lda	$01,x
+	lda	BG_X+1,x
 	sta	a:BG2HOFS
 	rep	#$20
 	.a16
-	lda	$18,x
+	lda	BG_Y,x
 	dec	a
 	sep	#$20
 	.a8
@@ -517,13 +517,13 @@ write_bg_scroll_regs:
 	ldx	#$1400
 	sep	#$20
 	.a8
-	lda	$00,x
+	lda	BG_X,x
 	sta	a:BG3HOFS
-	lda	$01,x
+	lda	BG_X+1,x
 	sta	a:BG3HOFS
 	rep	#$20
 	.a16
-	lda	$18,x
+	lda	BG_Y,x
 	dec	a
 	sep	#$20
 	.a8

@@ -1,18 +1,35 @@
 ; engine/palette_tasks.asm -- Palette tasks and VRAM script tasks
 ; Bank $00, $00:9971-$00:9C17. Included by main.asm in segment BANK00.
 ;
-; Eight task slots of $10 bytes at $1200 (sub_009982/sub_009985 start one from
-; a script in Y; run_palette_tasks runs them each frame through tbl_palette_task_types): copy
-; palettes from bank $08 to the WRAM buffer, and fade them. run_vram_tasks runs a
-; second kind of task (slots at $1280) that appends entries to the VRAM
-; transfer list.
+; Palette tasks: 8 slots of $10 bytes at palette_tasks ($1200, TASK_*
+; fields). start_palette_task (slot $1200) / start_palette_task_at (X = slot)
+; start one from a script in Y (bank $05) whose first byte is the type;
+; run_palette_tasks runs them every frame through tbl_palette_task_types.
+; They work on the palette buffer in $7E (the copy at $7E:2200 is DMAd to
+; CGRAM every frame):
+;
+;   1  palette_task_animate   script: delay byte, repeat byte (bit 7: loop
+;                             forever), then {source in bank $08, destination
+;                             in $7E} pairs, 0 = end; one pair is copied every
+;                             delay+1 frames; a source block is {size-1 word,
+;                             colours}
+;   2  palette_task_darken    (never run) darkens a range by one step per level
+;   3  palette_task_fade_in   script: speed byte (0 = 16), source (bank $08)
+;   4  palette_task_fade_out  and destination words; each colour component is
+;                             the source's minus the level (fade in: 31 - level)
+;
+; The level advances by speed/16 per frame; the task ends at level 32.
+;
+; VRAM tasks: slots at vram_tasks ($1280), half of them run on each frame by
+; run_vram_tasks; type 1 (vram_task_script, never run in the traces) copies
+; lists of VRAM queue entries into the queue on a timed script.
 
 clear_palette_task:
-	stz	$00,x
-	stz	$02,x
-	stz	$04,x
-	stz	$06,x
-	stz	$08,x
+	stz	TASK_TYPE,x
+	stz	TASK_SCRIPT,x
+	stz	TASK_PROGRESS,x
+	stz	TASK_ENTRY,x
+	stz	TASK_DELAY,x
 	stz	$0A,x
 	stz	$0C,x
 	stz	$0E,x
@@ -25,9 +42,9 @@ start_palette_task_at:
 	jsl	f:clear_palette_task
 	lda	a:$0000,y
 	and	#$00FF
-	sta	$00,x
+	sta	TASK_TYPE,x
 	iny
-	sty	$02,x
+	sty	TASK_SCRIPT,x
 	rtl
 
 run_palette_tasks:
@@ -36,7 +53,7 @@ run_palette_tasks:
 	ldx	#$1200
 @loop:
 	stx	zp_FC
-	lda	$00,x
+	lda	TASK_TYPE,x
 	beq	@next
 	jsl	f:call_palette_task
 @next:
@@ -64,20 +81,20 @@ tbl_palette_task_types:
 	.addr	palette_task_fade_out
 
 palette_task_animate:
-	lda	$08,x
+	lda	TASK_DELAY,x
 	beq	@next_frame
 	; (not executed in the CDL traces)
-	dec	$08,x
+	dec	TASK_DELAY,x
 	rtl
 @next_frame:
-	ldy	$02,x
+	ldy	TASK_SCRIPT,x
 	lda	a:$0000,y
 	and	#$00FF
-	sta	$08,x
+	sta	TASK_DELAY,x
 @copy_entry:
-	lda	$02,x
+	lda	TASK_SCRIPT,x
 	clc
-	adc	$06,x
+	adc	TASK_ENTRY,x
 	tay
 	lda	a:$0002,y
 	beq	@end_of_frames
@@ -92,27 +109,27 @@ palette_task_animate:
 	mvn	#$08, #$7E
 	plx
 	plb
-	lda	$06,x
+	lda	TASK_ENTRY,x
 	clc
 	adc	#$0004
-	sta	$06,x
+	sta	TASK_ENTRY,x
 	bra	palette_task_animate
 @end_of_frames:
-	inc	$04,x
-	stz	$06,x
-	ldy	$02,x
+	inc	TASK_PROGRESS,x
+	stz	TASK_ENTRY,x
+	ldy	TASK_SCRIPT,x
 	lda	a:$0000,y
 	bmi	@copy_entry
 	xba
 	and	#$00FF
-	cmp	$04,x
+	cmp	TASK_PROGRESS,x
 	bcs	@copy_entry
 	jmp	a:clear_palette_task
 
 palette_task_darken:
 	; (not executed in the CDL traces)
-	ldy	$02,x
-	lda	$04,x
+	ldy	TASK_SCRIPT,x
+	lda	TASK_PROGRESS,x
 	xba
 	and	#$00FF
 	sta	zp_04
@@ -126,12 +143,12 @@ palette_task_darken:
 	asl	a
 	asl	a
 	clc
-	adc	$04,x
+	adc	TASK_PROGRESS,x
 	cmp	#$2000
 	bcc	@advance
 	brl	clear_palette_task
 @advance:
-	sta	$04,x
+	sta	TASK_PROGRESS,x
 	xba
 	and	#$00FF
 	sec
@@ -145,6 +162,8 @@ palette_task_darken:
 @done:
 	rtl
 
+; (Never run.) Script +1/+3: start and end address in $7E; subtracts 1 from
+; every non-zero component.
 darken_palette_range:
 	; (not executed in the CDL traces)
 	lda	a:$0003,y
@@ -173,7 +192,7 @@ darken_palette_range:
 	rtl
 
 palette_task_fade_out:
-	ldy	$02,x
+	ldy	TASK_SCRIPT,x
 	lda	a:$0000,y
 	and	#$00FF
 	bne	@speed_ok
@@ -185,18 +204,18 @@ palette_task_fade_out:
 	asl	a
 	asl	a
 	clc
-	adc	$04,x
+	adc	TASK_PROGRESS,x
 	cmp	#$2000
 	bcc	@advance
 	brl	clear_palette_task
 @advance:
-	sta	$04,x
+	sta	TASK_PROGRESS,x
 	xba
 	and	#$00FF
 	bra	fade_palette_from_source
 
 palette_task_fade_in:
-	ldy	$02,x
+	ldy	TASK_SCRIPT,x
 	lda	a:$0000,y
 	and	#$00FF
 	bne	@speed_ok
@@ -208,15 +227,17 @@ palette_task_fade_in:
 	asl	a
 	asl	a
 	clc
-	adc	$04,x
+	adc	TASK_PROGRESS,x
 	cmp	#$2000
 	bcc	@advance
 	brl	clear_palette_task
 @advance:
-	sta	$04,x
+	sta	TASK_PROGRESS,x
 	xba
 	and	#$00FF
 	eor	#$001F
+; Y = script, A = level (0-31): writes source colours minus level per
+; component (clamped at 0) to the destination in $7E.
 fade_palette_from_source:
 	sta	zp_08
 	asl	a
@@ -304,25 +325,25 @@ start_vram_task:
 	; (not executed in the CDL traces)
 	lda	a:$0000,y
 	beq	@start
-	lda	$00,x
+	lda	TASK_TYPE,x
 	bne	@done
 @start:
 	jsl	f:clear_vram_task
 	lda	a:$0000,y
-	sta	$00,x
+	sta	TASK_TYPE,x
 	lda	a:$0002,y
-	sta	$02,x
+	sta	TASK_SCRIPT,x
 	lda	#$0000
 @done:
 	rtl
 
 clear_vram_task:
 	; (not executed in the CDL traces)
-	stz	$00,x
-	stz	$02,x
-	stz	$04,x
-	stz	$06,x
-	stz	$08,x
+	stz	TASK_TYPE,x
+	stz	TASK_SCRIPT,x
+	stz	TASK_PROGRESS,x
+	stz	TASK_ENTRY,x
+	stz	TASK_DELAY,x
 	stz	$0A,x
 	stz	$0C,x
 	stz	$0E,x
@@ -336,7 +357,7 @@ run_vram_tasks:
 	ldx	#$1290
 @loop:
 	stx	zp_FC
-	lda	$00,x
+	lda	TASK_TYPE,x
 	beq	@next
 	; (not executed in the CDL traces)
 	jsl	f:call_vram_task
@@ -364,19 +385,19 @@ tbl_vram_task_types:
 
 vram_task_script:
 	; (not executed in the CDL traces)
-	lda	$08,x
+	lda	TASK_DELAY,x
 	beq	@next_frame
-	dec	$08,x
+	dec	TASK_DELAY,x
 	rtl
 @next_frame:
-	lda	$02,x
+	lda	TASK_SCRIPT,x
 	sta	zp_00
 	lda	(zp_00)
-	sta	$08,x
+	sta	TASK_DELAY,x
 @next_entry:
-	inc	$06,x
-	inc	$06,x
-	ldy	$06,x
+	inc	TASK_ENTRY,x
+	inc	TASK_ENTRY,x
+	ldy	TASK_ENTRY,x
 	iny
 	iny
 	lda	(zp_00),y
@@ -411,11 +432,11 @@ vram_task_script:
 	ldx	zp_FC
 	bra	vram_task_script
 @end_of_frames:
-	inc	$04,x
-	stz	$06,x
+	inc	TASK_PROGRESS,x
+	stz	TASK_ENTRY,x
 	ldy	#$0002
 	lda	(zp_00),y
 	bmi	@next_entry
-	cmp	$04,x
+	cmp	TASK_PROGRESS,x
 	bcs	@next_entry
 	jmp	a:clear_vram_task

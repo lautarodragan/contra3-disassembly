@@ -1,10 +1,32 @@
-; engine/bg_scroll.asm -- BG scrolling and tilemap updates
+; engine/bg_scroll.asm -- BG scrolling, tilemap updates and stage spawning
 ; Bank $00, $00:C283-$00:CF0B. Included by main.asm in segment BANK00.
 ;
-; sub_00C283/sub_00C575 (from NMI) DMA the tilemap rows/columns queued at
-; $1780 to VRAM; fill_bg_screen..sub_00CC37 scroll the BG layers, whose state is
-; at $1380 and $13C0 ($40 bytes each). Tables metatile_column_offsets..metatile_row_offsets+6.
+; Side-view stages scroll BG1 (the playfield) and BG2 (background). Each
+; layer has a scroll state of $40 bytes (BG_* fields): BG1 at bg1_x ($1380),
+; BG2 at bg2_x ($13C0), BG3 at $1400. The layers' maps are in $7E (BG1 map
+; at $7E:9000, metatiles from $7E:5000; BG2 $7E:F000 / $7E:B000): a map word
+; is a metatile number (bits 0-13) and flips (bits 14-15); a metatile is
+; 4x4 tiles. When the scroll crosses an 8-pixel column or row, draw_bg_column
+; / draw_bg_row queue the new tiles through the VRAM queue, and
+; update_bg_collision_map turns them into the collision map at $7E:4000
+; (a word per tile, classed by tile-number thresholds zp_C8-zp_DE).
+;
+; run_bg1_scroll_mode (each frame) runs the BG1 handler bg1_scroll_mode
+; (tbl_bg1_scroll_modes): horizontal or vertical stages, following the
+; players past scroll_threshold or autoscrolling (bg1_autoscroll). BG2 has
+; its own handler (bg2_scroll_mode, tbl_bg2_scroll_modes): parallax at 1/8
+; or 1/3 of BG1, autoscroll, drawn progressively, ...
+;
+; dma_bg_tilemap_updates (NMI) does the other BG DMAs: rows from $7F, an
+; extra DMA (bg_dma_vram_addr), groups of 4x4 tile blocks ($1800/$1840).
+;
+; init_stage_spawns / spawn_stage_objects place the stage's objects as BG1
+; scrolls: per 256-pixel page, a list of 10-byte entries {position in the
+; page ($FF end), type, first and last slot / $10, x, y, field $3A}.
 
+; NMI (side view). zp_B8/zp_BA: VRAM addresses of 6 rows each, sources at
+; $1780; bg_dma_vram_addr: one DMA; $1800-$183E: up to 8 VRAM addresses of
+; 4-row blocks (source pointers at $1840).
 dma_bg_tilemap_updates:
 	sep	#$10
 	.i8
@@ -281,6 +303,8 @@ dma_bg_tilemap_updates:
 	.i16
 	rtl
 
+; Writes BG3 tilemap blocks (4 rows of 4 tiles) listed in data_058CE2 from
+; $7E to VRAM $5C00 (stage 4).
 draw_bg3_block_map:
 	ldx	#$0000
 	ldy	#$0001
@@ -354,13 +378,15 @@ draw_bg3_block_map:
 @done:
 	rtl
 
+; X = BG state, Y = map base ($4000 BG1, $A000 BG2). With the display off,
+; draws the whole screen column by column.
 fill_bg_screen:
 	stx	zp_FC
 	sty	zp_FE
-	stz	$32,x
-	stz	$18,x
+	stz	BG_COLUMN_OFFSET,x
+	stz	BG_Y,x
 	lda	#$0100
-	sta	$00,x
+	sta	BG_X,x
 	lda	zp_FC
 	cmp	#$1380
 	bne	@full_width
@@ -384,20 +410,20 @@ fill_bg_screen:
 	jsl	f:run_vram_queue
 	ldx	zp_FC
 	clc
-	lda	$00,x
+	lda	BG_X,x
 	adc	#$0008
-	sta	$00,x
+	sta	BG_X,x
 	cmp	#$01FF
 	bcc	@next
-	stz	$00,x
+	stz	BG_X,x
 	clc
-	lda	$3C,x
+	lda	BG_MAP_OFFSET,x
 	adc	#$0080
-	sta	$3C,x
+	sta	BG_MAP_OFFSET,x
 @next:
 	dec	zp_18
 	bpl	@loop
-	stz	$00,x
+	stz	BG_X,x
 	stz	$02,x
 	lda	#$0000
 	sta	a:bg1_scroll_mode
@@ -406,6 +432,7 @@ fill_bg_screen:
 	stz	a:wram_13B0
 	rtl
 
+; Dispatch on bg1_scroll_mode.
 run_bg1_scroll_mode:
 	lda	a:bg1_scroll_mode
 	phx
@@ -466,6 +493,9 @@ bg1_init_horizontal:
 	sta	a:spawn_scroll_var
 	rtl
 
+; Follows a player who walks right past scroll_threshold ($80, $A0 when both
+; play) by his PLAYER_DX, unless the other player is at the left edge; with
+; bg1_autoscroll, scrolls $6800/$10000 pixel a frame.
 bg1_scroll_horizontal:
 	lda	a:bg1_autoscroll
 	bne	@autoscroll
@@ -482,7 +512,7 @@ bg1_scroll_horizontal:
 	bcc	@check_p2
 	ldx	#$0200
 	ldy	#$0240
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	beq	@player_not_moving
 	bmi	@player_not_moving
 	bra	@push_player
@@ -494,32 +524,32 @@ bg1_scroll_horizontal:
 	bcc	@no_scroll
 	ldx	#$0240
 	ldy	#$0200
-	lda	$1A,x
+	lda	OBJ_X_VEL,x
 	beq	@player_not_moving
 	bmi	@player_not_moving
 @push_player:
-	lda	a:$1D8A,y
+	lda	a:PLAYER_LIVES,y
 	beq	@scroll_by_player
-	lda	a:$000A,y
+	lda	a:OBJ_X,y
 	cmp	#$000C
 	bcs	@scroll_by_player
 	sec
-	lda	$0A,x
-	sbc	a:$1306,x
-	sta	$0A,x
+	lda	OBJ_X,x
+	sbc	a:PLAYER_DX,x
+	sta	OBJ_X,x
 @no_scroll:
 	stz	a:bg1_x_delta
-	stz	a:$1306,x
+	stz	a:PLAYER_DX,x
 	rtl
 @scroll_by_player:
 	clc
-	lda	a:$1306,x
+	lda	a:PLAYER_DX,x
 	sta	a:bg1_x_delta
 	bra	@apply
 @player_not_moving:
-	lda	a:$1D8A,y
+	lda	a:PLAYER_LIVES,y
 	beq	@autoscroll
-	lda	a:$000A,y
+	lda	a:OBJ_X,y
 	cmp	#$000C
 	bcc	@no_scroll
 @autoscroll:
@@ -536,23 +566,23 @@ bg1_scroll_horizontal:
 	ldy	#$4000
 	sty	zp_FE
 	clc
-	lda	$00,x
-	adc	$0E,x
-	sta	$00,x
+	lda	BG_X,x
+	adc	BG_X_DELTA,x
+	sta	BG_X,x
 	clc
-	lda	$32,x
+	lda	BG_COLUMN_OFFSET,x
 	asl	a
 	asl	a
 	asl	a
-	adc	$00,x
+	adc	BG_X,x
 	and	#$FF00
-	cmp	$30,x
+	cmp	BG_PAGE,x
 	beq	@draw
-	sta	$30,x
+	sta	BG_PAGE,x
 	clc
-	lda	$3C,x
+	lda	BG_MAP_OFFSET,x
 	adc	#$0080
-	sta	$3C,x
+	sta	BG_MAP_OFFSET,x
 @draw:
 	jsl	f:draw_bg_column
 	jmp	a:update_bg_collision_map
@@ -599,6 +629,8 @@ bg1_no_vertical_scroll:
 	stz	a:bg1_y_delta
 	rtl
 
+; Follows a player who moves up past scroll_threshold, or autoscrolls at
+; data_058D52[bg1_autoscroll_speed].
 bg1_scroll_vertical:
 	lda	a:bg1_autoscroll
 	bne	@autoscroll
@@ -610,7 +642,7 @@ bg1_scroll_vertical:
 	bcs	@check_p2
 @p1_high:
 	ldx	#$0200
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bpl	@autoscroll
 	bmi	@scroll_by_player
 @check_p2:
@@ -623,15 +655,15 @@ bg1_scroll_vertical:
 	bcs	bg1_no_vertical_scroll
 @p2_high:
 	ldx	#$0240
-	lda	$1E,x
+	lda	OBJ_Y_VEL,x
 	bpl	@autoscroll
 @scroll_by_player:
 	clc
-	lda	$0C,x
-	adc	$1C,x
-	lda	$0E,x
+	lda	OBJ_Y_SUB,x
+	adc	OBJ_Y_VEL_SUB,x
+	lda	OBJ_Y,x
 	sta	zp_00
-	adc	$1E,x
+	adc	OBJ_Y_VEL,x
 	sec
 	sbc	zp_00
 	sta	a:bg1_y_delta
@@ -640,9 +672,9 @@ bg1_scroll_vertical:
 	ldy	#$4000
 	sty	zp_FE
 	clc
-	lda	$18,x
+	lda	BG_Y,x
 	adc	a:bg1_y_delta
-	sta	$18,x
+	sta	BG_Y,x
 	stz	a:bg1_y_sub
 	bra	@page
 @autoscroll:
@@ -659,21 +691,21 @@ bg1_scroll_vertical:
 	ldy	#$4000
 	sty	zp_FE
 	clc
-	lda	$18,x
-	adc	$26,x
-	sta	$18,x
+	lda	BG_Y,x
+	adc	BG_Y_DELTA,x
+	sta	BG_Y,x
 @page:
 	clc
 	lda	#$00F0
-	adc	$18,x
+	adc	BG_Y,x
 	and	#$FF00
-	cmp	$30,x
+	cmp	BG_PAGE,x
 	beq	@draw
-	sta	$30,x
+	sta	BG_PAGE,x
 	clc
-	lda	$3C,x
+	lda	BG_MAP_OFFSET,x
 	adc	#$0080
-	sta	$3C,x
+	sta	BG_MAP_OFFSET,x
 @draw:
 	jsl	f:draw_bg_row
 	jmp	a:update_bg_collision_map
@@ -685,15 +717,15 @@ bg1_update_vertical:
 	sty	zp_FE
 	clc
 	lda	#$00F0
-	adc	$18,x
+	adc	BG_Y,x
 	and	#$FF00
-	cmp	$30,x
+	cmp	BG_PAGE,x
 	beq	@draw
-	sta	$30,x
+	sta	BG_PAGE,x
 	clc
-	lda	$3C,x
+	lda	BG_MAP_OFFSET,x
 	adc	#$0080
-	sta	$3C,x
+	sta	BG_MAP_OFFSET,x
 @draw:
 	jsl	f:draw_bg_row
 	jmp	a:update_bg_collision_map
@@ -711,16 +743,17 @@ loc_00C8FE:
 	sty	zp_FE
 	clc
 	lda	#$0008
-	sta	$32,x
+	sta	BG_COLUMN_OFFSET,x
 	asl	a
 	asl	a
 	asl	a
-	adc	$00,x
+	adc	BG_X,x
 	and	#$FF00
 	lsr	a
-	sta	$3C,x
+	sta	BG_MAP_OFFSET,x
 	jml	f:draw_bg_column
 
+; Dispatch on bg2_scroll_mode.
 run_bg2_scroll_mode:
 	lda	a:bg2_scroll_mode
 	phx
@@ -840,35 +873,35 @@ bg2_parallax_y_1_3:
 	stx	zp_FC
 	ldy	#$A000
 	sty	zp_FE
-	lda	$00,x
+	lda	BG_X,x
 	and	#$00FF
-	sta	$00,x
+	sta	BG_X,x
 	stz	$12,x
 	stz	$2A,x
 	clc
 	lda	a:bg1_y_delta
-	adc	$26,x
-	sta	$26,x
+	adc	BG_Y_DELTA,x
+	sta	BG_Y_DELTA,x
 @loop:
 	clc
 	adc	#$0003
 	bpl	@page
-	sta	$26,x
-	dec	$18,x
+	sta	BG_Y_DELTA,x
+	dec	BG_Y,x
 	dec	$2A,x
 	bra	@loop
 @page:
 	clc
 	lda	#$00F0
-	adc	$18,x
+	adc	BG_Y,x
 	and	#$FF00
-	cmp	$30,x
+	cmp	BG_PAGE,x
 	beq	@draw
-	sta	$30,x
+	sta	BG_PAGE,x
 	clc
-	lda	$3C,x
+	lda	BG_MAP_OFFSET,x
 	adc	#$0080
-	sta	$3C,x
+	sta	BG_MAP_OFFSET,x
 @draw:
 	brl	draw_bg_row
 
@@ -887,20 +920,21 @@ bg2_follow_bg1_x:
 	sta	a:bg2_x
 	rtl
 
+; X = BG state, zp_FE = map base: queues the tile row entering the screen.
 draw_bg_row:
 	clc
-	lda	$18,x
+	lda	BG_Y,x
 	adc	#$0010
 	and	#$0018
 	sta	zp_0A
-	lda	$18,x
+	lda	BG_Y,x
 	lsr	a
 	sec
 	sbc	#$0008
 	and	#$0070
 	clc
 	adc	zp_FE
-	adc	$3C,x
+	adc	BG_MAP_OFFSET,x
 	adc	#$5000
 	sta	zp_00
 	lda	vram_queue_end
@@ -909,13 +943,13 @@ draw_bg_row:
 	sta	zp_06
 	lda	#$FFFF
 	sta	zp_0C
-	lda	$00,x
+	lda	BG_X,x
 	and	#$0100
 	asl	a
 	asl	a
 	sta	zp_04
 	clc
-	lda	$18,x
+	lda	BG_Y,x
 	adc	#$00F0
 	and	#$00F8
 	asl	a
@@ -999,28 +1033,30 @@ draw_bg_row:
 	.a16
 	rtl
 
+; X = BG state, zp_FE = map base: queues the tile column entering the screen
+; (7 metatiles for BG1, 8 for BG2).
 draw_bg_column:
-	lda	$32,x
+	lda	BG_COLUMN_OFFSET,x
 	asl	a
 	asl	a
 	asl	a
 	clc
-	adc	$00,x
+	adc	BG_X,x
 	and	#$0018
 	sta	zp_0A
-	lda	$00,x
+	lda	BG_X,x
 	and	#$00F8
 	lsr	a
 	lsr	a
 	lsr	a
 	clc
-	adc	$32,x
+	adc	BG_COLUMN_OFFSET,x
 	sta	zp_08
 	lsr	a
 	and	#$000E
 	clc
 	adc	zp_FE
-	adc	$3C,x
+	adc	BG_MAP_OFFSET,x
 	adc	#$5000
 	sta	zp_02
 	lda	vram_queue_end
@@ -1043,7 +1079,7 @@ draw_bg_column:
 	sty	zp_1C
 	and	#$001F
 	sta	zp_04
-	lda	$00,x
+	lda	BG_X,x
 	and	#$0100
 	eor	zp_1C
 	asl	a
@@ -1144,6 +1180,8 @@ clear_bg2_scroll_deltas:
 	stz	a:wram_13E6
 	rtl
 
+; Converts the last queued row/column (zp_1A = its entry) into collision
+; words at $7E:4000.
 update_bg_collision_map:
 	sep	#$20
 	.a8
@@ -1293,6 +1331,7 @@ metatile_row_offsets:
 	.byte	$1E, $00, $1C, $00, $1A, $00, $18, $00, $16, $00, $14, $00, $12, $00, $10, $00
 	.byte	$0E, $00, $0C, $00, $0A, $00, $08, $00, $06, $00, $04, $00, $02, $00, $00, $00
 
+; Sets the spawner for a horizontal stage (bg1_x) at the current page.
 init_stage_spawns:
 	lda	a:bg1_x
 	and	#$FF00
@@ -1318,6 +1357,8 @@ init_stage_spawns:
 	sta	a:spawn_pages
 	rtl
 
+; Each frame: on a new page, spawns what is left of the old one and moves
+; on; then spawns the next entry if its position has been reached.
 spawn_stage_objects:
 	lda	a:spawn_scroll_var
 	sta	zp_02
@@ -1382,19 +1423,19 @@ spawn_next_stage_object:
 @set_fields:
 	lda	a:$0001,y
 	and	#$00FF
-	sta	$10,x
+	sta	OBJ_TYPE,x
 	clc
 	lda	a:$0004,y
 	adc	zp_08
-	sta	$0A,x
+	sta	OBJ_X,x
 	sec
 	lda	a:$0006,y
 	sbc	zp_0A
-	sta	$0E,x
+	sta	OBJ_Y,x
 	lda	a:$0008,y
 	sta	$3A,x
-	stz	$06,x
-	stz	$16,x
+	stz	OBJ_HP,x
+	stz	OBJ_FLAGS,x
 	clc
 	lda	a:spawn_entry_offset
 	adc	#$000A
@@ -1402,6 +1443,8 @@ spawn_next_stage_object:
 @done:
 	rtl
 
+; Y = entry: first free object slot between entry bytes 2 and 3 (x $10) in
+; X; carry set if none.
 find_free_object_slot_in_range:
 	lda	a:$0003,y
 	and	#$00FF
@@ -1419,7 +1462,7 @@ find_free_object_slot_in_range:
 	sta	zp_FC
 	clc
 @loop:
-	lda	$10,x
+	lda	OBJ_TYPE,x
 	beq	@done
 	txa
 	clc

@@ -1,11 +1,30 @@
-; engine/hdma.asm -- HDMA tables and their NMI-time transfers
+; engine/hdma.asm -- HUD, stage HDMA and HDMA tables
 ; Bank $00, $00:E369-$00:E7EE. Included by main.asm in segment BANK00.
 ;
-; init_hud clears and sets up the HDMA table buffer at $1700;
-; sub_00E3DA/sub_00E464 (from NMI) compute table entries with the hardware
-; divider; sub_00E4F6/sub_00E535 DMA to VRAM and setup_stage_hdma programs HDMA
-; channels 3 and 4.
+; The HUD (lives, weapons, bombs) is a buffer of BG3 tilemap words at
+; hud_buffer ($1700-$177F) built by init_hud from templates and updated by
+; update_p1_hud / update_p2_hud (each frame, the two players alternating in
+; two-player games), then DMAd to VRAM ($5C25/$5C42, player 2 $5C35/$5C52)
+; by upload_p1_hud / upload_p2_hud in the NMI. Lives are shown as two digits
+; (lives - 1, via the hardware divider), the two weapon slots by 2x2 icons
+; (hud_weapon_tiles_*), the active slot by its palette
+; (hud_weapon_slot_attrs).
+;
+; setup_stage_hdma (side-view NMI) programs the HDMA channels: the preset
+; hdma_preset (data_05A1ED), channel 3 for the window (table at zp_9E, WH0/WH1)
+; and channel 4 for COLDATA (table at zp_C6).
+;
+; build_scroll_split_hdma builds, from a pattern (scroll_split_pattern,
+; data_05A25A) and a position (scroll_split_y), an indirect HDMA table at
+; $7E:D000 / values at $7E:D400 that splits the screen in horizontal bands
+; with their own scroll (each band's value comes from a handler: BG1 x, BG2 x
+; or a table); nmi_frame_side_view copies them to $7E:D200 / $7E:D800.
+; init_line_hdma_table / fill_line_hdma_table build a per-line table at
+; $7E:E800 (two halves of 127 lines, indirect HDMA list at $7E:EA00).
 
+; Clears hud_buffer, draws the HUD label text and copies the templates
+; (data_05A14F.. + 2, 32 bytes per row) for player 1 and, with two players,
+; player 2.
 init_hud:
 	rep	#$30
 	phb
@@ -64,6 +83,7 @@ update_hud_alternating:
 	bcc	update_p1_hud
 	brl	update_p2_hud
 
+; Lives digits, weapon icons and palettes, bombs of player 1 into hud_buffer.
 update_p1_hud:
 	lda	a:p1_lives
 	beq	@lives_digits
@@ -248,6 +268,7 @@ upload_p2_hud:
 hdma_return:
 	rtl
 
+; Does nothing before stage_state 2.
 setup_stage_hdma:
 	stz	zp_00
 	sep	#$20
@@ -317,6 +338,7 @@ setup_stage_hdma:
 split_hdma_return:
 	rtl
 
+; Called by nmi_frame_side_view; does nothing while scroll_split_pattern = 0.
 build_scroll_split_hdma:
 	lda	a:scroll_split_pattern
 	beq	split_hdma_return
@@ -492,14 +514,14 @@ unused_debug_scroll_split:
 	lda	#$0007
 	sta	hdma_preset
 	lda	joy1_held
-	bit	#$0800
-	beq	@no_left
+	bit	#JOY_UP
+	beq	@no_up
 	dec	a:scroll_split_y
-@no_left:
-	bit	#$0400
-	beq	@clamp
+@no_up:
+	bit	#JOY_DOWN
+	beq	@wrap
 	inc	a:scroll_split_y
-@clamp:
+@wrap:
 	lda	a:scroll_split_y
 	and	#$01FF
 	sta	a:scroll_split_y
@@ -542,6 +564,9 @@ init_line_hdma_table:
 	.a16
 	rtl
 
+; A = divisor of the slope, Y = line offset of the centre. Fills
+; $7E:E800 (going up from the centre) with zp_00 + n * slope and $7E:E900
+; (going down) with zp_00 - n * slope.
 fill_line_hdma_table:
 	pha
 	tya

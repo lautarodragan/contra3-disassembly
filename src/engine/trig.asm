@@ -1,10 +1,20 @@
 ; engine/trig.asm -- Angle and trigonometry helpers
 ; Bank $1D, $1D:ABA0-$1D:AF26. Included by main.asm in segment BANK1D.
 ;
-; calc_angle: angle (0-255) of a vector; polar_to_xy, set_velocity_from_angle...: multiply
-; by sine/cosine (tables data_05F794/data_05F814) with the hardware
-; multiplier.
+; Angles are bytes: 0 up, $40 right, $80 down, $C0 left (clockwise). The
+; sine tables are a quarter wave of 64 entries, value x 256 (quarter_sine,
+; quarter_cosine = sin/cos x 256, with quarter_sine_lo / quarter_cosine_lo
+; the next 8 fraction bits); atan_table gives the angle of a ratio.
+;
+; calc_angle: zp_08 = dx, zp_0A = dy (magnitudes below 256, sign in the high
+; byte) -> A = angle. polar_to_xy: A = angle, Y = radius -> zp_08 = x,
+; zp_0A = y. set_velocity_from_angle: X = object, A = speed (1/16 pixel per
+; frame), angle in the object's byte +$04 -> OBJ_X_VEL / OBJ_Y_VEL (and
+; their fractions). calc_distance: sqrt(dx^2 + dy^2) of zp_08/zp_0A ($FF if
+; too far); half_distance_squared: (dx^2 + dy^2) / 2 ($FFFE if too far).
 
+; zp_08 = dx, zp_0A = dy (16-bit; only magnitudes below 256 are handled).
+; Returns the angle in A (16-bit, 0-255); keeps X and Y.
 calc_angle:
 	.a16
 	.i16
@@ -166,6 +176,7 @@ calc_angle_8:
 	lda	zp_08
 	bra	@divide_add
 
+; A = angle, Y = radius (8-bit): zp_08 = radius * sin, zp_0A = -radius * cos.
 polar_to_xy:
 	.a16
 	.i16
@@ -302,6 +313,10 @@ set_velocity_from_angle_y:
 	plx
 	rtl
 
+; X = object, A = speed; angle in byte +$04 of the object (also used as
+; OBJ_FACING by other objects). Velocity = speed * sin / 16 (x) and
+; -speed * cos / 16 (y), in 12.4 fixed point split into the OBJ velocity
+; words.
 set_velocity_from_angle:
 	sep	#$20
 	.a8
@@ -326,13 +341,13 @@ set_velocity_from_angle:
 	lsr	a
 	lsr	a
 	and	#$000F
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	a:RDMPYL
 	asl	a
 	asl	a
 	asl	a
 	asl	a
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	sep	#$20
 	.a8
 	lda	a:quarter_cosine,y
@@ -347,17 +362,17 @@ set_velocity_from_angle:
 	lsr	a
 	and	#$000F
 	eor	#$FFFF
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	a:RDMPYL
 	asl	a
 	asl	a
 	asl	a
 	asl	a
 	eor	#$FFFF
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	bne	@done
 	; (not executed in the CDL traces)
-	inc	$1E,x
+	inc	OBJ_Y_VEL,x
 @done:
 	rtl
 @quadrant1:
@@ -375,13 +390,13 @@ set_velocity_from_angle:
 	lsr	a
 	lsr	a
 	and	#$000F
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	a:RDMPYL
 	asl	a
 	asl	a
 	asl	a
 	asl	a
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	sep	#$20
 	.a8
 	lda	a:quarter_sine,y
@@ -395,13 +410,13 @@ set_velocity_from_angle:
 	lsr	a
 	lsr	a
 	and	#$000F
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	a:RDMPYL
 	asl	a
 	asl	a
 	asl	a
 	asl	a
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	rtl
 @quadrant23:
 	.a8
@@ -421,17 +436,17 @@ set_velocity_from_angle:
 	lsr	a
 	and	#$000F
 	eor	#$FFFF
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	a:RDMPYL
 	asl	a
 	asl	a
 	asl	a
 	asl	a
 	eor	#$FFFF
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	bne	@q2_y
 	; (not executed in the CDL traces)
-	inc	$1A,x
+	inc	OBJ_X_VEL,x
 @q2_y:
 	sep	#$20
 	.a8
@@ -446,13 +461,13 @@ set_velocity_from_angle:
 	lsr	a
 	lsr	a
 	and	#$000F
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	a:RDMPYL
 	asl	a
 	asl	a
 	asl	a
 	asl	a
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	rtl
 @quadrant3:
 	.a8
@@ -470,17 +485,17 @@ set_velocity_from_angle:
 	lsr	a
 	and	#$000F
 	eor	#$FFFF
-	sta	$1A,x
+	sta	OBJ_X_VEL,x
 	lda	a:RDMPYL
 	asl	a
 	asl	a
 	asl	a
 	asl	a
 	eor	#$FFFF
-	sta	$18,x
+	sta	OBJ_X_VEL_SUB,x
 	bne	@q3_y
 	; (not executed in the CDL traces)
-	inc	$1A,x
+	inc	OBJ_X_VEL,x
 @q3_y:
 	sep	#$20
 	.a8
@@ -496,20 +511,21 @@ set_velocity_from_angle:
 	lsr	a
 	and	#$000F
 	eor	#$FFFF
-	sta	$1E,x
+	sta	OBJ_Y_VEL,x
 	lda	a:RDMPYL
 	asl	a
 	asl	a
 	asl	a
 	asl	a
 	eor	#$FFFF
-	sta	$1C,x
+	sta	OBJ_Y_VEL_SUB,x
 	bne	@q3_done
 	; (not executed in the CDL traces)
-	inc	$1E,x
+	inc	OBJ_Y_VEL,x
 @q3_done:
 	rtl
 
+; zp_08 = dx, zp_0A = dy: A = integer square root of dx^2 + dy^2.
 calc_distance:
 	phy
 	lda	zp_08

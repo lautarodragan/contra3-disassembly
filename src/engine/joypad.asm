@@ -35,10 +35,10 @@ read_joypads:
 	and	a:data_058228,x
 	beq	@next_pad
 	lda	$28,x
-	cmp	#$2000
+	cmp	#JOY_SELECT
 	bne	@next_pad
 	lda	$20,x
-	cmp	#$3030
+	cmp	#JOY_SELECT|JOY_START|JOY_L|JOY_R
 	bne	@next_pad
 	; (not executed in the CDL traces)
 	lda	force_blank_frames
@@ -59,14 +59,14 @@ sub_008B64:
 	lda	force_blank_frames
 	bne	loc_008B90
 	lda	joy1_pressed
-	and	#$3000
+	and	#JOY_SELECT|JOY_START
 	beq	loc_008B90
 	jsl	f:sub_008BA1
 	lda	game_mode
 	cmp	#$0002
 	bne	loc_008B91
 	lda	joy1_pressed
-	and	#$2000
+	and	#JOY_SELECT
 	bne	loc_008B90
 	lda	#$0006
 	jsl	f:set_game_mode
