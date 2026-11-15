@@ -14,7 +14,7 @@ LD65FLAGS := -C src/contra3.cfg
 # any file under src/ is a dependency.
 src_files := $(shell find src -name '*.asm' -o -name '*.inc' -o -name '*.bin')
 
-.PHONY: all compare clean disasm emu-test book book-check
+.PHONY: all compare clean disasm emu-test shift-build shift-test book book-check
 
 all: compare
 
@@ -37,6 +37,7 @@ compare: $(rom)
 
 clean:
 	rm -f build/main.o build/contra3.sfc build/contra3.map build/contra3.lbl
+	rm -rf build/shift build/dbg
 
 # Run the generator (tools/disasm.py, a reference/research tool since src/ is
 # the source of truth) into build/disasm/: src/ is never overwritten.  Compare
@@ -57,6 +58,24 @@ emu-test: $(rom)
 	@test -f "$(PRIVATE)/tests/test_screens.py" || \
 	  { echo "emu-test: no emulator test suite in PRIVATE=$(PRIVATE)"; exit 1; }
 	$(MAKE) -C "$(PRIVATE)" test ROM="$(abspath $(rom))"
+
+# Shift test (milestone 3): build a copy of src/ with filler bytes inserted at
+# the start of every bank (a different amount per bank) and, with
+# SHIFT_FLAGS="--labels 0.3 --seed N", before some data labels, then run the
+# emulator suite on it.  It passes only if every reference between code and
+# data is a label.  See tools/shift.py and the book's Shiftability page.
+#   make shift-test [SHIFT=default|alt|N|BB=N,...] [SHIFT_FLAGS=...] [PRIVATE=...]
+SHIFT       ?= default
+SHIFT_FLAGS ?=
+
+shift-build:
+	$(PYTHON) tools/shift.py build --amounts $(SHIFT) $(SHIFT_FLAGS)
+	$(PYTHON) tools/shift.py diff
+
+shift-test: shift-build
+	@test -f "$(PRIVATE)/tests/test_screens.py" || \
+	  { echo "shift-test: no emulator test suite in PRIVATE=$(PRIVATE)"; exit 1; }
+	$(MAKE) -C "$(PRIVATE)" test ROM="$(abspath build/shift/contra3.sfc)"
 
 # The book (book/, published to GitHub Pages by .github/workflows/book.yml).
 # book-check: every label, constant and path the book names must exist.
