@@ -58,10 +58,10 @@ sound_check_input:
 	bne	@start_pressed
 	bit	#JOY_B
 	bne	@b_pressed
-	ldx	#.loword(text_05F347)
+	ldx	#.loword(text_sound_check_mode)
 	lda	#$2400
 	jsl	f:draw_text_attr
-	ldx	#.loword(text_05F35A)
+	ldx	#.loword(text_sound_2)
 	jsl	f:draw_text
 	jsr	a:sound_check_change_id
 	jsr	a:sound_check_play

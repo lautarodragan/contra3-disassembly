@@ -37,7 +37,7 @@ init_hud:
 	mvn	#$00, #$00
 	plb
 	lda	#$2000
-	ldx	#.loword(text_05A105)
+	ldx	#.loword(text_1p)
 	jsl	f:draw_text_attr
 	ldx	#$0020
 @copy_p1_top:
@@ -56,7 +56,7 @@ init_hud:
 	lda	a:title_menu_cursor
 	beq	@done
 	lda	#$2400
-	ldx	#.loword(text_05A12B)
+	ldx	#.loword(text_2p)
 	jsl	f:draw_text_attr
 	ldx	#$0020
 @copy_p2_top:

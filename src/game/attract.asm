@@ -480,15 +480,15 @@ init_title_logo:
 	rts
 
 draw_title_texts:
-	ldx	#.loword(text_058561)
+	ldx	#.loword(text_tm_and_1992_konami_co_ltd)
 	jsl	f:draw_text
-	ldx	#.loword(text_058599)
+	ldx	#.loword(text_1_player)
 	jsl	f:draw_text
-	ldx	#.loword(text_0585A6)
+	ldx	#.loword(text_2_players_a)
 	jsl	f:draw_text
-	ldx	#.loword(text_0585B4)
+	ldx	#.loword(text_2_players_b)
 	jsl	f:draw_text
-	ldx	#.loword(text_0585C2)
+	ldx	#.loword(text_option)
 	jsl	f:draw_text
 	jsl	f:draw_title_menu_cursor
 	rts
@@ -652,25 +652,25 @@ draw_title_menu_cursor:
 	asl	a
 	tay
 	lda	a:data_05851F,y
-	ldx	#.loword(text_058599)
+	ldx	#.loword(text_1_player)
 	jsl	f:draw_text_attr
 	lda	a:title_menu_cursor
 	asl	a
 	tay
 	lda	a:data_05851D,y
-	ldx	#.loword(text_0585A6)
+	ldx	#.loword(text_2_players_a)
 	jsl	f:draw_text_attr
 	lda	a:title_menu_cursor
 	asl	a
 	tay
 	lda	a:data_05851B,y
-	ldx	#.loword(text_0585B4)
+	ldx	#.loword(text_2_players_b)
 	jsl	f:draw_text_attr
 	lda	a:title_menu_cursor
 	asl	a
 	tay
 	lda	a:data_058519,y
-	ldx	#.loword(text_0585C2)
+	ldx	#.loword(text_option)
 	jsl	f:draw_text_attr
 	clc
 	rtl

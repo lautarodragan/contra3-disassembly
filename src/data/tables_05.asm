@@ -104,25 +104,39 @@ data_058404:
 	.byte	$00, $24, $00, $20, $00, $20
 data_05840A:
 	; CDL: read by start_palette_task_at, palette_task_animate, game_mode_game_start; partly not accessed
-	.byte	$99, $85, $A6, $85, $B4, $85, $C2, $85
+	.addr	text_1_player, text_2_players_a, text_2_players_b, text_option
 palette_task_058412:
 	palette_animate	$00, $00
 	palette_copy	palette_088F92, $2200
 	palette_copy_end
-text_05841B:
+text_stage_select:
 	.byte	$2B, $5A, $4D, $4E, $3C, $42, $40, $00, $4D, $40, $47, $40, $3E
+; Stage card text by stage (game_mode_stage_card: index = stage * 2, so
+; entry 0 is the end of the string above).
 data_058428:
 	; CDL: read by draw_text, game_mode_stage_card; partly not accessed
-	.byte	$4E, $FF, $36, $84, $40, $84, $4A, $84, $54, $84, $5E, $84, $68, $84, $6D, $5A
-	.byte	$4D, $4E, $3C, $42, $40, $00, $02, $FF, $6D, $5A, $4D, $4E, $3C, $42, $40, $00
-	.byte	$03, $FF, $6D, $5A, $4D, $4E, $3C, $42, $40, $00, $04, $FF, $6D, $5A, $4D, $4E
-	.byte	$3C, $42, $40, $00, $05, $FF, $6D, $5A, $4D, $4E, $3C, $42, $40, $00, $06, $FF
+	.byte	$4E, $FF
+	.addr	text_stage_1, text_stage_2, text_stage_3, text_stage_4, text_stage_5, text_stage_6
+text_stage_1:
+	.byte	$6D, $5A
+	.byte	$4D, $4E, $3C, $42, $40, $00, $02, $FF
+text_stage_2:
+	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00
+	.byte	$03, $FF
+text_stage_3:
+	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00, $04, $FF
+text_stage_4:
+	.byte	$6D, $5A, $4D, $4E
+	.byte	$3C, $42, $40, $00, $05, $FF
+text_stage_5:
+	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00, $06, $FF
+text_stage_6:
 	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00, $07, $FF
-text_058472:
+text_game_over:
 	.byte	$2C, $5A, $42, $3C, $48, $40
 	.byte	$00, $4A, $50, $40, $4C, $FF, $2C, $5A, $3E, $4A, $49, $4E, $44, $49, $4F, $40
 	.byte	$00, $FF
-text_05848A:
+text_end:
 	.byte	$8C, $5A, $40, $49, $3F, $FF
 text_058490:
 	.byte	$8C, $5A, $00, $00, $00, $FF, $2A
@@ -195,21 +209,21 @@ palette_task_058558:
 	palette_animate	$00, $00
 	palette_copy	palette_088C1C, $2380
 	palette_copy_end
-text_058561:
+text_tm_and_1992_konami_co_ltd:
 	.byte	$21
 	.byte	$5B, $4E, $48, $00, $3C, $49, $3F, $00, $2C, $00, $02, $0A, $0A, $03, $00, $46
 	.byte	$4A, $49, $3C, $48, $44, $00, $3E, $4A, $2E, $2F, $00, $47, $4E, $3F, $2E, $FE
 	.byte	$45, $5B, $47, $44, $3E, $40, $49, $4D, $40, $3F, $00, $3D, $53, $00, $49, $44
 	.byte	$49, $4E, $40, $49, $3F, $4A, $FF
-text_058599:
+text_1_player:
 	.byte	$2C, $5A, $02, $00, $0B, $47, $3C, $53, $40
 	.byte	$4C, $00, $00, $FF
-text_0585A6:
+text_2_players_a:
 	.byte	$6C, $5A, $03, $00, $0B, $47, $3C, $53, $40, $4C, $4D, $00
 	.byte	$3C, $FF
-text_0585B4:
+text_2_players_b:
 	.byte	$AC, $5A, $03, $00, $0B, $47, $3C, $53, $40, $4C, $4D, $00, $3D, $FF
-text_0585C2:
+text_option:
 	.byte	$EC, $5A, $4A, $0B, $4E, $44, $4A, $49, $FF
 ptrs_0585CB:
 	.addr	load_list_0585D1
@@ -290,8 +304,15 @@ data_0586DF:
 	.byte	$00, $00, $68, $38
 data_058793:
 	; CDL: read by draw_text, konami_logo_sweep
-	.byte	$9B, $87, $9F, $87, $A3, $87, $A7, $87, $30, $00, $88, $FF, $30, $00, $8A, $FF
-	.byte	$30, $00, $8C, $FF, $30, $00, $8E, $FF
+	.addr	text_05879B, text_05879F, text_0587A3, text_0587A7
+text_05879B:
+	.byte	$30, $00, $88, $FF
+text_05879F:
+	.byte	$30, $00, $8A, $FF
+text_0587A3:
+	.byte	$30, $00, $8C, $FF
+text_0587A7:
+	.byte	$30, $00, $8E, $FF
 load_list_0587AB:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk (+2 more)
 	load_list	$00, $00
@@ -367,19 +388,19 @@ palette_task_058889:
 	palette_copy	palette_08892E, $2240
 	palette_copy_end
 	; CDL: read by draw_text
-text_058892:
+text_hi_score:
 	.byte	$6C, $58, $43, $44, $00, $4D, $3E, $4A, $4C, $40, $FF
-text_05889D:
+text_1p_score:
 	.byte	$E3, $58, $02, $0B, $00
 	.byte	$4D, $3E, $4A, $4C, $40, $FF
-text_0588A8:
+text_rest_03:
 	.byte	$64, $59, $4C, $40, $4D, $4E, $00, $01, $04, $FF
-text_0588B2:
+text_2p_score:
 	.byte	$F5, $58, $03, $0B, $00, $4D, $3E, $4A, $4C, $40, $FF
-text_0588BD:
+text_rest_03_2:
 	.byte	$76, $59, $4C, $40, $4D
 	.byte	$4E, $00, $01, $04, $FF
-text_0588C7:
+text_stage_clear_bonus:
 	.byte	$0B, $5A, $4D, $4E, $3C, $42, $40, $00, $3E, $47, $40
 	.byte	$3C, $4C, $FE, $6B, $5A, $3E, $47, $40, $3C, $4C, $00, $3D, $4A, $49, $4F
 ptrs_0588E1:
@@ -402,28 +423,38 @@ lives_options:
 	.byte	$03, $00, $05, $00, $07, $00, $1E, $00
 data_058903:
 	; CDL: read by draw_text, options_change_level
-	.byte	$09, $89, $14, $89, $1F, $89, $D2, $59, $40, $3C, $4D, $53, $00, $00, $00, $00
-	.byte	$FF, $D2, $59, $49, $4A, $4C, $48, $3C, $47, $00, $00, $FF, $D2, $59, $43, $3C
+	.addr	text_easy, text_normal, text_hard
+text_easy:
+	.byte	$D2, $59, $40, $3C, $4D, $53, $00, $00, $00, $00
+	.byte	$FF
+text_normal:
+	.byte	$D2, $59, $49, $4A, $4C, $48, $3C, $47, $00, $00, $FF
+text_hard:
+	.byte	$D2, $59, $43, $3C
 	.byte	$4C, $3F, $00, $00, $00, $00, $FF
 sound_mode_commands:
 	; CDL: read by draw_text; partly not accessed
 	.byte	$7F, $00, $7E, $00
 data_05892E:
 	; CDL: read by draw_text, options_apply_sound_mode; partly not accessed
-	.byte	$32, $89, $3D, $89, $12, $5A, $4D, $4E, $40, $4C, $40, $4A, $00, $00, $FF, $12
+	.addr	text_stereo, text_monaural
+text_stereo:
+	.byte	$12, $5A, $4D, $4E, $40, $4C, $40, $4A, $00, $00, $FF
+text_monaural:
+	.byte	$12
 	.byte	$5A, $48, $4A, $49, $3C, $4F, $4C, $3C, $47, $FF
-text_058948:
+text_option_mode:
 	.byte	$0A, $59, $4A, $0B, $4E, $44
 	.byte	$4A, $49, $00, $48, $4A, $3F, $40, $FF
-text_058956:
+text_player:
 	.byte	$8A, $59, $0B, $47, $3C, $53, $40, $4C
 	.byte	$FF
-text_05895F:
+text_level:
 	.byte	$CA, $59, $47, $40, $50, $40, $47, $FF
-text_058967:
+text_sound:
 	.byte	$0A, $5A, $4D, $4A, $4F, $49, $3F
 	.byte	$FF
-text_05896F:
+text_exit:
 	.byte	$4A, $5A, $40, $52, $44, $4E, $FF
 load_list_058976:
 	; CDL: read by draw_text, load_data_list, run_pending_loads (+3 more)
@@ -438,16 +469,16 @@ palette_task_05898E:
 	palette_copy	palette_088B7A, $2200
 	palette_copy_end
 	; CDL: read by draw_text
-text_058997:
+text_hi_score_2:
 	.byte	$AC, $58, $43, $44, $00, $4D, $3E, $4A, $4C, $40, $FF
-text_0589A2:
+text_1p_score_2:
 	.byte	$A3, $58, $02, $0B, $00
 	.byte	$4D, $3E, $4A, $4C, $40, $FF
-text_0589AD:
+text_rest_03_3:
 	.byte	$24, $59, $4C, $40, $4D, $4E, $00, $01, $04, $FF
-text_0589B7:
+text_2p_score_2:
 	.byte	$B5, $58, $03, $0B, $00, $4D, $3E, $4A, $4C, $40, $FF
-text_0589C2:
+text_rest_03_4:
 	.byte	$36, $59, $4C, $40, $4D
 	.byte	$4E, $00, $01, $04, $FF
 stage_layouts:
@@ -1165,11 +1196,11 @@ tbl_shot_types:
 	.faraddr	update_spark_radial_fast
 	.faraddr	update_spark_random
 	; CDL: read by draw_text
-text_05A105:
+text_1p:
 	.byte	$20, $5C, $00, $02, $0B, $00, $0D, $00, $00, $0E, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $FE, $40, $5C, $00, $0C, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $0C, $00, $FF
-text_05A12B:
+text_2p:
 	.byte	$30, $5C, $00, $03, $0B, $00, $0D, $00, $00, $0E
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $FE, $50, $5C, $00, $0C, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $0C
@@ -4696,10 +4727,10 @@ data_05F33F:
 data_05F343:
 	; CDL: read by update_enemy_type_85; partly not accessed
 	.byte	$FF, $FF, $00, $00
-text_05F347:
+text_sound_check_mode:
 	.byte	$08, $59, $4D, $4A, $4F, $49, $3F, $00, $3E, $43, $40, $3E
 	.byte	$46, $00, $48, $4A, $3F, $40, $FF
-text_05F35A:
+text_sound_2:
 	.byte	$4C, $5A, $4D, $4A, $4F, $49, $3F, $FF
 song_lists:
 	; CDL: not accessed

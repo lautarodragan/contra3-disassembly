@@ -459,6 +459,8 @@ unused_draw_text_continue:
 ; attribute high byte becomes n; $FE: a new VRAM address word follows (next
 ; line); $FF: end. With text_erase set, every tile is written as 0 (the
 ; string is erased) and text_erase is cleared.
+; In the font, tile $00 is a space, $01-$0A the digits 0-9, $0B P, $3C-$4A
+; A-O and $4C-$54 R-Z; the strings' labels (text_stage_1 ...) spell them.
 draw_text:
 	lda	#$0001
 	sta	zp_02

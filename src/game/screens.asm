@@ -179,19 +179,19 @@ stage_clear_fade_out:
 ; Draws HI SCORE, 1P/2P SCORE and REST (update_high_score first).
 draw_score_board:
 	jsr	a:update_high_score
-	ldx	#.loword(text_058892)
+	ldx	#.loword(text_hi_score)
 	lda	#$2400
 	jsl	f:draw_text_attr
-	ldx	#.loword(text_05889D)
+	ldx	#.loword(text_1p_score)
 	lda	#$2400
 	jsl	f:draw_text_attr
-	ldx	#.loword(text_0588A8)
+	ldx	#.loword(text_rest_03)
 	lda	#$2400
 	jsl	f:draw_text_attr
-	ldx	#.loword(text_0588B2)
+	ldx	#.loword(text_2p_score)
 	lda	#$2400
 	jsl	f:draw_text_attr
-	ldx	#.loword(text_0588BD)
+	ldx	#.loword(text_rest_03_2)
 	lda	#$2400
 	jsl	f:draw_text_attr
 	ldx	#$1E44
@@ -319,7 +319,7 @@ draw_bcd_number:
 	rtl
 
 draw_stage_bonus:
-	ldx	#.loword(text_0588C7)
+	ldx	#.loword(text_stage_clear_bonus)
 	lda	#$2400
 	jsl	f:draw_text_attr
 	ldx	#$1C02
@@ -468,7 +468,7 @@ options_init:
 	ldy	#.loword(palette_task_058412)
 	jsl	f:start_palette_task
 	jsr	a:options_get_lives_index
-	ldx	#.loword(text_058948)
+	ldx	#.loword(text_option_mode)
 	lda	#$2400
 	jsl	f:draw_text_attr
 	inc	a:mode_step
@@ -560,11 +560,11 @@ options_update_player_item:
 	lda	a:options_cursor
 	cmp	#$0000
 	beq	@selected
-	ldx	#.loword(text_058956)
+	ldx	#.loword(text_player)
 	jsl	f:draw_text
 	jmp	a:options_draw_lives
 @selected:
-	ldx	#.loword(text_058956)
+	ldx	#.loword(text_player)
 	lda	#$2400
 	jsl	f:draw_text_attr
 	jsr	a:options_change_lives
@@ -575,11 +575,11 @@ options_update_level_item:
 	lda	a:options_cursor
 	cmp	#$0001
 	beq	@selected
-	ldx	#.loword(text_05895F)
+	ldx	#.loword(text_level)
 	jsl	f:draw_text
 	jmp	a:options_draw_level
 @selected:
-	ldx	#.loword(text_05895F)
+	ldx	#.loword(text_level)
 	lda	#$2400
 	jsl	f:draw_text_attr
 	jsr	a:options_change_level
@@ -589,11 +589,11 @@ options_update_sound_item:
 	lda	a:options_cursor
 	cmp	#$0002
 	beq	@selected
-	ldx	#.loword(text_058967)
+	ldx	#.loword(text_sound)
 	jsl	f:draw_text
 	jmp	a:options_draw_sound
 @selected:
-	ldx	#.loword(text_058967)
+	ldx	#.loword(text_sound)
 	lda	#$2400
 	jsl	f:draw_text_attr
 	jsr	a:options_change_sound
@@ -603,13 +603,13 @@ options_update_exit_item:
 	lda	a:options_cursor
 	cmp	#$0003
 	beq	@selected
-	ldx	#.loword(text_05896F)
+	ldx	#.loword(text_exit)
 	jsl	f:draw_text
 @loop:
 	clc
 	rts
 @selected:
-	ldx	#.loword(text_05896F)
+	ldx	#.loword(text_exit)
 	lda	#$2400
 	jsl	f:draw_text_attr
 	lda	joy1_pressed
@@ -869,19 +869,19 @@ final_score_fade_out:
 
 draw_final_scores:
 	jsr	a:update_high_score
-	ldx	#.loword(text_058997)
+	ldx	#.loword(text_hi_score_2)
 	lda	#$2400
 	jsl	f:draw_text_attr
-	ldx	#.loword(text_0589A2)
+	ldx	#.loword(text_1p_score_2)
 	lda	#$2400
 	jsl	f:draw_text_attr
-	ldx	#.loword(text_0589AD)
+	ldx	#.loword(text_rest_03_3)
 	lda	#$2400
 	jsl	f:draw_text_attr
-	ldx	#.loword(text_0589B7)
+	ldx	#.loword(text_2p_score_2)
 	lda	#$2400
 	jsl	f:draw_text_attr
-	ldx	#.loword(text_0589C2)
+	ldx	#.loword(text_rest_03_4)
 	lda	#$2400
 	jsl	f:draw_text_attr
 	ldx	#$1E44

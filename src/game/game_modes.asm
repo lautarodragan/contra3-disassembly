@@ -528,7 +528,7 @@ game_mode_stage_select:
 	jsl	f:load_data_list
 	ldy	#.loword(palette_task_058412)
 	jsl	f:start_palette_task
-	ldx	#.loword(text_05841B)
+	ldx	#.loword(text_stage_select)
 	lda	#$2400
 	jsl	f:draw_text_attr
 	lda	#$0100
@@ -800,7 +800,7 @@ game_over_init:
 	ldy	#.loword(palette_task_058412)
 	jsl	f:start_palette_task
 	jsl	f:draw_score_board
-	ldx	#.loword(text_058472)
+	ldx	#.loword(text_game_over)
 	lda	#$2400
 	jsl	f:draw_text_attr
 	ldx	#.loword(song_set_05F513)
@@ -1004,7 +1004,7 @@ continue_draw_menu:
 	asl	a
 	tay
 	lda	a:data_0583FC,y
-	ldx	#.loword(text_05848A)
+	ldx	#.loword(text_end)
 	jsl	f:draw_text_attr
 	rts
 
@@ -1026,19 +1026,19 @@ continue_draw_player_menu:
 	asl	a
 	tay
 	lda	a:data_058404,y
-	ldx	#.loword(text_058599)
+	ldx	#.loword(text_1_player)
 	jsl	f:draw_text_attr
 	lda	a:continue_cursor
 	asl	a
 	tay
 	lda	a:data_058402,y
-	ldx	#.loword(text_0585A6)
+	ldx	#.loword(text_2_players_a)
 	jsl	f:draw_text_attr
 	lda	a:continue_cursor
 	asl	a
 	tay
 	lda	a:data_058400,y
-	ldx	#.loword(text_0585B4)
+	ldx	#.loword(text_2_players_b)
 	jsl	f:draw_text_attr
 	rts
 
