@@ -9,6 +9,7 @@
 - [The disassembler](disassembler.md)
 - [Progress](progress.md)
 - [Shiftability](shiftability.md)
+- [Cheats](cheats.md)
 - [Contributing: naming](contributing.md)
 
 # The game

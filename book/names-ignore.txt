@@ -42,3 +42,14 @@ update_players_next
 ASSET
 # a test of the private repository (shiftability.md)
 tests/test_cdl.py
+
+# cheats.md: build outputs of `make cheats` / `make ips`, an option word,
+# a placeholder, the private repository's test file and screenshot names
+build/contra3-
+build/contra3-infinite_lives-invincible-damage_mult2.sfc
+build/patches/contra3-
+start_stage
+CHEAT_X
+tests/test_cheats.py
+demo_stage2
+demo_stage4

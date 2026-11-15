@@ -17,7 +17,7 @@ src_files := $(shell find src -name '*.asm' -o -name '*.inc' -o -name '*.bin')
 # A failed link must not leave a partial ROM behind that looks up to date.
 .DELETE_ON_ERROR:
 
-.PHONY: all compare clean disasm emu-test shift-build shift-test book book-check cheats ips
+.PHONY: all compare clean disasm emu-test shift-build shift-test book book-check cheats ips cheat-test
 
 all: compare
 
@@ -110,3 +110,13 @@ cheats:
 
 ips: compare
 	$(PYTHON) tools/cheats.py ips
+
+# Emulator tests of the cheats (tests/test_cheats.py of the private
+# repository): it builds cheat ROMs from this checkout with tools/cheats.py
+# and checks them through RAM reads.
+#   make cheat-test [PRIVATE=../contra3-disassembly-private]
+cheat-test:
+	@test -f "$(PRIVATE)/tests/test_cheats.py" || \
+	  { echo "cheat-test: no tests/test_cheats.py in PRIVATE=$(PRIVATE)"; exit 1; }
+	$(MAKE) -C "$(PRIVATE)" cores
+	cd "$(PRIVATE)" && C3_DISASM="$(CURDIR)" $(PYTHON) -m pytest tests/test_cheats.py

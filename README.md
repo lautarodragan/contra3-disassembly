@@ -58,6 +58,72 @@ have been moved (filler bytes at the start of every bank): it passes only
 where every reference between code and data is a label. See the book's
 Shiftability page.
 
+## Cheats (milestone 4)
+
+Optional changes to the game, chosen at build time; the default build never
+has any. Options are defined and documented in `src/cheats.inc`
+(`python3 tools/cheats.py list`); a bare word sets one to 1, `word=n` to n:
+
+```
+make cheats CHEATS="infinite_lives invincible damage_mult=2"   # -> build/contra3-infinite_lives-invincible-damage_mult2.sfc
+make cheats PRESET=god-mode                                    # -> build/contra3-god-mode.sfc
+make ips                                                       # IPS patches of every preset -> build/patches/
+make cheat-test [PRIVATE=../contra3-disassembly-private]       # emulator tests of the cheats
+```
+
+| option | effect |
+|---|---|
+| `infinite_lives` | losing a life does not take one (side view and top-down) |
+| `invincible` | enemies, bullets and crushing do not kill; falling off the screen / into a hole still does |
+| `no_pit_death` | side view: falling off the screen respawns the player without losing a life |
+| `keep_weapons` | dying does not take the weapons away |
+| `infinite_bombs` | smart bombs are not used up |
+| `start_weapon=n`, `start_weapon2=n` | weapons in slots I (active) and II at the start (0 default, 1 S, 2 C, 3 H, 4 F, 5 L) |
+| `start_lives=n` | lives at the start of a game (1-99) |
+| `fire_delay=n` | frames between shots, all weapons (1-8; side view) |
+| `damage_mult=n` | the players' shots do n times their damage |
+| `enemy_hp=p` | enemies and bosses start with p% of their HP (0: one hit kills) |
+| `start_stage=n` | a new game starts at stage n |
+| `stage_select` | the unused stage select screen after the title |
+| `continues=n`, `infinite_continues` | continues per game / none spent |
+| `debug_keys` | the developers' unused debug keys (Select + Up/A/B/X; top-down X + L/R/A/Y/B) |
+| `button_codes` | the unused title codes: Down, Down+Right, Right, Start = 30 lives; Down, Down+Left, Left, Start = stage select |
+
+The book's [Cheats](https://lautarodragan.github.io/contra3-disassembly/cheats.html)
+page explains where each one hooks into the code.
+
+### Patches
+
+`make ips` builds every preset and writes `build/patches/contra3-<preset>.ips`
+(with `tools/make_ips.py`) against `build/contra3.sfc`: the default build
+*is* the original ROM, so no copy of the game is needed. Apply one patch
+(they don't stack; use `make cheats` for combinations) to the original
+**Contra III: The Alien Wars (USA)** ROM, 1 MiB without a copier header,
+SHA-1 `265886e3f665adf2507e7b2f08b6b2ed9d0018b2`, with any IPS patcher
+([Floating IPS / flips](https://github.com/Alcaro/Flips),
+[RomPatcher.js](https://www.marcrobledo.com/RomPatcher.js/)).
+
+| patch | options |
+|---|---|
+| `contra3-infinite-lives.ips` | `infinite_lives` |
+| `contra3-invincible.ips` | `invincible` |
+| `contra3-god-mode.ips` | `invincible no_pit_death infinite_lives infinite_bombs keep_weapons` |
+| `contra3-infinite-bombs.ips` | `infinite_bombs` |
+| `contra3-keep-weapons.ips` | `keep_weapons` |
+| `contra3-full-arsenal.ips` | `start_weapon=5 start_weapon2=1 keep_weapons` (laser and spread, kept) |
+| `contra3-rapid-fire.ips` | `fire_delay=1` |
+| `contra3-double-damage.ips` | `damage_mult=2` |
+| `contra3-half-enemy-hp.ips` | `enemy_hp=50` |
+| `contra3-one-hit-kills.ips` | `enemy_hp=0` |
+| `contra3-stage-select.ips` | `stage_select` |
+| `contra3-30-lives.ips` | `start_lives=30 infinite_continues` |
+| `contra3-debug-keys.ips` | `debug_keys button_codes` |
+
+Pre-built patches are published on the [Releases](../../releases) page:
+pushing a `v*` tag runs `.github/workflows/release.yml`, which builds the
+default ROM (checking its SHA-1), runs `make ips` and attaches the patches
+to a new release. Only patches are uploaded, never a ROM.
+
 ## Layout
 
 | path | contents |
@@ -78,6 +144,7 @@ Shiftability page.
 | `src/ram.inc` | RAM symbols (placeholders `zp_XX` / `wram_XXXX` until named) and structure offsets |
 | `src/snes_registers.inc` | SNES hardware register names (`INIDISP`, `NMITIMEN`, `DMAP0`, ...) |
 | `src/game/game.inc` | game flow constants: game modes (`GAME_MODE_*`), stage states, title menu entries, difficulty, joypad bits (`JOY_*`) |
+| `src/cheats.inc`, `src/objects/cheat_code.asm` | build-time cheat options and their routines (see "Cheats") |
 | `contra3.sha1` | SHA-1 of the original ROM |
 | `tools/disasm.py` | the disassembler that generated `src/` (reference only now) |
 | `tools/disasm_hints.json` | hand-written hints for the disassembler |
@@ -88,6 +155,7 @@ Shiftability page.
 | `tools/srcmap.py`, `tools/datafmt.py` | map ROM addresses to source lines; add labels and pointers to data by address |
 | `tools/rename.py` | renames symbols across `src/` and the book, refusing collisions (see below) |
 | `tools/check_book_names.py` | checks that every label, constant and path the book names exists |
+| `tools/cheats.py`, `tools/make_ips.py` | cheat builds (`make cheats`) and IPS patches (`make ips`) |
 
 Every file starts with its title, address range and what is known about
 it; the full list is in the book's "Source layout" page. A bank's files must
@@ -238,4 +306,4 @@ the same commit, or the check fails.
 1. Matching disassembly (this).
 2. Semantic names for all routines/variables, split into many files.
 3. Shiftable: no hardcoded ROM addresses anywhere (code and data tables).
-4. Optional cheats as build flags.
+4. Optional cheats as build flags (started: see "Cheats").

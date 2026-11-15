@@ -1,0 +1,65 @@
+name: release
+
+# Push a tag like `v1.0` (or run this manually) to build the cheat presets'
+# IPS patches (make ips) and publish a GitHub Release with them attached.
+#
+# The original ROM is never needed: the default build is byte-identical to it
+# (make compare checks the SHA-1 in contra3.sha1), so the patches are diffs
+# between two builds. Only the .ips patches are uploaded -- never a ROM -- so
+# no copyrighted game data is distributed.
+on:
+  push:
+    tags: [ 'v*' ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to create (e.g. v1.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install cc65
+        run: |
+          sudo apt-get update
+          sudo apt-get install -yq cc65
+
+      - name: Build patches
+        # make ips depends on make compare: the base ROM must be the original.
+        run: make ips
+
+      - name: Resolve release tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "name=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create release and upload patches
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo 'IPS patches with build-time cheats for Contra III: The Alien Wars (USA).'
+            echo
+            echo 'Apply **one** patch to the original ROM (1 MiB, no copier header) whose SHA-1 is'
+            echo "\`$(cut -d' ' -f1 contra3.sha1)\`, with any IPS patcher (Floating IPS / flips, RomPatcher.js)."
+            echo 'For combinations of options build the ROM yourself: `make cheats CHEATS="..."` (see the README).'
+            echo
+            echo '```'
+            cat build/patches/README.txt
+            echo '```'
+          } > notes.md
+          gh release create "${{ steps.tag.outputs.name }}" \
+            build/patches/*.ips \
+            --title "${{ steps.tag.outputs.name }}" \
+            --notes-file notes.md

@@ -20,6 +20,7 @@ file give its title, its address range and what is known about its contents.
 | `src/gfx/` | data-only files of the graphics banks (`$08-$19`, `$1C`) |
 | `src/header.asm` | the internal header and the vectors (segment `HEADER`, at `$00:FFC0`) |
 | `src/data_macros.inc` | macros for the data formats with pointers (animation scripts, data lists, palette tasks, HDMA lists, player frames) |
+| `src/cheats.inc` | the build-time cheat options (`CHEAT_*`, all off by default) and their helpers; see [Cheats](cheats.md) |
 
 The names of the files are as specific as the code allowed so far: where it
 is only known that a range holds handlers of object types, the file is named
@@ -82,6 +83,7 @@ macros in `src/data_macros.inc`.
 | `src/objects/object_handlers_01a.asm` | `$01:B194-$01:CF8A` | Object handlers (bank $01, part 1) |
 | `src/objects/object_handlers_01b.asm` | `$01:CF8B-$01:F6A7` | Object handlers (bank $01, part 2) |
 | `src/game/stage_palette_anim.asm` | `$01:F6A8-$01:FFFF` | Stage palette animation |
+| `src/objects/cheat_code.asm` | (free space of bank `$01`) | Routines of the build-time cheats; empty in the default build ([Cheats](cheats.md)) |
 | `src/topdown/stage_states.asm` | `$02:8000-$02:8E32` | Top-down stages: state machine and setup |
 | `src/topdown/stage_play.asm` | `$02:8E33-$02:DDC5` | Top-down stages: gameplay (part 1) |
 | `src/effects/window_shapes.asm` | `$02:DDC6-$02:E65E` | Window shapes |

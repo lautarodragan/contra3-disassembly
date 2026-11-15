@@ -25,8 +25,11 @@ setups, animation scripts, data lists, palette scripts and many pointer
 tables are labels, and a shift test (filler inserted at the start of every
 bank and before data labels, then the emulator suite) checks it; see
 [Shiftability](shiftability.md) for the status and what is still fixed.
-Milestone 4 (cheats; see the [Introduction](introduction.md#goals)) has not
-started.
+**Milestone 4 (cheats)** has its first set: build-time options in
+`src/cheats.inc` (infinite lives, invincibility, damage and enemy HP,
+weapons, bombs, fire rate, stage select, continues, the developers' debug
+keys and button codes), `make cheats` and IPS patches of presets
+(`make ips`); see [Cheats](cheats.md).
 
 The rest of this page is `docs/disasm_report.md`, the report that
 `tools/disasm.py` wrote along with the source in the CDL pass, included here
