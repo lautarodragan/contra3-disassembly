@@ -8,6 +8,7 @@
 - [Source layout](layout.md)
 - [The disassembler](disassembler.md)
 - [Progress](progress.md)
+- [Shiftability](shiftability.md)
 - [Contributing: naming](contributing.md)
 
 # The game

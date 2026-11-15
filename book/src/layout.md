@@ -2,7 +2,7 @@
 
 `src/` is split into files by subsystem. `src/main.asm` is the only
 translation unit: it includes `src/common.inc` (CPU setup, register and RAM
-names), then for each bank opens the bank's segment (`BANK00` to `BANK1F`,
+names, data macros), then for each bank opens the bank's segment (`BANK00` to `BANK1F`,
 placed at `$XX:8000` by `src/contra3.cfg`) and includes that bank's files in
 address order. The files never switch segments themselves, so a bank's files
 must stay contiguous and in order in `src/main.asm`; the first lines of every
@@ -18,7 +18,8 @@ file give its title, its address range and what is known about its contents.
 | `src/effects/` | window/raster effect shapes |
 | `src/data/` | shared tables (bank `$05`), metasprite data (bank `$06`), bank `$1D` tail |
 | `src/gfx/` | data-only files of the graphics banks (`$08-$19`, `$1C`) |
-| `src/header.asm` | the internal header and the vectors |
+| `src/header.asm` | the internal header and the vectors (segment `HEADER`, at `$00:FFC0`) |
+| `src/data_macros.inc` | macros for the data formats with pointers (animation scripts, data lists, palette tasks, HDMA lists, player frames) |
 
 The names of the files are as specific as the code allowed so far: where it
 is only known that a range holds handlers of object types, the file is named
@@ -28,12 +29,16 @@ as their contents get understood; keep a bank's files in order.
 ## Data files
 
 The banks that only hold data (the files in `src/gfx/`, and `src/sound/sound_1A.asm` and its siblings) are
-data-only files of `.byte` lines: no labels and no code, one block per CDL
-comment. They are kept separate so that they can later be replaced by
-`.incbin` of files extracted from a user-supplied ROM (see the
+data-only files of `.byte` lines, without code. Their labels name the
+streams that the data lists in `src/data/tables_05.asm` point to; other
+blocks start at a CDL comment. A block whose bounds are exact and that
+holds no pointers is marked `; ASSET:` (see [Shiftability](shiftability.md)):
+those can later be replaced by `.incbin` of files extracted from a
+user-supplied ROM (see the
 [Introduction](introduction.md#the-rom-and-the-assets)); no binary game data
 is committed. Banks `$05`, `$06` and `$07`, and the data blocks inside code
-banks, stay as source because they contain pointers that will become labels.
+banks, stay as source because they contain pointers; their formats are
+macros in `src/data_macros.inc`.
 
 ## Files by address
 

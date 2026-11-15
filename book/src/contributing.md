@@ -57,7 +57,15 @@ More rules:
 - **Placeholders.** `sub_`, `loc_`, `tbl_`, `ptrs_`, `data_` + six hex digits
   (ROM) and `zp_XX` / `wram_XXXX` / `wram_7EXXXX` (RAM, see
   [RAM map](ram-map.md)) mean "not named yet". Don't create new names in
-  those forms.
+  those forms. Data whose kind is known but not its meaning is named
+  after its kind and address instead (`anim_05C4CE`, `metasprite_06AEA0`,
+  `gfx_0A8000`; list in [Shiftability](shiftability.md)): these are
+  placeholders too, rename them freely.
+- **References are labels** (milestone 3): never write a ROM address as a
+  number. Pointers in code are `#.loword(label)`, banks `#^label`, pointers
+  in data `.addr` / `.faraddr` or the macros of `src/data_macros.inc`;
+  `tools/datafmt.py label 05:C59A name` adds a label at an address.
+  `python3 tools/shift.py scan` must stay at 0.
 - **Cheap locals.** In ca65 an `@name` label is only visible between two
   normal labels, and every `loc_XXXXXX` is a normal label, so a cheap local
   can only replace a `loc_` label when nothing outside that span refers to
@@ -93,6 +101,8 @@ order) and the table in [Source layout](layout.md).
 make                  # the ROM must still match contra3.sha1
 make book-check       # every name the book mentions must exist
 make emu-test PRIVATE=../contra3-disassembly-private   # when code or data moves
+python3 tools/shift.py scan                            # no hardcoded ROM reference of known forms
+make shift-test PRIVATE=../contra3-disassembly-private # when converting references
 ```
 
 A rename that keeps `make` matching changes nothing in the ROM, so

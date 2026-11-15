@@ -53,6 +53,11 @@ private repository (needs Python 3 + pytest + Pillow there; the first run
 builds the core with `make cores`, which needs network access). About a
 minute.
 
+`make shift-test` (milestone 3) does the same with a ROM whose code and data
+have been moved (filler bytes at the start of every bank): it passes only
+where every reference between code and data is a label. See the book's
+Shiftability page.
+
 ## Layout
 
 | path | contents |
@@ -67,6 +72,7 @@ minute.
 | `src/data/` | shared tables (bank `$05`), metasprites (bank `$06`) |
 | `src/gfx/` | data-only files of the graphics banks |
 | `src/header.asm` | internal header and vectors |
+| `src/data_macros.inc` | macros for the data formats with pointers |
 | `src/contra3.cfg` | ld65 memory map: 32 LoROM banks of `$8000` at `$XX:8000` |
 | `src/common.inc` | included first by `main.asm` (`.p816`, register names) |
 | `src/ram.inc` | RAM symbols (placeholders `zp_XX` / `wram_XXXX` until named) and structure offsets |
@@ -78,6 +84,8 @@ minute.
 | `tools/cdl.py` | reads the emulator's code/data log (CDL) for the disassembler |
 | `docs/disasm_report.md` | coverage / quality report written by the disassembler with the CDL (included in the book's Progress page) |
 | `book/` | the book (mdBook): `book.toml`, pages in `book/src/`, `names-ignore.txt` |
+| `tools/shift.py`, `tools/shift_diag.py` | shift test: build with code and data moved, scan for hardcoded references, find what breaks in the emulator |
+| `tools/srcmap.py`, `tools/datafmt.py` | map ROM addresses to source lines; add labels and pointers to data by address |
 | `tools/rename.py` | renames symbols across `src/` and the book, refusing collisions (see below) |
 | `tools/check_book_names.py` | checks that every label, constant and path the book names exists |
 

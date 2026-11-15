@@ -18,9 +18,15 @@ the generator is a reference tool (see [The disassembler](disassembler.md)).
 - a rename tool and naming conventions for the parallel naming work (see
   [Contributing: naming](contributing.md)).
 
-Still to do: real names for the routines, tables and variables. Milestones
-3 and 4 (shiftable source, cheats; see the
-[Introduction](introduction.md#goals)) have not started.
+Still to do: real names for the routines, tables and variables.
+
+**Milestone 3 (shiftable source) has started**: pointer immediates, bank
+setups, animation scripts, data lists, palette scripts and many pointer
+tables are labels, and a shift test (filler inserted at the start of every
+bank and before data labels, then the emulator suite) checks it; see
+[Shiftability](shiftability.md) for the status and what is still fixed.
+Milestone 4 (cheats; see the [Introduction](introduction.md#goals)) has not
+started.
 
 The rest of this page is `docs/disasm_report.md`, the report that
 `tools/disasm.py` wrote along with the source in the CDL pass, included here

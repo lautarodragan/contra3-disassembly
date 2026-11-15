@@ -37,3 +37,8 @@ zp_XX
 wram_XXXX
 wram_7EXXXX
 update_players_next
+
+# the comment marker of blocks ready to become binary files (layout.md, shiftability.md)
+ASSET
+# a test of the private repository (shiftability.md)
+tests/test_cdl.py
