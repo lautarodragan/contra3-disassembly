@@ -2364,42 +2364,42 @@ data_05D07C:
 	.byte	$00, $01, $00, $30, $CC, $A9, $1A, $FF, $FF, $00, $01, $00, $30, $A6, $BC, $1A
 	.byte	$FF, $FF
 start_points_x:
-	; CDL: read by set_start_points, sub_029037; partly not accessed
+	; CDL: read by set_start_points, respawn_at_start_point_stage2; partly not accessed
 	.byte	$80, $00, $80, $01, $80, $02, $80, $03, $80, $00, $80, $01, $80, $02, $80, $03
 	.byte	$80, $00, $80, $01, $80, $02, $80, $03, $80, $00, $80, $01, $80, $02, $80, $03
 start_points_x_stage5:
-	; CDL: read by set_start_points, sub_029080
+	; CDL: read by set_start_points, respawn_at_start_point_stage5
 	.byte	$F0, $00, $80, $01, $60, $02, $A0, $03, $A8, $00, $80, $01, $A0, $02, $80, $03
 	.byte	$A0, $00, $40, $01, $A0, $02, $40, $03, $70, $00, $70, $01, $C0, $02, $80, $03
 start_points_y:
-	; CDL: read by set_start_points, sub_029037; partly not accessed
+	; CDL: read by set_start_points, respawn_at_start_point_stage2; partly not accessed
 	.byte	$C0, $00, $80, $00, $80, $00, $A0, $00, $80, $01, $80, $01, $80, $01, $60, $01
 	.byte	$60, $02, $40, $02, $40, $02, $80, $02, $50, $03, $40, $03, $80, $03, $80, $03
 start_points_y_stage5:
-	; CDL: read by set_start_points, sub_029080
+	; CDL: read by set_start_points, respawn_at_start_point_stage5
 	.byte	$A0, $00, $C0, $00, $60, $00, $60, $00, $60, $01, $80, $01, $A0, $01, $70, $01
 	.byte	$90, $02, $C0, $02, $80, $02, $80, $02, $70, $03, $90, $03, $90, $03, $80, $03
 data_05D15E:
 	; CDL: read by sub_02920E
 	.byte	$10, $00, $07, $00, $11, $00, $08, $00
 data_05D166:
-	; CDL: read by sub_02924F
+	; CDL: read by td_set_stand_anim
 	.byte	$0E, $00, $03, $00
 data_05D16A:
-	; CDL: read by sub_02927F
+	; CDL: read by td_set_stand_fire_anim
 	.byte	$0E, $00, $03, $00, $0F, $00, $04, $00
 data_05D172:
-	; CDL: read by sub_029393
+	; CDL: read by td_player_state_dying
 	.byte	$12, $00, $09, $00, $13, $00, $0A, $00
 data_05D17A:
-	; CDL: read by sub_029405
+	; CDL: read by td_spin_dying_player
 	.byte	$06, $00, $04, $00, $02, $00, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00
 data_05D18C:
-	; CDL: read by sub_0294B7
+	; CDL: read by td_set_falling_anim
 	.byte	$12, $00, $09, $00, $13, $00, $0A, $00
 data_05D194:
-	; CDL: read by sub_029629
+	; CDL: read by td_set_walk_anim
 	.byte	$0B, $00, $00, $00, $0C, $00, $01, $00, $0D, $00, $02, $00, $0C, $00, $01, $00
 data_05D1A4:
 	; CDL: read by sub_0296D8
@@ -2408,21 +2408,21 @@ data_05D1A8:
 	; CDL: read by sub_0296D8
 	.byte	$FD, $FF
 data_05D1AA:
-	; CDL: read by sub_0296D8, sub_02977C; partly not accessed
+	; CDL: read by sub_0296D8, fire_td_spread; partly not accessed
 	.byte	$04, $00, $F0, $FF, $10, $00, $F8, $FF, $08, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $10, $00, $F0, $FF, $08, $00, $F8, $FF, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00
 data_05D1CC:
-	; CDL: read by sub_02999D
+	; CDL: read by spawn_stage2_enemies
 	.byte	$FF, $00, $03, $00, $01, $00
 data_05D1D2:
-	; CDL: read by sub_02999D
+	; CDL: read by spawn_stage2_enemies
 	.byte	$01, $00, $02, $00
 data_05D1D6:
-	; CDL: read by sub_0299E0
+	; CDL: read by spawn_stage5_enemies
 	.byte	$12, $00, $05, $00
 data_05D1DA:
-	; CDL: read by sub_029A23
+	; CDL: read by td_place_enemy_near_player
 	.byte	$40, $FF, $41, $FF, $41, $FF, $41, $FF, $41, $FF, $42, $FF, $43, $FF, $43, $FF
 	.byte	$44, $FF, $45, $FF, $46, $FF, $47, $FF, $49, $FF, $4A, $FF, $4C, $FF, $4D, $FF
 	.byte	$4F, $FF, $51, $FF, $53, $FF, $55, $FF, $57, $FF, $59, $FF, $5C, $FF, $5E, $FF
@@ -2432,7 +2432,7 @@ data_05D1DA:
 	.byte	$B7, $FF, $BB, $FF, $C0, $FF, $C4, $FF, $C9, $FF, $CD, $FF, $D2, $FF, $D6, $FF
 	.byte	$DB, $FF, $E0, $FF, $E4, $FF, $E9, $FF, $EE, $FF, $F2, $FF, $F7, $FF, $FC, $FF
 data_05D25A:
-	; CDL: read by sub_029A23
+	; CDL: read by td_place_enemy_near_player
 	.byte	$00, $00, $04, $00, $09, $00, $0E, $00, $12, $00, $17, $00, $1C, $00, $20, $00
 	.byte	$25, $00, $2A, $00, $2E, $00, $33, $00, $37, $00, $3C, $00, $40, $00, $45, $00
 	.byte	$49, $00, $4D, $00, $52, $00, $56, $00, $5A, $00, $5E, $00, $62, $00, $66, $00
@@ -2465,25 +2465,25 @@ data_05D25A:
 	.byte	$96, $FF, $9A, $FF, $9E, $FF, $A2, $FF, $A6, $FF, $AA, $FF, $AE, $FF, $B3, $FF
 	.byte	$B7, $FF, $BB, $FF, $C0, $FF, $C4, $FF, $C9, $FF, $CD, $FF, $D2, $FF, $D6, $FF
 	.byte	$DB, $FF, $E0, $FF, $E4, $FF, $E9, $FF, $EE, $FF, $F2, $FF, $F7, $FF, $FC, $FF
-	; CDL: read by sub_029D44
+	; CDL: read by td_animate_enemy
 	.byte	$02, $00, $00, $00, $00, $0E, $02, $00, $01, $00, $00, $0E, $02, $00, $02, $00
 	.byte	$00, $0E, $02, $00, $03, $00, $00, $0E, $02, $00, $04, $00, $00, $0E, $02, $00
 	.byte	$05, $00, $00, $0E, $02, $00, $06, $00, $00, $0E, $02, $00, $07, $00, $00, $0E
 	.byte	$02, $00, $08, $00, $00, $0E, $02, $00, $09, $00, $00, $0E, $02, $00, $0A, $00
 	.byte	$00, $0E, $00, $00, $0A, $00, $00, $0E
 data_05D4A2:
-	; CDL: read by sub_029D44, sub_029EEB
+	; CDL: read by td_animate_enemy, sub_029EEB
 	.byte	$00, $00, $02, $00, $04, $00, $08, $00, $00, $00, $00, $00, $08, $00, $01, $00
 	.byte	$00, $00, $08, $00, $00, $00, $00, $00, $08, $00, $02, $00, $00, $00, $A8, $D4
 data_05D4C2:
 	; CDL: read by sub_029F61
 	.byte	$00, $00, $02, $00, $04, $00
 data_05D4C8:
-	; CDL: read by sub_029D44, sub_029FA7; partly not accessed
+	; CDL: read by td_animate_enemy, sub_029FA7; partly not accessed
 	.byte	$40, $00, $20, $00, $10, $00, $02, $00, $00, $00, $00, $02, $00, $00, $01, $00
 	.byte	$00, $02
 data_05D4DA:
-	; CDL: read by sub_029D44, sub_02A076, sub_02A167
+	; CDL: read by td_animate_enemy, sub_02A076, sub_02A167
 	.byte	$10, $00, $20, $00, $40, $00, $08, $00, $00, $00, $00, $02, $08, $00, $01, $00
 	.byte	$00, $02, $08, $00, $00, $00, $00, $02, $08, $00, $02, $00, $00, $02, $E0, $D4
 data_05D4FA:
@@ -2511,11 +2511,11 @@ data_05D524:
 	; CDL: read by sub_02A1D0; partly not accessed
 	.byte	$03, $00, $03, $00, $01, $00
 data_05D52A:
-	; CDL: read by sub_029D44; partly not accessed
+	; CDL: read by td_animate_enemy; partly not accessed
 	.byte	$10, $00, $40, $00, $80, $00, $04, $00, $00, $00, $00, $04, $04, $00, $01, $00
 	.byte	$00, $04, $30, $D5
 data_05D53E:
-	; CDL: read by sub_029D44, sub_02A463
+	; CDL: read by td_animate_enemy, sub_02A463
 	.byte	$10, $00, $40, $00, $80, $00, $03, $00, $00, $00, $00, $0E, $03, $00, $01, $00
 	.byte	$00, $0E, $44, $D5
 data_05D552:
@@ -2531,14 +2531,14 @@ data_05D564:
 	; CDL: read by sub_02A72C
 	.byte	$FF, $FF, $01, $00, $00, $00
 data_05D56A:
-	; CDL: read by sub_029D44, sub_02A7D2
+	; CDL: read by td_animate_enemy, sub_02A7D2
 	.byte	$02, $00, $10, $00, $20, $00, $08, $00, $00, $00, $00, $00, $08, $00, $01, $00
 	.byte	$00, $00, $08, $00, $00, $00, $00, $00, $08, $00, $02, $00, $00, $00, $70, $D5
 data_05D58A:
 	; CDL: read by sub_02A813
 	.byte	$00, $01, $80, $00, $20, $00
 data_05D590:
-	; CDL: read by sub_029D44, sub_02A88D
+	; CDL: read by td_animate_enemy, sub_02A88D
 	.byte	$02, $00, $04, $00, $08, $00, $08, $00, $00, $00, $00, $02, $08, $00, $01, $00
 	.byte	$00, $02, $08, $00, $00, $00, $00, $02, $08, $00, $02, $00, $00, $02, $96, $D5
 data_05D5B0:

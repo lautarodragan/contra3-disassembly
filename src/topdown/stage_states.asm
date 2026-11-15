@@ -103,11 +103,11 @@ stage2_state_play:
 loc_02809D:
 	jsl	f:update_topdown_players
 	jsl	f:sub_02E65F
-	jsl	f:sub_02AC23
-	jsl	f:sub_029CA3
-	jsl	f:sub_02999D
+	jsl	f:update_map_objects
+	jsl	f:td_update_enemies
+	jsl	f:spawn_stage2_enemies
 	jsl	f:sub_02A9F8
-	jsl	f:sub_02B7E6
+	jsl	f:update_topdown_shots
 	jsl	f:sub_02DC3B
 	jsl	f:update_screen_shake
 	jsl	f:animate_topdown_palettes
@@ -201,9 +201,9 @@ stage2_state_boss:
 	bcs	loc_028199
 	jsl	f:update_topdown_players
 	jsl	f:sub_02E65F
-	jsl	f:sub_02AC23
+	jsl	f:update_map_objects
 	jsl	f:sub_02A9F8
-	jsl	f:sub_02B7E6
+	jsl	f:update_topdown_shots
 	jsl	f:update_screen_shake
 	jsl	f:animate_topdown_palettes
 	jsl	f:update_topdown_views
@@ -299,11 +299,11 @@ stage5_state_play:
 loc_028235:
 	jsl	f:update_topdown_players
 	jsl	f:sub_02E65F
-	jsl	f:sub_02AC23
-	jsl	f:sub_029CA3
-	jsl	f:sub_0299E0
+	jsl	f:update_map_objects
+	jsl	f:td_update_enemies
+	jsl	f:spawn_stage5_enemies
 	jsl	f:sub_02A9F8
-	jsl	f:sub_02B7E6
+	jsl	f:update_topdown_shots
 	jsl	f:sub_02DD19
 	jsl	f:update_screen_shake
 	jsl	f:animate_topdown_palettes
@@ -344,7 +344,7 @@ stage5_state_boss:
 	jsl	f:sub_02AC09
 	jsl	f:sub_029C9E
 	jsl	f:sub_02A9F8
-	jsl	f:sub_02B7E6
+	jsl	f:update_topdown_shots
 	jsl	f:update_screen_shake
 	jsl	f:animate_topdown_palettes
 	jsl	f:update_topdown_views

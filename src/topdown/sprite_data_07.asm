@@ -330,7 +330,7 @@ data_078828:
 	.byte	$02, $B0, $13, $00, $02, $B1, $02, $B2, $13, $00, $02, $B3, $02, $B4, $13, $00
 	.byte	$02, $B5
 data_079118:
-	; CDL: read by sub_029533
+	; CDL: read by td_get_walk_vectors
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF
@@ -340,7 +340,7 @@ data_079118:
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 data_079198:
-	; CDL: read by sub_029533
+	; CDL: read by td_get_walk_vectors
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $00, $01, $00
@@ -374,7 +374,7 @@ data_079198:
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 data_079398:
-	; CDL: read by sub_029533
+	; CDL: read by td_get_walk_vectors
 	.byte	$00, $00, $28, $00, $9E, $00, $64, $01, $78, $02, $DA, $03, $8B, $05, $8A, $07
 	.byte	$D7, $09, $71, $0C, $59, $0F, $8C, $12, $0C, $16, $D8, $19, $EE, $1D, $4F, $22
 	.byte	$FA, $26, $ED, $2B, $29, $31, $AC, $36, $75, $3C, $84, $42, $D8, $48, $70, $4F
@@ -384,7 +384,7 @@ data_079398:
 	.byte	$11, $3C, $BC, $47, $84, $53, $66, $5F, $60, $6B, $72, $77, $99, $83, $D2, $8F
 	.byte	$1E, $9C, $78, $A8, $E0, $B4, $54, $C1, $D1, $CD, $56, $DA, $E1, $E6, $70, $F3
 data_079418:
-	; CDL: read by sub_029533, draw_topdown_players, sub_03F6FD; partly not accessed
+	; CDL: read by td_get_walk_vectors, draw_topdown_players, sub_03F6FD; partly not accessed
 	.byte	$00, $00, $90, $0C, $1F, $19, $AA, $25, $2F, $32, $AC, $3E, $20, $4B, $88, $57
 	.byte	$E2, $63, $2E, $70, $67, $7C, $8E, $88, $A0, $94, $9A, $A0, $7C, $AC, $44, $B8
 	.byte	$EF, $C3, $7B, $CF, $E8, $DA, $33, $E6, $5A, $F1, $5D, $FC, $38, $07, $EB, $11

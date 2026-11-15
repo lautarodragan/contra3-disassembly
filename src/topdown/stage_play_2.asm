@@ -51,7 +51,7 @@ loc_02E6A9:
 	lda	$24,x
 	cmp	#$0070
 	bcc	loc_02E6B7
-	jsl	f:sub_029B21
+	jsl	f:clear_topdown_slot
 	rts
 loc_02E6B7:
 	lda	$24,x
@@ -1954,7 +1954,7 @@ sub_02F5A3:
 	lda	$3A,x
 	cmp	#$1900
 	bcs	loc_02F5B5
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02F5B5:
 	rtl
 loc_02F5B6:
@@ -1977,7 +1977,7 @@ sub_02F5C8:
 sub_02F5D8:
 	lda	a:wram_0B50
 	bne	loc_02F5E0
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02F5E0:
 	jsr	a:sub_02F753
 	jsr	a:sub_02F745
@@ -2038,7 +2038,7 @@ sub_02F63C:
 	cmp	#$18E0
 	bcs	loc_02F650
 	; (not executed in the CDL traces)
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02F650:
 	lda	a:wram_1900
 	sta	$0A,x
@@ -2068,7 +2068,7 @@ sub_02F67C:
 	lda	a:wram_0B50
 	bne	loc_02F684
 	; (not executed in the CDL traces)
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02F684:
 	jsr	a:sub_02F753
 	jsr	a:sub_02F745
@@ -2133,7 +2133,7 @@ sub_02F6EA:
 	lda	$3A,x
 	cmp	#$18E0
 	bcs	loc_02F6FE
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02F6FE:
 	lda	a:wram_1900
 	sta	$0A,x
@@ -2164,7 +2164,7 @@ sub_02F729:
 	lda	$24,x
 	cmp	#$0010
 	bcc	loc_02F735
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02F735:
 	lsr	a
 	and	#$0006
@@ -2524,7 +2524,7 @@ loc_02F9B4:
 	bne	loc_02F9B3
 	jsl	f:sub_02AC8F
 	bcs	loc_02F9B3
-	jml	f:sub_029B21
+	jml	f:clear_topdown_slot
 
 sub_02F9C7:
 	lda	$2A,x
@@ -2676,7 +2676,7 @@ loc_02FACA:
 	bne	loc_02FAC9
 	jsl	f:sub_02AC8F
 	bcs	loc_02FAC9
-	jml	f:sub_029B21
+	jml	f:clear_topdown_slot
 
 sub_02FADD:
 	lda	$06,x

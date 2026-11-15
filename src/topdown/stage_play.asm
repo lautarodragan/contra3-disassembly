@@ -24,7 +24,7 @@ update_topdown_players:
 update_topdown_player:
 	lda	$12,x
 	bne	loc_028E58
-	brl	sub_028EF2
+	brl	td_player_state_inactive
 loc_028E58:
 	lda	a:$0648,x
 	beq	loc_028E70
@@ -40,23 +40,23 @@ loc_028E6A:
 loc_028E70:
 	lda	$2C,x
 	beq	loc_028E77
-	brl	sub_029449
+	brl	td_player_state_falling
 loc_028E77:
 	lda	$06,x
 	bpl	loc_028E7E
-	brl	sub_029393
+	brl	td_player_state_dying
 loc_028E7E:
-	jsr	a:sub_0290A5
-	jsr	a:sub_0290F3
-	jsr	a:sub_029113
-	jsr	a:sub_0291A5
+	jsr	a:td_update_turn_speed
+	jsr	a:td_update_fire_timer
+	jsr	a:td_set_spin_direction
+	jsr	a:td_check_smart_bomb
 	lda	a:$0640,x
 	beq	loc_028E92
 	brl	loc_028EC0
 loc_028E92:
-	jsr	a:sub_029102
+	jsr	a:td_check_turn_buttons_both
 	bcc	loc_028E9A
-	brl	sub_02929D
+	brl	td_player_state_turn_buttons
 loc_028E9A:
 	stz	a:$10CE,x
 	lda	a:$066C,x
@@ -66,17 +66,17 @@ loc_028E9A:
 loc_028EA7:
 	bit	#$0F00
 	beq	loc_028EAF
-	brl	sub_029355
+	brl	td_player_state_walk
 loc_028EAF:
 	bit	zp_96
 	beq	loc_028EB6
-	brl	sub_029355
+	brl	td_player_state_walk
 loc_028EB6:
 	bit	zp_94
 	beq	loc_028EBD
-	brl	sub_029355
+	brl	td_player_state_walk
 loc_028EBD:
-	brl	sub_029233
+	brl	td_player_state_stand
 loc_028EC0:
 	lda	$12,x
 	phx
@@ -87,16 +87,16 @@ loc_028EC0:
 	sta	zp_00
 	jmp	(zp_00)
 tbl_topdown_player_states:
-	.addr	sub_028EF2
-	.addr	sub_029233
-	.addr	sub_029265
-	.addr	sub_029355
-	.addr	sub_029376
+	.addr	td_player_state_inactive
+	.addr	td_player_state_stand
+	.addr	td_player_state_stand_fire
+	.addr	td_player_state_walk
+	.addr	td_player_state_walk_fire
 	.addr	sub_0291CB
-	.addr	sub_02929D
-	.addr	sub_0292F2
-	.addr	sub_029393
-	.addr	sub_029449
+	.addr	td_player_state_turn_buttons
+	.addr	td_player_state_spin_fire
+	.addr	td_player_state_dying
+	.addr	td_player_state_falling
 loc_028EE3:
 	stz	$00,x
 	stz	$06,x
@@ -105,7 +105,8 @@ loc_028EE3:
 	lda	#$0001
 	sta	a:$10CC,x
 
-sub_028EF2:
+; State 0: no player (no lives) or respawn: drop in at a start point.
+td_player_state_inactive:
 	lda	a:$10CA,x
 	bne	loc_028F4B
 	stz	a:$10CC,x
@@ -122,7 +123,7 @@ loc_028F0C:
 	rtl
 loc_028F0D:
 	; (not executed in the CDL traces)
-	jsr	a:sub_028FBB
+	jsr	a:td_get_other_player
 	lda	a:$002C,y
 	sta	$2C,x
 	lda	a:$000A,y
@@ -182,7 +183,7 @@ loc_028F7B:
 	and	#$00FF
 	sta	$04,x
 	stz	a:$064A,x
-	jsr	a:sub_028FC8
+	jsr	a:td_set_respawn_position
 	lda	a:wram_15A8
 	bne	loc_028FA5
 	lda	#$0100
@@ -200,7 +201,8 @@ loc_028FA5:
 	sta	$12,x
 	rtl
 
-sub_028FBB:
+; Y = the other player's slot.
+td_get_other_player:
 	; (not executed in the CDL traces)
 	cpx	#$0EC0
 	bne	loc_028FC4
@@ -210,7 +212,8 @@ loc_028FC4:
 	ldy	#$0EC0
 	rts
 
-sub_028FC8:
+; Puts a respawning player at the start point nearest to where it died.
+td_set_respawn_position:
 	lda	a:title_menu_cursor
 	dec	a
 	beq	loc_028FEE
@@ -223,14 +226,14 @@ loc_028FD0:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_028FE5,x
+	lda	f:tbl_respawn_by_map,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_028FE5:
-	.addr	sub_029037
+tbl_respawn_by_map:
+	.addr	respawn_at_start_point_stage2
 	.addr	sub_028FED
-	.addr	sub_029080
+	.addr	respawn_at_start_point_stage5
 	.addr	sub_028FED
 
 sub_028FED:
@@ -243,7 +246,7 @@ loc_028FF3:
 	; (not executed in the CDL traces)
 	lda	$2C,x
 	beq	loc_029036
-	jsr	a:sub_028FBB
+	jsr	a:td_get_other_player
 	lda	a:$10CA,y
 	beq	loc_028FD0
 	lda	a:$002C,y
@@ -273,14 +276,14 @@ loc_029032:
 loc_029036:
 	rts
 
-sub_029037:
-	jsr	a:sub_02905C
+respawn_at_start_point_stage2:
+	jsr	a:clamp_y_to_map
 	xba
 	and	#$0003
 	asl	a
 	asl	a
 	sta	zp_FA
-	jsr	a:sub_02906E
+	jsr	a:clamp_x_to_map
 	xba
 	and	#$0003
 	ora	zp_FA
@@ -294,7 +297,8 @@ sub_029037:
 	stz	$0C,x
 	rts
 
-sub_02905C:
+; A = the object's y clamped to 0..$3FF.
+clamp_y_to_map:
 	lda	$0E,x
 	bmi	loc_029066
 	cmp	#$0400
@@ -307,7 +311,8 @@ loc_02906A:
 	lda	#$03FF
 	rts
 
-sub_02906E:
+; A = the object's x clamped to 0..$3FF.
+clamp_x_to_map:
 	lda	$0A,x
 	bmi	loc_029078
 	cmp	#$0400
@@ -321,14 +326,14 @@ loc_02907C:
 	lda	#$03FF
 	rts
 
-sub_029080:
-	jsr	a:sub_02905C
+respawn_at_start_point_stage5:
+	jsr	a:clamp_y_to_map
 	xba
 	and	#$0003
 	asl	a
 	asl	a
 	sta	zp_FA
-	jsr	a:sub_02906E
+	jsr	a:clamp_x_to_map
 	xba
 	and	#$0003
 	ora	zp_FA
@@ -342,7 +347,8 @@ sub_029080:
 	stz	$0C,x
 	rts
 
-sub_0290A5:
+; Turning speed (+$0644, 2 or 4) while L or R is held.
+td_update_turn_speed:
 	lda	a:$066C,x
 	and	#$0030
 	beq	loc_0290E1
@@ -381,7 +387,8 @@ loc_0290E7:
 loc_0290F2:
 	rts
 
-sub_0290F3:
+; +$0646 counts the frames fire is held (0 when newly pressed); the weapons fire on some of them.
+td_update_fire_timer:
 	lda	a:$066E,x
 	bit	button_fire
 	beq	loc_0290FE
@@ -391,7 +398,8 @@ loc_0290FE:
 	inc	a:$0646,x
 	rts
 
-sub_029102:
+; Carry set when both turn buttons (L and R) are held.
+td_check_turn_buttons_both:
 	lda	zp_94
 	ora	zp_96
 	sta	zp_FA
@@ -404,7 +412,8 @@ loc_029111:
 	sec
 	rts
 
-sub_029113:
+; +$0656 = 0 or 2 by the turn button pressed last.
+td_set_spin_direction:
 	lda	#$0007
 	cmp	$12,x
 	beq	loc_02912F
@@ -473,7 +482,8 @@ loc_02918B:
 loc_0291A4:
 	rts
 
-sub_0291A5:
+; A (button_bomb) with bombs left: sound $5A, starts the bomb (+$0090).
+td_check_smart_bomb:
 	lda	a:$066E,x
 	bit	button_bomb
 	beq	loc_0291CA
@@ -518,7 +528,7 @@ loc_0291F5:
 loc_029202:
 	jsl	f:sub_02920E
 	jsl	f:sub_02C334
-	jsr	a:sub_0295CD
+	jsr	a:td_keep_players_together
 	rtl
 
 sub_02920E:
@@ -543,21 +553,22 @@ loc_029223:
 loc_029232:
 	rtl
 
-sub_029233:
+; State 1: standing.
+td_player_state_stand:
 	lda	a:$066C,x
 	bit	button_fire
-	bne	sub_029265
+	bne	td_player_state_stand_fire
 	lda	#$0001
 	cmp	$12,x
 	beq	loc_029243
 	sta	$12,x
 loc_029243:
-	jsl	f:sub_02924F
+	jsl	f:td_set_stand_anim
 	jsl	f:sub_02C334
-	jsr	a:sub_0295CD
+	jsr	a:td_keep_players_together
 	rtl
 
-sub_02924F:
+td_set_stand_anim:
 	lda	$22,x
 	bne	loc_029256
 	inc	$22,x
@@ -572,19 +583,20 @@ loc_029256:
 loc_029264:
 	rtl
 
-sub_029265:
+; State 2: standing and firing.
+td_player_state_stand_fire:
 	lda	#$0002
 	cmp	$12,x
 	beq	loc_029270
 	sta	$12,x
 	stz	$24,x
 loc_029270:
-	jsl	f:sub_02927F
+	jsl	f:td_set_stand_fire_anim
 	jsl	f:sub_02C334
-	jsr	a:sub_0295CD
-	jml	f:loc_0296E9
+	jsr	a:td_keep_players_together
+	jml	f:td_fire_forward
 
-sub_02927F:
+td_set_stand_fire_anim:
 	inc	$24,x
 	lda	$22,x
 	bne	loc_029288
@@ -603,7 +615,8 @@ loc_029288:
 loc_02929C:
 	rtl
 
-sub_02929D:
+; State 6: both turn buttons held (fire then spins, state 7).
+td_player_state_turn_buttons:
 	lda	#$0006
 	cmp	$12,x
 	beq	loc_0292BA
@@ -622,20 +635,20 @@ loc_0292BA:
 	bra	loc_0292D3
 loc_0292C2:
 	stz	a:$0640,x
-	jsr	a:sub_029102
+	jsr	a:td_check_turn_buttons_both
 	bcs	loc_0292CC
 	bra	loc_0292D3
 loc_0292CC:
 	lda	a:$066C,x
 	bit	button_fire
-	bne	sub_0292F2
+	bne	td_player_state_spin_fire
 loc_0292D3:
-	jsl	f:sub_0292DF
+	jsl	f:td_set_turn_buttons_anim
 	jsl	f:sub_02C334
-	jsr	a:sub_0295CD
+	jsr	a:td_keep_players_together
 	rtl
 
-sub_0292DF:
+td_set_turn_buttons_anim:
 	lda	$22,x
 	bne	loc_0292E6
 	inc	$22,x
@@ -649,7 +662,8 @@ loc_0292E6:
 loc_0292F1:
 	rtl
 
-sub_0292F2:
+; State 7: L+R+fire: spins 8 units a frame firing both weapons sideways.
+td_player_state_spin_fire:
 	lda	#$0007
 	cmp	$12,x
 	beq	loc_02930D
@@ -661,7 +675,7 @@ sub_0292F2:
 	sta	a:$064A,x
 	sta	a:$065A,x
 loc_02930D:
-	jsr	a:sub_029102
+	jsr	a:td_check_turn_buttons_both
 	bcc	loc_029319
 	lda	a:$066C,x
 	bit	button_fire
@@ -677,15 +691,15 @@ loc_02931C:
 	and	#$00FF
 	cmp	$04,x
 	bne	loc_029332
-	brl	sub_02929D
+	brl	td_player_state_turn_buttons
 loc_029332:
-	jsr	a:sub_029342
+	jsr	a:td_set_spin_fire_anim
 	jsl	f:sub_02C334
-	jsr	a:sub_0295CD
-	jsr	a:sub_02966C
-	jmp	a:loc_0296B1
+	jsr	a:td_keep_players_together
+	jsr	a:td_spin_player
+	jmp	a:td_fire_spin_shots
 
-sub_029342:
+td_set_spin_fire_anim:
 	lda	$22,x
 	bne	loc_029349
 	inc	$22,x
@@ -699,41 +713,44 @@ loc_029349:
 loc_029354:
 	rts
 
-sub_029355:
+; State 3: walking (D-pad, relative to the view).
+td_player_state_walk:
 	lda	a:$066C,x
 	bit	button_fire
-	bne	sub_029376
+	bne	td_player_state_walk_fire
 	lda	#$0003
 	cmp	$12,x
 	beq	loc_029365
 	sta	$12,x
 loc_029365:
-	jsr	a:sub_029648
+	jsr	a:td_turn_player
 	jsl	f:sub_02C334
-	jsr	a:sub_029504
-	jsr	a:sub_0295CD
-	jsr	a:sub_029629
+	jsr	a:td_walk_by_dpad
+	jsr	a:td_keep_players_together
+	jsr	a:td_set_walk_anim
 	rtl
 
-sub_029376:
+; State 4: walking and firing.
+td_player_state_walk_fire:
 	lda	#$0004
 	cmp	$12,x
 	beq	loc_02937F
 	sta	$12,x
 loc_02937F:
-	jsr	a:sub_029648
+	jsr	a:td_turn_player
 	jsl	f:sub_02C334
-	jsr	a:sub_029504
-	jsr	a:sub_0295CD
-	jsr	a:sub_029629
-	jml	f:loc_0296E9
+	jsr	a:td_walk_by_dpad
+	jsr	a:td_keep_players_together
+	jsr	a:td_set_walk_anim
+	jml	f:td_fire_forward
 
-sub_029393:
+; State 8: hit: loses a life, sound $3F, spins and slows down; respawns after $80 frames.
+td_player_state_dying:
 	lda	#$0008
 	cmp	$12,x
 	beq	loc_0293B9
 	pha
-	jsr	a:sub_029689
+	jsr	a:topdown_lose_life
 	pla
 	sta	$12,x
 	lda	#$003F
@@ -752,14 +769,14 @@ loc_0293B9:
 	bcc	loc_0293C8
 	brl	loc_028EE3
 loc_0293C8:
-	jsl	f:sub_029419
-	jsl	f:sub_029431
+	jsl	f:td_halve_x_velocity
+	jsl	f:td_halve_y_velocity
 loc_0293D0:
 	inc	$24,x
-	jsl	f:sub_029405
+	jsl	f:td_spin_dying_player
 	jsl	f:sub_02C334
-	jsl	f:sub_029C83
-	jsr	a:sub_0295CD
+	jsl	f:move_topdown_object
+	jsr	a:td_keep_players_together
 	lda	$22,x
 	bne	loc_0293E8
 	inc	$22,x
@@ -781,7 +798,7 @@ loc_0293F5:
 loc_029404:
 	rtl
 
-sub_029405:
+td_spin_dying_player:
 	lda	$24,x
 	lsr	a
 	lsr	a
@@ -796,7 +813,7 @@ sub_029405:
 	sta	$04,x
 	rtl
 
-sub_029419:
+td_halve_x_velocity:
 	lda	$1A,x
 	cmp	$18,x
 	bne	loc_029429
@@ -812,7 +829,7 @@ loc_029429:
 	ror	$18,x
 	rtl
 
-sub_029431:
+td_halve_y_velocity:
 	lda	$1E,x
 	cmp	$1C,x
 	bne	loc_029441
@@ -828,12 +845,14 @@ loc_029441:
 	ror	$1C,x
 	rtl
 
-sub_029449:
+; State 9 (+$2C set): loses a life, sound $43, spins while its view zooms
+; in and fades out (probably a fall into a pit); respawns after $80 frames.
+td_player_state_falling:
 	lda	#$0009
 	cmp	$12,x
 	beq	loc_029477
 	pha
-	jsr	a:sub_029689
+	jsr	a:topdown_lose_life
 	pla
 	sta	$12,x
 	lda	#$0043
@@ -858,12 +877,12 @@ loc_029477:
 	brl	loc_028EE3
 loc_029486:
 	inc	$24,x
-	jsr	a:sub_0294DB
+	jsr	a:td_spin_falling_player
 	jsl	f:sub_02C334
-	jsl	f:sub_029C83
-	jsr	a:sub_0295CD
-	jsr	a:sub_0294E7
-	jsr	a:sub_0294B7
+	jsl	f:move_topdown_object
+	jsr	a:td_keep_players_together
+	jsr	a:zoom_in_falling_view
+	jsr	a:td_set_falling_anim
 	lda	a:title_menu_cursor
 	beq	loc_0294A4
 	dec	a
@@ -880,7 +899,7 @@ loc_0294A4:
 loc_0294B6:
 	rtl
 
-sub_0294B7:
+td_set_falling_anim:
 	lda	$22,x
 	bne	loc_0294BE
 	inc	$22,x
@@ -902,7 +921,7 @@ loc_0294CB:
 loc_0294DA:
 	rts
 
-sub_0294DB:
+td_spin_falling_player:
 	lda	$04,x
 	clc
 	adc	#$0002
@@ -910,7 +929,7 @@ sub_0294DB:
 	sta	$04,x
 	rts
 
-sub_0294E7:
+zoom_in_falling_view:
 	lda	a:title_menu_cursor
 	beq	loc_0294EF
 	dec	a
@@ -927,19 +946,20 @@ loc_0294EF:
 loc_029503:
 	rts
 
-sub_029504:
+; Up/down: forward/backward along the view, left/right: sideways (vectors by view angle).
+td_walk_by_dpad:
 	ldy	a:$10CE,x
 	bne	loc_029532
-	jsr	a:sub_029533
+	jsr	a:td_get_walk_vectors
 	lda	a:$066C,x
 	bit	#$0800
 	beq	loc_029519
-	jsr	a:sub_02955D
+	jsr	a:td_walk_forward
 	bra	loc_029521
 loc_029519:
 	bit	#$0400
 	beq	loc_029521
-	jsr	a:sub_029572
+	jsr	a:td_walk_backward
 loc_029521:
 	lda	a:$066C,x
 	bit	#$0100
@@ -952,7 +972,8 @@ loc_02952B:
 loc_029532:
 	rts
 
-sub_029533:
+; Walking velocity for the player's view angle (tables in bank $07).
+td_get_walk_vectors:
 	lda	a:$0654,x
 	asl	a
 	tay
@@ -980,7 +1001,7 @@ sub_029533:
 	.a16
 	rts
 
-sub_02955D:
+td_walk_forward:
 	lda	zp_18
 	sta	$18,x
 	lda	zp_1A
@@ -989,10 +1010,10 @@ sub_02955D:
 	sta	$1C,x
 	lda	zp_1E
 	sta	$1E,x
-	jsl	f:sub_029C83
+	jsl	f:move_topdown_object
 	rts
 
-sub_029572:
+td_walk_backward:
 	sec
 	lda	#$0000
 	sbc	zp_18
@@ -1007,7 +1028,7 @@ sub_029572:
 	lda	#$0000
 	sbc	zp_1E
 	sta	$1E,x
-	jsl	f:sub_029C83
+	jsl	f:move_topdown_object
 	rts
 loc_029595:
 	sec
@@ -1021,7 +1042,7 @@ loc_029595:
 	sta	$1C,x
 	lda	zp_1A
 	sta	$1E,x
-	jsl	f:sub_029C83
+	jsl	f:move_topdown_object
 	rts
 loc_0295B1:
 	lda	zp_1C
@@ -1035,24 +1056,25 @@ loc_0295B1:
 	lda	#$0000
 	sbc	zp_1A
 	sta	$1E,x
-	jsl	f:sub_029C83
+	jsl	f:move_topdown_object
 	rts
 
-sub_0295CD:
+; 2P-B: keeps the players within one screen of each other.
+td_keep_players_together:
 	lda	a:title_menu_cursor
 	dec	a
 	dec	a
 	bne	loc_0295E2
 	; (not executed in the CDL traces)
-	jsr	a:sub_028FBB
+	jsr	a:td_get_other_player
 	lda	a:$0012,y
 	beq	loc_0295E2
-	jsr	a:sub_0295E3
-	jsr	a:sub_029606
+	jsr	a:td_pull_towards_other_player_x
+	jsr	a:td_pull_towards_other_player_y
 loc_0295E2:
 	rts
 
-sub_0295E3:
+td_pull_towards_other_player_x:
 	; (not executed in the CDL traces)
 	lda	a:$000A,y
 	sec
@@ -1076,7 +1098,7 @@ loc_0295FF:
 	stz	a:$0672,x
 	rts
 
-sub_029606:
+td_pull_towards_other_player_y:
 	; (not executed in the CDL traces)
 	lda	a:$000E,y
 	sec
@@ -1100,7 +1122,7 @@ loc_029622:
 	stz	a:$0672,x
 	rts
 
-sub_029629:
+td_set_walk_anim:
 	inc	$24,x
 	lda	$22,x
 	bne	loc_029632
@@ -1120,7 +1142,8 @@ loc_029632:
 loc_029647:
 	rts
 
-sub_029648:
+; L/R turn the player (and its view) by the turning speed.
+td_turn_player:
 	lda	a:$066C,x
 	bit	zp_96
 	bne	loc_029654
@@ -1142,7 +1165,8 @@ loc_029660:
 	sta	$04,x
 	rts
 
-sub_02966C:
+; Spin fire: angle +8 a frame.
+td_spin_player:
 	lda	a:$0656,x
 	bne	loc_02967D
 	lda	$04,x
@@ -1160,7 +1184,8 @@ loc_02967D:
 	sta	$04,x
 	rts
 
-sub_029689:
+; Takes a life (dying, falling); loses the weapons as on the side-view stages.
+topdown_lose_life:
 	lda	$12,x
 	cmp	#$0008
 	beq	loc_0296B0
@@ -1182,14 +1207,15 @@ loc_0296AD:
 	stz	a:$10C8,x
 loc_0296B0:
 	rts
-loc_0296B1:
+; Spin fire: fires both weapons at +$40 and +$C0 from the player's angle.
+td_fire_spin_shots:
 	stz	zp_14
 	lda	#$0040
 	sta	zp_12
 	lda	#$003C
 	sta	zp_10
 	ldy	#$001E
-	jsl	f:sub_0296F8
+	jsl	f:fire_topdown_weapon
 	lda	#$0002
 	sta	zp_14
 	lda	#$00C0
@@ -1197,7 +1223,7 @@ loc_0296B1:
 	lda	#$00C4
 	sta	zp_10
 	ldy	#$001E
-	bra	sub_0296F8
+	bra	fire_topdown_weapon
 
 sub_0296D8:
 	stz	zp_12
@@ -1206,8 +1232,9 @@ sub_0296D8:
 	lda	a:data_05D1A8,y
 	sta	zp_10
 	ldy	#$0020
-	bra	sub_0296F8
-loc_0296E9:
+	bra	fire_topdown_weapon
+; Fires the active weapon straight ahead.
+td_fire_forward:
 	stz	zp_12
 	ldy	a:$10DE,x
 	sty	zp_14
@@ -1215,8 +1242,10 @@ loc_0296E9:
 	sta	zp_10
 	ldy	#$0018
 
-sub_0296F8:
-	jsr	a:sub_02971E
+; Fires weapon p1_weapon_1 (zp_14 = 0) or p1_weapon_2 (zp_14 = 2) of player X
+; through tbl_topdown_weapons (WEAPON_* order).
+fire_topdown_weapon:
+	jsr	a:td_get_muzzle_position
 	lda	a:$10C4,x
 	ldy	zp_14
 	beq	loc_029705
@@ -1225,19 +1254,20 @@ loc_029705:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_029712,x
+	lda	f:tbl_topdown_weapons,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_029712:
-	.addr	sub_029744
-	.addr	sub_02977C
-	.addr	sub_02987B
-	.addr	sub_0297D8
-	.addr	sub_02983C
-	.addr	sub_02980A
+tbl_topdown_weapons:
+	.addr	fire_td_default
+	.addr	fire_td_spread
+	.addr	fire_td_crush
+	.addr	fire_td_homing
+	.addr	fire_td_flame
+	.addr	fire_td_laser
 
-sub_02971E:
+; zp_1C/zp_1E = player position + offset at angle (player angle + zp_12).
+td_get_muzzle_position:
 	lda	$04,x
 	clc
 	adc	zp_12
@@ -1259,11 +1289,11 @@ sub_02971E:
 	sta	zp_1E
 	rts
 
-sub_029744:
+fire_td_default:
 	lda	a:$0646,x
 	lsr	a
 	bcs	loc_029750
-	jsl	f:sub_0298CC
+	jsl	f:td_find_free_shot_slot
 	bcc	loc_029751
 loc_029750:
 	rtl
@@ -1286,14 +1316,14 @@ loc_029760:
 	sta	a:$000E,y
 	rtl
 
-sub_02977C:
+fire_td_spread:
 	lda	a:$0646,x
 	and	#$0003
 	beq	loc_029785
 loc_029784:
 	rtl
 loc_029785:
-	jsl	f:sub_0298CC
+	jsl	f:td_find_free_shot_slot
 	bcs	loc_029784
 	lda	a:$0646,x
 	and	#$0007
@@ -1327,16 +1357,16 @@ loc_02979F:
 	sta	a:$0004,y
 	dec	zp_18
 	beq	loc_0297D7
-	jsl	f:sub_0298CC
+	jsl	f:td_find_free_shot_slot
 	bcc	loc_02979F
 loc_0297D7:
 	rtl
 
-sub_0297D8:
+fire_td_homing:
 	lda	a:$0646,x
 	and	#$0003
 	bne	loc_0297E6
-	jsl	f:sub_0298CC
+	jsl	f:td_find_free_shot_slot
 	bcc	loc_0297E7
 loc_0297E6:
 	rtl
@@ -1355,8 +1385,8 @@ loc_0297E7:
 	sta	a:$000E,y
 	rtl
 
-sub_02980A:
-	jsl	f:sub_0298CC
+fire_td_laser:
+	jsl	f:td_find_free_shot_slot
 	bcc	loc_029811
 	rtl
 loc_029811:
@@ -1378,21 +1408,21 @@ loc_029820:
 	sta	a:$000C,y
 	rtl
 
-sub_02983C:
-	jsl	f:sub_02990A
+fire_td_flame:
+	jsl	f:td_find_flame_shot
 	bcc	loc_029858
-	jsl	f:sub_0298CC
+	jsl	f:td_find_free_shot_slot
 	bcc	loc_029849
 	; (not executed in the CDL traces)
 	rtl
 loc_029849:
-	jsr	a:sub_02986B
+	jsr	a:td_play_flame_sound
 	lda	#$0000
 	sta	a:$0012,y
 	lda	#$0007
 	sta	a:$0010,y
 loc_029858:
-	jsr	a:sub_02986B
+	jsr	a:td_play_flame_sound
 	lda	zp_1A
 	sta	a:$0014,y
 	lda	zp_1C
@@ -1401,7 +1431,7 @@ loc_029858:
 	sta	a:$000C,y
 	rtl
 
-sub_02986B:
+td_play_flame_sound:
 	lda	a:$0646,x
 	and	#$000F
 	bne	loc_02987A
@@ -1410,11 +1440,11 @@ sub_02986B:
 loc_02987A:
 	rts
 
-sub_02987B:
+fire_td_crush:
 	lda	a:$0646,x
 	and	#$0001
 	bne	loc_029889
-	jsl	f:sub_029953
+	jsl	f:td_find_three_shot_slots
 	bcc	loc_02988A
 loc_029889:
 	rtl
@@ -1448,7 +1478,9 @@ loc_02988A:
 	ply
 	rtl
 
-sub_0298CC:
+; Y = a free shot slot of player X ($0480-$05BF, second weapon $05C0-$06FF;
+; player 2 $0700/$0840); carry set when none.
+td_find_free_shot_slot:
 	lda	zp_14
 	bne	loc_0298E5
 	ldy	#$0480
@@ -1483,7 +1515,7 @@ loc_0298FF:
 	bcc	loc_0298F8
 	rtl
 
-sub_02990A:
+td_find_flame_shot:
 	lda	zp_14
 	bne	loc_029923
 	ldy	#$0480
@@ -1524,7 +1556,7 @@ loc_029948:
 	bcc	loc_029936
 	rtl
 
-sub_029953:
+td_find_three_shot_slots:
 	lda	zp_14
 	bne	loc_02996C
 	ldy	#$0480
@@ -1570,20 +1602,23 @@ loc_029991:
 	plx
 	rtl
 
-sub_02999D:
+; Stage 2 enemy generator: alternating $200-frame periods, either a random
+; enemy type (by difficulty) near a player when a slot of $0DC0-$0EBF is free,
+; or type $0F when none is alive.
+spawn_stage2_enemies:
 	lda	stage_frame_counter
 	bit	#$0200
 	beq	loc_0299AB
-	jsl	f:sub_029BA9
+	jsl	f:td_check_enemies_alive
 	bcc	loc_0299CE
 	rtl
 loc_0299AB:
-	jsl	f:sub_029B94
+	jsl	f:td_find_free_enemy_slot
 	bcc	loc_0299B2
 loc_0299B1:
 	rtl
 loc_0299B2:
-	jsr	a:sub_029A23
+	jsr	a:td_place_enemy_near_player
 	bcs	loc_0299B1
 	ldy	difficulty
 	lda	rng_lo
@@ -1599,7 +1634,7 @@ loc_0299C3:
 	rtl
 loc_0299CE:
 	ldx	#$0DC0
-	jsr	a:sub_029A23
+	jsr	a:td_place_enemy_near_player
 	bcs	loc_0299DF
 	lda	#$000F
 	sta	$10,x
@@ -1608,20 +1643,21 @@ loc_0299CE:
 loc_0299DF:
 	rtl
 
-sub_0299E0:
+; Stage 5 enemy generator (as spawn_stage2_enemies, type $0C).
+spawn_stage5_enemies:
 	lda	stage_frame_counter
 	bit	#$0200
 	beq	loc_0299EE
-	jsl	f:sub_029BA9
+	jsl	f:td_check_enemies_alive
 	bcc	loc_029A11
 	rtl
 loc_0299EE:
-	jsl	f:sub_029B94
+	jsl	f:td_find_free_enemy_slot
 	bcc	loc_0299F5
 loc_0299F4:
 	rtl
 loc_0299F5:
-	jsr	a:sub_029A23
+	jsr	a:td_place_enemy_near_player
 	bcs	loc_0299F4
 	ldy	difficulty
 	lda	rng_lo
@@ -1637,7 +1673,7 @@ loc_029A06:
 	rtl
 loc_029A11:
 	ldx	#$0DC0
-	jsr	a:sub_029A23
+	jsr	a:td_place_enemy_near_player
 	bcs	loc_029A22
 	lda	#$000C
 	sta	$10,x
@@ -1646,8 +1682,9 @@ loc_029A11:
 loc_029A22:
 	rtl
 
-sub_029A23:
-	jsr	a:sub_029A49
+; Enemy X at a random offset from a player (td_pick_spawn_player).
+td_place_enemy_near_player:
+	jsr	a:td_pick_spawn_player
 	bcs	loc_029A48
 	lda	rng_lo
 	and	#$00FF
@@ -1667,7 +1704,8 @@ sub_029A23:
 loc_029A48:
 	rts
 
-sub_029A49:
+; zp_FC/zp_FE = position of a living player (random in 2P); carry set if none.
+td_pick_spawn_player:
 	lda	a:title_menu_cursor
 	bne	loc_029A61
 	lda	a:p1_lives
@@ -1800,7 +1838,8 @@ loc_029B0D:
 	clc
 	rtl
 
-sub_029B21:
+; Clears the $40-byte slot X.
+clear_topdown_slot:
 	phx
 	phy
 	phb
@@ -1885,7 +1924,8 @@ loc_029B92:
 	sec
 	rtl
 
-sub_029B94:
+; X = a free slot in $0DC0-$0EBF; carry set when none.
+td_find_free_enemy_slot:
 	ldx	#$0DC0
 loc_029B97:
 	lda	$10,x
@@ -1901,7 +1941,8 @@ loc_029B9D:
 	bcc	loc_029B97
 	rtl
 
-sub_029BA9:
+; Carry set when a slot of $0DC0-$0EBF is in use.
+td_check_enemies_alive:
 	phx
 	ldx	#$0DC0
 loc_029BAD:
@@ -2044,7 +2085,8 @@ loc_029C7E:
 sub_029C7F:
 	jsl	f:sub_1DAD8A
 
-sub_029C83:
+; Adds the velocity (+$18/+$1A, +$1C/+$1E) to the position (+$08/+$0A, +$0C/+$0E).
+move_topdown_object:
 	clc
 	lda	$08,x
 	adc	$18,x
@@ -2065,14 +2107,15 @@ sub_029C9E:
 	ldx	#$0B40
 	bra	loc_029CA6
 
-sub_029CA3:
+; Runs the enemies ($0D40-$0EBF): handler by type (tbl_td_enemy_types), animation, hit flash.
+td_update_enemies:
 	ldx	#$0D40
 loc_029CA6:
 	lda	$10,x
 	beq	loc_029CB6
-	jsl	f:sub_029CC2
-	jsl	f:sub_029D44
-	jsl	f:sub_029D88
+	jsl	f:td_run_enemy_handler
+	jsl	f:td_animate_enemy
+	jsl	f:td_flash_enemy_on_hit
 loc_029CB6:
 	txa
 	clc
@@ -2084,16 +2127,16 @@ loc_029CB6:
 sub_029CC1:
 	rtl
 
-sub_029CC2:
+td_run_enemy_handler:
 	lda	$10,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_029CD1,x
+	lda	f:tbl_td_enemy_types,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_029CD1:
+tbl_td_enemy_types:
 	.addr	sub_029CC1
 	.addr	sub_029F48
 	.addr	sub_029EA4
@@ -2151,15 +2194,16 @@ sub_029D31:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_029D3B
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_029D3B:
 	lda	$28,x
 	bne	loc_029D43
-	jml	f:sub_029B21
+	jml	f:clear_topdown_slot
 loc_029D43:
 	rtl
 
-sub_029D44:
+; Steps the animation script at +$28 (entries of 3 words).
+td_animate_enemy:
 	ldy	$28,x
 	beq	loc_029D6E
 	dec	$22,x
@@ -2198,7 +2242,8 @@ loc_029D74:
 	sta	$02,x
 	rtl
 
-sub_029D88:
+; Hit flash: palette swapped to 3 for a frame when +$2E bit 6 is set.
+td_flash_enemy_on_hit:
 	lda	stage_frame_counter
 	bit	#$0001
 	bne	loc_029DAB
@@ -2293,7 +2338,7 @@ loc_029E16:
 sub_029E1F:
 	lda	#$000C
 	jsl	f:sub_1DAD8A
-	jsl	f:sub_029C83
+	jsl	f:move_topdown_object
 	jsl	f:sub_02C086
 	rts
 
@@ -2381,7 +2426,7 @@ sub_029EBD:
 	lda	$2E,x
 	bit	#$0003
 	beq	loc_029EC7
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_029EC7:
 	stz	$3E,x
 	stz	$3C,x
@@ -2400,7 +2445,7 @@ sub_029EDE:
 	lda	$2E,x
 	bit	#$0003
 	beq	loc_029EE8
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_029EE8:
 	inc	$12,x
 	rtl
@@ -2422,7 +2467,7 @@ sub_029EEB:
 loc_029F0A:
 	dec	$24,x
 	bpl	loc_029F11
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_029F11:
 	lda	$2E,x
 	bit	#$0003
@@ -2440,7 +2485,7 @@ sub_029F24:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_029F32
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_029F32:
 	jsl	f:sub_029DCD
 	rtl
@@ -2487,7 +2532,7 @@ sub_029F61:
 loc_029F80:
 	dec	$24,x
 	bpl	loc_029F87
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_029F87:
 	lda	$2E,x
 	bit	#$0003
@@ -2508,7 +2553,7 @@ sub_029FA7:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_029FB1
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_029FB1:
 	lda	$06,x
 	bmi	loc_02A012
@@ -2534,7 +2579,7 @@ sub_029FD8:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_029FE2
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_029FE2:
 	lda	$06,x
 	bmi	loc_02A012
@@ -2574,7 +2619,7 @@ loc_02A023:
 	lda	a:$0012,y
 	cmp	#$0001
 	bne	loc_02A030
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02A030:
 	cmp	#$0003
 	bne	loc_02A038
@@ -2684,7 +2729,7 @@ loc_02A0EC:
 	lda	a:$0012,y
 	cmp	#$0001
 	bne	loc_02A0F9
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02A0F9:
 	cmp	#$0003
 	bne	loc_02A101
@@ -2753,7 +2798,7 @@ loc_02A16E:
 	lda	a:$0012,y
 	cmp	#$0001
 	bne	loc_02A17B
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02A17B:
 	cmp	#$0003
 	bne	loc_02A183
@@ -3038,13 +3083,13 @@ loc_02A398:
 loc_02A39A:
 	phx
 	ldx	#$0E80
-	jsl	f:sub_029B21
+	jsl	f:clear_topdown_slot
 	ldx	#$0E40
-	jsl	f:sub_029B21
+	jsl	f:clear_topdown_slot
 	ldx	#$0E00
-	jsl	f:sub_029B21
+	jsl	f:clear_topdown_slot
 	plx
-	jsl	f:sub_029B21
+	jsl	f:clear_topdown_slot
 	rtl
 
 sub_02A3B6:
@@ -3350,7 +3395,7 @@ sub_02A5FB:
 	sta	$04,x
 	lda	$24,x
 	jsl	f:sub_1DAD8A
-	jsl	f:sub_029C83
+	jsl	f:move_topdown_object
 	pla
 	clc
 	adc	#$0010
@@ -3367,7 +3412,7 @@ sub_02A625:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_02A62F
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02A62F:
 	lda	$06,x
 	bmi	loc_02A678
@@ -3401,7 +3446,7 @@ sub_02A665:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_02A66F
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02A66F:
 	dec	$24,x
 	bmi	loc_02A61B
@@ -3634,7 +3679,7 @@ sub_02A82F:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_02A83D
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02A83D:
 	jsl	f:sub_029DCD
 	rtl
@@ -3649,7 +3694,7 @@ sub_02A849:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_02A857
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02A857:
 	lda	$24,x
 	cmp	#$0020
@@ -3697,7 +3742,7 @@ sub_02A88D:
 loc_02A8AC:
 	dec	$24,x
 	bpl	loc_02A8B3
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02A8B3:
 	lda	$2E,x
 	bit	#$0003
@@ -3715,7 +3760,7 @@ sub_02A8C6:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_02A8D4
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02A8D4:
 	jsl	f:sub_029DCD
 	rtl
@@ -3758,7 +3803,7 @@ sub_02A8FE:
 loc_02A91D:
 	dec	$24,x
 	bpl	loc_02A924
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02A924:
 	lda	$2E,x
 	bit	#$0003
@@ -3777,7 +3822,7 @@ sub_02A93F:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_02A949
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02A949:
 	lda	$06,x
 	bpl	loc_02A950
@@ -3802,7 +3847,7 @@ sub_02A96C:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_02A976
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02A976:
 	lda	$06,x
 	bpl	loc_02A97D
@@ -3935,7 +3980,7 @@ sub_02AA47:
 sub_02AA6B:
 	lda	$20,x
 	bne	sub_02AA72
-	brl	sub_029B21
+	brl	clear_topdown_slot
 
 sub_02AA72:
 	rtl
@@ -3979,7 +4024,7 @@ sub_02AA86:
 sub_02AAB2:
 	lda	$20,x
 	bne	loc_02AAB9
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02AAB9:
 	rtl
 
@@ -4019,7 +4064,7 @@ loc_02AADA:
 sub_02AAF5:
 	dec	$24,x
 	bpl	loc_02AAFC
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02AAFC:
 	rtl
 
@@ -4189,8 +4234,8 @@ sub_02AC09:
 loc_02AC0C:
 	lda	$10,x
 	beq	loc_02AC17
-	jsl	f:sub_02AC3D
-	jsr	a:sub_02ACCC
+	jsl	f:run_map_object_handler
+	jsr	a:update_map_object_block
 loc_02AC17:
 	txa
 	clc
@@ -4200,13 +4245,15 @@ loc_02AC17:
 	bcc	loc_02AC0C
 	rtl
 
-sub_02AC23:
+; Runs the map objects ($0AC0-$0D3F: targets, turrets, boss parts) by type
+; (tbl_map_object_types), then update_map_object_block.
+update_map_objects:
 	ldx	#$0AC0
 loc_02AC26:
 	lda	$10,x
 	beq	loc_02AC31
-	jsl	f:sub_02AC3D
-	jsr	a:sub_02ACCC
+	jsl	f:run_map_object_handler
+	jsr	a:update_map_object_block
 loc_02AC31:
 	txa
 	clc
@@ -4218,15 +4265,15 @@ loc_02AC31:
 sub_02AC3C:
 	rtl
 
-sub_02AC3D:
+run_map_object_handler:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02AC4A,x
+	lda	f:tbl_map_object_types,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02AC4A:
+tbl_map_object_types:
 	.addr	sub_02AC3C
 	.addr	sub_02F9F6
 	.addr	sub_02F8D4
@@ -4296,7 +4343,9 @@ loc_02ACCA:
 loc_02ACCB:
 	rtl
 
-sub_02ACCC:
+; Map objects are drawn in the Mode 7 tilemap: when the block wanted
+; (+$20) changes, queues it at VRAM address +$26 (queue_m7_block_patch).
+update_map_object_block:
 	lda	$20,x
 	cmp	$28,x
 	beq	loc_02ACE1
@@ -5266,7 +5315,7 @@ loc_02B3EB:
 	sta	$20,x
 	cmp	$28,x
 	bne	loc_02B3F7
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02B3F7:
 	rtl
 
@@ -5450,7 +5499,7 @@ loc_02B529:
 	beq	loc_02B528
 	jsr	a:sub_02B545
 	bcs	loc_02B544
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02B544:
 	rtl
 
@@ -5514,7 +5563,7 @@ sub_02B5A4:
 
 sub_02B5B2:
 	jsl	f:sub_02B5BA
-	jml	f:sub_029D88
+	jml	f:td_flash_enemy_on_hit
 
 sub_02B5BA:
 	jsl	f:sub_029DBA
@@ -5638,7 +5687,7 @@ loc_02B69A:
 	sta	$20,x
 	cmp	$28,x
 	bne	loc_02B6AD
-	brl	sub_029B21
+	brl	clear_topdown_slot
 loc_02B6AD:
 	rtl
 
@@ -5817,7 +5866,9 @@ loc_02B7E2:
 	dec	a:wram_15D0
 	rtl
 
-sub_02B7E6:
+; Runs the shots: player 1's ($0480-$06FF), player 2's ($0700-$097F) and the
+; others ($0300-$047F), by type + 8 (tbl_topdown_shot_types).
+update_topdown_shots:
 	ldy	#$0EC0
 	sty	zp_18
 	lda	a:$0002,y
@@ -5827,7 +5878,7 @@ sub_02B7E6:
 loc_02B7F6:
 	lda	$10,x
 	beq	loc_02B7FE
-	jsl	f:sub_02B845
+	jsl	f:run_topdown_shot_handler
 loc_02B7FE:
 	txa
 	clc
@@ -5845,7 +5896,7 @@ loc_02B7FE:
 loc_02B81B:
 	lda	$10,x
 	beq	loc_02B823
-	jsl	f:sub_02B845
+	jsl	f:run_topdown_shot_handler
 loc_02B823:
 	txa
 	clc
@@ -5858,7 +5909,7 @@ loc_02B82E:
 loc_02B831:
 	lda	$10,x
 	beq	loc_02B839
-	jsl	f:sub_02B845
+	jsl	f:run_topdown_shot_handler
 loc_02B839:
 	txa
 	clc
@@ -5868,17 +5919,17 @@ loc_02B839:
 	bcc	loc_02B831
 	rtl
 
-sub_02B845:
+run_topdown_shot_handler:
 	clc
 	adc	#$0008
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02B856,x
+	lda	f:tbl_topdown_shot_types,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02B856:
+tbl_topdown_shot_types:
 	.addr	sub_02B914
 	.addr	sub_02B914
 	.addr	sub_02B914
