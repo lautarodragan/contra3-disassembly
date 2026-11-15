@@ -727,7 +727,7 @@ stage_layout           = $1670	; side-view stage layout x2 (stage_layouts[stage_
 wram_1672           = $1672
 wram_1673           = $1673
 scroll_split_y      = $1674	; vertical position the scroll-split HDMA table is built for (build_scroll_split_hdma)
-scroll_split_pattern = $1676	; scroll-split pattern, 1-based index into data_05A25A; 0 = off
+scroll_split_pattern = $1676	; scroll-split pattern, 1-based index into ptrs_scroll_split_patterns; 0 = off
 song_change_state   = $1678	; state of update_song_change (stage_frame): 0 idle, 1 delay, 2 stop the music (sound $84), 3 wait for the upload of song_change_set
 song_change_wait    = $167A	; update_song_change: frames to wait after requesting the song set
 wram_167C           = $167C

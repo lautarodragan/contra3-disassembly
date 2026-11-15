@@ -33,7 +33,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import srcmap  # noqa: E402
 
-LINE_RE = re.compile(r"^(?:(@?[A-Za-z_][A-Za-z0-9_]*):)?\s*([a-z]{3})?\b\s*([^;]*?)\s*(?:;.*)?$")
+LINE_RE = re.compile(r"^(?:(@?[A-Za-z_][A-Za-z0-9_]*):)?\s*(?:([a-z]{3})\b)?\s*([^;]*?)\s*(?:;.*)?$")
 READ_RE = re.compile(r"^(?:a:|f:)?([A-Za-z_][A-Za-z0-9_]*)(?:\s*\+\s*\$?[0-9A-Fa-f]+)?(?:,([xy]))?$")
 SMALL_ABS = re.compile(r"^a:\$00[0-9A-F]{2},([xy])$")
 CONSUMERS_A = re.compile(r"^(make_effect_object|spawn_effect\w*|start_palette_task\w*|draw_text\w*"
@@ -111,6 +111,15 @@ def follow(ins, i, reg, labels_at, db_at):
                 return "ptr", "%s %s with DB=%s at line %d" % (op, arg, ",".join("%02X" % d for d in sorted(dbs)), n)
         if op in ("jsl", "jsr", "jml", "jmp"):
             target = arg.split(":")[-1]
+            j = labels_at.get(target)
+            if j is not None and stores:
+                # a routine of the same file that reads a stored copy indirectly
+                for n2, op2, arg2 in ins[j:j + 60]:
+                    hit = [s for s in stores if re.search(r"[(\[]%s[)\]]" % re.escape(s), arg2)]
+                    if hit:
+                        return "ptr", "(%s) in %s at line %d" % (hit[0], target, n2)
+                    if op2 in ("rts", "rtl"):
+                        break
             if target == "queue_vram_blocks" and "y" in regs:
                 return "ptr", "Y to queue_vram_blocks at line %d" % n
             if target == "load_data_list" and "x" in regs:

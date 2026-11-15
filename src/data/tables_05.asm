@@ -1572,25 +1572,54 @@ hdma_list_05A23C:
 hdma_list_05A24F:
 	hdma_channel_ind	$4370, $02, $11, $7E3820, $7E
 	hdma_channels_end	$80
-data_05A25A:
+; Split-screen scroll patterns (scroll_split_pattern 1-3, build_scroll_split_hdma):
+; each a list of line tables (split_lines_*) chosen by the high byte of
+; scroll_split_y; a line table is entries of {line, value...} read by
+; build_split_line_table.
+ptrs_scroll_split_patterns:
 	; CDL: read by build_scroll_split_hdma, build_split_line_table; partly not accessed
-	.byte	$60, $A2, $66, $A2, $6A, $A2, $70, $A2, $78, $A2, $BC, $A2, $DC, $A2, $EC, $A2
-	.byte	$20, $A3, $40, $A3, $50, $A3, $00, $00, $02, $00, $7F, $00, $02, $00, $00, $01
+	.addr	scroll_split_pattern_1
+	.addr	scroll_split_pattern_2
+	.addr	scroll_split_pattern_3
+scroll_split_pattern_1:
+	.addr	split_lines_05A270
+	.addr	split_lines_05A278
+	.addr	split_lines_05A2BC
+scroll_split_pattern_2:
+	.addr	split_lines_05A2DC
+	.addr	split_lines_05A2EC
+scroll_split_pattern_3:
+	.addr	split_lines_05A320
+	.addr	split_lines_05A340
+	.addr	split_lines_05A350
+split_lines_05A270:
+	.byte	$00, $00, $02, $00, $7F, $00, $02, $00
+split_lines_05A278:
+	.byte	$00, $01
 	.byte	$00, $00, $70, $01, $00, $00, $78, $01, $00, $1C, $80, $01, $00, $1A, $88, $01
 	.byte	$00, $18, $90, $01, $00, $16, $98, $01, $00, $14, $A0, $01, $00, $12, $A8, $01
 	.byte	$00, $10, $C0, $01, $00, $0E, $C8, $01, $00, $0C, $D0, $01, $00, $0A, $D8, $01
 	.byte	$00, $08, $E0, $01, $00, $06, $E8, $01, $00, $04, $F0, $01, $00, $02, $F8, $01
-	.byte	$00, $04, $00, $02, $00, $06, $08, $02, $00, $08, $10, $02, $00, $0A, $18, $02
+	.byte	$00, $04
+split_lines_05A2BC:
+	.byte	$00, $02, $00, $06, $08, $02, $00, $08, $10, $02, $00, $0A, $18, $02
 	.byte	$00, $0C, $20, $02, $00, $0E, $8F, $02, $02, $00, $DF, $02, $02, $00, $FF, $7F
-	.byte	$00, $00, $00, $00, $02, $00
+	.byte	$00, $00
+split_lines_05A2DC:
+	.byte	$00, $00, $02, $00
 	; CDL: read by build_split_line_table
-	.byte	$7F, $00, $02, $00, $C0, $00, $02, $00, $E0, $00, $02, $00, $00, $01, $00, $0E
+	.byte	$7F, $00, $02, $00, $C0, $00, $02, $00, $E0, $00, $02, $00
+split_lines_05A2EC:
+	.byte	$00, $01, $00, $0E
 	.byte	$18, $01, $02, $00, $28, $01, $00, $0E, $50, $01, $00, $10, $58, $01, $00, $0C
 	.byte	$60, $01, $00, $0A, $68, $01, $00, $08, $70, $01, $00, $06, $80, $01, $00, $04
 	.byte	$90, $01, $00, $02, $A0, $01, $00, $18, $B0, $01, $00, $16, $FF, $7F, $00, $14
+split_lines_05A320:
 	.byte	$20, $00, $00, $04, $39, $00, $00, $06, $60, $00, $00, $08, $80, $00, $00, $04
 	.byte	$99, $00, $00, $06, $C0, $00, $00, $08, $E0, $00, $00, $04, $FF, $00, $00, $06
+split_lines_05A340:
 	.byte	$18, $01, $00, $08, $28, $01, $00, $06, $7F, $01, $04, $00, $FF, $01, $04, $00
+split_lines_05A350:
 	.byte	$00, $02, $04, $00, $7F, $02, $04, $00, $FF, $7F, $04, $00
 tbl_05A35C:
 	.addr	split_value_from_table

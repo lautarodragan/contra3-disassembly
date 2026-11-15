@@ -15,7 +15,7 @@
 ; and channel 4 for COLDATA (table at zp_C6).
 ;
 ; build_scroll_split_hdma builds, from a pattern (scroll_split_pattern,
-; data_05A25A) and a position (scroll_split_y), an indirect HDMA table at
+; ptrs_scroll_split_patterns) and a position (scroll_split_y), an indirect HDMA table at
 ; $7E:D000 / values at $7E:D400 that splits the screen in horizontal bands
 ; with their own scroll (each band's value comes from a handler: BG1 x, BG2 x
 ; or a table); nmi_frame_side_view copies them to $7E:D200 / $7E:D800.
@@ -347,7 +347,7 @@ build_scroll_split_hdma:
 	tay
 	lda	#$D000	; [num]
 	sta	zp_00
-	lda	a:data_05A25A,y
+	lda	a:ptrs_scroll_split_patterns,y
 	sta	zp_04
 	lda	#$D400	; [num]
 	phx
@@ -527,7 +527,7 @@ unused_debug_scroll_split:
 	sta	a:scroll_split_y
 	lda	#$D000	; [num]
 	sta	zp_00
-	lda	#.loword(data_05A25A + $6)
+	lda	#.loword(ptrs_scroll_split_patterns + $6)
 	sta	zp_04
 	lda	#$D400	; [num]
 	rts
