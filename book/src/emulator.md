@@ -75,14 +75,23 @@ make goldens                       # rewrite tests/goldens/*.png from the curren
   input, infinite lives and bombs and the barrier kept on. 15 plays: every
   stage from its start and from its midpoint (the bosses, the stage
   transitions, the NORMAL ending of stage 6), 2-player modes A and B (the
-  top-down split screen), HARD; plus the attract sequence. Every 300 frames
-  the screen (15-bit), VRAM and the audio since the last checkpoint are
-  hashed and compared with `tests/goldens/play/<play>.json` (hashes only,
+  top-down split screen), HARD; plus the attract sequence. Every 60 frames
+  the screen (15-bit) and the audio since the last checkpoint are hashed
+  and compared with `tests/goldens/play/<play>.json` (hashes only,
   taken from the original ROM). On a mismatch the first differing
   checkpoint is reported and the actual frame, the original ROM's frame and
   a diff go to `out/play/`. The plays run in parallel (`C3_JOBS`, default
   the CPU count); about 330,000 frames, 100 s on 4 cores.
 * `test_cdl.py`: sanity checks of the tracer (skipped on a core without it).
+* `test_cheats.py`: the build-time cheats of the disassembly (milestone 4).
+  Builds cheat ROMs from the disassembly checkout (`C3_DISASM`, default
+  `../contra3-disassembly`; needs cc65) with its `tools/cheats.py` and checks
+  them through RAM reads, mostly against the original doing the same:
+  lives that don't go down after deaths (side view and top-down), no deaths
+  with invincibility, respawn instead of a pit death, weapons kept, start
+  values, continues, bombs, fire rate, doubled damage, scaled enemy HP,
+  stage select, the title button codes, the debug keys, 30 lives in OPTION.
+  About 3 minutes; `make cheat-test` in the disassembly runs it.
 
 `make test TESTS="tests/test_screens.py tests/test_play.py"` runs only some
 files (the disassembly's shift test does this: `test_cdl.py` checks the
