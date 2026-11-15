@@ -1,11 +1,21 @@
 ; objects/object_handlers_00b.asm -- Object handlers (bank $00, part 2)
 ; Bank $00, $00:DDC8-$00:E1B7. Included by main.asm in segment BANK00.
 ;
-; Handlers of the secondary object list (tbl_shot_types, see
-; objects/secondary_objects.asm) and object slot helpers:
-; sub_00E122/sub_00E134 find a free slot, sub_00E16E.
+; Handlers of the player shots (tbl_shot_types, see
+; objects/secondary_objects.asm) and helpers: find_free_shot_slot_up_to and
+; sub_00E134 find a free shot slot, get_bg_tile_at_object reads the BG map
+; under an object.
+;
+; Shot types by weapon (spawners in objects/player_shots.asm; SHOT_DAMAGE
+; in brackets): $01 default gun (2), $02 spread (2; becomes $01 after its
+; first frame), $03 crush missile (4) whose blast is made of $0D shots (4),
+; $04 homing missile (2), $05 / $06 flame (the first slot $05, the others
+; $06), $0B / $0C laser segments (the second slot $0C, damage 3 once their
+; delay ran out). $15: a shot that hit something without destroying it,
+; bouncing back (damage 0). The other types are not identified.
 
-sub_00DDC8:
+; Shot type $02: spread gun bullet, first frame (then type $01).
+update_spread_shot:
 	lda	$04,x
 	bmi	loc_00DDEB
 	bne	loc_00DDE9
@@ -17,7 +27,9 @@ sub_00DDC8:
 	sta	$04,x
 	bra	loc_00DDEB
 
-sub_00DDDF:
+; Shot type $01: bullet of the default gun (also the spread shots after their
+; first frame); on a hit it bounces back as type $15.
+update_default_shot:
 	lda	$04,x
 	bmi	loc_00DDEB
 	bne	loc_00DDE9
@@ -63,7 +75,9 @@ loc_00DE20:
 loc_00DE2C:
 	rtl
 
-sub_00DE2D:
+; Shot type $03: crush missile; once its field $04 is 0 it explodes into type
+; $0D blast shots around it, one per frame for field $14 frames.
+update_crush_shot:
 	lda	$04,x
 	bne	loc_00DE18
 	dec	$14,x
@@ -120,7 +134,9 @@ loc_00DE63:
 	sta	rng_hi
 	rtl
 
-sub_00DE9C:
+; Shot type $04: homing missile: steers towards the next OBJF_TARGET object
+; (round robin from wram_1646) by 6 units of direction per frame.
+update_homing_shot:
 	lda	$16,x
 	beq	loc_00DEA3
 	brl	loc_00DDEF
@@ -229,7 +245,7 @@ loc_00DF38:
 	sta	$02,x
 	rtl
 
-sub_00DF62:
+update_shot_type_05:
 	dec	$00,x
 	bpl	loc_00DF72
 	lda	#$8000
@@ -240,7 +256,7 @@ sub_00DF62:
 loc_00DF72:
 	rtl
 
-sub_00DF73:
+update_shot_type_06:
 	dec	$00,x
 	bpl	loc_00DF89
 	stz	$06,x
@@ -312,7 +328,7 @@ loc_00DFCA:
 	sta	a:$0006,y
 	rtl
 
-sub_00DFF9:
+update_shot_type_07:
 	lda	$16,x
 	bpl	loc_00DF9A
 	clc
@@ -359,7 +375,7 @@ loc_00E029:
 loc_00E049:
 	rtl
 
-sub_00E04A:
+update_shot_type_08:
 	dec	$04,x
 	bne	loc_00E054
 	lda	#$8000
@@ -374,9 +390,11 @@ loc_00E054:
 	sta	$02,x
 	rtl
 
-sub_00E060:
+; Shot types $0A and $0B: laser segment, inactive (damage 0) until its delay
+; (field $04) runs out, then damage 3.
+update_laser_shot:
 	lda	$04,x
-	beq	sub_00E072
+	beq	update_shot_type_09
 	dec	$04,x
 	bne	loc_00E071
 	lda	#$0003
@@ -386,7 +404,7 @@ sub_00E060:
 loc_00E071:
 	rtl
 
-sub_00E072:
+update_shot_type_09:
 	lda	$16,x
 	bmi	loc_00E08B
 	lda	#$0008
@@ -412,7 +430,7 @@ loc_00E097:
 	sta	$02,x
 	rtl
 
-sub_00E09F:
+update_shot_type_0C:
 	dec	$04,x
 	beq	loc_00E0AF
 	lda	stage_frame_mod8
@@ -426,7 +444,9 @@ loc_00E0AF:
 	sta	$0A,x
 	rtl
 
-sub_00E0B5:
+; Shot type $0D: one blast of the crush missile (damage 4, or 8 from type
+; $07), frees itself when field $04 runs out.
+update_crush_blast:
 	lda	$16,x
 	beq	loc_00E0BB
 	stz	$06,x
@@ -445,7 +465,7 @@ loc_00E0C7:
 	sta	$02,x
 	rtl
 
-sub_00E0D3:
+update_shot_type_0E:
 	; (not executed in the CDL traces)
 	dec	$04,x
 	bne	loc_00E0DC
@@ -454,7 +474,7 @@ sub_00E0D3:
 loc_00E0DC:
 	rtl
 
-sub_00E0DD:
+update_shot_type_10:
 	clc
 	lda	$18,x
 	adc	#$1000
@@ -475,7 +495,7 @@ loc_00E0FC:
 	sta	$0A,x
 	rtl
 
-sub_00E102:
+update_shot_type_13:
 	; (not executed in the CDL traces)
 	dec	$04,x
 	bne	loc_00E10B
@@ -484,7 +504,9 @@ sub_00E102:
 loc_00E10B:
 	rtl
 
-sub_00E10C:
+; Shot type $15: a shot that hit without destroying its target, flying back
+; with damage 0 until field $04 runs out.
+update_spent_shot:
 	dec	$04,x
 	bne	loc_00E116
 	lda	#$8000
@@ -498,7 +520,9 @@ loc_00E116:
 	sta	$02,x
 	rtl
 
-sub_00E122:
+; Returns in X the first free shot slot from X up to zp_06, carry clear;
+; carry set when there is none.
+find_free_shot_slot_up_to:
 	lda	$10,x
 	beq	loc_00E132
 	txa
@@ -506,7 +530,7 @@ sub_00E122:
 	adc	#$0020
 	tax
 	cmp	zp_06
-	bne	sub_00E122
+	bne	find_free_shot_slot_up_to
 	sec
 	rtl
 loc_00E132:
@@ -553,7 +577,10 @@ loc_00E16A:
 	lda	#$0000
 	rtl
 
-sub_00E16E:
+; Returns in A the BG map entry ($7E:4000) under the object at X plus the
+; offset (zp_00, zp_02); 0 when below the screen (y >= $E0). Used for floor
+; and wall collision.
+get_bg_tile_at_object:
 	clc
 	lda	$0E,x
 	adc	zp_02

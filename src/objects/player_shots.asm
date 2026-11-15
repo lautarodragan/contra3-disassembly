@@ -4,7 +4,7 @@
 ; fire_weapon (fire button) and spin_fire_weapon_1/2 (spin jump) dispatch
 ; by weapon (WEAPON_*) through tbl_fire_weapon / tbl_spin_fire_1 /
 ; tbl_spin_fire_2 to the spawners, which allocate slots of the shot list
-; (sub_00E122 and friends) and set position, velocity (64-direction tables
+; (find_free_shot_slot_up_to and friends) and set position, velocity (64-direction tables
 ; vel8_x_sub, vel8_x, vel8_y_sub, vel8_y indexed by the angle),
 ; SHOT_TYPE, SHOT_DAMAGE and SHOT_ATTR.  The shots' handlers are in
 ; objects/object_handlers_00b.asm (tbl_shot_types).
@@ -181,7 +181,7 @@ loc_00D769:
 
 ; WEAPON_DEFAULT: one shot (shot type 1, damage 2) at angle zp_12; sound 4.
 spawn_shot_default:
-	jsl	f:sub_00E122
+	jsl	f:find_free_shot_slot_up_to
 	bcs	loc_00D769
 	lda	#$0001
 	sta	SHOT_TYPE,x

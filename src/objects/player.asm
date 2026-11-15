@@ -1361,7 +1361,7 @@ sub_01AF3C:
 	stz	zp_00
 	lda	#$FFE0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$0002
 	beq	loc_01AF54
 	lda	#$0005
@@ -1372,7 +1372,7 @@ loc_01AF54:
 	sta	zp_00
 	lda	#$FFE0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$0002
 	beq	sub_01AF6F
 	lda	#$0002
@@ -1385,11 +1385,11 @@ sub_01AF6F:
 sub_01AF72:
 	sta	zp_02
 	stz	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_04
 	lda	#$0006
 	sta	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_06
 	lda	zp_06
 	bit	#$0182

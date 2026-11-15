@@ -14,10 +14,12 @@ sub_01CF8B:
 	adc	$32,x
 	sta	$1E,x
 
-sub_01CF98:
+; Object type $46: becomes an explosion effect (type $1D) where there is a
+; solid BG tile (stage 3 boss).
+update_debris_explosion:
 	stz	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	beq	loc_01CFBA
 	lda	#$C59A
 	sta	$20,x
@@ -32,10 +34,12 @@ sub_01CF98:
 loc_01CFBA:
 	rtl
 
-sub_01CFBB:
+; Object type $4B: becomes a type $1D effect flying in a random direction
+; (stage 3 boss).
+update_debris_spark:
 	stz	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	beq	loc_01CFF4
 
 sub_01CFC5:
@@ -62,7 +66,9 @@ sub_01CFC5:
 loc_01CFF4:
 	rtl
 
-sub_01CFF5:
+; Object type $1D: effect (explosion, spark, fire): plays OBJ_ANIM and frees
+; itself when the script ends (make_effect_object).
+update_effect:
 	ldy	$20,x
 	bne	loc_01CFFF
 	lda	#$8000
@@ -87,7 +93,7 @@ loc_01D015:
 	jsl	f:find_free_slot_y_down
 	bcc	loc_01D044
 	lda	#$C558
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	a:data_0593CA,x
 	sta	a:$001E,y
 	lda	a:data_0593DA,x
@@ -118,7 +124,9 @@ loc_01D05B:
 	plx
 	rtl
 
-sub_01D05D:
+; Object type $1E: alien dog that jumps out at the player (stage 1 sections
+; 2-3; seen in the emulator).
+update_alien_dog:
 	lda	$06,x
 	bpl	loc_01D064
 	jmp	a:loc_01D149
@@ -127,19 +135,19 @@ loc_01D064:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01D073,x
+	lda	f:tbl_alien_dog_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01D073:
-	.addr	sub_01D07F
-	.addr	sub_01D09E
-	.addr	sub_01D0F3
-	.addr	sub_01D132
-	.addr	sub_01D140
-	.addr	sub_01D17F
+tbl_alien_dog_states:
+	.addr	alien_dog_state_00
+	.addr	alien_dog_state_01
+	.addr	alien_dog_state_02
+	.addr	alien_dog_state_03
+	.addr	alien_dog_state_04
+	.addr	alien_dog_state_05
 
-sub_01D07F:
+alien_dog_state_00:
 	lda	#$0003
 	sta	$16,x
 	lda	#$3800
@@ -155,7 +163,7 @@ sub_01D07F:
 	stz	$22,x
 	inc	$12,x
 
-sub_01D09E:
+alien_dog_state_01:
 	jsr	a:sub_01D0A4
 	bcc	loc_01D0E8
 	rtl
@@ -208,7 +216,7 @@ loc_01D0E8:
 	stz	$22,x
 	inc	$12,x
 
-sub_01D0F3:
+alien_dog_state_02:
 	lda	difficulty
 	beq	loc_01D0FC
 	jsr	a:sub_01D0C6
@@ -239,7 +247,7 @@ loc_01D0FD:
 	stz	$22,x
 	inc	$12,x
 
-sub_01D132:
+alien_dog_state_03:
 	lda	$0E,x
 	cmp	#$00C8
 	bcs	loc_01D13A
@@ -249,7 +257,7 @@ loc_01D13A:
 	stz	$1C,x
 	inc	$12,x
 
-sub_01D140:
+alien_dog_state_04:
 	lda	$3E,x
 	beq	loc_01D148
 	; (not executed in the CDL traces)
@@ -281,7 +289,7 @@ loc_01D149:
 	sta	$12,x
 	rtl
 
-sub_01D17F:
+alien_dog_state_05:
 	dec	$24,x
 	bne	loc_01D1A1
 	lda	$0A,x
@@ -296,7 +304,7 @@ sub_01D17F:
 	stz	$1A,x
 	txy
 	lda	#$C4CE
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	rtl
 loc_01D1A1:
 	clc
@@ -308,7 +316,9 @@ loc_01D1A1:
 	sta	$1E,x
 	rtl
 
-sub_01D1B1:
+; Object type $18: enemy bullet (sub_01A11C allocates them); deleted when it
+; touches a player.
+update_enemy_bullet:
 	lda	$12,x
 	bne	loc_01D1D2
 	lda	#$180F
@@ -337,23 +347,30 @@ sub_01D1DB:
 	sta	$02,x
 	rtl
 
-sub_01D1E7:
+; Object type $1B: killed soldier thrown back (start_dying_soldier*), then
+; an explosion effect.
+update_dying_soldier:
 	lda	$12,x
 	bne	loc_01D23C
-loc_01D1EB:
+; Entry points used by soldier handlers when killed: turn the object into
+; type $1B (thrown back, then an explosion). With sprite A and sound $0E
+; (here), $0D (start_dying_soldier_sound_0D) or $0B
+; (start_dying_soldier_sprite); start_dying_soldier takes the sprite from
+; data_05C79A by OBJ_FACING.
+start_dying_soldier_sound_0E:
 	sta	$00,x
 	lda	#$000E
 	bra	loc_01D1F7
-loc_01D1F2:
+start_dying_soldier_sound_0D:
 	sta	$00,x
 	lda	#$000D
 loc_01D1F7:
 	jsl	f:queue_sound
 	bra	loc_01D20F
-loc_01D1FD:
+start_dying_soldier_sprite:
 	sta	$00,x
 	bra	loc_01D208
-loc_01D201:
+start_dying_soldier:
 	ldy	$04,x
 	lda	a:data_05C79A,y
 	sta	$00,x
@@ -395,7 +412,7 @@ loc_01D23C:
 	stz	$1A,x
 	txy
 	lda	#$C4CE
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	rtl
 loc_01D25E:
 	clc
@@ -407,7 +424,9 @@ loc_01D25E:
 	sta	$1E,x
 	rtl
 
-sub_01D26E:
+; Object type $19: plays an animation and deletes itself; never run in the
+; CDL traces.
+update_object_type_19:
 	; (not executed in the CDL traces)
 	lda	$12,x
 	bne	loc_01D291
@@ -434,10 +453,14 @@ loc_01D291:
 loc_01D29C:
 	rtl
 
-sub_01D29D:
+; Object type $1A: explosion of a grenade (type $13): harmful for $20
+; frames, spawns type $1D sparks.
+update_grenade_blast:
 	lda	$12,x
 	bne	loc_01D2D8
-loc_01D2A1:
+; Turns the object into a grenade blast (type $1A, also entered from
+; update_grenade).
+start_grenade_blast:
 	stz	$1A,x
 	stz	$18,x
 	lda	#$FFFE
@@ -543,7 +566,9 @@ loc_01D369:
 	stz	$26,x
 	rtl
 
-sub_01D370:
+; Object type $2F: stage 1 burning section: spawns type $30 (falling fire).
+; Not identified exactly.
+update_object_type_2F:
 	lda	$12,x
 	bne	loc_01D383
 	lda	#$0004
@@ -595,7 +620,8 @@ loc_01D3B0:
 	sta	a:$001E,y
 	bra	loc_01D446
 
-sub_01D3DF:
+; Object type $2B: stage 1 burning section. Not identified.
+update_object_type_2B:
 	lda	$12,x
 	bne	loc_01D3FE
 	lda	$3A,x
@@ -660,7 +686,9 @@ loc_01D446:
 loc_01D46E:
 	rtl
 
-sub_01D46F:
+; Object type $30: stage 1 burning section: falling fire. Not identified
+; exactly.
+update_object_type_30:
 	clc
 	lda	$1C,x
 	adc	#$3000
@@ -669,7 +697,9 @@ sub_01D46F:
 	adc	#$0000
 	sta	$1E,x
 
-sub_01D47E:
+; Object type $2E: stage 1 burning section: fireball. Not identified
+; exactly.
+update_object_type_2E:
 	lda	$0E,x
 	cmp	#$00B8
 	bcc	loc_01D4BE
@@ -703,7 +733,9 @@ loc_01D4B1:
 loc_01D4BE:
 	rtl
 
-sub_01D4BF:
+; Object type $31: stage 1 burning section: flying fireball enemy, HP 64.
+; Not identified exactly.
+update_object_type_31:
 	lda	$12,x
 	bne	loc_01D4EF
 	ldy	difficulty
@@ -762,7 +794,7 @@ loc_01D52F:
 	stz	$04,x
 	txy
 	lda	#$C4CE
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_01D53D:
 	clc
 	lda	$1C,x
@@ -815,7 +847,8 @@ loc_01D591:
 loc_01D5B0:
 	rtl
 
-sub_01D5B1:
+; Object type $32: stage 1 section 10: fireballs. Not identified exactly.
+update_object_type_32:
 	lda	$06,x
 	bmi	loc_01D5D0
 	clc
@@ -841,7 +874,8 @@ loc_01D5D0:
 loc_01D5E1:
 	rtl
 
-sub_01D5E2:
+; Object type $33: stage 1 section 10. Not identified.
+update_object_type_33:
 	lda	$16,x
 	bne	loc_01D5F1
 	lda	#$0003
@@ -930,7 +964,9 @@ loc_01D693:
 	plx
 	rtl
 
-sub_01D6A3:
+; Object type $2C: stage 1 burning section: fire pillar. Not identified
+; exactly.
+update_object_type_2C:
 	lda	$12,x
 	bne	loc_01D6C5
 	ldy	difficulty
@@ -1011,7 +1047,8 @@ loc_01D712:
 loc_01D752:
 	rtl
 
-sub_01D753:
+; Object type $2D: stage 1 burning section: fire. Not identified exactly.
+update_object_type_2D:
 	clc
 	lda	$1C,x
 	adc	#$C000
@@ -1019,26 +1056,27 @@ sub_01D753:
 	lda	$1E,x
 	adc	#$0000
 	sta	$1E,x
-	jml	f:sub_01CFF5
+	jml	f:update_effect
 
-sub_01D766:
+; Object type $34: stage 1 section 2. Not identified.
+update_object_type_34:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01D775,x
+	lda	f:tbl_object_type_34_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01D775:
-	.addr	sub_01D781
-	.addr	sub_01D795
+tbl_object_type_34_states:
+	.addr	object_type_34_state_00
+	.addr	object_type_34_state_01
 	.addr	sub_01D7E2
 	.addr	sub_01D7E2
 	.addr	sub_01D831
-	.addr	sub_01D80A
+	.addr	object_type_34_state_05
 
-sub_01D781:
+object_type_34_state_00:
 	inc	$12,x
 	lda	#$0003
 	sta	$16,x
@@ -1049,7 +1087,7 @@ sub_01D781:
 	sta	$36,x
 	rtl
 
-sub_01D795:
+object_type_34_state_01:
 	lda	a:wram_0910
 	cmp	#$0017
 	bne	loc_01D7BA
@@ -1107,7 +1145,7 @@ sub_01D7E2:
 loc_01D809:
 	rtl
 
-sub_01D80A:
+object_type_34_state_05:
 	lda	stage_frame_mod8
 	bne	loc_01D830
 	lda	$0A,x
@@ -1120,7 +1158,7 @@ sub_01D80A:
 	sta	zp_06
 	ldy	#$0300
 	lda	#$C59A
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_01D830
 	lda	#$FFFE
 	sta	a:$001E,y
@@ -1146,7 +1184,7 @@ loc_01D83E:
 	lda	$36,x
 	sta	zp_06
 	ldy	#$0300
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_01D867
 	lda	stage_frame_odd
 	bne	loc_01D868
@@ -1191,7 +1229,8 @@ sub_01D8AA:
 	rep	#$20
 	rep	#$10
 
-sub_01D8AE:
+; Object type $39: stage 3. Not identified.
+update_object_type_39:
 	lda	$12,x
 	bne	loc_01D8C0
 	inc	$12,x
@@ -1237,13 +1276,14 @@ loc_01D8F4:
 loc_01D906:
 	rtl
 
-sub_01D907:
+; Object type $3A: stage 3. Not identified.
+update_object_type_3A:
 	ldy	$34,x
 	lda	a:$0016,y
 	bne	loc_01D916
 	txy
 	lda	#$C516
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_01D916:
 	jsr	a:sub_01D9D2
 	ldy	#$0200
@@ -1554,24 +1594,26 @@ loc_01DB63:
 	sec
 	rtl
 
-sub_01DB65:
+; Object types $48 and $51: stage 3 (type $51: the flying machine with a
+; searchlight, section 8). Not identified exactly.
+update_object_type_48:
 	lda	$06,x
 	bpl	loc_01DB72
 	stz	$06,x
 	lda	#$C1CC
-	jml	f:loc_01D1FD
+	jml	f:start_dying_soldier_sprite
 loc_01DB72:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01DB81,x
+	lda	f:tbl_object_type_48_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01DB81:
+tbl_object_type_48_states:
 	.addr	sub_01DB8B
-	.addr	sub_01DBE3
+	.addr	object_type_48_state_01
 	.addr	sub_01DC66
 	.addr	sub_01DB8B
 	.addr	sub_01DC66
@@ -1618,14 +1660,14 @@ loc_01DBD9:
 	inc	$12,x
 	rtl
 
-sub_01DBE3:
+object_type_48_state_01:
 	lda	$24,x
 	beq	loc_01DC1F
 	lda	#$0004
 	sta	zp_02
 	lda	#$0008
 	sta	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$0004
 	bne	loc_01DBFF
 	bit	#$2000
@@ -1692,7 +1734,7 @@ sub_01DC66:
 	bcs	loc_01DC82
 	stz	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$0004
 	bne	loc_01DC98
 	bit	#$2000
@@ -1740,7 +1782,9 @@ loc_01DCBD:
 loc_01DCCF:
 	rts
 
-sub_01DCD0:
+; Object type $49: stage 3 section 10: green shielded soldiers. Not
+; identified exactly.
+update_object_type_49:
 	lda	$0E,x
 	cmp	#$00E8
 	bcc	loc_01DCDD
@@ -1752,16 +1796,16 @@ loc_01DCDD:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01DCEC,x
+	lda	f:tbl_object_type_49_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01DCEC:
-	.addr	sub_01DCF2
-	.addr	sub_01DD00
-	.addr	sub_01DD50
+tbl_object_type_49_states:
+	.addr	object_type_49_state_00
+	.addr	object_type_49_state_01
+	.addr	object_type_49_state_02
 
-sub_01DCF2:
+object_type_49_state_00:
 	lda	#$0003
 	sta	$16,x
 	stz	$24,x
@@ -1770,7 +1814,7 @@ sub_01DCF2:
 	inc	$12,x
 	rtl
 
-sub_01DD00:
+object_type_49_state_01:
 	lda	stage_frame_counter
 	and	#$001F
 	bne	loc_01DD4F
@@ -1807,7 +1851,7 @@ loc_01DD3E:
 loc_01DD4F:
 	rtl
 
-sub_01DD50:
+object_type_49_state_02:
 	lda	$32,x
 	cmp	#$0018
 	bcs	loc_01DD68
@@ -1822,7 +1866,8 @@ sub_01DD50:
 loc_01DD68:
 	rtl
 
-sub_01DD69:
+; Object type $4A: stage 3: rolling disc (HP 6; seen in the emulator).
+update_rolling_mine:
 	lda	$06,x
 	bpl	loc_01DD81
 	lda	#$0030
@@ -1831,25 +1876,25 @@ sub_01DD69:
 	lda	#$FFFE
 	sta	$1E,x
 	lda	#$C516
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_01DD81:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01DD90,x
+	lda	f:tbl_rolling_mine_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01DD90:
-	.addr	sub_01DD9C
-	.addr	sub_01DDCF
-	.addr	sub_01DE0D
-	.addr	sub_01DE4F
-	.addr	sub_01DE82
-	.addr	sub_01DE5D
+tbl_rolling_mine_states:
+	.addr	rolling_mine_state_00
+	.addr	rolling_mine_state_01
+	.addr	rolling_mine_state_02
+	.addr	rolling_mine_state_03
+	.addr	rolling_mine_state_04
+	.addr	rolling_mine_state_05
 
-sub_01DD9C:
+rolling_mine_state_00:
 	ldy	difficulty
 	lda	#$003F
 	sta	$16,x
@@ -1873,7 +1918,7 @@ sub_01DD9C:
 	inc	$12,x
 	rtl
 
-sub_01DDCF:
+rolling_mine_state_01:
 	lda	$24,x
 	bmi	loc_01DDD5
 	dec	$24,x
@@ -1907,7 +1952,7 @@ loc_01DDF5:
 loc_01DE0C:
 	rtl
 
-sub_01DE0D:
+rolling_mine_state_02:
 	lda	$1E,x
 	bmi	loc_01DE16
 	cmp	#$0005
@@ -1943,7 +1988,7 @@ loc_01DE47:
 loc_01DE4E:
 	rtl
 
-sub_01DE4F:
+rolling_mine_state_03:
 	lda	$20,x
 	bne	loc_01DE5C
 	lda	#$0040
@@ -1953,7 +1998,7 @@ sub_01DE4F:
 loc_01DE5C:
 	rtl
 
-sub_01DE5D:
+rolling_mine_state_05:
 	lda	$20,x
 	bne	loc_01DE81
 	lda	#$0080
@@ -1972,7 +2017,7 @@ sub_01DE5D:
 loc_01DE81:
 	rtl
 
-sub_01DE82:
+rolling_mine_state_04:
 	lda	#$0800
 	jsl	f:pick_target_player
 	jsl	f:angle_to_player
@@ -2035,7 +2080,7 @@ sub_01DEEF:
 	sta	zp_00
 	lda	#$FFF0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8002
 	beq	loc_01DF11
 	lda	#$0002
@@ -2046,7 +2091,7 @@ sub_01DEEF:
 	sta	$1A,x
 loc_01DF11:
 	stz	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8002
 	beq	loc_01DF28
 	stz	$04,x
@@ -2057,7 +2102,9 @@ loc_01DF11:
 loc_01DF28:
 	rts
 
-sub_01DF29:
+; Object type $4E: stage 3 section 7, 27 states (a mid-boss, probably). Not
+; identified.
+update_object_type_4E:
 	lda	$06,x
 	bpl	loc_01DF32
 	lda	#$0018
@@ -2074,42 +2121,42 @@ loc_01DF40:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01DF4F,x
+	lda	f:tbl_object_type_4E_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01DF4F:
-	.addr	sub_01DF86
-	.addr	sub_01DFB2
-	.addr	sub_01DFFA
-	.addr	sub_01E00D
-	.addr	sub_01DFBD
-	.addr	sub_01DFC4
-	.addr	sub_01E039
-	.addr	sub_01E046
-	.addr	sub_01E057
-	.addr	sub_01E082
-	.addr	sub_01E09C
+tbl_object_type_4E_states:
+	.addr	object_type_4E_state_00
+	.addr	object_type_4E_state_01
+	.addr	object_type_4E_state_02
+	.addr	object_type_4E_state_03
+	.addr	object_type_4E_state_04
+	.addr	object_type_4E_state_05
+	.addr	object_type_4E_state_06
+	.addr	object_type_4E_state_07
+	.addr	object_type_4E_state_08
+	.addr	object_type_4E_state_09
+	.addr	object_type_4E_state_0A
 	.addr	sub_01E0B8
-	.addr	sub_01E0EA
-	.addr	sub_01E112
+	.addr	object_type_4E_state_0C
+	.addr	object_type_4E_state_0D
 	.addr	sub_01E0D1
 	.addr	sub_01E1CC
-	.addr	sub_01E2E4
+	.addr	object_type_4E_state_10
 	.addr	sub_01E0B8
-	.addr	sub_01E1EA
-	.addr	sub_01E222
+	.addr	object_type_4E_state_12
+	.addr	object_type_4E_state_13
 	.addr	sub_01E0D1
-	.addr	sub_01E2EE
+	.addr	object_type_4E_state_15
 	.addr	sub_01E1CC
-	.addr	sub_01E312
-	.addr	sub_01E451
+	.addr	object_type_4E_state_17
+	.addr	object_type_4E_state_18
 	.addr	sub_01E0D1
-	.addr	sub_01E48F
+	.addr	object_type_4E_state_1A
 	; CDL: not accessed
 	.byte	$6B
 
-sub_01DF86:
+object_type_4E_state_00:
 	lda	#$0000
 	sta	$16,x
 	lda	#$0006
@@ -2132,7 +2179,7 @@ sub_01DF86:
 	inc	$12,x
 	rtl
 
-sub_01DFB2:
+object_type_4E_state_01:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bcc	loc_01DFBC
@@ -2140,13 +2187,13 @@ sub_01DFB2:
 loc_01DFBC:
 	rtl
 
-sub_01DFBD:
+object_type_4E_state_04:
 	stz	$36,x
 	stz	$38,x
 	inc	$12,x
 	rtl
 
-sub_01DFC4:
+object_type_4E_state_05:
 	lda	#$0008
 	sta	zp_02
 	lda	#$0040
@@ -2178,7 +2225,7 @@ sub_01DFC4:
 loc_01DFF9:
 	rtl
 
-sub_01DFFA:
+object_type_4E_state_02:
 	lda	#$0001
 	sta	$16,x
 	lda	#$FFFF
@@ -2188,7 +2235,7 @@ sub_01DFFA:
 	inc	$12,x
 	rtl
 
-sub_01E00D:
+object_type_4E_state_03:
 	jsr	a:sub_01E01E
 	lda	$0E,x
 	cmp	#$0020
@@ -2214,7 +2261,7 @@ sub_01E01E:
 	sta	a:bg2_y
 	rts
 
-sub_01E039:
+object_type_4E_state_06:
 	lda	#$0001
 	sta	$16,x
 	lda	#$0001
@@ -2222,7 +2269,7 @@ sub_01E039:
 	inc	$12,x
 	rtl
 
-sub_01E046:
+object_type_4E_state_07:
 	jsr	a:sub_01E01E
 	lda	$0E,x
 	cmp	#$0043
@@ -2233,7 +2280,7 @@ sub_01E046:
 loc_01E056:
 	rtl
 
-sub_01E057:
+object_type_4E_state_08:
 	phx
 	ldx	#$0000
 loc_01E05B:
@@ -2256,7 +2303,7 @@ loc_01E073:
 	inc	$12,x
 	rtl
 
-sub_01E082:
+object_type_4E_state_09:
 	lda	#$400D
 	sta	$16,x
 	ldy	difficulty
@@ -2270,7 +2317,7 @@ sub_01E082:
 	sta	hdma_preset
 	rtl
 
-sub_01E09C:
+object_type_4E_state_0A:
 	lda	#$006D
 	sta	zp_06
 	lda	$0A,x
@@ -2312,7 +2359,7 @@ sub_01E0D1:
 	inc	$12,x
 	rtl
 
-sub_01E0EA:
+object_type_4E_state_0C:
 	jsr	a:sub_01E0F0
 	inc	$12,x
 	rtl
@@ -2336,7 +2383,7 @@ loc_01E104:
 loc_01E111:
 	rts
 
-sub_01E112:
+object_type_4E_state_0D:
 	jsr	a:sub_01E01E
 	lda	a:bg2_x
 	sta	f:wram_7EA008
@@ -2439,7 +2486,7 @@ sub_01E1CC:
 loc_01E1E9:
 	rtl
 
-sub_01E1EA:
+object_type_4E_state_12:
 	lda	$16,x
 	ora	#$0010
 	sta	$16,x
@@ -2467,7 +2514,7 @@ loc_01E202:
 	inc	$12,x
 	rtl
 
-sub_01E222:
+object_type_4E_state_13:
 	inc	$24,x
 	lda	$24,x
 	cmp	#$0258
@@ -2558,13 +2605,13 @@ loc_01E2DC:
 	plx
 	rtl
 
-sub_01E2E4:
+object_type_4E_state_10:
 	jsr	a:sub_01E0F0
 	jsl	f:sub_01E2AB
 	inc	$12,x
 	rtl
 
-sub_01E2EE:
+object_type_4E_state_15:
 	lda	$16,x
 	and	#$FFEF
 	sta	$16,x
@@ -2582,7 +2629,7 @@ sub_01E2EE:
 	inc	$12,x
 	rtl
 
-sub_01E312:
+object_type_4E_state_17:
 	lda	#$000A
 	sta	$12,x
 	rtl
@@ -2770,7 +2817,7 @@ loc_01E43E:
 	sta	$0E,x
 	rts
 
-sub_01E451:
+object_type_4E_state_18:
 	lda	#$0002
 	sta	zp_02
 	lda	#$0010
@@ -2799,7 +2846,7 @@ sub_01E451:
 	jsl	f:queue_sound
 	rtl
 
-sub_01E48F:
+object_type_4E_state_1A:
 	jsr	a:sub_01E01E
 	jsl	f:sub_00FD92
 	lda	$0A,x
@@ -2814,7 +2861,7 @@ sub_01E48F:
 	sta	zp_06
 	ldy	#$0280
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_01E4C0
 	lda	#$FFFD
 	sta	a:$001E,y
@@ -2845,7 +2892,8 @@ loc_01E4DB:
 loc_01E4F2:
 	rtl
 
-sub_01E4F3:
+; Object type $4F: stage 3: winged alien bug (HP 8; seen in the emulator).
+update_stage3_winged_bug:
 	inc	$32,x
 	lda	a:wram_1688
 	bne	loc_01E4FE
@@ -2875,18 +2923,18 @@ loc_01E52D:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01E53C,x
+	lda	f:tbl_stage3_winged_bug_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01E53C:
-	.addr	sub_01E6F0
-	.addr	sub_01E546
-	.addr	sub_01E579
-	.addr	sub_01E5EB
-	.addr	sub_01E5FE
+tbl_stage3_winged_bug_states:
+	.addr	stage3_winged_bug_state_00
+	.addr	stage3_winged_bug_state_01
+	.addr	stage3_winged_bug_state_02
+	.addr	stage3_winged_bug_state_03
+	.addr	stage3_winged_bug_state_04
 
-sub_01E546:
+stage3_winged_bug_state_01:
 	lda	$0E,x
 	bmi	loc_01E557
 	cmp	$30,x
@@ -2914,7 +2962,7 @@ loc_01E56F:
 	jsr	a:sub_01E763
 	rtl
 
-sub_01E579:
+stage3_winged_bug_state_02:
 	clc
 	lda	$30,x
 	adc	#$FFF0
@@ -2978,7 +3026,7 @@ loc_01E5DA:
 loc_01E5EA:
 	rts
 
-sub_01E5EB:
+stage3_winged_bug_state_03:
 	jsr	a:sub_01E63E
 	sec
 	lda	$1C,x
@@ -2989,7 +3037,7 @@ sub_01E5EB:
 	sta	$1E,x
 	rtl
 
-sub_01E5FE:
+stage3_winged_bug_state_04:
 	lda	stage_frame_mod8
 	bne	loc_01E629
 	lda	$0A,x
@@ -3003,7 +3051,7 @@ sub_01E5FE:
 	sta	zp_06
 	ldy	#$0300
 	lda	#$C672
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_01E629
 	lda	#$FFFC
 	sta	a:$001E,y
@@ -3106,7 +3154,7 @@ loc_01E6E3:
 loc_01E6EF:
 	rts
 
-sub_01E6F0:
+stage3_winged_bug_state_00:
 	ldy	difficulty
 	lda	stage_frame_counter
 	and	a:data_05CABF,y
@@ -3163,29 +3211,30 @@ sub_01E763:
 loc_01E771:
 	rts
 
-sub_01E772:
+; Object type $56: stage 6. Not identified.
+update_object_type_56:
 	lda	$06,x
 	bpl	loc_01E782
 	stz	$06,x
 	lda	$04,x
 	tay
 	lda	a:data_05CB19,y
-	jml	f:loc_01D1EB
+	jml	f:start_dying_soldier_sound_0E
 loc_01E782:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01E791,x
+	lda	f:tbl_object_type_56_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01E791:
-	.addr	sub_01E797
-	.addr	sub_01E7FF
+tbl_object_type_56_states:
+	.addr	object_type_56_state_00
+	.addr	object_type_56_state_01
 	.addr	sub_01E822
 
-sub_01E797:
+object_type_56_state_00:
 	ldy	difficulty
 	lda	#$001F
 	sta	$16,x
@@ -3239,7 +3288,7 @@ loc_01E7F2:
 loc_01E7FE:
 	rts
 
-sub_01E7FF:
+object_type_56_state_01:
 	jsl	f:sub_01A177
 	lda	zp_FC
 	bne	loc_01E821
@@ -3273,7 +3322,7 @@ loc_01E82B:
 loc_01E837:
 	stz	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$807E
 	beq	loc_01E85F
 	jsr	a:sub_01E7E0
@@ -3312,7 +3361,8 @@ loc_01E877:
 loc_01E883:
 	rts
 
-sub_01E884:
+; Object type $5C: stage 6 (the bone arch). Not identified.
+update_object_type_5C:
 	lda	$12,x
 	bne	loc_01E89A
 	lda	#$0003
@@ -3396,7 +3446,7 @@ loc_01E91D:
 	sta	$0E,x
 	stz	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$807E
 	bne	loc_01E93D
 	lda	zp_05
@@ -3420,29 +3470,30 @@ loc_01E940:
 	sta	a:$000E,y
 	rts
 
-sub_01E94F:
+; Object type $24: stage 6 alien soldier (seen in the emulator).
+update_object_type_24:
 	lda	$06,x
 	bpl	loc_01E95F
 	stz	$06,x
 	lda	$04,x
 	tay
 	lda	a:data_05CB19,y
-	jml	f:loc_01D1EB
+	jml	f:start_dying_soldier_sound_0E
 loc_01E95F:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01E96E,x
+	lda	f:tbl_object_type_24_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01E96E:
-	.addr	sub_01E974
-	.addr	sub_01E9BE
+tbl_object_type_24_states:
+	.addr	object_type_24_state_00
+	.addr	object_type_24_state_01
 	.addr	sub_01E822
 
-sub_01E974:
+object_type_24_state_00:
 	ldy	difficulty
 	lda	#$001F
 	sta	$16,x
@@ -3479,7 +3530,7 @@ loc_01E9A2:
 	inc	$12,x
 	rtl
 
-sub_01E9BE:
+object_type_24_state_01:
 	jsl	f:sub_01A177
 	lda	zp_FC
 	bne	loc_01E9D7
@@ -3500,38 +3551,40 @@ sub_01E9D8:
 	rep	#$20
 	rep	#$10
 
-sub_01E9DC:
+; Object type $3D: stage 3 mid-boss: the spiked machine climbing the girder
+; (HP 160; seen in the emulator).
+update_stage3_spiked_climber:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01E9EB,x
+	lda	f:tbl_stage3_spiked_climber_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01E9EB:
-	.addr	sub_01EA36
-	.addr	sub_01EA13
-	.addr	sub_01EA21
-	.addr	sub_01EA59
-	.addr	sub_01EAB2
-	.addr	sub_01EABD
-	.addr	sub_01EB2F
-	.addr	sub_01EB55
-	.addr	sub_01ED76
-	.addr	sub_01EDFC
-	.addr	sub_01EE36
-	.addr	sub_01EFB8
-	.addr	sub_01EFE0
-	.addr	sub_01EFEF
-	.addr	sub_01F025
-	.addr	sub_01F04F
-	.addr	sub_01F0C9
-	.addr	sub_01F1E1
-	.addr	sub_01F21F
-	.addr	sub_01F257
+tbl_stage3_spiked_climber_states:
+	.addr	stage3_spiked_climber_state_00
+	.addr	stage3_spiked_climber_state_01
+	.addr	stage3_spiked_climber_state_02
+	.addr	stage3_spiked_climber_state_03
+	.addr	stage3_spiked_climber_state_04
+	.addr	stage3_spiked_climber_state_05
+	.addr	stage3_spiked_climber_state_06
+	.addr	stage3_spiked_climber_state_07
+	.addr	update_object_type_59
+	.addr	stage3_spiked_climber_state_09
+	.addr	stage3_spiked_climber_state_0A
+	.addr	update_object_type_52
+	.addr	stage3_spiked_climber_state_0C
+	.addr	stage3_spiked_climber_state_0D
+	.addr	stage3_spiked_climber_state_0E
+	.addr	stage3_spiked_climber_state_0F
+	.addr	stage3_spiked_climber_state_10
+	.addr	stage3_spiked_climber_state_11
+	.addr	stage3_spiked_climber_state_12
+	.addr	stage3_spiked_climber_state_13
 
-sub_01EA13:
+stage3_spiked_climber_state_01:
 	inc	$12,x
 	lda	#$0060
 	sta	$24,x
@@ -3539,7 +3592,7 @@ sub_01EA13:
 	sta	a:wram_1688
 	rtl
 
-sub_01EA21:
+stage3_spiked_climber_state_02:
 	dec	$24,x
 	bpl	loc_01EA35
 	inc	$12,x
@@ -3552,7 +3605,7 @@ sub_01EA21:
 loc_01EA35:
 	rtl
 
-sub_01EA36:
+stage3_spiked_climber_state_00:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	loc_01EA58
@@ -3568,7 +3621,7 @@ sub_01EA36:
 loc_01EA58:
 	rtl
 
-sub_01EA59:
+stage3_spiked_climber_state_03:
 	dec	$24,x
 	bpl	loc_01EA58
 	lda	#$0108
@@ -3607,14 +3660,14 @@ sub_01EA59:
 	jsr	a:sub_01D932
 	rtl
 
-sub_01EAB2:
+stage3_spiked_climber_state_04:
 	lda	$0E,x
 	cmp	#$0080
-	bcs	sub_01EABD
+	bcs	stage3_spiked_climber_state_05
 	inc	$12,x
 	stz	$1E,x
 
-sub_01EABD:
+stage3_spiked_climber_state_05:
 	lda	a:wram_1642
 	beq	loc_01EAC9
 	jsr	a:sub_01ECED
@@ -3669,7 +3722,7 @@ loc_01EB1C:
 loc_01EB2E:
 	rtl
 
-sub_01EB2F:
+stage3_spiked_climber_state_06:
 	lda	a:bg1_y
 	bpl	loc_01EB54
 	cmp	#$FF58
@@ -3686,7 +3739,7 @@ sub_01EB2F:
 loc_01EB54:
 	rtl
 
-sub_01EB55:
+stage3_spiked_climber_state_07:
 	lda	a:wram_035E
 	bne	loc_01EB69
 	inc	$12,x
@@ -3712,10 +3765,12 @@ loc_01EB69:
 	sta	a:wram_035A
 	rtl
 
-sub_01EB90:
+; Object type $3E: does nothing (rtl); stage 3 spiked climber's arm.
+update_object_type_3E:
 	rtl
 
-sub_01EB91:
+; Object type $40: stage 3 spiked climber, its weak point (HP 80).
+update_stage3_spiked_climber_core:
 	lda	a:wram_1642
 	bne	loc_01EBAD
 	lda	$06,x
@@ -3736,7 +3791,8 @@ loc_01EBB7:
 	sty	a:wram_0382
 	rtl
 
-sub_01EBBE:
+; Object type $3F: stage 3 spiked climber, spike arm.
+update_object_type_3F:
 	ldy	#$B8B6
 	lda	stage_frame_bit1
 	bne	loc_01EBC8
@@ -3940,14 +3996,15 @@ loc_01ED3E:
 	sta	zp_06
 	ldy	#$03C0
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_01ED75
 	lda	#$FFFA
 	sta	a:$001E,y
 loc_01ED75:
 	rts
 
-sub_01ED76:
+; Object type $59: not seen. Not identified.
+update_object_type_59:
 	lda	#$004E
 	sta	$24,x
 	inc	$12,x
@@ -4007,7 +4064,7 @@ loc_01ED84:
 	stz	$24,x
 	rtl
 
-sub_01EDFC:
+stage3_spiked_climber_state_09:
 	lda	a:wram_034A
 	bmi	loc_01EE22
 	cmp	#$007C
@@ -4032,7 +4089,7 @@ loc_01EE22:
 	sta	a:wram_035A
 	rtl
 
-sub_01EE36:
+stage3_spiked_climber_state_0A:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	loc_01EE44
@@ -4148,25 +4205,27 @@ loc_01EEE5:
 	sta	$24,x
 	rtl
 
-sub_01EF2C:
+; Object type $60: does nothing (rtl); never run in the CDL traces.
+update_object_type_60:
 	; (not executed in the CDL traces)
 	rtl
 
-sub_01EF2D:
+; Object type $5A: stage 3 spiked climber, spikes. Not identified exactly.
+update_object_type_5A:
 	lda	a:wram_1636
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01EF3D,x
+	lda	f:tbl_object_type_5A_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01EF3D:
-	.addr	sub_01EF43
-	.addr	sub_01EF57
-	.addr	sub_01EFAE
+tbl_object_type_5A_states:
+	.addr	object_type_5A_state_00
+	.addr	object_type_5A_state_01
+	.addr	object_type_5A_state_02
 
-sub_01EF43:
+object_type_5A_state_00:
 	ldy	$38,x
 	clc
 	lda	a:wram_034A
@@ -4177,7 +4236,7 @@ sub_01EF43:
 	adc	a:data_05CBC5,y
 	sta	$0E,x
 
-sub_01EF57:
+object_type_5A_state_01:
 	ldy	$32,x
 	lda	a:data_05CBDB,y
 	sta	zp_00
@@ -4226,7 +4285,7 @@ loc_01EF9E:
 	sta	$1A,x
 	rtl
 
-sub_01EFAE:
+object_type_5A_state_02:
 	lda	a:wram_060A
 	cmp	$0A,x
 	bcs	loc_01EFB7
@@ -4234,7 +4293,8 @@ sub_01EFAE:
 loc_01EFB7:
 	rtl
 
-sub_01EFB8:
+; Object type $52: not seen. Not identified.
+update_object_type_52:
 	lda	a:bg1_x
 	eor	#$FFFF
 	and	#$0100
@@ -4253,7 +4313,7 @@ sub_01EFB8:
 	sta	$32,x
 	rtl
 
-sub_01EFE0:
+stage3_spiked_climber_state_0C:
 	inc	$12,x
 	clc
 	lda	$30,x
@@ -4262,7 +4322,7 @@ sub_01EFE0:
 	jsr	a:sub_01F2B0
 	rtl
 
-sub_01EFEF:
+stage3_spiked_climber_state_0D:
 	lda	#$00F0
 	sta	a:wram_03E8
 	sta	a:wram_0628
@@ -4284,7 +4344,7 @@ sub_01EFEF:
 	jsl	f:queue_sound
 	rtl
 
-sub_01F025:
+stage3_spiked_climber_state_0E:
 	jsr	a:sub_01F3E3
 	lda	#$0001
 	sta	a:shake_continuous
@@ -4304,7 +4364,7 @@ loc_01F039:
 	sta	a:wram_060A
 	rtl
 
-sub_01F04F:
+stage3_spiked_climber_state_0F:
 	jsr	a:sub_01F3E3
 	lda	#$0003
 	sta	a:shake_timer
@@ -4352,7 +4412,7 @@ sub_01F04F:
 	plx
 	rtl
 
-sub_01F0C9:
+stage3_spiked_climber_state_10:
 	jsr	a:sub_01F3E3
 	lda	$06,x
 	bpl	loc_01F0F4
@@ -4487,7 +4547,7 @@ loc_01F1DD:
 	jsr	a:sub_01F2FF
 	rtl
 
-sub_01F1E1:
+stage3_spiked_climber_state_11:
 	jsr	a:sub_01F3E3
 	dec	$24,x
 	bpl	loc_01F1EF
@@ -4509,14 +4569,14 @@ loc_01F1EF:
 	sta	zp_06
 	ldy	#$0280
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_01F21E
 	lda	#$FFFC
 	sta	a:$001A,y
 loc_01F21E:
 	rtl
 
-sub_01F21F:
+stage3_spiked_climber_state_12:
 	jsr	a:sub_01F3E3
 	lda	#$0001
 	sta	a:shake_continuous
@@ -4540,7 +4600,7 @@ loc_01F24A:
 	sta	f:wram_7E382A
 	rtl
 
-sub_01F257:
+stage3_spiked_climber_state_13:
 	dec	$24,x
 	bpl	loc_01F26B
 	lda	#$8000
@@ -4764,7 +4824,9 @@ sub_01F3E3:
 	jsl	f:kill_players_outside
 	rts
 
-sub_01F3F2:
+; Object type $74: stage 4: enemy on a hover bike (HP 16; seen in the
+; emulator).
+update_hoverbike_rider:
 	lda	$06,x
 	bpl	loc_01F419
 	lda	#$0013
@@ -4790,20 +4852,20 @@ loc_01F41F:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01F42E,x
+	lda	f:tbl_hoverbike_rider_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01F42E:
-	.addr	sub_01F43C
-	.addr	sub_01F494
-	.addr	sub_01F4AA
-	.addr	sub_01F4A3
-	.addr	sub_01F4B1
-	.addr	sub_01F4E8
-	.addr	sub_01F501
+tbl_hoverbike_rider_states:
+	.addr	hoverbike_rider_state_00
+	.addr	hoverbike_rider_state_01
+	.addr	hoverbike_rider_state_02
+	.addr	hoverbike_rider_state_03
+	.addr	hoverbike_rider_state_04
+	.addr	hoverbike_rider_state_05
+	.addr	hoverbike_rider_state_06
 
-sub_01F43C:
+hoverbike_rider_state_00:
 	inc	$12,x
 	ldy	difficulty
 	lda	#$4013
@@ -4842,7 +4904,7 @@ sub_01F43C:
 	sta	$34,x
 	rtl
 
-sub_01F494:
+hoverbike_rider_state_01:
 	dec	$32,x
 	bpl	loc_01F49F
 	lda	$30,x
@@ -4854,17 +4916,17 @@ loc_01F49F:
 	jsr	a:sub_01F52D
 	rtl
 
-sub_01F4A3:
+hoverbike_rider_state_03:
 	jsr	a:sub_01F55E
 	jsr	a:sub_01F52D
 	rtl
 
-sub_01F4AA:
+hoverbike_rider_state_02:
 	jsr	a:sub_01F5A0
 	jsr	a:sub_01F52D
 	rtl
 
-sub_01F4B1:
+hoverbike_rider_state_04:
 	dec	$24,x
 	bpl	loc_01F4BA
 	lda	#$8000
@@ -4883,7 +4945,7 @@ loc_01F4BA:
 	sta	zp_02
 	ldy	#$0440
 	lda	#$C4CE
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_01F4E7
 	lda	rng_lo
 	and	#$0003
@@ -4891,7 +4953,7 @@ loc_01F4BA:
 loc_01F4E7:
 	rtl
 
-sub_01F4E8:
+hoverbike_rider_state_05:
 	sec
 	lda	$18,x
 	sbc	#$2000
@@ -4906,7 +4968,7 @@ sub_01F4E8:
 loc_01F500:
 	rtl
 
-sub_01F501:
+hoverbike_rider_state_06:
 	clc
 	lda	$18,x
 	adc	#$3000
@@ -4916,7 +4978,7 @@ sub_01F501:
 	sta	$1A,x
 	ldy	#$0400
 	lda	#$C61E
-	jsl	f:sub_01CF25
+	jsl	f:spawn_effect
 	bcs	loc_01F52C
 	lda	#$FFFC
 	sta	a:$001A,y
@@ -5013,7 +5075,8 @@ sub_01F5A0:
 loc_01F5E2:
 	rts
 
-sub_01F5E3:
+; Object type $76: stage 4: projectile. Not identified exactly.
+update_object_type_76:
 	lda	$12,x
 	bne	loc_01F608
 	inc	$12,x
@@ -5063,7 +5126,7 @@ loc_01F642:
 	bne	loc_01F66A
 	ldy	#$0440
 	lda	#$C516
-	jsl	f:sub_01CF25
+	jsl	f:spawn_effect
 	bcs	loc_01F66A
 	lda	$0A,x
 	sta	a:$000A,y
@@ -5077,7 +5140,8 @@ loc_01F642:
 loc_01F66A:
 	rtl
 
-sub_01F66B:
+; Object type $78: stage 4: projectile. Not identified exactly.
+update_object_type_78:
 	lda	$12,x
 	bne	loc_01F692
 	inc	$12,x
@@ -5105,4 +5169,4 @@ loc_01F692:
 	sta	$1E,x
 	lda	#$C59A
 	txy
-	jml	f:sub_01CF66
+	jml	f:make_effect_object

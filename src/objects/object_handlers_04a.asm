@@ -459,7 +459,7 @@ loc_04834A:
 	sta	zp_06
 	ldy	#$0300
 	lda	#$C5B8
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_048381
 	lda	rng_lo
 	and	#$0001
@@ -634,7 +634,7 @@ stage3_robot_cables_state_02:
 	adc	#$4402
 	tay
 	lda	#$000A
-	jml	f:sub_00CFAF
+	jml	f:update_object_type_28
 loc_0484B8:
 	lda	OBJ_TIMER,x
 	bit	#$0007
@@ -1054,7 +1054,7 @@ stage3_boss_state_16:
 	sta	zp_06
 	ldy	#$0280
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	stage3_boss_state_0E
 	lda	#$FFFD
 	sta	a:$001E,y
@@ -1124,7 +1124,7 @@ loc_04886C:
 	sta	zp_06
 	ldy	#$0300
 	lda	#$C5B8
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_048892
 	lda	#$0002
 	sta	a:$001E,y
@@ -1425,17 +1425,17 @@ update_countdown_bomb:
 	sta	zp_02
 	lda	#$0018
 	sta	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bne	loc_048B0C
 	stz	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bne	loc_048B0C
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bne	loc_048B0C
 	lda	#$0018
 	sta	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	beq	loc_048B24
 loc_048B0C:
 	lda	OBJ_Y,x
@@ -2563,7 +2563,7 @@ loc_049430:
 	jsl	f:find_free_slot_y_down
 	bcc	loc_049456
 	lda	#$C4CE
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	zp_00
 	sta	a:$000A,y
 	sbc	#$0018
@@ -2594,7 +2594,7 @@ rideable_missile_state_08:
 	sta	zp_04
 	ldy	#$0300
 	lda	#$C4CE
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	lda	#$FFFE
 	sta	a:$001A,y
 	sec
@@ -2766,7 +2766,7 @@ stage4_boss_state_04:
 	stz	zp_04
 	ldy	#$0280
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_0495FC
 	lda	rng_lo
 	and	#$0003
@@ -2799,7 +2799,7 @@ update_stage4_boss_pod:
 	sta	OBJ_X_VEL,x
 	txy
 	lda	#$C516
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_049633:
 	lda	a:wram_163A
 	eor	$30,x
@@ -2821,7 +2821,7 @@ loc_049646:
 	sta	OBJ_X_VEL,x
 	txy
 	lda	#$C4CE
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_04965A:
 	lda	OBJ_STATE,x
 	bne	loc_049690
@@ -2882,7 +2882,7 @@ update_stage4_boss_fireball:
 	bpl	loc_0496CC
 	txy
 	lda	#$C516
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_0496CC:
 	lda	OBJ_STATE,x
 	phx
@@ -2959,7 +2959,7 @@ loc_04973E:
 	jsl	f:find_free_slot_y_down
 	bcc	loc_04976E
 	lda	#$C558
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	OBJ_X,x
 	adc	#$0004
 	sta	a:$000A,y
@@ -3244,7 +3244,7 @@ sub_04997F:
 	jsl	f:find_free_slot_y_down
 	bcc	loc_0499AA
 	lda	a:wram_1636
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	#$FFF8
 	sta	a:$001A,y
 	lda	OBJ_X,x
@@ -3493,7 +3493,7 @@ loc_049BA4:
 	jsl	f:find_free_slot_y_down
 	bcc	loc_049BD4
 	lda	#$C4CE
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	rng_lo
 	and	#$001F
 	sta	zp_00
@@ -3761,7 +3761,7 @@ sub_049D8D:
 	sta	zp_06
 	ldy	#$0280
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_049DC2
 	lda	#$FFFD
 	sta	a:$001E,y
@@ -4124,7 +4124,7 @@ loc_04A047:
 	sta	zp_06
 	ldy	#$0280
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_04A084
 	lda	#$FFFD
 	sta	a:$001E,y
@@ -4875,7 +4875,7 @@ face_boss_state_07:
 	sta	zp_06
 	ldy	#$0300
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_04A680
 	lda	#$FFFC
 	sta	a:$001E,y
@@ -5052,7 +5052,7 @@ loc_04A7B3:
 	sta	a:$0018,y
 	sta	a:$001A,y
 	lda	#$C4CE
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	rts
 
 sub_04A7D1:
@@ -5822,7 +5822,7 @@ loc_04AD6B:
 	stz	OBJ_X_VEL,x
 	lda	#$C4CE
 	txy
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 
 larva_state_03:
 	; (not executed in the CDL traces)
@@ -6183,7 +6183,7 @@ loc_04AFE7:
 	stz	OBJ_X_VEL,x
 	lda	#$C4CE
 	txy
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 
 enemy_type_68_state_05:
 	; (not executed in the CDL traces)
@@ -6285,7 +6285,7 @@ heart_boss_state_03:
 	sta	zp_06
 	ldy	#$0300
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_04B0D7
 	lda	#$FFFC
 	sta	a:$001E,y
@@ -6547,7 +6547,7 @@ heart_boss_bug_state_03:
 	stz	OBJ_X_VEL,x
 	txy
 	lda	#$C4CE
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	rtl
 
 sub_04B2C1:
@@ -6697,7 +6697,7 @@ wall_worm_state_03:
 	sta	zp_06
 	ldy	#$0300
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_04B3D4
 	lda	#$FFFC
 	sta	a:$001E,y
@@ -7637,7 +7637,7 @@ cave_beast_state_27:
 	sta	zp_06
 	ldy	#$0280
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_04BB59
 	lda	#$FFFD
 	sta	a:$001E,y
@@ -8254,7 +8254,7 @@ loc_04BFA2:
 	stz	OBJ_X_VEL,x
 	txy
 	lda	#$C4CE
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	#$0005
 	sta	OBJ_STATE,x
 
@@ -8712,7 +8712,7 @@ loc_04C383:
 	stz	OBJ_X_VEL,x
 	txy
 	lda	#$C4CE
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	#$0006
 	sta	OBJ_STATE,x
 
@@ -9260,7 +9260,7 @@ loc_04C80E:
 	sta	zp_06
 	ldy	#$0280
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_04C83E
 	lda	#$FFFD
 	sta	a:$001E,y
@@ -9573,7 +9573,7 @@ snake_robot_state_11:
 	sta	zp_06
 	ldy	#$0280
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_04CAF3
 	lda	#$FFFD
 	sta	a:$001E,y
@@ -10204,7 +10204,7 @@ loc_04CF5B:
 	jsl	f:find_free_slot_y_down
 	bcc	loc_04CF90
 	lda	#$C672
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	OBJ_X,x
 	sta	a:$000A,y
 	lda	OBJ_Y,x
@@ -10405,7 +10405,7 @@ sub_04D0EA:
 	sta	OBJ_FLAGS,x
 	txy
 	lda	#$C516
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 loc_04D106:
 	phx
 	lda	f:wram_7EA0E0
@@ -10567,7 +10567,7 @@ loc_04D247:
 	jsl	f:find_free_slot_y_down
 	bcc	loc_04D2AC
 	lda	#$C672
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	#$FFFA
 	sta	a:$001A,y
 	sta	a:$001E,y
@@ -10588,7 +10588,7 @@ loc_04D26C:
 	sta	zp_02
 	ldy	#$0300
 	lda	#$C4CE
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_04D2AC
 	lda	rng_hi
 	and	#$0003
@@ -10725,7 +10725,7 @@ loc_04D389:
 	sta	zp_02
 	ldy	#$0700
 	lda	#$C4CE
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_04D3B3
 	lda	#$FFFC
 	sta	a:$001A,y
@@ -11054,7 +11054,7 @@ loc_04D638:
 	jsl	f:find_free_slot_y_down
 	bcc	loc_04D685
 	lda	#$C4CE
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	OBJ_X,x
 	adc	#$0000
 	sta	a:$000A,y
@@ -11208,7 +11208,7 @@ loc_04D73D:
 	lda	#$0033
 	jsl	f:queue_sound
 	lda	#$C6BA
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	#$FFFC
 	sta	a:$001A,y
 	lda	#$FFFE

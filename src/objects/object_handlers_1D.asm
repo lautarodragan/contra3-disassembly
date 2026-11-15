@@ -544,7 +544,7 @@ ending_sequence_state_21:
 	lda	#$0002
 	sta	zp_04
 	lda	#$0020
-	jsl	f:sub_00CFAF
+	jsl	f:update_object_type_28
 	lda	#$0060
 	sta	OBJ_TIMER,x
 	lda	#$0002
@@ -1401,7 +1401,7 @@ sub_1DBA68:
 	sta	zp_02
 	ldy	#$0700
 	lda	#$C69C
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_1DBA8B
 	lda	#$FFFC
 	sta	a:$001E,y
@@ -1827,7 +1827,7 @@ loc_1DBDB3:
 	adc	rng_hi
 	sta	rng_hi
 	lda	#$C558
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_1DBDF6
 	lda	#OBJT_ENDING_EXPLOSION
 	sta	a:$0010,y
@@ -1896,7 +1896,7 @@ sub_1DBE30:
 	lda	#$C702
 loc_1DBE4C:
 	ldy	#$0300
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_1DBE60
 	lda	rng_lo
 	and	#$0007
@@ -2198,7 +2198,7 @@ loc_1DC09B:
 	jsl	f:find_free_slot_y
 	bcs	loc_1DC0C6
 	lda	#$C6DE
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	OBJ_Y,x
 	adc	#$FFE4
 	sta	a:$000E,y
@@ -2320,7 +2320,7 @@ loc_1DC18D:
 	sta	zp_FC
 	lda	a:data_05FFA5,y
 	ldy	#$02C0
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_1DC1B7
 	lda	zp_FC
 	sta	a:$001E,y
@@ -2961,7 +2961,7 @@ loc_1DC65C:
 	jsl	f:queue_sound
 	lda	#$C4CE
 	txy
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_1DC674:
 	lda	a:wram_163C
 	cpx	#$0500
@@ -3158,7 +3158,7 @@ update_enemy_type_8E:
 	sta	OBJ_Y_VEL,x
 	txy
 	lda	#$C516
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_1DC7F1:
 	clc
 	lda	OBJ_Y_VEL_SUB,x
@@ -3204,7 +3204,7 @@ loc_1DC835:
 	jsl	f:queue_sound
 	lda	#$C4CE
 	txy
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_1DC847:
 	jsr	a:sub_1DCAE9
 	ldy	a:wram_163C
@@ -3237,7 +3237,7 @@ loc_1DC87B:
 	jsl	f:queue_sound
 	txy
 	lda	#$C516
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_1DC88A:
 	lda	OBJ_STATE,x
 	bne	loc_1DC8DE
@@ -3317,7 +3317,7 @@ update_brain_boss_rolling_eye:
 loc_1DC91C:
 	txy
 	lda	#$C672
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_1DC924:
 	lda	$3A,x
 	beq	loc_1DC960
@@ -3380,7 +3380,7 @@ update_brain_boss_orb_arch:
 loc_1DC98D:
 	txy
 	lda	#$C4CE
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_1DC995:
 	lda	a:wram_163A
 	ldy	$3A,x
@@ -3446,7 +3446,7 @@ loc_1DCA0A:
 	jsl	f:queue_sound
 	txy
 	lda	#$C4CE
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_1DCA19:
 	lda	OBJ_Y,x
 	ldy	OBJ_Y_VEL,x

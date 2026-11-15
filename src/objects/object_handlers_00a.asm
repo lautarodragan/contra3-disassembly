@@ -60,7 +60,9 @@ loc_00CF59:
 loc_00CF7D:
 	rtl
 
-sub_00CF7E:
+; Object type $55: stage 6: palette cycling (cgram_upload_*). Not identified
+; exactly.
+update_object_type_55:
 	lda	stage_frame_counter
 	and	#$0007
 	dec	a
@@ -79,7 +81,8 @@ sub_00CF7E:
 loc_00CF9D:
 	rtl
 
-sub_00CF9E:
+; Object type $57: never run in the CDL traces.
+update_object_type_57:
 	; (not executed in the CDL traces)
 	lda	a:bg2sc_shadow
 	and	#$FFFC
@@ -89,7 +92,9 @@ sub_00CF9E:
 	sta	$16,x
 	rtl
 
-sub_00CFAF:
+; Object type $28: the handler is a fill routine (also called directly as a
+; helper); probably never used as a type.
+update_object_type_28:
 	phx
 	tax
 	sep	#$20
@@ -118,7 +123,9 @@ loc_00CFB9:
 	plx
 	rtl
 
-sub_00CFD0:
+; Object type $08: invisible stage trigger (stage 1 section 4): sets
+; wram_13BA = 4 and adjusts the scroll target.
+update_object_type_08:
 	lda	#$8000
 	sta	$16,x
 	stz	a:bg1_autoscroll
@@ -135,14 +142,17 @@ sub_00CFD0:
 	sta	(zp_02)
 	rtl
 
-sub_00CFF5:
+; Object type $89: not seen. Not identified.
+update_object_type_89:
 	lda	#$8000
 	sta	$16,x
 	lda	#$0001
 	sta	a:stage_checkpoint
 	rtl
 
-sub_00D001:
+; Object type $03: invisible stage trigger (stage 1, 3, 6): copies field $3A
+; into wram_13FA / wram_13FC and waits for wram_13FE.
+update_object_type_03:
 	lda	$12,x
 	bne	loc_00D019
 	lda	#$0001
@@ -164,14 +174,18 @@ loc_00D019:
 loc_00D02B:
 	rtl
 
-sub_00D02C:
+; Object type $05: invisible stage trigger: sets wram_13B4 to 1 and deletes
+; itself.
+update_object_type_05:
 	lda	#$0001
 	sta	a:bg1_autoscroll
 	lda	#$8000
 	sta	$16,x
 	rtl
 
-sub_00D038:
+; Object type $3B: invisible stage trigger (like type $0E, also sets
+; wram_13F0 / wram_13FA).
+update_object_type_3B:
 	clc
 	lda	a:bg2_y
 	adc	#$00FF
@@ -181,7 +195,9 @@ sub_00D038:
 	and	#$00FF
 	sta	a:bg2_scroll_mode
 
-sub_00D04D:
+; Object type $0E: invisible stage trigger: sets wram_13BA from field $3A and
+; aligns the scroll position.
+update_object_type_0E:
 	lda	$3A,x
 	and	#$00FF
 	sta	a:bg1_scroll_mode
@@ -200,7 +216,9 @@ sub_00D04D:
 	sta	$16,x
 	rtl
 
-sub_00D078:
+; Object type $07: invisible stage trigger: queues loader list
+; data_059E4A[field $3A] (load_*) and deletes itself.
+update_object_type_07:
 	lda	#$8000
 	sta	$16,x
 	lda	$3A,x
@@ -211,7 +229,9 @@ sub_00D078:
 	ldx	zp_FA
 	rtl
 
-sub_00D08C:
+; Object type $42: invisible stage trigger: copies fields $3A/$3B into
+; wram_1666 / wram_1672.
+update_object_type_42:
 	sep	#$20
 	.a8
 	stz	a:wram_1673
@@ -226,7 +246,9 @@ sub_00D08C:
 	sta	$16,x
 	rtl
 
-sub_00D0A6:
+; Object type $4D: invisible stage trigger: wram_1680 / wram_1682 from
+; data_059F06; never run in the CDL traces.
+update_object_type_4D:
 	; (not executed in the CDL traces)
 	lda	#$8000
 	sta	$16,x
@@ -237,27 +259,29 @@ sub_00D0A6:
 	sta	a:wram_1682
 	rtl
 
-sub_00D0BA:
+; Object type $06: stage 1 scripted scene (section 9): BG/HDMA effect with 9
+; states. Not identified.
+update_object_type_06:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00D0C9,x
+	lda	f:tbl_object_type_06_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00D0C9:
-	.addr	sub_00D0DB
-	.addr	sub_00D0E6
-	.addr	sub_00D107
-	.addr	sub_00D1BD
-	.addr	sub_00D290
-	.addr	sub_00D2F8
-	.addr	sub_00D37E
-	.addr	sub_00D480
-	.addr	sub_00D3E7
+tbl_object_type_06_states:
+	.addr	object_type_06_state_00
+	.addr	object_type_06_state_01
+	.addr	object_type_06_state_02
+	.addr	object_type_06_state_03
+	.addr	object_type_06_state_04
+	.addr	object_type_06_state_05
+	.addr	object_type_06_state_06
+	.addr	object_type_06_state_07
+	.addr	object_type_06_state_08
 
-sub_00D0DB:
+object_type_06_state_00:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	loc_00D0E5
@@ -265,7 +289,7 @@ sub_00D0DB:
 loc_00D0E5:
 	rtl
 
-sub_00D0E6:
+object_type_06_state_01:
 	lda	#$003F
 	sta	a:wram_166C
 	lda	#$A000
@@ -279,7 +303,7 @@ sub_00D0E6:
 	sta	a:bg2_scroll_mode
 	rtl
 
-sub_00D107:
+object_type_06_state_02:
 	lda	#$0008
 	sta	zp_08
 	stx	zp_FE
@@ -370,7 +394,7 @@ loc_00D19D:
 loc_00D1BC:
 	rtl
 
-sub_00D1BD:
+object_type_06_state_03:
 	stx	zp_FC
 	lda	#$0005
 	sta	hdma_preset
@@ -455,7 +479,7 @@ sub_00D1BD:
 loc_00D28F:
 	rtl
 
-sub_00D290:
+object_type_06_state_04:
 	lda	a:wram_1692
 	bmi	loc_00D29A
 	dec	a:wram_1692
@@ -463,12 +487,12 @@ sub_00D290:
 loc_00D29A:
 	lda	a:m7d_shadow
 	cmp	#$0280
-	bcs	sub_00D2F8
+	bcs	object_type_06_state_05
 	lda	#$0046
 	jsl	f:queue_sound
 	inc	$12,x
 	lda	a:wram_0290
-	bne	sub_00D2F8
+	bne	object_type_06_state_05
 	phx
 	ldy	#$0300
 	ldx	#$0004
@@ -500,7 +524,7 @@ loc_00D2B7:
 	bne	loc_00D2B7
 	plx
 
-sub_00D2F8:
+object_type_06_state_05:
 	sec
 	lda	a:m7a_shadow
 	sbc	#$0008
@@ -561,7 +585,7 @@ loc_00D37B:
 	.a16
 	rtl
 
-sub_00D37E:
+object_type_06_state_06:
 	lda	#$0003
 	sta	a:shake_timer
 	inc	$24,x
@@ -598,14 +622,14 @@ loc_00D3C0:
 	sta	zp_06
 	ldy	#$0300
 	lda	#$C4CE
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_00D3E6
 	lda	#$FFFC
 	sta	a:$001E,y
 loc_00D3E6:
 	rtl
 
-sub_00D3E7:
+object_type_06_state_08:
 	phx
 	lda	#$0038
 	sta	zp_02
@@ -679,7 +703,7 @@ loc_00D401:
 loc_00D47E:
 	bra	loc_00D48E
 
-sub_00D480:
+object_type_06_state_07:
 	lda	#$00C0
 	sta	zp_00
 	stz	zp_02
@@ -705,7 +729,9 @@ loc_00D48E:
 	sta	bg_dma_vram_addr
 	rtl
 
-sub_00D4BC:
+; Object type $2A: advances the state of the type $06 object and deletes the
+; type $2F one. Not identified.
+update_object_type_2A:
 	ldy	#$09C0
 loc_00D4BF:
 	lda	a:$0010,y
@@ -737,7 +763,9 @@ loc_00D4EE:
 	sta	a:$0016,y
 	rtl
 
-sub_00D4F5:
+; Object type $0C: bomb dropped by the bomber plane (stage 1 section 10,
+; seen in the emulator); falls with gravity, trailing type $1D fire effects.
+update_bomber_bomb:
 	lda	stage_frame_odd
 	bne	loc_00D530
 	ldy	$20,x
@@ -788,7 +816,9 @@ loc_00D553:
 	sta	$1A,x
 	rtl
 
-sub_00D563:
+; Object type $3C: stage 3 BG effect (palette cycling, line scroll table at
+; $7E:E000). Not identified.
+update_object_type_3C:
 	lda	stage_frame_counter
 	bit	#$0007
 	bne	loc_00D57F

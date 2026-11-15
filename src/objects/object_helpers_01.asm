@@ -145,7 +145,7 @@ sub_019EE6:
 	stz	zp_00
 	lda	#$FFE0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$0002
 	beq	loc_019EFE
 	lda	#$0002
@@ -156,7 +156,7 @@ loc_019EFE:
 	sta	zp_00
 	lda	#$FFE0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$0002
 	beq	loc_019F19
 	lda	#$0004
@@ -538,11 +538,11 @@ sub_01A18A:
 	sta	$0A,x
 	stz	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_04
 	lda	#$0006
 	sta	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_06
 	bit	#$807E
 	beq	loc_01A1CD
@@ -656,7 +656,7 @@ sub_01A276:
 	bpl	loc_01A282
 	txy
 	lda	#$C59A
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_01A282:
 	ldy	$20,x
 	lda	a:$0004,y
@@ -669,7 +669,7 @@ sub_01A28A:
 	bpl	loc_01A282
 	txy
 	lda	#$C516
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 
 ; Kills (PCONTACT_KILLED) each player outside the limits zp_00 (bottom),
 ; zp_01 (top), zp_02 (left), zp_03 (right) (0 = no limit), unless the
@@ -779,7 +779,7 @@ loc_01A33E:
 	stz	$04,x
 	txy
 	lda	#$C516
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_01A34F:
 	lda	#$0400
 	jsl	f:pick_target_player
@@ -818,7 +818,7 @@ loc_01A395:
 	jsl	f:find_free_slot_y_down
 	bcc	loc_01A3BF
 	lda	#$C606
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	zp_06
 	sta	a:$001A,y
 	lda	zp_04

@@ -12,7 +12,7 @@ data_058008:
 	; CDL: not accessed
 	.byte	$00, $01, $00, $00, $00, $00, $00, $01
 data_058010:
-	; CDL: read by build_wave_table, sub_01E112; partly not accessed
+	; CDL: read by build_wave_table, object_type_4E_state_0D; partly not accessed
 	.byte	$00, $00, $24, $03, $48, $06, $6C, $09, $8F, $0C, $B2, $0F, $D4, $12, $F6, $15
 	.byte	$17, $19, $37, $1C, $55, $1F, $73, $22, $8F, $25, $AA, $28, $C3, $2B, $DB, $2E
 	.byte	$F0, $31, $04, $35, $16, $38, $25, $3B, $33, $3E, $3E, $41, $46, $44, $4C, $47
@@ -715,7 +715,7 @@ data_059BCC:
 	.byte	$00, $02, $00, $00, $01, $02, $FF, $00, $10, $07, $AC, $9C, $00, $00, $00, $00
 	.byte	$10, $00, $FF, $00
 data_059E42:
-	; CDL: read by sub_00CF7E
+	; CDL: read by update_object_type_55
 	.byte	$00, $A0, $00, $A4, $00, $A8, $00, $A4
 data_059E4A:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk (+1 more); partly not accessed
@@ -742,29 +742,29 @@ data_059F06:
 	; CDL: not accessed
 	.byte	$04, $00
 data_059F08:
-	; CDL: read by sub_00D290; partly not accessed
+	; CDL: read by object_type_06_state_04; partly not accessed
 	.byte	$8A, $F4, $70, $00
 data_059F0C:
-	; CDL: read by sub_00D290, sub_00D4F5, update_objects; partly not accessed
+	; CDL: read by object_type_06_state_04, update_bomber_bomb, update_objects; partly not accessed
 	.byte	$88, $00, $FF, $FF, $00, $00, $10, $00, $BB, $B5, $B8, $C5, $10, $00, $C0, $B5
 	.byte	$B8, $C5, $00, $60, $C5, $B5, $16, $C5, $00, $00, $C5, $B5, $16, $C5
 data_059F2A:
-	; CDL: read by sub_00D3E7; partly not accessed
+	; CDL: read by object_type_06_state_08; partly not accessed
 	.byte	$80, $08, $80, $08, $10, $01, $10, $01, $40, $04, $40, $04, $20, $02, $20, $02
 	.byte	$20, $02, $20, $02, $40, $04, $40, $04, $10, $01, $10, $01, $80, $08, $80, $08
 	.byte	$40, $04, $40, $04, $80, $08, $80, $08, $20, $02, $20, $02, $10, $01, $10, $01
 	.byte	$10, $01, $10, $01, $20, $02, $20, $02, $80, $08, $80, $08, $40, $04, $40, $04
 data_059F6A:
-	; CDL: read by sub_00D3E7; partly not accessed
+	; CDL: read by object_type_06_state_08; partly not accessed
 	.byte	$00, $00, $08, $08, $04, $04, $0C, $0C, $02, $02, $0A, $0A, $06, $06, $0E, $0E
 	.byte	$00, $00, $08, $08, $04, $04, $0C, $0C, $02, $02, $0A, $0A, $06, $06, $0E, $0E
 	.byte	$00, $00, $08, $08, $04, $04, $0C, $0C, $02, $02, $0A, $0A, $06, $06, $0E, $0E
 	.byte	$00, $00, $08, $08, $04, $04, $0C, $0C, $02, $02, $0A, $0A, $06, $06, $0E, $0E
 data_059FAA:
-	; CDL: read by sub_00D480
+	; CDL: read by object_type_06_state_07
 	.byte	$00, $A0, $80, $A3, $00, $A7, $80, $AA
 data_059FB2:
-	; CDL: read by sub_00D563
+	; CDL: read by update_object_type_3C
 	.byte	$00, $A0, $00, $A3, $00, $A6, $00, $A9
 data_059FBA:
 	; CDL: read by load_data_list, init_loader_context, decompress_chunk (+1 more); DMA / HDMA; partly not accessed
@@ -795,46 +795,46 @@ data_05A064:
 	; CDL: read by spawn_shot_laser; partly not accessed
 	.byte	$44, $31, $46, $31, $42, $31, $46, $71, $44, $31, $46, $31, $42, $31, $46, $71
 data_05A074:
-	; CDL: read by sub_00DE9C
+	; CDL: read by update_homing_shot
 	.byte	$2E, $3F, $40, $3F, $2C, $3F, $40, $BF, $2E, $BF, $40, $FF, $2C, $7F, $40, $7F
 data_05A084:
 	; CDL: not accessed
 	.byte	$84, $3F
 data_05A086:
-	; CDL: read by sub_00E09F
+	; CDL: read by update_shot_type_0C
 	.byte	$82, $3B, $86, $3F, $EC, $3B, $84, $3D
 data_05A08E:
-	; CDL: read by sub_00DE2D, sub_00E0B5
+	; CDL: read by update_crush_shot, update_crush_blast
 	.byte	$C0, $31, $AE, $31, $AC, $31, $86, $33, $84, $33, $86, $33, $84, $33, $00, $00
 data_05A09E:
-	; CDL: read by sub_00E0DD
+	; CDL: read by update_shot_type_10
 	.byte	$8A, $3D, $8A, $3D, $8E, $31, $8E, $31, $86, $3F, $86, $3F, $84, $3F, $84, $3F
 data_05A0AE:
-	; CDL: read by sub_00E10C
+	; CDL: read by update_spent_shot
 	.byte	$8A, $3D, $8A, $3D, $8A, $3F
 tbl_shot_types:
 	.faraddr	$000000
-	.faraddr	sub_00DDDF
-	.faraddr	sub_00DDC8
-	.faraddr	sub_00DE2D
-	.faraddr	sub_00DE9C
-	.faraddr	sub_00DF62
-	.faraddr	sub_00DF73
-	.faraddr	sub_00DFF9
-	.faraddr	sub_00E04A
-	.faraddr	sub_00E072
-	.faraddr	sub_00E060
-	.faraddr	sub_00E060
-	.faraddr	sub_00E09F
-	.faraddr	sub_00E0B5
-	.faraddr	sub_00E0D3
-	.faraddr	sub_00E0D3
-	.faraddr	sub_00E0DD
-	.faraddr	sub_00E0DD
-	.faraddr	sub_00E0DD
-	.faraddr	sub_00E102
-	.faraddr	sub_00E102
-	.faraddr	sub_00E10C
+	.faraddr	update_default_shot
+	.faraddr	update_spread_shot
+	.faraddr	update_crush_shot
+	.faraddr	update_homing_shot
+	.faraddr	update_shot_type_05
+	.faraddr	update_shot_type_06
+	.faraddr	update_shot_type_07
+	.faraddr	update_shot_type_08
+	.faraddr	update_shot_type_09
+	.faraddr	update_laser_shot
+	.faraddr	update_laser_shot
+	.faraddr	update_shot_type_0C
+	.faraddr	update_crush_blast
+	.faraddr	update_shot_type_0E
+	.faraddr	update_shot_type_0E
+	.faraddr	update_shot_type_10
+	.faraddr	update_shot_type_10
+	.faraddr	update_shot_type_10
+	.faraddr	update_shot_type_13
+	.faraddr	update_shot_type_13
+	.faraddr	update_spent_shot
 	.faraddr	update_ending_firework
 	.faraddr	update_spark_random
 	.faraddr	update_spark_radial
@@ -944,102 +944,102 @@ data_05A3AA:
 	.byte	$11, $00, $10, $00, $0F, $00, $0E, $00, $0D, $00, $0B, $00, $09, $00, $06, $00
 tbl_object_types:
 	.faraddr	$000000
-	.faraddr	sub_00F27C
-	.faraddr	sub_01B194
-	.faraddr	sub_00D001
-	.faraddr	sub_01C4CE
-	.faraddr	sub_00D02C
-	.faraddr	sub_00D0BA
-	.faraddr	sub_00D078
-	.faraddr	sub_00CFD0
-	.faraddr	sub_01B712
-	.faraddr	sub_01BAEC
-	.faraddr	sub_01BDB4
-	.faraddr	sub_00D4F5
-	.faraddr	sub_01C21E
-	.faraddr	sub_00D04D
-	.faraddr	sub_01C7E1
-	.faraddr	sub_01CB4A
-	.faraddr	sub_01C9FA
-	.faraddr	sub_01CC22
-	.faraddr	sub_01CD77
-	.faraddr	sub_01C6EC
-	.faraddr	sub_01C6FB
-	.faraddr	sub_01C7B6
-	.faraddr	sub_01CDE5
-	.faraddr	sub_01D1B1
-	.faraddr	sub_01D26E
-	.faraddr	sub_01D29D
-	.faraddr	sub_01D1E7
-	.faraddr	sub_01B539
-	.faraddr	sub_01CFF5
-	.faraddr	sub_01D05D
-	.faraddr	sub_00FBE2
-	.faraddr	sub_00FC85
+	.faraddr	update_object_type_01
+	.faraddr	update_object_type_02
+	.faraddr	update_object_type_03
+	.faraddr	update_object_type_04
+	.faraddr	update_object_type_05
+	.faraddr	update_object_type_06
+	.faraddr	update_object_type_07
+	.faraddr	update_object_type_08
+	.faraddr	update_object_type_09
+	.faraddr	update_foot_soldier
+	.faraddr	update_object_type_0B
+	.faraddr	update_bomber_bomb
+	.faraddr	update_popup_turret
+	.faraddr	update_object_type_0E
+	.faraddr	update_weapon_capsule
+	.faraddr	update_bouncing_debris
+	.faraddr	update_object_type_11
+	.faraddr	update_object_type_12
+	.faraddr	update_grenade
+	.faraddr	update_object_type_14
+	.faraddr	update_object_type_15
+	.faraddr	update_object_type_16
+	.faraddr	update_window_sniper
+	.faraddr	update_enemy_bullet
+	.faraddr	update_object_type_19
+	.faraddr	update_grenade_blast
+	.faraddr	update_dying_soldier
+	.faraddr	update_object_type_1C
+	.faraddr	update_effect
+	.faraddr	update_alien_dog
+	.faraddr	update_object_type_1F
+	.faraddr	update_stage1_boss_part
 	.faraddr	update_face_boss_larva
-	.faraddr	sub_00FD12
-	.faraddr	sub_00FD46
-	.faraddr	sub_01E94F
+	.faraddr	update_object_type_22
+	.faraddr	update_falling_debris
+	.faraddr	update_object_type_24
 	.faraddr	update_winged_alien_tail_segment
-	.faraddr	sub_00FAC0
-	.faraddr	sub_00FB15
-	.faraddr	sub_00CFAF
-	.faraddr	sub_00FC21
-	.faraddr	sub_00D4BC
-	.faraddr	sub_01D3DF
-	.faraddr	sub_01D6A3
-	.faraddr	sub_01D753
-	.faraddr	sub_01D47E
-	.faraddr	sub_01D370
-	.faraddr	sub_01D46F
-	.faraddr	sub_01D4BF
-	.faraddr	sub_01D5B1
-	.faraddr	sub_01D5E2
-	.faraddr	sub_01D766
-	.faraddr	sub_01BC6F
+	.faraddr	update_stage1_boss_tracking_shot
+	.faraddr	update_stage1_boss_falling_shot
+	.faraddr	update_object_type_28
+	.faraddr	update_stage1_boss
+	.faraddr	update_object_type_2A
+	.faraddr	update_object_type_2B
+	.faraddr	update_object_type_2C
+	.faraddr	update_object_type_2D
+	.faraddr	update_object_type_2E
+	.faraddr	update_object_type_2F
+	.faraddr	update_object_type_30
+	.faraddr	update_object_type_31
+	.faraddr	update_object_type_32
+	.faraddr	update_object_type_33
+	.faraddr	update_object_type_34
+	.faraddr	update_object_type_35
 	.faraddr	delete_self_and_linked
 	.faraddr	stage_exit
-	.faraddr	sub_00FD6A
-	.faraddr	sub_01D8AE
-	.faraddr	sub_01D907
-	.faraddr	sub_00D038
-	.faraddr	sub_00D563
-	.faraddr	sub_01E9DC
-	.faraddr	sub_01EB90
-	.faraddr	sub_01EBBE
-	.faraddr	sub_01EB91
+	.faraddr	update_stage1_boss_fire
+	.faraddr	update_object_type_39
+	.faraddr	update_object_type_3A
+	.faraddr	update_object_type_3B
+	.faraddr	update_object_type_3C
+	.faraddr	update_stage3_spiked_climber
+	.faraddr	update_object_type_3E
+	.faraddr	update_object_type_3F
+	.faraddr	update_stage3_spiked_climber_core
 	.faraddr	update_stage3_boss
-	.faraddr	sub_00D08C
-	.faraddr	sub_01CB95
+	.faraddr	update_object_type_42
+	.faraddr	update_object_type_43
 	.faraddr	update_stage3_robot_cables
 	.faraddr	update_stage3_second_robot
-	.faraddr	sub_01CF98
+	.faraddr	update_debris_explosion
 	.faraddr	sub_01A30C
-	.faraddr	sub_01DB65
-	.faraddr	sub_01DCD0
-	.faraddr	sub_01DD69
-	.faraddr	sub_01CFBB
+	.faraddr	update_object_type_48
+	.faraddr	update_object_type_49
+	.faraddr	update_rolling_mine
+	.faraddr	update_debris_spark
 	.faraddr	update_countdown_bomb
-	.faraddr	sub_00D0A6
-	.faraddr	sub_01DF29
-	.faraddr	sub_01E4F3
-	.faraddr	sub_01C355
-	.faraddr	sub_01DB65
-	.faraddr	sub_01EFB8
+	.faraddr	update_object_type_4D
+	.faraddr	update_object_type_4E
+	.faraddr	update_stage3_winged_bug
+	.faraddr	update_wall_hatch
+	.faraddr	update_object_type_48
+	.faraddr	update_object_type_52
 	.faraddr	sub_01A275
-	.faraddr	sub_01C4CE
-	.faraddr	sub_00CF7E
-	.faraddr	sub_01E772
-	.faraddr	sub_00CF9E
+	.faraddr	update_object_type_04
+	.faraddr	update_object_type_55
+	.faraddr	update_object_type_56
+	.faraddr	update_object_type_57
 	.faraddr	update_heart_boss
-	.faraddr	sub_01ED76
-	.faraddr	sub_01EF2D
+	.faraddr	update_object_type_59
+	.faraddr	update_object_type_5A
 	.faraddr	update_wall_worm
-	.faraddr	sub_01E884
+	.faraddr	update_object_type_5C
 	.faraddr	update_cave_beast
 	.faraddr	update_winged_alien
 	.faraddr	update_face_boss
-	.faraddr	sub_01EF2C
+	.faraddr	update_object_type_60
 	.faraddr	update_floor_mouth
 	.faraddr	update_floor_mouth_bug
 	.faraddr	update_wall_worm_larva
@@ -1053,23 +1053,23 @@ tbl_object_types:
 	.faraddr	sub_01A276
 	.faraddr	sub_01A28A
 	.faraddr	sub_018207
-	.faraddr	sub_01B59A
+	.faraddr	update_stage4_tank
 	.faraddr	update_brain_boss
 	.faraddr	update_enemy_type_70
 	.faraddr	update_cave_beast_fireball
 	.faraddr	update_cave_beast_beam
-	.faraddr	sub_01BE78
-	.faraddr	sub_01F3F2
+	.faraddr	update_object_type_73
+	.faraddr	update_hoverbike_rider
 	.faraddr	update_face_boss_side_head
-	.faraddr	sub_01F5E3
+	.faraddr	update_object_type_76
 	.faraddr	update_face_boss_neck
-	.faraddr	sub_01F66B
+	.faraddr	update_object_type_78
 	.faraddr	update_snake_robot
 	.faraddr	update_lightning_pylon
 	.faraddr	update_lightning_bolt
 	.faraddr	update_enemy_type_7C
 	.faraddr	update_spiked_mine
-	.faraddr	sub_01C03C
+	.faraddr	update_object_type_7E
 	.faraddr	update_airship_gun_arm
 	.faraddr	update_enemy_type_80
 	.faraddr	update_snake_robot_head
@@ -1080,7 +1080,7 @@ tbl_object_types:
 	.faraddr	sub_01A4B5
 	.faraddr	update_skeleton_eye_fireball
 	.faraddr	update_snake_robot_debris
-	.faraddr	sub_00CFF5
+	.faraddr	update_object_type_89
 	.faraddr	update_brain_boss
 	.faraddr	update_brain_boss_orb_ring
 	.faraddr	update_brain_boss_chain
@@ -1246,7 +1246,7 @@ data_05AA98:
 	.byte	$FC, $FF, $FD, $FF, $FD, $FF, $FE, $FF, $FF, $FF, $FD, $FF, $FF, $FF, $FC, $FF
 	.byte	$FD, $FF, $FE, $FF, $FE, $FF, $FF, $FF
 data_05AAB0:
-	; CDL: read by sub_00FD12, sub_00FEAA
+	; CDL: read by update_object_type_22, sub_00FEAA
 	.byte	$99, $B6, $88, $B6, $73, $B6, $FD, $B6, $00, $80, $20, $80, $80, $80, $A0, $80
 	.byte	$00, $81, $20, $81, $80, $81, $A0, $81, $40, $80, $60, $80, $C0, $80, $E0, $80
 	.byte	$40, $81, $60, $81
@@ -1276,10 +1276,10 @@ data_05AB40:
 	; CDL: read by sub_00F907; DMA / HDMA
 	.byte	$80, $00, $00, $01, $FF, $7F
 data_05AB46:
-	; CDL: read by sub_00FAC0; DMA / HDMA
+	; CDL: read by update_stage1_boss_tracking_shot; DMA / HDMA
 	.byte	$00, $04, $00, $06, $00, $08
 data_05AB4C:
-	; CDL: read by sub_00FC21; partly not accessed
+	; CDL: read by update_stage1_boss; partly not accessed
 	.byte	$00, $01, $C0, $00, $08, $00
 data_05AB52:
 	; CDL: read by sub_00F69D; partly not accessed
@@ -1368,16 +1368,16 @@ data_05AC47:
 	.byte	$DC, $FF, $DC, $FF, $BE, $FF, $C8, $FF, $D9, $FF, $00, $00, $CC, $FF, $00, $00
 	.byte	$00, $00, $F0, $FF, $00, $00, $00, $00, $F0, $FF
 data_05AC61:
-	; CDL: read by sub_01B41F
+	; CDL: read by object_type_02_state_07
 	.byte	$0F, $00, $07, $00, $03, $00
 data_05AC67:
-	; CDL: read by sub_01B41F
+	; CDL: read by object_type_02_state_07
 	.byte	$FA, $FF, $FA, $FF, $F8, $FF, $FC, $FF, $F8, $FF, $FA, $FF, $F8, $FF, $FB, $FF
 data_05AC77:
-	; CDL: read by sub_01B41F; partly not accessed
+	; CDL: read by object_type_02_state_07; partly not accessed
 	.byte	$00, $80, $00, $40, $00, $40, $00, $50, $00, $70, $00, $20, $00, $60, $00, $30
 data_05AC87:
-	; CDL: read by sub_00FEAA, sub_01B41F; partly not accessed
+	; CDL: read by sub_00FEAA, object_type_02_state_07; partly not accessed
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FD, $FF, $FE, $FF, $FD, $FF, $FE, $FF, $FD, $FF
 	.byte	$00, $B7, $20, $B7, $40, $B7, $60, $B7, $80, $B7, $A0, $B7, $C0, $B7, $E0, $B7
 	.byte	$60, $BF, $80, $C0, $A0, $C0, $C0, $C0, $00, $C0, $20, $C0, $40, $C0, $60, $C0
@@ -1422,59 +1422,59 @@ data_05AC87:
 	.byte	$80, $60, $A0, $60, $A0, $60, $C0, $60, $20, $50, $40, $50, $60, $50, $A0, $50
 	.byte	$C0, $50, $E0, $50, $80, $50, $00, $51, $20, $51
 data_05AF31:
-	; CDL: read by sub_01B7B7
+	; CDL: read by object_type_09_state_02
 	.byte	$00, $02, $00, $02, $04, $02
 data_05AF37:
-	; CDL: read by setup_stage_hdma, sub_00FEAA, sub_01B7B7; partly not accessed
+	; CDL: read by setup_stage_hdma, sub_00FEAA, object_type_09_state_02; partly not accessed
 	.byte	$00, $04, $04, $04, $00, $04, $00, $C9, $20, $C9, $40, $C9, $80, $C9, $A0, $C9
 	.byte	$C0, $C9, $60, $C9, $E0, $C9, $00, $CA, $20, $CA, $40, $CA, $60, $CA, $60, $C8
 	.byte	$E0, $C8, $80, $CA, $20, $CA, $40, $CA, $60, $CA, $70, $43, $02, $0F, $00, $38
 	.byte	$7E, $7E, $FF, $FF, $80
 data_05AF6C:
-	; CDL: read by setup_stage_hdma, sub_01BCAF
+	; CDL: read by setup_stage_hdma, object_type_35_state_02
 	.byte	$02, $00, $0E, $00, $00, $00, $10, $00, $02, $00, $0E, $00
 data_05AF78:
-	; CDL: read by sub_01BCAF
+	; CDL: read by object_type_35_state_02
 	.byte	$98, $00, $98, $00, $A0, $00, $A0, $00, $A8, $00, $A8, $00
 data_05AF84:
-	; CDL: read by sub_01BCAF
+	; CDL: read by object_type_35_state_02
 	.byte	$00, $A0, $00, $60, $00, $C0, $00, $40, $00, $E0, $00, $20
 data_05AF90:
-	; CDL: read by update_objects, sub_00FEAA, sub_01BCAF; partly not accessed
+	; CDL: read by update_objects, sub_00FEAA, object_type_35_state_02; partly not accessed
 	.byte	$FF, $FF, $00, $00, $FF, $FF, $00, $00, $FF, $FF, $00, $00, $06, $00, $58, $B1
 	.byte	$12, $B4, $08, $00, $6D, $B1, $27, $B4, $06, $00, $82, $B1, $3C, $B4, $08, $00
 	.byte	$6D, $B1, $27, $B4, $9C, $AF, $0C, $00, $97, $B1, $51, $B4, $06, $00, $AC, $B1
 	.byte	$66, $B4, $0C, $00, $97, $B1, $51, $B4, $00, $00, $97, $B1, $51, $B4, $40, $55
 	.byte	$C0, $55
 data_05AFD2:
-	; CDL: read by sub_01BDB4
+	; CDL: read by update_object_type_0B
 	.byte	$40, $00, $28, $00, $10, $00
 data_05AFD8:
-	; CDL: read by sub_01BDB4
+	; CDL: read by update_object_type_0B
 	.byte	$80, $00, $60, $00, $40, $00
 data_05AFDE:
-	; CDL: read by sub_01BDB4
+	; CDL: read by update_object_type_0B
 	.byte	$02, $00, $04, $00, $0C, $00
 data_05AFE4:
 	; CDL: read by sub_01BB61
 	.byte	$00, $00, $01, $00, $03, $00
 data_05AFEA:
-	; CDL: read by sub_01BEB1
+	; CDL: read by object_type_73_state_00
 	.byte	$F8, $FF, $F9, $FF, $FA, $FF
 data_05AFF0:
-	; CDL: read by sub_01BEB1
+	; CDL: read by object_type_73_state_00
 	.byte	$40, $00, $60, $00, $80, $00
 data_05AFF6:
-	; CDL: read by update_objects, sub_01BF67; partly not accessed
+	; CDL: read by update_objects, object_type_73_state_03; partly not accessed
 	.byte	$60, $00, $70, $00, $80, $00, $20, $00, $CF, $C5, $FB, $C7, $10, $00, $E0, $C5
 	.byte	$0C, $C8, $20, $00, $F1, $C5, $F1, $C5, $80, $00, $0C, $C8, $E0, $C5, $00, $00
 	.byte	$FB, $C7, $CF, $C5, $08, $00, $75, $C6, $A4, $C6, $08, $00, $86, $C6, $B5, $C6
 	.byte	$1A, $B0
 data_05B028:
-	; CDL: read by sub_01C0F5
+	; CDL: read by object_type_7E_state_01
 	.byte	$24, $00, $14, $00, $0C, $00
 data_05B02E:
-	; CDL: read by sub_01C0F5
+	; CDL: read by object_type_7E_state_01
 	.byte	$18, $00, $58, $00, $98, $00, $D8, $00
 data_05B036:
 	; CDL: read by sub_00FEAA, sub_01C302
@@ -1482,25 +1482,25 @@ data_05B036:
 	.byte	$00, $51, $60, $83, $80, $83, $A0, $83, $C0, $83, $E0, $83, $20, $84, $40, $84
 	.byte	$00, $51, $00, $84
 data_05B05A:
-	; CDL: read by sub_01C3A0; partly not accessed
+	; CDL: read by wall_hatch_state_00; partly not accessed
 	.byte	$04, $00, $08, $00, $10, $00
 data_05B060:
 	; CDL: read by sub_01C3F1
 	.byte	$80, $69, $A0, $69
 data_05B064:
-	; CDL: read by sub_01C424
+	; CDL: read by wall_hatch_state_03
 	.byte	$40, $69, $60, $69, $80, $68, $A0, $68, $C0, $68, $E0, $68, $00, $69, $20, $69
 data_05B074:
 	; CDL: read by sub_01C3F1
 	.byte	$40, $69, $A0, $69, $80, $69
 data_05B07A:
-	; CDL: read by sub_01C424; partly not accessed
+	; CDL: read by wall_hatch_state_03; partly not accessed
 	.byte	$0C, $00, $18, $00, $1C, $00, $18, $00, $0C, $00, $00, $00, $FC, $FF, $FF, $FF
 data_05B08A:
-	; CDL: read by sub_01C424; partly not accessed
+	; CDL: read by wall_hatch_state_03; partly not accessed
 	.byte	$E4, $FF, $EA, $FF, $F6, $FF, $02, $00, $00, $00, $00, $00, $F6, $FF, $EA, $FF
 data_05B09A:
-	; CDL: read by sub_00FEAA, sub_01C424; partly not accessed
+	; CDL: read by sub_00FEAA, wall_hatch_state_03; partly not accessed
 	.byte	$03, $00, $01, $00, $00, $00, $00, $50, $40, $76, $60, $76, $A0, $76, $C0, $76
 	.byte	$E0, $76, $20, $77, $40, $77, $60, $77, $A0, $77, $C0, $77, $E0, $77, $60, $74
 	.byte	$00, $77, $80, $77
@@ -1524,26 +1524,26 @@ data_05B18C:
 	; CDL: read by sub_01C9A5
 	.byte	$A3, $B0, $01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $02, $00, $03, $00
 data_05B19C:
-	; CDL: read by sub_01CA43; partly not accessed
+	; CDL: read by object_type_11_state_01; partly not accessed
 	.byte	$08, $B4, $03, $B4, $FE, $B3, $08, $B4, $03, $B4, $FE, $B3
 data_05B1A8:
-	; CDL: read by sub_01CA43; partly not accessed
+	; CDL: read by object_type_11_state_01; partly not accessed
 	.byte	$FD, $FF, $FC, $FF, $FA, $FF, $FB, $FF, $FD, $FF, $FC, $FF
 data_05B1B4:
-	; CDL: read by sub_00FEAA, sub_01CA43; partly not accessed
+	; CDL: read by sub_00FEAA, object_type_11_state_01; partly not accessed
 	.byte	$03, $00, $02, $00, $01, $00, $FF, $FF, $FE, $FF, $FD, $FF, $A0, $63, $60, $63
 	.byte	$E0, $63, $80, $65
 data_05B1C8:
-	; CDL: read by sub_01CC53
+	; CDL: read by object_type_12_state_00
 	.byte	$04, $00, $06, $00, $08, $00
 data_05B1CE:
 	; CDL: read by sub_01CC7C
 	.byte	$60, $00, $40, $00, $10, $00
 data_05B1D4:
-	; CDL: read by sub_01CCAF
+	; CDL: read by object_type_12_state_05
 	.byte	$0C, $00, $F8, $FF
 data_05B1D8:
-	; CDL: read by sub_01CCAF; partly not accessed
+	; CDL: read by object_type_12_state_05; partly not accessed
 	.byte	$00, $00, $00, $00, $00, $00, $FF, $FF, $00, $00, $FF, $FF, $00, $00, $FF, $FF
 	.byte	$01, $00, $FE, $FF, $01, $00, $FE, $FF, $01, $00, $FE, $FF, $01, $00, $FE, $FF
 	.byte	$02, $00, $FD, $FF, $02, $00, $FD, $FF, $02, $00, $FD, $FF, $02, $00, $FD, $FF
@@ -1551,7 +1551,7 @@ data_05B1D8:
 	.byte	$03, $00, $FC, $FF, $03, $00, $FC, $FF, $03, $00, $FC, $FF, $03, $00, $FC, $FF
 	.byte	$04, $00, $FB, $FF, $04, $00, $FB, $FF, $04, $00, $FB, $FF, $04, $00, $FB, $FF
 data_05B228:
-	; CDL: read by sub_01CCAF; partly not accessed
+	; CDL: read by object_type_12_state_05; partly not accessed
 	.byte	$00, $00, $00, $00, $00, $40, $00, $C0, $00, $80, $00, $80, $00, $C0, $00, $40
 	.byte	$00, $00, $00, $00, $00, $40, $00, $C0, $00, $80, $00, $80, $00, $C0, $00, $40
 	.byte	$00, $00, $00, $00, $00, $40, $00, $C0, $00, $80, $00, $80, $00, $C0, $00, $40
@@ -1562,10 +1562,10 @@ data_05B278:
 	; CDL: read by sub_01CC7C
 	.byte	$F0, $B1, $AA, $B4
 data_05B27C:
-	; CDL: read by sub_01CC97
+	; CDL: read by object_type_12_state_03
 	.byte	$05, $B2, $BF, $B4
 data_05B280:
-	; CDL: read by update_objects, sub_01CCAF
+	; CDL: read by update_objects, object_type_12_state_05
 	.byte	$1A, $B2, $D4, $B4, $06, $00, $91, $AE, $91, $AE, $06, $00, $96, $AE, $96, $AE
 	.byte	$06, $00, $BE, $AF, $BE, $AF, $06, $00, $C3, $AF, $C3, $AF, $84, $B2
 ; Player frames, 16 bytes each (index PLAYER_POSE + PLAYER_POSE_ADD + $38):
@@ -1899,7 +1899,7 @@ data_05B2AC:
 	.byte	$80, $61, $C0, $61, $00, $64, $40, $64, $00, $01, $40, $01, $98, $98, $52, $AC
 	.byte	$80, $64, $C0, $64, $00, $65, $40, $65, $00, $01, $40, $01, $B1, $98, $6B, $AC
 data_05C43E:
-	; CDL: read by sub_01CE1D
+	; CDL: read by window_sniper_state_00
 	.byte	$04, $00, $06, $00, $08, $00
 data_05C444:
 	; CDL: read by sub_01CE44
@@ -1908,11 +1908,11 @@ data_05C44A:
 	; CDL: read by sub_01CE99
 	.byte	$00, $02, $40, $02
 data_05C44E:
-	; CDL: read by sub_01CE58; partly not accessed
+	; CDL: read by window_sniper_state_03; partly not accessed
 	.byte	$06, $00, $00, $00, $1A, $00, $1A, $00, $24, $00, $24, $00, $1A, $00, $1A, $00
 	.byte	$02, $00, $06, $00, $EE, $FF, $EE, $FF, $E2, $FF, $E2, $FF, $F0, $FF, $F0, $FF
 data_05C46E:
-	; CDL: read by sub_01CE58; partly not accessed
+	; CDL: read by window_sniper_state_03; partly not accessed
 	.byte	$CA, $FF, $CA, $FF, $D9, $FF, $D9, $FF, $EE, $FF, $EE, $FF, $06, $00, $06, $00
 	.byte	$12, $00, $12, $00, $06, $00, $06, $00, $EF, $FF, $EF, $FF, $DB, $FF, $DB, $FF
 data_05C48E:
@@ -1920,7 +1920,7 @@ data_05C48E:
 	.byte	$2F, $B2, $E9, $B4, $59, $B2, $13, $B5, $83, $B2, $3D, $B5, $AD, $B2, $67, $B5
 	.byte	$D7, $B2, $91, $B5, $AD, $B2, $67, $B5, $83, $B2, $3D, $B5, $59, $B2, $13, $B5
 data_05C4AE:
-	; CDL: read by update_objects, sub_01CF1D, sub_01CFF5; partly not accessed
+	; CDL: read by update_objects, sub_01CF1D, update_effect; partly not accessed
 	.byte	$44, $B2, $FE, $B4, $6E, $B2, $28, $B5, $98, $B2, $52, $B5, $C2, $B2, $7C, $B5
 	.byte	$EC, $B2, $A6, $B5, $C2, $B2, $7C, $B5, $98, $B2, $52, $B5, $44, $B2, $FE, $B4
 	.byte	$01, $00, $EA, $AF, $00, $32, $01, $00, $D9, $AF, $00, $32, $02, $00, $A5, $AE
@@ -1960,7 +1960,7 @@ data_05C4AE:
 	.byte	$00, $32, $08, $00, $4E, $B1, $00, $3E, $08, $00, $4E, $B1, $00, $32, $08, $00
 	.byte	$4E, $B1, $00, $30, $08, $00, $4E, $B1, $00, $32, $08, $00, $4E, $B1, $00, $30
 data_05C70E:
-	; CDL: read by update_objects, sub_01D0F3; partly not accessed
+	; CDL: read by update_objects, alien_dog_state_02; partly not accessed
 	.byte	$00, $00, $02, $00, $08, $00, $60, $00, $01, $B3, $01, $B3, $08, $00, $12, $B3
 	.byte	$12, $B3, $08, $00, $01, $B3, $01, $B3, $08, $00, $12, $B3, $12, $B3, $20, $00
 	.byte	$01, $B3, $01, $B3, $08, $00, $12, $B3, $12, $B3, $08, $00, $01, $B3, $01, $B3
@@ -1974,28 +1974,28 @@ data_05C792:
 	; CDL: read by sub_01D1DB
 	.byte	$00, $30, $00, $32, $00, $3E, $00, $30
 data_05C79A:
-	; CDL: read by sub_01D1E7
+	; CDL: read by update_dying_soldier
 	.byte	$D6, $B1, $90, $B4
 data_05C79E:
-	; CDL: read by sub_01D1E7
+	; CDL: read by update_dying_soldier
 	.byte	$FF, $FF, $00, $00
 data_05C7A2:
-	; CDL: read by sub_01D1E7; partly not accessed
+	; CDL: read by update_dying_soldier; partly not accessed
 	.byte	$00, $80, $00, $80, $06, $00, $33, $AF, $33, $AF, $04, $00, $E5, $AE, $E5, $AE
 	.byte	$02, $00, $F6, $AE, $F6, $AE, $00, $00, $00, $00, $00, $00, $02, $00, $C5, $AE
 	.byte	$C5, $AE, $02, $00, $CA, $AE, $CA, $AE, $02, $00, $33, $AF, $33, $AF, $02, $00
 	.byte	$E5, $AE, $E5, $AE, $02, $00, $F6, $AE, $F6, $AE, $00, $00, $00, $00, $00, $00
 data_05C7E2:
-	; CDL: read by update_objects, sub_01D370; partly not accessed
+	; CDL: read by update_objects, update_object_type_2F; partly not accessed
 	.byte	$80, $00, $70, $00, $60, $00, $06, $00, $D6, $B5, $1A, $B6, $06, $00, $E7, $B5
 	.byte	$2B, $B6, $06, $00, $F8, $B5, $3C, $B6, $06, $00, $09, $B6, $4D, $B6, $E8, $C7
 	.byte	$02, $00, $5E, $B6, $1A, $B6, $02, $00, $63, $B6, $2B, $B6, $02, $00, $68, $B6
 	.byte	$3C, $B6, $02, $00, $6D, $B6, $4D, $B6, $02, $C8
 data_05C81C:
-	; CDL: read by sub_01D4BF
+	; CDL: read by update_object_type_31
 	.byte	$10, $00, $40, $00, $FF, $7F
 data_05C822:
-	; CDL: read by sub_01D6A3
+	; CDL: read by update_object_type_2C
 	.byte	$00, $00, $10, $00, $20, $00
 data_05C828:
 	; CDL: read by sub_01D831
@@ -2041,19 +2041,19 @@ data_05C91E:
 	.byte	$84, $C1, $F6, $C1, $07, $00, $91, $C1, $03, $C2, $06, $00, $84, $C1, $F6, $C1
 	.byte	$26, $C9, $07, $00, $A6, $C1, $A6, $C1, $02, $00, $B7, $C1, $B7, $C1, $46, $C9
 data_05C94E:
-	; CDL: read by sub_01DD00; partly not accessed
+	; CDL: read by object_type_49_state_01; partly not accessed
 	.byte	$02, $00, $02, $00, $03, $00, $03, $00
 data_05C956:
-	; CDL: read by sub_01DD50; partly not accessed
+	; CDL: read by object_type_49_state_02; partly not accessed
 	.byte	$D2, $00, $B4, $00, $96, $00, $78, $00
 data_05C95E:
-	; CDL: read by sub_01DD9C
+	; CDL: read by rolling_mine_state_00
 	.byte	$04, $00, $06, $00, $10, $00
 data_05C964:
-	; CDL: read by sub_01DD9C
+	; CDL: read by rolling_mine_state_00
 	.byte	$00, $78, $FF, $87
 data_05C968:
-	; CDL: read by update_objects, sub_01DD9C
+	; CDL: read by update_objects, rolling_mine_state_00
 	.byte	$01, $00, $FE, $FF, $03, $00, $7D, $B7, $B0, $B7, $03, $00, $8E, $B7, $9F, $B7
 	.byte	$03, $00, $9F, $B7, $8E, $B7, $03, $00, $B0, $B7, $7D, $B7, $6C, $C9, $08, $00
 	.byte	$C1, $B7, $C1, $B7, $08, $00, $D6, $B7, $D6, $B7, $06, $00, $EB, $B7, $EB, $B7
@@ -2061,19 +2061,19 @@ data_05C968:
 	.byte	$40, $B8, $00, $00, $EB, $B7, $EB, $B7, $06, $00, $EB, $B7, $EB, $B7, $06, $00
 	.byte	$D6, $B7, $D6, $B7, $08, $00, $C1, $B7, $C1, $B7, $00, $00, $C1, $B7, $C1, $B7
 data_05C9C8:
-	; CDL: read by sub_01DE82
+	; CDL: read by rolling_mine_state_04
 	.byte	$EB, $B7, $FC, $B7, $0D, $B8, $1E, $B8, $2F, $B8, $62, $B8, $51, $B8, $40, $B8
 data_05C9D8:
-	; CDL: read by sub_01DE82
+	; CDL: read by rolling_mine_state_04
 	.byte	$04, $00, $14, $00, $18, $00, $10, $00, $04, $00, $FC, $FF, $F0, $FF, $F4, $FF
 data_05C9E8:
-	; CDL: read by sub_01DE82
+	; CDL: read by rolling_mine_state_04
 	.byte	$D8, $FF, $D8, $FF, $E8, $FF, $EC, $FF, $F0, $FF, $EC, $FF, $E8, $FF, $D8, $FF
 data_05C9F8:
-	; CDL: read by sub_01DFC4
+	; CDL: read by object_type_4E_state_05
 	.byte	$0C, $CA, $1C, $CA, $2C, $CA, $3C, $CA, $4C, $CA
 data_05CA02:
-	; CDL: read by sub_00FEAA, sub_01DFC4
+	; CDL: read by sub_00FEAA, object_type_4E_state_05
 	.byte	$00, $41, $80, $41, $00, $42, $80, $42, $00, $43, $40, $61, $60, $61, $00, $50
 	.byte	$00, $61, $40, $61, $60, $61, $00, $50, $80, $61, $C0, $61, $E0, $61, $00, $61
 	.byte	$80, $61, $C0, $61, $E0, $61, $00, $61, $80, $61, $C0, $61, $E0, $61, $80, $61
@@ -2081,10 +2081,10 @@ data_05CA02:
 	.byte	$20, $5F, $40, $5F, $60, $5F, $00, $5F, $20, $5F, $C0, $5F, $E0, $5F, $80, $5F
 	.byte	$A0, $5E, $C0, $5F, $E0, $5F, $80, $5F, $A0, $5E
 data_05CA5C:
-	; CDL: read by sub_01E057
+	; CDL: read by object_type_4E_state_08
 	.byte	$6D, $08, $A0, $E0, $00, $A1, $00, $00
 data_05CA64:
-	; CDL: read by update_objects, sub_00FEAA, sub_01E082; DMA / HDMA; partly not accessed
+	; CDL: read by update_objects, sub_00FEAA, object_type_4E_state_09; DMA / HDMA; partly not accessed
 	.byte	$40, $00, $48, $00, $50, $00, $58, $00, $60, $B8, $80, $B8, $E0, $B8, $00, $B9
 	.byte	$20, $B9, $40, $B9, $A0, $B7, $C0, $B7, $80, $C2, $80, $C2, $80, $C2, $80, $C2
 	.byte	$00, $00, $FF, $FF, $E0, $B7, $20, $B8, $00, $B8, $40, $B8, $6D, $20, $60, $02
@@ -2092,10 +2092,10 @@ data_05CA64:
 	.byte	$B7, $73, $B8, $02, $00, $2B, $B7, $8C, $B8, $A1, $CA, $01, $00, $12, $B7, $73
 	.byte	$B8, $AF, $CA, $01, $00, $40, $B7, $A1, $B8, $B7, $CA
 data_05CABF:
-	; CDL: read by sub_01E6F0; partly not accessed
+	; CDL: read by stage3_winged_bug_state_00; partly not accessed
 	.byte	$9F, $00, $2F, $00, $07, $00, $00, $00, $04, $00, $08, $00
 data_05CACB:
-	; CDL: read by sub_01E797; partly not accessed
+	; CDL: read by object_type_56_state_00; partly not accessed
 	.byte	$01, $00, $02, $00, $03, $00, $04, $00
 data_05CAD3:
 	; CDL: read by sub_01E7E0; partly not accessed
@@ -2110,12 +2110,12 @@ data_05CAEB:
 	; CDL: read by sub_01E7E0; partly not accessed
 	.byte	$FE, $FF, $FD, $FF, $FD, $FF, $FD, $FF
 data_05CAF3:
-	; CDL: read by update_objects, sub_01E7FF
+	; CDL: read by update_objects, object_type_56_state_01
 	.byte	$02, $00, $FE, $FF, $07, $00, $99, $C2, $08, $C4, $06, $00, $AE, $C2, $1D, $C4
 	.byte	$07, $00, $C3, $C2, $32, $C4, $06, $00, $AE, $C2, $1D, $C4, $F7, $CA, $02, $00
 	.byte	$D8, $C2, $47, $C4, $11, $CB
 data_05CB19:
-	; CDL: read by sub_01E772
+	; CDL: read by update_object_type_56
 	.byte	$E9, $C2, $58, $C4
 data_05CB1D:
 	; CDL: read by sub_01E8AD
@@ -2139,57 +2139,57 @@ data_05CB3D:
 	; CDL: read by sub_01EBCE
 	.byte	$D0, $B8, $B6, $B8, $00, $00
 data_05CB43:
-	; CDL: read by update_objects, sub_01EABD; partly not accessed
+	; CDL: read by update_objects, stage3_spiked_climber_state_05; partly not accessed
 	.byte	$00, $03, $00, $02, $40, $00, $03, $00, $22, $B9, $F9, $B8, $03, $00, $43, $B9
 	.byte	$1F, $BB, $03, $00, $8B, $BA, $F6, $BA, $03, $00, $AC, $BA, $D5, $BA, $03, $00
 	.byte	$D5, $BA, $AC, $BA, $03, $00, $F6, $BA, $8B, $BA, $03, $00, $1F, $BB, $43, $B9
 	.byte	$03, $00, $F9, $B8, $22, $B9, $49, $CB
 data_05CB7B:
-	; CDL: read by sub_01EE36
+	; CDL: read by stage3_spiked_climber_state_0A
 	.byte	$A0, $00, $80, $00, $80, $00, $80, $00, $40, $00, $80, $00, $40, $00, $80, $00
 	.byte	$50, $00, $50, $00, $80, $00, $90, $00, $88, $00, $40, $00, $F0, $00
 data_05CB99:
-	; CDL: read by sub_01EE36
+	; CDL: read by stage3_spiked_climber_state_0A
 	.byte	$00, $06, $C0, $05, $80, $05, $40, $05, $00, $05, $40, $03, $C0, $04, $80, $04
 	.byte	$40, $04, $00, $04, $C0, $03
 data_05CBAF:
-	; CDL: read by sub_01EF43
+	; CDL: read by object_type_5A_state_00
 	.byte	$48, $00, $38, $00, $28, $00, $18, $00, $08, $00, $08, $00, $18, $00, $28, $00
 	.byte	$38, $00, $48, $00, $00, $00
 data_05CBC5:
-	; CDL: read by sub_01EF43
+	; CDL: read by object_type_5A_state_00
 	.byte	$94, $FF, $A4, $FF, $B4, $FF, $C4, $FF, $D4, $FF, $18, $00, $28, $00, $38, $00
 	.byte	$48, $00, $58, $00, $00, $00
 data_05CBDB:
-	; CDL: read by sub_01EF57
+	; CDL: read by object_type_5A_state_01
 	.byte	$0E, $06, $CE, $03
 data_05CBDF:
-	; CDL: read by update_objects, sub_01EF57; partly not accessed
+	; CDL: read by update_objects, object_type_5A_state_01; partly not accessed
 	.byte	$C8, $00, $B8, $00, $A8, $00, $98, $00, $88, $00, $40, $00, $30, $00, $20, $00
 	.byte	$10, $00, $00, $00, $5C, $00, $00, $00, $F8, $FF, $F0, $FF, $E8, $FF, $E0, $FF
 	.byte	$A0, $FF, $98, $FF, $90, $FF, $88, $FF, $80, $FF, $B8, $FF, $02, $00, $E0, $B9
 	.byte	$BE, $B9, $02, $00, $E5, $B9, $CF, $B9, $0B, $CC
 data_05CC19:
-	; CDL: read by sub_01EE36
+	; CDL: read by stage3_spiked_climber_state_0A
 	.byte	$00, $1C, $00, $1B, $00, $17, $00, $10, $00, $08, $00, $02, $00, $02, $00, $01
 	.byte	$00, $00, $00, $00
 data_05CC2D:
-	; CDL: read by sub_01EE36
+	; CDL: read by stage3_spiked_climber_state_0A
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00
 data_05CC41:
-	; CDL: read by sub_01EE36
+	; CDL: read by stage3_spiked_climber_state_0A
 	.byte	$FF, $BB, $FF, $E2, $FF, $7E, $FF, $8F, $FF, $C7, $FF, $B1, $FF, $B1, $FF, $D8
 	.byte	$FF, $FF, $FF, $FF
 data_05CC55:
-	; CDL: read by sub_01EE36
+	; CDL: read by stage3_spiked_climber_state_0A
 	.byte	$FB, $FF, $FB, $FF, $FC, $FF, $FD, $FF, $FE, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF
 data_05CC69:
-	; CDL: read by sub_01F0C9
+	; CDL: read by stage3_spiked_climber_state_10
 	.byte	$02, $00, $00, $00
 data_05CC6D:
-	; CDL: read by sub_01F0C9
+	; CDL: read by stage3_spiked_climber_state_10
 	.byte	$3D, $00, $1D, $40
 data_05CC71:
 	; CDL: read by sub_01F36F
@@ -2210,29 +2210,29 @@ data_05CC81:
 	.byte	$80, $5B, $80, $5B, $00, $75, $20, $75, $00, $50, $00, $50, $00, $50, $00, $50
 	.byte	$00, $50, $00, $50
 data_05CCC7:
-	; CDL: read by sub_01F0C9
+	; CDL: read by stage3_spiked_climber_state_10
 	.byte	$00, $10, $00, $E0
 data_05CCCB:
-	; CDL: read by sub_01F0C9
+	; CDL: read by stage3_spiked_climber_state_10
 	.byte	$00, $00, $FF, $FF
 data_05CCCF:
-	; CDL: read by sub_01F0C9
+	; CDL: read by stage3_spiked_climber_state_10
 	.byte	$FF, $00, $5A, $00, $42, $00, $FF, $00
 data_05CCD7:
-	; CDL: read by update_objects, sub_01F0C9; partly not accessed
+	; CDL: read by update_objects, stage3_spiked_climber_state_10; partly not accessed
 	.byte	$28, $00, $60, $00, $98, $00, $04, $00, $43, $B9, $95, $B9, $04, $00, $6C, $B9
 	.byte	$6C, $B9, $00, $00, $95, $B9, $43, $B9, $30, $00, $40, $00, $60, $00
 data_05CCF5:
-	; CDL: read by sub_01EA59
+	; CDL: read by stage3_spiked_climber_state_03
 	.byte	$38, $00, $50, $00, $80, $00
 data_05CCFB:
-	; CDL: read by sub_01F04F
+	; CDL: read by stage3_spiked_climber_state_0F
 	.byte	$60, $00, $A0, $00, $B8, $00
 data_05CD01:
-	; CDL: read by sub_01F43C
+	; CDL: read by hoverbike_rider_state_00
 	.byte	$08, $00, $10, $00, $20, $00
 data_05CD07:
-	; CDL: read by update_objects, sub_01F43C; partly not accessed
+	; CDL: read by update_objects, hoverbike_rider_state_00; partly not accessed
 	.byte	$C6, $C6, $EB, $C6, $08, $00, $18, $C7, $18, $C7, $10, $00, $41, $C7, $41, $C7
 	.byte	$00, $00, $C6, $C6
 data_05CD1B:

@@ -1,10 +1,13 @@
 ; objects/object_handlers_00c.asm -- Object handlers (bank $00, part 3)
 ; Bank $00, $00:F27C-$00:FD8C. Included by main.asm in segment BANK00.
 ;
-; Object type 1 (sub_00F27C) with its sub-states and helpers, and other
+; Object type 1 (update_object_type_01) with its sub-states and helpers, and other
 ; handlers dispatched through tbl_object_types.
 
-sub_00F27C:
+; Object type $01: stage controller seen near the end of stage 1 (sections
+; 13-14, before the boss) and in stage 2; loads graphics and palettes
+; (data_05AA1F), not drawn. Not identified.
+update_object_type_01:
 	lda	$32,x
 	beq	loc_00F290
 	dec	a
@@ -28,22 +31,22 @@ loc_00F2A0:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00F2B2,x
+	lda	f:tbl_object_type_01_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00F2B2:
-	.addr	sub_00F2C4
-	.addr	sub_00F2EF
-	.addr	sub_00F31A
-	.addr	sub_00F34C
-	.addr	sub_00F3A3
-	.addr	sub_00F3B8
-	.addr	sub_00F3E9
-	.addr	sub_00F415
-	.addr	sub_00F43D
+tbl_object_type_01_states:
+	.addr	object_type_01_state_00
+	.addr	object_type_01_state_01
+	.addr	object_type_01_state_02
+	.addr	object_type_01_state_03
+	.addr	object_type_01_state_04
+	.addr	object_type_01_state_05
+	.addr	object_type_01_state_06
+	.addr	object_type_01_state_07
+	.addr	object_type_01_state_08
 
-sub_00F2C4:
+object_type_01_state_00:
 	lda	#$0002
 	jsl	f:start_palette_anim
 	lda	#$F48A
@@ -58,9 +61,9 @@ sub_00F2C4:
 	sta	zp_02
 	ldy	#$4830
 	lda	#$0018
-	jml	f:sub_00CFAF
+	jml	f:update_object_type_28
 
-sub_00F2EF:
+object_type_01_state_01:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	loc_00F319
@@ -79,7 +82,7 @@ sub_00F2EF:
 loc_00F319:
 	rtl
 
-sub_00F31A:
+object_type_01_state_02:
 	lda	$24,x
 	bmi	loc_00F322
 	dec	$24,x
@@ -102,7 +105,7 @@ loc_00F322:
 loc_00F34B:
 	rtl
 
-sub_00F34C:
+object_type_01_state_03:
 	dec	$24,x
 	beq	loc_00F362
 	phx
@@ -145,7 +148,7 @@ loc_00F395:
 	plx
 	rtl
 
-sub_00F3A3:
+object_type_01_state_04:
 	jsr	a:sub_00F559
 	lda	$34,x
 	bne	loc_00F3B1
@@ -157,7 +160,7 @@ loc_00F3B1:
 	jsr	a:sub_00F8E2
 	rtl
 
-sub_00F3B8:
+object_type_01_state_05:
 	dec	$24,x
 	bne	loc_00F3DF
 	lda	#$0006
@@ -179,7 +182,7 @@ loc_00F3DF:
 	jsr	a:sub_00F8E2
 	rtl
 
-sub_00F3E9:
+object_type_01_state_06:
 	lda	a:wram_163C
 	cmp	#$0020
 	bne	loc_00F405
@@ -201,7 +204,7 @@ loc_00F405:
 	jsr	a:sub_00F672
 	brl	loc_00F46D
 
-sub_00F415:
+object_type_01_state_07:
 	lda	a:wram_163C
 	cmp	#$0007
 	bcs	loc_00F42D
@@ -219,7 +222,7 @@ loc_00F42D:
 	jsr	a:sub_00F672
 	brl	loc_00F46D
 
-sub_00F43D:
+object_type_01_state_08:
 	lda	a:wram_163C
 	cmp	#$0020
 	bcc	loc_00F45D
@@ -268,7 +271,7 @@ sub_00F484:
 	sta	zp_06
 	ldy	#$0280
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_00F4B6
 	lda	#$FFFD
 	sta	a:$001E,y
@@ -1045,14 +1048,16 @@ sub_00FA55:
 loc_00FABF:
 	rts
 
-sub_00FAC0:
+; Object type $26: stage 1 boss projectile that follows the player's height
+; (speed data_05AB46 by difficulty).
+update_stage1_boss_tracking_shot:
 	lda	$06,x
 	bpl	loc_00FAD3
 	lda	#$000C
 	jsl	f:queue_sound
 	txy
 	lda	#$C59A
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_00FAD3:
 	lda	zp_E6
 	cmp	#$0002
@@ -1090,7 +1095,9 @@ loc_00FB05:
 	sta	$1E,x
 	rtl
 
-sub_00FB15:
+; Object type $27: stage 1 boss projectile that falls, then rolls on the
+; floor.
+update_stage1_boss_falling_shot:
 	lda	$06,x
 	bpl	loc_00FB2A
 	lda	#$000C
@@ -1098,13 +1105,13 @@ sub_00FB15:
 	stz	$04,x
 	txy
 	lda	#$C59A
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_00FB2A:
 	lda	$12,x
 	bne	loc_00FB6B
 	stz	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	beq	loc_00FB44
 	jsl	f:snap_y_up_to_tile
 	inc	$12,x
@@ -1123,7 +1130,7 @@ loc_00FB44:
 loc_00FB54:
 	stz	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	beq	loc_00FB44
 	jsl	f:snap_y_up_to_tile
 	inc	$12,x
@@ -1142,7 +1149,7 @@ sub_00FB71:
 	inc	$3A,x
 	lda	#$AB14
 	ldy	#$0500
-	jsl	f:sub_01CF25
+	jsl	f:spawn_effect
 	bcs	loc_00FBAA
 	lda	#$0038
 	sta	a:$0010,y
@@ -1163,7 +1170,7 @@ loc_00FBAA:
 sub_00FBAB:
 	lda	#$AB22
 	ldy	#$0500
-	jsl	f:sub_01CF25
+	jsl	f:spawn_effect
 	bcs	loc_00FBE1
 	lda	#$000F
 	sta	a:$0016,y
@@ -1182,7 +1189,9 @@ sub_00FBAB:
 loc_00FBE1:
 	rts
 
-sub_00FBE2:
+; Object type $1F: stage 1 boss fight: moves wram_1638 depending on whether
+; it is hit. Not identified.
+update_object_type_1F:
 	lda	$14,x
 	bne	loc_00FC0B
 	ldy	#$0130
@@ -1217,7 +1226,9 @@ loc_00FC1D:
 	sta	a:wram_1638
 	rtl
 
-sub_00FC21:
+; Object type $29: stage 1 boss (the giant turtle), main body with HP $160
+; (352); fires at the player every data_05AB4C[difficulty] + rnd frames.
+update_stage1_boss:
 	dec	$34,x
 	bpl	loc_00FC43
 	ldy	difficulty
@@ -1259,7 +1270,9 @@ loc_00FC58:
 	lda	#$4E94
 	jml	f:loc_00FE7D
 
-sub_00FC85:
+; Object type $20: stage 1 boss (the giant turtle), a part with HP 256:
+; explodes when destroyed or when the boss dies (wram_0932).
+update_stage1_boss_part:
 	sec
 	lda	#$0060
 	sbc	f:wram_7EA068
@@ -1306,7 +1319,7 @@ loc_00FCD2:
 	lda	#$0007
 	sta	zp_06
 	ldy	#$0500
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_00FD11
 	lda	#$C516
 	sta	a:$0020,y
@@ -1324,7 +1337,8 @@ loc_00FCD2:
 loc_00FD11:
 	rtl
 
-sub_00FD12:
+; Object type $22: stage 1 boss fight, sprite blinking. Not identified.
+update_object_type_22:
 	lda	$30,x
 	beq	loc_00FD25
 	clc
@@ -1354,7 +1368,9 @@ loc_00FD40:
 	sta	$00,x
 	rtl
 
-sub_00FD46:
+; Object type $23: falling wall debris (stage 1 boss, the turtle breaking
+; through the wall); explodes at y >= $C8.
+update_falling_debris:
 	lda	$0E,x
 	cmp	#$00C8
 	bcc	loc_00FD5A
@@ -1362,7 +1378,7 @@ sub_00FD46:
 	sta	$1E,x
 	txy
 	lda	#$C69C
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_00FD5A:
 	clc
 	lda	$1C,x
@@ -1373,7 +1389,9 @@ loc_00FD5A:
 	sta	$1E,x
 	rtl
 
-sub_00FD6A:
+; Object type $38: stage 1 boss fire breath (spawned near the boss by
+; sub_00FB71).
+update_stage1_boss_fire:
 	dec	$24,x
 	bne	loc_00FD73
 	lda	#$8000

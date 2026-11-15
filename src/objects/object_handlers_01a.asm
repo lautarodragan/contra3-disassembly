@@ -2,9 +2,11 @@
 ; Bank $01, $01:B194-$01:CF8A. Included by main.asm in segment BANK01.
 ;
 ; Handlers of object types dispatched through tbl_object_types and their helpers;
-; sub_01CF25..sub_01CF66 are helpers used by every bank.
+; spawn_effect..sub_01CF66 are helpers used by every bank.
 
-sub_01B194:
+; Object type $02: seen once in stage 1 (section 8); sets OBJ_HP to $100 in
+; state 0 and runs 11 states. Not identified.
+update_object_type_02:
 	lda	$12,x
 	pha
 	beq	loc_01B200
@@ -56,24 +58,24 @@ loc_01B200:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01B20E,x
+	lda	f:tbl_object_type_02_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01B20E:
-	.addr	sub_01B224
-	.addr	sub_01B267
-	.addr	sub_01B312
-	.addr	sub_01B339
-	.addr	sub_01B371
-	.addr	sub_01B39E
-	.addr	sub_01B3B4
-	.addr	sub_01B41F
-	.addr	sub_01B4E1
+tbl_object_type_02_states:
+	.addr	object_type_02_state_00
+	.addr	object_type_02_state_01
+	.addr	object_type_02_state_02
+	.addr	object_type_02_state_03
+	.addr	object_type_02_state_04
+	.addr	object_type_02_state_05
+	.addr	object_type_02_state_06
+	.addr	object_type_02_state_07
+	.addr	object_type_02_state_08
 	.addr	sub_01D831
-	.addr	sub_01B521
+	.addr	object_type_02_state_0A
 
-sub_01B224:
+object_type_02_state_00:
 	lda	#$8000
 	sta	a:wram_09D6
 	lda	a:bg1_scroll_mode
@@ -102,7 +104,7 @@ sub_01B224:
 loc_01B266:
 	rtl
 
-sub_01B267:
+object_type_02_state_01:
 	lda	#$0003
 	sta	a:shake_timer
 	lda	#$0078
@@ -115,7 +117,7 @@ sub_01B267:
 	sta	zp_06
 	ldy	#$0300
 	lda	#$C69C
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_01B293
 	lda	#$FFFC
 	sta	a:$001E,y
@@ -181,7 +183,7 @@ loc_01B30F:
 	inc	$24,x
 	rtl
 
-sub_01B312:
+object_type_02_state_02:
 	dec	$24,x
 	bne	loc_01B338
 	inc	$12,x
@@ -200,7 +202,7 @@ sub_01B312:
 loc_01B338:
 	rtl
 
-sub_01B339:
+object_type_02_state_03:
 	inc	a:shake_continuous
 	lda	$0E,x
 	cmp	#$00C8
@@ -228,7 +230,7 @@ loc_01B35D:
 	plx
 	rtl
 
-sub_01B371:
+object_type_02_state_04:
 	lda	$24,x
 	bne	loc_01B383
 	ldy	#$ACB7
@@ -253,7 +255,7 @@ loc_01B38F:
 	plx
 	rtl
 
-sub_01B39E:
+object_type_02_state_05:
 	inc	a:shake_continuous
 	lda	$0A,x
 	cmp	#$0028
@@ -265,7 +267,7 @@ sub_01B39E:
 	sta	$38,x
 	rtl
 
-sub_01B3B4:
+object_type_02_state_06:
 	inc	a:shake_continuous
 	lda	$04,x
 	beq	loc_01B3C3
@@ -319,7 +321,7 @@ loc_01B3FE:
 	bne	loc_01B459
 	rtl
 
-sub_01B41F:
+object_type_02_state_07:
 	lda	difficulty
 	cmp	#$0004
 	bcs	loc_01B428
@@ -409,7 +411,7 @@ loc_01B4D8:
 	lda	#$4D8C
 	jml	f:sub_00FE76
 
-sub_01B4E1:
+object_type_02_state_08:
 	jsl	f:sub_00FD92
 	dec	$24,x
 	bne	loc_01B4FB
@@ -432,14 +434,14 @@ loc_01B4FB:
 	sta	zp_06
 	ldy	#$0300
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_01B520
 	lda	#$FFFC
 	sta	a:$001E,y
 loc_01B520:
 	rtl
 
-sub_01B521:
+object_type_02_state_0A:
 	lda	#$0000
 	sta	a:bg2_x
 	lda	#$8000
@@ -450,7 +452,9 @@ sub_01B521:
 	sta	a:stage_checkpoint
 	rtl
 
-sub_01B539:
+; Object type $1C: falling fragment (sprite by vertical speed) that explodes
+; on the floor or when shot (stage 1 section 9). Not identified.
+update_object_type_1C:
 	lda	$0E,x
 	cmp	#$00C8
 	bcc	loc_01B549
@@ -464,7 +468,7 @@ loc_01B549:
 loc_01B54D:
 	txy
 	lda	#$C59A
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_01B555:
 	lda	$1E,x
 	bpl	loc_01B568
@@ -504,22 +508,24 @@ loc_01B58A:
 loc_01B599:
 	rtl
 
-sub_01B59A:
+; Object type $6E: stage 4: the tank at the start (HP 315; seen in the
+; emulator).
+update_stage4_tank:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01B5A9,x
+	lda	f:tbl_stage4_tank_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01B5A9:
-	.addr	sub_01B5B1
-	.addr	sub_01B5E6
-	.addr	sub_01B601
-	.addr	sub_01B6AB
+tbl_stage4_tank_states:
+	.addr	stage4_tank_state_00
+	.addr	stage4_tank_state_01
+	.addr	stage4_tank_state_02
+	.addr	stage4_tank_state_03
 
-sub_01B5B1:
+stage4_tank_state_00:
 	inc	$12,x
 	lda	#$0180
 	sta	$0A,x
@@ -543,7 +549,7 @@ sub_01B5B1:
 	sta	a:bg1_y
 	rtl
 
-sub_01B5E6:
+stage4_tank_state_01:
 	dec	$24,x
 	bpl	loc_01B600
 	lda	#$0100
@@ -558,7 +564,7 @@ sub_01B5E6:
 loc_01B600:
 	rtl
 
-sub_01B601:
+stage4_tank_state_02:
 	lda	$06,x
 	bpl	loc_01B60F
 	inc	$12,x
@@ -645,7 +651,7 @@ loc_01B6A1:
 	plx
 	rtl
 
-sub_01B6AB:
+stage4_tank_state_03:
 	dec	$24,x
 	bpl	loc_01B6D1
 	lda	#$0200
@@ -687,14 +693,15 @@ loc_01B6E9:
 	sta	zp_04
 	ldy	#$0500
 	pla
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_01B711
 	lda	#$FFF8
 	sta	a:$001A,y
 loc_01B711:
 	rtl
 
-sub_01B712:
+; Object type $09: seen in stage 1 (section 4), HP 16. Not identified.
+update_object_type_09:
 	lda	$12,x
 	cmp	#$0003
 	beq	loc_01B723
@@ -716,7 +723,7 @@ loc_01B723:
 	sta	zp_06
 	ldy	#$0300
 	lda	#$C516
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_01B74B
 	lda	#$FFFE
 	sta	a:$001E,y
@@ -725,18 +732,18 @@ loc_01B74B:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01B75A,x
+	lda	f:tbl_object_type_09_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01B75A:
-	.addr	sub_01B764
-	.addr	sub_01B793
-	.addr	sub_01B7B7
-	.addr	sub_01B8B6
-	.addr	sub_01B89C
+tbl_object_type_09_states:
+	.addr	object_type_09_state_00
+	.addr	object_type_09_state_01
+	.addr	object_type_09_state_02
+	.addr	object_type_09_state_03
+	.addr	object_type_09_state_04
 
-sub_01B764:
+object_type_09_state_00:
 	stz	a:wram_16AE
 	lda	#$0041
 	sta	$16,x
@@ -757,7 +764,7 @@ sub_01B764:
 	stz	a:wram_165C
 	rtl
 
-sub_01B793:
+object_type_09_state_01:
 	lda	a:wram_0216
 	beq	loc_01B7A8
 	bmi	loc_01B7A8
@@ -765,7 +772,7 @@ sub_01B793:
 	jsr	a:sub_01B9DE
 	lda	a:player1_state
 	cmp	#$0009
-	beq	sub_01B7B7
+	beq	object_type_09_state_02
 loc_01B7A8:
 	lda	a:wram_0256
 	beq	loc_01B7DD
@@ -774,7 +781,7 @@ loc_01B7A8:
 	jsr	a:sub_01B9DE
 	bra	loc_01B7DD
 
-sub_01B7B7:
+object_type_09_state_02:
 	lda	a:wram_1658
 	tay
 	lda	a:$1306,y
@@ -890,7 +897,7 @@ loc_01B895:
 loc_01B89B:
 	rtl
 
-sub_01B89C:
+object_type_09_state_04:
 	lda	a:bg2_scroll_mode
 	cmp	#$0002
 	bne	loc_01B8B5
@@ -903,7 +910,7 @@ sub_01B89C:
 loc_01B8B5:
 	rtl
 
-sub_01B8B6:
+object_type_09_state_03:
 	; (not executed in the CDL traces)
 	dec	$24,x
 	beq	loc_01B8C6
@@ -934,7 +941,7 @@ loc_01B8D5:
 	sta	zp_06
 	ldy	#$0280
 	lda	#$C5DC
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 loc_01B8FA:
 	jsr	a:sub_01B993
 	lda	$24,x
@@ -1186,7 +1193,9 @@ loc_01BADA:
 	sta	a:$003E,y
 	rts
 
-sub_01BAEC:
+; Object type $0A: running foot soldier (stage 1; checked in the emulator).
+; Killed: becomes type $1B (dying soldier).
+update_foot_soldier:
 	lda	$30,x
 	bmi	loc_01BAF4
 	lda	$06,x
@@ -1195,23 +1204,23 @@ loc_01BAF4:
 	stz	$06,x
 	lda	#$001B
 	sta	$10,x
-	jml	f:loc_01D201
+	jml	f:start_dying_soldier
 loc_01BAFF:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01BB0E,x
+	lda	f:tbl_foot_soldier_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01BB0E:
-	.addr	sub_01BB79
-	.addr	sub_01BBCA
-	.addr	sub_01BBA6
-	.addr	sub_01BC08
-	.addr	sub_01BD71
-	.addr	sub_01BD8D
+tbl_foot_soldier_states:
+	.addr	foot_soldier_state_00
+	.addr	foot_soldier_state_01
+	.addr	foot_soldier_state_02
+	.addr	foot_soldier_state_03
+	.addr	foot_soldier_state_04
+	.addr	foot_soldier_state_05
 
 sub_01BB1A:
 	stz	$1C,x
@@ -1247,7 +1256,7 @@ sub_01BB4A:
 	lda	#$0003
 	sta	$12,x
 	jsr	a:sub_01BB23
-	jsl	f:sub_01BB79
+	jsl	f:foot_soldier_state_00
 	lda	#$0068
 	sta	$0E,x
 	rtl
@@ -1265,7 +1274,7 @@ loc_01BB68:
 	lda	#$3600
 	bra	loc_01BB7E
 
-sub_01BB79:
+foot_soldier_state_00:
 	stz	$06,x
 	lda	#$3400
 loc_01BB7E:
@@ -1287,14 +1296,14 @@ loc_01BB7E:
 	sta	$30,x
 	rtl
 
-sub_01BBA6:
+foot_soldier_state_02:
 	lda	$0A,x
 	cmp	#$0020
-	bcc	sub_01BBCA
+	bcc	foot_soldier_state_01
 	cmp	#$00D0
-	bcs	sub_01BBCA
+	bcs	foot_soldier_state_01
 	dec	$24,x
-	bpl	sub_01BBCA
+	bpl	foot_soldier_state_01
 	lda	#$0006
 	sta	$24,x
 	lda	$3E,x
@@ -1305,7 +1314,7 @@ sub_01BBA6:
 	stz	$1A,x
 	inc	$12,x
 
-sub_01BBCA:
+foot_soldier_state_01:
 	lda	$3E,x
 	beq	loc_01BC07
 loc_01BBCE:
@@ -1339,7 +1348,7 @@ loc_01BBF1:
 loc_01BC07:
 	rtl
 
-sub_01BC08:
+foot_soldier_state_03:
 	lda	$3E,x
 	beq	loc_01BC0F
 	; (not executed in the CDL traces)
@@ -1391,7 +1400,8 @@ loc_01BC63:
 loc_01BC6E:
 	rtl
 
-sub_01BC6F:
+; Object type $35: stage 1 (the cafe front), HP 1. Not identified.
+update_object_type_35:
 	lda	$06,x
 	bpl	loc_01BC76
 	brl	loc_01BAF4
@@ -1400,18 +1410,18 @@ loc_01BC76:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01BC85,x
+	lda	f:tbl_object_type_35_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01BC85:
-	.addr	sub_01BC8F
-	.addr	sub_01BCA5
-	.addr	sub_01BCAF
-	.addr	sub_01BD3C
-	.addr	sub_01BD51
+tbl_object_type_35_states:
+	.addr	object_type_35_state_00
+	.addr	object_type_35_state_01
+	.addr	object_type_35_state_02
+	.addr	object_type_35_state_03
+	.addr	object_type_35_state_04
 
-sub_01BC8F:
+object_type_35_state_00:
 	lda	#$AFCE
 	sta	$32,x
 	lda	#$0001
@@ -1423,7 +1433,7 @@ sub_01BC8F:
 	inc	$12,x
 	rtl
 
-sub_01BCA5:
+object_type_35_state_01:
 	lda	$0A,x
 	cmp	#$00D0
 	bcs	loc_01BCAE
@@ -1431,7 +1441,7 @@ sub_01BCA5:
 loc_01BCAE:
 	rtl
 
-sub_01BCAF:
+object_type_35_state_02:
 	lda	$34,x
 	bne	loc_01BD30
 	lda	#$0003
@@ -1495,7 +1505,7 @@ loc_01BD30:
 loc_01BD3B:
 	rtl
 
-sub_01BD3C:
+object_type_35_state_03:
 	lda	$1E,x
 	bmi	loc_01BD62
 	lda	#$081F
@@ -1506,7 +1516,7 @@ sub_01BD3C:
 	sta	$2A,x
 	inc	$12,x
 
-sub_01BD51:
+object_type_35_state_04:
 	lda	$3E,x
 	beq	loc_01BD58
 	; (not executed in the CDL traces)
@@ -1525,7 +1535,7 @@ loc_01BD62:
 	sta	$1E,x
 	rtl
 
-sub_01BD71:
+foot_soldier_state_04:
 	dec	$24,x
 	bpl	loc_01BD8C
 	stz	$22,x
@@ -1542,7 +1552,7 @@ loc_01BD8A:
 loc_01BD8C:
 	rtl
 
-sub_01BD8D:
+foot_soldier_state_05:
 	lda	#$00C8
 	cmp	$0E,x
 	bcs	loc_01BDA5
@@ -1563,7 +1573,8 @@ loc_01BDA5:
 	sta	$1E,x
 	rtl
 
-sub_01BDB4:
+; Object type $0B: invisible, at the start of stage 1. Not identified.
+update_object_type_0B:
 	lda	$12,x
 	bne	loc_01BDC4
 	lda	#$0040
@@ -1655,11 +1666,13 @@ loc_01BE60:
 loc_01BE71:
 	rtl
 loc_01BE72:
-	jsl	f:sub_01BB79
+	jsl	f:foot_soldier_state_00
 	plx
 	rtl
 
-sub_01BE78:
+; Object type $73: stage 4: soldier dropping onto the road (HP 6); dies as
+; type $1B.
+update_object_type_73:
 	lda	a:wram_1688
 	bne	loc_01BE83
 	lda	$06,x
@@ -1675,24 +1688,24 @@ loc_01BE8C:
 	lda	#$001B
 	sta	$10,x
 	lda	#$C7EA
-	jml	f:loc_01D1FD
+	jml	f:start_dying_soldier_sprite
 loc_01BE98:
 	ldy	$30,x
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01BEA9,x
+	lda	f:tbl_object_type_73_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01BEA9:
-	.addr	sub_01BEB1
-	.addr	sub_01BEF5
-	.addr	sub_01BF53
-	.addr	sub_01BF67
+tbl_object_type_73_states:
+	.addr	object_type_73_state_00
+	.addr	object_type_73_state_01
+	.addr	object_type_73_state_02
+	.addr	object_type_73_state_03
 
-sub_01BEB1:
+object_type_73_state_00:
 	inc	$12,x
 	lda	#$C5CF
 	sta	$00,x
@@ -1724,7 +1737,7 @@ loc_01BEC4:
 	lda	#$0015
 	jml	f:queue_sound
 
-sub_01BEF5:
+object_type_73_state_01:
 	clc
 	lda	$18,x
 	adc	#$2000
@@ -1754,7 +1767,7 @@ loc_01BF16:
 	jsl	f:find_free_slot_y_down
 	bcc	loc_01BF52
 	lda	#$C4CE
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	$0E,x
 	adc	#$FFEC
 	sta	a:$000E,y
@@ -1767,7 +1780,7 @@ loc_01BF16:
 loc_01BF52:
 	rtl
 
-sub_01BF53:
+object_type_73_state_02:
 	sec
 	lda	$18,x
 	sbc	#$6000
@@ -1780,7 +1793,7 @@ sub_01BF53:
 loc_01BF66:
 	rtl
 
-sub_01BF67:
+object_type_73_state_03:
 	stz	zp_00
 	stz	zp_02
 	lda	$1E,x
@@ -1838,7 +1851,7 @@ loc_01BFCD:
 	jsl	f:find_free_slot_y_down
 	bcc	loc_01BFFF
 	lda	#$C61E
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	zp_02
 	sta	a:$001A,y
 	lda	zp_00
@@ -1883,7 +1896,8 @@ loc_01C039:
 loc_01C03B:
 	rtl
 
-sub_01C03C:
+; Object type $7E: stage 4: soldier (HP 128); dies as type $1B.
+update_object_type_7E:
 	lda	a:wram_1688
 	bne	loc_01C045
 	lda	$06,x
@@ -1899,28 +1913,28 @@ loc_01C055:
 	lda	#$001B
 	sta	$10,x
 	lda	#$C7EA
-	jml	f:loc_01D1F2
+	jml	f:start_dying_soldier_sound_0D
 loc_01C061:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01C070,x
+	lda	f:tbl_object_type_7E_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01C070:
-	.addr	sub_01C080
-	.addr	sub_01C0F5
-	.addr	sub_01C09F
-	.addr	sub_01C164
-	.addr	sub_01C184
-	.addr	sub_01C1B6
-	.addr	sub_01C1EC
-	.addr	sub_01C21D
+tbl_object_type_7E_states:
+	.addr	object_type_7E_state_00
+	.addr	object_type_7E_state_01
+	.addr	object_type_7E_state_02
+	.addr	object_type_7E_state_03
+	.addr	object_type_7E_state_04
+	.addr	object_type_7E_state_05
+	.addr	object_type_7E_state_06
+	.addr	object_type_7E_state_07
 
-sub_01C080:
-	jsl	f:sub_01C164
+object_type_7E_state_00:
+	jsl	f:object_type_7E_state_03
 	lda	#$0600
 	sta	$02,x
 	lda	#$0080
@@ -1934,7 +1948,7 @@ sub_01C080:
 	inc	$34,x
 	rtl
 
-sub_01C09F:
+object_type_7E_state_02:
 	sec
 	lda	#$0080
 	sbc	a:bg1_y
@@ -1955,7 +1969,7 @@ loc_01C0BF:
 	lda	$1A,x
 	bpl	loc_01C0CC
 	cmp	#$FFFD
-	bcc	sub_01C0F5
+	bcc	object_type_7E_state_01
 loc_01C0CC:
 	sec
 	lda	$18,x
@@ -1964,12 +1978,12 @@ loc_01C0CC:
 	lda	$1A,x
 	sbc	#$0000
 	sta	$1A,x
-	bra	sub_01C0F5
+	bra	object_type_7E_state_01
 loc_01C0DD:
 	lda	$1A,x
 	bmi	loc_01C0E6
 	cmp	#$0003
-	bcs	sub_01C0F5
+	bcs	object_type_7E_state_01
 loc_01C0E6:
 	clc
 	lda	$18,x
@@ -1979,7 +1993,7 @@ loc_01C0E6:
 	adc	#$0000
 	sta	$1A,x
 
-sub_01C0F5:
+object_type_7E_state_01:
 	lda	$0A,x
 	cmp	#$00E0
 	bcc	loc_01C102
@@ -2034,9 +2048,9 @@ loc_01C12E:
 loc_01C161:
 	plx
 loc_01C162:
-	bra	sub_01C184
+	bra	object_type_7E_state_04
 
-sub_01C164:
+object_type_7E_state_03:
 	inc	$12,x
 
 sub_01C166:
@@ -2054,7 +2068,7 @@ sub_01C166:
 	stz	$34,x
 	rtl
 
-sub_01C184:
+object_type_7E_state_04:
 	clc
 	lda	$1C,x
 	adc	#$2000
@@ -2080,7 +2094,7 @@ sub_01C184:
 loc_01C1B5:
 	rtl
 
-sub_01C1B6:
+object_type_7E_state_05:
 	sec
 	lda	#$0080
 	sbc	a:bg1_y
@@ -2108,7 +2122,7 @@ loc_01C1E9:
 	sty	$1A,x
 	rtl
 
-sub_01C1EC:
+object_type_7E_state_06:
 	clc
 	lda	$1C,x
 	adc	#$3000
@@ -2133,10 +2147,12 @@ sub_01C1EC:
 loc_01C21C:
 	rtl
 
-sub_01C21D:
+object_type_7E_state_07:
 	rtl
 
-sub_01C21E:
+; Object type $0D: gun turret that rises out of the rubble (stage 1, HP 16;
+; seen in the emulator).
+update_popup_turret:
 	lda	$3E,x
 	bne	loc_01C226
 	lda	$06,x
@@ -2161,19 +2177,19 @@ loc_01C24A:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01C259,x
+	lda	f:tbl_popup_turret_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01C259:
-	.addr	sub_01C265
-	.addr	sub_01C27C
-	.addr	sub_01C28B
-	.addr	sub_01C2B0
-	.addr	sub_01C2BC
-	.addr	sub_01C31C
+tbl_popup_turret_states:
+	.addr	popup_turret_state_00
+	.addr	popup_turret_state_01
+	.addr	popup_turret_state_02
+	.addr	popup_turret_state_03
+	.addr	popup_turret_state_04
+	.addr	popup_turret_state_05
 
-sub_01C265:
+popup_turret_state_00:
 	lda	#$0003
 	sta	$16,x
 	lda	#$0020
@@ -2185,7 +2201,7 @@ sub_01C265:
 	inc	$12,x
 	rtl
 
-sub_01C27C:
+popup_turret_state_01:
 	lda	$0A,x
 	cmp	#$00E8
 	bcs	loc_01C28A
@@ -2195,7 +2211,7 @@ sub_01C27C:
 loc_01C28A:
 	rtl
 
-sub_01C28B:
+popup_turret_state_02:
 	lda	stage_frame_mod8
 	cmp	#$0001
 	bne	loc_01C2AF
@@ -2214,7 +2230,7 @@ sub_01C28B:
 loc_01C2AF:
 	rtl
 
-sub_01C2B0:
+popup_turret_state_03:
 	dec	$24,x
 	bne	loc_01C2BB
 	lda	#$0021
@@ -2223,7 +2239,7 @@ sub_01C2B0:
 loc_01C2BB:
 	rtl
 
-sub_01C2BC:
+popup_turret_state_04:
 	dec	$24,x
 	bne	loc_01C2C8
 	lda	#$0080
@@ -2274,7 +2290,7 @@ sub_01C302:
 loc_01C31B:
 	rtl
 
-sub_01C31C:
+popup_turret_state_05:
 	lda	$34,x
 	beq	loc_01C324
 	jsl	f:sub_01C2FB
@@ -2289,7 +2305,7 @@ loc_01C32E:
 	bne	loc_01C354
 	ldy	#$0300
 	lda	#$C4CE
-	jsl	f:sub_01CF25
+	jsl	f:spawn_effect
 	bcs	loc_01C354
 	lda	rng_hi
 	and	#$001F
@@ -2302,7 +2318,8 @@ loc_01C32E:
 loc_01C354:
 	rtl
 
-sub_01C355:
+; Object type $50: stage 3: wall hatch (HP 8; seen in the emulator).
+update_wall_hatch:
 	inc	$34,x
 	lda	$06,x
 	bpl	loc_01C385
@@ -2311,7 +2328,7 @@ sub_01C355:
 	stz	$04,x
 	txy
 	lda	#$C516
-	jsl	f:sub_01CF66
+	jsl	f:make_effect_object
 	lda	$0A,x
 	adc	#$0008
 	sta	$0A,x
@@ -2327,19 +2344,19 @@ loc_01C385:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01C394,x
+	lda	f:tbl_wall_hatch_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01C394:
-	.addr	sub_01C3A0
-	.addr	sub_01C3D0
+tbl_wall_hatch_states:
+	.addr	wall_hatch_state_00
+	.addr	wall_hatch_state_01
 	.addr	sub_01C3F1
-	.addr	sub_01C424
+	.addr	wall_hatch_state_03
 	.addr	sub_01C3F1
-	.addr	sub_01C4C8
+	.addr	wall_hatch_state_05
 
-sub_01C3A0:
+wall_hatch_state_00:
 	inc	$12,x
 	ldy	difficulty
 	lda	a:data_05B05A,y
@@ -2363,7 +2380,7 @@ sub_01C3A0:
 	stz	$30,x
 	rtl
 
-sub_01C3D0:
+wall_hatch_state_01:
 	lda	a:bg1_scroll_mode
 	cmp	#$0003
 	bne	loc_01C3E2
@@ -2413,7 +2430,7 @@ loc_01C41B:
 loc_01C423:
 	rtl
 
-sub_01C424:
+wall_hatch_state_03:
 	lda	a:bg1_scroll_mode
 	cmp	#$0003
 	bne	loc_01C435
@@ -2499,29 +2516,31 @@ loc_01C48F:
 loc_01C4C7:
 	rtl
 
-sub_01C4C8:
+wall_hatch_state_05:
 	lda	#$8000
 	sta	$16,x
 	rtl
 
-sub_01C4CE:
+; Object types $04 and $54: seen in stage 1 (section 4, a red soldier on a
+; building ledge, probably). Not identified with certainty.
+update_object_type_04:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01C4DD,x
+	lda	f:tbl_object_type_04_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01C4DD:
-	.addr	sub_01C4E9
-	.addr	sub_01C4FB
-	.addr	sub_01C5E1
-	.addr	sub_01C5F9
-	.addr	sub_01C629
-	.addr	sub_01C637
+tbl_object_type_04_states:
+	.addr	object_type_04_state_00
+	.addr	object_type_04_state_01
+	.addr	object_type_04_state_02
+	.addr	object_type_04_state_03
+	.addr	object_type_04_state_04
+	.addr	object_type_04_state_05
 
-sub_01C4E9:
+object_type_04_state_00:
 	lda	#$0041
 	sta	$16,x
 	lda	#$0060
@@ -2532,7 +2551,7 @@ sub_01C4E9:
 loc_01C4FA:
 	rtl
 
-sub_01C4FB:
+object_type_04_state_01:
 	jsl	f:sub_01B956
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
@@ -2623,7 +2642,7 @@ loc_01C515:
 	stz	a:wram_0892
 	rtl
 
-sub_01C5E1:
+object_type_04_state_02:
 	jsl	f:sub_01B956
 	lda	a:wram_08C6
 	bpl	loc_01C5F8
@@ -2635,7 +2654,7 @@ sub_01C5E1:
 loc_01C5F8:
 	rtl
 
-sub_01C5F9:
+object_type_04_state_03:
 	jsl	f:sub_01B956
 	lda	#$B0A0
 	sta	$30,x
@@ -2660,7 +2679,7 @@ loc_01C622:
 	sta	a:$0006,y
 	rtl
 
-sub_01C629:
+object_type_04_state_04:
 	jsl	f:sub_01B956
 	lda	stage_frame_counter
 	and	#$000F
@@ -2669,7 +2688,7 @@ sub_01C629:
 loc_01C636:
 	rtl
 
-sub_01C637:
+object_type_04_state_05:
 	lda	#$0004
 	sta	a:shake_timer
 	jsl	f:sub_01B956
@@ -2685,7 +2704,7 @@ sub_01C637:
 	sta	zp_06
 	ldy	#$0300
 	lda	#$C4CE
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_01C66B
 	lda	#$FFFD
 	sta	a:$001E,y
@@ -2759,7 +2778,9 @@ loc_01C6B2:
 sub_01C6EB:
 	rtl
 
-sub_01C6EC:
+; Object type $14: stage 1 section 4: part of the wall structure, HP 64
+; (flashes its palette when hit). Not identified exactly.
+update_object_type_14:
 	lda	$26,x
 	beq	loc_01C6FA
 	lda	#$914A
@@ -2769,7 +2790,9 @@ sub_01C6EC:
 loc_01C6FA:
 	rtl
 
-sub_01C6FB:
+; Object type $15: stage 1 section 4: destructible wall gun, HP 40;
+; destroyed: a burst of explosions. Not identified exactly.
+update_object_type_15:
 	lda	$12,x
 	beq	loc_01C731
 	lda	stage_frame_mod4
@@ -2784,7 +2807,7 @@ sub_01C6FB:
 	sta	zp_06
 	ldy	#$0300
 	lda	#$C4CE
-	jsl	f:sub_01CF3C
+	jsl	f:spawn_effect_random_offset
 	bcs	loc_01C730
 	lda	#$FFFF
 	sta	a:$001E,y
@@ -2856,7 +2879,9 @@ loc_01C7AD:
 loc_01C7B5:
 	rtl
 
-sub_01C7B6:
+; Object type $16: falls with gravity and explodes on the floor or on
+; contact (stage 1 section 4).
+update_object_type_16:
 	lda	$3C,x
 	bne	loc_01C7CF
 	lda	$1C,x
@@ -2875,27 +2900,29 @@ loc_01C7CF:
 	stz	$1A,x
 	txy
 	lda	#$C516
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_01C7E0:
 	rtl
 
-sub_01C7E1:
+; Object type $0F: flying weapon capsule: shot down, it drops a falcon
+; weapon item (all side-view stages; seen in the emulator).
+update_weapon_capsule:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01C7F0,x
+	lda	f:tbl_weapon_capsule_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01C7F0:
-	.addr	sub_01C7FA
-	.addr	sub_01C840
-	.addr	sub_01C87E
-	.addr	sub_01C8AE
-	.addr	sub_01C8C7
+tbl_weapon_capsule_states:
+	.addr	weapon_capsule_state_00
+	.addr	weapon_capsule_state_01
+	.addr	weapon_capsule_state_02
+	.addr	weapon_capsule_state_03
+	.addr	weapon_capsule_state_04
 
-sub_01C7FA:
+weapon_capsule_state_00:
 	lda	#$3E00
 	sta	$02,x
 	lda	#$0010
@@ -2930,7 +2957,7 @@ loc_01C835:
 	sta	$1A,x
 	rtl
 
-sub_01C840:
+weapon_capsule_state_01:
 	jsr	a:sub_01C99D
 	lda	$34,x
 	cmp	$0E,x
@@ -2965,7 +2992,7 @@ loc_01C869:
 	sta	$0A,x
 	rtl
 
-sub_01C87E:
+weapon_capsule_state_02:
 	ldy	$3C,x
 	beq	loc_01C8AB
 	lda	#$0012
@@ -2988,7 +3015,7 @@ loc_01C89F:
 loc_01C8AB:
 	brl	loc_01C8F5
 
-sub_01C8AE:
+weapon_capsule_state_03:
 	ldy	$3C,x
 	beq	loc_01C8C4
 	lda	#$0012
@@ -3000,7 +3027,7 @@ sub_01C8AE:
 loc_01C8C4:
 	brl	loc_01C8F5
 
-sub_01C8C7:
+weapon_capsule_state_04:
 	ldy	#$3E00
 	lda	stage_frame_odd
 	bne	loc_01C8D1
@@ -3035,7 +3062,7 @@ loc_01C903:
 	sta	$1E,x
 	txy
 	lda	#$C4CE
-	jml	f:sub_01CF66
+	jml	f:make_effect_object
 loc_01C910:
 	dec	$36,x
 	bne	loc_01C91A
@@ -3063,12 +3090,12 @@ loc_01C937:
 	lda	$1E,x
 	bmi	loc_01C963
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	and	#$807E
 	sta	zp_04
 	lda	#$0010
 	sta	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$807E
 	beq	loc_01C95D
 	lda	zp_04
@@ -3082,12 +3109,12 @@ loc_01C961:
 loc_01C963:
 	lda	#$FFF0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	and	#$0182
 	sta	zp_04
 	lda	#$0010
 	sta	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$0182
 	beq	loc_01C989
 	lda	zp_04
@@ -3161,21 +3188,22 @@ loc_01C9ED:
 	sta	$0A,x
 	rtl
 
-sub_01C9FA:
+; Object type $11: stage 1, HP 16. Not identified.
+update_object_type_11:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01CA09,x
+	lda	f:tbl_object_type_11_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01CA09:
-	.addr	sub_01CA0F
-	.addr	sub_01CA43
-	.addr	sub_01CAC7
+tbl_object_type_11_states:
+	.addr	object_type_11_state_00
+	.addr	object_type_11_state_01
+	.addr	object_type_11_state_02
 
-sub_01CA0F:
+object_type_11_state_00:
 	lda	#$B374
 	sta	$00,x
 	lda	#$4013
@@ -3199,7 +3227,7 @@ sub_01CA0F:
 loc_01CA3F:
 	jml	f:sub_01B956
 
-sub_01CA43:
+object_type_11_state_01:
 	lda	$06,x
 	bpl	loc_01CA3F
 	lda	#$0042
@@ -3266,7 +3294,7 @@ loc_01CA92:
 	plx
 	rtl
 
-sub_01CAC7:
+object_type_11_state_02:
 	lda	stage_frame_odd
 	bne	loc_01CAF1
 	lda	$0A,x
@@ -3279,18 +3307,18 @@ sub_01CAC7:
 	sta	zp_06
 	ldy	#$0300
 	lda	#$C516
-	jsl	f:sub_01CF3C
-	bcs	sub_01CB4A
+	jsl	f:spawn_effect_random_offset
+	bcs	update_bouncing_debris
 	lda	#$FFFF
 	sta	a:$001E,y
-	bra	sub_01CB4A
+	bra	update_bouncing_debris
 loc_01CAF1:
 	lda	stage_frame_mod8
-	bne	sub_01CB4A
+	bne	update_bouncing_debris
 	; (not executed in the CDL traces)
 	ldy	#$0740
 	jsl	f:find_free_slot_y_down
-	bcc	sub_01CB4A
+	bcc	update_bouncing_debris
 	lda	#$0010
 	sta	a:$0010,y
 	lda	#$0001
@@ -3315,13 +3343,15 @@ loc_01CAF1:
 	sta	a:$0018,y
 	lda	rng_hi
 	bmi	loc_01CB43
-	bra	sub_01CB4A
+	bra	update_bouncing_debris
 loc_01CB43:
 	lda	a:$001A,y
 	dec	a
 	sta	a:$001A,y
 
-sub_01CB4A:
+; Object type $10: debris that falls, bounces off the floor
+; (get_bg_tile_at_object) and blinks out (stage 1, the wrecked car).
+update_bouncing_debris:
 	dec	$24,x
 	bne	loc_01CB54
 	lda	#$8000
@@ -3343,7 +3373,7 @@ loc_01CB67:
 	bmi	loc_01CB82
 	stz	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	beq	loc_01CB82
 	jsl	f:snap_y_up_to_tile
 	lda	$30,x
@@ -3365,7 +3395,8 @@ loc_01CB92:
 	stz	$1C,x
 	rtl
 
-sub_01CB95:
+; Object type $43: stage 3 section 9, HP 64. Not identified.
+update_object_type_43:
 	lda	$12,x
 	bne	loc_01CBB0
 	inc	$12,x
@@ -3429,34 +3460,36 @@ loc_01CC13:
 loc_01CC21:
 	rtl
 
-sub_01CC22:
+; Object type $12: stage 1 soldier variant, HP 6 (seen in the emulator). Not
+; identified exactly.
+update_object_type_12:
 	jsr	a:sub_01CD18
 	lda	$06,x
 	bpl	loc_01CC34
 	stz	$06,x
 	lda	#$001B
 	sta	$10,x
-	jml	f:loc_01D201
+	jml	f:start_dying_soldier
 loc_01CC34:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01CC43,x
+	lda	f:tbl_object_type_12_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01CC43:
-	.addr	sub_01CC53
+tbl_object_type_12_states:
+	.addr	object_type_12_state_00
 	.addr	sub_01CC7C
 	.addr	sub_01CC90
-	.addr	sub_01CC97
+	.addr	object_type_12_state_03
 	.addr	sub_01CC90
-	.addr	sub_01CCAF
+	.addr	object_type_12_state_05
 	.addr	sub_01CC90
 	.addr	sub_01CC7C
 
-sub_01CC53:
+object_type_12_state_00:
 	lda	#$3400
 	sta	$02,x
 	stz	$26,x
@@ -3494,7 +3527,7 @@ sub_01CC90:
 loc_01CC96:
 	rtl
 
-sub_01CC97:
+object_type_12_state_03:
 	ldy	$04,x
 	lda	a:data_05B27C,y
 	sta	$00,x
@@ -3505,7 +3538,7 @@ sub_01CC97:
 	lda	#$0016
 	jml	f:queue_sound
 
-sub_01CCAF:
+object_type_12_state_05:
 	jsl	f:find_free_slot_y
 	bcs	loc_01CD06
 	lda	#$0013
@@ -3609,7 +3642,9 @@ loc_01CD6A:
 loc_01CD76:
 	rts
 
-sub_01CD77:
+; Object type $13: grenade/shell thrown by soldiers: explodes into type $1A
+; when it touches a player or a solid BG tile (bit $2000).
+update_grenade:
 	lda	$12,x
 	bne	loc_01CD99
 	lda	#$3000
@@ -3630,7 +3665,7 @@ loc_01CD99:
 	bne	loc_01CDAA
 	stz	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$2000
 	beq	loc_01CDCA
 loc_01CDAA:
@@ -3646,7 +3681,7 @@ loc_01CDAA:
 	lda	$0E,x
 	lda	#$0030
 	jsl	f:queue_sound
-	jml	f:loc_01D2A1
+	jml	f:start_grenade_blast
 loc_01CDCA:
 	clc
 	lda	$1C,x
@@ -3663,7 +3698,9 @@ loc_01CDCA:
 loc_01CDE4:
 	rtl
 
-sub_01CDE5:
+; Object type $17: sniper in a window (stage 1 and 3, HP 6; seen in the
+; emulator).
+update_window_sniper:
 	lda	$12,x
 	cmp	#$0003
 	bcs	loc_01CDF3
@@ -3675,25 +3712,25 @@ loc_01CDF3:
 	stz	$06,x
 	lda	#$001B
 	sta	$10,x
-	jml	f:loc_01D201
+	jml	f:start_dying_soldier
 loc_01CE02:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01CE11,x
+	lda	f:tbl_window_sniper_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01CE11:
-	.addr	sub_01CE1D
+tbl_window_sniper_states:
+	.addr	window_sniper_state_00
 	.addr	sub_01CE44
 	.addr	sub_01CE51
-	.addr	sub_01CE58
+	.addr	window_sniper_state_03
 	.addr	sub_01CE51
 	.addr	sub_01CE44
 
-sub_01CE1D:
+window_sniper_state_00:
 	lda	#$2600
 	sta	$02,x
 	stz	$26,x
@@ -3727,7 +3764,7 @@ sub_01CE51:
 loc_01CE57:
 	rtl
 
-sub_01CE58:
+window_sniper_state_03:
 	lda	$0A,x
 	sta	zp_18
 	lda	$0E,x
@@ -3842,7 +3879,12 @@ sub_01CF1D:
 	sta	$00,x
 	rtl
 
-sub_01CF25:
+; Effects (type $1D, update_effect): spawn_effect finds a free slot from Y
+; (up to $08C0) and makes it an effect playing animation A; carry set when
+; there is none. spawn_effect_random_offset also places it at
+; (zp_00 + rnd & zp_04, zp_02 - rnd & zp_06). make_effect_object turns the
+; slot at Y (often the object itself, txy) into an effect playing animation A.
+spawn_effect:
 	pha
 loc_01CF26:
 	lda	a:$0010,y
@@ -3858,9 +3900,9 @@ loc_01CF26:
 loc_01CF38:
 	clc
 	pla
-	bra	sub_01CF66
+	bra	make_effect_object
 
-sub_01CF3C:
+spawn_effect_random_offset:
 	pha
 loc_01CF3D:
 	lda	a:$0010,y
@@ -3886,7 +3928,7 @@ loc_01CF4F:
 	clc
 	pla
 
-sub_01CF66:
+make_effect_object:
 	sta	a:$0020,y
 	lda	#$0003
 	sta	a:$0016,y

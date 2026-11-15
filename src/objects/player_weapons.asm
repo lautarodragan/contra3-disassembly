@@ -896,7 +896,7 @@ loc_018682:
 	sta	zp_00
 	lda	#$FFE0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8002
 	beq	loc_0186AC
 	bmi	loc_0186F5
@@ -910,7 +910,7 @@ loc_0186AB:
 	rtl
 loc_0186AC:
 	stz	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8002
 	beq	loc_0186C9
 	; (not executed in the CDL traces)
@@ -924,7 +924,7 @@ loc_0186AC:
 loc_0186C9:
 	lda	#$FFF8
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8002
 	beq	loc_0186E7
 loc_0186D7:
@@ -940,7 +940,7 @@ loc_0186E6:
 loc_0186E7:
 	lda	#$0006
 	sta	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8002
 	beq	loc_018705
 loc_0186F5:
@@ -980,7 +980,7 @@ loc_01871A:
 loc_018731:
 	stz	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_04
 	bit	#$2000
 	bne	loc_018749
@@ -991,7 +991,7 @@ loc_018731:
 loc_018749:
 	lda	#$0006
 	sta	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_06
 	bit	#$2000
 	bne	loc_018762
@@ -1005,7 +1005,7 @@ loc_018762:
 	sta	zp_00
 	lda	#$FFE0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8002
 	beq	loc_01878C
 	bmi	loc_0187D6
@@ -1019,7 +1019,7 @@ loc_01878B:
 	rtl
 loc_01878C:
 	stz	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8002
 	beq	loc_0187AA
 	bmi	loc_0187B8
@@ -1034,7 +1034,7 @@ loc_0187A9:
 loc_0187AA:
 	lda	#$FFF8
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8002
 	beq	loc_0187C8
 loc_0187B8:
@@ -1049,7 +1049,7 @@ loc_0187B8:
 loc_0187C8:
 	lda	#$0006
 	sta	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8002
 	beq	loc_0187E6
 loc_0187D6:
@@ -1074,7 +1074,7 @@ loc_0187F7:
 	stz	zp_00
 	lda	#$FFD0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_04
 	bit	#$0E00
 	beq	loc_018812
@@ -1085,7 +1085,7 @@ loc_0187F7:
 loc_018812:
 	lda	#$0006
 	sta	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_06
 	bit	#$0E00
 	beq	loc_01882B
@@ -1881,7 +1881,7 @@ sub_018EF5:
 	stz	zp_00
 	lda	#$FFE0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8000
 	beq	loc_018F0B
 	; (not executed in the CDL traces)
@@ -1898,7 +1898,7 @@ loc_018F18:
 	sta	zp_00
 	lda	#$FFE0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8000
 	beq	loc_018F31
 	jsl	f:snap_x_left_to_tile
@@ -1912,11 +1912,11 @@ loc_018F31:
 loc_018F3E:
 	stz	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_04
 	lda	#$0006
 	sta	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_06
 	ora	zp_04
 	sta	zp_12
@@ -2026,11 +2026,11 @@ sub_019013:
 	stz	zp_00
 	lda	#$FFD0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_04
 	lda	#$0006
 	sta	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_06
 
 sub_01902B:
@@ -2211,12 +2211,12 @@ loc_01915A:
 	sta	zp_00
 	lda	#$FFE0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$0002
 	bne	loc_0191A9
 	lda	#$FFF8
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$0002
 	bne	loc_0191A6
 	; (not executed in the CDL traces)
@@ -2484,7 +2484,7 @@ sub_019397:
 	stz	zp_00
 	lda	#$FFD0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	beq	loc_0193AB
 	jsl	f:snap_y_down_to_tile
 	lda	#$000E
@@ -2494,7 +2494,7 @@ loc_0193AB:
 sub_0193AC:
 	stz	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	beq	loc_0193BD
 	jsl	f:snap_y_up_to_tile
 	lda	#$0001
@@ -2906,11 +2906,11 @@ sub_019680:
 	; (not executed in the CDL traces)
 	stz	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_04
 	lda	#$0006
 	sta	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_06
 	ora	zp_04
 	sta	zp_12
@@ -3144,13 +3144,13 @@ loc_01981E:
 	stz	zp_00
 	lda	#$FFE0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$0002
 	bne	loc_01986A
 	; (not executed in the CDL traces)
 	lda	#$FFF8
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$0002
 	bne	loc_019867
 	brl	loc_0182CD
@@ -3413,7 +3413,7 @@ sub_019A49:
 	sta	zp_00
 	lda	#$FFD0
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	beq	loc_019A60
 	; (not executed in the CDL traces)
 	jsl	f:snap_y_down_to_tile
@@ -3425,7 +3425,7 @@ sub_019A61:
 	lda	#$0006
 	sta	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	beq	loc_019A75
 	jsl	f:snap_y_up_to_tile
 	lda	#$0001
@@ -3852,13 +3852,13 @@ sub_019D76:
 	sta	zp_00
 	lda	#$FFF8
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8002
 	beq	loc_019D93
 	brl	snap_x_left_to_tile
 loc_019D93:
 	stz	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8002
 	beq	loc_019DA1
 	brl	snap_x_right_to_tile
@@ -3881,18 +3881,18 @@ sub_019DAB:
 loc_019DB5:
 	stz	zp_00
 	stz	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_04
 	lda	#$0006
 	sta	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	sta	zp_06
 	jsl	f:sub_01857A
 	lda	#$0006
 	sta	zp_00
 	lda	#$FFF8
 	sta	zp_02
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8002
 	beq	loc_019DEE
 	jsl	f:snap_x_left_to_tile
@@ -3904,7 +3904,7 @@ loc_019DED:
 	rtl
 loc_019DEE:
 	stz	zp_00
-	jsl	f:sub_00E16E
+	jsl	f:get_bg_tile_at_object
 	bit	#$8002
 	beq	loc_019E06
 	jsl	f:snap_x_right_to_tile
