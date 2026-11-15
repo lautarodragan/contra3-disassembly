@@ -81,10 +81,10 @@ loc_00CF9D:
 
 sub_00CF9E:
 	; (not executed in the CDL traces)
-	lda	a:wram_1E8E
+	lda	a:bg2sc_shadow
 	and	#$FFFC
 	ora	$3A,x
-	sta	a:wram_1E8E
+	sta	a:bg2sc_shadow
 	lda	#$8000
 	sta	$16,x
 	rtl
@@ -309,10 +309,10 @@ loc_00D12C:
 	and	#$00FF
 	xba
 	ora	zp_0A
-	ldx	zp_50
+	ldx	vram_queue_data_ptr
 	sta	a:$0000,x
-	inc	zp_50
-	inc	zp_50
+	inc	vram_queue_data_ptr
+	inc	vram_queue_data_ptr
 	inc	a:wram_161E
 	iny
 	iny
@@ -373,7 +373,7 @@ loc_00D1BC:
 sub_00D1BD:
 	stx	zp_FC
 	lda	#$0005
-	sta	zp_46
+	sta	hdma_preset
 	sep	#$20
 	.a8
 	lda	#$7E
@@ -436,20 +436,20 @@ sub_00D1BD:
 	lda	#$00A0
 	sta	f:wram_7E3824
 	lda	#$0320
-	sta	a:wram_1E9E
-	sta	a:wram_1EA4
-	stz	a:wram_1EA0
-	stz	a:wram_1EA2
+	sta	a:m7a_shadow
+	sta	a:m7d_shadow
+	stz	a:m7b_shadow
+	stz	a:m7c_shadow
 	lda	#$0180
-	sta	a:wram_1EA6
+	sta	a:m7x_shadow
 	lda	#$00A8
-	sta	a:wram_1EA8
+	sta	a:m7y_shadow
 	lda	#$00C1
-	sta	a:wram_1EAA
+	sta	a:m7sel_shadow
 	lda	#$0001
 	sta	a:wram_1672
 	lda	#$0045
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0080
 	sta	a:wram_1692
 loc_00D28F:
@@ -461,11 +461,11 @@ sub_00D290:
 	dec	a:wram_1692
 	bpl	loc_00D28F
 loc_00D29A:
-	lda	a:wram_1EA4
+	lda	a:m7d_shadow
 	cmp	#$0280
 	bcs	sub_00D2F8
 	lda	#$0046
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	inc	$12,x
 	lda	a:wram_0290
 	bne	sub_00D2F8
@@ -502,16 +502,16 @@ loc_00D2B7:
 
 sub_00D2F8:
 	sec
-	lda	a:wram_1E9E
+	lda	a:m7a_shadow
 	sbc	#$0008
-	sta	a:wram_1E9E
-	sta	a:wram_1EA4
+	sta	a:m7a_shadow
+	sta	a:m7d_shadow
 	cmp	#$002A
 	bcs	loc_00D323
 	lda	#$0047
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	inc	$12,x
-	stz	zp_46
+	stz	hdma_preset
 	stz	$24,x
 	stx	zp_FC
 	ldx	#.loword(data_059FBA)
@@ -523,8 +523,8 @@ loc_00D323:
 	bcs	loc_00D332
 	lda	zp_BC
 	bne	loc_00D332
-	dec	a:wram_1EA0
-	dec	a:wram_1EA2
+	dec	a:m7b_shadow
+	dec	a:m7c_shadow
 loc_00D332:
 	clc
 	lda	$1C,x
@@ -576,7 +576,7 @@ loc_00D394:
 	lda	#$0001
 	sta	a:wram_13BA
 	lda	#$0004
-	sta	zp_46
+	sta	hdma_preset
 	stz	$32,x
 	lda	#$007F
 	sta	f:wram_7E3820
@@ -673,7 +673,7 @@ loc_00D401:
 	bne	loc_00D47E
 	lda	#$8000
 	sta	$16,x
-	stz	zp_46
+	stz	hdma_preset
 	stz	a:wram_1672
 	rtl
 loc_00D47E:
@@ -815,7 +815,7 @@ loc_00D57F:
 	sta	$16,x
 	stz	a:wram_1676
 	stz	a:wram_1674
-	stz	zp_46
+	stz	hdma_preset
 	rtl
 loc_00D5A2:
 	ldy	#$001E
@@ -896,7 +896,7 @@ sub_00D610:
 	inc	$12,x
 	stz	a:wram_1676
 	stz	a:wram_1674
-	stz	zp_46
+	stz	hdma_preset
 	rtl
 loc_00D630:
 	ldy	#$001A

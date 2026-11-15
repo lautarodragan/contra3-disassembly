@@ -44,7 +44,7 @@ sub_00A3A8:
 	stz	a:wram_1C60
 	stz	a:wram_1C62
 	lda	#$0005
-	sta	zp_3E
+	sta	force_blank_frames
 	inc	game_submode
 loc_00A3C0:
 	rtl
@@ -56,7 +56,7 @@ loc_00A3C1:
 	beq	loc_00A3D9
 	; (not executed in the CDL traces)
 	lda	#$0002
-	sta	zp_3E
+	sta	force_blank_frames
 	lda	#$0003
 	brl	sub_00ABA3
 loc_00A3D9:
@@ -89,9 +89,9 @@ tbl_00A3EC:
 	.addr	sub_00A54F
 
 sub_00A404:
-	jsl	f:sub_00865C
+	jsl	f:reset_sound_queue
 	jsl	f:sub_008DBE
-	jsl	f:sub_00885E
+	jsl	f:clear_ram_1c00_1cff
 	rep	#$30
 	phb
 	lda	#$0000
@@ -119,7 +119,7 @@ sub_00A43B:
 	beq	loc_00A44B
 	; (not executed in the CDL traces)
 	stz	nmi_mode
-	stz	zp_46
+	stz	hdma_preset
 	brl	loc_00ABA0
 loc_00A44B:
 	lda	#$0002
@@ -128,48 +128,48 @@ loc_00A44B:
 	lda	zp_36
 	beq	loc_00A45F
 	stz	nmi_mode
-	stz	zp_46
+	stz	hdma_preset
 	brl	loc_00AB9B
 loc_00A45F:
 	rtl
 
 sub_00A460:
-	jsl	f:sub_00885E
+	jsl	f:clear_ram_1c00_1cff
 	stz	a:title_menu_cursor
 	jsl	f:sub_00B091
 	brl	loc_00AB9B
 
 sub_00A46E:
-	lda	a:wram_1E9E
+	lda	a:m7a_shadow
 	clc
 	adc	#$0020
-	sta	a:wram_1E9E
-	lda	a:wram_1EA4
+	sta	a:m7a_shadow
+	lda	a:m7d_shadow
 	clc
 	adc	#$0020
-	sta	a:wram_1EA4
+	sta	a:m7d_shadow
 	cmp	#$0100
 	bcc	loc_00A490
-	stz	a:wram_1E9E
-	stz	a:wram_1EA4
+	stz	a:m7a_shadow
+	stz	a:m7d_shadow
 	brl	loc_00AB9B
 loc_00A490:
 	rtl
 
 sub_00A491:
-	lda	a:wram_1E9E
+	lda	a:m7a_shadow
 	clc
 	adc	#$0010
-	sta	a:wram_1E9E
-	lda	a:wram_1EA4
+	sta	a:m7a_shadow
+	lda	a:m7d_shadow
 	clc
 	adc	#$0010
-	sta	a:wram_1EA4
+	sta	a:m7d_shadow
 	cmp	#$0100
 	bcc	loc_00A490
 	lda	#$0100
-	sta	a:wram_1E9E
-	sta	a:wram_1EA4
+	sta	a:m7a_shadow
+	sta	a:m7d_shadow
 	lda	#$0100
 	sta	a:wram_1E56
 	lda	#$FFA0
@@ -179,10 +179,10 @@ sub_00A491:
 	lda	#$FF80
 	sta	a:wram_1E5C
 	lda	#$0046
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	stz	a:wram_1E64
 	lda	#$0001
-	sta	zp_46
+	sta	hdma_preset
 	brl	loc_00AB9B
 
 sub_00A4DD:
@@ -198,7 +198,7 @@ loc_00A4F1:
 	lda	#$0068
 	sta	a:wram_1E56
 	lda	#$0046
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	brl	loc_00AB9B
 
 sub_00A501:
@@ -214,7 +214,7 @@ loc_00A515:
 	lda	#$0050
 	sta	a:wram_1E58
 	lda	#$0046
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	brl	loc_00AB9B
 
 sub_00A525:
@@ -230,7 +230,7 @@ loc_00A539:
 	lda	#$0050
 	sta	a:wram_1E5A
 	lda	#$0047
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0004
 	sta	a:wram_1E64
 	brl	loc_00AB9B
@@ -275,11 +275,11 @@ sub_00A587:
 	lda	#$00B0
 	sta	a:wram_1E5C
 	stz	a:wram_1E64
-	jsl	f:sub_00885E
+	jsl	f:clear_ram_1c00_1cff
 	stz	a:title_menu_cursor
 	jsl	f:sub_00B0DC
 	lda	#$0001
-	sta	zp_46
+	sta	hdma_preset
 	brl	loc_00AB9B
 loc_00A5B9:
 	jsl	f:sub_00B1AD
@@ -314,21 +314,21 @@ sub_00A5E0:
 	bne	loc_00A60D
 	php
 	rep	#$20
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	beq	loc_00A5F7
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	plp
 	rtl
 loc_00A5F7:
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	plp
-	stz	zp_46
+	stz	hdma_preset
 	lda	#$0001
 	sta	a:title_menu_cursor
-	jsl	f:sub_00885E
+	jsl	f:clear_ram_1c00_1cff
 	brl	loc_00AB9B
 loc_00A60D:
 	jsl	f:sub_00AD7C
@@ -349,10 +349,10 @@ sub_00A625:
 	; (not executed in the CDL traces)
 	lda	game_submode
 	bne	loc_00A63B
-	jsl	f:sub_00865C
+	jsl	f:reset_sound_queue
 	jsl	f:sub_008DBE
-	jsl	f:sub_00885E
-	stz	a:wram_1E80
+	jsl	f:clear_ram_1c00_1cff
+	stz	a:inidisp_shadow
 	brl	loc_00AB9B
 loc_00A63B:
 	jsl	f:sub_04D878
@@ -391,18 +391,18 @@ loc_00A67E:
 loc_00A67F:
 	php
 	rep	#$20
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	beq	loc_00A692
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	plp
 	rtl
 loc_00A692:
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	plp
-	stz	zp_46
+	stz	hdma_preset
 	jsr	a:sub_00A6C0
 	jsr	a:sub_00A734
 	lda	a:title_menu_cursor
@@ -479,10 +479,10 @@ sub_00A73D:
 	bmi	loc_00A747
 	brl	loc_00A7E1
 loc_00A747:
-	jsl	f:sub_00865C
+	jsl	f:reset_sound_queue
 	jsl	f:sub_008DBE
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	sep	#$20
 	.a8
 	sta	a:INIDISP
@@ -500,15 +500,15 @@ loc_00A747:
 	brl	loc_00AB9B
 loc_00A77C:
 	php
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	bit	#$0080
 	beq	loc_00A78B
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 loc_00A78B:
 	cmp	#$000F
 	bcs	loc_00A795
-	inc	a:wram_1E80
+	inc	a:inidisp_shadow
 	plp
 	rtl
 loc_00A795:
@@ -523,7 +523,7 @@ loc_00A795:
 	bit	#$1000
 	beq	loc_00A7B4
 	lda	#$0002
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	brl	loc_00AB9B
 loc_00A7B4:
 	bit	#$2C00
@@ -532,7 +532,7 @@ loc_00A7B4:
 loc_00A7BA:
 	pha
 	lda	#$0001
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	pla
 	bit	#$0800
 	beq	loc_00A7D2
@@ -553,16 +553,16 @@ loc_00A7E0:
 loc_00A7E1:
 	php
 	rep	#$20
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	beq	loc_00A7F4
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	plp
 	rtl
 loc_00A7F4:
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	plp
 	brl	loc_00ABA0
 
@@ -575,11 +575,11 @@ loc_00A806:
 	bmi	loc_00A80B
 	brl	loc_00A8B8
 loc_00A80B:
-	jsl	f:sub_00865C
+	jsl	f:reset_sound_queue
 	jsl	f:sub_008DBE
-	jsl	f:sub_00885E
+	jsl	f:clear_ram_1c00_1cff
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	sep	#$20
 	.a8
 	sta	a:INIDISP
@@ -615,15 +615,15 @@ loc_00A80B:
 	brl	loc_00AB9B
 loc_00A870:
 	php
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	bit	#$0080
 	beq	loc_00A87F
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 loc_00A87F:
 	cmp	#$000F
 	bcs	loc_00A889
-	inc	a:wram_1E80
+	inc	a:inidisp_shadow
 	plp
 	rtl
 loc_00A889:
@@ -650,16 +650,16 @@ loc_00A8AB:
 loc_00A8B8:
 	php
 	rep	#$20
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	beq	loc_00A8CB
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	plp
 	rtl
 loc_00A8CB:
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	plp
 	stz	zp_4A
 	lda	#$0002
@@ -676,7 +676,7 @@ sub_00A8E1:
 	lda	a:p1_lives
 	ora	a:p2_lives
 	bne	loc_00A8FB
-	jsl	f:sub_00865C
+	jsl	f:reset_sound_queue
 	lda	#$000B
 	brl	sub_00ABA3
 loc_00A8FB:
@@ -710,9 +710,9 @@ loc_00A931:
 sub_00A932:
 	lda	game_submode
 	bne	loc_00A945
-	jsl	f:sub_00865C
+	jsl	f:reset_sound_queue
 	jsl	f:sub_008DBE
-	jsl	f:sub_00885E
+	jsl	f:clear_ram_1c00_1cff
 	brl	loc_00AB9B
 loc_00A945:
 	jsl	f:sub_00B679
@@ -742,7 +742,7 @@ tbl_00A963:
 sub_00A96D:
 	jsl	f:sub_008DBE
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	sep	#$20
 	.a8
 	sta	a:INIDISP
@@ -762,21 +762,21 @@ sub_00A96D:
 
 sub_00A9A4:
 	php
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	bit	#$0080
 	beq	loc_00A9B3
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 loc_00A9B3:
 	cmp	#$000F
 	bcs	loc_00A9BD
-	inc	a:wram_1E80
+	inc	a:inidisp_shadow
 	plp
 	rtl
 loc_00A9BD:
 	plp
 	lda	#$006B
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	dec	a:wram_1E62
 	bmi	loc_00A9D2
 	lda	#$0080
@@ -809,16 +809,16 @@ sub_00A9ED:
 	; (not executed in the CDL traces)
 	php
 	rep	#$20
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	beq	loc_00AA00
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	plp
 	rtl
 loc_00AA00:
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	plp
 	brl	loc_00AAA8
 
@@ -847,7 +847,7 @@ sub_00AA25:
 	bit	#$1000
 	beq	loc_00AA5C
 	lda	#$0002
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	a:wram_1C00
 	beq	loc_00AA46
 	; (not executed in the CDL traces)
@@ -872,7 +872,7 @@ sub_00AA5D:
 	bit	#$1000
 	beq	loc_00AA7F
 	lda	#$0002
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	a:wram_1C00
 	sta	a:title_menu_cursor
 	stz	a:wram_1C00
@@ -883,16 +883,16 @@ loc_00AA7F:
 sub_00AA80:
 	php
 	rep	#$20
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	beq	loc_00AA93
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	plp
 	rtl
 loc_00AA93:
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	plp
 	lda	a:wram_1C00
 	bne	loc_00AAA8
@@ -912,7 +912,7 @@ sub_00AAB1:
 	beq	loc_00AAE5
 	pha
 	lda	#$0001
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	pla
 	bit	#$0800
 	bne	loc_00AAD8
@@ -991,9 +991,9 @@ sub_00AB28:
 sub_00AB56:
 	lda	game_submode
 	bne	loc_00AB68
-	jsl	f:sub_00865C
+	jsl	f:reset_sound_queue
 	jsl	f:sub_008DBE
-	jsl	f:sub_00885E
+	jsl	f:clear_ram_1c00_1cff
 	bra	loc_00AB9B
 loc_00AB68:
 	jsl	f:sub_00B9BE
@@ -1007,9 +1007,9 @@ loc_00AB75:
 sub_00AB76:
 	lda	game_submode
 	bne	loc_00AB88
-	jsl	f:sub_00865C
+	jsl	f:reset_sound_queue
 	jsl	f:sub_008DBE
-	jsl	f:sub_00885E
+	jsl	f:clear_ram_1c00_1cff
 	bra	loc_00AB9B
 loc_00AB88:
 	jsl	f:sub_00BC38
@@ -1066,11 +1066,11 @@ sub_00ABC6:
 	rep	#$10
 	rep	#$20
 	stz	zp_66
-	jsl	f:sub_0085A9
+	jsl	f:disable_display_and_nmi
 	sep	#$20
 	.a8
-	jsl	f:sub_00885E
-	jsl	f:sub_00848F
+	jsl	f:clear_ram_1c00_1cff
+	jsl	f:start_display
 	rep	#$20
 	.a16
 	rtl
@@ -1102,7 +1102,7 @@ loc_00ABFE:
 	asl	a
 	tay
 	lda	a:data_0584D6,y
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	jsr	a:sub_00ACAF
 loc_00AC16:
 	lda	zp_66
@@ -1186,7 +1186,7 @@ loc_00ACA2:
 sub_00ACAF:
 	lda	zp_66
 	beq	loc_00ACCF
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	sta	a:wram_1E4E
 	lda	a:wram_1FB4
 	sta	a:wram_1E50
@@ -1198,7 +1198,7 @@ sub_00ACAF:
 	rts
 loc_00ACCF:
 	lda	a:wram_1E4E
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	lda	a:wram_1E50
 	sta	a:wram_1FB4
 	lda	a:wram_1E52
@@ -1206,7 +1206,7 @@ loc_00ACCF:
 	rts
 
 sub_00ACE2:
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	bit	#$0080
 	bne	loc_00ACF9
 	and	#$000F
@@ -1216,7 +1216,7 @@ sub_00ACE2:
 	; (not executed in the CDL traces)
 	lda	#$0000
 loc_00ACF6:
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 loc_00ACF9:
 	rts
 

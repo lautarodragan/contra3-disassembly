@@ -381,7 +381,7 @@ loc_009BB7:
 	iny
 	lda	(zp_00),y
 	beq	loc_009C06
-	ldx	zp_4E
+	ldx	vram_queue_end
 	tay
 loc_009BC6:
 	lda	a:$0000,y
@@ -407,7 +407,7 @@ loc_009BC6:
 	tax
 	bra	loc_009BC6
 loc_009C00:
-	stx	zp_4E
+	stx	vram_queue_end
 	ldx	zp_FC
 	bra	sub_009BA8
 loc_009C06:

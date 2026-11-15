@@ -259,7 +259,7 @@ loc_01D148:
 	rtl
 loc_01D149:
 	lda	#$000B
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	stz	$06,x
 	lda	#$0007
 	sta	$16,x
@@ -348,7 +348,7 @@ loc_01D1F2:
 	sta	$00,x
 	lda	#$000D
 loc_01D1F7:
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	bra	loc_01D20F
 loc_01D1FD:
 	sta	$00,x
@@ -359,7 +359,7 @@ loc_01D201:
 	sta	$00,x
 loc_01D208:
 	lda	#$000B
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_01D20F:
 	ldy	$04,x
 	lda	#$001B
@@ -575,7 +575,7 @@ loc_01D395:
 	lda	a:data_05C7E2,y
 	sta	$24,x
 	lda	#$0022
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_01D3B0:
 	lda	zp_BE
 	bne	loc_01D382
@@ -628,7 +628,7 @@ loc_01D3FE:
 	lda	$3A,x
 	sta	$24,x
 	lda	#$0023
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$FFFA
 loc_01D42B:
 	sta	$1E,x
@@ -868,7 +868,7 @@ loc_01D600:
 	bit	#$00FF
 	bne	loc_01D61C
 	lda	#$0024
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_01D61C:
 	lda	#$0004
 	sta	a:wram_1662
@@ -983,7 +983,7 @@ loc_01D6FE:
 	lda	#$0001
 	sta	$32,x
 	lda	#$0021
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_01D712:
 	lda	zp_BE
 	bne	loc_01D752
@@ -1056,7 +1056,7 @@ sub_01D795:
 	lda	a:wram_0906
 	bpl	loc_01D7BB
 	lda	#$001D
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	inc	$12,x
 	lda	#$C848
 	sta	$32,x
@@ -1826,7 +1826,7 @@ sub_01DD69:
 	lda	$06,x
 	bpl	loc_01DD81
 	lda	#$0030
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	txy
 	lda	#$FFFE
 	sta	$1E,x
@@ -2066,9 +2066,9 @@ loc_01DF32:
 	lda	$26,x
 	beq	loc_01DF40
 	lda	#$916A
-	sta	zp_9A
+	sta	cgram_upload_src
 	lda	#$0050
-	sta	zp_98
+	sta	cgram_upload_addr
 loc_01DF40:
 	lda	$12,x
 	phx
@@ -2267,7 +2267,7 @@ sub_01E082:
 	stz	$30,x
 	stz	$32,x
 	lda	#$0008
-	sta	zp_46
+	sta	hdma_preset
 	rtl
 
 sub_01E09C:
@@ -2349,7 +2349,7 @@ sub_01E112:
 	and	#$0010
 	bne	loc_01E137
 	lda	#$0016
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_01E137:
 	lda	#$0013
 	sta	a:$0010,y
@@ -2782,7 +2782,7 @@ sub_01E451:
 	plx
 	lda	#$0001
 	sta	$16,x
-	stz	zp_46
+	stz	hdma_preset
 	stz	$06,x
 	stz	$24,x
 	stz	$30,x
@@ -2796,7 +2796,7 @@ sub_01E451:
 	sta	$1E,x
 	inc	$12,x
 	lda	#$0030
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	rtl
 
 sub_01E48F:
@@ -2853,7 +2853,7 @@ sub_01E4F3:
 	bpl	loc_01E52D
 loc_01E4FE:
 	lda	#$000C
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	ldy	#$0200
 	jsr	a:sub_01E6DD
 	ldy	#$0240
@@ -3682,7 +3682,7 @@ sub_01EB2F:
 	lda	#$FFFB
 	sta	a:wram_035E
 	lda	#$0048
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_01EB54:
 	rtl
 
@@ -3725,7 +3725,7 @@ sub_01EB91:
 	sta	a:wram_0396
 	sta	a:wram_0356
 	lda	#$0019
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_01EBAD:
 	ldy	#$3E00
 	lda	$26,x
@@ -3826,7 +3826,7 @@ loc_01EC63:
 	cmp	#$0100
 	bne	loc_01EC72
 	lda	#$0019
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_01EC72:
 	lda	a:wram_1636
 	cmp	#$FFF8
@@ -3842,7 +3842,7 @@ loc_01EC8B:
 	and	#$00FF
 	bne	loc_01EC97
 	lda	#$0018
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_01EC97:
 	lda	a:wram_1636
 	cmp	#$FFD4
@@ -4013,7 +4013,7 @@ sub_01EDFC:
 	cmp	#$007C
 	bcc	loc_01EE22
 	lda	#$0049
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$007C
 	sta	a:wram_034A
 	lda	#$0003
@@ -4209,7 +4209,7 @@ loc_01EF89:
 	lda	#$0002
 	sta	a:wram_1662
 	lda	#$0049
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_01EF96:
 	stz	$18,x
 	stz	$1A,x
@@ -4281,7 +4281,7 @@ sub_01EFEF:
 	lda	#$0020
 	sta	$24,x
 	lda	#$004A
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	rtl
 
 sub_01F025:
@@ -4436,7 +4436,7 @@ loc_01F164:
 	cmp	#$0098
 	bcc	loc_01F195
 	lda	#$004B
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0002
 	sta	a:wram_1662
 	phy
@@ -4548,7 +4548,7 @@ sub_01F257:
 	lda	#$0002
 	sta	a:wram_13BA
 	lda	#$0007
-	sta	zp_46
+	sta	hdma_preset
 loc_01F26B:
 	rtl
 
@@ -4636,7 +4636,7 @@ sub_01F2C3:
 	.a16
 	plx
 	lda	#$0009
-	sta	zp_46
+	sta	hdma_preset
 	rts
 
 sub_01F2FF:
@@ -4768,7 +4768,7 @@ sub_01F3F2:
 	lda	$06,x
 	bpl	loc_01F419
 	lda	#$0013
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0004
 	sta	$12,x
 	lda	#$FFF8
@@ -4981,7 +4981,7 @@ loc_01F57C:
 	lda	$0E,x
 	sta	a:$000E,y
 	lda	#$001A
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_01F59F:
 	rts
 
@@ -5009,7 +5009,7 @@ sub_01F5A0:
 	lda	#$CD0B
 	sta	$20,x
 	lda	#$0016
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_01F5E2:
 	rts
 
@@ -5037,7 +5037,7 @@ loc_01F608:
 	cmp	#$00AC
 	bcc	loc_01F632
 	lda	#$0030
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	inc	$12,x
 	stz	$1C,x
 	stz	$1E,x

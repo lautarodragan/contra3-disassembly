@@ -14,5 +14,5 @@ sub_04D9F1:
 	jsl	f:sub_0098D4
 	ply
 	lda	a:data_05F38A,y
-	jsl	f:sub_008624
+	jsl	f:send_sound_command_now
 	rtl

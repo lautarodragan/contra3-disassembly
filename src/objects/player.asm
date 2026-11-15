@@ -95,7 +95,7 @@ loc_01A5C8:
 	lda	#$0004
 	sta	a:wram_1662
 	lda	#$0020
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_01A60B:
 	lda	$36,x
 	beq	loc_01A620
@@ -406,7 +406,7 @@ sub_01A851:
 loc_01A86F:
 	stz	a:wram_16AE
 	lda	#$001F
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	stz	a:wram_165C
 	stz	a:wram_09DA
 	stz	a:wram_09D8
@@ -449,14 +449,14 @@ loc_01A8CE:
 	bne	loc_01A8F0
 	inc	a:wram_16AE
 	lda	#$001E
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	bra	loc_01A8F0
 loc_01A8E1:
 	lda	a:wram_16AE
 	beq	loc_01A8F0
 	stz	a:wram_16AE
 	lda	#$001F
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_01A8F0:
 	clc
 	lda	$18,x

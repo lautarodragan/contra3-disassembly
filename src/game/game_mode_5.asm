@@ -31,15 +31,15 @@ sub_04D890:
 sub_04D8A1:
 	; (not executed in the CDL traces)
 	php
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	bit	#$0080
 	beq	loc_04D8B0
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 loc_04D8B0:
 	cmp	#$000F
 	bcs	loc_04D8BA
-	inc	a:wram_1E80
+	inc	a:inidisp_shadow
 	plp
 	rtl
 loc_04D8BA:
@@ -65,7 +65,7 @@ sub_04D8BE:
 	rtl
 loc_04D8E7:
 	lda	#$0084
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	rtl
 loc_04D8EF:
 	inc	a:wram_1C00
@@ -74,16 +74,16 @@ sub_04D8F2:
 	; (not executed in the CDL traces)
 	php
 	rep	#$20
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	beq	loc_04D905
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	plp
 	rtl
 loc_04D905:
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	plp
 	lda	#$0001
 	sta	zp_36
@@ -149,7 +149,7 @@ sub_04D967:
 	cmp	#$0074
 	bcc	loc_04D989
 loc_04D984:
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_04D988:
 	rts
 loc_04D989:
@@ -163,11 +163,11 @@ loc_04D989:
 	jsl	f:sub_0098D4
 	ply
 	lda	a:data_05F388,y
-	jsl	f:sub_008624
+	jsl	f:send_sound_command_now
 	ldx	a:wram_1C02
 	lda	f:data_1DCCE0,x
 	and	#$00FF
-	jsl	f:sub_008624
+	jsl	f:send_sound_command_now
 	rts
 
 sub_04D9AF:

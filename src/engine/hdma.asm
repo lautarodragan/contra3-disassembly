@@ -258,7 +258,7 @@ sub_00E575:
 	lda	a:wram_1600
 	cmp	#$0002
 	bcc	loc_00E574
-	lda	zp_46
+	lda	hdma_preset
 	beq	loc_00E5B6
 	dec	a
 	asl	a
@@ -490,7 +490,7 @@ sub_00E6FD:
 sub_00E705:
 	; (not executed in the CDL traces)
 	lda	#$0007
-	sta	zp_46
+	sta	hdma_preset
 	lda	joy1_held
 	bit	#$0800
 	beq	loc_00E714

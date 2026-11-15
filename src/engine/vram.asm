@@ -8,8 +8,8 @@
 sub_008CFF:
 	ldx	#$3000
 loc_008D02:
-	cpx	zp_4E
-	bcs	loc_008CF4
+	cpx	vram_queue_end
+	bcs	reset_vram_queue
 	lda	f:$7E0004,x
 	sta	a:VMADDL
 	lda	f:$7E0006,x
@@ -38,40 +38,40 @@ sub_008D41:
 	lda	#$0080
 
 sub_008D44:
-	ldx	zp_4E
+	ldx	vram_queue_end
 	sta	f:$7E0000,x
 	tya
 	sta	f:$7E0004,x
 	lda	#$1801
 	sta	f:$7E0002,x
-	lda	zp_50
+	lda	vram_queue_data_ptr
 	sta	f:$7E0006,x
 	lda	#$007E
 	sta	f:$7E0008,x
 	txa
 	clc
 	adc	#$000B
-	sta	zp_4E
+	sta	vram_queue_end
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_008D6B:
 	; (not executed in the CDL traces)
-	ldx	zp_4E
+	ldx	vram_queue_end
 	lda	#$0000
 	sta	f:$7E0000,x
 	tya
 	sta	f:$7E0004,x
 	lda	#$1800
 	sta	f:$7E0002,x
-	lda	zp_50
+	lda	vram_queue_data_ptr
 	sta	f:$7E0006,x
 	lda	#$007E
 	sta	f:$7E0008,x
 	txa
 	clc
 	adc	#$000B
-	sta	zp_4E
+	sta	vram_queue_end
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
@@ -80,61 +80,61 @@ sub_008D95:
 	phb
 	sep	#$20
 	.a8
-	ldx	zp_50
+	ldx	vram_queue_data_ptr
 	sta	f:$7E0000,x
 	inx
-	stx	zp_50
+	stx	vram_queue_data_ptr
 	rep	#$20
 	.a16
 	plb
 	rtl
 
 sub_008DA5:
-	ldx	zp_50
+	ldx	vram_queue_data_ptr
 	sta	f:$7E0000,x
 	inx
 	inx
-	stx	zp_50
+	stx	vram_queue_data_ptr
 	rtl
 
 sub_008DB0:
-	ldx	zp_4E
+	ldx	vram_queue_end
 	sec
-	lda	zp_50
+	lda	vram_queue_data_ptr
 	sbc	f:$7DFFFB,x
 	sta	f:$7DFFFE,x
 	rtl
 
 sub_008DBE:
-	stz	zp_46
-	stz	zp_44
+	stz	hdma_preset
+	stz	irq_mode
 	lda	#$2200
-	sta	zp_48
+	sta	cgram_dma_src
 	lda	#$0004
-	sta	zp_3E
+	sta	force_blank_frames
 	lda	#$0009
-	sta	a:wram_1E84
-	stz	a:wram_1E8A
+	sta	a:bgmode_shadow
+	stz	a:mosaic_shadow
 	lda	#$3000
-	sta	zp_4E
+	sta	vram_queue_end
 	lda	#$3400
-	sta	zp_50
-	jsl	f:sub_0085A9
+	sta	vram_queue_data_ptr
+	jsl	f:disable_display_and_nmi
 	sep	#$20
 	.a8
 	rep	#$10
-	jsl	f:sub_0088BA
+	jsl	f:clear_objects_and_oam
 	.a16
-	jsl	f:sub_0088E7
-	jsl	f:sub_008914
+	jsl	f:clear_palette_tasks_and_buffer
+	jsl	f:clear_vram_tasks
 	jsl	f:sub_008E0A
-	jsl	f:sub_0088A3
+	jsl	f:clear_bg_scroll_state
 	sep	#$20
 	.a8
-	jsl	f:sub_0086AC
+	jsl	f:init_ppu_registers
 	rep	#$20
 	.a16
-	jsl	f:sub_00848F
+	jsl	f:start_display
 	rep	#$20
 	rtl
 
@@ -262,7 +262,7 @@ loc_008E96:
 	rep	#$20
 	.a16
 	lda	#$0007
-	sta	a:wram_1E84
+	sta	a:bgmode_shadow
 	rtl
 
 sub_008EE0:

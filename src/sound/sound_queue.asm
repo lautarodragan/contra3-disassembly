@@ -1,67 +1,67 @@
 ; sound/sound_queue.asm -- Sound command queue
 ; Bank $00, $00:85F3-$00:86AB. Included by main.asm in segment BANK00.
 ;
-; Commands for the sound CPU are queued in a ring at $0100 (sub_00868F queues
+; Commands for the sound CPU are queued in a ring at $0100 (queue_sound queues
 ; the command in A, skipping repeats; $56 write index, $54 read index) and
-; sent one per frame to APUIO0 by sub_0085F3. sub_00865C resets the queue with
+; sent one per frame to APUIO0 by send_queued_sound. reset_sound_queue resets the queue with
 ; command $84.
 
-sub_0085F3:
+send_queued_sound:
 	.a16
 	sep	#$30
 	.a8
 	.i8
-	lda	zp_52
-	beq	loc_008604
+	lda	apu_pending_cmd
+	beq	@ready
 	cmp	#$FF
-	beq	loc_00861D
+	beq	@check_stream
 	cmp	a:APUIO0
-	bne	loc_00861D
-	stz	zp_52
-loc_008604:
-	lda	zp_6A
-	beq	loc_00860C
+	bne	@check_stream
+	stz	apu_pending_cmd
+@ready:
+	lda	sound_cmd_override
+	beq	@from_queue
 	; (not executed in the CDL traces)
-	stz	zp_6A
-	bra	loc_008618
-loc_00860C:
+	stz	sound_cmd_override
+	bra	@send
+@from_queue:
 	ldx	sound_queue_read
 	cpx	sound_queue_write
-	beq	loc_00861D
+	beq	@check_stream
 	lda	a:$0100,x
 	inx
 	stx	sound_queue_read
-loc_008618:
-	sta	zp_52
+@send:
+	sta	apu_pending_cmd
 	sta	a:APUIO0
-loc_00861D:
+@check_stream:
 	rep	#$30
 	.a16
 	.i16
-	lda	zp_5A
-	bne	loc_008675
+	lda	sound_stream_check_index
+	bne	check_sound_stream_index
 	rtl
 
-sub_008624:
+send_sound_command_now:
 	php
 	sep	#$20
 	.a8
-	stz	zp_52
+	stz	apu_pending_cmd
 	sta	a:APUIO0
-loc_00862C:
+@wait:
 	cmp	a:APUIO0
-	bne	loc_00862C
+	bne	@wait
 	stz	sound_queue_read
 	stz	sound_queue_write
-	stz	zp_5A
-	stz	zp_6A
+	stz	sound_stream_check_index
+	stz	sound_cmd_override
 	rep	#$20
 	.a16
 	plp
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_00863D:
+stop_sound_now:
 	; (not executed in the CDL traces)
 	php
 	rep	#$20
@@ -71,9 +71,9 @@ sub_00863D:
 	lda	#$84
 	stz	$52
 	sta	a:APUIO0
-loc_00864A:
+@wait:
 	cmp	a:APUIO0
-	bne	loc_00864A
+	bne	@wait
 	stz	$54
 	stz	$56
 	stz	$5A
@@ -84,7 +84,7 @@ loc_00864A:
 	plp
 	rtl
 
-sub_00865C:
+reset_sound_queue:
 	sep	#$20
 	.a8
 	lda	#$84
@@ -92,34 +92,34 @@ sub_00865C:
 	stz	sound_queue_read
 	lda	#$01
 	sta	sound_queue_write
-	stz	zp_5A
-	stz	zp_6A
+	stz	sound_stream_check_index
+	stz	sound_cmd_override
 	rep	#$20
 	.a16
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008670:
+check_sound_stream:
 	; (not executed in the CDL traces)
 	lda	#$0001
-	sta	zp_5A
-loc_008675:
-	ldy	zp_5A
+	sta	sound_stream_check_index
+check_sound_stream_index:
+	ldy	sound_stream_check_index
 	lda	a:$1F2D,y
 	bit	#$8000
-	beq	loc_008687
+	beq	@stream_done
 	bit	#$4000
-	bne	loc_008686
-	stz	zp_5A
-loc_008686:
+	bne	@done
+	stz	sound_stream_check_index
+@done:
 	rtl
-loc_008687:
+@stream_done:
 	and	#$00FF
-	sta	zp_6A
-	stz	zp_5A
+	sta	sound_cmd_override
+	stz	sound_stream_check_index
 	rtl
 
-sub_00868F:
+queue_sound:
 	phx
 	phy
 	php
@@ -127,17 +127,17 @@ sub_00868F:
 	.a8
 	.i8
 	cmp	sound_last_queued
-	beq	loc_0086A8
+	beq	@done
 	ldx	sound_queue_write
 	sta	sound_last_queued
 	sta	a:$0100,x
 	inx
 	stx	sound_queue_write
 	cpx	sound_queue_read
-	bne	loc_0086A8
+	bne	@done
 	; (not executed in the CDL traces)
 	inc	sound_queue_read
-loc_0086A8:
+@done:
 	plp
 	.a16
 	.i16

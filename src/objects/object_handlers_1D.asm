@@ -8,16 +8,16 @@ sub_1DAF27:
 	cmp	#$0009
 	bcs	loc_1DAF38
 	lda	#$918A
-	sta	zp_9A
+	sta	cgram_upload_src
 	lda	#$0030
-	sta	zp_98
+	sta	cgram_upload_addr
 loc_1DAF38:
 	lda	$26,x
 	beq	loc_1DAF46
 	lda	#$912A
-	sta	zp_9A
+	sta	cgram_upload_src
 	lda	#$B030
-	sta	zp_98
+	sta	cgram_upload_addr
 loc_1DAF46:
 	lda	$06,x
 	bpl	loc_1DAF72
@@ -139,7 +139,7 @@ sub_1DAFFE:
 	lda	#$0000
 	sta	f:wram_7EE80A
 	lda	#$0011
-	sta	zp_46
+	sta	hdma_preset
 	lda	#$0007
 	sta	a:wram_1672
 loc_1DB06A:
@@ -241,7 +241,7 @@ loc_1DB10F:
 
 sub_1DB113:
 	lda	#$004A
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	stz	a:wram_1636
 	lda	#$0010
 	sta	a:wram_1638
@@ -291,7 +291,7 @@ sub_1DB175:
 	cmp	#$0012
 	bcc	loc_1DB19C
 	lda	#$0049
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	inc	$12,x
 	jsr	a:sub_1DB642
 	lda	#$0002
@@ -410,9 +410,9 @@ sub_1DB269:
 	lda	#$0006
 	sta	a:wram_13BA
 	lda	#$0012
-	sta	zp_46
+	sta	hdma_preset
 	lda	#$0004
-	sta	a:wram_1E9C
+	sta	a:ts_shadow
 	lda	#$0001
 	sta	a:wram_16B4
 	lda	#$0001
@@ -732,7 +732,7 @@ sub_1DB51E:
 	ply
 	sta	a:wram_0938
 	lda	#$005C
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	rts
 loc_1DB556:
 	cmp	#$0020
@@ -810,7 +810,7 @@ loc_1DB5CD:
 	rts
 loc_1DB5DE:
 	lda	#$005E
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_1DB5E5:
 	lda	$30,x
 	eor	#$0002
@@ -971,7 +971,7 @@ loc_1DB722:
 	cmp	#$0100
 	bcc	loc_1DB721
 	lda	#$005D
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	bra	loc_1DB739
 loc_1DB739:
 	lda	$34,x
@@ -1259,11 +1259,11 @@ sub_1DB952:
 	sta	a:wram_1640
 	jsl	f:sub_00FF30
 	lda	#$0002
-	sta	a:wram_1E94
+	sta	a:cgwsel_shadow
 	lda	#$0013
-	sta	a:wram_1E96
+	sta	a:cgadsub_shadow
 	lda	#$0001
-	sta	a:wram_1E84
+	sta	a:bgmode_shadow
 	phx
 	ldy	#$F8E3
 	jsl	f:sub_009982
@@ -1412,15 +1412,15 @@ sub_1DBA8C:
 	dec	$24,x
 	bpl	loc_1DBAE9
 loc_1DBAAA:
-	dec	a:wram_1E80
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
+	dec	a:inidisp_shadow
 	beq	loc_1DBAB4
 	bpl	loc_1DBAE9
 loc_1DBAB4:
 	stz	a:wram_029C
 	stz	a:wram_029E
-	stz	a:wram_1E9A
-	stz	zp_46
+	stz	a:tm_shadow
+	stz	hdma_preset
 	inc	$12,x
 	lda	#$00F0
 	sta	a:wram_13D8
@@ -1435,7 +1435,7 @@ loc_1DBAB4:
 	plx
 	stz	a:wram_163E
 	lda	#$0081
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_1DBAE9:
 	rtl
 
@@ -1453,7 +1453,7 @@ sub_1DBAEA:
 	plx
 	inc	$12,x
 	lda	#$0081
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	stz	a:wram_029C
 	stz	a:wram_029E
 	stz	a:wram_02BA
@@ -1488,14 +1488,14 @@ loc_1DBB47:
 	ldx	#$F4C3
 	jsl	f:sub_0098D4
 	lda	#$0071
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	ldy	#$FEC7
 	jsl	f:sub_009982
 	ldx	#.loword(data_05FEDF)
 	jsl	f:sub_0090A8
 	plx
 	lda	#$0013
-	sta	zp_46
+	sta	hdma_preset
 loc_1DBB6A:
 	rtl
 
@@ -1598,7 +1598,7 @@ loc_1DBC1D:
 	lda	#$0380
 	sta	$24,x
 	inc	$12,x
-	stz	zp_46
+	stz	hdma_preset
 	jsr	a:sub_1DB952
 	rtl
 
@@ -1612,10 +1612,10 @@ sub_1DBC2A:
 	bne	loc_1DBC49
 	inc	$12,x
 	lda	#$0012
-	sta	zp_46
+	sta	hdma_preset
 	lda	#$001F
-	sta	a:wram_1E9A
-	stz	a:wram_1E80
+	sta	a:tm_shadow
+	stz	a:inidisp_shadow
 	rtl
 loc_1DBC49:
 	adc	#$5C00
@@ -1646,7 +1646,7 @@ sub_1DBC59:
 	lda	#$0012
 	sta	a:wram_1636
 	lda	#$0059
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_1DBC89:
 	lda	#$0058
 	sta	zp_00
@@ -1777,9 +1777,9 @@ sub_1DBD6A:
 	and	#$0003
 	bne	loc_1DBD88
 	lda	#$912A
-	sta	zp_9A
+	sta	cgram_upload_src
 	lda	#$3040
-	sta	zp_98
+	sta	cgram_upload_addr
 loc_1DBD88:
 	rts
 
@@ -1862,7 +1862,7 @@ loc_1DBE11:
 	lda	#$0100
 	sta	a:wram_1686
 	lda	#$0084
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	inc	$12,x
 
 sub_1DBE2C:
@@ -1914,16 +1914,16 @@ loc_1DBE80:
 	lda	$26,x
 	beq	loc_1DBEA5
 	lda	#$912A
-	sta	zp_9A
+	sta	cgram_upload_src
 	lda	#$0030
-	sta	zp_98
+	sta	cgram_upload_addr
 	lda	a:wram_16BA
 	bmi	loc_1DBE98
 	dec	a:wram_16BA
 	bra	loc_1DBEA5
 loc_1DBE98:
 	lda	#$003C
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0004
 	sta	a:wram_16BA
 loc_1DBEA5:
@@ -2022,7 +2022,7 @@ sub_1DBF5D:
 	lda	#$0040
 	sta	$24,x
 	lda	#$0010
-	sta	zp_46
+	sta	hdma_preset
 loc_1DBF72:
 	jml	f:loc_00E733
 
@@ -2034,7 +2034,7 @@ sub_1DBF76:
 	bcc	loc_1DBF88
 	stz	$1C,x
 	inc	$12,x
-	stz	zp_46
+	stz	hdma_preset
 loc_1DBF88:
 	rtl
 
@@ -2155,7 +2155,7 @@ loc_1DC065:
 	inc	$12,x
 	stz	$3A,x
 	lda	#$0010
-	sta	zp_46
+	sta	hdma_preset
 	lda	#$014B
 	sta	$36,x
 	lda	#$0031
@@ -2222,7 +2222,7 @@ loc_1DC0E1:
 	ldy	#$FF59
 	jsr	a:sub_1DCC1C
 	lda	#$0059
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_1DC106:
 	jsr	a:sub_1DCB66
 	rtl
@@ -2232,7 +2232,7 @@ loc_1DC10A:
 	ldy	a:wram_1638
 	lda	a:data_05FF1F,y
 	sta	$12,x
-	stz	zp_46
+	stz	hdma_preset
 loc_1DC119:
 	inc	$36,x
 	jsr	a:sub_1DCB66
@@ -2262,9 +2262,9 @@ sub_1DC145:
 
 sub_1DC14C:
 	lda	#$918A
-	sta	zp_9A
+	sta	cgram_upload_src
 	lda	#$0030
-	sta	zp_98
+	sta	cgram_upload_addr
 	dec	$24,x
 	bpl	loc_1DC175
 	lda	#$0095
@@ -2279,7 +2279,7 @@ sub_1DC14C:
 	asl	a
 	clc
 	adc	#$0040
-	sta	a:wram_1E8C
+	sta	a:bg1sc_shadow
 loc_1DC175:
 	lda	$24,x
 	cmp	#$0180
@@ -2731,7 +2731,7 @@ loc_1DC4C3:
 	lda	#$0004
 	sta	a:wram_1662
 	lda	#$0039
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_1DC4DA:
 	ldy	$38,x
 	lda	a:data_05FF87,y
@@ -2938,7 +2938,7 @@ loc_1DC65C:
 	sta	a:wram_1662
 	jsr	a:sub_1DCAC9
 	lda	#$0030
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$C4CE
 	txy
 	jml	f:sub_01CF66
@@ -3129,7 +3129,7 @@ sub_1DC7D6:
 	cmp	#$00B4
 	bcc	loc_1DC7F1
 	lda	#$0030
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$FFFC
 	sta	$1E,x
 	txy
@@ -3175,7 +3175,7 @@ loc_1DC822:
 loc_1DC835:
 	jsr	a:sub_1DCAC9
 	lda	#$0030
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$C4CE
 	txy
 	jml	f:sub_01CF66
@@ -3207,7 +3207,7 @@ sub_1DC86D:
 	bpl	loc_1DC88A
 loc_1DC87B:
 	lda	#$0030
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	txy
 	lda	#$C516
 	jml	f:sub_01CF66
@@ -3412,7 +3412,7 @@ sub_1DCA00:
 	beq	loc_1DCA19
 loc_1DCA0A:
 	lda	#$0030
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	txy
 	lda	#$C4CE
 	jml	f:sub_01CF66

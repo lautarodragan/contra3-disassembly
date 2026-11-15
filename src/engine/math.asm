@@ -1,16 +1,16 @@
 ; engine/math.asm -- Arithmetic helpers
 ; Bank $00, $00:8986-$00:8B18. Included by main.asm in segment BANK00.
 ;
-; Division (sub_0089E4) and multiplication (sub_008ADB) with the hardware
+; Division (sub_0089E4) and multiplication (multiply_16x16) with the hardware
 ; divider/multiplier, and helpers the CDL traces never ran.
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008986:
+unused_calc_mode7_matrix:
 	; (not executed in the CDL traces)
 	rep	#$10
 	rep	#$20
 	ldy	#$0003
-loc_00898D:
+@loop:
 	phy
 	tya
 	asl	a
@@ -35,12 +35,12 @@ loc_00898D:
 	jsl	f:sub_0089E4
 	pla
 	cmp	#$0100
-	bcc	loc_0089CB
+	bcc	@positive
 	lda	#$0000
 	sec
 	sbc	zp_00
 	sta	zp_00
-loc_0089CB:
+@positive:
 	ply
 	tya
 	asl	a
@@ -48,11 +48,11 @@ loc_0089CB:
 	lda	zp_00
 	sta	a:$1E9E,x
 	dey
-	bpl	loc_00898D
+	bpl	@loop
 	lda	a:wram_1F90
-	sta	a:wram_1EA6
+	sta	a:m7x_shadow
 	lda	a:wram_1F92
-	sta	a:wram_1EA8
+	sta	a:m7y_shadow
 	rtl
 
 sub_0089E4:
@@ -144,21 +144,21 @@ sub_008A58:
 	sta	zp_0A
 	sta	zp_0C
 	tya
-	beq	loc_008A84
-	bmi	loc_008A7B
-loc_008A72:
+	beq	@done
+	bmi	@shift_right
+@shift_left:
 	asl	zp_08
 	rol	zp_0A
 	dey
-	bne	loc_008A72
-	beq	loc_008A84
-loc_008A7B:
+	bne	@shift_left
+	beq	@done
+@shift_right:
 	lsr	zp_0C
 	ror	zp_0A
 	ror	zp_08
 	iny
-	bne	loc_008A7B
-loc_008A84:
+	bne	@shift_right
+@done:
 	lda	zp_04
 	sec
 	sbc	zp_08
@@ -169,15 +169,15 @@ loc_008A84:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008A92:
+clear_object_slot_y:
 	; (not executed in the CDL traces)
 	phx
 	tyx
-	jsl	f:sub_008A9A
+	jsl	f:clear_object_slot
 	plx
 	rtl
 
-sub_008A9A:
+clear_object_slot:
 	; (not executed in the CDL traces)
 	stz	$04,x
 	stz	$08,x
@@ -214,7 +214,7 @@ sub_008A9A:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008ADB:
+multiply_16x16:
 	; (not executed in the CDL traces)
 	sep	#$10
 	.i8

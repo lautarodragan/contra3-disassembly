@@ -1,10 +1,10 @@
 ; engine/init.asm -- PPU init and RAM clear helpers
 ; Bank $00, $00:86AC-$00:8985. Included by main.asm in segment BANK00.
 ;
-; sub_0086AC writes every PPU register with its start-up value (and the shadow
-; copies at $1E8x); sub_008819 to sub_008959 clear RAM areas with MVN.
+; init_ppu_registers writes every PPU register with its start-up value (and the shadow
+; copies at $1E8x); clear_ram_0000_1bff to clear_wram_7e8000_and_7ec000 clear RAM areas with MVN.
 
-sub_0086AC:
+init_ppu_registers:
 	php
 	sep	#$20
 	.a8
@@ -12,7 +12,7 @@ sub_0086AC:
 	lda	#$8F
 	sta	a:INIDISP
 	lda	#$03
-	sta	a:wram_1E86
+	sta	a:obsel_shadow
 	sta	a:OBSEL
 	lda	#$00
 	sta	a:OAMADDL
@@ -20,19 +20,19 @@ sub_0086AC:
 	lda	#$09
 	sta	a:BGMODE
 	lda	#$00
-	sta	a:wram_1E8A
+	sta	a:mosaic_shadow
 	sta	a:MOSAIC
 	lda	#$01
-	sta	a:wram_1E8C
+	sta	a:bg1sc_shadow
 	sta	a:BG1SC
 	lda	#$11
-	sta	a:wram_1E8E
+	sta	a:bg2sc_shadow
 	sta	a:BG2SC
 	lda	#$5A
-	sta	a:wram_1E90
+	sta	a:bg3sc_shadow
 	sta	a:BG3SC
 	lda	#$59
-	sta	a:wram_1E92
+	sta	a:bg4sc_shadow
 	sta	a:BG4SC
 	lda	#$22
 	sta	a:BG12NBA
@@ -88,22 +88,22 @@ sub_0086AC:
 	sta	a:WBGLOG
 	sta	a:WOBJLOG
 	lda	#$17
-	sta	a:wram_1E9A
+	sta	a:tm_shadow
 	sta	a:TM
 	lda	#$17
-	sta	a:wram_1E9C
+	sta	a:ts_shadow
 	sta	a:TS
 	lda	#$00
 	sta	a:TMW
 	sta	a:TSW
 	lda	#$30
-	sta	a:wram_1E94
+	sta	a:cgwsel_shadow
 	sta	a:CGWSEL
 	lda	#$00
-	sta	a:wram_1E96
+	sta	a:cgadsub_shadow
 	sta	a:CGADSUB
 	lda	#$E0
-	sta	a:wram_1E98
+	sta	a:coldata_shadow
 	sta	a:COLDATA
 	lda	#$00
 	sta	a:SETINI
@@ -145,7 +145,7 @@ sub_0086AC:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008819:
+clear_ram_0000_1bff:
 	; (not executed in the CDL traces)
 	rep	#$30
 	phb
@@ -160,7 +160,7 @@ sub_008819:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008830:
+clear_zp_84_fe:
 	; (not executed in the CDL traces)
 	rep	#$30
 	phb
@@ -175,7 +175,7 @@ sub_008830:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008847:
+clear_ram_0200_1bff:
 	; (not executed in the CDL traces)
 	rep	#$30
 	phb
@@ -189,7 +189,7 @@ sub_008847:
 	plb
 	rtl
 
-sub_00885E:
+clear_ram_1c00_1cff:
 	rep	#$30
 	phb
 	lda	#$0000
@@ -203,7 +203,7 @@ sub_00885E:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008875:
+clear_zp_70_fe:
 	; (not executed in the CDL traces)
 	rep	#$30
 	phb
@@ -218,7 +218,7 @@ sub_008875:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_00888C:
+clear_ram_1200_1aff:
 	; (not executed in the CDL traces)
 	rep	#$30
 	phb
@@ -232,7 +232,7 @@ sub_00888C:
 	plb
 	rtl
 
-sub_0088A3:
+clear_bg_scroll_state:
 	.a8
 	.i8
 	rep	#$30
@@ -249,7 +249,7 @@ sub_0088A3:
 	plb
 	rtl
 
-sub_0088BA:
+clear_objects_and_oam:
 	.a8
 	rep	#$30
 	.a16
@@ -274,7 +274,7 @@ sub_0088BA:
 	plb
 	rtl
 
-sub_0088E7:
+clear_palette_tasks_and_buffer:
 	rep	#$30
 	phb
 	lda	#$0000
@@ -297,7 +297,7 @@ sub_0088E7:
 	plb
 	rtl
 
-sub_008914:
+clear_vram_tasks:
 	rep	#$30
 	phb
 	lda	#$0000
@@ -311,7 +311,7 @@ sub_008914:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_00892B:
+clear_ram_1b00_1bff:
 	; (not executed in the CDL traces)
 	rep	#$30
 	phb
@@ -325,7 +325,7 @@ sub_00892B:
 	plb
 	rtl
 
-sub_008942:
+clear_wram_7e4000_7effff:
 	rep	#$30
 	phb
 	lda	#$0000
@@ -339,7 +339,7 @@ sub_008942:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008959:
+clear_wram_7e8000_and_7ec000:
 	; (not executed in the CDL traces)
 	rep	#$30
 	phb

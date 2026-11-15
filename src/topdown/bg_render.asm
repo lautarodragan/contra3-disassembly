@@ -1,7 +1,7 @@
 ; topdown/bg_render.asm -- Top-down stages: BG rendering
 ; Bank $03, $03:E180-$03:FFFF. Included by main.asm in segment BANK03.
 ;
-; sub_03E180 (from the top-down NMI frame handler sub_0083A3) builds the
+; sub_03E180 (from the top-down NMI frame handler nmi_frame_top_down) builds the
 ; tilemap updates of the top-down stages into the buffer at $1780 (one half
 ; per player view in two-player games, on alternate frames).
 

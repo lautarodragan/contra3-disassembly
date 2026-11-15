@@ -1,7 +1,7 @@
 ; engine/reset.asm -- Reset: cold boot, warm boot and the main loop
 ; Bank $00, $00:8000-$00:816B. Included by main.asm in segment BANK00.
 ;
-; The reset vector (reset) and the warm boot entry loc_0080A3 (jumped to by
+; The reset vector (reset) and the warm boot entry warm_boot (jumped to by
 ; the soft-reset check in engine/joypad.asm): CPU, stack, PPU and RAM setup.
 ; The main loop at the end only polls sub_00995A (sound); the game itself runs
 ; in the NMI handler (engine/nmi.asm).
@@ -33,20 +33,20 @@ reset:
 	sta	a:INIDISP
 	rep	#$20
 	.a16
-	lda	a:wram_1E0A
+	lda	a:boot_signature
 	cmp	#$4A3E
-	bne	loc_008044
+	bne	@cold_boot
 	; (not executed in the CDL traces)
-	lda	a:wram_1E0C
+	lda	a:boot_signature+2
 	cmp	#$4E49
-	bne	loc_008044
-	lda	a:wram_1E0E
+	bne	@cold_boot
+	lda	a:boot_signature+4
 	cmp	#$3C4C
-	bne	loc_008044
-	lda	a:wram_1E10
+	bne	@cold_boot
+	lda	a:boot_signature+6
 	cmp	#$0400
-	beq	loc_00809C
-loc_008044:
+	beq	@upload_sound_driver
+@cold_boot:
 	rep	#$30
 	phb
 	lda	#$0000
@@ -58,13 +58,13 @@ loc_008044:
 	mvn	#$00, #$00
 	plb
 	lda	#$4A3E
-	sta	a:wram_1E0A
+	sta	a:boot_signature
 	lda	#$4E49
-	sta	a:wram_1E0C
+	sta	a:boot_signature+2
 	lda	#$3C4C
-	sta	a:wram_1E0E
+	sta	a:boot_signature+4
 	lda	#$0400
-	sta	a:wram_1E10
+	sta	a:boot_signature+6
 	stz	a:wram_1FA0
 	stz	a:wram_1FA2
 	stz	a:wram_1FE0
@@ -79,10 +79,10 @@ loc_008044:
 	stz	a:wram_1E4A
 	lda	#$0002
 	sta	a:wram_1E3E
-loc_00809C:
+@upload_sound_driver:
 	ldx	#.loword(data_05F55B)
 	jsl	f:sub_0090A8
-loc_0080A3:
+warm_boot:
 	sei
 	cld
 	rep	#$30
@@ -147,13 +147,13 @@ loc_0080A3:
 	iny
 	mvn	#$7F, #$7F
 	plb
-	jsl	f:sub_0086AC
+	jsl	f:init_ppu_registers
 	lda	#$3000
-	sta	zp_4E
+	sta	vram_queue_end
 	lda	#$3400
-	sta	zp_50
+	sta	vram_queue_data_ptr
 	lda	#$2200
-	sta	zp_48
+	sta	cgram_dma_src
 	rep	#$30
 	phb
 	lda	#$0000
@@ -165,13 +165,13 @@ loc_0080A3:
 	mvn	#$00, #$00
 	plb
 	lda	#$0003
-	sta	zp_30
-	jsl	f:sub_00848F
+	sta	soft_reset_pad_mask
+	jsl	f:start_display
 	stz	nmi_mode
-	stz	zp_44
+	stz	irq_mode
 	lda	#$0081
 	sta	a:nmitimen_shadow
 	cli
-loc_008166:
+@main_loop:
 	jsl	f:sub_00995A
-	bra	loc_008166
+	bra	@main_loop

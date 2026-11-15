@@ -45,8 +45,8 @@ tbl_028035:
 	.addr	sub_0282A1
 
 sub_028041:
-	stz	a:wram_1EC4
-	jsl	f:sub_00865C
+	stz	a:hdmaen_shadow
+	jsl	f:reset_sound_queue
 	jsr	a:sub_028AEA
 	jsr	a:sub_028A71
 	jsr	a:sub_028A88
@@ -113,13 +113,13 @@ sub_0280D9:
 	ora	a:p2_lives
 	bne	loc_028103
 	; (not executed in the CDL traces)
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	beq	loc_0280F7
 	cmp	#$000F
 	bne	loc_028101
 	stz	a:wram_1588
 	lda	#$0081
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	bra	loc_028101
 loc_0280F7:
 	stz	a:wram_1E42
@@ -140,17 +140,17 @@ sub_028105:
 	cmp	#$0080
 	bne	loc_028119
 	lda	#$0081
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_028119:
 	dec	a:wram_159C
 	bpl	loc_02813C
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	beq	loc_028134
 	cmp	#$000F
 	bne	loc_02813C
 	stz	a:wram_1588
 	lda	#$0081
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	bra	loc_02813C
 loc_028134:
 	lda	#$0001
@@ -167,7 +167,7 @@ sub_02813D:
 	jsr	a:sub_028B4B
 	jsr	a:sub_028BA5
 	lda	#$0068
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	jsl	f:sub_02EBF2
 	jsl	f:sub_02ED3B
 	jsr	a:sub_028D03
@@ -216,7 +216,7 @@ sub_0281BB:
 	cmp	#$0012
 	bne	loc_0281E8
 	lda	#$0081
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0080
 	sta	a:wram_159C
 	inc	a:wram_1580
@@ -225,7 +225,7 @@ sub_0281BB:
 sub_0281D4:
 	dec	a:wram_159C
 	bpl	loc_0281E8
-	jsl	f:sub_00865C
+	jsl	f:reset_sound_queue
 	lda	#$0001
 	sta	zp_64
 	stz	a:wram_1588
@@ -235,9 +235,9 @@ loc_0281E8:
 
 sub_0281E9:
 	jsr	a:sub_028D32
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	bne	loc_0281E8
-	jsl	f:sub_00865C
+	jsl	f:reset_sound_queue
 	stz	a:wram_1E42
 	stz	a:wram_1580
 	inc	zp_36
@@ -298,7 +298,7 @@ sub_028271:
 	jsr	a:sub_028B4B
 	jsr	a:sub_028BC6
 	lda	#$0068
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	jsl	f:sub_02EBF2
 	jsl	f:sub_02ED3B
 	jsr	a:sub_028D03
@@ -348,7 +348,7 @@ sub_0282F3:
 	cmp	#$0009
 	bne	loc_028320
 	lda	#$0081
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0040
 	sta	a:wram_159C
 	inc	a:wram_1580
@@ -357,7 +357,7 @@ sub_0282F3:
 sub_02830C:
 	dec	a:wram_159C
 	bpl	loc_028320
-	jsl	f:sub_00865C
+	jsl	f:reset_sound_queue
 	lda	#$0001
 	sta	zp_64
 	stz	a:wram_1588
@@ -367,9 +367,9 @@ loc_028320:
 
 sub_028321:
 	jsr	a:sub_028D32
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	bne	loc_028320
-	jsl	f:sub_00865C
+	jsl	f:reset_sound_queue
 	stz	a:wram_1E42
 	stz	a:wram_1580
 	inc	zp_36
@@ -407,7 +407,7 @@ loc_028369:
 	bit	#$2000
 	beq	loc_02838D
 	; (not executed in the CDL traces)
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	sta	a:wram_15D2
 	lda	a:wram_1FB4
 	sta	a:wram_15D4
@@ -425,13 +425,13 @@ loc_02838D:
 
 sub_02838F:
 	; (not executed in the CDL traces)
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	ora	a:wram_1FB4
 	ora	a:wram_1FF4
 	beq	loc_0283B4
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	bpl	loc_0283A2
-	stz	a:wram_1E80
+	stz	a:inidisp_shadow
 loc_0283A2:
 	dec	a:wram_1FB4
 	bpl	loc_0283AA
@@ -488,7 +488,7 @@ sub_0283BC:
 	stz	zp_40
 	lda	#$0000
 	sta	a:vtime_shadow
-	stz	a:wram_1E80
+	stz	a:inidisp_shadow
 	stz	a:wram_1FB4
 	stz	a:wram_1FF4
 	sec
@@ -496,10 +496,10 @@ sub_0283BC:
 
 sub_028427:
 	; (not executed in the CDL traces)
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	cmp	#$000F
 	bcs	loc_02843A
-	inc	a:wram_1E80
+	inc	a:inidisp_shadow
 	inc	a:wram_1FB4
 	inc	a:wram_1FF4
 	sec
@@ -529,9 +529,9 @@ loc_028458:
 
 sub_02845A:
 	; (not executed in the CDL traces)
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	beq	loc_02846A
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	dec	a:wram_1FB4
 	dec	a:wram_1FF4
 	sec
@@ -539,7 +539,7 @@ sub_02845A:
 loc_02846A:
 	inc	a:wram_1582
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	sta	a:wram_1FB4
 	sta	a:wram_1FF4
 	sec
@@ -581,10 +581,10 @@ sub_02847B:
 
 sub_0284C4:
 	; (not executed in the CDL traces)
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	cmp	a:wram_15D2
 	bcs	loc_0284E7
-	inc	a:wram_1E80
+	inc	a:inidisp_shadow
 	lda	a:wram_1FB4
 	cmp	a:wram_15D4
 	bcs	loc_0284DA
@@ -599,7 +599,7 @@ loc_0284E5:
 	rts
 loc_0284E7:
 	lda	a:wram_15D2
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	lda	a:wram_15D4
 	sta	a:wram_1FB4
 	lda	a:wram_15D6
@@ -625,7 +625,7 @@ tbl_028508:
 
 sub_028516:
 	lda	#$006F
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	stz	a:wram_1586
 	lda	#$0001
 	sta	a:wram_158E
@@ -667,8 +667,8 @@ sub_028516:
 	ldy	#$CD59
 	jsl	f:sub_00B183
 	lda	#$0080
-	sta	a:wram_1EC4
-	stz	a:wram_1E80
+	sta	a:hdmaen_shadow
+	stz	a:inidisp_shadow
 	stz	a:wram_1FB4
 	stz	a:wram_1FF4
 	inc	a:wram_158A
@@ -676,10 +676,10 @@ sub_028516:
 	rts
 
 sub_028599:
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	cmp	#$000F
 	bcs	loc_0285AC
-	inc	a:wram_1E80
+	inc	a:inidisp_shadow
 	inc	a:wram_1FB4
 	inc	a:wram_1FF4
 	clc
@@ -729,7 +729,7 @@ loc_0285E8:
 	sep	#$20
 	.a8
 	lda	#$FC
-	sta	a:wram_1EC4
+	sta	a:hdmaen_shadow
 	lda	#$80
 	sta	a:WOBJSEL
 	stz	a:CGWSEL
@@ -765,7 +765,7 @@ sub_028626:
 	and	#$0002
 	tay
 	lda	a:data_05CD6A,y
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	inc	a:wram_158A
 loc_028646:
 	clc
@@ -845,7 +845,7 @@ loc_0286CD:
 loc_0286CE:
 	pha
 	lda	#$0001
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	pla
 	bit	#$0800
 	bne	loc_0286F9
@@ -856,7 +856,7 @@ loc_0286CE:
 	bra	loc_02871C
 loc_0286E8:
 	lda	#$0002
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0002
 	sta	a:wram_152A
 	sta	a:wram_156A
@@ -916,7 +916,7 @@ loc_028758:
 loc_028759:
 	pha
 	lda	#$0001
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	pla
 	bit	#$0800
 	bne	loc_02878C
@@ -932,7 +932,7 @@ loc_028773:
 	sta	a:wram_156A
 loc_02877E:
 	lda	#$0002
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0002
 	sta	a:wram_152A
 	rts
@@ -988,7 +988,7 @@ loc_0287DC:
 loc_0287DD:
 	pha
 	lda	#$0001
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	pla
 	bit	#$0800
 	bne	loc_028810
@@ -1006,7 +1006,7 @@ loc_0287F7:
 	sta	a:wram_152A
 loc_028802:
 	lda	#$0002
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0002
 	sta	a:wram_156A
 	rts
@@ -1603,19 +1603,19 @@ sub_028D03:
 	sep	#$20
 	.a8
 	lda	#$FC
-	sta	a:wram_1EC4
+	sta	a:hdmaen_shadow
 	stz	a:INIDISP
 	rep	#$20
 	.a16
 	stz	a:wram_1FB4
 	stz	a:wram_1FF4
-	stz	a:wram_1E80
+	stz	a:inidisp_shadow
 	rts
 
 sub_028D19:
 	sep	#$20
 	.a8
-	stz	a:wram_1EC4
+	stz	a:hdmaen_shadow
 	lda	#$80
 	sta	a:INIDISP
 	rep	#$20
@@ -1623,18 +1623,18 @@ sub_028D19:
 	lda	#$0080
 	sta	a:wram_1FB4
 	sta	a:wram_1FF4
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	rts
 
 sub_028D32:
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	cmp	a:wram_1588
 	beq	loc_028D77
 	bcs	loc_028D5D
 	lda	zp_78
 	bit	#$0001
 	bne	loc_028D77
-	inc	a:wram_1E80
+	inc	a:inidisp_shadow
 	lda	a:wram_1FB4
 	cmp	#$000F
 	bcs	loc_028D51
@@ -1650,7 +1650,7 @@ loc_028D5D:
 	lda	zp_78
 	bit	#$0003
 	bne	loc_028D77
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	lda	a:wram_1FB4
 	beq	loc_028D6F
 	dec	a:wram_1FB4

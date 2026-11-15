@@ -903,7 +903,7 @@ sub_00CA52:
 	adc	$3C,x
 	adc	#$5000
 	sta	zp_00
-	lda	zp_4E
+	lda	vram_queue_end
 	sta	zp_1A
 	lda	#$0008
 	sta	zp_06
@@ -968,7 +968,7 @@ loc_00CABB:
 	lda	f:data_00CD90,x
 	sta	zp_16
 loc_00CAEF:
-	ldx	zp_50
+	ldx	vram_queue_data_ptr
 	lda	(zp_10),y
 	eor	zp_0C
 	sta	a:$0000,x
@@ -984,7 +984,7 @@ loc_00CAEF:
 	txa
 	clc
 	adc	#$0008
-	sta	zp_50
+	sta	vram_queue_data_ptr
 	inc	zp_00
 	inc	zp_00
 	dec	zp_06
@@ -1023,7 +1023,7 @@ sub_00CB29:
 	adc	$3C,x
 	adc	#$5000
 	sta	zp_02
-	lda	zp_4E
+	lda	vram_queue_end
 	sta	zp_1A
 	ldy	#$0008
 	cpx	#$1380
@@ -1095,7 +1095,7 @@ loc_00CBAB:
 	lda	f:data_00CD10,x
 	sta	zp_16
 loc_00CBDF:
-	ldx	zp_50
+	ldx	vram_queue_data_ptr
 	lda	(zp_10),y
 	eor	zp_0C
 	sta	a:$0000,x
@@ -1111,7 +1111,7 @@ loc_00CBDF:
 	txa
 	clc
 	adc	#$0008
-	sta	zp_50
+	sta	vram_queue_data_ptr
 	lda	zp_02
 	clc
 	adc	#$0010

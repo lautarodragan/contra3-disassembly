@@ -23,7 +23,7 @@ loc_00F290:
 	bcs	loc_00F2A0
 	ldy	#$0000
 loc_00F2A0:
-	sty	a:wram_1E8A
+	sty	a:mosaic_shadow
 	lda	$12,x
 	phx
 	asl	a
@@ -64,7 +64,7 @@ sub_00F2EF:
 	lda	a:wram_13BA
 	cmp	#$0004
 	bne	loc_00F319
-	stz	zp_46
+	stz	hdma_preset
 	inc	$12,x
 	lda	#$0080
 	sta	$24,x
@@ -88,9 +88,9 @@ loc_00F322:
 	lda	a:wram_1678
 	bne	loc_00F34B
 	lda	#$0068
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0058
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0002
 	sta	$24,x
 	inc	$12,x
@@ -161,7 +161,7 @@ sub_00F3B8:
 	dec	$24,x
 	bne	loc_00F3DF
 	lda	#$0006
-	sta	zp_46
+	sta	hdma_preset
 	inc	$12,x
 	lda	#$0020
 	sta	a:wram_1636
@@ -206,7 +206,7 @@ sub_00F415:
 	cmp	#$0007
 	bcs	loc_00F42D
 	lda	#$0056
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0004
 	sta	a:wram_1662
 	inc	$12,x
@@ -386,9 +386,9 @@ loc_00F572:
 	lda	#$0004
 	sta	a:wram_1662
 	lda	#$0056
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0056
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	dec	$34,x
 loc_00F5B0:
 	rts
@@ -533,7 +533,7 @@ sub_00F69D:
 	dec	$38,x
 	bne	loc_00F6B6
 	lda	#$0025
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	inc	$36,x
 	ldy	difficulty
 	lda	a:data_05AB52,y
@@ -682,7 +682,7 @@ sub_00F7AE:
 	bra	loc_00F806
 loc_00F7C6:
 	lda	#$0057
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	a:wram_0490
 	cmp	#$0020
 	bne	loc_00F7E2
@@ -694,14 +694,14 @@ loc_00F7DD:
 	bne	loc_00F7F3
 loc_00F7E2:
 	lda	#$0057
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	stz	$3A,x
 	ldy	#$0080
 	lda	#$0004
 	bra	loc_00F806
 loc_00F7F3:
 	lda	#$0057
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0001
 	sta	a:wram_0464
 	ldy	#$0100
@@ -1049,7 +1049,7 @@ sub_00FAC0:
 	lda	$06,x
 	bpl	loc_00FAD3
 	lda	#$000C
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	txy
 	lda	#$C59A
 	jml	f:sub_01CF66
@@ -1094,7 +1094,7 @@ sub_00FB15:
 	lda	$06,x
 	bpl	loc_00FB2A
 	lda	#$000C
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	stz	$04,x
 	txy
 	lda	#$C59A
@@ -1236,11 +1236,11 @@ loc_00FC43:
 	lda	$26,x
 	beq	loc_00FC58
 	lda	#$912A
-	sta	zp_9A
+	sta	cgram_upload_src
 	lda	#$0060
-	sta	zp_98
+	sta	cgram_upload_addr
 	lda	#$000F
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_00FC58:
 	lda	$06,x
 	bpl	loc_00FCBD
@@ -1273,7 +1273,7 @@ sub_00FC85:
 	bpl	loc_00FCBD
 loc_00FCA0:
 	lda	#$0030
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0040
 	sta	$24,x
 	inc	$12,x
@@ -1286,7 +1286,7 @@ loc_00FCBD:
 	lda	$14,x
 	beq	loc_00FCC8
 	lda	#$000F
-	jml	f:sub_00868F
+	jml	f:queue_sound
 loc_00FCC8:
 	rtl
 loc_00FCC9:

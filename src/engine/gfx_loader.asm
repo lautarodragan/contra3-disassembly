@@ -39,7 +39,7 @@ loc_0090CE:
 loc_0090DF:
 	rep	#$20
 	.a16
-	jsl	f:sub_0085A9
+	jsl	f:disable_display_and_nmi
 	ldx	$18	; $1318 (D=$1300)
 	lda	f:$050000,x
 	cmp	#$FFFF
@@ -47,7 +47,7 @@ loc_0090DF:
 	jsl	f:sub_009155
 	bra	loc_0090DF
 loc_0090F6:
-	jsl	f:sub_0085C1
+	jsl	f:enable_nmi
 loc_0090FA:
 	stz	$16	; $1316 (D=$1300) / $1356 (D=$1340) / $1F16 (D=$1F00)
 	stz	$12	; $1312 (D=$1300) / $1352 (D=$1340) / $1F12 (D=$1F00)
@@ -178,7 +178,7 @@ loc_0091B8:
 loc_0091CD:
 	rep	#$20
 	.a16
-	jsl	f:sub_0085A9
+	jsl	f:disable_display_and_nmi
 	ldx	$18	; $1318 (D=$1300)
 	lda	f:$050000,x
 	cmp	#$FFFF
@@ -191,7 +191,7 @@ loc_0091E7:
 	.a8
 	rep	#$20
 	.a16
-	jsl	f:sub_0085A9
+	jsl	f:disable_display_and_nmi
 	ldx	$18	; $1318 (D=$1300)
 	lda	f:$050000,x
 	cmp	#$FFFF

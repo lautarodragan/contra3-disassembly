@@ -205,7 +205,7 @@ loc_00D78F:
 	lda	#$0001
 	sta	$38,x
 	lda	#$0004
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	rtl
 
 sub_00D7C6:
@@ -315,7 +315,7 @@ loc_00D830:
 	lda	#$0001
 	sta	$38,x
 	lda	#$0009
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	rtl
 
 sub_00D895:
@@ -410,7 +410,7 @@ loc_00D8E9:
 	lda	#$0001
 	sta	$38,x
 	lda	#$0007
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	rtl
 
 sub_00D942:
@@ -494,7 +494,7 @@ loc_00D982:
 	lda	#$0001
 	sta	$38,x
 	lda	#$0008
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	rtl
 
 sub_00D9DE:
@@ -589,7 +589,7 @@ loc_00DA80:
 	bit	#$000F
 	bne	loc_00DA8E
 	lda	#$000A
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_00DA8E:
 	lda	$D4,x
 	sta	$F4,x
@@ -1027,5 +1027,5 @@ loc_00DC8E:
 	lda	#$0001
 	sta	$38,x
 	lda	#$0005
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	rtl

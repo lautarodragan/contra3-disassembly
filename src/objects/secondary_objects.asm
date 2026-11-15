@@ -146,7 +146,7 @@ loc_00E2B3:
 	bit	#$4000
 	beq	loc_00E2C1
 	lda	#$0010
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_00E2C1:
 	lda	#$0001
 	sta	a:$0016,y

@@ -39,8 +39,8 @@ sub_019E6E:
 	beq	loc_019E7F
 	inc	$26,x
 	lda	#$912A
-	sta	zp_9A
-	sty	zp_98
+	sta	cgram_upload_src
+	sty	cgram_upload_addr
 loc_019E7F:
 	rtl
 loc_019E80:
@@ -742,7 +742,7 @@ loc_01A332:
 	bpl	loc_01A34F
 loc_01A33E:
 	lda	#$0017
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	stz	$04,x
 	txy
 	lda	#$C516

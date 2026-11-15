@@ -48,10 +48,10 @@ data_058010:
 	.byte	$00, $00, $01, $00, $02, $00, $03, $00, $04, $00, $05, $00, $06, $00, $08, $00
 	.byte	$10, $00, $50, $00, $00, $01, $00, $10
 data_058228:
-	; CDL: read by sub_008B19
+	; CDL: read by read_joypads
 	.byte	$01, $00, $02, $00, $04, $00
 data_05822E:
-	; CDL: read by sub_008B19, sub_008BA7; partly not accessed
+	; CDL: read by read_joypads, setup_hdma_channels; partly not accessed
 	.byte	$08, $00, $FE, $84, $00, $00, $02, $00, $00, $22, $E0, $23, $00, $00, $00, $00
 	.byte	$01, $00, $5E, $82, $01, $00, $6C, $82, $01, $00, $E2, $82, $01, $00, $F0, $82
 	.byte	$01, $00, $66, $83, $01, $00, $70, $83, $01, $00, $AE, $83, $01, $00, $D2, $83
@@ -133,7 +133,7 @@ data_0584F5:
 	; CDL: read by sub_00AFE4
 	.byte	$97
 data_0584F6:
-	; CDL: read by sub_008BA7, sub_00AFE4; DMA / HDMA
+	; CDL: read by setup_hdma_channels, sub_00AFE4; DMA / HDMA
 	.byte	$F3, $15, $97, $F5, $15, $97, $F7, $15, $70, $43, $00, $05, $0F, $85, $05, $60
 	.byte	$43, $00, $2C, $14, $85, $05, $FF, $FF, $C0, $80, $0F, $01, $09, $00, $80, $11
 	.byte	$01, $04, $00
@@ -469,7 +469,7 @@ data_058F1A:
 	.byte	$FB, $FF, $FB, $FF, $FC, $FF, $FC, $FF, $FC, $FF, $FD, $FF, $FD, $FF, $FE, $FF
 	.byte	$FE, $FF, $FE, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $00, $00, $00, $00, $00, $03
 	.byte	$06, $08, $0B, $0D, $0E, $0F, $10, $0F, $0E, $0D, $0B, $08, $06, $03
-	; CDL: DMA (started in sub_00823C)
+	; CDL: DMA (started in nmi_frame_side_view)
 	.byte	$CE, $39, $EF, $3D, $10, $42, $52, $4A, $94, $52, $D6, $5A, $F7, $5E, $18, $63
 	.byte	$39, $67, $5A, $6B, $7B, $6F, $9C, $73, $BD, $77, $DE, $7B, $FF, $7F, $FF, $7F
 	.byte	$00, $00, $FF, $7F, $FF, $7F, $FF, $7F, $6D, $31, $F1, $3D, $D6, $5A, $09, $21

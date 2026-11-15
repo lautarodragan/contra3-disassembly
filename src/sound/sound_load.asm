@@ -14,7 +14,7 @@ sub_009627:
 	beq	loc_009633
 	brl	loc_00978C
 loc_009633:
-	jsl	f:sub_00863D
+	jsl	f:stop_sound_now
 	lda	f:$050001,x
 	and	#$00FF
 	bne	loc_009643
@@ -408,17 +408,17 @@ loc_0098D3:
 sub_0098D4:
 	rep	#$30
 	lda	#$00FF
-	sta	zp_52
+	sta	apu_pending_cmd
 	jsl	f:sub_0098E2
-	stz	zp_52
+	stz	apu_pending_cmd
 	rtl
 
 sub_0098E2:
 	rep	#$20
 	stz	sound_queue_read
 	stz	sound_queue_write
-	stz	zp_5A
-	stz	zp_6A
+	stz	sound_stream_check_index
+	stz	sound_cmd_override
 	lda	f:$050000,x
 	inx
 	php
@@ -475,19 +475,19 @@ loc_009947:
 sub_00994F:
 	rep	#$20
 	lda	#$00FF
-	sta	zp_52
+	sta	apu_pending_cmd
 	stx	a:wram_1F2C
 	rtl
 
 sub_00995A:
 	rep	#$20
-	lda	zp_52
+	lda	apu_pending_cmd
 	cmp	#$00FF
 	bne	loc_009970
 	ldx	a:wram_1F2C
 	jsl	f:sub_0098E2
 	stz	sound_queue_read
 	stz	sound_queue_write
-	stz	zp_52
+	stz	apu_pending_cmd
 loc_009970:
 	rtl

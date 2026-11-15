@@ -1,28 +1,28 @@
 ; engine/irq.asm -- HDMA channel setup and IRQ handler
 ; Bank $00, $00:8BA7-$00:8CFE. Included by main.asm in segment BANK00.
 ;
-; sub_008BA7 (called from NMI) sets up the HDMA channels from the list
+; setup_hdma_channels (called from NMI) sets up the HDMA channels from the list
 ; selected by $46 (data_05822E). irq (also the COP/BRK/ABORT vector)
-; dispatches through tbl_008C0E to the raster handlers; sub_008C15 and
-; sub_008C8C write the Mode 7 matrix and scroll registers mid-frame.
+; dispatches through tbl_irq_handlers to the raster handlers; irq_mode7_top_view and
+; irq_mode7_bottom_view write the Mode 7 matrix and scroll registers mid-frame.
 
-sub_008BA7:
+setup_hdma_channels:
 	sep	#$20
 	.a8
 	stz	a:HDMAEN
 	rep	#$30
 	.a16
-	lda	zp_46
-	bne	loc_008BB3
+	lda	hdma_preset
+	bne	@setup
 	rtl
-loc_008BB3:
+@setup:
 	asl	a
 	tax
 	ldy	a:data_05822E,x
-loc_008BB8:
+@loop:
 	ldx	a:$0000,y
 	cpx	#$FFFF
-	bcs	loc_008BD7
+	bcs	@done
 	lda	a:$0002,y
 	sta	$00,x
 	lda	a:$0004,y
@@ -33,8 +33,8 @@ loc_008BB8:
 	clc
 	adc	#$0007
 	tay
-	bra	loc_008BB8
-loc_008BD7:
+	bra	@loop
+@done:
 	sep	#$20
 	.a8
 	lda	a:$0002,y
@@ -68,8 +68,8 @@ irq:
 	sta	a:NMITIMEN
 	rep	#$20
 	.a16
-	ldx	zp_44
-	jsr	(.loword(tbl_008C0E),x)
+	ldx	irq_mode
+	jsr	(.loword(tbl_irq_handlers),x)
 	.a8
 	rep	#$30
 	.a16
@@ -79,16 +79,16 @@ irq:
 	ply
 	plx
 	rti
-tbl_008C0E:
-	.addr	sub_008C14
-	.addr	sub_008C15
-	.addr	sub_008C8C
+tbl_irq_handlers:
+	.addr	irq_none
+	.addr	irq_mode7_top_view
+	.addr	irq_mode7_bottom_view
 
-sub_008C14:
+irq_none:
 	; (not executed in the CDL traces)
 	rts
 
-sub_008C15:
+irq_mode7_top_view:
 	sep	#$20
 	.a8
 	lda	a:wram_1FA4
@@ -124,17 +124,17 @@ sub_008C15:
 	lda	a:wram_1FB3
 	sta	a:BG1VOFS
 	ldx	zp_40
-	beq	loc_008C8B
+	beq	@done
 	ldx	#$0070
 	stx	a:VTIMEL
 	ldx	#$0004
-	stx	zp_44
+	stx	irq_mode
 	lda	#$A1
 	sta	a:NMITIMEN
-loc_008C8B:
+@done:
 	rts
 
-sub_008C8C:
+irq_mode7_bottom_view:
 	.a16
 	sep	#$20
 	.a8
@@ -171,12 +171,12 @@ sub_008C8C:
 	lda	a:wram_1FF3
 	sta	a:BG1VOFS
 	ldx	#$0002
-	stx	zp_44
+	stx	irq_mode
 	rts
-loc_008CF4:
+reset_vram_queue:
 	.a16
 	lda	#$3000
-	sta	zp_4E
+	sta	vram_queue_end
 	lda	#$3400
-	sta	zp_50
+	sta	vram_queue_data_ptr
 	rtl

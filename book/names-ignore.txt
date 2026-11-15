@@ -17,6 +17,7 @@ bank_00.asm
 
 # made-up examples and placeholder patterns in the naming guide (contributing.md)
 next_random
+sub_00816C
 OLD1
 NEW1
 OLD2

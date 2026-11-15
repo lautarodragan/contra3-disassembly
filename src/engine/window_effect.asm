@@ -42,7 +42,7 @@ loc_00E82D:
 	stz	zp_9E
 	stz	zp_C6
 	jsl	f:sub_02E003
-	stz	a:wram_1E98
+	stz	a:coldata_shadow
 	rtl
 loc_00E839:
 	jsr	a:sub_00E86B
@@ -65,10 +65,10 @@ loc_00E855:
 
 sub_00E86B:
 	lda	#$0022
-	sta	a:wram_1EAC
+	sta	a:w12sel_shadow
 	lda	#$0203
-	sta	a:wram_1EBA
-	stz	a:wram_1E98
+	sta	a:tmw_shadow
+	stz	a:coldata_shadow
 	lda	#$A42A
 	sta	zp_12
 	lda	#$0018
@@ -86,11 +86,11 @@ sub_00E896:
 	sta	zp_10
 	and	a:wram_16AA
 	ora	a:wram_16AC
-	sta	a:wram_1E98
+	sta	a:coldata_shadow
 	lda	#$0023
-	sta	a:wram_1EAC
+	sta	a:w12sel_shadow
 	lda	#$0200
-	sta	a:wram_1EBA
+	sta	a:tmw_shadow
 	lda	a:$131C,x
 	sta	zp_14
 	lda	a:$131E,x

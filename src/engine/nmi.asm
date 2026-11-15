@@ -2,8 +2,8 @@
 ; Bank $00, $00:819B-$00:85F2. Included by main.asm in segment BANK00.
 ;
 ; nmi saves the registers and calls one of three frame handlers through
-; tbl_0081E0, indexed by $42: sub_0081E6, sub_00823C (side-view stages) and
-; sub_0083A3 (top-down Mode 7 stages, see game/game_modes.asm sub_00AC3F).
+; tbl_nmi_frame_handlers, indexed by $42: nmi_frame_default, nmi_frame_side_view (side-view stages) and
+; nmi_frame_top_down (top-down Mode 7 stages, see game/game_modes.asm sub_00AC3F).
 ; They upload PPU state (scroll, BG/colour-math registers, OAM, CGRAM) and
 ; then run the game logic for the frame (joypads, game mode state machine
 ; sub_00A377, palette tasks, loaders, sound queue).
@@ -39,66 +39,66 @@ nmi:
 	sta	a:VTIMEL
 	cli
 	lda	nmi_busy
-	beq	loc_0081D1
+	beq	@run_frame
 	lda	#$0001
 	sta	nmi_busy
-	bra	loc_0081DA
-loc_0081D1:
+	bra	@exit
+@run_frame:
 	inc	nmi_busy
 	ldx	nmi_mode
-	jsr	(.loword(tbl_0081E0),x)
+	jsr	(.loword(tbl_nmi_frame_handlers),x)
 	stz	nmi_busy
-loc_0081DA:
+@exit:
 	plb
 	pld
 	ply
 	plx
 	pla
 	rti
-tbl_0081E0:
-	.addr	sub_0081E6
-	.addr	sub_00823C
-	.addr	sub_0083A3
+tbl_nmi_frame_handlers:
+	.addr	nmi_frame_default
+	.addr	nmi_frame_side_view
+	.addr	nmi_frame_top_down
 
-sub_0081E6:
+nmi_frame_default:
 	sep	#$20
 	.a8
 	lda	#$80
 	sta	a:INIDISP
 	rep	#$20
 	.a16
-	jsr	a:sub_008549
-	jsr	a:sub_0084AE
+	jsr	a:write_bg_scroll_regs
+	jsr	a:write_ppu_shadows
 	jsl	f:sub_00913D
-	jsl	f:sub_008BA7
-	jsr	a:sub_008452
+	jsl	f:setup_hdma_channels
+	jsr	a:dma_oam_and_palette
 	jsl	f:sub_008CFF
 	sep	#$20
 	.a8
-	lda	zp_3E
-	beq	loc_008215
-	dec	zp_3E
-	beq	loc_008215
-	lda	a:wram_1E80
+	lda	force_blank_frames
+	beq	@display_on
+	dec	force_blank_frames
+	beq	@display_on
+	lda	a:inidisp_shadow
 	ora	#$80
-	bra	loc_008218
-loc_008215:
-	lda	a:wram_1E80
-loc_008218:
+	bra	@set_inidisp
+@display_on:
+	lda	a:inidisp_shadow
+@set_inidisp:
 	sta	a:INIDISP
 	rep	#$20
 	.a16
-	jsl	f:sub_008B19
+	jsl	f:read_joypads
 	stz	sound_last_queued
 	jsl	f:sub_00A377
-	jsl	f:sub_00816C
+	jsl	f:next_random
 	jsl	f:sub_009995
 	jsl	f:sub_0090C7
 	jsl	f:sub_009B76
-	jsl	f:sub_0085F3
+	jsl	f:send_queued_sound
 	rts
 
-sub_00823C:
+nmi_frame_side_view:
 	sep	#$20
 	.a8
 	lda	#$80
@@ -174,15 +174,15 @@ sub_00823C:
 	sta	a:COLDATA
 	rep	#$20
 	.a16
-	jsr	a:sub_0084AE
+	jsr	a:write_ppu_shadows
 	jsl	f:sub_00913D
-	jsr	a:sub_008452
+	jsr	a:dma_oam_and_palette
 	sep	#$20
 	.a8
-	lda	zp_98
-	beq	loc_008301
+	lda	cgram_upload_addr
+	beq	@no_cgram_upload
 	sta	a:CGADD
-	ldx	zp_9A
+	ldx	cgram_upload_src
 	stx	a:A1T1L
 	lda	#$05
 	sta	a:A1B1
@@ -190,10 +190,10 @@ sub_00823C:
 	stx	a:DAS1L
 	lda	#$02
 	sta	a:MDMAEN
-	lda	zp_99
-	beq	loc_008301
+	lda	cgram_upload_addr2
+	beq	@no_cgram_upload
 	sta	a:CGADD
-	ldx	zp_9A
+	ldx	cgram_upload_src
 	stx	a:A1T1L
 	lda	#$05
 	sta	a:A1B1
@@ -201,37 +201,37 @@ sub_00823C:
 	stx	a:DAS1L
 	lda	#$02
 	sta	a:MDMAEN
-loc_008301:
+@no_cgram_upload:
 	rep	#$20
 	.a16
 	jsl	f:sub_008CFF
 	jsl	f:sub_00E4F6
 	lda	a:title_menu_cursor
-	beq	loc_008314
+	beq	@one_player
 	jsl	f:sub_00E535
-loc_008314:
+@one_player:
 	jsl	f:sub_00E575
 	jsl	f:sub_00C283
-	lda	a:wram_1EAC
+	lda	a:w12sel_shadow
 	sta	a:W12SEL
-	lda	a:wram_1EAE
+	lda	a:wobjsel_shadow
 	sta	a:WOBJSEL
-	lda	a:wram_1EBA
+	lda	a:tmw_shadow
 	sta	a:TMW
 	sep	#$20
 	.a8
-	lda	a:wram_1EB8
+	lda	a:wbglog_shadow
 	sta	a:WBGLOG
-	lda	zp_3E
-	beq	loc_008345
-	dec	zp_3E
-	beq	loc_008345
-	lda	a:wram_1E80
+	lda	force_blank_frames
+	beq	@display_on
+	dec	force_blank_frames
+	beq	@display_on
+	lda	a:inidisp_shadow
 	ora	#$80
-	bra	loc_008348
-loc_008345:
-	lda	a:wram_1E80
-loc_008348:
+	bra	@set_inidisp
+@display_on:
+	lda	a:inidisp_shadow
+@set_inidisp:
 	sta	a:INIDISP
 	rep	#$20
 	.a16
@@ -245,29 +245,29 @@ loc_008348:
 	ldy	#$D800
 	mvn	#$7E, #$7E
 	plb
-	jsl	f:sub_008B19
+	jsl	f:read_joypads
 	jsl	f:sub_00E7EF
 	jsl	f:sub_00E5F7
 	stz	sound_last_queued
 	jsl	f:sub_00A377
-	jsl	f:sub_00816C
+	jsl	f:next_random
 	jsl	f:sub_009995
 	jsl	f:sub_0090C7
 	jsl	f:sub_009B76
-	jsl	f:sub_0085F3
+	jsl	f:send_queued_sound
 	lda	frame_counter
 	bit	#$0001
-	bne	loc_008399
+	bne	@odd_frame
 	jsl	f:sub_00E3DA
-loc_008398:
+@done:
 	rts
-loc_008399:
+@odd_frame:
 	lda	a:title_menu_cursor
-	beq	loc_008398
+	beq	@done
 	jsl	f:sub_00E464
 	rts
 
-sub_0083A3:
+nmi_frame_top_down:
 	sep	#$20
 	.a8
 	lda	#$80
@@ -276,7 +276,7 @@ sub_0083A3:
 	sta	f:wram_7E38A1
 	sta	f:wram_7E38A5
 	sta	a:INIDISP
-	lda	a:wram_1EC4
+	lda	a:hdmaen_shadow
 	sta	a:HDMAEN
 	rep	#$20
 	.a16
@@ -284,58 +284,58 @@ sub_0083A3:
 	jsl	f:sub_00A257
 	jsl	f:sub_00E4EE
 	jsl	f:sub_009C18
-	jsr	a:sub_008452
-	lda	zp_3E
-	beq	loc_0083DD
-	dec	zp_3E
-	bne	loc_008427
-loc_0083DD:
+	jsr	a:dma_oam_and_palette
+	lda	force_blank_frames
+	beq	@set_brightness
+	dec	force_blank_frames
+	bne	@after_display
+@set_brightness:
 	lda	a:title_menu_cursor
-	beq	loc_0083E5
+	beq	@inidisp_global
 	dec	a
-	beq	loc_008407
-loc_0083E5:
+	beq	@inidisp_p1
+@inidisp_global:
 	sep	#$20
 	.a8
 	lda	a:wram_1FB4
 	sta	f:wram_7E38A3
 	lda	a:wram_1FF4
 	sta	f:wram_7E38A7
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	sta	f:wram_7E38A1
 	sta	f:wram_7E38A5
 	sta	a:INIDISP
 	rep	#$20
 	.a16
-	bra	loc_008427
-loc_008407:
+	bra	@after_display
+@inidisp_p1:
 	sep	#$20
 	.a8
 	lda	a:wram_1FF4
 	sta	f:wram_7E38A7
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	sta	f:wram_7E38A1
 	sta	f:wram_7E38A5
 	lda	a:wram_1FB4
 	sta	f:wram_7E38A3
 	sta	a:INIDISP
 	rep	#$20
-loc_008427:
+@after_display:
 	.a16
 	jsl	f:sub_02DDDC
-	jsl	f:sub_008B19
+	jsl	f:read_joypads
 	stz	sound_last_queued
 	jsl	f:sub_00A377
-	jsl	f:sub_00816C
+	jsl	f:next_random
 	jsl	f:sub_00E3CD
 	jsl	f:sub_02ED77
 	jsl	f:sub_03E180
 	jsl	f:sub_009995
 	jsl	f:sub_0090C7
-	jsl	f:sub_0085F3
+	jsl	f:send_queued_sound
 	rts
 
-sub_008452:
+dma_oam_and_palette:
 	sep	#$20
 	.a8
 	stz	a:OAMADDL
@@ -350,7 +350,7 @@ sub_008452:
 	stz	a:CGADD
 	ldx	#$2200
 	stx	a:DMAP1
-	ldx	zp_48
+	ldx	cgram_dma_src
 	stx	a:A1T1L
 	lda	#$7E
 	sta	a:A1B1
@@ -362,88 +362,88 @@ sub_008452:
 	.a16
 	rts
 
-sub_00848F:
+start_display:
 	php
 	sep	#$30
 	.a8
 	.i8
 	lda	a:RDNMI
 	lda	#$0F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	lda	#$81
 	sta	a:nmitimen_shadow
 	sta	a:NMITIMEN
-	jsl	f:sub_0088A3
+	jsl	f:clear_bg_scroll_state
 	.a16
 	.i16
 	sep	#$30
 	.a8
 	.i8
 	lda	#$04
-	sta	zp_3E
+	sta	force_blank_frames
 	plp
 	.a16
 	.i16
 	rtl
 
-sub_0084AE:
+write_ppu_shadows:
 	sep	#$20
 	.a8
-	lda	a:wram_1E9A
+	lda	a:tm_shadow
 	sta	a:TM
-	lda	a:wram_1E9C
+	lda	a:ts_shadow
 	sta	a:TS
-	lda	a:wram_1E94
+	lda	a:cgwsel_shadow
 	sta	a:CGWSEL
-	lda	a:wram_1E96
+	lda	a:cgadsub_shadow
 	sta	a:CGADSUB
-	lda	a:wram_1E98
+	lda	a:coldata_shadow
 	sta	a:COLDATA
-	lda	a:wram_1E86
+	lda	a:obsel_shadow
 	sta	a:OBSEL
-	lda	a:wram_1E84
+	lda	a:bgmode_shadow
 	sta	a:BGMODE
-	lda	a:wram_1E8A
+	lda	a:mosaic_shadow
 	sta	a:MOSAIC
-	lda	a:wram_1E8C
+	lda	a:bg1sc_shadow
 	sta	a:BG1SC
-	lda	a:wram_1E8E
+	lda	a:bg2sc_shadow
 	sta	a:BG2SC
-	lda	a:wram_1E92
+	lda	a:bg4sc_shadow
 	sta	a:BG4SC
-	lda	a:wram_1E90
+	lda	a:bg3sc_shadow
 	sta	a:BG3SC
-	lda	a:wram_1E9E
+	lda	a:m7a_shadow
 	sta	a:M7A
-	lda	a:wram_1E9F
+	lda	a:m7a_shadow+1
 	sta	a:M7A
-	lda	a:wram_1EA0
+	lda	a:m7b_shadow
 	sta	a:M7B
-	lda	a:wram_1EA1
+	lda	a:m7b_shadow+1
 	sta	a:M7B
-	lda	a:wram_1EA2
+	lda	a:m7c_shadow
 	sta	a:M7C
-	lda	a:wram_1EA3
+	lda	a:m7c_shadow+1
 	sta	a:M7C
-	lda	a:wram_1EA4
+	lda	a:m7d_shadow
 	sta	a:M7D
-	lda	a:wram_1EA5
+	lda	a:m7d_shadow+1
 	sta	a:M7D
-	lda	a:wram_1EA6
+	lda	a:m7x_shadow
 	sta	a:M7X
-	lda	a:wram_1EA7
+	lda	a:m7x_shadow+1
 	sta	a:M7X
-	lda	a:wram_1EA8
+	lda	a:m7y_shadow
 	sta	a:M7Y
-	lda	a:wram_1EA9
+	lda	a:m7y_shadow+1
 	sta	a:M7Y
-	lda	a:wram_1EAA
+	lda	a:m7sel_shadow
 	sta	a:M7SEL
 	rep	#$20
 	.a16
 	rts
 
-sub_008549:
+write_bg_scroll_regs:
 	rep	#$30
 	ldx	#$1380
 	sep	#$20
@@ -501,7 +501,7 @@ sub_008549:
 	.a16
 	rts
 
-sub_0085A9:
+disable_display_and_nmi:
 	php
 	sep	#$20
 	.a8
@@ -510,12 +510,12 @@ sub_0085A9:
 	sta	a:HDMAEN
 	sta	a:MDMAEN
 	sta	a:NMITIMEN
-loc_0085BA:
+set_forced_blank:
 	lda	#$8F
 	sta	a:INIDISP
-	bra	loc_0085D0
+	bra	display_off_common
 
-sub_0085C1:
+enable_nmi:
 	.a16
 	php
 	sep	#$20
@@ -523,10 +523,10 @@ sub_0085C1:
 	lda	a:RDNMI
 	lda	a:nmitimen_shadow
 	sta	a:NMITIMEN
-	lda	a:wram_1E80
-loc_0085D0:
+	lda	a:inidisp_shadow
+display_off_common:
 	lda	#$04
-	sta	a:zp_3E
+	sta	a:force_blank_frames
 	lda	#$00
 	sta	a:HDMAEN
 	sta	a:MDMAEN
@@ -534,15 +534,15 @@ loc_0085D0:
 	.a16
 	rtl
 
-sub_0085DF:
+wait_nmi_and_disable_display:
 	php
 	sep	#$20
 	.a8
 	lda	a:nmitimen_shadow
-	bpl	loc_0085D0
+	bpl	display_off_common
 	lda	#$80
 	sta	a:nmi_busy
-loc_0085EC:
+@wait:
 	lda	a:nmi_busy
-	bmi	loc_0085EC
-	bra	loc_0085BA
+	bmi	@wait
+	bra	set_forced_blank

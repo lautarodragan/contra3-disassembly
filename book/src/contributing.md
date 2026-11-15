@@ -16,7 +16,7 @@ comments are evidence; keep them.
 ## Renaming: `tools/rename.py`
 
 ```sh
-python3 tools/rename.py sub_00816C next_random          # one symbol
+python3 tools/rename.py sub_00816C next_random           # one symbol
 python3 tools/rename.py OLD1 NEW1 OLD2 NEW2              # several
 python3 tools/rename.py --map names.txt                  # a batch: "OLD NEW" per line, # comments
 python3 tools/rename.py -n --map names.txt               # dry run: show the files it would change

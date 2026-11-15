@@ -26,7 +26,7 @@ sub_00FD9A:
 	adc	#$000C
 	sta	a:wram_16B0
 	pla
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_00FDB0:
 	dec	a:wram_16B0
 	rtl
@@ -57,7 +57,7 @@ sub_00FDD2:
 	sta	a:wram_1680
 	inc	a:wram_1678
 	lda	#$0081
-	jml	f:sub_00868F
+	jml	f:queue_sound
 
 sub_00FDE7:
 	dec	a:wram_1680
@@ -67,7 +67,7 @@ loc_00FDEC:
 	sta	a:wram_1678
 	stz	a:wram_1680
 	lda	#$0084
-	jml	f:sub_00868F
+	jml	f:queue_sound
 
 sub_00FDFC:
 	ldx	a:wram_1682
@@ -83,7 +83,7 @@ sub_00FE0F:
 	dec	a:wram_167A
 	bpl	loc_00FE23
 loc_00FE19:
-	lda	zp_52
+	lda	apu_pending_cmd
 	cmp	#$00FF
 	beq	loc_00FE23
 	stz	a:wram_1678

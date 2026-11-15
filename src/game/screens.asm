@@ -23,19 +23,19 @@ tbl_00B681:
 sub_00B691:
 	php
 	rep	#$20
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	beq	loc_00B6A4
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	plp
 	rtl
 loc_00B6A4:
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	plp
 	lda	#$0001
-	sta	a:wram_1E9A
+	sta	a:tm_shadow
 	ldx	#$F4EF
 	jsl	f:sub_0098D4
 	lda	stage_number
@@ -51,21 +51,21 @@ loc_00B6A4:
 
 sub_00B6CF:
 	php
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	bit	#$0080
 	beq	loc_00B6DE
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 loc_00B6DE:
 	cmp	#$000F
 	bcs	loc_00B6E8
-	inc	a:wram_1E80
+	inc	a:inidisp_shadow
 	plp
 	rtl
 loc_00B6E8:
 	plp
 	lda	#$006A
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	inc	a:wram_1C00
 	rtl
 
@@ -97,7 +97,7 @@ sub_00B70C:
 	lda	#$0040
 	sta	zp_76
 	lda	#$0005
-	sta	a:wram_1E9A
+	sta	a:tm_shadow
 	inc	a:wram_1C00
 loc_00B738:
 	rtl
@@ -117,7 +117,7 @@ sub_00B741:
 	bit	#$0100
 	bne	loc_00B75A
 	lda	#$0003
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_00B75A:
 	lda	a:wram_1C02
 	ora	a:wram_1C04
@@ -147,16 +147,16 @@ loc_00B77D:
 sub_00B781:
 	php
 	rep	#$20
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	beq	loc_00B794
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	plp
 	rtl
 loc_00B794:
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	plp
 	stz	a:wram_1E40
 	inc	stage_number
@@ -243,7 +243,7 @@ sub_00B83B:
 	bne	loc_00B877
 loc_00B854:
 	lda	#$003E
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	$0A,x
 	inc	a
 	cmp	#$001E
@@ -414,8 +414,8 @@ loc_00B99E:
 
 sub_00B99F:
 	pha
-	jsl	f:sub_0088A3
-	jsl	f:sub_008942
+	jsl	f:clear_bg_scroll_state
+	jsl	f:clear_wram_7e4000_7effff
 	pla
 	asl	a
 	tay
@@ -453,17 +453,17 @@ sub_00B9CC:
 
 sub_00B9EB:
 	php
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	bit	#$0080
 	beq	loc_00B9FA
 	; (not executed in the CDL traces)
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 loc_00B9FA:
 	cmp	#$000F
 	bcs	loc_00BA04
 	; (not executed in the CDL traces)
-	inc	a:wram_1E80
+	inc	a:inidisp_shadow
 	plp
 	rtl
 loc_00BA04:
@@ -481,23 +481,23 @@ loc_00BA04:
 	rtl
 loc_00BA20:
 	lda	#$0002
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	inc	a:wram_1C00
 	rtl
 
 sub_00BA2B:
 	php
 	rep	#$20
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	beq	loc_00BA3E
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	plp
 	rtl
 loc_00BA3E:
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	plp
 	lda	#$0001
 	sta	zp_36
@@ -510,7 +510,7 @@ sub_00BA4B:
 	beq	loc_00BA7E
 	pha
 	lda	#$0001
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	pla
 	bit	#$0800
 	bne	loc_00BA72
@@ -604,7 +604,7 @@ sub_00BB0E:
 	; (not executed in the CDL traces)
 	pha
 	lda	#$0001
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	pla
 	bit	#$0100
 	bne	loc_00BB32
@@ -686,7 +686,7 @@ sub_00BBA9:
 	beq	loc_00BBDE
 	pha
 	lda	#$0001
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	pla
 	bit	#$0100
 	bne	loc_00BBCE
@@ -724,7 +724,7 @@ sub_00BBEA:
 	; (not executed in the CDL traces)
 	pha
 	lda	#$0001
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	pla
 	bit	#$0100
 	bne	loc_00BC12
@@ -753,7 +753,7 @@ sub_00BC22:
 	; (not executed in the CDL traces)
 	ldy	a:wram_1E54
 	lda	a:data_05892A,y
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	rts
 loc_00BC2D:
 	ldy	a:wram_1E54
@@ -775,19 +775,19 @@ tbl_00BC40:
 sub_00BC48:
 	php
 	rep	#$20
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	beq	loc_00BC5B
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	plp
 	rtl
 loc_00BC5B:
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	plp
 	lda	#$0005
-	sta	a:wram_1E9A
+	sta	a:tm_shadow
 	ldx	#.loword(data_058976)
 	jsl	f:sub_0090A8
 	ldy	#$898E
@@ -798,15 +798,15 @@ loc_00BC5B:
 
 sub_00BC7E:
 	php
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	bit	#$0080
 	beq	loc_00BC8D
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 loc_00BC8D:
 	cmp	#$000F
 	bcs	loc_00BC97
-	inc	a:wram_1E80
+	inc	a:inidisp_shadow
 	plp
 	rtl
 loc_00BC97:
@@ -828,16 +828,16 @@ sub_00BCA9:
 	; (not executed in the CDL traces)
 	php
 	rep	#$20
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	and	#$000F
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	beq	loc_00BCBC
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	plp
 	rtl
 loc_00BCBC:
 	lda	#$0080
-	sta	a:wram_1E80
+	sta	a:inidisp_shadow
 	plp
 	lda	#$0001
 	sta	zp_36

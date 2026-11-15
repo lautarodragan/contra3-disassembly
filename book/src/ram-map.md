@@ -4,7 +4,7 @@ All RAM names are in `src/ram.inc`, included by `src/common.inc`. The first
 pass (milestone 2) replaced RAM operands by symbols mechanically, with the
 CDL: every variable the code addresses directly has a symbol, most of them
 still a placeholder named by its address (`zp_00`-style for the direct page,
-`wram_1E80`-style for `$0100-$1FFF`, `wram_7EA000`-style above `$7E:2000`).
+`inidisp_shadow`-style for `$0100-$1FFF`, `wram_7EA000`-style above `$7E:2000`).
 The header of `src/ram.inc` lists exactly what was converted and what was
 left as a number on purpose; in short:
 

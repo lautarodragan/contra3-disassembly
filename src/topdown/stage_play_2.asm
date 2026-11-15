@@ -867,7 +867,7 @@ loc_02ED43:
 	lda	#$00A1
 	sta	a:nmitimen_shadow
 	lda	#$0002
-	sta	zp_44
+	sta	irq_mode
 	stz	zp_40
 	rtl
 loc_02ED5D:
@@ -878,7 +878,7 @@ loc_02ED5D:
 	lda	#$00A1
 	sta	a:nmitimen_shadow
 	lda	#$0002
-	sta	zp_44
+	sta	irq_mode
 	sta	zp_40
 	rtl
 
@@ -1575,7 +1575,7 @@ sub_02F27C:
 	rts
 loc_02F285:
 	lda	#$003A
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	rng_lo
 	and	#$0006
 	sta	a:wram_15CC
@@ -1708,7 +1708,7 @@ loc_02F390:
 	lda	#$0004
 	sta	$2A,x
 	lda	#$0010
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	phx
 	phb
 	ldx	zp_02
@@ -1963,7 +1963,7 @@ loc_02F5B6:
 	beq	sub_02F5C8
 	sta	$12,x
 	lda	#$0030
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	stz	$16,x
 
 sub_02F5C8:
@@ -2498,7 +2498,7 @@ loc_02F989:
 	rtl
 loc_02F98A:
 	lda	#$0030
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	stz	$06,x
 	stz	$16,x
 	lda	#$0003
@@ -2533,7 +2533,7 @@ sub_02F9C7:
 	bit	#$0040
 	beq	loc_02F9F5
 	lda	#$0010
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	$20,x
 	sta	$2A,x
 	lda	#$0006
@@ -2650,7 +2650,7 @@ loc_02FA9F:
 	rtl
 loc_02FAA0:
 	lda	#$0030
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	stz	$06,x
 	stz	$16,x
 	lda	#$0059
@@ -2950,7 +2950,7 @@ sub_02FC9C:
 	bit	#$0040
 	beq	loc_02FCCA
 	lda	#$0010
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	$20,x
 	sta	$2A,x
 	lda	#$0074

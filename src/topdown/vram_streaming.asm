@@ -1,7 +1,7 @@
 ; topdown/vram_streaming.asm -- Top-down stages: VRAM streaming
 ; Bank $00, $00:9C18-$00:A376. Included by main.asm in segment BANK00.
 ;
-; Run by the NMI frame handler of the top-down (Mode 7) stages (sub_0083A3):
+; Run by the NMI frame handler of the top-down (Mode 7) stages (nmi_frame_top_down):
 ; sub_009C18 streams map/tile data to VRAM (from banks $13, $14, $16),
 ; sub_00A257 transfers the buffers at $1800-$1827.
 

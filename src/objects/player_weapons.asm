@@ -42,7 +42,7 @@ sub_01801B:
 	lda	a:$1314,x
 	sta	a:$131E,x
 	lda	#$005A
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 loc_01804D:
 	rtl
 
@@ -57,7 +57,7 @@ sub_01804E:
 	beq	loc_01805F
 	ldy	#$0000
 loc_01805F:
-	sty	a:wram_1E8A
+	sty	a:mosaic_shadow
 loc_018062:
 	rtl
 
@@ -117,17 +117,17 @@ loc_0180CB:
 sub_0180D1:
 	; (not executed in the CDL traces)
 	lda	#$0002
-	sta	a:wram_1E94
+	sta	a:cgwsel_shadow
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_0180D8:
 	; (not executed in the CDL traces)
-	lda	zp_46
+	lda	hdma_preset
 	cmp	#$0004
 	beq	sub_0180D1
 	lda	#$0000
-	sta	a:wram_1E94
+	sta	a:cgwsel_shadow
 	ldy	#$0052
 	lda	joy2_held
 	bit	#$2000
@@ -138,15 +138,15 @@ sub_0180D8:
 loc_0180F6:
 	ldy	#$0000
 loc_0180F9:
-	sty	a:wram_1E96
+	sty	a:cgadsub_shadow
 	bit	#$4000
 	beq	loc_01810A
-	lda	a:wram_1E96
+	lda	a:cgadsub_shadow
 	and	#$0012
-	sta	a:wram_1E96
+	sta	a:cgadsub_shadow
 loc_01810A:
 	lda	a:wram_1612
-	sta	a:wram_1E98
+	sta	a:coldata_shadow
 	lda	joy2_pressed
 	bit	#$0080
 	beq	loc_01811B
@@ -176,7 +176,7 @@ loc_01813C:
 	lda	joy1_pressed
 	bit	#$8000
 	beq	loc_018156
-	lda	a:wram_1EBA
+	lda	a:tmw_shadow
 	pha
 	inc	a
 	and	#$001F
@@ -184,46 +184,46 @@ loc_01813C:
 	pla
 	and	#$FF00
 	ora	zp_00
-	sta	a:wram_1EBA
+	sta	a:tmw_shadow
 loc_018156:
 	lda	joy1_pressed
 	bit	#$4000
 	beq	loc_018174
-	lda	a:wram_1EBA
+	lda	a:tmw_shadow
 	pha
 	and	#$00FF
-	sta	a:wram_1EBA
+	sta	a:tmw_shadow
 	pla
 	xba
 	inc	a
 	and	#$001F
 	xba
-	ora	a:wram_1EBA
-	sta	a:wram_1EBA
+	ora	a:tmw_shadow
+	sta	a:tmw_shadow
 loc_018174:
 	lda	joy1_pressed
 	bit	#$0020
 	beq	loc_018194
-	lda	a:wram_1EAC
+	lda	a:w12sel_shadow
 	pha
 	inc	a
 	and	#$0003
-	sta	a:wram_1EAC
+	sta	a:w12sel_shadow
 	pla
 	clc
 	adc	#$0010
 	and	#$0030
-	ora	a:wram_1EAC
-	sta	a:wram_1EAC
+	ora	a:w12sel_shadow
+	sta	a:w12sel_shadow
 loc_018194:
 	lda	joy1_pressed
 	bit	#$0010
 	beq	loc_0181A8
-	lda	a:wram_1EAE
+	lda	a:wobjsel_shadow
 	clc
 	adc	#$0010
 	and	#$0030
-	sta	a:wram_1EAE
+	sta	a:wobjsel_shadow
 loc_0181A8:
 	lda	#$00FF
 	sta	f:wram_7EF800
@@ -243,7 +243,7 @@ loc_0181A8:
 	sta	f:wram_7EFA04
 	rtl
 loc_0181E1:
-	stz	a:wram_1EBA
+	stz	a:tmw_shadow
 	stz	a:wram_1EBC
 	rtl
 
@@ -3395,7 +3395,7 @@ loc_019A76:
 	bmi	loc_019A85
 	lda	#$0043
 loc_019A85:
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	stz	$30,x
 	stz	$34,x
 	stz	$36,x

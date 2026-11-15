@@ -35,8 +35,8 @@ sub_00BD61:
 	.a16
 	inc	a:wram_1600
 	lda	#$0080
-	sta	a:wram_1E80
-	jsl	f:sub_00865C
+	sta	a:inidisp_shadow
+	jsl	f:reset_sound_queue
 	ldx	stage_number
 	lda	a:data_0589CC,x
 	and	#$00FF
@@ -91,24 +91,24 @@ loc_00BD90:
 	sta	f:wram_7E3E1E
 	lda	#$0020
 	sta	a:CGWSEL
-	sta	a:wram_1E94
+	sta	a:cgwsel_shadow
 	lda	#$003F
 	sta	a:CGADSUB
-	sta	a:wram_1E96
+	sta	a:cgadsub_shadow
 	lda	#$0022
 	sta	a:W12SEL
-	sta	a:wram_1EAC
+	sta	a:w12sel_shadow
 	lda	#$0203
 	sta	a:TMW
-	sta	a:wram_1EBA
+	sta	a:tmw_shadow
 	lda	#$00E0
 	sta	a:COLDATA
-	stz	a:wram_1E98
+	stz	a:coldata_shadow
 	lda	#$00FF
 	sta	a:wram_1EB0
 	stz	a:wram_1EB2
 	lda	#$0030
-	sta	a:wram_1EAE
+	sta	a:wobjsel_shadow
 	stz	a:wram_1510
 	stz	a:wram_1550
 	lda	#$0280
@@ -129,27 +129,27 @@ sub_00BE64:
 loc_00BE6E:
 	inc	a:wram_1600
 	lda	#$0041
-	sta	a:wram_1E8C
+	sta	a:bg1sc_shadow
 	sta	a:BG1SC
 	lda	#$0049
-	sta	a:wram_1E8E
+	sta	a:bg2sc_shadow
 	sta	a:BG2SC
 	lda	#$005C
-	sta	a:wram_1E90
+	sta	a:bg3sc_shadow
 	sta	a:BG3SC
 	lda	#$0000
 	sta	a:BG12NBA
 	lda	#$0005
 	sta	a:BG34NBA
 	lda	#$0003
-	sta	a:wram_1E86
+	sta	a:obsel_shadow
 	lda	#$0009
-	sta	a:wram_1E84
+	sta	a:bgmode_shadow
 	sta	a:BGMODE
 	lda	#$0017
-	sta	a:wram_1E9A
+	sta	a:tm_shadow
 	lda	#$0002
-	sta	a:wram_1E9C
+	sta	a:ts_shadow
 	ldx	#.loword(data_058ADD)
 	jsl	f:sub_0090A8
 	ldx	#.loword(data_058AD4)
@@ -172,7 +172,7 @@ loc_00BEEA:
 	jsl	f:sub_00C041
 	stz	a:wram_168A
 	jsl	f:sub_00CE0A
-	stz	a:wram_1E80
+	stz	a:inidisp_shadow
 	stz	a:wram_1686
 	stz	a:wram_16BC
 
@@ -189,8 +189,8 @@ sub_00BF02:
 	stz	a:wram_1838
 	lda	#$0008
 	sta	zp_E2
-	stz	zp_9A
-	stz	zp_98
+	stz	cgram_upload_src
+	stz	cgram_upload_addr
 	rtl
 
 sub_00BF28:
@@ -214,11 +214,11 @@ sub_00BF4A:
 	lda	zp_78
 	bit	#$0007
 	bne	loc_00BF89
-	dec	a:wram_1E80
+	dec	a:inidisp_shadow
 	bne	loc_00BF89
 	stz	a:wram_1E5E
-	stz	a:wram_1E80
-	stz	zp_46
+	stz	a:inidisp_shadow
+	stz	hdma_preset
 	stz	a:wram_1600
 	stz	nmi_mode
 	lda	#$0001
@@ -235,10 +235,10 @@ loc_00BF72:
 	bne	loc_00BF79
 	stz	zp_64
 loc_00BF79:
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	cmp	#$000F
 	bcs	loc_00BF89
-	inc	a:wram_1E80
+	inc	a:inidisp_shadow
 	lda	#$0002
 	sta	zp_64
 loc_00BF89:
@@ -355,15 +355,15 @@ sub_00C066:
 sub_00C06E:
 	jsl	f:sub_01B918
 	lda	#$0003
-	sta	zp_46
+	sta	hdma_preset
 	lda	#$0004
 	sta	a:wram_13FA
 loc_00C07D:
 	lda	#$00C1
-	sta	a:wram_1EAA
+	sta	a:m7sel_shadow
 	stz	a:wram_1666
 	lda	#$0064
-	jml	f:sub_00868F
+	jml	f:queue_sound
 
 sub_00C08D:
 	; (not executed in the CDL traces)
@@ -374,34 +374,34 @@ sub_00C08D:
 
 sub_00C098:
 	lda	#$0007
-	sta	zp_46
+	sta	hdma_preset
 	lda	#$003C
 	sta	a:wram_08D0
 loc_00C0A3:
 	lda	#$004A
-	sta	a:wram_1E8E
+	sta	a:bg2sc_shadow
 	lda	#$0062
-	jml	f:sub_00868F
+	jml	f:queue_sound
 
 sub_00C0B0:
 	; (not executed in the CDL traces)
 	lda	#$0063
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$000D
 	sta	a:wram_0952
 	lda	#$000A
-	sta	zp_46
+	sta	hdma_preset
 	lda	#$0030
 	sta	a:wram_0978
 	bra	loc_00C0DE
 
 sub_00C0CA:
 	lda	#$0084
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$004F
-	jsl	f:sub_00868F
+	jsl	f:queue_sound
 	lda	#$0040
-	sta	a:wram_1E8C
+	sta	a:bg1sc_shadow
 loc_00C0DE:
 	lda	#$0002
 	sta	a:wram_16B6
@@ -416,7 +416,7 @@ loc_00C0DE:
 	lda	#$0002
 	sta	a:wram_02F0
 	lda	#$004A
-	sta	a:wram_1E8E
+	sta	a:bg2sc_shadow
 	lda	#$0004
 	sta	a:wram_13BA
 	lda	#$000A
@@ -430,9 +430,9 @@ sub_00C115:
 	lda	#$0055
 	sta	a:wram_08D0
 	lda	#$004A
-	sta	a:wram_1E8E
+	sta	a:bg2sc_shadow
 	lda	#$0062
-	jml	f:sub_00868F
+	jml	f:queue_sound
 
 sub_00C132:
 	lda	a:$0000,x
@@ -462,10 +462,10 @@ sub_00C132:
 	rtl
 
 sub_00C16F:
-	lda	a:wram_1E80
+	lda	a:inidisp_shadow
 	cmp	#$000F
 	bcs	loc_00C17A
-	inc	a:wram_1E80
+	inc	a:inidisp_shadow
 loc_00C17A:
 	lda	#$0FC0
 	sta	zp_AC
