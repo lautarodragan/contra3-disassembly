@@ -13043,7 +13043,7 @@ loc_02E141:
 	lda	#$0020
 loc_02E173:
 	tay
-	lda	a:data_05E298,y
+	lda	a:ptrs_05E298,y
 	sta	$04
 	lda	$78
 	lsr	a
@@ -13350,7 +13350,7 @@ loc_02E3F2:
 	lda	#$0020
 loc_02E424:
 	tay
-	lda	a:data_05E298,y
+	lda	a:ptrs_05E298,y
 	sta	$04
 	lda	$78
 	lsr	a

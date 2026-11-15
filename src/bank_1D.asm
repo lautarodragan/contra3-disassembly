@@ -2762,7 +2762,7 @@ sub_1DBB6B:
 	sta	$24,x
 	phx
 	ldy	a:$163E
-	lda	a:data_05FDBC,y
+	lda	a:ptrs_05FDBC,y
 	tax
 	jsl	f:sub_0090A8
 	plx

@@ -8801,7 +8801,7 @@ loc_04C51F:
 	lda	$02
 	asl	a
 	tay
-	lda	a:data_05F17E,y
+	lda	a:ptrs_05F17E,y
 	sta	$04
 	stz	$00
 loc_04C52A:
@@ -9376,7 +9376,7 @@ loc_04CA17:
 	lda	$02
 	asl	a
 	tay
-	lda	a:data_05F17E,y
+	lda	a:ptrs_05F17E,y
 	sta	$04
 	stz	$00
 loc_04CA22:
@@ -9550,9 +9550,9 @@ loc_04CB68:
 	lda	$0A
 	asl	a
 	tay
-	lda	a:data_05F17E,y
+	lda	a:ptrs_05F17E,y
 	sta	$0C
-	lda	a:data_05F182,y
+	lda	a:ptrs_05F182,y
 	sta	$0E
 	stz	$00
 loc_04CB97:

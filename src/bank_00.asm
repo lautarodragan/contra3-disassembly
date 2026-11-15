@@ -6511,7 +6511,7 @@ sub_00B2DD:
 	lda	a:$1E48
 	asl	a
 	tay
-	lda	a:data_0585CB,y
+	lda	a:ptrs_0585CB,y
 	tax
 	jsl	f:sub_0090A8
 	rts
@@ -7367,12 +7367,12 @@ sub_00B99F:
 	pla
 	asl	a
 	tay
-	lda	a:data_0588E1,y
+	lda	a:ptrs_0588E1,y
 	tax
 	phy
 	jsl	f:sub_0090A8
 	ply
-	lda	a:data_0588ED,y
+	lda	a:ptrs_0588ED,y
 	tax
 	jsl	f:sub_0090A8
 	rtl
@@ -13885,7 +13885,7 @@ loc_00ECDA:
 	lda	a:$1C84
 	asl	a
 	tay
-	lda	a:data_05A7AF,y
+	lda	a:ptrs_05A7AF,y
 	tax
 	jsl	f:sub_0090A8
 loc_00ECE7:

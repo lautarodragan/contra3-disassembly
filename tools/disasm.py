@@ -277,6 +277,80 @@ class Disassembler:
                 self.labels.setdefault(tgt, 'data')
                 break
 
+    def find_data_pointer_tables(self):
+        """Tables of 16-bit data pointers:
+               lda table,x|y   (M16, DB known)
+               sta ptr         (direct page)
+               ...             (straight-line, <= 12 instructions)
+               lda (ptr),y     (any instruction using (ptr) or (ptr),y)
+        The table is read while its entries are >= $8000, do not run into
+        code, labels or other tables.  Entries become `.addr label` where
+        the label is in the bank DB had at the indirect access."""
+        self.data_tables = {}
+        for start, bank in getattr(self, 'pending_ptr_tables', []):
+            if start not in self.data_tables:
+                self._add_data_ptr_table(start, bank)
+        ends = ('rts', 'rtl', 'rti', 'jmp', 'jml', 'bra', 'brl')
+        for off in sorted(self.instrs):
+            ld = self.instrs[off]
+            if ld.mn != 'lda' or ld.m8 or ld.mode not in ('absx', 'absy', 'abs'):
+                continue
+            if ld.db is None:
+                continue
+            st_ = self.instrs.get(off + ld.length)
+            if st_ is None or st_.mn != 'sta' or st_.mode != 'dp':
+                continue
+            ptr = st_.operand
+            cur = st_.off + st_.length
+            use = None
+            for _ in range(12):
+                ins = self.instrs.get(cur)
+                if ins is None:
+                    break
+                if ins.mode in ('dpi', 'dpiy') and ins.operand == ptr and ins.mn != 'pei':
+                    use = ins
+                    break
+                if ins.mn in ends or ins.mn in ('jsr', 'jsl'):
+                    break
+                if ins.operand == ptr and ins.mode == 'dp' and ins.mn.startswith('st'):
+                    break
+                cur += ins.length
+            if use is None or use.db is None:
+                continue
+            start = rom_offset((ld.db << 16) | ld.operand)
+            if start is None or start in self.data_tables or start in self.tables:
+                continue
+            self._add_data_ptr_table(start, use.db, 1 if ld.mode == 'abs' else 256)
+
+    def _add_data_ptr_table(self, start, bank, maxn=256):
+        targets = []
+        o = start
+        limit = (start // BANK_SIZE + 1) * BANK_SIZE
+        while o + 2 <= limit and len(targets) < maxn:
+            if o != start and o in self.labels:
+                break
+            if any(i in self.owner or i in self.table_bytes for i in (o, o + 1)):
+                break
+            if o + 1 in self.labels:
+                break
+            v = self.rom[o] | (self.rom[o + 1] << 8)
+            t = rom_offset((bank << 16) | v)
+            if v < 0x8000 or t is None or t in self.owner or t in self.table_bytes:
+                break
+            if start <= t < o + 2:
+                break
+            targets.append(t)
+            o += 2
+        if not targets:
+            return
+        self.data_tables[start] = (targets, 2)
+        for i in range(start, start + 2 * len(targets)):
+            self.table_bytes.add(i)
+        if self.labels.get(start) in (None, 'data'):
+            self.labels[start] = 'ptrs'
+        for t in targets:
+            self.labels.setdefault(t, 'data')
+
     def find_pointer_args(self):
         """Routines that take a ROM pointer in X or Y: detected when the
         routine reads `f:$BB0000,x` (or ,y) before changing the register, or
@@ -302,6 +376,7 @@ class Disassembler:
         for k, v in self.hints.get('pointer_args', {}).items():
             args[rom_offset(parse_addr(k))] = (v['reg'], parse_addr(v['bank']))
         self.pointer_args = args
+        self.pending_ptr_tables = []
         label_offs = set(self.labels)
         for off, ins in self.instrs.items():
             if ins.mn not in ('jsr', 'jsl') or ins.target not in args:
@@ -320,6 +395,19 @@ class Disassembler:
                 if prev is None:
                     break
                 cur = prev.off
+                if prev.mn == 't' + 'a' + reg:
+                    p2 = None
+                    for back in (3, 4):
+                        q = self.instrs.get(prev.off - back)
+                        if q is not None and q.length == back:
+                            p2 = q
+                            break
+                    if (p2 is not None and p2.mn == 'lda' and not p2.m8 and p2.db is not None
+                            and p2.mode in ('absx', 'absy') and prev.off not in label_offs):
+                        start = rom_offset((p2.db << 16) | p2.operand)
+                        if start is not None:
+                            self.pending_ptr_tables.append((start, bank))
+                    break
                 if prev.mn == 'ld' + reg and prev.mode == 'immx' and prev.length == 3:
                     tgt = rom_offset((bank << 16) | prev.operand)
                     if tgt is not None and prev.off not in self.imm_ptrs:
@@ -1002,7 +1090,7 @@ class Emitter:
             if off in self.names:
                 self.label_name[off] = self.names[off]
                 continue
-            prefix = {'sub': 'sub', 'loc': 'loc', 'data': 'data', 'jt': 'tbl'}[kind]
+            prefix = {'sub': 'sub', 'loc': 'loc', 'data': 'data', 'jt': 'tbl', 'ptrs': 'ptrs'}[kind]
             self.label_name[off] = '%s_%06X' % (prefix, self.cfg.canon(off))
         # labels that fall inside an instruction become `name = host + n`
         self.inner = collections.defaultdict(list)
@@ -1167,6 +1255,9 @@ class Emitter:
         asm_m8 = asm_x8 = None
         table_entry = {}
         for tstart, (kind, targets, size) in d.tables.items():
+            for i, t in enumerate(targets):
+                table_entry[tstart + i * size] = (t, size)
+        for tstart, (targets, size) in d.data_tables.items():
             for i, t in enumerate(targets):
                 table_entry[tstart + i * size] = (t, size)
         hdr = 0x7FB0 if bank == 0 else None
@@ -1347,7 +1438,9 @@ def make_report(d, em, cfg, path):
              '| of which jump-table bytes (.addr/.faraddr) | %d |' % st['table_bytes'],
              '| instructions | %d |' % st['instructions'],
              '| routines (call / table / vector targets) | %d |' % len(d.routines),
-             '| jump tables | %d (%d entries) |' % (len(d.tables), st['table_entries']),
+             '| jump tables | %d |' % len(d.tables),
+             '| data pointer tables | %d (%d entries) |' % (len(d.data_tables), sum(len(v[0]) for v in d.data_tables.values())),
+             '| table entries emitted as .addr/.faraddr | %d |' % st['table_entries'],
              '| labels | %d |' % len(em.label_name),
              '| operands as labels | %d |' % st['operand_label'],
              '| operands as hardware register names | %d |' % st['operand_register'],
@@ -1433,6 +1526,7 @@ def main():
     d.run()
     d.find_immediate_pointers()
     d.find_pointer_args()
+    d.find_data_pointer_tables()
     em = Emitter(d, cfg, hints)
     os.makedirs(args.out, exist_ok=True)
     for b in range(NUM_BANKS):
