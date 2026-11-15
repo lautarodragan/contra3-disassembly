@@ -167,6 +167,9 @@ class Disassembler:
         self.table_hints = {}
         for t in hints.get('jump_tables', []):
             self.table_hints[rom_offset(parse_addr(t['addr']))] = t
+        if cdl:
+            for base, n in cdl.table_hints.items():
+                self.table_hints.setdefault(base, {'min_count': n})
         self.force_code = {rom_offset(parse_addr(a)) for a in hints.get('force_code', [])}
         self.no_table_at = {rom_offset(parse_addr(a)) for a in hints.get('no_auto_table', [])}
 
@@ -188,21 +191,260 @@ class Disassembler:
 
     # -- main analysis ----------------------------------------------------
 
-    def run(self):
+    def run(self, speculate=True):
         # Iterate: each pass knows the code entry points found by the previous
         # one (so table scans stop in front of them) and the inferred call
-        # return states.  Stop when nothing changes.
+        # return states.  Stop when nothing changes.  Then (optionally) look
+        # for unreferenced routines right after the end of known code and
+        # repeat.
         self.prev_code_entries = set()
+        self.speculative = {}     # off -> (m8, x8)
+        self.spec_source = {}     # off -> 'cdl' | 'heuristic'
         self.passes = 0
-        for it in range(10):
-            self.passes += 1
-            changed = self._pass()
-            entries = set(self.direct_targets)
-            sig = (frozenset(entries), tuple(sorted((k, len(v[1])) for k, v in self.tables.items())))
-            if not changed and sig == getattr(self, '_sig', None):
+        self.no_speculate = {rom_offset(parse_addr(a)) for a in self.hints.get('not_code', [])}
+        for rnd in range(40):
+            for it in range(10):
+                self.passes += 1
+                changed = self._pass()
+                entries = set(self.direct_targets)
+                sig = (frozenset(entries), tuple(sorted((k, len(v[1])) for k, v in self.tables.items())))
+                if not changed and sig == getattr(self, '_sig', None):
+                    break
+                self._sig = sig
+                self.prev_code_entries = entries
+            if not speculate:
                 break
-            self._sig = sig
-            self.prev_code_entries = entries
+            self._banks_cache = self._code_banks()
+            new = self._cdl_unreached() if self.cdl else {}
+            src = 'cdl'
+            if not new:
+                new = self._find_unreferenced()
+                src = 'heuristic'
+            if not new:
+                break
+            self.speculative.update(new)
+            for o in new:
+                self.spec_source[o] = src
+
+    # -- immediate pointers -----------------------------------------------
+
+    def find_immediate_pointers(self):
+        """Find long pointers built from immediates, e.g.
+               lda #$9A3C / sta $00 / sep #$20 / lda #$05 / sta $02
+        (also with ldx/stx, ldy/sty, in either order, within a few
+        instructions of straight-line code).  When the pair forms a ROM
+        address, both immediates become label expressions
+        (#.loword(label) / #^label)."""
+        self.imm_ptrs = {}
+        loads = {'sta': 'lda', 'stx': 'ldx', 'sty': 'ldy'}
+        stores = []   # (off, addr, value, width8, load instr)
+        for off in sorted(self.instrs):
+            ins = self.instrs[off]
+            if ins.mn not in loads or ins.mode not in ('dp', 'abs', 'long'):
+                continue
+            # immediate load directly before (fall-through predecessor)
+            prev = None
+            for back in (2, 3):
+                p = self.instrs.get(off - back)
+                if p is not None and p.length == back:
+                    prev = p
+                    break
+            if prev is None or prev.mn != loads[ins.mn] or prev.mode not in ('immm', 'immx'):
+                continue
+            addr = ins.operand
+            stores.append((off, addr, prev.operand, prev.length == 2, prev))
+        n = len(stores)
+        for i in range(n):
+            off, addr, val, w8, ld = stores[i]
+            if w8 or val < 0x8000:
+                continue
+            for j in range(max(0, i - 4), min(n, i + 5)):
+                if j == i:
+                    continue
+                off2, addr2, val2, w82, ld2 = stores[j]
+                if abs(off2 - off) > 24 or addr2 != addr + 2:
+                    continue
+                bank = val2 & 0xFF
+                if (not w82 and val2 > 0xFF) or (w82 and val2 > 0xFF) or val2 > 0xFF:
+                    continue
+                tgt = rom_offset((bank << 16) | val)
+                if tgt is None or self.cfg.canon(tgt) != ((bank << 16) | val):
+                    continue
+                if ld.off in self.imm_ptrs or ld2.off in self.imm_ptrs:
+                    continue
+                self.imm_ptrs[ld.off] = ('lo', tgt)
+                self.imm_ptrs[ld2.off] = ('bank', tgt)
+                self.labels.setdefault(tgt, 'data')
+                break
+
+    def find_pointer_args(self):
+        """Routines that take a ROM pointer in X or Y: detected when the
+        routine reads `f:$BB0000,x` (or ,y) before changing the register, or
+        declared in the hints ("pointer_args": {"00:90A8": {"reg": "x",
+        "bank": "05"}}).  At each call site, the closest preceding
+        `ldx #imm` / `ldy #imm` in straight-line code becomes a label."""
+        writes = {'x': {'ldx', 'tax', 'tsx', 'tyx', 'plx', 'inx', 'dex'},
+                  'y': {'ldy', 'tay', 'txy', 'ply', 'iny', 'dey'}}
+        args = {}
+        for r in self.routines:
+            off = r
+            for _ in range(12):
+                ins = self.instrs.get(off)
+                if ins is None:
+                    break
+                if ins.mode in ('longx',) and ins.operand & 0xFFFF == 0:
+                    args[r] = ('x', ins.operand >> 16)
+                    break
+                if ins.mn in writes['x'] or ins.mn in BRANCHES or ins.mn in (
+                        'jsr', 'jsl', 'jmp', 'jml', 'rts', 'rtl'):
+                    break
+                off += ins.length
+        for k, v in self.hints.get('pointer_args', {}).items():
+            args[rom_offset(parse_addr(k))] = (v['reg'], parse_addr(v['bank']))
+        self.pointer_args = args
+        label_offs = set(self.labels)
+        for off, ins in self.instrs.items():
+            if ins.mn not in ('jsr', 'jsl') or ins.target not in args:
+                continue
+            reg, bank = args[ins.target]
+            cur = off
+            for _ in range(8):
+                if cur in label_offs:
+                    break
+                prev = None
+                for back in (1, 2, 3, 4):
+                    p = self.instrs.get(cur - back)
+                    if p is not None and p.length == back:
+                        prev = p
+                        break
+                if prev is None:
+                    break
+                cur = prev.off
+                if prev.mn == 'ld' + reg and prev.mode == 'immx' and prev.length == 3:
+                    tgt = rom_offset((bank << 16) | prev.operand)
+                    if tgt is not None and prev.off not in self.imm_ptrs:
+                        self.imm_ptrs[prev.off] = ('lo', tgt)
+                        self.labels.setdefault(tgt, 'data')
+                    break
+                if prev.mn in writes[reg] or prev.mn in BRANCHES or prev.mn in (
+                        'jsr', 'jsl', 'jmp', 'jml', 'rts', 'rtl', 'rti'):
+                    break
+
+    # -- unreferenced routines -------------------------------------------
+
+    def _code_banks(self):
+        banks = collections.Counter(o // BANK_SIZE for o in self.instrs)
+        return {b for b, n in banks.items() if n >= 200}
+
+    def _cdl_unreached(self):
+        """First opcode of every run of CDL-executed code not decoded yet."""
+        out = {}
+        for off, mx in self.cdl.code_starts.items():
+            if off in self.owner or off in self.speculative:
+                continue
+            out[off] = mx
+        # keep only run heads
+        heads = {}
+        for off in sorted(out):
+            if not any((off - k) in out for k in (1, 2, 3, 4)):
+                heads[off] = out[off]
+        return heads
+
+    def _find_unreferenced(self):
+        """Candidates: the first byte after an instruction that ends control
+        flow (RTS/RTL/RTI/JMP/JML/BRA/BRL), not yet decoded, in a bank that
+        already holds a fair amount of code, which decodes into a plausible
+        routine (see _plausible)."""
+        out = {}
+        banks = self._code_banks()
+        for off, ins in list(self.instrs.items()):
+            if ins.mn not in ('rts', 'rtl', 'rti', 'jmp', 'jml', 'bra', 'brl'):
+                continue
+            if ins.mn in ('jmp', 'jml') and ins.mode in ('absi', 'absil'):
+                pass
+            cand = off + ins.length
+            if cand % BANK_SIZE == 0 or cand // BANK_SIZE not in banks:
+                continue
+            if cand in self.owner or cand in self.table_bytes or self.data_mask[cand]:
+                continue
+            if cand in self.speculative or cand in self.no_speculate:
+                continue
+            for m8, x8 in [(ins.m8, ins.x8), (False, False), (True, False), (True, True), (False, True)]:
+                if self._plausible(cand, m8, x8):
+                    out[cand] = (m8, x8)
+                    break
+        return out
+
+    def _plausible(self, start, m8, x8, limit=600):
+        if self.rom[start] in (0x00, 0xFF, 0x02, 0x42, 0xDB):
+            return False
+        seen = {}
+        todo = [(start, m8, x8)]
+        count = 0
+        ended = False
+        while todo:
+            off, m8, x8 = todo.pop()
+            while True:
+                if off in seen:
+                    if seen[off] != (m8, x8):
+                        alt = self.decode(off, m8, x8)
+                        if alt is None or alt.length != self.decode(off, *seen[off]).length:
+                            return False
+                    break
+                if off in self.owner:
+                    if self.owner[off] != off:
+                        return False
+                    ended = True
+                    break   # joins known code
+                if off in self.table_bytes or self.data_mask[off]:
+                    return False
+                ins = self.decode(off, m8, x8)
+                if ins is None or ins.mn in SUSPICIOUS:
+                    return False
+                for i in range(off + 1, off + ins.length):
+                    if i in self.owner or i in self.table_bytes or self.data_mask[i]:
+                        return False
+                seen[off] = (m8, x8)
+                count += 1
+                if count > limit:
+                    return False
+                mn, mode, opd = ins.mn, ins.mode, ins.operand
+                if mn == 'rep':
+                    m8 = m8 and not (opd & 0x20)
+                    x8 = x8 and not (opd & 0x10)
+                elif mn == 'sep':
+                    m8 = m8 or bool(opd & 0x20)
+                    x8 = x8 or bool(opd & 0x10)
+                nxt = off + ins.length
+                if mn in BRANCHES:
+                    rel = opd - (0x100 if (mode == 'rel' and opd & 0x80) else 0) \
+                        - (0x10000 if (mode == 'rell' and opd & 0x8000) else 0)
+                    t = rom_offset((self.cfg.canon(off) & 0xFF0000)
+                                   | ((self.cfg.canon(off) + ins.length + rel) & 0xFFFF))
+                    if t is None:
+                        return False
+                    todo.append((t, m8, x8))
+                    if mn in ('bra', 'brl'):
+                        ended = True
+                        break
+                elif mn in ('jsr', 'jsl', 'jmp', 'jml') and mode in ('abs', 'long'):
+                    if mode == 'abs':
+                        t = rom_offset((self.cfg.canon(off) & 0xFF0000) | opd)
+                    else:
+                        t = rom_offset(opd)
+                    if t is None or t // BANK_SIZE not in self._banks_cache:
+                        return False
+                    if t in self.owner and self.owner[t] != t:
+                        return False
+                    if mn in ('jmp', 'jml'):
+                        todo.append((t, m8, x8)) if t not in self.owner else None
+                        ended = True
+                        break
+                elif mn in ('rts', 'rtl', 'rti') or mode in ('absi', 'absil', 'absix') and mn in ('jmp', 'jml'):
+                    ended = True
+                    break
+                off = nxt
+        return ended and count >= 2
 
     def _seed(self):
         seeds = []
@@ -226,8 +468,11 @@ class Disassembler:
             off = rom_offset(parse_addr(e['addr']))
             seeds.append((off, e.get('m', 8) == 8, e.get('x', 8) == 8,
                           parse_addr(e['db']) if 'db' in e else None))
+        for off, (m8, x8) in sorted(getattr(self, 'speculative', {}).items()):
+            seeds.append((off, m8, x8, None))
         if self.cdl:
-            for off, (m8, x8) in sorted(self.cdl.code_starts.items()):
+            for off in sorted(self.cdl.extra_entries):
+                m8, x8 = self.cdl.code_starts.get(off, (True, True))
                 seeds.append((off, m8, x8, None))
         return seeds
 
@@ -243,6 +488,7 @@ class Disassembler:
         self.data_refs = {}       # instr off -> target ROM offset (data label)
         self.table_bytes = set()  # ROM offsets claimed by jump tables
         self.direct_targets = set()  # targets of jsr/jsl/jmp/branches
+        self.cdl_corrections = set()  # offsets where the CDL fixed M/X
         self.warnings = []
         self.work = collections.deque()
 
@@ -282,6 +528,11 @@ class Disassembler:
                 self.conflicts.append((off, 'jump into the middle of instruction at %s'
                                        % fmt_addr(self.cfg.canon(self.owner[off]))))
                 return
+            if self.cdl and off in self.cdl.code_starts:
+                cm8, cx8 = self.cdl.code_starts[off]
+                if (cm8, cx8) != (st.m8, st.x8):
+                    self.cdl_corrections.add(off)
+                    st = st._replace(m8=cm8, x8=cx8)
             vis = self.visited.get(off)
             key = (st.m8, st.x8)
             if vis is not None and key in vis:
@@ -495,8 +746,12 @@ class Disassembler:
         tgt = None
         if mode in ('long', 'longx'):
             tgt = rom_offset(opd)
-        elif mode in ('abs', 'absx', 'absy') and opd >= 0x8000 and db is not None:
-            tgt = rom_offset((db << 16) | opd)
+        elif mode in ('abs', 'absx', 'absy') and opd >= 0x8000:
+            edb = db
+            if edb is None and self.cdl:
+                edb = self.cdl.db.get(ins.off)
+            if edb is not None:
+                tgt = rom_offset((edb << 16) | opd)
         if tgt is not None:
             self.data_refs[ins.off] = tgt
             self.labels.setdefault(tgt, 'data')
@@ -515,7 +770,7 @@ class Disassembler:
             return False
         return True
 
-    def _scan_table(self, start, st, entry_size, bank, count=None):
+    def _scan_table(self, start, st, entry_size, bank, count=None, min_count=0):
         """Read a table of code pointers starting at ROM offset `start`.
         Returns the list of target offsets."""
         targets = []
@@ -524,7 +779,8 @@ class Disassembler:
         while off + entry_size <= limit:
             if count is not None and len(targets) >= count:
                 break
-            if count is None:
+            checks = count is None and len(targets) >= min_count
+            if checks:
                 if off != start and (off in self.labels or off in self.owner
                                      or off in self.prev_code_entries
                                      or off + 1 in self.prev_code_entries):
@@ -546,7 +802,7 @@ class Disassembler:
                 t = rom_offset((bank << 16) | v)
             else:
                 t = rom_offset(v)
-            if count is None and not self._looks_like_code(t, st):
+            if checks and not self._looks_like_code(t, st):
                 break
             targets.append(t)
             off += entry_size
@@ -568,7 +824,8 @@ class Disassembler:
         if start in self.tables:
             targets = self.tables[start][1]
         else:
-            targets = self._scan_table(start, st, 2, bank, count)
+            targets = self._scan_table(start, st, 2, bank, count,
+                                       hint.get('min_count', 0) if hint else 0)
         self._register_table(start, 'word', targets, 2, st)
         if not targets:
             self.warnings.append((ins.off, 'empty jump table at %s' % fmt_addr(self.cfg.canon(start))))
@@ -628,7 +885,8 @@ class Disassembler:
         if start in self.tables:
             targets = self.tables[start][1]
         else:
-            targets = self._scan_table(start, st, size, bank, count)
+            targets = self._scan_table(start, st, size, bank, count,
+                                       hint.get('min_count', 0) if hint else 0)
         if not any(t is not None for t in targets):
             return False
         self._register_table(start, 'word' if size == 2 else 'long', targets, size, st)
@@ -769,6 +1027,11 @@ class Emitter:
         """Label expression for ROM offset `off`."""
         return self.label_name[off]
 
+    def same(self, off, value, bits):
+        """True if the label at `off` evaluates to `value` (low `bits` bits),
+        i.e. replacing the number by the label keeps the ROM identical."""
+        return (self.cfg.canon(off) & ((1 << bits) - 1)) == value
+
     def has_label(self, off):
         return off is not None and off in self.label_name
 
@@ -783,7 +1046,7 @@ class Emitter:
             return '$%0*X' % (width * 2, val)
 
         def absval(val, data_tgt=None, prefix='a:'):
-            if data_tgt is not None and self.has_label(data_tgt):
+            if data_tgt is not None and self.has_label(data_tgt) and self.same(data_tgt, val, 16):
                 st['operand_label'] += 1
                 return prefix + self.ref(data_tgt)
             if val >= 0x8000:
@@ -800,6 +1063,12 @@ class Emitter:
             return ''
         if mode == 'acc':
             return 'a'
+        if mode in ('immm', 'immx') and ins.off in d.imm_ptrs:
+            kind, tgt = d.imm_ptrs[ins.off]
+            st['immediate_label'] += 1
+            if kind == 'lo':
+                return '#.loword(%s)' % self.ref(tgt)
+            return '#^%s' % self.ref(tgt)
         if mode in ('imm8', 'immm', 'immx'):
             st['immediate'] += 1
             return '#' + num(v, ins.length - 1)
@@ -856,7 +1125,7 @@ class Emitter:
             return '(' + num(v, 2) + ',x)'
         if mode == 'abs':
             if ins.mn in ('jsr', 'jmp'):
-                if self.has_label(ins.target):
+                if self.has_label(ins.target) and self.same(ins.target, v, 16):
                     st['operand_label'] += 1
                     return 'a:' + self.ref(ins.target)
                 st['operand_rom_number'] += 1
@@ -866,7 +1135,7 @@ class Emitter:
             return absval(v, d.data_refs.get(ins.off)) + (',x' if mode == 'absx' else ',y')
         if mode in ('long', 'longx'):
             tgt = ins.target if ins.mn in ('jsl', 'jml') else d.data_refs.get(ins.off)
-            if self.has_label(tgt):
+            if self.has_label(tgt) and self.same(tgt, v, 24):
                 st['operand_label'] += 1
                 s = 'f:' + self.ref(tgt)
             else:
@@ -926,12 +1195,18 @@ class Emitter:
                 kind = self.label_kind.get(off)
                 if kind == 'sub' and off in self.label_name and off in d.instrs:
                     w('')
+                src = d.spec_source.get(off)
+                if src == 'heuristic':
+                    w('; (no caller found; decoded because it follows the end of a routine)')
+                elif src == 'cdl':
+                    w('; (no caller found statically; executed according to the CDL)')
                 w('%s:' % self.label_name[off])
             if off in table_entry and off not in d.instrs:
                 t, size = table_entry[off]
                 if (all(i not in d.owner and i not in self.label_name
                         for i in range(off + 1, off + size))
-                        and (t is None or self.has_label(t))):
+                        and (t is None or (self.has_label(t) and self.same(
+                            t, int.from_bytes(self.rom[off:off + size], 'little'), size * 8)))):
                     flush()
                     if t is None:
                         w('\t.addr\t$0000' if size == 2 else '\t.faraddr\t$000000')
@@ -1078,10 +1353,13 @@ def make_report(d, em, cfg, path):
              '| operands as hardware register names | %d |' % st['operand_register'],
              '| operands: hardcoded ROM addresses ($8000+) | %d |' % st['operand_rom_number'],
              '| operands: hardcoded RAM/other addresses | %d |' % st['operand_ram_number'],
-             '| immediates (some may be pointers) | %d |' % st['immediate'],
+             '| immediates turned into pointer expressions (#.loword/#^) | %d |' % st['immediate_label'],
+             '| other immediates (some may still be pointers) | %d |' % st['immediate'],
              '| M/X conflicts and overlaps | %d |' % len(set(d.conflicts)),
              '| decoding stops (suspicious opcode etc.) | %d |' % len(set(d.stops)),
              '| auto-inferred call return states | %d |' % len(d.auto_call_returns),
+             '| routines found heuristically (no known caller) | %d |' % sum(
+                 1 for o, k in d.spec_source.items() if k == 'heuristic' and o in d.instrs),
              '']
     per_bank = collections.Counter()
     for ins in d.instrs.values():
@@ -1104,6 +1382,22 @@ def make_report(d, em, cfg, path):
     section('M/X conflicts and overlaps', d.conflicts)
     section('Decoding stops', d.stops)
     section('Warnings', d.warnings)
+    heur = sorted(o for o, k in d.spec_source.items() if k == 'heuristic' and o in d.instrs)
+    lines.append('## Routines without a known caller, decoded heuristically (%d)' % len(heur))
+    lines.append('')
+    lines.append('Code right after the end of a routine that decodes as a plausible routine.')
+    lines.append('These are either dead code or reached through pointers not identified yet;')
+    lines.append('a CDL will confirm or refute them (add refuted ones to "not_code" in the hints).')
+    lines.append('')
+    for o in heur:
+        lines.append('- `%s`' % fmt_addr(cfg.canon(o)))
+    lines.append('')
+    if d.cdl:
+        lines.append('## M/X corrected by the CDL (%d)' % len(d.cdl_corrections))
+        lines.append('')
+        for o in sorted(d.cdl_corrections)[:400]:
+            lines.append('- `%s`' % fmt_addr(cfg.canon(o)))
+        lines.append('')
     lines.append('## Auto-inferred call return states (%d)' % len(d.auto_call_returns))
     lines.append('')
     for r, v in sorted(d.auto_call_returns.items()):
@@ -1137,6 +1431,8 @@ def main():
 
     d = Disassembler(rom, hints, cfg, cdl)
     d.run()
+    d.find_immediate_pointers()
+    d.find_pointer_args()
     em = Emitter(d, cfg, hints)
     os.makedirs(args.out, exist_ok=True)
     for b in range(NUM_BANKS):

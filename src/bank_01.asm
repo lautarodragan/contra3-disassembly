@@ -45,8 +45,20 @@ sub_01801B:
 	jsl	f:sub_00868F
 loc_01804D:
 	rtl
-	.byte	$B5, $22, $89, $00, $40, $F0, $0D, $A0, $12, $00, $A5, $BC, $F0, $03, $A0, $00
-	.byte	$00, $8C, $8A, $1E, $6B
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01804E:
+	lda	$22,x
+	bit	#$4000
+	beq	loc_018062
+	ldy	#$0012
+	lda	$BC
+	beq	loc_01805F
+	ldy	#$0000
+loc_01805F:
+	sty	a:$1E8A
+loc_018062:
+	rtl
 
 sub_018063:
 	lda	$20,x
@@ -99,24 +111,137 @@ loc_0180CB:
 	lda	a:data_05B2AC,y
 	sta	$00,x
 	rtl
-	.byte	$A9, $02, $00, $8D, $94, $1E, $6B, $A5, $46, $C9, $04, $00, $F0, $F2, $A9, $00
-	.byte	$00, $8D, $94, $1E, $A0, $52, $00, $A5, $22, $89, $00, $20, $F0, $07, $A5, $22
-	.byte	$89, $40, $00, $D0, $03, $A0, $00, $00, $8C, $96, $1E, $89, $00, $40, $F0, $09
-	.byte	$AD, $96, $1E, $29, $12, $00, $8D, $96, $1E, $AD, $12, $16, $8D, $98, $1E, $A5
-	.byte	$2A, $89, $80, $00, $F0, $04, $EE, $12, $16, $6B, $89, $00, $80, $F0, $03, $CE
-	.byte	$12, $16, $6B, $A5, $28, $89, $00, $20, $F0, $09, $AD, $2C, $16, $49, $01, $00
-	.byte	$8D, $2C, $16, $AD, $2C, $16, $D0, $03, $82, $A5, $00, $A5, $28, $89, $00, $80
-	.byte	$F0, $13, $AD, $BA, $1E, $48, $1A, $29, $1F, $00, $85, $00, $68, $29, $00, $FF
-	.byte	$05, $00, $8D, $BA, $1E, $A5, $28, $89, $00, $40, $F0, $17, $AD, $BA, $1E, $48
-	.byte	$29, $FF, $00, $8D, $BA, $1E, $68, $EB, $1A, $29, $1F, $00, $EB, $0D, $BA, $1E
-	.byte	$8D, $BA, $1E, $A5, $28, $89, $20, $00, $F0, $19, $AD, $AC, $1E, $48, $1A, $29
-	.byte	$03, $00, $8D, $AC, $1E, $68, $18, $69, $10, $00, $29, $30, $00, $0D, $AC, $1E
-	.byte	$8D, $AC, $1E, $A5, $28, $89, $10, $00, $F0, $0D, $AD, $AE, $1E, $18, $69, $10
-	.byte	$00, $29, $30, $00, $8D, $AE, $1E, $A9, $FF, $00, $8F, $00, $F8, $7E, $A9, $07
-	.byte	$F8, $8F, $01, $F8, $7E, $A9, $FF, $00, $8F, $03, $F8, $7E, $A9, $87, $F8, $8F
-	.byte	$04, $F8, $7E, $A9, $FF, $00, $8F, $00, $FA, $7E, $A9, $07, $FA, $8F, $01, $FA
-	.byte	$7E, $A9, $FF, $00, $8F, $03, $FA, $7E, $A9, $87, $FA, $8F, $04, $FA, $7E, $6B
-	.byte	$9C, $BA, $1E, $9C, $BC, $1E, $6B
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_0180D1:
+	lda	#$0002
+	sta	a:$1E94
+	rtl
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_0180D8:
+	lda	$46
+	cmp	#$0004
+	beq	sub_0180D1
+	lda	#$0000
+	sta	a:$1E94
+	ldy	#$0052
+	lda	$22
+	bit	#$2000
+	beq	loc_0180F6
+	lda	$22
+	bit	#$0040
+	bne	loc_0180F9
+loc_0180F6:
+	ldy	#$0000
+loc_0180F9:
+	sty	a:$1E96
+	bit	#$4000
+	beq	loc_01810A
+	lda	a:$1E96
+	and	#$0012
+	sta	a:$1E96
+loc_01810A:
+	lda	a:$1612
+	sta	a:$1E98
+	lda	$2A
+	bit	#$0080
+	beq	loc_01811B
+	inc	a:$1612
+	rtl
+loc_01811B:
+	bit	#$8000
+	beq	loc_018123
+	dec	a:$1612
+loc_018123:
+	rtl
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_018124:
+	lda	$28
+	bit	#$2000
+	beq	loc_018134
+	lda	a:$162C
+	eor	#$0001
+	sta	a:$162C
+loc_018134:
+	lda	a:$162C
+	bne	loc_01813C
+	brl	loc_0181E1
+loc_01813C:
+	lda	$28
+	bit	#$8000
+	beq	loc_018156
+	lda	a:$1EBA
+	pha
+	inc	a
+	and	#$001F
+	sta	$00
+	pla
+	and	#$FF00
+	ora	$00
+	sta	a:$1EBA
+loc_018156:
+	lda	$28
+	bit	#$4000
+	beq	loc_018174
+	lda	a:$1EBA
+	pha
+	and	#$00FF
+	sta	a:$1EBA
+	pla
+	xba
+	inc	a
+	and	#$001F
+	xba
+	ora	a:$1EBA
+	sta	a:$1EBA
+loc_018174:
+	lda	$28
+	bit	#$0020
+	beq	loc_018194
+	lda	a:$1EAC
+	pha
+	inc	a
+	and	#$0003
+	sta	a:$1EAC
+	pla
+	clc
+	adc	#$0010
+	and	#$0030
+	ora	a:$1EAC
+	sta	a:$1EAC
+loc_018194:
+	lda	$28
+	bit	#$0010
+	beq	loc_0181A8
+	lda	a:$1EAE
+	clc
+	adc	#$0010
+	and	#$0030
+	sta	a:$1EAE
+loc_0181A8:
+	lda	#$00FF
+	sta	f:$7EF800
+	lda	#$F807
+	sta	f:$7EF801
+	lda	#$00FF
+	sta	f:$7EF803
+	lda	#$F887
+	sta	f:$7EF804
+	lda	#$00FF
+	sta	f:$7EFA00
+	lda	#$FA07
+	sta	f:$7EFA01
+	lda	#$00FF
+	sta	f:$7EFA03
+	lda	#$FA87
+	sta	f:$7EFA04
+	rtl
+loc_0181E1:
+	stz	a:$1EBA
+	stz	a:$1EBC
+	rtl
 
 sub_0181E8:
 	phx
@@ -947,7 +1072,7 @@ sub_018839:
 	sta	$06,x
 	adc	#$0006
 	sta	$28,x
-	adc	a:data_05AB74,y
+	adc	a:$AB74,y
 	sta	a:$1312,x
 	lda	$0E,x
 	adc	#$FFF2
@@ -2700,8 +2825,19 @@ loc_019651:
 	adc	$0E
 	sta	$0E,x
 	rtl
-	.byte	$64, $00, $64, $02, $22, $6E, $E1, $00, $85, $04, $A9, $06, $00, $85, $00, $22
-	.byte	$6E, $E1, $00, $85, $06, $05, $04, $85, $12
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_019680:
+	stz	$00
+	stz	$02
+	jsl	f:sub_00E16E
+	sta	$04
+	lda	#$0006
+	sta	$00
+	jsl	f:sub_00E16E
+	sta	$06
+	ora	$04
+	sta	$12
 loc_019699:
 	lda	$06
 	bit	#$807E
@@ -3816,10 +3952,31 @@ sub_019ED4:
 loc_019EE4:
 	sec
 	rtl
-	.byte	$64, $00, $A9, $E0, $FF, $85, $02, $22, $6E, $E1, $00, $89, $02, $00, $F0, $08
-	.byte	$A9, $02, $00, $95, $38, $82, $35, $F5, $A9, $10, $00, $85, $00, $A9, $E0, $FF
-	.byte	$85, $02, $22, $6E, $E1, $00, $89, $02, $00, $F0, $08, $A9, $04, $00, $95, $38
-	.byte	$82, $FB, $F4, $6B
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_019EE6:
+	stz	$00
+	lda	#$FFE0
+	sta	$02
+	jsl	f:sub_00E16E
+	bit	#$0002
+	beq	loc_019EFE
+	lda	#$0002
+	sta	$38,x
+	brl	sub_019433
+loc_019EFE:
+	lda	#$0010
+	sta	$00
+	lda	#$FFE0
+	sta	$02
+	jsl	f:sub_00E16E
+	bit	#$0002
+	beq	loc_019F19
+	lda	#$0004
+	sta	$38,x
+	brl	sub_019414
+loc_019F19:
+	rtl
 
 sub_019F1A:
 	ldy	#$0200
@@ -4507,9 +4664,9 @@ loc_01A41C:
 	phx
 	sta	$06
 loc_01A41F:
-	lda	#$FFF0
+	lda	#.loword(data_01FFF0)
 	sta	$12
-	lda	#$0001
+	lda	#^data_01FFF0
 	sta	$14
 	lda	a:$16B2
 	sta	$16
@@ -5486,12 +5643,51 @@ loc_01ABA6:
 	tyx
 loc_01ABA7:
 	rts
-	.byte	$B5, $22, $89, $00, $20, $F0, $4F, $B5, $2C, $89, $00, $08, $F0, $18, $E6, $84
-	.byte	$E6, $84, $A5, $84, $29, $06, $00, $C9, $06, $00, $D0, $03, $A9, $00, $00, $85
-	.byte	$84, $9D, $8C, $1D, $80, $30, $B5, $22, $89, $80, $00, $F0, $08, $A9, $01, $00
-	.byte	$9D, $8A, $1D, $80, $07, $B5, $22, $89, $00, $80, $F0, $07, $A9, $04, $00, $95
-	.byte	$3C, $80, $13, $B5, $22, $89, $40, $00, $F0, $0C, $A9, $00, $80, $9D, $8A, $1D
-	.byte	$9D, $8C, $1D, $9D, $88, $1D, $60
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01ABA8:
+	lda	$22,x
+	bit	#$2000
+	beq	loc_01ABFE
+	lda	$2C,x
+	bit	#$0800
+	beq	loc_01ABCE
+	inc	$84
+	inc	$84
+	lda	$84
+	and	#$0006
+	cmp	#$0006
+	bne	loc_01ABC7
+	lda	#$0000
+loc_01ABC7:
+	sta	$84
+	sta	a:$1D8C,x
+	bra	loc_01ABFE
+loc_01ABCE:
+	lda	$22,x
+	bit	#$0080
+	beq	loc_01ABDD
+	lda	#$0001
+	sta	a:$1D8A,x
+	bra	loc_01ABE4
+loc_01ABDD:
+	lda	$22,x
+	bit	#$8000
+	beq	loc_01ABEB
+loc_01ABE4:
+	lda	#$0004
+	sta	$3C,x
+	bra	loc_01ABFE
+loc_01ABEB:
+	lda	$22,x
+	bit	#$0040
+	beq	loc_01ABFE
+	lda	#$8000
+	sta	a:$1D8A,x
+	sta	a:$1D8C,x
+	sta	a:$1D88,x
+loc_01ABFE:
+	rts
 
 sub_01ABFF:
 	dec	$34,x
@@ -5643,14 +5839,61 @@ loc_01AD09:
 	sta	$12,x
 	stz	$30,x
 	rtl
-	.byte	$20, $39, $88, $B5, $3C, $89, $04, $00, $F0, $04, $5C, $76, $9A, $01, $22, $55
-	.byte	$85, $01, $22, $1B, $80, $01, $A9, $F2, $FF, $B4, $04, $D0, $03, $A9, $F6, $FF
-	.byte	$85, $14, $A9, $D8, $FF, $85, $16, $22, $92, $D6, $00, $74, $38, $A9, $02, $00
-	.byte	$B4, $04, $D0, $03, $A9, $06, $00, $85, $14, $A9, $D8, $FF, $85, $16, $22, $56
-	.byte	$D6, $00, $74, $38, $B5, $1E, $30, $05, $C9, $06, $00, $B0, $0F, $18, $B5, $1C
-	.byte	$69, $00, $0C, $95, $1C, $B5, $1E, $69, $00, $00, $95, $1E, $10, $0A, $22, $76
-	.byte	$9D, $01, $A9, $0C, $00, $95, $12, $6B, $22, $AB, $9D, $01, $B5, $12, $D0, $F2
-	.byte	$6B
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01AD11:
+	jsr	a:sub_018839
+	lda	$3C,x
+	bit	#$0004
+	beq	loc_01AD1F
+	jml	f:loc_019A76
+loc_01AD1F:
+	jsl	f:sub_018555
+	jsl	f:sub_01801B
+	lda	#$FFF2
+	ldy	$04,x
+	bne	loc_01AD31
+	lda	#$FFF6
+loc_01AD31:
+	sta	$14
+	lda	#$FFD8
+	sta	$16
+	jsl	f:sub_00D692
+	stz	$38,x
+	lda	#$0002
+	ldy	$04,x
+	bne	loc_01AD48
+	lda	#$0006
+loc_01AD48:
+	sta	$14
+	lda	#$FFD8
+	sta	$16
+	jsl	f:sub_00D656
+	stz	$38,x
+	lda	$1E,x
+	bmi	loc_01AD5E
+	cmp	#$0006
+	bcs	loc_01AD6D
+loc_01AD5E:
+	clc
+	lda	$1C,x
+	adc	#$0C00
+	sta	$1C,x
+	lda	$1E,x
+	adc	#$0000
+	sta	$1E,x
+loc_01AD6D:
+	bpl	loc_01AD79
+	jsl	f:sub_019D76
+loc_01AD73:
+	lda	#$000C
+	sta	$12,x
+	rtl
+loc_01AD79:
+	jsl	f:sub_019DAB
+	lda	$12,x
+	bne	loc_01AD73
+	rtl
 loc_01AD82:
 	rtl
 
@@ -5800,10 +6043,10 @@ sub_01AE95:
 	ldy	#$0000
 	lda	$04,x
 	bne	loc_01AEA9
-	ldy	#$FFF6
+	ldy	#.loword(data_00FFF6)
 loc_01AEA9:
 	sty	$14
-	lda	#$0000
+	lda	#^data_00FFF6
 	sta	$16
 	jml	f:sub_00D6DC
 
@@ -6035,11 +6278,59 @@ loc_01B077:
 	lda	#$0010
 	sta	$C4
 	brl	loc_019565
-	.byte	$A9, $00, $80, $85, $C4, $6B, $A9, $02, $00, $85, $C4, $82, $67, $E3, $A9, $10
-	.byte	$00, $85, $C4, $82, $88, $E5, $A9, $08, $00, $85, $C4, $82, $65, $E4, $64, $C4
-	.byte	$6B, $A9, $08, $00, $85, $C4, $82, $A8, $E3, $A9, $08, $00, $85, $C4, $82, $FB
-	.byte	$E3, $A9, $10, $00, $85, $C4, $82, $AD, $E4, $A9, $10, $00, $85, $C4, $82, $FA
-	.byte	$E4
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01B07F:
+	lda	#$8000
+	sta	$C4
+	rtl
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01B085:
+	lda	#$0002
+	sta	$C4
+	brl	sub_0193F4
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01B08D:
+	lda	#$0010
+	sta	$C4
+	brl	loc_01961D
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01B095:
+	lda	#$0008
+	sta	$C4
+	brl	loc_019502
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01B09D:
+	stz	$C4
+	rtl
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01B0A0:
+	lda	#$0008
+	sta	$C4
+	brl	loc_019450
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01B0A8:
+	lda	#$0008
+	sta	$C4
+	brl	loc_0194AB
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01B0B0:
+	lda	#$0010
+	sta	$C4
+	brl	loc_019565
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01B0B8:
+	lda	#$0010
+	sta	$C4
+	brl	loc_0195BA
 
 sub_01B0C0:
 	ldy	$04,x
@@ -10021,7 +10312,16 @@ sub_01CF66:
 	sta	a:$0022,y
 	sta	a:$0004,y
 	rtl
-	.byte	$18, $B5, $1C, $75, $30, $95, $1C, $B5, $1E, $75, $32, $95, $1E
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01CF8B:
+	clc
+	lda	$1C,x
+	adc	$30,x
+	sta	$1C,x
+	lda	$1E,x
+	adc	$32,x
+	sta	$1E,x
 
 sub_01CF98:
 	stz	$00
@@ -10060,13 +10360,13 @@ sub_01CFC5:
 	sta	$E8
 	and	#$003E
 	tay
-	lda	a:data_0593CA,y
+	lda	a:$93CA,y
 	sta	$1E,x
-	lda	a:data_0593DA,y
+	lda	a:$93DA,y
 	sta	$1A,x
-	lda	a:data_05941A,y
+	lda	a:$941A,y
 	sta	$1C,x
-	lda	a:data_05942A,y
+	lda	a:$942A,y
 	sta	$18,x
 loc_01CFF4:
 	rtl
@@ -10528,8 +10828,25 @@ loc_01D302:
 	sta	a:$0022,y
 loc_01D353:
 	rtl
-	.byte	$B5, $26, $D0, $11, $B5, $14, $F0, $0C, $B5, $02, $95, $26, $29, $00, $30, $09
-	.byte	$00, $02, $95, $02, $6B, $B5, $26, $95, $02, $74, $26, $6B
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01D354:
+	lda	$26,x
+	bne	loc_01D369
+	lda	$14,x
+	beq	loc_01D368
+	lda	$02,x
+	sta	$26,x
+	and	#$3000
+	ora	#$0200
+	sta	$02,x
+loc_01D368:
+	rtl
+loc_01D369:
+	lda	$26,x
+	sta	$02,x
+	stz	$26,x
+	rtl
 
 sub_01D370:
 	lda	$12,x
@@ -11171,7 +11488,11 @@ loc_01D868:
 	lda	#$C516
 	sta	a:$0020,y
 	rtl
-	.byte	$C2, $20, $C2, $10
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01D8AA:
+	rep	#$20
+	rep	#$10
 
 sub_01D8AE:
 	lda	$12,x
@@ -11242,9 +11563,9 @@ loc_01D931:
 
 sub_01D932:
 	ldy	$3A,x
-	lda	a:data_05C874,y
+	lda	a:$C874,y
 	sta	$38,x
-	lda	a:data_05C860,y
+	lda	a:$C860,y
 	sta	$00
 	sta	$02
 	asl	a
@@ -11255,7 +11576,7 @@ sub_01D932:
 	clc
 	adc	#$0008
 	sta	$36,x
-	lda	a:data_05C86A,y
+	lda	a:$C86A,y
 	sta	$30,x
 	sta	$04
 	clc
@@ -11388,10 +11709,10 @@ loc_01DA40:
 	ldx	$FE
 	clc
 	lda	$34,x
-	adc	a:data_05C8CE,y
+	adc	a:$C8CE,y
 	sta	$34,x
 	lda	$36,x
-	adc	a:data_05C88E,y
+	adc	a:$C88E,y
 	cmp	#$0008
 	bcs	loc_01DA5F
 	lda	#$0008
@@ -12651,8 +12972,22 @@ loc_01E3AA:
 	clc
 loc_01E3AB:
 	rts
-	.byte	$DA, $49, $FF, $FF, $1A, $85, $00, $98, $85, $04, $A9, $00, $01, $85, $02, $A9
-	.byte	$00, $00, $85, $06, $20, $18, $E3, $FA, $6B
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01E3AC:
+	phx
+	eor	#$FFFF
+	inc	a
+	sta	$00
+	tya
+	sta	$04
+	lda	#$0100
+	sta	$02
+	lda	#$0000
+	sta	$06
+	jsr	a:sub_01E318
+	plx
+	rtl
 
 sub_01E3C5:
 	lda	$0A,x
@@ -12665,7 +13000,13 @@ sub_01E3C5:
 	lda	#$0000
 	sta	$1A,x
 	bra	loc_01E3E7
-	.byte	$A9, $00, $80, $95, $18, $A9, $FF, $FF, $95, $1A
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01E3DD:
+	lda	#$8000
+	sta	$18,x
+	lda	#$FFFF
+	sta	$1A,x
 loc_01E3E7:
 	jmp	a:loc_01E43E
 
@@ -13444,7 +13785,11 @@ sub_01E9BE:
 	inc	$12,x
 loc_01E9D7:
 	rtl
-	.byte	$C2, $20, $C2, $10
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_01E9D8:
+	rep	#$20
+	rep	#$10
 
 sub_01E9DC:
 	lda	$12,x
@@ -13492,7 +13837,7 @@ sub_01EA21:
 	lda	#$0060
 	sta	$24,x
 	phx
-	ldx	#$9E95
+	ldx	#.loword(data_059E95)
 	jsl	f:sub_0090A8
 	plx
 loc_01EA35:
@@ -13545,7 +13890,7 @@ sub_01EA59:
 	lda	#$4010
 	sta	$16,x
 	ldy	$84
-	lda	a:data_05CCF5,y
+	lda	a:$CCF5,y
 	sta	$06,x
 	lda	#$FFF8
 	sta	$2A,x
@@ -13588,7 +13933,7 @@ loc_01EAE7:
 	ldy	$84
 	lda	$E8
 	and	#$00FF
-	adc	a:data_05CB43,y
+	adc	a:$CB43,y
 	sta	a:$163A
 	lda	$38,x
 	eor	#$FFFF
@@ -13693,15 +14038,15 @@ loc_01EBC8:
 	rtl
 
 sub_01EBCE:
-	lda	a:data_05CB3D,y
+	lda	a:$CB3D,y
 	sta	$00,x
-	lda	a:data_05CB31,y
+	lda	a:$CB31,y
 	sta	$10,x
 	lda	#$003C
 	sta	$16,x
 	lda	#$3E00
 	sta	$02,x
-	lda	a:data_05CB37,y
+	lda	a:$CB37,y
 	sta	$28,x
 	lda	#$FFDC
 	sta	$2A,x
@@ -13829,10 +14174,10 @@ loc_01ECD3:
 loc_01ECDD:
 	clc
 	lda	$18,x
-	adc	a:data_05CB29,y
+	adc	a:$CB29,y
 	sta	$18,x
 	lda	$1A,x
-	adc	a:data_05CB2D,y
+	adc	a:$CB2D,y
 	sta	$1A,x
 loc_01ECEC:
 	rts
@@ -14003,7 +14348,7 @@ loc_01EE53:
 	lda	a:$1638
 	beq	loc_01EE7C
 	ldy	$36,x
-	lda	a:data_05CB99,y
+	lda	a:$CB99,y
 	tay
 	lda	$30,x
 	sta	a:$0030,y
@@ -14020,16 +14365,16 @@ loc_01EE7D:
 	ldy	a:$163A
 	lda	a:$034E
 	bmi	loc_01EE7C
-	cmp	a:data_05CB7B,y
+	cmp	a:$CB7B,y
 	bcc	loc_01EE7C
 	phx
 	ldx	#$0340
 	lda	#$FFFF
 	sta	$FE
-	lda	#$FFFE
+	lda	#.loword(data_01FFFE)
 	sta	$FC
 	jsr	a:sub_01F3BD
-	lda	#$0001
+	lda	#^data_01FFFE
 	sta	$FE
 	jsr	a:sub_01F3BD
 	plx
@@ -14062,13 +14407,13 @@ loc_01EEE0:
 loc_01EEE5:
 	lda	#$004F
 	sta	$24,x
-	lda	a:data_05CC41,y
+	lda	a:$CC41,y
 	sta	$18,x
-	lda	a:data_05CC55,y
+	lda	a:$CC55,y
 	sta	$1A,x
-	lda	a:data_05CC19,y
+	lda	a:$CC19,y
 	sta	$3A,x
-	lda	a:data_05CC2D,y
+	lda	a:$CC2D,y
 	sta	$3E,x
 	txa
 	clc
@@ -14291,7 +14636,7 @@ sub_01F04F:
 	lda	#$401D
 	sta	$16,x
 	ldy	$84
-	lda	a:data_05CCFB,y
+	lda	a:$CCFB,y
 	sta	$06,x
 	jsr	a:sub_01F2FF
 	plx
@@ -14325,18 +14670,18 @@ loc_01F0F4:
 	bcc	loc_01F105
 	ldy	#$0002
 loc_01F105:
-	lda	a:data_05CC69,y
+	lda	a:$CC69,y
 	cmp	$04,x
 	beq	loc_01F118
 	sta	$04,x
-	lda	a:data_05CC6D,y
+	lda	a:$CC6D,y
 	sta	$16,x
 	lda	#$CCDD
 	sta	$20,x
 loc_01F118:
 	ldy	$84
 	lda	$0A,x
-	cmp	a:data_05CCD7,y
+	cmp	a:$CCD7,y
 	bcc	loc_01F127
 	stz	$1C,x
 	stz	$1E,x
@@ -14417,16 +14762,16 @@ loc_01F1B2:
 	lda	$E8
 	and	#$0006
 	tay
-	lda	a:data_05CCCF,y
+	lda	a:$CCCF,y
 	sta	a:$1642
 	bra	loc_01F1DD
 loc_01F1CE:
 	clc
 	lda	$18,x
-	adc	a:data_05CCC7,y
+	adc	a:$CCC7,y
 	sta	$18,x
 	lda	$1A,x
-	adc	a:data_05CCCB,y
+	adc	a:$CCCB,y
 	sta	$1A,x
 loc_01F1DD:
 	jsr	a:sub_01F2FF
@@ -14471,7 +14816,7 @@ sub_01F21F:
 	sta	f:$7E3821
 	sta	f:$7E382A
 	phx
-	ldx	#$9EB1
+	ldx	#.loword(data_059EB1)
 	jsl	f:sub_0090A8
 	plx
 	inc	$12,x
@@ -14640,13 +14985,13 @@ sub_01F360:
 	sta	$16,x
 
 sub_01F36F:
-	lda	a:data_05CC71,y
+	lda	a:$CC71,y
 	sta	$0E,x
-	lda	a:data_05CC75,y
+	lda	a:$CC75,y
 	sta	$28,x
-	lda	a:data_05CC7B,y
+	lda	a:$CC7B,y
 	sta	$2A,x
-	lda	a:data_05CC81,y
+	lda	a:$CC81,y
 	sta	$00,x
 	lda	#$3E00
 	sta	$02,x
@@ -15229,5 +15574,8 @@ loc_01F6E4:
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+data_01FFF0:
+	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+data_01FFFE:
+	.byte	$FF, $FF

@@ -900,7 +900,7 @@ sub_04869A:
 	sta	$2A,x
 	stz	$16,x
 	phx
-	ldx	#$EB45
+	ldx	#.loword(data_05EB45)
 	jsl	f:sub_0090A8
 	plx
 	lda	#$0004
@@ -1808,7 +1808,7 @@ loc_048E0D:
 
 sub_048E14:
 	phx
-	ldx	#$ECD9
+	ldx	#.loword(data_05ECD9)
 	jsl	f:sub_0090A8
 	plx
 	lda	#$FFFC
@@ -1923,7 +1923,7 @@ sub_048F05:
 	lda	#$0100
 	sta	$24,x
 	phx
-	ldx	#$ECD0
+	ldx	#.loword(data_05ECD0)
 	jsl	f:sub_0090A8
 	plx
 loc_048F1D:
@@ -2120,7 +2120,7 @@ sub_0490B2:
 	lda	#$0050
 	jsl	f:sub_00868F
 	phx
-	ldx	#$ECD0
+	ldx	#.loword(data_05ECD0)
 	jsl	f:sub_0090A8
 	plx
 loc_0490DE:
@@ -6243,7 +6243,7 @@ loc_04B0E7:
 	lda	#$0081
 	jsl	f:sub_00868F
 	phx
-	ldx	#$9EC9
+	ldx	#.loword(data_059EC9)
 	jsl	f:sub_0090A8
 	plx
 	lda	#$0080
@@ -7606,7 +7606,17 @@ sub_04BB9D:
 	inc	$12,x
 loc_04BBAA:
 	jmp	a:loc_04B674
-	.byte	$F6, $24, $B5, $24, $C9, $78, $00, $90, $04, $74, $24, $F6, $12, $4C, $74, $B6
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_04BBAD:
+	inc	$24,x
+	lda	$24,x
+	cmp	#$0078
+	bcc	loc_04BBBA
+	stz	$24,x
+	inc	$12,x
+loc_04BBBA:
+	jmp	a:loc_04B674
 
 sub_04BBBD:
 	ldy	#$0800
@@ -7665,7 +7675,16 @@ sub_04BC10:
 	jsl	f:sub_00FEA3
 	plx
 	rts
-	.byte	$18, $60, $38, $60
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_04BC2C:
+	clc
+	rts
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_04BC2E:
+	sec
+	rts
 
 sub_04BC30:
 	lda	$12,x
@@ -8599,7 +8618,13 @@ loc_04C383:
 
 sub_04C3A1:
 	rtl
-	.byte	$A0, $00, $05, $A9, $00, $00, $99, $06, $00, $6B
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_04C3A2:
+	ldy	#$0500
+	lda	#$0000
+	sta	a:$0006,y
+	rtl
 
 sub_04C3AC:
 	ldy	#$0500
@@ -10513,7 +10538,7 @@ sub_04D316:
 	lda	#$01C0
 	sta	$24,x
 	phx
-	ldx	#$F286
+	ldx	#.loword(data_05F286)
 	jsl	f:sub_0090A8
 	plx
 loc_04D32E:
@@ -11188,7 +11213,7 @@ tbl_04D888:
 	.addr	sub_04D8F2
 
 sub_04D890:
-	ldx	#$CF41
+	ldx	#.loword(data_05CF41)
 	jsl	f:sub_0090A8
 	ldy	#$8412
 	jsl	f:sub_009982

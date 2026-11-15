@@ -2363,9 +2363,9 @@ loc_03E682:
 	sta	a:$11C0
 	lda	#$AAAA
 	sta	a:$11C2
-	lda	#$AAAA
+	lda	#.loword(data_02AAAA)
 	sta	a:$11C4
-	lda	#$0002
+	lda	#^data_02AAAA
 	sta	a:$11C6
 	lda	a:$158E
 	dec	a

@@ -913,13 +913,13 @@ sub_1DACEF:
 	tay
 	sep	#$20
 	.a8
-	lda	a:data_05F794,y
+	lda	a:$F794,y
 	sta	a:WRMPYB
 	nop
 	stz	$09
 	lda	a:RDMPYH
 	sta	$08
-	lda	a:data_05F814,y
+	lda	a:$F814,y
 	sta	a:WRMPYB
 	rep	#$20
 	.a16
@@ -931,13 +931,13 @@ sub_1DACEF:
 	sta	$08
 	sep	#$20
 	.a8
-	lda	a:data_05F7D4,y
+	lda	a:$F7D4,y
 	sta	a:WRMPYB
 	nop
 	stz	$0B
 	lda	a:RDMPYH
 	sta	$0A
-	lda	a:data_05F854,y
+	lda	a:$F854,y
 	sta	a:WRMPYB
 	rep	#$20
 	.a16
@@ -1694,7 +1694,7 @@ sub_1DB2C5:
 	bpl	loc_1DB2F1
 	inc	$12,x
 	phx
-	ldx	#$F8C3
+	ldx	#.loword(data_05F8C3)
 	jsl	f:sub_0090A8
 	ldy	#$F8DA
 	jsl	f:sub_009982
@@ -2508,10 +2508,10 @@ loc_1DB940:
 
 sub_1DB952:
 	stz	a:$1644
-	lda	#$FFFF
+	lda	#.loword(data_10FFFF)
 	sta	a:$163E
 	stz	a:$1642
-	lda	#$0010
+	lda	#^data_10FFFF
 	sta	a:$1640
 	jsl	f:sub_00FF30
 	lda	#$0002
@@ -2525,7 +2525,7 @@ sub_1DB952:
 	jsl	f:sub_009982
 	plx
 	phx
-	ldx	#$F8D1
+	ldx	#.loword(data_05F8D1)
 	jsl	f:sub_0090A8
 	plx
 loc_1DB98C:
@@ -2746,7 +2746,7 @@ loc_1DBB47:
 	jsl	f:sub_00868F
 	ldy	#$FEC7
 	jsl	f:sub_009982
-	ldx	#$FEDF
+	ldx	#.loword(data_05FEDF)
 	jsl	f:sub_0090A8
 	plx
 	lda	#$0013
@@ -3259,7 +3259,7 @@ sub_1DBF13:
 	sta	$0A,x
 	stz	a:$1638
 	phx
-	ldx	#$FF27
+	ldx	#.loword(data_05FF27)
 	jsl	f:sub_0090A8
 	plx
 	stz	a:$1642
@@ -3501,7 +3501,7 @@ sub_1DC125:
 	lda	#$0006
 	sta	$12,x
 	phx
-	ldx	#$FF30
+	ldx	#.loword(data_05FF30)
 	jsl	f:sub_0090A8
 	plx
 loc_1DC13D:
@@ -4920,7 +4920,13 @@ loc_1DCBB7:
 	sta	$1A,x
 loc_1DCBC6:
 	rts
-	.byte	$A9, $40, $00, $85, $00, $A9, $80, $00, $85, $02
+
+; (no caller found; decoded because it follows the end of a routine)
+sub_1DCBC7:
+	lda	#$0040
+	sta	$00
+	lda	#$0080
+	sta	$02
 
 sub_1DCBD1:
 	lda	$0E,x
