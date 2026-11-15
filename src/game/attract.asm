@@ -865,11 +865,11 @@ draw_title_word_sprites:
 	sta	zp_FC
 	lda	#$0044
 	sta	zp_FE
-	lda	#$8705
+	lda	#.loword(title_sprites_058705)
 	sta	zp_18
-	lda	#$86E5
+	lda	#.loword(title_sprites_0586E5)
 	sta	zp_1A
-	lda	#$86F5
+	lda	#.loword(title_sprites_0586F5)
 	sta	zp_1C
 	ldy	#$000E
 	jsr	a:draw_title_sprite_group
@@ -877,11 +877,11 @@ draw_title_word_sprites:
 	sta	zp_FC
 	lda	#$004C
 	sta	zp_FE
-	lda	#$8745
+	lda	#.loword(title_sprites_058745)
 	sta	zp_18
-	lda	#$8715
+	lda	#.loword(title_sprites_058715)
 	sta	zp_1A
-	lda	#$872D
+	lda	#.loword(title_sprites_05872D)
 	sta	zp_1C
 	ldy	#$0016
 	jsr	a:draw_title_sprite_group
@@ -889,11 +889,11 @@ draw_title_word_sprites:
 	sta	zp_FC
 	lda	#$006C
 	sta	zp_FE
-	lda	#$877D
+	lda	#.loword(title_sprites_05877D)
 	sta	zp_18
-	lda	#$875D
+	lda	#.loword(title_sprites_05875D)
 	sta	zp_1A
-	lda	#$876D
+	lda	#.loword(title_sprites_05876D)
 	sta	zp_1C
 	ldy	#$000E
 	jsr	a:draw_title_sprite_group
@@ -901,11 +901,11 @@ draw_title_word_sprites:
 	sta	zp_FC
 	lda	#$006C
 	sta	zp_FE
-	lda	#$8791
+	lda	#.loword(title_sprites_058791)
 	sta	zp_18
-	lda	#$878D
+	lda	#.loword(title_sprites_05878D)
 	sta	zp_1A
-	lda	#$878F
+	lda	#.loword(title_sprites_05878F)
 	sta	zp_1C
 	ldy	#$0000
 	jsr	a:draw_title_sprite_group
