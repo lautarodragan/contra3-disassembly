@@ -8944,7 +8944,7 @@ loc_02CE77:
 	lda	$14,x
 	cmp	#$0006
 	bcs	loc_02CE8D
-	ldy	a:wram_1F9E
+	ldy	a:p1_weapon_select
 	sta	a:$1F84,y
 	bra	loc_02CEA6
 loc_02CE8D:
@@ -9951,7 +9951,7 @@ loc_02D669:
 	lda	$14,x
 	cmp	#$0006
 	bcs	loc_02D67F
-	ldy	a:wram_1FDE
+	ldy	a:p2_weapon_select
 	sta	a:$1FC4,y
 	bra	loc_02D698
 loc_02D67F:

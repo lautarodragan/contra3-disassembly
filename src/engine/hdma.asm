@@ -94,7 +94,7 @@ loc_00E3E0:
 	sta	a:wram_170D
 	sta	a:wram_174B
 	sta	a:wram_174D
-	ldx	a:wram_1F82
+	ldx	a:p1_weapon_slot_other
 	lda	a:data_05A1D1,x
 	sta	a:wram_1711
 	sta	a:wram_1713
@@ -155,7 +155,7 @@ loc_00E46A:
 	sta	a:wram_172D
 	sta	a:wram_176B
 	sta	a:wram_176D
-	ldx	a:wram_1FC2
+	ldx	a:p2_weapon_slot_other
 	lda	a:data_05A1D1,x
 	sta	a:wram_1731
 	sta	a:wram_1733

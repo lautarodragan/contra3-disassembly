@@ -194,7 +194,7 @@ opening_zoom_title_logo_last:
 	lda	#$0100
 	sta	a:title_wars_x
 	lda	#$FF80
-	sta	a:wram_1E5C
+	sta	a:title_tm_x
 	lda	#$0046
 	jsl	f:queue_sound
 	stz	a:title_shake
@@ -254,7 +254,7 @@ opening_slide_title_wars:
 
 opening_shake_title:
 	lda	#$00B0
-	sta	a:wram_1E5C
+	sta	a:title_tm_x
 	jsl	f:draw_title_word_sprites
 	ldy	a:title_shake
 	lda	frame_counter
@@ -293,7 +293,7 @@ game_mode_title:
 	lda	#$0050
 	sta	a:title_wars_x
 	lda	#$00B0
-	sta	a:wram_1E5C
+	sta	a:title_tm_x
 	stz	a:title_shake
 	jsl	f:clear_ram_1c00_1cff
 	stz	a:title_menu_cursor
@@ -462,14 +462,14 @@ init_players:
 	stz	a:life_transfer_disabled
 	stz	a:p1_weapon_slot
 	stz	a:p2_weapon_slot
-	stz	a:wram_1F82
-	stz	a:wram_1FC2
+	stz	a:p1_weapon_slot_other
+	stz	a:p2_weapon_slot_other
 	stz	a:p1_weapon_1
 	stz	a:p2_weapon_1
 	stz	a:p1_weapon_2
 	stz	a:p2_weapon_2
-	stz	a:wram_1F9E
-	stz	a:wram_1FDE
+	stz	a:p1_weapon_select
+	stz	a:p2_weapon_select
 	stz	a:p1_barrier_timer
 	stz	a:p2_barrier_timer
 	lda	#$0001
@@ -1214,7 +1214,7 @@ update_weapon_swap:
 	lda	a:p2_spin
 	beq	@not_forced
 	lda	#$0002
-	sta	a:wram_1FC2
+	sta	a:p2_weapon_slot_other
 	sta	a:p2_weapon_slot
 	rts
 @not_forced:
@@ -1223,12 +1223,12 @@ update_weapon_swap:
 	lda	joy2_pressed
 	bit	#JOY_X
 	beq	@apply
-	lda	a:wram_1FDE
+	lda	a:p2_weapon_select
 	eor	#$0002
-	sta	a:wram_1FDE
+	sta	a:p2_weapon_select
 @apply:
-	lda	a:wram_1FDE
-	sta	a:wram_1FC2
+	lda	a:p2_weapon_select
+	sta	a:p2_weapon_slot_other
 	eor	#$0002
 	sta	a:p2_weapon_slot
 	rts
@@ -1237,7 +1237,7 @@ update_weapon_swap_p1:
 	lda	a:p1_spin
 	beq	@not_forced
 	lda	#$0002
-	sta	a:wram_1F82
+	sta	a:p1_weapon_slot_other
 	sta	a:p1_weapon_slot
 	rts
 @not_forced:
@@ -1246,12 +1246,12 @@ update_weapon_swap_p1:
 	lda	joy1_pressed
 	bit	#JOY_X
 	beq	@apply
-	lda	a:wram_1F9E
+	lda	a:p1_weapon_select
 	eor	#$0002
-	sta	a:wram_1F9E
+	sta	a:p1_weapon_select
 @apply:
-	lda	a:wram_1F9E
-	sta	a:wram_1F82
+	lda	a:p1_weapon_select
+	sta	a:p1_weapon_slot_other
 	eor	#$0002
 	sta	a:p1_weapon_slot
 	rts

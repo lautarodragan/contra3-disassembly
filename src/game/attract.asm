@@ -281,14 +281,14 @@ demo_init_players:
 	sta	difficulty
 	stz	a:p1_weapon_slot
 	stz	a:p2_weapon_slot
-	stz	a:wram_1F82
-	stz	a:wram_1FC2
+	stz	a:p1_weapon_slot_other
+	stz	a:p2_weapon_slot_other
 	stz	a:p1_weapon_1
 	stz	a:p2_weapon_1
 	stz	a:p1_weapon_2
 	stz	a:p2_weapon_2
-	stz	a:wram_1F9E
-	stz	a:wram_1FDE
+	stz	a:p1_weapon_select
+	stz	a:p2_weapon_select
 	stz	a:p1_barrier_timer
 	stz	a:p2_barrier_timer
 	stz	a:p1_spin
@@ -853,8 +853,8 @@ check_stage_select_code:
 	sec
 	rts
 
-; Builds the OAM entries of the words THE, ALIEN, WARS (and a 4th group
-; at wram_1E5C) at their X positions, Y offset by the title shake.
+; Builds the OAM entries of the words THE, ALIEN, WARS and the TM mark
+; at their X positions (title_*_x), Y offset by the title shake.
 draw_title_word_sprites:
 	ldx	#$0FC0
 	lda	#$11C0
@@ -897,7 +897,7 @@ draw_title_word_sprites:
 	sta	zp_1C
 	ldy	#$000E
 	jsr	a:draw_title_sprite_group
-	lda	a:wram_1E5C
+	lda	a:title_tm_x
 	sta	zp_FC
 	lda	#$006C
 	sta	zp_FE
