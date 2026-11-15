@@ -16,7 +16,7 @@
 See [The cartridge](cartridge.md#vectors) for the vector table.
 
 Every other routine is still named by its address, `sub_` plus six hex
-digits (for example `sub_00FF48` at `$00:FF48`). The number of routines and
+digits (for example `vector_length` at `$00:FF48`). The number of routines and
 jump tables found is in [Progress](progress.md).
 
 When you name a routine, add it here with what it does, its inputs and

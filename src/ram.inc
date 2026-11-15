@@ -1067,12 +1067,12 @@ hdmaen_shadow       = $1EC4	; HDMAEN, written by nmi_frame_top_down
 pending_spc_list           = $1F2C
 p1_weapon_slot      = $1F80	; player 1 active weapon slot (player 2: $1FC0)
 wram_1F82           = $1F82
-p1_weapon_1         = $1F84	; player 1 weapon (WEAPON_*) of the first slot, fired when p1_weapon_slot = 2 (sub_00D656); PLAYER_WEAPON_1
-p1_weapon_2         = $1F86	; player 1 weapon of the second slot, fired when p1_weapon_slot = 0 (sub_00D692)
+p1_weapon_1         = $1F84	; player 1 weapon (WEAPON_*) of the first slot, fired when p1_weapon_slot = 2 (spin_fire_weapon_1); PLAYER_WEAPON_1
+p1_weapon_2         = $1F86	; player 1 weapon of the second slot, fired when p1_weapon_slot = 0 (spin_fire_weapon_2)
 p1_barrier_timer    = $1F88	; player 1 barrier (invincibility) timer
 p1_lives            = $1F8A	; player 1 lives
 p1_bombs            = $1F8C	; player 1 smart bombs
-p1_spin             = $1F8E	; 1 while player 1 holds L+R or spin-jumps: both weapons fire (sub_018000); PLAYER_SPIN
+p1_spin             = $1F8E	; 1 while player 1 holds L+R or spin-jumps: both weapons fire (update_spin_flag); PLAYER_SPIN
 p1_m7_center_x           = $1F90	; Mode 7 rotation centre x of player 1's view (copied to p1_m7x by compute_m7_matrix)
 p1_m7_center_y           = $1F92	; Mode 7 rotation centre y of player 1's view
 p1_m7_scale_x           = $1F94	; Mode 7 scale of player 1's view, $0100 = 1:1, larger = zoomed out ($0500 in the intro and the map view)
@@ -1239,8 +1239,8 @@ wram_7F0000         = $7F0000
 ; Main object list: slots of OBJ_SIZE bytes from $0200: players at $0200 /
 ; $0240 (see PLAYER_* below), $0280 and $02C0 run by update_objects_0280, and
 ; $0300-$0ABF (30 slots) run by update_objects.  New objects are allocated in
-; $0300-$077F (sub_019E83 / sub_019EAB search upwards); enemy bullets
-; (sub_01A11C) search downwards from $0740.  Freed by clearing the slot
+; $0300-$077F (find_free_slot / find_free_slot_y search upwards); enemy bullets
+; (spawn_enemy_bullet) search downwards from $0740.  Freed by clearing the slot
 ; (OBJ_FLAGS bit 15, or OBJ_TYPE 0 = free).
 OBJ_SIZE            = $40
 OBJ_SPRITE          = $00	; metasprite pointer (bank $06) drawn by draw_metasprite; 0 = not drawn.  Set from the animation script (OBJ_ANIM) or by the handler
@@ -1270,7 +1270,7 @@ OBJ_HITBOX_TOP      = $2E	; OBJ_Y + OBJ_HITBOX_H, likewise
 ; $30-$3B: free for the handler (no common meaning)
 OBJ_TOUCHED_BY      = $3C	; slot of the player whose body overlaps the object this frame (OBJF_TOUCH); not cleared by the loop
 ;
-; OBJ_FLAGS bits (tested in update_objects, update_shots, sub_01AB1F):
+; OBJ_FLAGS bits (tested in update_objects, update_shots, bomb_hit_targets):
 OBJF_MOVE           = $0001	; add the velocity to the position and follow the BG scroll ($138E/$13A6)
 OBJF_OFFSCREEN_KILL = $0002	; freed when OBJ_X or OBJ_Y leaves -$20..$11F
 OBJF_HARMFUL        = $0004	; touching it kills the player (ORed into PLAYER_CONTACT; removed while the player has the barrier)
@@ -1281,7 +1281,7 @@ OBJF_CLANG          = $4000	; a shot that hits it without damage plays sound $10
 OBJF_DELETE         = $8000	; free the slot after its handler returns
 ;
 ; Player objects ($0200 player 1, $0240 player 2) are slots of the same
-; list run by their own code (sub_01A624); the fields above with the same
+; list run by their own code (update_players); the fields above with the same
 ; meaning are OBJ_SPRITE, OBJ_ATTR, OBJ_FACING, the position and velocity,
 ; OBJ_STATE (PLAYER_STATE_* below) and OBJ_FLAGS (0 = not present,
 ; bit 1 = invulnerable after respawn, bit 15 = not touchable).  Others
@@ -1291,7 +1291,7 @@ PLAYERF_INVULNERABLE = $0002	; set while PLAYER_INVULN_TIMER runs: enemies' bodi
 PLAYERF_INTANGIBLE  = $8000	; dying / not on the screen: not touched by objects
 PLAYER_HITBOX_LEFT  = $06	; body box, left (= OBJ_X)
 PLAYER_HITBOX_BOTTOM = $10	; body box, bottom (= OBJ_Y)
-PLAYER_FIRE_DELAY_2 = $14	; frames before PLAYER_WEAPON_2 can fire again (reloaded from weapon_fire_delays[weapon] by sub_00D692 / sub_00D6DC)
+PLAYER_FIRE_DELAY_2 = $14	; frames before PLAYER_WEAPON_2 can fire again (reloaded from weapon_fire_delays[weapon] by spin_fire_weapon_2 / fire_weapon)
 PLAYER_POSE         = $20	; pose (index of the frame tables data_05B29E.., 16 bytes each), not an animation pointer
 PLAYER_JOY_HELD     = $22	; joypad buttons held (copied from joy1_held/joy2_held)
 PLAYER_INVULN_TIMER = $24	; respawn invulnerability: counts down, the player blinks, OBJ_FLAGS bit 1 cleared at 0
@@ -1300,15 +1300,15 @@ PLAYER_HITBOX_RIGHT = $28	; body box, right
 PLAYER_HITBOX_TOP   = $2A	; body box, top
 PLAYER_JOY_PRESSED  = $2C	; joypad buttons newly pressed (copied from joy1_pressed/joy2_pressed)
 PLAYER_LOCKED       = $2E	; non-zero while the "stand still" button (button_stand_still / wram_1628) is held: no walking
-PLAYER_FIRE_DELAY_1 = $3A	; frames before PLAYER_WEAPON_1 can fire again (sub_00D656 / sub_00D6DC)
+PLAYER_FIRE_DELAY_1 = $3A	; frames before PLAYER_WEAPON_1 can fire again (spin_fire_weapon_1 / fire_weapon)
 PLAYER_CONTACT      = $3C	; contact flags, PCONTACT_* bits
 ; Player parallel fields at slot + $1300 ($1500 player 1, $1540 player 2):
 PLAYER_POSE_ADD     = $1300	; added to PLAYER_POSE (shooting poses), cleared every frame
-PLAYER_PLATFORM     = $1304	; slot of the solid object the player was last pushed by / stands on (sub_019F37)
-PLAYER_DX           = $1306	; x movement of this frame (sub_01AA20)
+PLAYER_PLATFORM     = $1304	; slot of the solid object the player was last pushed by / stands on (solid_object_vs_player)
+PLAYER_DX           = $1306	; x movement of this frame (move_player)
 PLAYER_DY           = $130C	; y movement of this frame
-PLAYER_BOMB_RADIUS  = $1310	; bomb blast half-size, 0 = no bomb active (sub_01801B starts it, sub_01AAF4 grows it to $FF)
-PLAYER_CENTER_X     = $1312	; point enemies aim at (sub_01A0C8, sub_01A0E9)
+PLAYER_BOMB_RADIUS  = $1310	; bomb blast half-size, 0 = no bomb active (check_bomb_button starts it, update_bomb grows it to $FF)
+PLAYER_CENTER_X     = $1312	; point enemies aim at (angle_to_player, fire_bullet_at_player)
 PLAYER_CENTER_Y     = $1314
 PLAYER_BOMB_SPEED_SUB = $1318	; bomb growth per frame, fraction (accelerates by $0800 a frame)
 PLAYER_BOMB_SPEED   = $131A	; bomb growth per frame, pixels
@@ -1324,25 +1324,25 @@ PLAYER_WEAPON_2     = $1D86	; weapon in the second slot
 PLAYER_BARRIER      = $1D88	; p1_barrier_timer
 PLAYER_LIVES        = $1D8A	; p1_lives
 PLAYER_BOMBS        = $1D8C	; p1_bombs
-PLAYER_SPIN         = $1D8E	; 1 while L and R are both held or in the spin jump (state PLAYER_STATE_SPIN_JUMP): both weapons fire (sub_018000)
+PLAYER_SPIN         = $1D8E	; 1 while L and R are both held or in the spin jump (state PLAYER_STATE_SPIN_JUMP): both weapons fire (update_spin_flag)
 
-; Player states (OBJ_STATE of a player; handlers in tbl_01AACA, input
-; handling in tbl_01A6EF).  Seen in the emulator: 0 on the ground, 3 jump,
+; Player states (OBJ_STATE of a player; handlers in tbl_player_states, input
+; handling in tbl_player_input).  Seen in the emulator: 0 on the ground, 3 jump,
 ; 4 falling (also the drop-in after a respawn), 7 / 8 death, $0E / $0F
 ; respawn.  The others (climbing, hanging, scripted moves) are not
 ; identified yet.
 PLAYER_STATE_GROUND = $00	; standing / walking / crouching
-PLAYER_STATE_JUMP   = $03	; jumping (sub_018354)
-PLAYER_STATE_FALL   = $04	; falling (sub_018317)
-PLAYER_STATE_DYING  = $07	; hit: thrown back (sub_019AEB), entered at loc_019A76
-PLAYER_STATE_DEAD   = $08	; lying dead; when the countdown at +$30 ends, takes a life (sub_019B66)
-PLAYER_STATE_SPIN_STANCE = $0B	; L+R held on the ground (sub_01AC71)
+PLAYER_STATE_JUMP   = $03	; jumping (player_state_jump)
+PLAYER_STATE_FALL   = $04	; falling (player_state_fall)
+PLAYER_STATE_DYING  = $07	; hit: thrown back (player_state_dying), entered at kill_player
+PLAYER_STATE_DEAD   = $08	; lying dead; when the countdown at +$30 ends, takes a life (player_state_dead)
+PLAYER_STATE_SPIN_STANCE = $0B	; L+R held on the ground (player_state_spin_stance)
 PLAYER_STATE_SPIN_JUMP = $0C	; spin jump: fire pressed during PLAYER_STATE_SPIN_STANCE
-PLAYER_STATE_OUT    = $0E	; waiting to respawn (sub_019B9D: needs lives left)
-PLAYER_STATE_RESPAWN = $0F	; respawning (sub_019BC8)
+PLAYER_STATE_OUT    = $0E	; waiting to respawn (player_state_out: needs lives left)
+PLAYER_STATE_RESPAWN = $0F	; respawning (player_state_respawn)
 ;
 ; Weapons (PLAYER_WEAPON_1 / PLAYER_WEAPON_2, p1_weapon_1...): index of the
-; shot spawners tbl_00D686 / tbl_00D6C2 / tbl_00D717 and of weapon_fire_delays
+; shot spawners tbl_spin_fire_1 / tbl_spin_fire_2 / tbl_fire_weapon and of weapon_fire_delays
 ; (fire delay); checked in the emulator by poking p1_weapon_1.
 WEAPON_DEFAULT      = 0	; the starting gun
 WEAPON_SPREAD       = 1	; S
@@ -1352,7 +1352,7 @@ WEAPON_FLAME        = 4	; F
 WEAPON_LASER        = 5	; L
 ;
 ; PLAYER_CONTACT bits:
-PCONTACT_KILLED     = $0004	; killed: harmful object, enemy bullet, fell off the screen (checked by the states, loc_019A76)
+PCONTACT_KILLED     = $0004	; killed: harmful object, enemy bullet, fell off the screen (checked by the states, kill_player)
 PCONTACT_ON_OBJECT  = $0080	; standing on a solid object
 PCONTACT_BLOCK_LEFT = $0200	; a solid object on the left: cannot walk left
 PCONTACT_BLOCK_RIGHT = $0400	; a solid object on the right: cannot walk right

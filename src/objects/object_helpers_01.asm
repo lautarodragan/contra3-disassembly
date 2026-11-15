@@ -4,7 +4,9 @@
 ; Routines shared by object handlers in banks $00, $01, $04 and $1D (movement,
 ; aiming, spawning).
 
-sub_019E44:
+; Handler of object type 54: marks itself OBJF_DELETE and frees the first
+; object (from $0280) whose OBJ_TYPE equals its own $3A.
+delete_self_and_linked:
 	lda	#$8000
 	sta	$16,x
 	txy
@@ -48,10 +50,13 @@ loc_019E80:
 	stz	$26,x
 	rtl
 
-sub_019E83:
+; Returns X = the first free slot (OBJ_TYPE 0) of $0300-$077F, carry clear;
+; carry set if none.
+find_free_slot:
 	ldx	#$0300
 
-sub_019E86:
+; The same, starting at X.
+find_free_slot_from_x:
 	lda	$10,x
 	beq	loc_019E96
 	txa
@@ -59,14 +64,16 @@ sub_019E86:
 	adc	#$0040
 	tax
 	cmp	#$0780
-	bcc	sub_019E86
+	bcc	find_free_slot_from_x
 	; (not executed in the CDL traces)
 	rtl
 loc_019E96:
 	clc
 	rtl
 
-sub_019E98:
+; Y = the first free slot from Y up to $0ABF, carry clear; carry set if
+; none.
+find_free_slot_y_to_end:
 	lda	a:$0010,y
 	beq	loc_019EA9
 	tya
@@ -74,17 +81,19 @@ sub_019E98:
 	adc	#$0040
 	tay
 	cmp	#$0AC0
-	bcc	sub_019E98
+	bcc	find_free_slot_y_to_end
 	; (not executed in the CDL traces)
 	rtl
 loc_019EA9:
 	clc
 	rtl
 
-sub_019EAB:
+; Y = the first free slot of $0300-$077F, carry clear; carry set if none.
+find_free_slot_y:
 	ldy	#$0300
 
-sub_019EAE:
+; The same, starting at Y.
+find_free_slot_from_y:
 	lda	a:$0010,y
 	beq	loc_019EBF
 	tya
@@ -92,13 +101,15 @@ sub_019EAE:
 	adc	#$0040
 	tay
 	cmp	#$0780
-	bcc	sub_019EAE
+	bcc	find_free_slot_from_y
 	rtl
 loc_019EBF:
 	clc
 	rtl
 
-sub_019EC1:
+; Y = the first free slot from Y down to $0300, carry SET when found,
+; carry clear if none.
+find_free_slot_y_down:
 	lda	a:$0010,y
 	beq	loc_019ED2
 	tya
@@ -106,13 +117,14 @@ sub_019EC1:
 	sbc	#$0040
 	tay
 	cmp	#$0300
-	bcs	sub_019EC1
+	bcs	find_free_slot_y_down
 	rtl
 loc_019ED2:
 	sec
 	rtl
 
-sub_019ED4:
+; X = the first free slot from X down to $0300, carry set when found.
+find_free_slot_x_down:
 	lda	$10,x
 	beq	loc_019EE4
 	txa
@@ -120,7 +132,7 @@ sub_019ED4:
 	sbc	#$0040
 	tax
 	cmp	#$0300
-	bcs	sub_019ED4
+	bcs	find_free_slot_x_down
 	; (not executed in the CDL traces)
 	rtl
 loc_019EE4:
@@ -138,7 +150,7 @@ sub_019EE6:
 	beq	loc_019EFE
 	lda	#$0002
 	sta	$38,x
-	brl	sub_019433
+	brl	snap_x_right_to_tile
 loc_019EFE:
 	lda	#$0010
 	sta	zp_00
@@ -149,27 +161,33 @@ loc_019EFE:
 	beq	loc_019F19
 	lda	#$0004
 	sta	$38,x
-	brl	sub_019414
+	brl	snap_x_left_to_tile
 loc_019F19:
 	rtl
 
-sub_019F1A:
+; Makes the object at X solid for each present player (solid_object_vs_player).
+solid_object_vs_players:
 	ldy	#$0200
 	lda	a:$0016,y
 	beq	loc_019F28
 	stz	zp_0C
-	jsl	f:sub_019F37
+	jsl	f:solid_object_vs_player
 loc_019F28:
 	ldy	#$0240
 	lda	a:$0016,y
 	beq	loc_019F36
 	; (not executed in the CDL traces)
 	stz	zp_0C
-	jsl	f:sub_019F37
+	jsl	f:solid_object_vs_player
 loc_019F36:
 	rtl
 
-sub_019F37:
+; If the hitbox of the object at X overlaps the body of the player at Y,
+; pushes the player out along the shallower axis: onto the top (lands it,
+; PCONTACT_ON_OBJECT, PLAYER_PLATFORM = X), or to the side
+; (PCONTACT_BLOCK_LEFT / PCONTACT_BLOCK_RIGHT; also PCONTACT_KILLED when
+; crushed against the screen edge).  zp_0C = kind of object (0-2).
+solid_object_vs_player:
 	clc
 	lda	$0A,x
 	adc	$28,x
@@ -393,7 +411,9 @@ sub_01A0BD:
 sub_01A0C7:
 	rtl
 
-sub_01A0C8:
+; A = angle (0-255, sub_1DABA0) from the centre of the hitbox of the object
+; at X to PLAYER_CENTER_X/Y of the player at Y, plus $80.
+angle_to_player:
 	lda	$28,x
 	lsr	a
 	adc	$0A,x
@@ -411,7 +431,9 @@ sub_01A0C8:
 	and	#$00FF
 	rtl
 
-sub_01A0E9:
+; Fires an enemy bullet from zp_00/zp_02 at the target player (the first
+; present one, alternating by stage_frame_odd); see spawn_enemy_bullet.
+fire_bullet_at_player:
 	lda	stage_frame_odd
 	bne	loc_01A0FA
 	ldy	#$0200
@@ -436,14 +458,19 @@ loc_01A105:
 	lsr	a
 	and	#$00FE
 
-sub_01A11C:
+; In: A = direction (x2), zp_00/zp_02 = position.  Allocates a slot
+; downwards from $0740 and makes it an enemy bullet (type $18) whose
+; velocity comes from the table of the difficulty (data_05ABA5[difficulty]
+; + direction): faster bullets on harder levels.  Out: carry set and Y =
+; bullet if spawned.
+spawn_enemy_bullet:
 	phy
 	ldy	difficulty
 	clc
 	adc	a:data_05ABA5,y
 	sta	zp_FC
 	ldy	#$0740
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_01A15B
 	lda	#$0018
 	sta	a:$0010,y
@@ -467,7 +494,9 @@ loc_01A15B:
 	ply
 	rtl
 
-sub_01A15D:
+; In: A = mask ANDed with stage_frame_counter.  Out: Y = $0200 or $0240, a
+; present player, alternating when both are.
+pick_target_player:
 	and	stage_frame_counter
 	bne	loc_01A16C
 	lda	a:wram_0216
@@ -607,7 +636,7 @@ loc_01A25D:
 loc_01A260:
 	brl	loc_019651
 loc_01A263:
-	brl	sub_0193DB
+	brl	snap_y_up_to_tile
 loc_01A266:
 	brl	loc_019480
 loc_01A269:
@@ -642,15 +671,19 @@ sub_01A28A:
 	lda	#$C516
 	jml	f:sub_01CF66
 
-sub_01A296:
+; Kills (PCONTACT_KILLED) each player outside the limits zp_00 (bottom),
+; zp_01 (top), zp_02 (left), zp_03 (right) (0 = no limit), unless the
+; player has the barrier and zp_FC = A was 0.  Absent, intangible or
+; invulnerable players are spared.
+kill_players_outside:
 	sta	zp_FC
 	ldy	#$0200
-	jsr	a:sub_01A2A5
+	jsr	a:kill_player_outside
 	ldy	#$0240
-	jsr	a:sub_01A2A5
+	jsr	a:kill_player_outside
 	rtl
 
-sub_01A2A5:
+kill_player_outside:
 	lda	a:$1D88,y
 	beq	loc_01A2AE
 	; (not executed in the CDL traces)
@@ -701,7 +734,7 @@ sub_01A2F0:
 	phx
 	sta	zp_00
 	ldy	#$0740
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_01A30A
 	tyx
 	lda	#$0047
@@ -749,7 +782,7 @@ loc_01A33E:
 	jml	f:sub_01CF66
 loc_01A34F:
 	lda	#$0400
-	jsl	f:sub_01A15D
+	jsl	f:pick_target_player
 	lda	a:$1312,y
 	sta	zp_00
 	lda	a:$1314,y
@@ -782,7 +815,7 @@ loc_01A395:
 	lda	stage_frame_mod4
 	bne	loc_01A3BF
 	ldy	#$0740
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_01A3BF
 	lda	#$C606
 	jsl	f:sub_01CF66
@@ -857,7 +890,7 @@ loc_01A41F:
 	sta	zp_14
 	lda	a:wram_16B2
 	sta	zp_16
-	jsl	f:sub_019E98
+	jsl	f:find_free_slot_y_to_end
 	bcs	loc_01A4B3
 	bra	loc_01A438
 loc_01A436:

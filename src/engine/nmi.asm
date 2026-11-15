@@ -267,7 +267,7 @@ nmi_frame_side_view:
 	mvn	#$7E, #$7E
 	plb
 	jsl	f:read_joypads
-	jsl	f:sub_00E7EF
+	jsl	f:update_player_window
 	jsl	f:sub_00E5F7
 	stz	sound_last_queued
 	jsl	f:run_game_mode

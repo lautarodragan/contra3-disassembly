@@ -33,7 +33,7 @@ sub_00CF0C:
 	bcc	loc_00CF7D
 	phx
 	ldx	#$0600
-	jsl	f:sub_019E86
+	jsl	f:find_free_slot_from_x
 	bcc	loc_00CF59
 	; (not executed in the CDL traces)
 	plx
@@ -684,7 +684,7 @@ sub_00D480:
 	sta	zp_00
 	stz	zp_02
 	lda	#$0000
-	jsl	f:sub_01A296
+	jsl	f:kill_players_outside
 loc_00D48E:
 	lda	a:wram_13C0
 	sta	f:wram_7E3821
@@ -744,7 +744,7 @@ sub_00D4F5:
 	lda	a:$0004,y
 	sta	zp_00
 	ldy	#$0840
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_00D530
 	lda	zp_00
 	sta	a:$0020,y

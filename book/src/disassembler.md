@@ -107,7 +107,7 @@ The module docstring of `tools/disasm.py` has the details. In short:
 Labels are named by kind and address: `sub_` for a called or dispatched
 routine, `loc_` for a branch or jump target, `tbl_` for a jump table,
 `ptrs_` for a table of data pointers, and `data_` for anything else that is
-referenced; for example `sub_00FF48` is at `$00:FF48`.
+referenced; for example `vector_length` is at `$00:FF48`.
 
 ## Hints
 

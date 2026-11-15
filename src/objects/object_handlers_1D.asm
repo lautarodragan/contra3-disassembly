@@ -734,8 +734,8 @@ sub_1DB51E:
 	bne	loc_1DB556
 	phy
 	lda	#$0020
-	jsl	f:sub_01A15D
-	jsl	f:sub_01A0C8
+	jsl	f:pick_target_player
+	jsl	f:angle_to_player
 	ply
 	sta	a:wram_0938
 	lda	#$005C
@@ -2195,7 +2195,7 @@ brain_boss_state_07:
 	lda	#$0004
 	sta	zp_FC
 loc_1DC09B:
-	jsl	f:sub_019EAB
+	jsl	f:find_free_slot_y
 	bcs	loc_1DC0C6
 	lda	#$C6DE
 	jsl	f:sub_01CF66
@@ -2494,7 +2494,7 @@ loc_1DC2D1:
 	rtl
 loc_1DC2F0:
 	ldy	#$0800
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_1DC31A
 	lda	#$000F
 	sta	a:$0010,y
@@ -2844,7 +2844,7 @@ sub_1DC580:
 
 sub_1DC586:
 	lda	#$0002
-	jsl	f:sub_01A15D
+	jsl	f:pick_target_player
 	sty	a:wram_163E
 	lda	#$008F
 	ldy	#$0500
@@ -3505,7 +3505,7 @@ loc_1DCA5C:
 
 sub_1DCA73:
 	pha
-	jsl	f:sub_019E83
+	jsl	f:find_free_slot
 	pla
 	bcs	loc_1DCAC8
 	bra	loc_1DCA7F

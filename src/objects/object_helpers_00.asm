@@ -2,22 +2,25 @@
 ; Bank $00, $00:FD8D-$00:FFBF. Included by main.asm in segment BANK00.
 ;
 ; Small routines shared by object handlers in all banks (sub_00FD8D,
-; sub_00FE76, sub_00FEA3, sub_00FEAA...), and sub_00FF48 (multiplication, ends
+; sub_00FE76, sub_00FEA3, sub_00FEAA...), and vector_length (multiplication, ends
 ; at $00:FFB1 inside the unused extended-header area), followed by $FF padding
 ; up to the header.
 
 sub_00FD8D:
 	lda	#$006E
-	bra	sub_00FD9A
+	bra	queue_sound_throttled
 
 sub_00FD92:
 	lda	#$0041
-	bra	sub_00FD9A
+	bra	queue_sound_throttled
 
 sub_00FD97:
 	lda	#$0030
 
-sub_00FD9A:
+; Queues sound A (queue_sound) only when the countdown wram_16B0 has run
+; out, then restarts it at 12-19 frames: for repeated sounds (sub_00FD8D,
+; sub_00FD92, sub_00FD97 are this with sounds $6E, $41, $30).
+queue_sound_throttled:
 	ldy	a:wram_16B0
 	bpl	loc_00FDB0
 	pha
@@ -221,6 +224,9 @@ loc_00FEE9:
 loc_00FF00:
 	rtl
 
+; Per frame (side-view stages): shake_bg1_y / shake_bg2_y = shake_timer and
+; half of it on two frames out of four (0 on the others), shake_timer
+; decremented every 16 frames; or 1 pixel while shake_continuous is set.
 update_shake_side_view:
 	lda	stage_frame_bit1
 	bne	loc_00FF28
@@ -262,7 +268,9 @@ sub_00FF30:
 	plx
 	rtl
 
-sub_00FF48:
+; A = zp_16 = sqrt(zp_08^2 + zp_0A^2) (8-bit inputs; bitwise square root).
+; Uses zp_0C-zp_16.
+vector_length:
 	sep	#$20
 	.a8
 	lda	zp_08

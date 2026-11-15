@@ -353,7 +353,7 @@ loc_01B459:
 	lda	stage_frame_counter
 	and	a:data_05AC61,y
 	bne	loc_01B4CC
-	jsl	f:sub_019EAB
+	jsl	f:find_free_slot_y
 	bcs	loc_01B4CC
 	lda	$0A,x
 	adc	#$0002
@@ -791,7 +791,7 @@ sub_01B7B7:
 	bmi	loc_01B7DD
 	lda	$34,x
 	sta	zp_0C
-	jsl	f:sub_019F37
+	jsl	f:solid_object_vs_player
 loc_01B7DD:
 	lda	$34,x
 	asl	a
@@ -981,14 +981,14 @@ sub_01B956:
 	beq	loc_01B966
 	ldy	#$0200
 	stz	zp_0C
-	jsl	f:sub_019F37
+	jsl	f:solid_object_vs_player
 	beq	loc_01B974
 loc_01B966:
 	lda	a:wram_0256
 	beq	loc_01B974
 	ldy	#$0240
 	stz	zp_0C
-	jsl	f:sub_019F37
+	jsl	f:solid_object_vs_player
 loc_01B974:
 	jsr	a:sub_01B943
 loc_01B977:
@@ -1015,7 +1015,7 @@ sub_01B993:
 	bmi	loc_01B9A5
 	ldy	#$0200
 	stz	zp_0C
-	jsl	f:sub_019F37
+	jsl	f:solid_object_vs_player
 	beq	loc_01B9B5
 loc_01B9A5:
 	lda	a:wram_0256
@@ -1023,7 +1023,7 @@ loc_01B9A5:
 	bmi	loc_01B9B5
 	ldy	#$0240
 	stz	zp_0C
-	jsl	f:sub_019F37
+	jsl	f:solid_object_vs_player
 loc_01B9B5:
 	jsr	a:sub_01B943
 loc_01B9B8:
@@ -1049,7 +1049,7 @@ loc_01B9D2:
 sub_01B9DE:
 	lda	$34,x
 	sta	zp_0C
-	jsl	f:sub_019F37
+	jsl	f:solid_object_vs_player
 	lda	a:$003C,y
 	bit	#$0080
 	beq	loc_01BA08
@@ -1382,12 +1382,12 @@ loc_01BC46:
 	adc	#$0008
 	sta	zp_00
 	lda	#$0010
-	jml	f:sub_01A11C
+	jml	f:spawn_enemy_bullet
 loc_01BC63:
 	lda	$0A,x
 	sta	zp_00
 	lda	#$0030
-	jml	f:sub_01A11C
+	jml	f:spawn_enemy_bullet
 loc_01BC6E:
 	rtl
 
@@ -1448,7 +1448,7 @@ sub_01BCAF:
 	ldx	#$000A
 	ldy	#$0300
 loc_01BCD2:
-	jsl	f:sub_019EAE
+	jsl	f:find_free_slot_from_y
 	bcc	loc_01BCED
 loc_01BCD8:
 	tya
@@ -1596,7 +1596,7 @@ loc_01BDEA:
 	cmp	#$0A00
 	bcc	loc_01BDD7
 	ldy	#$0300
-	jsl	f:sub_019EAE
+	jsl	f:find_free_slot_from_y
 	bcs	loc_01BE71
 	phx
 	tyx
@@ -1634,7 +1634,7 @@ loc_01BE3B:
 	cmp	#$0A00
 	bcc	loc_01BE29
 	ldy	#$0300
-	jsl	f:sub_019EAE
+	jsl	f:find_free_slot_from_y
 	bcs	loc_01BE71
 	phx
 	tyx
@@ -1751,7 +1751,7 @@ loc_01BF16:
 	lda	stage_frame_odd
 	bne	loc_01BF52
 	ldy	#$0700
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_01BF52
 	lda	#$C4CE
 	jsl	f:sub_01CF66
@@ -1835,7 +1835,7 @@ loc_01BFCD:
 	ora	zp_00
 	beq	loc_01BFFF
 	ldy	#$0500
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_01BFFF
 	lda	#$C61E
 	jsl	f:sub_01CF66
@@ -1877,7 +1877,7 @@ loc_01C026:
 	lda	$0A,x
 	sta	zp_00
 	pla
-	jml	f:sub_01A11C
+	jml	f:spawn_enemy_bullet
 loc_01C039:
 	dec	$34,x
 loc_01C03B:
@@ -2019,7 +2019,7 @@ loc_01C12E:
 	sta	$36,x
 	phx
 	ldx	#$06C0
-	jsl	f:sub_019ED4
+	jsl	f:find_free_slot_x_down
 	bcc	loc_01C161
 	jsl	f:sub_01C166
 	lda	#$007E
@@ -2086,7 +2086,7 @@ sub_01C1B6:
 	sbc	a:wram_1398
 	sta	$0E,x
 	lda	#$0080
-	jsl	f:sub_01A15D
+	jsl	f:pick_target_player
 	sec
 	lda	$0A,x
 	sbc	a:$1312,y
@@ -2248,7 +2248,7 @@ loc_01C2E1:
 	lda	#$00B8
 	sta	zp_02
 	lda	#$0030
-	jsl	f:sub_01A11C
+	jsl	f:spawn_enemy_bullet
 	lda	#$0001
 	sta	$34,x
 	lda	#$B052
@@ -2440,8 +2440,8 @@ loc_01C44E:
 	and	a:data_05B09A,y
 	bne	loc_01C48F
 	lda	#$0800
-	jsl	f:sub_01A15D
-	jsl	f:sub_01A0C8
+	jsl	f:pick_target_player
+	jsl	f:angle_to_player
 	lsr	a
 	lsr	a
 	and	#$003E
@@ -2495,7 +2495,7 @@ loc_01C48F:
 	adc	a:data_05B08A,y
 	sta	zp_02
 	lda	$30,x
-	jsl	f:sub_01A11C
+	jsl	f:spawn_enemy_bullet
 loc_01C4C7:
 	rtl
 
@@ -2818,7 +2818,7 @@ loc_01C756:
 	bne	loc_01C7B5
 	phx
 	ldx	#$03C0
-	jsl	f:sub_019E86
+	jsl	f:find_free_slot_from_x
 	ply
 	bcs	loc_01C7B5
 	lda	#$0016
@@ -3092,7 +3092,7 @@ loc_01C963:
 	beq	loc_01C989
 	lda	zp_04
 	beq	loc_01C987
-	jsl	f:sub_0193F4
+	jsl	f:snap_y_down_to_tile
 loc_01C987:
 	bra	loc_01C98D
 loc_01C989:
@@ -3289,7 +3289,7 @@ loc_01CAF1:
 	bne	sub_01CB4A
 	; (not executed in the CDL traces)
 	ldy	#$0740
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	sub_01CB4A
 	lda	#$0010
 	sta	a:$0010,y
@@ -3345,7 +3345,7 @@ loc_01CB67:
 	stz	zp_02
 	jsl	f:sub_00E16E
 	beq	loc_01CB82
-	jsl	f:sub_0193DB
+	jsl	f:snap_y_up_to_tile
 	lda	$30,x
 	beq	loc_01CB92
 	inc	a
@@ -3385,7 +3385,7 @@ loc_01CBB0:
 	lda	#$4051
 	sta	$16,x
 loc_01CBBD:
-	jsl	f:sub_019F1A
+	jsl	f:solid_object_vs_players
 	lda	$06,x
 	bpl	loc_01CC13
 	lda	#$0041
@@ -3506,7 +3506,7 @@ sub_01CC97:
 	jml	f:queue_sound
 
 sub_01CCAF:
-	jsl	f:sub_019EAB
+	jsl	f:find_free_slot_y
 	bcs	loc_01CD06
 	lda	#$0013
 	sta	a:$0010,y
@@ -3752,7 +3752,7 @@ sub_01CE58:
 	lsr	a
 	and	#$003E
 	plx
-	jsl	f:sub_01A11C
+	jsl	f:spawn_enemy_bullet
 	bcc	loc_01CE98
 	jsl	f:sub_01CF1D
 	lda	#$0010

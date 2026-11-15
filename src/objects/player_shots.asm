@@ -1,13 +1,18 @@
-; objects/player_shots.asm -- Player shots
+; objects/player_shots.asm -- Player shots: firing and spawning
 ; Bank $00, $00:D656-$00:DDC7. Included by main.asm in segment BANK00.
 ;
-; Spawning of the players' shots: sub_00D656, sub_00D692, sub_00D6DC (called
-; from the player weapon code in bank $01) dispatch per weapon through
-; tbl_00D686, tbl_00D6C2, tbl_00D717 to routines that allocate object slots
-; (sub_00E122) and set position and velocity from aim-direction tables in bank
-; $05.
+; fire_weapon (fire button) and spin_fire_weapon_1/2 (spin jump) dispatch
+; by weapon (WEAPON_*) through tbl_fire_weapon / tbl_spin_fire_1 /
+; tbl_spin_fire_2 to the spawners, which allocate slots of the shot list
+; (sub_00E122 and friends) and set position, velocity (64-direction tables
+; data_058E1A, data_058D7A, data_058DFA, data_058D5A indexed by the angle),
+; SHOT_TYPE, SHOT_DAMAGE and SHOT_ATTR.  The shots' handlers are in
+; objects/object_handlers_00b.asm (tbl_shot_types).
 
-sub_00D656:
+; Spin jump: fires PLAYER_WEAPON_1 without the button check, at an angle
+; that turns by a weapon-dependent step each shot (kept in the player's
+; $36).  In: X = player, zp_14/zp_16 = muzzle offset.
+spin_fire_weapon_1:
 	lda	$3A,x
 	bne	loc_00D655
 	lda	a:$1D84,x
@@ -30,19 +35,21 @@ loc_00D671:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00D686,x
+	lda	f:tbl_spin_fire_1,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00D686:
-	.addr	sub_00D758
-	.addr	sub_00D7E3
-	.addr	sub_00D8B2
-	.addr	sub_00D961
-	.addr	sub_00D9F5
-	.addr	sub_00DC5A
+tbl_spin_fire_1:
+	.addr	spin_shot_default_1
+	.addr	spin_shots_spread_1
+	.addr	spin_shot_crush_1
+	.addr	spin_shot_homing_1
+	.addr	spin_shots_flame_1
+	.addr	spin_shot_laser_1
 
-sub_00D692:
+; Spin jump: the same for PLAYER_WEAPON_2 (angle in $34, offset by half a
+; turn).
+spin_fire_weapon_2:
 	lda	$14,x
 	bne	loc_00D655
 	lda	a:$1D86,x
@@ -65,17 +72,17 @@ loc_00D6AD:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00D6C2,x
+	lda	f:tbl_spin_fire_2,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00D6C2:
-	.addr	sub_00D741
-	.addr	sub_00D7C6
-	.addr	sub_00D895
-	.addr	sub_00D942
-	.addr	sub_00D9DE
-	.addr	sub_00DC3D
+tbl_spin_fire_2:
+	.addr	spin_shot_default_2
+	.addr	spin_shots_spread_2
+	.addr	spin_shot_crush_2
+	.addr	spin_shot_homing_2
+	.addr	spin_shots_flame_2
+	.addr	spin_shot_laser_2
 loc_00D6CE:
 	lda	$22,x
 	bit	button_fire
@@ -84,7 +91,14 @@ loc_00D6CE:
 	sta	a:$1300,x
 	bra	loc_00D6E2
 
-sub_00D6DC:
+; If button_fire is held: fires the weapon of the active slot
+; (PLAYER_WEAPON_SLOT = 2: PLAYER_WEAPON_1 into the player's first 10 shot
+; slots, delay PLAYER_FIRE_DELAY_1; 0: PLAYER_WEAPON_2 into the next 10,
+; PLAYER_FIRE_DELAY_2) when its delay is 0, reloading the delay from
+; weapon_fire_delays.  In: X = player, zp_12 = angle ($00 up, $20 right,
+; $80 per turn), zp_14/zp_16 = muzzle offset from OBJ_X/OBJ_Y.  The
+; spawners return with X = player and set $38 (shooting pose) to 1.
+fire_weapon:
 	lda	$22,x
 	bit	button_fire
 	beq	loc_00D740
@@ -113,17 +127,17 @@ loc_00D702:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_00D717,x
+	lda	f:tbl_fire_weapon,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_00D717:
-	.addr	sub_00D76B
-	.addr	sub_00D81A
-	.addr	sub_00D8E3
-	.addr	sub_00D97A
-	.addr	sub_00DA08
-	.addr	sub_00DC88
+tbl_fire_weapon:
+	.addr	spawn_shot_default
+	.addr	spawn_shots_spread
+	.addr	spawn_shot_crush
+	.addr	spawn_shot_homing
+	.addr	spawn_shots_flame
+	.addr	spawn_shot_laser
 loc_00D723:
 	lda	$14,x
 	bne	loc_00D740
@@ -142,7 +156,7 @@ loc_00D723:
 loc_00D740:
 	rtl
 
-sub_00D741:
+spin_shot_default_2:
 	clc
 	lda	a:$0034,y
 	adc	#$0008
@@ -151,21 +165,22 @@ sub_00D741:
 	adc	#$0040
 	and	#$007E
 	sta	zp_12
-	bra	sub_00D76B
+	bra	spawn_shot_default
 
-sub_00D758:
+spin_shot_default_1:
 	clc
 	lda	a:$0036,y
 	adc	#$0008
 	and	#$007E
 	sta	a:$0036,y
 	sta	zp_12
-	bra	sub_00D76B
+	bra	spawn_shot_default
 loc_00D769:
 	tyx
 	rtl
 
-sub_00D76B:
+; WEAPON_DEFAULT: one shot (shot type 1, damage 2) at angle zp_12; sound 4.
+spawn_shot_default:
 	jsl	f:sub_00E122
 	bcs	loc_00D769
 	lda	#$0001
@@ -208,8 +223,8 @@ loc_00D78F:
 	jsl	f:queue_sound
 	rtl
 
-sub_00D7C6:
-	jsr	a:sub_00D7FA
+spin_shots_spread_2:
+	jsr	a:find_spread_shot_slots
 	beq	loc_00D7CC
 	rtl
 loc_00D7CC:
@@ -223,9 +238,9 @@ loc_00D7CC:
 	sta	zp_12
 	bra	loc_00D820
 
-sub_00D7E3:
+spin_shots_spread_1:
 	; (not executed in the CDL traces)
-	jsr	a:sub_00D7FA
+	jsr	a:find_spread_shot_slots
 	beq	loc_00D7E9
 	rtl
 loc_00D7E9:
@@ -237,7 +252,9 @@ loc_00D7E9:
 	sta	zp_12
 	bra	loc_00D820
 
-sub_00D7FA:
+; Returns Z set and X = the first of 5 free shot slots (tries X and X+$A0),
+; else Z clear and X = Y (the player).
+find_spread_shot_slots:
 	lda	$10,x
 	ora	$30,x
 	ora	$50,x
@@ -258,8 +275,10 @@ sub_00D7FA:
 loc_00D819:
 	rts
 
-sub_00D81A:
-	jsr	a:sub_00D7FA
+; WEAPON_SPREAD: five shots (type 2, damage 2) fanned around zp_12, in five
+; consecutive free slots (find_spread_shot_slots); sound 9.
+spawn_shots_spread:
+	jsr	a:find_spread_shot_slots
 	beq	loc_00D820
 	rtl
 loc_00D820:
@@ -318,8 +337,8 @@ loc_00D830:
 	jsl	f:queue_sound
 	rtl
 
-sub_00D895:
-	jsr	a:sub_00D8C9
+spin_shot_crush_2:
+	jsr	a:find_crush_shot_slot
 	beq	loc_00D89B
 	rtl
 loc_00D89B:
@@ -333,8 +352,8 @@ loc_00D89B:
 	sta	zp_12
 	bra	loc_00D8E9
 
-sub_00D8B2:
-	jsr	a:sub_00D8C9
+spin_shot_crush_1:
+	jsr	a:find_crush_shot_slot
 	beq	loc_00D8B8
 	rtl
 loc_00D8B8:
@@ -346,7 +365,9 @@ loc_00D8B8:
 	sta	zp_12
 	bra	loc_00D8E9
 
-sub_00D8C9:
+; Returns Z set and X = a free slot among X, X+$60, X+$C0, else Z clear and
+; X = Y.
+find_crush_shot_slot:
 	lda	$10,x
 	beq	loc_00D8E2
 	txa
@@ -365,8 +386,9 @@ sub_00D8C9:
 loc_00D8E2:
 	rts
 
-sub_00D8E3:
-	jsr	a:sub_00D8C9
+; WEAPON_CRUSH: a missile (types 3 / 13) at angle zp_12.
+spawn_shot_crush:
+	jsr	a:find_crush_shot_slot
 	beq	loc_00D8E9
 	rtl
 loc_00D8E9:
@@ -413,7 +435,7 @@ loc_00D8E9:
 	jsl	f:queue_sound
 	rtl
 
-sub_00D942:
+spin_shot_homing_2:
 	jsl	f:sub_00E134
 	bcc	loc_00D94A
 	tyx
@@ -429,7 +451,7 @@ loc_00D94A:
 	sta	zp_12
 	bra	loc_00D982
 
-sub_00D961:
+spin_shot_homing_1:
 	; (not executed in the CDL traces)
 	jsl	f:sub_00E134
 	bcc	loc_00D969
@@ -444,7 +466,9 @@ loc_00D969:
 	sta	zp_12
 	bra	loc_00D982
 
-sub_00D97A:
+; WEAPON_HOMING: a homing missile (type 4, damage 2) in a slot found by
+; sub_00E134; sound 8.
+spawn_shot_homing:
 	jsl	f:sub_00E134
 	bcc	loc_00D982
 	tyx
@@ -497,7 +521,7 @@ loc_00D982:
 	jsl	f:queue_sound
 	rtl
 
-sub_00D9DE:
+spin_shots_flame_2:
 	clc
 	lda	a:$0034,y
 	adc	#$0004
@@ -506,9 +530,9 @@ sub_00D9DE:
 	adc	#$0040
 	and	#$007E
 	sta	zp_12
-	bra	sub_00DA08
+	bra	spawn_shots_flame
 
-sub_00D9F5:
+spin_shots_flame_1:
 	; (not executed in the CDL traces)
 	clc
 	lda	a:$0036,y
@@ -516,12 +540,14 @@ sub_00D9F5:
 	and	#$007E
 	sta	a:$0036,y
 	sta	zp_12
-	bra	sub_00DA08
+	bra	spawn_shots_flame
 loc_00DA06:
 	tyx
 	rtl
 
-sub_00DA08:
+; WEAPON_FLAME: a chain of 10 flame shots occupying all 10 slots of the
+; weapon; the chain's head keeps state in the first slot's OBJ_STATE.
+spawn_shots_flame:
 	lda	$12,x
 	beq	loc_00DA0F
 	brl	loc_00DA80
@@ -820,8 +846,8 @@ loc_00DB40:
 	plx
 	rtl
 
-sub_00DC3D:
-	jsr	a:sub_00DC71
+spin_shot_laser_2:
+	jsr	a:check_laser_shot_slots
 	beq	loc_00DC43
 	rtl
 loc_00DC43:
@@ -835,8 +861,8 @@ loc_00DC43:
 	sta	zp_12
 	bra	loc_00DC8E
 
-sub_00DC5A:
-	jsr	a:sub_00DC71
+spin_shot_laser_1:
+	jsr	a:check_laser_shot_slots
 	beq	loc_00DC60
 	rtl
 loc_00DC60:
@@ -848,7 +874,9 @@ loc_00DC60:
 	sta	zp_12
 	bra	loc_00DC8E
 
-sub_00DC71:
+; Returns Z set when the 9 shot slots from X are free, else Z clear and X =
+; Y.
+check_laser_shot_slots:
 	lda	$10,x
 	ora	$30,x
 	ora	$50,x
@@ -863,8 +891,10 @@ sub_00DC71:
 loc_00DC87:
 	rts
 
-sub_00DC88:
-	jsr	a:sub_00DC71
+; WEAPON_LASER: a laser beam (several shot slots, find via
+; check_laser_shot_slots).
+spawn_shot_laser:
+	jsr	a:check_laser_shot_slots
 	beq	loc_00DC8E
 	rtl
 loc_00DC8E:

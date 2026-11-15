@@ -14,7 +14,7 @@ sub_00F27C:
 	sty	a:stage_exit_request
 loc_00F28A:
 	sta	$32,x
-	jsl	f:sub_0181E8
+	jsl	f:make_players_invulnerable
 loc_00F290:
 	inc	a:wram_1636
 	ldy	#$0012
@@ -973,7 +973,7 @@ sub_00F9FD:
 	lda	stage_frame_mod8
 	bne	loc_00FA54
 	ldy	#$0500
-	jsl	f:sub_019EAE
+	jsl	f:find_free_slot_from_y
 	bcs	loc_00FA54
 	phx
 	lda	#$0026
@@ -1007,7 +1007,7 @@ sub_00FA55:
 	bit	#$000F
 	bne	loc_00FA54
 	ldy	#$0500
-	jsl	f:sub_019EAE
+	jsl	f:find_free_slot_from_y
 	bcs	loc_00FABF
 	phx
 	lda	#$0027
@@ -1106,7 +1106,7 @@ loc_00FB2A:
 	stz	zp_02
 	jsl	f:sub_00E16E
 	beq	loc_00FB44
-	jsl	f:sub_0193DB
+	jsl	f:snap_y_up_to_tile
 	inc	$12,x
 	lda	#$FFFE
 	sta	$1E,x
@@ -1125,7 +1125,7 @@ loc_00FB54:
 	stz	zp_02
 	jsl	f:sub_00E16E
 	beq	loc_00FB44
-	jsl	f:sub_0193DB
+	jsl	f:snap_y_up_to_tile
 	inc	$12,x
 	stz	$1E,x
 	stz	$1C,x
@@ -1231,7 +1231,7 @@ sub_00FC21:
 	lda	$0A,x
 	adc	#$0010
 	sta	zp_00
-	jsl	f:sub_01A0E9
+	jsl	f:fire_bullet_at_player
 loc_00FC43:
 	lda	$26,x
 	beq	loc_00FC58

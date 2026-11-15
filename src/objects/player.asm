@@ -1,12 +1,17 @@
 ; objects/player.asm -- Players
 ; Bank $01, $01:A548-$01:B193. Included by main.asm in segment BANK01.
 ;
-; sub_01A624 (once per frame from the stage loop stage_play) updates both
-; players (objects at $0200/$0240): joypad state, barrier blinking, the player
-; state machine (sub_01A6CF), collisions; sub_01AA6A, sub_01ABFF, sub_01B0C0.
+; update_players (once per frame from the stage loop) runs both players
+; (objects at $0200/$0240, fields PLAYER_* in ram.inc): pad, respawn
+; blinking, the input routine of the state (read_player_input,
+; tbl_player_input), the bomb (update_bomb, bomb_hit_targets), the state
+; handler (run_player_state, tbl_player_states; most handlers are in
+; objects/player_weapons.asm) and the player's frame (set_player_frame).
+; Also the generic movement (move_player), the hanging and spin-stance
+; states and the BG-collision cascade for hanging (sub_01AF72).
 
 sub_01A548:
-	jsr	a:sub_018839
+	jsr	a:set_player_box_jumping
 	lda	OBJ_Y,x
 	cmp	#$00C8
 	bcs	loc_01A564
@@ -17,7 +22,7 @@ sub_01A548:
 	lda	OBJ_Y_VEL,x
 	adc	#$0000
 	sta	OBJ_Y_VEL,x
-	brl	sub_018555
+	brl	animate_player_somersault
 loc_01A564:
 	lda	#$00C8
 	sta	OBJ_Y,x
@@ -114,7 +119,14 @@ loc_01A622:
 	; CDL: not accessed
 	.byte	$6B
 
-sub_01A624:
+; Once per frame from the stage loop: for each player with lives left,
+; copies the pad (PLAYER_JOY_HELD/PRESSED), counts PLAYER_INVULN_TIMER down
+; (clears PLAYERF_INVULNERABLE at 0; the player blinks between palettes
+; every 4 frames meanwhile) and runs read_player_input; updates the bombs
+; (update_bomb), then run_player_state and set_player_frame for each
+; player (player 1's frame on odd frames, VRAM $6000/$6100; player 2's on
+; even ones, $6200/$6300).
+update_players:
 	ldx	#$0200
 	lda	a:p1_lives
 	beq	loc_01A654
@@ -137,9 +149,9 @@ loc_01A643:
 loc_01A64D:
 	lda	#$3A00
 loc_01A650:
-	jsl	f:sub_01A6CF
+	jsl	f:read_player_input
 loc_01A654:
-	jsr	a:sub_01AAF4
+	jsr	a:update_bomb
 	ldx	#$0240
 	lda	a:p2_lives
 	beq	loc_01A687
@@ -162,41 +174,45 @@ loc_01A676:
 loc_01A680:
 	lda	#$3C20
 loc_01A683:
-	jsl	f:sub_01A6CF
+	jsl	f:read_player_input
 loc_01A687:
-	jsr	a:sub_01AAF4
+	jsr	a:update_bomb
 	jsl	f:sub_00C67D
 	jsl	f:sub_00C917
 	lda	a:p1_lives
 	beq	loc_01A6B0
 	ldx	#$0200
-	jsl	f:sub_01AA6A
+	jsl	f:run_player_state
 	lda	stage_frame_odd
 	beq	loc_01A6B0
 	lda	#$6000
 	sta	zp_B8
 	lda	#$6100
 	sta	zp_BA
-	jsl	f:sub_018063
+	jsl	f:set_player_frame
 loc_01A6B0:
 	lda	a:p2_lives
 	beq	loc_01A6CE
 	ldx	#$0240
-	jsl	f:sub_01AA6A
+	jsl	f:run_player_state
 	lda	stage_frame_odd
 	bne	loc_01A6CE
 	lda	#$6200
 	sta	zp_B8
 	lda	#$6300
 	sta	zp_BA
-	jsl	f:sub_018063
+	jsl	f:set_player_frame
 loc_01A6CE:
 	rtl
 
-sub_01A6CF:
+; In: A = OBJ_ATTR for this frame (palette), X = player.  Clears
+; PLAYER_LOCKED, PLAYER_AIM and PLAYER_POSE_ADD, updates PLAYER_SPIN, then
+; runs the input routine of the state (tbl_player_input): sets the
+; velocity, OBJ_FACING and PLAYER_AIM from the pad.
+read_player_input:
 	sta	OBJ_ATTR,x
 	jsl	f:apply_player_autopilot
-	jsl	f:sub_018000
+	jsl	f:update_spin_flag
 	stz	PLAYER_LOCKED,x
 	stz	PLAYER_AIM,x
 	stz	a:PLAYER_POSE_ADD,x
@@ -204,32 +220,32 @@ sub_01A6CF:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01A6EF,x
+	lda	f:tbl_player_input,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01A6EF:
-	.addr	sub_01A93D
-	.addr	sub_01A938
-	.addr	sub_01A9B9
-	.addr	sub_01A956
-	.addr	sub_01A956
-	.addr	sub_01A9B9
+tbl_player_input:
+	.addr	input_ground
+	.addr	input_hang
+	.addr	input_climb
+	.addr	input_air
+	.addr	input_air
+	.addr	input_climb
 	.addr	sub_01A806
-	.addr	sub_01AA20
-	.addr	sub_01AA20
-	.addr	sub_01AA20
+	.addr	move_player
+	.addr	move_player
+	.addr	move_player
 	.addr	sub_01A851
-	.addr	sub_01AA18
-	.addr	sub_01A956
-	.addr	sub_01A938
-	.addr	sub_01AA20
-	.addr	sub_01AA20
+	.addr	move_player_unless_locked
+	.addr	input_air
+	.addr	input_hang
+	.addr	move_player
+	.addr	move_player
 	.addr	sub_01A7B9
 	.addr	sub_01A757
 	.addr	sub_01A719
-	.addr	sub_01AA18
-	.addr	sub_01AA18
+	.addr	move_player_unless_locked
+	.addr	move_player_unless_locked
 
 sub_01A719:
 	lda	PLAYER_INVULN_TIMER,x
@@ -245,13 +261,13 @@ loc_01A72A:
 	bne	loc_01A739
 	cmp	#$0058
 	bcc	loc_01A739
-	brl	sub_01AA18
+	brl	move_player_unless_locked
 loc_01A739:
 	lda	OBJ_X_VEL,x
 	bpl	loc_01A745
 	cmp	#$FFFE
 	bcs	loc_01A745
-	brl	sub_01AA18
+	brl	move_player_unless_locked
 loc_01A745:
 	sec
 	lda	OBJ_X_VEL_SUB,x
@@ -260,7 +276,7 @@ loc_01A745:
 	lda	OBJ_X_VEL,x
 	sbc	#$0000
 	sta	OBJ_X_VEL,x
-	brl	sub_01AA18
+	brl	move_player_unless_locked
 
 sub_01A757:
 	stz	OBJ_FACING,x
@@ -287,15 +303,15 @@ loc_01A775:
 	lda	PLAYER_JOY_HELD,x
 	bit	button_stand_still
 	beq	loc_01A78C
-	brl	sub_01AA18
+	brl	move_player_unless_locked
 loc_01A78C:
 	lda	#$0002
 	sta	OBJ_X_VEL,x
-	brl	sub_01AA18
+	brl	move_player_unless_locked
 loc_01A794:
 	bit	#$0200
 	bne	loc_01A79C
-	brl	sub_01AA18
+	brl	move_player_unless_locked
 loc_01A79C:
 	lda	#$0002
 	sta	OBJ_FACING,x
@@ -305,11 +321,11 @@ loc_01A79C:
 	lda	PLAYER_JOY_HELD,x
 	bit	button_stand_still
 	beq	loc_01A7B1
-	brl	sub_01AA18
+	brl	move_player_unless_locked
 loc_01A7B1:
 	lda	#$FFFE
 	sta	OBJ_X_VEL,x
-	brl	sub_01AA18
+	brl	move_player_unless_locked
 
 sub_01A7B9:
 	stz	OBJ_X_VEL_SUB,x
@@ -339,16 +355,16 @@ loc_01A7E3:
 	lda	PLAYER_AIM,x
 	ora	#$0008
 	sta	PLAYER_AIM,x
-	brl	sub_01AA18
+	brl	move_player_unless_locked
 loc_01A7F4:
 	bit	#$0800
 	bne	loc_01A7FC
-	brl	sub_01AA18
+	brl	move_player_unless_locked
 loc_01A7FC:
 	lda	PLAYER_AIM,x
 	ora	#$0002
 	sta	PLAYER_AIM,x
-	brl	sub_01AA18
+	brl	move_player_unless_locked
 
 sub_01A806:
 	; (not executed in the CDL traces)
@@ -388,7 +404,7 @@ loc_01A83F:
 loc_01A84C:
 	sta	OBJ_Y_VEL,x
 loc_01A84E:
-	brl	sub_01AA20
+	brl	move_player
 
 sub_01A851:
 	lda	#$0040
@@ -425,7 +441,7 @@ loc_01A86F:
 	sta	PLAYER_INVULN_TIMER,x
 	stz	$32,x
 	stz	$34,x
-	brl	sub_01AA20
+	brl	move_player
 loc_01A8A9:
 	lda	PLAYER_JOY_HELD,x
 	bit	#$0100
@@ -477,28 +493,34 @@ loc_01A8F0:
 	lda	#$000A
 	sbc	zp_00
 	sta	a:wram_165C
-	brl	sub_01AA20
+	brl	move_player
 loc_01A919:
 	sec
 	sbc	zp_00
 	sta	a:wram_165C
 	bne	loc_01A924
-	brl	sub_01AA20
+	brl	move_player
 loc_01A924:
 	bpl	loc_01A92F
 	lda	#$0001
 	sta	a:wram_09F4
-	brl	sub_01AA20
+	brl	move_player
 loc_01A92F:
 	lda	#$0002
 	sta	a:wram_09F4
-	brl	sub_01AA20
+	brl	move_player
 
-sub_01A938:
+; Hanging (states 1, $0D): like input_ground, but fire also stops the
+; player (wram_1628 = fire | stand still).
+input_hang:
 	lda	a:wram_1628
 	bra	loc_01A93F
 
-sub_01A93D:
+; On the ground (state 0): button_stand_still sets PLAYER_LOCKED; left/right
+; walk at 1.40 pixels a frame unless a solid object blocks that side
+; (PCONTACT_BLOCK_*), and set OBJ_FACING and PLAYER_AIM; up/down add to
+; PLAYER_AIM.  Ends with move_player_unless_locked.
+input_ground:
 	lda	button_stand_still
 loc_01A93F:
 	sta	zp_00
@@ -514,7 +536,7 @@ loc_01A94B:
 	stz	OBJ_X_VEL,x
 	bra	loc_01A999
 
-sub_01A956:
+input_air:
 	lda	PLAYER_JOY_HELD,x
 loc_01A958:
 	bit	#$0100
@@ -554,17 +576,19 @@ loc_01A999:
 	lda	PLAYER_AIM,x
 	ora	#$0008
 	sta	PLAYER_AIM,x
-	bra	sub_01AA18
+	bra	move_player_unless_locked
 loc_01A9A9:
 	lda	PLAYER_JOY_HELD,x
 	bit	#$0800
-	beq	sub_01AA18
+	beq	move_player_unless_locked
 	lda	PLAYER_AIM,x
 	ora	#$0002
 	sta	PLAYER_AIM,x
-	bra	sub_01AA18
+	bra	move_player_unless_locked
 
-sub_01A9B9:
+; Climbing a wall (states 2, 5): up/down move vertically, left/right only
+; aim.  Ends with move_player.
+input_climb:
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	lda	PLAYER_JOY_HELD,x
@@ -602,23 +626,27 @@ loc_01A9F8:
 	lda	PLAYER_AIM,x
 	ora	#$0001
 	sta	PLAYER_AIM,x
-	bra	sub_01AA20
+	bra	move_player
 loc_01AA08:
 	lda	PLAYER_JOY_HELD,x
 	bit	#$0200
-	beq	sub_01AA20
+	beq	move_player
 	lda	PLAYER_AIM,x
 	ora	#$0004
 	sta	PLAYER_AIM,x
-	bra	sub_01AA20
+	bra	move_player
 
-sub_01AA18:
+; Zeroes the x velocity while PLAYER_LOCKED, then move_player.
+move_player_unless_locked:
 	lda	PLAYER_LOCKED,x
-	beq	sub_01AA20
+	beq	move_player
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 
-sub_01AA20:
+; Adds the velocity to the position, clamps x to 10..240 (and y to 49 and
+; more while wram_1666 is set) and stores the movement of the frame in
+; PLAYER_DX / PLAYER_DY.  In: X = player.  Returns with RTL.
+move_player:
 	clc
 	lda	OBJ_X_VEL_SUB,x
 	adc	OBJ_X_SUB,x
@@ -658,7 +686,11 @@ loc_01AA61:
 	sta	a:PLAYER_DY,x
 	rtl
 
-sub_01AA6A:
+; Per frame, per player: follows the BG scroll, kills the player who fell
+; below the screen (PCONTACT_KILLED), counts down the fire delays and the
+; barrier (PLAYER_BARRIER), then runs the state handler (tbl_player_states,
+; by OBJ_STATE; see PLAYER_STATE_* in ram.inc).  In: X = player.
+run_player_state:
 	sec
 	lda	a:OBJ_X,x
 	sbc	a:wram_138E
@@ -704,34 +736,37 @@ loc_01AABB:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01AACA,x
+	lda	f:tbl_player_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01AACA:
-	.addr	sub_01885E
-	.addr	sub_018F8B
-	.addr	sub_01914F
-	.addr	sub_018354
-	.addr	sub_018317
-	.addr	sub_019813
+tbl_player_states:
+	.addr	player_state_ground
+	.addr	player_state_hang
+	.addr	player_state_climb_right
+	.addr	player_state_jump
+	.addr	player_state_fall
+	.addr	player_state_climb_left
 	.addr	sub_019C18
-	.addr	sub_019AEB
-	.addr	sub_019B66
+	.addr	player_state_dying
+	.addr	player_state_dead
 	.addr	sub_01A548
 	.addr	sub_01A57D
-	.addr	sub_01AC71
-	.addr	sub_018354
+	.addr	player_state_spin_stance
+	.addr	player_state_jump
 	.addr	sub_01AD83
-	.addr	sub_019B9D
-	.addr	sub_019BC8
+	.addr	player_state_out
+	.addr	player_state_respawn
 	.addr	sub_019125
 	.addr	sub_01B0E7
 	.addr	sub_01B104
 	.addr	sub_01ABFF
 	.addr	sub_01AC28
 
-sub_01AAF4:
+; While PLAYER_BOMB_RADIUS is non-zero: grows it by PLAYER_BOMB_SPEED (which
+; accelerates by $0800 a frame) up to 255, then 0 = finished; calls
+; bomb_hit_targets.
+update_bomb:
 	lda	a:PLAYER_BOMB_RADIUS,x
 	beq	loc_01AB1E
 	clc
@@ -748,11 +783,16 @@ loc_01AB05:
 	lda	a:PLAYER_BOMB_SPEED,x
 	adc	#$0000
 	sta	a:PLAYER_BOMB_SPEED,x
-	jsr	a:sub_01AB1F
+	jsr	a:bomb_hit_targets
 loc_01AB1E:
 	rts
 
-sub_01AB1F:
+; Every other frame per player (stage_frame_odd): each object of the
+; target list overlapping the square of half-size PLAYER_BOMB_RADIUS around
+; PLAYER_BOMB_X/Y gets OBJ_HIT = $0100 and, if OBJF_TARGET and not
+; OBJF_INVULNERABLE, loses 1 OBJ_HP; destroyed objects score
+; type_scores[OBJ_TYPE] for the player (sub_00B829).
+bomb_hit_targets:
 	lda	stage_frame_odd
 	bne	loc_01AB2A
 	cpx	#$0200
@@ -828,7 +868,10 @@ loc_01ABA7:
 	rts
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01ABA8:
+; Unused debug code (no caller): with Select held, Up cycles the difficulty
+; (and sets PLAYER_BOMBS to it), A sets one life and kills the player, B
+; kills the player, X sets lives, bombs and barrier to $8000.
+debug_player_keys:
 	; (not executed in the CDL traces)
 	lda	PLAYER_JOY_HELD,x
 	bit	#$2000
@@ -939,13 +982,17 @@ loc_01AC62:
 	stz	OBJ_X_VEL,x
 	rtl
 
-sub_01AC71:
-	jsr	a:sub_018F6C
-	jsl	f:sub_01801B
+; State $0B (L+R held on the ground; entered from the ground aim routines
+; when PLAYER_SPIN is set): carried by a platform, plays the stance
+; animation; fire with PLAYER_SPIN still set starts the spin jump (state
+; $0C, where spin_fire_weapon_1/2 fire both weapons around).
+player_state_spin_stance:
+	jsr	a:set_player_box_standing
+	jsl	f:check_bomb_button
 	lda	PLAYER_CONTACT,x
 	bit	#$0004
 	beq	loc_01AC83
-	jml	f:loc_019A76
+	jml	f:kill_player
 loc_01AC83:
 	ldy	a:PLAYER_PLATFORM,x
 	beq	loc_01ACA3
@@ -1029,14 +1076,14 @@ loc_01AD09:
 ; (no caller found; decoded because it follows the end of a routine)
 sub_01AD11:
 	; (not executed in the CDL traces)
-	jsr	a:sub_018839
+	jsr	a:set_player_box_jumping
 	lda	PLAYER_CONTACT,x
 	bit	#$0004
 	beq	loc_01AD1F
-	jml	f:loc_019A76
+	jml	f:kill_player
 loc_01AD1F:
-	jsl	f:sub_018555
-	jsl	f:sub_01801B
+	jsl	f:animate_player_somersault
+	jsl	f:check_bomb_button
 	lda	#$FFF2
 	ldy	OBJ_FACING,x
 	bne	loc_01AD31
@@ -1045,7 +1092,7 @@ loc_01AD31:
 	sta	zp_14
 	lda	#$FFD8
 	sta	zp_16
-	jsl	f:sub_00D692
+	jsl	f:spin_fire_weapon_2
 	stz	$38,x
 	lda	#$0002
 	ldy	OBJ_FACING,x
@@ -1055,7 +1102,7 @@ loc_01AD48:
 	sta	zp_14
 	lda	#$FFD8
 	sta	zp_16
-	jsl	f:sub_00D656
+	jsl	f:spin_fire_weapon_1
 	stz	$38,x
 	lda	OBJ_Y_VEL,x
 	bmi	loc_01AD5E
@@ -1088,10 +1135,10 @@ sub_01AD83:
 	lda	PLAYER_CONTACT,x
 	bit	#$0004
 	beq	loc_01AD8E
-	jml	f:loc_019A76
+	jml	f:kill_player
 loc_01AD8E:
-	jsr	a:sub_01B0C0
-	jsl	f:sub_01801B
+	jsr	a:set_player_box_hanging
+	jsl	f:check_bomb_button
 	jsl	f:sub_01AF3C
 	lda	OBJ_STATE,x
 	cmp	#$000D
@@ -1154,7 +1201,7 @@ loc_01ADFD:
 	sta	zp_14
 	lda	#$FFDF
 	sta	zp_16
-	jml	f:sub_00D6DC
+	jml	f:fire_weapon
 
 sub_01AE10:
 	lda	#$0052
@@ -1169,7 +1216,7 @@ loc_01AE24:
 	sty	zp_14
 	lda	#$FFC0
 	sta	zp_16
-	jml	f:sub_00D6DC
+	jml	f:fire_weapon
 
 sub_01AE2F:
 	lda	PLAYER_LOCKED,x
@@ -1186,7 +1233,7 @@ loc_01AE3E:
 	sta	zp_14
 	lda	#$FFCB
 	sta	zp_16
-	jml	f:sub_00D6DC
+	jml	f:fire_weapon
 
 sub_01AE51:
 	lda	PLAYER_LOCKED,x
@@ -1203,7 +1250,7 @@ loc_01AE60:
 	sta	zp_14
 	lda	#$FFDF
 	sta	zp_16
-	jml	f:sub_00D6DC
+	jml	f:fire_weapon
 
 sub_01AE73:
 	lda	PLAYER_LOCKED,x
@@ -1221,7 +1268,7 @@ loc_01AE82:
 	sta	zp_14
 	lda	#$FFCC
 	sta	zp_16
-	jml	f:sub_00D6DC
+	jml	f:fire_weapon
 
 sub_01AE95:
 	lda	#$0050
@@ -1236,7 +1283,7 @@ loc_01AEA9:
 	sty	zp_14
 	lda	#$0000
 	sta	zp_16
-	jml	f:sub_00D6DC
+	jml	f:fire_weapon
 
 sub_01AEB4:
 	lda	PLAYER_LOCKED,x
@@ -1254,7 +1301,7 @@ loc_01AEC3:
 	sta	zp_14
 	lda	#$FFF4
 	sta	zp_16
-	jml	f:sub_00D6DC
+	jml	f:fire_weapon
 
 sub_01AED6:
 	; (not executed in the CDL traces)
@@ -1272,7 +1319,7 @@ loc_01AEE5:
 	sta	zp_14
 	lda	#$FFF2
 	sta	zp_16
-	jml	f:sub_00D6DC
+	jml	f:fire_weapon
 
 sub_01AEF8:
 	lda	zp_C4
@@ -1319,7 +1366,7 @@ sub_01AF3C:
 	beq	loc_01AF54
 	lda	#$0005
 	sta	OBJ_STATE,x
-	brl	sub_019433
+	brl	snap_x_right_to_tile
 loc_01AF54:
 	lda	#$0006
 	sta	zp_00
@@ -1330,7 +1377,7 @@ loc_01AF54:
 	beq	sub_01AF6F
 	lda	#$0002
 	sta	OBJ_STATE,x
-	brl	sub_019414
+	brl	snap_x_left_to_tile
 
 sub_01AF6F:
 	lda	#$FFD0
@@ -1451,7 +1498,7 @@ loc_01B04E:
 loc_01B054:
 	lda	#$0002
 	sta	zp_C4
-	brl	sub_0193F4
+	brl	snap_y_down_to_tile
 loc_01B05C:
 	stz	zp_C4
 	rtl
@@ -1484,7 +1531,7 @@ sub_01B085:
 	; (not executed in the CDL traces)
 	lda	#$0002
 	sta	zp_C4
-	brl	sub_0193F4
+	brl	snap_y_down_to_tile
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_01B08D:
@@ -1534,7 +1581,8 @@ sub_01B0B8:
 	sta	zp_C4
 	brl	loc_0195BA
 
-sub_01B0C0:
+; Body box and PLAYER_CENTER_X/Y for the hanging states, from OBJ_FACING.
+set_player_box_hanging:
 	ldy	OBJ_FACING,x
 	lda	OBJ_X,x
 	adc	a:data_05ABED,y
@@ -1553,11 +1601,11 @@ sub_01B0C0:
 	rts
 
 sub_01B0E7:
-	jsl	f:sub_01801B
+	jsl	f:check_bomb_button
 	lda	PLAYER_CONTACT,x
 	bit	#$0004
 	beq	loc_01B0F6
-	jml	f:loc_019A76
+	jml	f:kill_player
 loc_01B0F6:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
@@ -1636,4 +1684,4 @@ loc_01B162:
 	sta	zp_14
 	lda	a:data_05AC47,y
 	sta	zp_16
-	jml	f:sub_00D6DC
+	jml	f:fire_weapon

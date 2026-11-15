@@ -16,15 +16,15 @@ animation scripts) in the same routines.
 
 | slots | use | run by |
 |---|---|---|
-| `$0200`, `$0240` | player 1, player 2 (`player1_obj`, `player2_obj`) | `sub_01A624` (players), drawn by `draw_players` |
+| `$0200`, `$0240` | player 1, player 2 (`player1_obj`, `player2_obj`) | `update_players` (players), drawn by `draw_players` |
 | `$0280`, `$02C0` | two more slots | `update_objects_0280` |
 | `$0300-$0ABF` | 30 slots: enemies, bosses, items, enemy bullets, effects | `update_objects` |
 
-New objects are allocated in `$0300-$077F`: `sub_019E83` (X) and
-`sub_019EAB` (Y) return the first slot whose `OBJ_TYPE` is 0, with carry
-clear; enemy bullets (`sub_01A11C`, type `$18`) search downwards from
-`$0740` (`sub_019EC1`, carry set when found). A slot is freed by clearing
-its `$40` bytes (`OBJF_DELETE`, `OBJF_OFFSCREEN_KILL`, `sub_019E44`).
+New objects are allocated in `$0300-$077F`: `find_free_slot` (X) and
+`find_free_slot_y` (Y) return the first slot whose `OBJ_TYPE` is 0, with carry
+clear; enemy bullets (`spawn_enemy_bullet`, type `$18`) search downwards from
+`$0740` (`find_free_slot_y_down`, carry set when found). A slot is freed by clearing
+its `$40` bytes (`OBJF_DELETE`, `OBJF_OFFSCREEN_KILL`, `delete_self_and_linked`).
 
 ### Fields
 
@@ -94,7 +94,7 @@ For each slot in use, in order:
 
 ## Players
 
-The players use the same slots with their own code (`sub_01A624`, once
+The players use the same slots with their own code (`update_players`, once
 per frame, `src/objects/player.asm`): the position, velocity, sprite,
 `OBJ_FACING` (0 right, 2 left) and `OBJ_STATE` fields have the same
 meaning, the others differ (`PLAYER_*` in `src/ram.inc`):
@@ -126,8 +126,8 @@ stat block at slot + `$1D80` (`$1F80`, `$1FC0`; `p1_*` / `p2_*` in the
 
 Nothing hurts a player directly: contact sets `PCONTACT_KILLED` in
 `PLAYER_CONTACT` (an `OBJF_HARMFUL` object in `update_objects`, enemy
-bullets and hazards in `sub_01A2A5`, falling off the bottom of the screen
-in `sub_01AA6A`), and the player's state handlers jump to `loc_019A76`
+bullets and hazards in `kill_player_outside`, falling off the bottom of the screen
+in `run_player_state`), and the player's state handlers jump to `kill_player`
 when they see it: death sound, knock-back (`PLAYER_STATE_DYING`), loss of
 the active weapon and of the barrier, then `PLAYER_STATE_DEAD`, a life
 taken (`PLAYER_LIVES`) and the bombs reset to 1. Protection:
@@ -135,7 +135,7 @@ taken (`PLAYER_LIVES`) and the bombs reset to 1. Protection:
 - `PLAYER_INVULN_TIMER` after a respawn (`PLAYERF_INVULNERABLE`): contact is
   ignored;
 - the barrier (`PLAYER_BARRIER`, `p1_barrier_timer`, counted down every
-  frame by `sub_01AA6A`): `OBJF_HARMFUL` is ignored and enemies touched
+  frame by `run_player_state`): `OBJF_HARMFUL` is ignored and enemies touched
   lose 1 HP per frame.
 
 ### Weapons
@@ -155,7 +155,7 @@ holding a `WEAPON_*` number:
 
 (checked by poking `p1_weapon_1` in the emulator). The fire button calls
 the shot spawners of `src/objects/player_shots.asm` through one of three
-tables indexed by weapon (`tbl_00D686`, `tbl_00D6C2`, `tbl_00D717`), which
+tables indexed by weapon (`tbl_spin_fire_1`, `tbl_spin_fire_2`, `tbl_fire_weapon`), which
 reload `PLAYER_FIRE_DELAY_1/2` from `weapon_fire_delays`. Weapon 1's shots
 use the first 10 shot slots of the player, weapon 2's the next 10.
 Holding L and R (`PLAYER_SPIN`) fires both.
@@ -179,7 +179,7 @@ it, frees it off the screen, and tests it against the target list:
 **Damage to enemies** is computed in `update_shots`: the target's
 `OBJ_HP` -= `SHOT_DAMAGE` (skipped for `OBJF_INVULNERABLE`); when it goes
 negative the shooter scores `type_scores[OBJ_TYPE]` (BCD, `add_score_for_player_obj`).
-The bomb (`sub_01AB1F`) and the barrier (`update_objects`) take 1 HP per
+The bomb (`bomb_hit_targets`) and the barrier (`update_objects`) take 1 HP per
 frame. Each player's shots are only tested every other frame.
 
 ## Sprites

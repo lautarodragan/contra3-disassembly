@@ -84,7 +84,7 @@ sub_01D005:
 	sta	zp_04
 	ldy	#$0700
 loc_01D015:
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_01D044
 	lda	#$C558
 	jsl	f:sub_01CF66
@@ -492,7 +492,7 @@ loc_01D302:
 	lda	$24,x
 	bit	#$0007
 	bne	loc_01D353
-	jsl	f:sub_019EAB
+	jsl	f:find_free_slot_y
 	bcs	loc_01D353
 	lda	#$001D
 	sta	a:$0010,y
@@ -582,7 +582,7 @@ loc_01D3B0:
 	lda	#$0001
 	sta	a:shake_continuous
 	ldy	#$0840
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_01D382
 	dec	$32,x
 	lda	#$0030
@@ -636,7 +636,7 @@ loc_01D42D:
 	lda	stage_frame_mod4
 	bne	loc_01D46E
 	ldy	#$08C0
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_01D46E
 	lda	#$002E
 	sta	a:$0010,y
@@ -774,7 +774,7 @@ loc_01D53D:
 	lda	stage_frame_mod4
 	bne	loc_01D58A
 	ldy	#$0840
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_01D58A
 	lda	#$001D
 	sta	a:$0010,y
@@ -878,7 +878,7 @@ loc_01D625:
 	lda	stage_frame_odd
 	bne	loc_01D5F0
 	ldy	#$0840
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_01D5F0
 	tya
 	bit	#$0040
@@ -988,7 +988,7 @@ loc_01D712:
 	lda	stage_frame_mod4
 	bne	loc_01D752
 	ldy	#$0400
-	jsl	f:sub_019EAE
+	jsl	f:find_free_slot_from_y
 	bcs	loc_01D752
 	lda	#$00D0
 	sta	a:$000E,y
@@ -1074,7 +1074,7 @@ loc_01D7BB:
 	adc	#$0020
 	sta	$38,x
 	ldy	#$0700
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_01D7E1
 	lda	$0A,x
 	adc	#$0018
@@ -1289,7 +1289,7 @@ loc_01D964:
 	sta	zp_08
 loc_01D969:
 	ldy	#$0740
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_01D9C5
 	lda	zp_FC
 	sta	a:$0034,y
@@ -1497,7 +1497,7 @@ loc_01DAF3:
 	sta	zp_08
 	plx
 	phy
-	jsl	f:sub_00FF48
+	jsl	f:vector_length
 	ply
 	cmp	#$0008
 	bcs	loc_01DB06
@@ -1593,7 +1593,7 @@ sub_01DB8B:
 	bne	loc_01DBB0
 	jmp	a:loc_01DC45
 loc_01DBB0:
-	jsl	f:sub_0193DB
+	jsl	f:snap_y_up_to_tile
 	stz	$30,x
 	stz	$32,x
 	stz	$34,x
@@ -1774,7 +1774,7 @@ sub_01DD00:
 	lda	stage_frame_counter
 	and	#$001F
 	bne	loc_01DD4F
-	jsl	f:sub_019EAB
+	jsl	f:find_free_slot_y
 	bcs	loc_01DD4F
 	lda	#$0048
 	sta	a:$0010,y
@@ -1974,8 +1974,8 @@ loc_01DE81:
 
 sub_01DE82:
 	lda	#$0800
-	jsl	f:sub_01A15D
-	jsl	f:sub_01A0C8
+	jsl	f:pick_target_player
+	jsl	f:angle_to_player
 	lsr	a
 	lsr	a
 	and	#$003E
@@ -2002,7 +2002,7 @@ sub_01DE82:
 	adc	$0E,x
 	sta	zp_02
 	lda	zp_FE
-	jsl	f:sub_01A11C
+	jsl	f:spawn_enemy_bullet
 loc_01DEC4:
 	rtl
 loc_01DEC5:
@@ -2343,7 +2343,7 @@ sub_01E112:
 	lda	stage_frame_counter
 	and	#$000F
 	bne	loc_01E16F
-	jsl	f:sub_019EAB
+	jsl	f:find_free_slot_y
 	bcs	loc_01E16F
 	lda	stage_frame_counter
 	and	#$0010
@@ -2480,7 +2480,7 @@ loc_01E232:
 	lda	stage_frame_counter
 	and	#$001F
 	bne	loc_01E29E
-	jsl	f:sub_019EAB
+	jsl	f:find_free_slot_y
 	bcs	loc_01E29E
 	lda	#$0051
 	sta	a:$0010,y
@@ -3112,7 +3112,7 @@ sub_01E6F0:
 	and	a:data_05CABF,y
 	bne	loc_01E762
 	ldy	#$04C0
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_01E762
 	lda	#$004F
 	sta	a:$0010,y
@@ -3281,7 +3281,7 @@ loc_01E837:
 	stz	$1E,x
 	stz	$08,x
 	stz	$0C,x
-	jsl	f:sub_0193DB
+	jsl	f:snap_y_up_to_tile
 	lda	#$CAF7
 	sta	$20,x
 	stz	$22,x
@@ -3359,7 +3359,7 @@ loc_01E8CF:
 	tay
 	cmp	#$0A00
 	bcc	loc_01E8BC
-	jsl	f:sub_019EAB
+	jsl	f:find_free_slot_y
 	bcs	loc_01E8F8
 	lda	#$00FF
 	sta	a:$000A,y
@@ -3379,7 +3379,7 @@ sub_01E8F9:
 	and	#$00FF
 	adc	a:data_05CB23,y
 	sta	$32,x
-	jsl	f:sub_019EAB
+	jsl	f:find_free_slot_y
 	bcs	loc_01E8F8
 	lda	#$0000
 	sta	a:$000A,y
@@ -4588,7 +4588,7 @@ loc_01F29F:
 
 sub_01F2A0:
 	lda	#$0400
-	jsl	f:sub_01A15D
+	jsl	f:pick_target_player
 	lda	$0E,x
 	adc	#$FFF2
 	sbc	a:$1314,y
@@ -4720,7 +4720,7 @@ sub_01F38B:
 	sta	zp_10
 	ldy	#$08C0
 loc_01F3A2:
-	jsl	f:sub_019EC1
+	jsl	f:find_free_slot_y_down
 	bcc	loc_01F3BB
 	tyx
 	lda	zp_12
@@ -4761,7 +4761,7 @@ sub_01F3E3:
 	sta	zp_00
 	stz	zp_02
 	lda	#$0002
-	jsl	f:sub_01A296
+	jsl	f:kill_players_outside
 	rts
 
 sub_01F3F2:
@@ -4960,7 +4960,7 @@ sub_01F55E:
 	lda	stage_frame_mod4
 	bne	loc_01F59F
 	lda	#$0400
-	jsl	f:sub_01A15D
+	jsl	f:pick_target_player
 	dec	$34,x
 	bpl	loc_01F57C
 	lda	#$0002
@@ -4971,7 +4971,7 @@ sub_01F55E:
 	sta	$12,x
 loc_01F57C:
 	ldy	#$0440
-	jsl	f:sub_019EAE
+	jsl	f:find_free_slot_from_y
 	bcs	loc_01F59F
 	lda	#$0078
 	sta	a:$0010,y
@@ -4987,7 +4987,7 @@ loc_01F59F:
 
 sub_01F5A0:
 	lda	#$0400
-	jsl	f:sub_01A15D
+	jsl	f:pick_target_player
 	lda	$0A,x
 	bmi	loc_01F5E2
 	cmp	a:$000A,y
@@ -4997,7 +4997,7 @@ sub_01F5A0:
 	lda	#$0001
 	sta	$12,x
 	ldy	#$0440
-	jsl	f:sub_019EAE
+	jsl	f:find_free_slot_from_y
 	bcs	loc_01F5E2
 	lda	#$0076
 	sta	a:$0010,y

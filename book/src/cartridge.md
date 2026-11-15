@@ -63,7 +63,7 @@ byte, which for a LoROM SlowROM game is normally `$20`. Contra III's title,
 build reproduces it as it is, since it must match the original.
 
 Because the developer ID at `$FFDA` is not `$33`, there is no extended
-header at `$FFB0-$FFBF`. In fact the code of `sub_00FF48` ends with an `RTL`
+header at `$FFB0-$FFBF`. In fact the code of `vector_length` ends with an `RTL`
 at `$00:FFB1`, inside that area (the CDL confirms that it runs), and
 `$FFB2-$FFBF` are `$FF` that nothing reads.
 

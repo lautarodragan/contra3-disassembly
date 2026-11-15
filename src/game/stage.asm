@@ -3,7 +3,7 @@
 ;
 ; run_side_view_stage dispatches the stage sub-mode through tbl_stage_states: stage start
 ; effects (stage_init), stage setup (stage_setup_video: video mode, graphics, BG),
-; and the per-frame stage loop (stage_play: players sub_01A624, object lists
+; and the per-frame stage loop (stage_play: players update_players, object lists
 ; sub_00E1B8/sub_00E989, HUD...).
 
 run_side_view_stage:
@@ -261,7 +261,7 @@ stage_frame:
 	sta	oam_hi_bits
 	jsl	f:reset_vram_update_queues
 	jsr	a:update_stage_frame_counters
-	jsl	f:sub_01A624
+	jsl	f:update_players
 	jsl	f:update_shots
 	stz	a:wram_023C
 	stz	a:wram_027C
