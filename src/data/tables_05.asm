@@ -61,33 +61,140 @@ data_05822E:
 	.byte	$08, $00
 	.addr	hdma_list_0584FE
 	.byte	$00, $00, $02, $00, $00, $22, $E0, $23, $00, $00, $00, $00
-	.byte	$01, $00, $5E, $82, $01, $00, $6C, $82, $01, $00, $E2, $82, $01, $00, $F0, $82
-	.byte	$01, $00, $66, $83, $01, $00, $70, $83, $01, $00, $AE, $83, $01, $00, $D2, $83
-	.byte	$03, $00, $00, $80, $7A, $82, $87, $82, $94, $82, $A1, $82, $00, $00, $03, $00
-	.byte	$00, $80, $AE, $82, $BB, $82, $C8, $82, $D5, $82, $00, $00, $80, $00, $01, $18
-	.byte	$00, $28, $20, $E0, $7F, $20, $00, $00, $00, $80, $00, $01, $18, $00, $28, $40
-	.byte	$E0, $7F, $20, $00, $00, $00, $80, $00, $01, $18, $00, $28, $00, $E0, $7F, $20
-	.byte	$00, $00, $00, $80, $00, $01, $18, $00, $28, $60, $E0, $7F, $20, $00, $00, $00
-	.byte	$80, $00, $01, $18, $10, $28, $00, $E0, $7F, $20, $00, $00, $00, $80, $00, $01
-	.byte	$18, $10, $28, $60, $E0, $7F, $20, $00, $00, $00, $80, $00, $01, $18, $10, $28
-	.byte	$20, $E0, $7F, $20, $00, $00, $00, $80, $00, $01, $18, $10, $28, $40, $E0, $7F
-	.byte	$20, $00, $00, $00, $03, $00, $00, $80, $FE, $82, $0B, $83, $18, $83, $25, $83
-	.byte	$00, $00, $03, $00, $00, $80, $32, $83, $3F, $83, $4C, $83, $59, $83, $00, $00
-	.byte	$80, $00, $01, $18, $B0, $3B, $20, $E0, $7F, $20, $00, $00, $00, $80, $00, $01
-	.byte	$18, $B0, $3B, $80, $E0, $7F, $20, $00, $00, $00, $80, $00, $01, $18, $B0, $3B
-	.byte	$00, $E0, $7F, $20, $00, $00, $00, $80, $00, $01, $18, $B0, $3B, $A0, $E0, $7F
-	.byte	$20, $00, $00, $00, $80, $00, $01, $18, $C0, $3B, $00, $E0, $7F, $20, $00, $00
-	.byte	$00, $80, $00, $01, $18, $C0, $3B, $A0, $E0, $7F, $20, $00, $00, $00, $80, $00
-	.byte	$01, $18, $C0, $3B, $20, $E0, $7F, $20, $00, $00, $00, $80, $00, $01, $18, $C0
-	.byte	$3B, $80, $E0, $7F, $20, $00, $00, $00, $09, $00, $00, $80, $7A, $83, $87, $83
-	.byte	$00, $00, $09, $00, $00, $80, $94, $83, $A1, $83, $00, $00, $80, $00, $01, $18
-	.byte	$90, $2A, $C0, $E0, $7F, $20, $00, $00, $00, $80, $00, $01, $18, $90, $2A, $20
-	.byte	$E1, $7F, $20, $00, $00, $00, $80, $00, $01, $18, $F0, $2A, $E0, $E0, $7F, $40
-	.byte	$00, $00, $00, $80, $00, $01, $18, $F0, $2A, $40, $E1, $7F, $40, $00, $00, $00
-	.byte	$03, $00, $00, $80, $B8, $83, $C5, $83, $00, $00, $80, $00, $01, $18, $00, $3E
-	.byte	$80, $E1, $7F, $E0, $00, $00, $00, $80, $00, $01, $18, $00, $3E, $60, $E2, $7F
-	.byte	$E0, $00, $00, $00, $03, $00, $00, $80, $DC, $83, $E9, $83, $00, $00, $80, $00
-	.byte	$01, $18, $10, $2B, $40, $E3, $7F, $80, $00, $00, $00, $80, $00, $01, $18, $10
+	; Never read in the traces (only hdma_preset 1 is used): 8 pairs (1, list);
+	; each list is a word (3 or 9), $8000, pointers to 13-byte VRAM DMA records
+	; (VMAIN, DMAP, BBAD, VRAM address, source in $7F, size, 0) and 0.
+	.byte	$01, $00
+	.addr	unused_dma_list_05825E
+	.byte	$01, $00
+	.addr	unused_dma_list_05826C
+	.byte	$01, $00
+	.addr	unused_dma_list_0582E2
+	.byte	$01, $00
+	.addr	unused_dma_list_0582F0
+	.byte	$01, $00
+	.addr	unused_dma_list_058366
+	.byte	$01, $00
+	.addr	unused_dma_list_058370
+	.byte	$01, $00
+	.addr	unused_dma_list_0583AE
+	.byte	$01, $00
+	.addr	unused_dma_list_0583D2
+unused_dma_list_05825E:
+	.byte	$03, $00, $00, $80
+	.addr	unused_vram_dma_05827A
+	.addr	unused_vram_dma_058287
+	.addr	unused_vram_dma_058294
+	.addr	unused_vram_dma_0582A1
+	.byte	$00, $00
+unused_dma_list_05826C:
+	.byte	$03, $00
+	.byte	$00, $80
+	.addr	unused_vram_dma_0582AE
+	.addr	unused_vram_dma_0582BB
+	.addr	unused_vram_dma_0582C8
+	.addr	unused_vram_dma_0582D5
+	.byte	$00, $00
+unused_vram_dma_05827A:
+	.byte	$80, $00, $01, $18
+	.byte	$00, $28, $20, $E0, $7F, $20, $00, $00, $00
+unused_vram_dma_058287:
+	.byte	$80, $00, $01, $18, $00, $28, $40
+	.byte	$E0, $7F, $20, $00, $00, $00
+unused_vram_dma_058294:
+	.byte	$80, $00, $01, $18, $00, $28, $00, $E0, $7F, $20
+	.byte	$00, $00, $00
+unused_vram_dma_0582A1:
+	.byte	$80, $00, $01, $18, $00, $28, $60, $E0, $7F, $20, $00, $00, $00
+unused_vram_dma_0582AE:
+	.byte	$80, $00, $01, $18, $10, $28, $00, $E0, $7F, $20, $00, $00, $00
+unused_vram_dma_0582BB:
+	.byte	$80, $00, $01
+	.byte	$18, $10, $28, $60, $E0, $7F, $20, $00, $00, $00
+unused_vram_dma_0582C8:
+	.byte	$80, $00, $01, $18, $10, $28
+	.byte	$20, $E0, $7F, $20, $00, $00, $00
+unused_vram_dma_0582D5:
+	.byte	$80, $00, $01, $18, $10, $28, $40, $E0, $7F
+	.byte	$20, $00, $00, $00
+unused_dma_list_0582E2:
+	.byte	$03, $00, $00, $80
+	.addr	unused_vram_dma_0582FE
+	.addr	unused_vram_dma_05830B
+	.addr	unused_vram_dma_058318
+	.addr	unused_vram_dma_058325
+	.byte	$00, $00
+unused_dma_list_0582F0:
+	.byte	$03, $00, $00, $80
+	.addr	unused_vram_dma_058332
+	.addr	unused_vram_dma_05833F
+	.addr	unused_vram_dma_05834C
+	.addr	unused_vram_dma_058359
+	.byte	$00, $00
+unused_vram_dma_0582FE:
+	.byte	$80, $00, $01, $18, $B0, $3B, $20, $E0, $7F, $20, $00, $00, $00
+unused_vram_dma_05830B:
+	.byte	$80, $00, $01
+	.byte	$18, $B0, $3B, $80, $E0, $7F, $20, $00, $00, $00
+unused_vram_dma_058318:
+	.byte	$80, $00, $01, $18, $B0, $3B
+	.byte	$00, $E0, $7F, $20, $00, $00, $00
+unused_vram_dma_058325:
+	.byte	$80, $00, $01, $18, $B0, $3B, $A0, $E0, $7F
+	.byte	$20, $00, $00, $00
+unused_vram_dma_058332:
+	.byte	$80, $00, $01, $18, $C0, $3B, $00, $E0, $7F, $20, $00, $00
+	.byte	$00
+unused_vram_dma_05833F:
+	.byte	$80, $00, $01, $18, $C0, $3B, $A0, $E0, $7F, $20, $00, $00, $00
+unused_vram_dma_05834C:
+	.byte	$80, $00
+	.byte	$01, $18, $C0, $3B, $20, $E0, $7F, $20, $00, $00, $00
+unused_vram_dma_058359:
+	.byte	$80, $00, $01, $18, $C0
+	.byte	$3B, $80, $E0, $7F, $20, $00, $00, $00
+unused_dma_list_058366:
+	.byte	$09, $00, $00, $80
+	.addr	unused_vram_dma_05837A
+	.addr	unused_vram_dma_058387
+	.byte	$00, $00
+unused_dma_list_058370:
+	.byte	$09, $00, $00, $80
+	.addr	unused_vram_dma_058394
+	.addr	unused_vram_dma_0583A1
+	.byte	$00, $00
+unused_vram_dma_05837A:
+	.byte	$80, $00, $01, $18
+	.byte	$90, $2A, $C0, $E0, $7F, $20, $00, $00, $00
+unused_vram_dma_058387:
+	.byte	$80, $00, $01, $18, $90, $2A, $20
+	.byte	$E1, $7F, $20, $00, $00, $00
+unused_vram_dma_058394:
+	.byte	$80, $00, $01, $18, $F0, $2A, $E0, $E0, $7F, $40
+	.byte	$00, $00, $00
+unused_vram_dma_0583A1:
+	.byte	$80, $00, $01, $18, $F0, $2A, $40, $E1, $7F, $40, $00, $00, $00
+unused_dma_list_0583AE:
+	.byte	$03, $00, $00, $80
+	.addr	unused_vram_dma_0583B8
+	.addr	unused_vram_dma_0583C5
+	.byte	$00, $00
+unused_vram_dma_0583B8:
+	.byte	$80, $00, $01, $18, $00, $3E
+	.byte	$80, $E1, $7F, $E0, $00, $00, $00
+unused_vram_dma_0583C5:
+	.byte	$80, $00, $01, $18, $00, $3E, $60, $E2, $7F
+	.byte	$E0, $00, $00, $00
+unused_dma_list_0583D2:
+	.byte	$03, $00, $00, $80
+	.addr	unused_vram_dma_0583DC
+	.addr	unused_vram_dma_0583E9
+	.byte	$00, $00
+unused_vram_dma_0583DC:
+	.byte	$80, $00
+	.byte	$01, $18, $10, $2B, $40, $E3, $7F, $80, $00, $00, $00
+unused_vram_dma_0583E9:
+	.byte	$80, $00, $01, $18, $10
 	.byte	$2B, $C0, $E3, $7F, $80, $00, $00, $00
 continues_per_difficulty:
 	; CDL: read by init_continues
@@ -3205,7 +3312,10 @@ data_05CD1B:
 	.byte	$29, $CD, $41, $CD
 data_05CD21:
 	; CDL: read by start_palette_task_at, palette_task_fade_out, palette_task_fade_in (+2 more); DMA / HDMA
-	.byte	$4D, $CD, $2F, $CD, $47, $CD, $53, $CD
+	.addr	palette_task_05CD4D
+	.addr	palette_task_05CD2F
+	.addr	palette_task_05CD47
+	.addr	palette_task_05CD53
 palette_task_05CD29:
 	palette_fade_in	$10, palette_08F02A, $22DA
 palette_task_05CD2F:
@@ -4712,8 +4822,16 @@ data_05ED24:
 	.addr	metasprite_06C48B, metasprite_06C490, metasprite_06C495, metasprite_06C49A
 data_05ED34:
 	; CDL: read by queue_vram_blocks_at_x, winged_alien_queue_tiles
-	.byte	$3A, $ED, $46, $ED, $52, $ED, $00, $B0, $00, $B0, $00, $B0, $C0, $BD, $E0, $BD
-	.byte	$00, $BE, $80, $BC, $A0, $BC, $C0, $BC, $E0, $BC, $00, $BD, $20, $BD, $00, $B0
+	.addr	vram_blocks_05ED3A
+	.addr	vram_blocks_05ED46
+	.addr	vram_blocks_05ED52
+vram_blocks_05ED3A:
+	.byte	$00, $B0, $00, $B0, $00, $B0, $C0, $BD, $E0, $BD
+	.byte	$00, $BE
+vram_blocks_05ED46:
+	.byte	$80, $BC, $A0, $BC, $C0, $BC, $E0, $BC, $00, $BD, $20, $BD
+vram_blocks_05ED52:
+	.byte	$00, $B0
 	.byte	$20, $BE, $40, $BE, $00, $B0, $60, $BE, $80, $BE
 ; OBJ_HP of face_boss by difficulty (easy, normal, hard)
 face_boss_hp:
@@ -4742,7 +4860,12 @@ data_05ED94:
 	.byte	$00, $C0, $00, $C2, $C0, $C1, $80, $C1
 data_05ED9C:
 	; CDL: read by queue_vram_blocks_at_x, sub_04A93B
-	.byte	$A0, $ED, $A8, $ED, $60, $C0, $80, $C0, $A0, $C0, $C0, $C0, $E0, $C0, $00, $C1
+	.addr	vram_blocks_05EDA0
+	.addr	vram_blocks_05EDA8
+vram_blocks_05EDA0:
+	.byte	$60, $C0, $80, $C0, $A0, $C0, $C0, $C0
+vram_blocks_05EDA8:
+	.byte	$E0, $C0, $00, $C1
 	.byte	$20, $C1
 data_05EDAE:
 	; CDL: read by queue_vram_blocks_at_x, sub_04A95D
@@ -4871,7 +4994,11 @@ data_05EF04:
 	.byte	$60, $BC, $00, $B0, $60, $BC, $00, $B0
 data_05EF3C:
 	; CDL: read by queue_vram_blocks_at_x, sub_04B14B
-	.byte	$40, $EF, $4C, $EF, $80, $B0, $A0, $B0, $C0, $B0, $00, $BA, $20, $BA, $40, $BA
+	.addr	vram_blocks_05EF40
+	.addr	vram_blocks_05EF4C
+vram_blocks_05EF40:
+	.byte	$80, $B0, $A0, $B0, $C0, $B0, $00, $BA, $20, $BA, $40, $BA
+vram_blocks_05EF4C:
 	.byte	$A0, $BA, $C0, $BA, $E0, $BA, $20, $BB, $40, $BB
 data_05EF56:
 	; CDL: read by queue_vram_blocks_at_x, spawn_heart_boss_bug
@@ -4910,7 +5037,12 @@ wall_worm_hp:
 	.word	ENEMY_HP($0040), ENEMY_HP($0080), ENEMY_HP($0100)
 data_05EFD4:
 	; CDL: read by queue_vram_blocks_at_x, sub_04B403
-	.byte	$E0, $EF, $D8, $EF, $60, $51, $80, $51, $A0, $51, $C0, $51, $40, $72, $60, $72
+	.addr	vram_blocks_05EFE0
+	.addr	vram_blocks_05EFD8
+vram_blocks_05EFD8:
+	.byte	$60, $51, $80, $51, $A0, $51, $C0, $51
+vram_blocks_05EFE0:
+	.byte	$40, $72, $60, $72
 	.byte	$60, $50, $60, $50
 data_05EFE8:
 	; CDL: read by sub_04B403
@@ -4923,7 +5055,10 @@ data_05EFF0:
 	.byte	$80, $00, $90, $00
 data_05EFF4:
 	; CDL: read by queue_vram_blocks_at_x, sub_04B447
-	.byte	$F8, $EF, $FA, $EF, $80, $72
+	.addr	vram_blocks_05EFF8
+	.addr	data_05EFFA
+vram_blocks_05EFF8:
+	.byte	$80, $72
 data_05EFFA:
 	; CDL: read by queue_vram_blocks_at_x, sub_04B469
 	.byte	$20, $5A, $90, $44, $10, $45, $90, $45
@@ -5742,7 +5877,9 @@ data_05FFA1:
 	.byte	$F8, $FF, $FF, $FF
 data_05FFA5:
 	; CDL: read by brain_boss_state_0A; partly not accessed
-	.byte	$EA, $C6, $58, $C5, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.addr	anim_05C6EA
+	.addr	anim_05C558
+	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
 .if CHEAT_ENEMY_HP <> 100
 ; cheat_enemy_hp_tables: with CHEAT_ENEMY_HP, the scaled copies of the HP tables
