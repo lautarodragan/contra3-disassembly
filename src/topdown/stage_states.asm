@@ -1553,7 +1553,7 @@ load_stage5_boss_assets:
 ; topdown_map = stage 2, clears the objects ($0200-$11DF), full brightness target.
 init_stage2_vars:
 	stz	a:topdown_map
-	stz	a:wram_15A8
+	stz	a:boss_centered_view
 	lda	#$0004
 	sta	a:targets_left_flag
 loc_028BF3:
@@ -1580,19 +1580,19 @@ loc_028BF3:
 init_stage5_vars:
 	lda	#TD_MAP_STAGE5
 	sta	a:topdown_map
-	stz	a:wram_15A8
+	stz	a:boss_centered_view
 	lda	#$0004
 	sta	a:targets_left_flag
 	lda	#$8000
 	sta	a:wram_15B2
 	stz	a:wram_15B4
 	lda	#$0002
-	sta	a:wram_15B6
-	stz	a:wram_15B8
+	sta	a:palette_cycle_speed
+	stz	a:palette_cycle_counter
 	bra	loc_028BF3
 
 ; Boss of stage 2: clears objects and blocks, topdown_map = 2,
-; wram_15A8 = 2 (view follows the boss), players at ($200, $280).
+; boss_centered_view = 2 (view follows the boss), players at ($200, $280).
 init_stage2_boss_vars:
 	rep	#$30
 	phb
@@ -1626,7 +1626,7 @@ init_stage2_boss_vars:
 	plb
 	lda	#TD_MAP_STAGE2_BOSS
 	sta	a:topdown_map
-	sta	a:wram_15A8
+	sta	a:boss_centered_view
 loc_028C8D:
 	stz	a:targets_left_flag
 	lda	#$0001
@@ -1677,7 +1677,7 @@ init_stage5_boss_vars:
 	plb
 	lda	#TD_MAP_STAGE5_BOSS
 	sta	a:topdown_map
-	stz	a:wram_15A8
+	stz	a:boss_centered_view
 	brl	loc_028C8D
 
 ; HDMA channels 2-7 on, display on at brightness 0.

@@ -184,7 +184,7 @@ loc_028F7B:
 	sta	$04,x
 	stz	a:$064A,x
 	jsr	a:td_set_respawn_position
-	lda	a:wram_15A8
+	lda	a:boss_centered_view
 	bne	loc_028FA5
 	lda	#$0100
 	sta	a:$10D4,x
@@ -4042,7 +4042,7 @@ tbl_02AAC9:
 	.addr	sub_02AAF5
 
 sub_02AACD:
-	ldy	a:wram_15A8
+	ldy	a:boss_centered_view
 	lda	a:data_05D664,y
 	sta	$20,x
 	lda	#$0001
@@ -4082,7 +4082,7 @@ tbl_02AB0C:
 	.addr	sub_02AAF5
 
 sub_02AB10:
-	ldy	a:wram_15A8
+	ldy	a:boss_centered_view
 	lda	a:data_05D668,y
 	sta	$20,x
 	lda	#$0002
@@ -4103,7 +4103,7 @@ tbl_02AB2F:
 	.addr	sub_02AAF5
 
 sub_02AB33:
-	ldy	a:wram_15A8
+	ldy	a:boss_centered_view
 	lda	a:data_05D66C,y
 	sta	$20,x
 	lda	#$0003
@@ -4124,7 +4124,7 @@ tbl_02AB52:
 	.addr	sub_02AAF5
 
 sub_02AB56:
-	ldy	a:wram_15A8
+	ldy	a:boss_centered_view
 	lda	a:data_05D670,y
 	sta	$20,x
 	lda	#$0004
@@ -4145,7 +4145,7 @@ tbl_02AB75:
 	.addr	sub_02AAF5
 
 sub_02AB79:
-	ldy	a:wram_15A8
+	ldy	a:boss_centered_view
 	lda	a:data_05D674,y
 	sta	$20,x
 	lda	#$0005
@@ -4166,7 +4166,7 @@ tbl_02AB98:
 	.addr	sub_02AAF5
 
 sub_02AB9C:
-	ldy	a:wram_15A8
+	ldy	a:boss_centered_view
 	lda	a:data_05D678,y
 	sta	$20,x
 	lda	#$0006
@@ -4187,7 +4187,7 @@ tbl_02ABBB:
 	.addr	sub_02AAF5
 
 sub_02ABBF:
-	ldy	a:wram_15A8
+	ldy	a:boss_centered_view
 	lda	a:data_05D67C,y
 	sta	$20,x
 	lda	#$0007
@@ -5812,16 +5812,16 @@ loc_02B77C:
 
 sub_02B77D:
 	lda	#$0040
-	sta	a:wram_15AA
+	sta	a:boss_chr_stream_vram
 	lda	#$007E
-	sta	a:wram_15AC
+	sta	a:boss_chr_stream_bank
 	lda	#$0600
-	sta	a:wram_15AE
+	sta	a:boss_chr_stream_size
 	lda	a:wram_1592
 	asl	a
 	tay
 	lda	a:data_05DC30,y
-	sta	a:wram_158C
+	sta	a:boss_chr_stream_src
 	rtl
 
 sub_02B79B:
@@ -6140,7 +6140,7 @@ loc_02B9D0:
 	stz	$0C,x
 	lda	#$0080
 	jsl	f:set_velocity_from_angle
-	lda	a:wram_15A8
+	lda	a:boss_centered_view
 	bne	loc_02BA3F
 	ldy	a:wram_1596
 	bne	loc_02BA06
@@ -6955,7 +6955,7 @@ loc_02C02C:
 	rts
 
 sub_02C02E:
-	lda	a:wram_15A8
+	lda	a:boss_centered_view
 	beq	loc_02C035
 	clc
 	rtl
@@ -7012,7 +7012,7 @@ loc_02C07F:
 	rts
 
 sub_02C086:
-	lda	a:wram_15A8
+	lda	a:boss_centered_view
 	beq	loc_02C08D
 	; (not executed in the CDL traces)
 	clc
@@ -7381,7 +7381,7 @@ loc_02C32E:
 	rts
 
 sub_02C334:
-	lda	a:wram_15A8
+	lda	a:boss_centered_view
 	beq	loc_02C33B
 	clc
 	rtl
@@ -7541,7 +7541,7 @@ loc_02C443:
 	clc
 	rts
 loc_02C445:
-	lda	a:wram_15BE
+	lda	a:palette_cycle_paused
 	bne	loc_02C443
 	lda	a:title_menu_cursor
 	dec	a

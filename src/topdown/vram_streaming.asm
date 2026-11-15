@@ -10,7 +10,7 @@
 ; rotated frames of the players and enemies chosen by draw_topdown_sprites,
 ; listed at $1780 (player 1's view, to VRAM $4000) or $17C0 (player 2's view,
 ; to $4800, odd frames in 2P-A). On the boss maps also the boss's Mode 7
-; characters (wram_158C/wram_15AC, wram_15AE bytes to VRAM wram_15AA).
+; characters (wram_158C/wram_15AC, boss_chr_stream_size bytes to VRAM boss_chr_stream_vram).
 ; Nothing during the intro and the map view.
 stream_topdown_sprite_gfx:
 	lda	a:intro_phase
@@ -152,15 +152,15 @@ loc_009D81:
 	.i8
 	ldx	#$80
 	stx	a:VMAIN
-	lda	a:wram_15AA
+	lda	a:boss_chr_stream_vram
 	sta	a:VMADDL
 	lda	#$1900
 	sta	a:DMAP0
-	lda	a:wram_158C
+	lda	a:boss_chr_stream_src
 	sta	a:A1T0L
-	ldy	a:wram_15AC
+	ldy	a:boss_chr_stream_bank
 	sty	a:A1B0
-	lda	a:wram_15AE
+	lda	a:boss_chr_stream_size
 	sta	a:DAS0L
 	ldx	#$01
 	stx	a:MDMAEN
@@ -240,15 +240,15 @@ loc_009E77:
 	.i8
 	ldx	#$80
 	stx	a:VMAIN
-	lda	a:wram_15AA
+	lda	a:boss_chr_stream_vram
 	sta	a:VMADDL
 	lda	#$1900
 	sta	a:DMAP0
-	lda	a:wram_158C
+	lda	a:boss_chr_stream_src
 	sta	a:A1T0L
-	ldy	a:wram_15AC
+	ldy	a:boss_chr_stream_bank
 	sty	a:A1B0
-	lda	a:wram_15AE
+	lda	a:boss_chr_stream_size
 	sta	a:DAS0L
 	ldx	#$01
 	stx	a:MDMAEN
@@ -436,15 +436,15 @@ loc_00A093:
 	.i8
 	ldx	#$80
 	stx	a:VMAIN
-	lda	a:wram_15AA
+	lda	a:boss_chr_stream_vram
 	sta	a:VMADDL
 	lda	#$1900
 	sta	a:DMAP0
-	lda	a:wram_158C
+	lda	a:boss_chr_stream_src
 	sta	a:A1T0L
-	ldy	a:wram_15AC
+	ldy	a:boss_chr_stream_bank
 	sty	a:A1B0
-	lda	a:wram_15AE
+	lda	a:boss_chr_stream_size
 	sta	a:DAS0L
 	ldx	#$01
 	stx	a:MDMAEN
@@ -524,15 +524,15 @@ loc_00A189:
 	.i8
 	ldx	#$80
 	stx	a:VMAIN
-	lda	a:wram_15AA
+	lda	a:boss_chr_stream_vram
 	sta	a:VMADDL
 	lda	#$1900
 	sta	a:DMAP0
-	lda	a:wram_158C
+	lda	a:boss_chr_stream_src
 	sta	a:A1T0L
-	ldy	a:wram_15AC
+	ldy	a:boss_chr_stream_bank
 	sty	a:A1B0
-	lda	a:wram_15AE
+	lda	a:boss_chr_stream_size
 	sta	a:DAS0L
 	ldx	#$01
 	stx	a:MDMAEN

@@ -101,7 +101,7 @@ centre = the player's position (`p1_view_x`, `p1_view_y`), scroll =
 centre minus where the player is drawn on the screen (`p1_view_anchor_x`,
 `p1_view_anchor_y`: `$80,$A0` in one-player games, `$60,$34` and
 `$60,$AC` split), angle = minus `p1_view_angle`. On the stage 2 boss map
-(`wram_15A8` set) the view is computed around the boss instead.
+(`boss_centered_view` set) the view is computed around the boss instead.
 
 Every frame the NMI calls `compute_m7_matrix` (and `compute_p2_m7_matrix`
 in mode A). It builds the matrix from `sine_table` / `cosine_table`

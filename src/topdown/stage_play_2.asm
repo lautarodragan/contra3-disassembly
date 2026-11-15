@@ -173,7 +173,7 @@ loc_02E7C5:
 	; (not executed in the CDL traces)
 	brl	loc_02E9C9
 loc_02E7C8:
-	lda	a:wram_15A8
+	lda	a:boss_centered_view
 	beq	loc_02E7D0
 	brl	loc_02E809
 loc_02E7D0:
@@ -244,7 +244,7 @@ loc_02E84D:
 loc_02E86C:
 	rtl
 loc_02E86D:
-	lda	a:wram_15A8
+	lda	a:boss_centered_view
 	beq	loc_02E875
 	; (not executed in the CDL traces)
 	brl	loc_02E8F4
@@ -392,7 +392,7 @@ loc_02E9A9:
 loc_02E9C8:
 	rtl
 loc_02E9C9:
-	lda	a:wram_15A8
+	lda	a:boss_centered_view
 	beq	loc_02E9D1
 	brl	loc_02EA1D
 loc_02E9D1:
@@ -714,7 +714,7 @@ td_get_enemy_points:
 	rts
 
 ; Sets up the top-down HDMA channels 2-7 and their tables at $7E:3C00/$7E:3E00
-; (window) and $7E:3860-$7E:38E0 (status bar / split screen), by 1P / 2P-A.
+; (window, indirect) and $7E:3860-$7E:38E0 (CGADSUB, TM, INIDISP, SETINI, BGMODE by screen section), by 1P / 2P-A.
 init_topdown_hdma:
 	rep	#$30
 	jsr	a:setup_topdown_hdma_channels
@@ -1461,18 +1461,18 @@ sub_02F188:
 
 sub_02F18F:
 	lda	#$3200
-	sta	a:wram_15AA
+	sta	a:boss_chr_stream_vram
 	lda	#$007E
-	sta	a:wram_15AC
+	sta	a:boss_chr_stream_bank
 	lda	#$0280
-	sta	a:wram_15AE
+	sta	a:boss_chr_stream_size
 	lda	a:wram_1592
 	lsr	a
 	lsr	a
 	and	#$0006
 	tay
 	lda	a:data_05E676,y
-	sta	a:wram_158C
+	sta	a:boss_chr_stream_src
 	rtl
 
 sub_02F1B1:
@@ -1490,10 +1490,10 @@ tbl_02F1C1:
 	.addr	sub_02F204
 
 sub_02F1C7:
-	stz	a:wram_15B6
-	stz	a:wram_15B8
+	stz	a:palette_cycle_speed
+	stz	a:palette_cycle_counter
 	lda	#$0001
-	sta	a:wram_15BE
+	sta	a:palette_cycle_paused
 	lda	#$0001
 	sta	a:wram_15BC
 
@@ -1511,24 +1511,24 @@ loc_02F1EB:
 loc_02F1EC:
 	lda	#$0008
 	sta	a:wram_15C4
-	sta	a:wram_15BE
+	sta	a:palette_cycle_paused
 	lda	#$0100
-	sta	a:wram_15B6
-	stz	a:wram_15B8
+	sta	a:palette_cycle_speed
+	stz	a:palette_cycle_counter
 	lda	#$0002
 	sta	a:wram_15BC
 
 sub_02F204:
 	lda	a:wram_15C4
 	beq	loc_02F21C
-	lda	a:wram_15BE
+	lda	a:palette_cycle_paused
 	bne	loc_02F219
 	dec	a:wram_15C4
 	lda	a:wram_15C4
-	sta	a:wram_15BE
+	sta	a:palette_cycle_paused
 	bra	loc_02F21C
 loc_02F219:
-	dec	a:wram_15BE
+	dec	a:palette_cycle_paused
 loc_02F21C:
 	lda	a:wram_0AD2
 	cmp	#$0008

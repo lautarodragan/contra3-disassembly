@@ -23,24 +23,24 @@ animate_stage5_palettes:
 	jsl	f:start_stage5_palette_tasks
 	jsl	f:step_palette_anim_timer
 
-; Cycles colours $38-$3F of the palette buffer ($7E:2270), wram_15B6
-; steps per frame (high byte) or frames per step (low byte), unless wram_15BE.
+; Cycles colours $38-$3F of the palette buffer ($7E:2270), palette_cycle_speed
+; steps per frame (high byte) or frames per step (low byte), unless palette_cycle_paused.
 animate_stage5_boss_palettes:
 	jmp	a:loc_04DA68
 
-; Counts wram_1584 from 0 to $5F, wrapping.
+; Counts td_palette_anim_timer from 0 to $5F, wrapping.
 step_palette_anim_timer:
-	inc	a:wram_1584
-	lda	a:wram_1584
+	inc	a:td_palette_anim_timer
+	lda	a:td_palette_anim_timer
 	cmp	#$0060
 	bcc	loc_04DA35
-	stz	a:wram_1584
+	stz	a:td_palette_anim_timer
 loc_04DA35:
 	rtl
 
 ; Starts the stage 2 palette tasks at timer 0 and $20.
 start_stage2_palette_tasks:
-	lda	a:wram_1584
+	lda	a:td_palette_anim_timer
 	bne	loc_04DA42
 	ldy	#$F576
 	jml	f:start_palette_task
@@ -54,7 +54,7 @@ loc_04DA4E:
 
 ; Starts the stage 5 palette tasks at timer 0 and $20.
 start_stage5_palette_tasks:
-	lda	a:wram_1584
+	lda	a:td_palette_anim_timer
 	bne	loc_04DA5B
 	ldy	#$F582
 	jml	f:start_palette_task
@@ -66,28 +66,28 @@ loc_04DA5B:
 loc_04DA67:
 	rtl
 loc_04DA68:
-	lda	a:wram_15BE
+	lda	a:palette_cycle_paused
 	bne	loc_04DA99
-	lda	a:wram_15B6
+	lda	a:palette_cycle_speed
 	beq	loc_04DA99
 	bmi	loc_04DA9A
 	cmp	#$0100
 	bcs	loc_04DA8A
-	dec	a:wram_15B8
+	dec	a:palette_cycle_counter
 	bmi	loc_04DA80
 	bne	loc_04DA99
 loc_04DA80:
 	and	#$00FF
-	sta	a:wram_15B8
+	sta	a:palette_cycle_counter
 	jsr	a:rotate_palette_colors_up
 	rtl
 loc_04DA8A:
 	xba
 	and	#$00FF
-	sta	a:wram_15B8
+	sta	a:palette_cycle_counter
 loc_04DA91:
 	jsr	a:rotate_palette_colors_up
-	dec	a:wram_15B8
+	dec	a:palette_cycle_counter
 	bne	loc_04DA91
 loc_04DA99:
 	rtl
@@ -97,21 +97,21 @@ loc_04DA9A:
 	inc	a
 	cmp	#$0100
 	bcs	loc_04DAB4
-	dec	a:wram_15B8
+	dec	a:palette_cycle_counter
 	bmi	loc_04DAAA
 	bne	loc_04DAC3
 loc_04DAAA:
 	and	#$00FF
-	sta	a:wram_15B8
+	sta	a:palette_cycle_counter
 	jsr	a:rotate_palette_colors_down
 	rtl
 loc_04DAB4:
 	xba
 	and	#$00FF
-	sta	a:wram_15B8
+	sta	a:palette_cycle_counter
 loc_04DABB:
 	jsr	a:rotate_palette_colors_down
-	dec	a:wram_15B8
+	dec	a:palette_cycle_counter
 	bne	loc_04DABB
 loc_04DAC3:
 	rtl
@@ -498,7 +498,7 @@ set_m7_block_patch_0:
 	lda	#$0002
 	sta	a:wram_1800
 loc_04DD8A:
-	lda	a:wram_15A8
+	lda	a:boss_centered_view
 	beq	loc_04DD99
 	sep	#$20
 	.a8
