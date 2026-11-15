@@ -14,7 +14,7 @@ LD65FLAGS := -C src/contra3.cfg
 # any file under src/ is a dependency.
 src_files := $(shell find src -name '*.asm' -o -name '*.inc' -o -name '*.bin')
 
-.PHONY: all compare clean disasm
+.PHONY: all compare clean disasm book book-check
 
 all: compare
 
@@ -43,3 +43,14 @@ clean:
 #   make disasm BASEROM=path/to/contra3.sfc [CDL=path/to/cdl]
 disasm:
 	$(PYTHON) tools/disasm.py $(BASEROM) $(if $(CDL),--cdl $(CDL))
+
+# The book (book/, published to GitHub Pages by .github/workflows/book.yml).
+# book-check: every label, constant and path the book names must exist.
+# book: needs mdBook (https://github.com/rust-lang/mdBook) on the PATH.
+MDBOOK ?= mdbook
+
+book-check:
+	$(PYTHON) tools/check_book_names.py
+
+book: book-check
+	$(MDBOOK) build book

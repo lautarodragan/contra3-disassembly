@@ -10,6 +10,9 @@ build/
 *.smc
 *.zip
 
+# the built book (mdbook build book)
+/book/book/
+
 # python
 __pycache__/
 *.pyc

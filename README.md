@@ -9,6 +9,11 @@ Status: milestone 1 (matching build from generated source). See
 [`docs/disasm_report.md`](docs/disasm_report.md) for how much of the ROM is
 decoded as code vs. data and how many operands are labels vs. numbers.
 
+**[The book](https://lautarodragan.github.io/contra3-disassembly/)** (sources
+in [`book/`](book/)) explains the project at length: goals, building, the
+cartridge and its header, how the disassembler works, progress, and (as they
+get filled in) the RAM map and the routines.
+
 ## Building
 
 Requirements:
@@ -39,7 +44,9 @@ Never commit a ROM (`*.sfc` is ignored).
 | `tools/disasm.py` | the disassembler that generated `src/` |
 | `tools/disasm_hints.json` | hand-written hints for the disassembler |
 | `tools/cdl.py` | reads the emulator's code/data log (CDL) as hints |
-| `docs/disasm_report.md` | coverage / quality report written by the disassembler |
+| `docs/disasm_report.md` | coverage / quality report written by the disassembler (included in the book's Progress page) |
+| `book/` | the book (mdBook): `book.toml`, pages in `book/src/`, `names-ignore.txt` |
+| `tools/check_book_names.py` | checks that every label, constant and path the book names exists |
 
 The game runs in banks `$00-$1F` (SlowROM; it never jumps to the `$80+`
 mirrors), so labels are named and placed by their `$00-$1F` address, e.g.
@@ -122,6 +129,20 @@ The private repository's emulator tracer writes `cdl/contra3.cdl` (+
   still unreached is seeded;
 - pointer addresses read by indirect jumps give minimum jump-table lengths;
 - the DB seen at an instruction lets its absolute operand become a label.
+
+## The book
+
+```
+make book-check     # every label/constant/path the book names must exist
+make book           # book-check + mdbook build book (needs mdBook v0.5.4)
+```
+
+`.github/workflows/book.yml` runs the check, builds the book and deploys it
+to GitHub Pages on pushes to `main` that touch `book/`, the report, the
+checker or the workflow. For the deploy to work, the repository's Pages
+source must be set to **GitHub Actions** (Settings → Pages → Build and
+deployment → Source). When you rename a label, fix the pages that name it in
+the same commit, or the check fails.
 
 ## Roadmap
 

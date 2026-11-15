@@ -1,0 +1,66 @@
+# Builds the mdBook in book/ and publishes it to GitHub Pages, only when the
+# book (or what it includes or is checked against) changed on main. Pages has
+# to be set to deploy from "GitHub Actions" (Settings → Pages → Source) for
+# the deploy job to work.
+name: book
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'book/**'
+      - 'docs/disasm_report.md'
+      - 'tools/check_book_names.py'
+      - '.github/workflows/book.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; a newer push cancels the build of an older one.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  # Bumping it is a deliberate change: mdBook's output changes between
+  # versions.
+  MDBOOK_VERSION: v0.5.4
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install mdBook
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          curl -sSfL "https://github.com/rust-lang/mdBook/releases/download/${MDBOOK_VERSION}/mdbook-${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
+            | tar -xz -C "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Check names
+        # every label, constant and path the book names must exist in the code
+        run: python3 tools/check_book_names.py
+
+      - name: Build
+        run: mdbook build book
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: book/book
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

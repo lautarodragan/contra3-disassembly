@@ -1,0 +1,7 @@
+# Names the book mentions on purpose although the code doesn't have them:
+# old names next to their new ones, history, and made-up examples.
+# tools/check_book_names.py skips these. One per line; # starts a comment.
+
+# the CDL the private repository's emulator tracer writes (disassembler.md)
+cdl/contra3.cdl
+contra3.cdl.json

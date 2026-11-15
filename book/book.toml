@@ -1,0 +1,21 @@
+[book]
+title = "Contra III: The Alien Wars — Disassembly"
+description = "Notes on the ca65 disassembly of Contra III: The Alien Wars (SNES, USA): how to build it, how the disassembler works, the cartridge, the RAM map and the routines."
+authors = ["taro"]
+language = "en"
+src = "src"
+
+[build]
+# A page in SUMMARY.md without a file is an error, not a new empty page.
+create-missing = false
+
+[output.html]
+git-repository-url = "https://github.com/lautarodragan/contra3-disassembly"
+edit-url-template = "https://github.com/lautarodragan/contra3-disassembly/edit/main/book/{path}"
+# The sidebar lists pages, not their headings.
+sidebar-header-nav = false
+
+# The sidebar's sections fold, all closed but the top level.
+[output.html.fold]
+enable = true
+level = 0
