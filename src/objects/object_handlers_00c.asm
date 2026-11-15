@@ -26,7 +26,7 @@ loc_00F28A:
 	sta	$32,x
 	jsl	f:make_players_invulnerable
 loc_00F290:
-	inc	a:wram_1636
+	inc	a:boss_work_0
 	ldy	#$0012
 	lda	stage_frame_mod8
 	cmp	#$0005
@@ -105,10 +105,10 @@ loc_00F322:
 	sta	$24,x
 	inc	$12,x
 	jsr	a:spawn_stage1_boss_wall_chunks
-	stz	a:wram_163A
+	stz	a:boss_work_2
 	lda	#$0020
-	sta	a:stage1_boss_height
-	sta	a:wram_1640
+	sta	a:boss_work_3
+	sta	a:boss_work_5
 loc_00F34B:
 	rtl
 
@@ -174,14 +174,14 @@ stage1_boss_controller_state_05:
 	sta	hdma_preset
 	inc	$12,x
 	lda	#$0020
-	sta	a:wram_1636
+	sta	a:boss_work_0
 	stz	$36,x
 	lda	#$0080
 	sta	$38,x
 	lda	#$0080
 	sta	a:wram_0474
 	lda	#$0100
-	sta	a:stage1_boss_head_pos
+	sta	a:boss_work_1
 	jsr	a:spawn_stage1_boss_parts
 loc_00F3DF:
 	dec	a:wram_030E
@@ -190,7 +190,7 @@ loc_00F3DF:
 	rtl
 
 stage1_boss_controller_state_06:
-	lda	a:stage1_boss_height
+	lda	a:boss_work_3
 	cmp	#$0020
 	bne	loc_00F405
 	lda	$32,x
@@ -200,7 +200,7 @@ stage1_boss_controller_state_06:
 	bne	loc_00F405
 loc_00F3FC:
 	lda	#$0003
-	sta	a:wram_163E
+	sta	a:boss_work_4
 	inc	$12,x
 	rtl
 loc_00F405:
@@ -212,7 +212,7 @@ loc_00F405:
 	brl	loc_00F46D
 
 stage1_boss_controller_state_07:
-	lda	a:stage1_boss_height
+	lda	a:boss_work_3
 	cmp	#$0007
 	bcs	loc_00F42D
 	lda	#$0056
@@ -230,15 +230,15 @@ loc_00F42D:
 	brl	loc_00F46D
 
 stage1_boss_controller_state_08:
-	lda	a:stage1_boss_height
+	lda	a:boss_work_3
 	cmp	#$0020
 	bcc	loc_00F45D
-	dec	a:wram_163E
+	dec	a:boss_work_4
 	bne	loc_00F45A
 	lda	$32,x
 	bne	loc_00F45A
 	lda	#$0020
-	sta	a:wram_1636
+	sta	a:boss_work_0
 	lda	#$0006
 	sta	$12,x
 	rtl
@@ -378,12 +378,12 @@ stage1_boss_push_wall:
 	eor	#$0002
 	sta	$30,x
 	lda	#$0020
-	sta	a:wram_1644
+	sta	a:boss_work_7
 	brl	loc_00F5B1
 loc_00F571:
 	rts
 loc_00F572:
-	dec	a:wram_1644
+	dec	a:boss_work_7
 	bpl	loc_00F5B0
 	lda	#$0020
 	sta	$24,x
@@ -538,7 +538,7 @@ tbl_stage1_boss_attacks:
 	.addr	stage1_boss_attack_06
 
 stage1_boss_attack_06:
-	ldy	a:wram_1640
+	ldy	a:boss_work_5
 	cpy	#$002C
 	bcs	loc_00F69A
 	brl	loc_00F882
@@ -558,7 +558,7 @@ stage1_boss_attack_fire:
 	sta	$38,x
 loc_00F6B6:
 	jsr	a:stage1_boss_spawn_fire
-	ldy	a:wram_1640
+	ldy	a:boss_work_5
 	cpy	#$001C
 	bcs	loc_00F6C4
 	brl	loc_00F882
@@ -592,8 +592,8 @@ loc_00F6EC:
 	sta	$38,x
 loc_00F6F7:
 	jsr	a:stage1_boss_fire_falling_shot
-	ldy	a:wram_1640
-	lda	a:wram_1636
+	ldy	a:boss_work_5
+	lda	a:boss_work_0
 	and	#$0010
 	bne	loc_00F710
 loc_00F705:
@@ -611,7 +611,7 @@ loc_00F718:
 	brl	loc_00F882
 
 stage1_boss_attack_tracking_shots:
-	lda	a:wram_1636
+	lda	a:boss_work_0
 	and	#$0040
 	beq	loc_00F728
 	lda	#$0002
@@ -624,8 +624,8 @@ loc_00F728:
 	sta	$38,x
 loc_00F733:
 	jsr	a:stage1_boss_fire_tracking_shot
-	ldy	a:wram_1640
-	lda	a:wram_1636
+	ldy	a:boss_work_5
+	lda	a:boss_work_0
 	and	#$0020
 	bne	loc_00F74C
 	cpy	#$0024
@@ -654,7 +654,7 @@ loc_00F763:
 	sta	$38,x
 	stz	a:wram_0464
 loc_00F771:
-	ldy	a:wram_1640
+	ldy	a:boss_work_5
 	lda	$38,x
 	bit	#$0080
 	bne	loc_00F78F
@@ -728,8 +728,8 @@ loc_00F806:
 	sta	$36,x
 	sty	$38,x
 loc_00F80A:
-	ldy	a:wram_1640
-	lda	a:wram_1636
+	ldy	a:boss_work_5
+	lda	a:boss_work_0
 	and	#$0010
 	bne	loc_00F820
 	cpy	#$0024
@@ -762,10 +762,10 @@ loc_00F82C:
 	rts
 
 ; Probably: moves the body (HDMA lines) up or down by zp_00/zp_02, the
-; direction by bit 6 of wram_1636 (stage1_boss_move_down negates the step,
+; direction by bit 6 of boss_work_0 (stage1_boss_move_down negates the step,
 ; stage1_boss_move_up as is).
 stage1_boss_sway:
-	lda	a:wram_1636
+	lda	a:boss_work_0
 	and	#$0040
 	bne	stage1_boss_move_down
 	bra	stage1_boss_move_up
@@ -793,11 +793,11 @@ loc_00F879:
 	lda	#$003A
 	bra	loc_00F897
 loc_00F882:
-	inc	a:wram_1640
+	inc	a:boss_work_5
 	ldy	#$0000
 	bra	loc_00F890
 loc_00F88A:
-	dec	a:wram_1640
+	dec	a:boss_work_5
 	ldy	#$0038
 loc_00F890:
 	phx
@@ -834,12 +834,12 @@ loc_00F899:
 
 stage1_boss_add_height:
 	clc
-	lda	a:wram_163A
+	lda	a:boss_work_2
 	adc	zp_00
-	sta	a:wram_163A
-	lda	a:stage1_boss_height
+	sta	a:boss_work_2
+	lda	a:boss_work_3
 	adc	zp_02
-	sta	a:stage1_boss_height
+	sta	a:boss_work_3
 	rts
 
 stage1_boss_set_bg2_scroll:
@@ -898,7 +898,7 @@ loc_00F90E:
 	rts
 
 stage1_boss_build_head_hdma:
-	lda	a:stage1_boss_head_pos
+	lda	a:boss_work_1
 	and	#$01F8
 	ora	#$4000
 	phx
@@ -909,7 +909,7 @@ loc_00F956:
 	inx
 	cpx	#$0020
 	bcc	loc_00F956
-	lda	a:stage1_boss_head_pos
+	lda	a:boss_work_1
 	bit	#$0100
 	beq	loc_00F98C
 	and	#$00F8
@@ -952,7 +952,7 @@ stage1_boss_place_parts:
 	stz	a:wram_044F
 	sec
 	lda	#$60
-	sbc	a:stage1_boss_head_pos
+	sbc	a:boss_work_1
 	sta	a:wram_044A
 	stz	a:wram_044B
 	sec
@@ -1214,7 +1214,7 @@ loc_00FBE1:
 	rts
 
 ; Object type $1F: stage 1 boss, the head (invulnerable target in slot $0440;
-; seen in the emulator): pushed back while it is hit (stage1_boss_head_pos
+; seen in the emulator): pushed back while it is hit (boss_work_1
 ; down to $E0), else it comes out again (up to $100, or $130 while
 ; OBJ_TIMER is set).
 update_stage1_boss_head:
@@ -1224,22 +1224,22 @@ update_stage1_boss_head:
 	lda	$24,x
 	bne	loc_00FBF8
 	ldy	#$0100
-	lda	a:stage1_boss_head_pos
+	lda	a:boss_work_1
 	cmp	#$0100
 	bcs	loc_00FC11
 loc_00FBF8:
 	sty	zp_00
-	lda	a:stage1_boss_head_pos
+	lda	a:boss_work_1
 	clc
 	adc	#$0004
 	cmp	zp_00
 	bcc	loc_00FC07
 	lda	zp_00
 loc_00FC07:
-	sta	a:stage1_boss_head_pos
+	sta	a:boss_work_1
 	rtl
 loc_00FC0B:
-	lda	a:stage1_boss_head_pos
+	lda	a:boss_work_1
 	ldy	#$00E0
 loc_00FC11:
 	sty	zp_00
@@ -1249,7 +1249,7 @@ loc_00FC11:
 	bcs	loc_00FC1D
 	lda	zp_00
 loc_00FC1D:
-	sta	a:stage1_boss_head_pos
+	sta	a:boss_work_1
 	rtl
 
 ; Object type $29: stage 1 boss (the giant turtle), main body with HP $160

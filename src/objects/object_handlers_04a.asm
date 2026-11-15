@@ -36,7 +36,7 @@ loc_048023:
 	adc	#$0100
 	sta	a:bg2_y
 loc_04802A:
-	inc	a:wram_1636
+	inc	a:boss_work_0
 	jsr	a:sub_048605
 	lda	OBJ_STATE,x
 	phx
@@ -717,7 +717,7 @@ loc_048544:
 sub_048545:
 	lda	#$0400
 	jsl	f:pick_target_player
-	lda	a:wram_1636
+	lda	a:boss_work_0
 	and	#$0300
 	beq	loc_048575
 	stz	zp_00
@@ -894,12 +894,12 @@ stage3_boss_state_0B:
 	inc	OBJ_STATE,x
 	lda	#$0100
 	sta	a:bg2_y
-	stz	a:stage1_boss_height
-	stz	a:stage1_boss_head_pos
+	stz	a:boss_work_3
+	stz	a:boss_work_1
 	lda	#$0002
-	sta	a:wram_163A
+	sta	a:boss_work_2
 	lda	#$00A2
-	sta	a:wram_163E
+	sta	a:boss_work_4
 	lda	#$0030
 	sta	$30,x
 	lda	#$0008
@@ -964,7 +964,7 @@ loc_04873C:
 
 stage3_boss_state_0D:
 	jsr	a:sub_04893E
-	dec	a:wram_163E
+	dec	a:boss_work_4
 	bne	loc_048751
 	stz	$34,x
 	stz	$36,x
@@ -973,7 +973,7 @@ stage3_boss_state_0D:
 	inc	OBJ_STATE,x
 	rtl
 loc_048751:
-	lda	a:wram_163E
+	lda	a:boss_work_4
 	cmp	#$0040
 	bcc	loc_048765
 	phx
@@ -997,9 +997,9 @@ stage3_boss_state_17:
 	rtl
 
 stage3_boss_state_18:
-	stz	a:wram_163A
+	stz	a:boss_work_2
 	jsr	a:sub_04893E
-	lda	a:stage1_boss_head_pos
+	lda	a:boss_work_1
 	bne	loc_0487A1
 	lda	#$0083
 	jsl	f:queue_sound
@@ -1020,7 +1020,7 @@ stage3_boss_state_19:
 	rtl
 
 stage3_boss_state_1A:
-	stz	a:wram_163A
+	stz	a:boss_work_2
 	jsr	a:sub_04893E
 	lda	OBJ_Y,x
 	bmi	loc_0487C2
@@ -1193,18 +1193,18 @@ stage3_boss_state_15:
 	dec	$3E,x
 	bne	loc_048923
 	lda	#$00A2
-	sta	a:wram_163E
+	sta	a:boss_work_4
 	lda	#$0002
-	sta	a:wram_163A
+	sta	a:boss_work_2
 	lda	#$000D
 	sta	OBJ_STATE,x
 	lda	#$004E
 	jml	f:queue_sound
 loc_048923:
-	stz	a:wram_163A
+	stz	a:boss_work_2
 	jsr	a:sub_04893E
 loc_048929:
-	lda	a:stage1_boss_head_pos
+	lda	a:boss_work_1
 	cmp	#$0004
 	bne	loc_04893D
 	phx
@@ -1219,10 +1219,10 @@ sub_04893E:
 	lda	#$0003
 	sta	a:shake_timer
 	phx
-	lda	a:stage1_boss_head_pos
+	lda	a:boss_work_1
 	asl	a
 	tay
-	lda	a:stage1_boss_height
+	lda	a:boss_work_3
 	cmp	#$0003
 	bcs	loc_0489A1
 	cpy	#$000E
@@ -1266,24 +1266,24 @@ loc_04895C:
 	ldy	zp_FE
 	jsl	f:queue_vram_blocks
 loc_0489A1:
-	inc	a:stage1_boss_height
-	ldy	a:wram_163A
-	lda	a:stage1_boss_height
+	inc	a:boss_work_3
+	ldy	a:boss_work_2
+	lda	a:boss_work_3
 	cmp	a:data_05E8E7,y
 	bcc	loc_0489CB
-	stz	a:stage1_boss_height
+	stz	a:boss_work_3
 	clc
-	lda	a:stage1_boss_head_pos
+	lda	a:boss_work_1
 	adc	a:data_05E8EB,y
 	bpl	loc_0489C0
-	stz	a:stage1_boss_head_pos
+	stz	a:boss_work_1
 	bra	loc_0489CB
 loc_0489C0:
 	cmp	#$0008
 	bcc	loc_0489C8
 	lda	#$0008
 loc_0489C8:
-	sta	a:stage1_boss_head_pos
+	sta	a:boss_work_1
 loc_0489CB:
 	plx
 	rts
@@ -2057,7 +2057,7 @@ stage4_controller_state_15:
 	cmp	#$0084
 	beq	loc_049017
 	lda	#$C558
-	sta	a:wram_1636
+	sta	a:boss_work_0
 	inc	OBJ_STATE,x
 loc_049017:
 	rtl
@@ -2643,7 +2643,7 @@ stage4_boss_state_00:
 	lda	#$017F
 	sta	$32,x
 	stz	$30,x
-	stz	a:wram_163A
+	stz	a:boss_work_2
 	inc	OBJ_STATE,x
 	phx
 	ldx	#$0700
@@ -2662,7 +2662,7 @@ stage4_boss_state_00:
 	ldy	#$0002
 	jsr	a:sub_049A30
 	plx
-	stz	a:stage1_boss_head_pos
+	stz	a:boss_work_1
 	rtl
 
 stage4_boss_state_01:
@@ -2693,18 +2693,18 @@ loc_04953B:
 	jsr	a:sub_0498AF
 	lda	a:wram_0796
 	beq	loc_0495A1
-	inc	a:stage1_boss_head_pos
-	lda	a:stage1_boss_head_pos
+	inc	a:boss_work_1
+	lda	a:boss_work_1
 	cmp	#$0070
 	bcc	loc_0495A0
 	bit	#$0007
 	bne	loc_0495A0
 	cmp	#$0090
 	bcc	loc_049564
-	stz	a:stage1_boss_head_pos
-	lda	a:wram_163A
+	stz	a:boss_work_1
+	lda	a:boss_work_2
 	eor	#$0002
-	sta	a:wram_163A
+	sta	a:boss_work_2
 loc_049564:
 	ldy	#$05C0
 	jsl	f:find_free_slot_y_down
@@ -2801,7 +2801,7 @@ update_stage4_boss_pod:
 	lda	#.loword(anim_05C516)
 	jml	f:make_effect_object
 loc_049633:
-	lda	a:wram_163A
+	lda	a:boss_work_2
 	eor	$30,x
 	bne	loc_04963D
 	jsr	a:sub_049A54
@@ -3243,7 +3243,7 @@ sub_04997F:
 	ldy	#$0500
 	jsl	f:find_free_slot_y_down
 	bcc	loc_0499AA
-	lda	a:wram_1636
+	lda	a:boss_work_0
 	jsl	f:make_effect_object
 	lda	#$FFF8
 	sta	a:$001A,y
@@ -3281,7 +3281,7 @@ sub_0499AB:
 	stz	OBJ_X_VEL,x
 	stz	$30,x
 	lda	#$C606
-	sta	a:wram_1636
+	sta	a:boss_work_0
 	phx
 	ldy	#$0000
 	ldx	#$07C0
@@ -3336,7 +3336,7 @@ sub_049A54:
 	bcs	loc_049AC0
 	lda	difficulty
 	beq	loc_049AC0
-	lda	a:stage1_boss_head_pos
+	lda	a:boss_work_1
 	cmp	#$0020
 	bcc	loc_049AC0
 	cmp	#$0032
@@ -10781,9 +10781,9 @@ loc_04D3D8:
 	stz	$16,x
 loc_04D421:
 	plx
-	stz	a:stage1_boss_head_pos
+	stz	a:boss_work_1
 	lda	#$0004
-	sta	a:wram_1640
+	sta	a:boss_work_5
 	rtl
 
 helicopter_rope_state_05:
@@ -10795,7 +10795,7 @@ helicopter_rope_state_05:
 	rtl
 loc_04D43A:
 	lda	#$0000
-	ldy	a:wram_163E
+	ldy	a:boss_work_4
 	bne	loc_04D445
 	lda	#$CB86
 loc_04D445:
@@ -10824,7 +10824,7 @@ helicopter_rope_state_04:
 loc_04D46F:
 	stz	OBJ_FLAGS,x
 	lda	#$0000
-	ldy	a:wram_163E
+	ldy	a:boss_work_4
 	bne	loc_04D488
 	lda	#$CB77
 	ldy	stage_frame_bit1
@@ -10835,7 +10835,7 @@ loc_04D483:
 	sty	OBJ_FLAGS,x
 loc_04D488:
 	sta	OBJ_SPRITE,x
-	lda	a:stage1_boss_head_pos
+	lda	a:boss_work_1
 	beq	loc_04D4F6
 	lda	#.loword(metasprite_06CB72)
 	sta	OBJ_SPRITE,x
@@ -10846,9 +10846,9 @@ loc_04D488:
 	jsr	a:sub_04D6DD
 	jsr	a:sub_04D6E7
 	jsr	a:sub_04D701
-	lda	a:wram_163A
+	lda	a:boss_work_2
 	bne	loc_04D4F5
-	ldy	a:stage1_boss_height
+	ldy	a:boss_work_3
 	lda	OBJ_X,x
 	cmp	#$0084
 	bcc	loc_04D4C8
@@ -10856,7 +10856,7 @@ loc_04D488:
 	bcc	loc_04D4F5
 	cpy	#$0144
 	bcs	loc_04D4F5
-	lda	a:wram_1644
+	lda	a:boss_work_7
 	bmi	loc_04D4F5
 	lda	#$FFFF
 	bra	loc_04D4DA
@@ -10865,14 +10865,14 @@ loc_04D4C8:
 	bcs	loc_04D4F5
 	cpy	#$00BC
 	bcc	loc_04D4F5
-	lda	a:wram_1644
+	lda	a:boss_work_7
 	bpl	loc_04D4F5
 	lda	#$0001
 loc_04D4DA:
 	sta	a:wram_091A
-	stz	a:stage1_boss_head_pos
+	stz	a:boss_work_1
 	lda	#$0004
-	sta	a:wram_1640
+	sta	a:boss_work_5
 	lda	#$0006
 	sta	a:wram_0912
 	lda	#$FFFC
@@ -10891,23 +10891,23 @@ helicopter_rope_state_06:
 	sta	OBJ_STATE,x
 	lda	OBJ_X_VEL,x
 	bpl	loc_04D513
-	stz	a:wram_1636
+	stz	a:boss_work_0
 	stz	OBJ_FACING,x
 	lda	#$0240
 	bra	loc_04D51E
 loc_04D513:
 	lda	#$0002
-	sta	a:wram_1636
+	sta	a:boss_work_0
 	sta	OBJ_FACING,x
 	lda	#$01C2
 loc_04D51E:
-	sta	a:stage1_boss_height
-	stz	a:wram_1642
-	stz	a:wram_1644
+	sta	a:boss_work_3
+	stz	a:boss_work_6
+	stz	a:boss_work_7
 	lda	#.loword(anim_05F2F3)
 	sta	OBJ_ANIM,x
 	lda	#$0016
-	sta	a:wram_163E
+	sta	a:boss_work_4
 
 helicopter_rope_state_07:
 	clc
@@ -10928,19 +10928,19 @@ helicopter_rope_state_07:
 	sta	zp_02
 	jsr	a:sub_04D6DD
 	jsr	a:sub_04D6E7
-	lda	a:wram_163E
+	lda	a:boss_work_4
 	bne	loc_04D563
-	stz	a:wram_1640
+	stz	a:boss_work_5
 	bra	loc_04D566
 loc_04D563:
-	dec	a:wram_163E
+	dec	a:boss_work_4
 loc_04D566:
 	jml	f:trail_pass_to_next
 loc_04D56A:
 	brl	helicopter_rope_state_03
 
 helicopter_rope_state_08:
-	lda	a:stage1_boss_height
+	lda	a:boss_work_3
 	cmp	#$00FD
 	bcc	loc_04D56A
 	cmp	#$0103
@@ -10950,16 +10950,16 @@ helicopter_rope_state_08:
 helicopter_rope_state_09:
 	lda	stage_frame_mod4
 	bne	loc_04D5C0
-	inc	a:wram_1640
-	lda	a:wram_1640
+	inc	a:boss_work_5
+	lda	a:boss_work_5
 	cmp	#$0004
 	bcc	loc_04D5C0
 	lda	#$0100
-	sta	a:stage1_boss_height
+	sta	a:boss_work_3
 	lda	#$7FFF
-	sta	a:wram_163E
-	stz	a:wram_1642
-	stz	a:wram_1644
+	sta	a:boss_work_4
+	stz	a:boss_work_6
+	stz	a:boss_work_7
 	inc	OBJ_STATE,x
 	lda	#.loword(anim_05F30B)
 	sta	OBJ_ANIM,x
@@ -10982,7 +10982,7 @@ helicopter_rope_state_0A:
 	dec	OBJ_TIMER,x
 	bne	loc_04D5D0
 	inc	OBJ_STATE,x
-	stz	a:wram_163E
+	stz	a:boss_work_4
 	stz	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 loc_04D5D0:
@@ -11011,12 +11011,12 @@ loc_04D5FB:
 helicopter_rope_state_0B:
 	lda	stage_frame_mod4
 	bne	loc_04D61C
-	dec	a:wram_1640
+	dec	a:boss_work_5
 	bne	loc_04D61C
 	lda	#$0003
 	sta	OBJ_STATE,x
 	lda	#$0002
-	sta	a:wram_163A
+	sta	a:boss_work_2
 loc_04D61C:
 	jsr	a:sub_04D70A
 	brl	sub_04D457
@@ -11070,7 +11070,7 @@ loc_04D685:
 
 sub_04D686:
 	phx
-	lda	a:stage1_boss_height
+	lda	a:boss_work_3
 	and	#$01FE
 	tay
 	clc
@@ -11087,7 +11087,7 @@ loc_04D695:
 loc_04D69F:
 	ror	a
 	sta	zp_02
-	ldy	a:wram_1640
+	ldy	a:boss_work_5
 loc_04D6A5:
 	cpy	#$0000
 	beq	loc_04D6BF
@@ -11132,7 +11132,7 @@ sub_04D6DD:
 	rts
 
 sub_04D6E7:
-	ldy	a:stage1_boss_head_pos
+	ldy	a:boss_work_1
 	clc
 	adc	a:data_05F28F,y
 	clc
@@ -11155,7 +11155,7 @@ sub_04D701:
 
 sub_04D70A:
 	clc
-	lda	a:stage1_boss_height
+	lda	a:boss_work_3
 	adc	#$0020
 	lsr	a
 	lsr	a
@@ -11226,7 +11226,7 @@ loc_04D78B:
 	ldy	#$0008
 loc_04D79B:
 	sty	a:wram_0912
-	sta	a:wram_163A
+	sta	a:boss_work_2
 	stz	a:wram_0918
 	stz	a:wram_091A
 	stz	a:wram_091C
@@ -11234,63 +11234,63 @@ loc_04D79B:
 	stz	a:wram_0920
 	stz	a:wram_0922
 	lda	#$0002
-	sta	a:stage1_boss_head_pos
+	sta	a:boss_work_1
 	clc
-	lda	a:stage1_boss_height
+	lda	a:boss_work_3
 	adc	#$00FE
 	and	#$01FE
-	sta	a:stage1_boss_height
+	sta	a:boss_work_3
 loc_04D7C6:
 	rts
 
 sub_04D7C7:
-	lda	a:stage1_boss_height
-	ldy	a:wram_1636
+	lda	a:boss_work_3
+	ldy	a:boss_work_0
 	beq	loc_04D7F3
 	cmp	#$0160
 	bcs	loc_04D817
-	lda	a:wram_1644
+	lda	a:boss_work_7
 	bmi	loc_04D7DE
 	cmp	#$0004
 	bcs	loc_04D82A
 loc_04D7DE:
 	clc
-	lda	a:wram_1642
+	lda	a:boss_work_6
 	adc	#$8000
-	sta	a:wram_1642
-	lda	a:wram_1644
+	sta	a:boss_work_6
+	lda	a:boss_work_7
 	adc	#$0000
-	sta	a:wram_1644
+	sta	a:boss_work_7
 	bra	loc_04D82A
 loc_04D7F3:
 	cmp	#$00A4
 	bcc	loc_04D817
-	lda	a:wram_1644
+	lda	a:boss_work_7
 	bpl	loc_04D802
 	cmp	#$FFFD
 	bcc	loc_04D82A
 loc_04D802:
 	sec
-	lda	a:wram_1642
+	lda	a:boss_work_6
 	sbc	#$8000
-	sta	a:wram_1642
-	lda	a:wram_1644
+	sta	a:boss_work_6
+	lda	a:boss_work_7
 	sbc	#$0000
-	sta	a:wram_1644
+	sta	a:boss_work_7
 	bra	loc_04D82A
 loc_04D817:
-	lda	a:wram_1636
+	lda	a:boss_work_0
 	eor	#$0002
-	sta	a:wram_1636
+	sta	a:boss_work_0
 	sta	OBJ_FACING,x
-	lda	a:wram_163A
+	lda	a:boss_work_2
 	beq	loc_04D82A
-	dec	a:wram_163A
+	dec	a:boss_work_2
 loc_04D82A:
 	clc
-	lda	a:wram_1644
-	adc	a:stage1_boss_height
-	sta	a:stage1_boss_height
+	lda	a:boss_work_7
+	adc	a:boss_work_3
+	sta	a:boss_work_3
 	rts
 
 ; Object type $85. Stage 4, helicopter scene: a spinning projectile thrown

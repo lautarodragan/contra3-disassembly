@@ -3629,13 +3629,13 @@ stage3_spiked_climber_state_00:
 	bne	loc_01EA58
 	inc	$12,x
 	lda	#$FFF8
-	sta	a:wram_1636
+	sta	a:boss_work_0
 	lda	#$0200
-	sta	a:wram_163A
-	stz	a:wram_163E
-	stz	a:wram_1640
-	stz	a:stage1_boss_head_pos
-	stz	a:wram_1642
+	sta	a:boss_work_2
+	stz	a:boss_work_4
+	stz	a:boss_work_5
+	stz	a:boss_work_1
+	stz	a:boss_work_6
 loc_01EA58:
 	rtl
 
@@ -3686,7 +3686,7 @@ stage3_spiked_climber_state_04:
 	stz	$1E,x
 
 stage3_spiked_climber_state_05:
-	lda	a:wram_1642
+	lda	a:boss_work_6
 	beq	loc_01EAC9
 	jsr	a:spiked_climber_check_fallen
 	lda	$16,x
@@ -3695,26 +3695,26 @@ loc_01EAC9:
 	stx	zp_FC
 	jsr	a:spiked_climber_move_x
 	jsr	a:spiked_climber_place_parts
-	lda	a:wram_1642
+	lda	a:boss_work_6
 	beq	loc_01EADD
 	lda	#$0003
 	sta	$38,x
 	bra	loc_01EB07
 loc_01EADD:
-	lda	a:stage1_boss_head_pos
+	lda	a:boss_work_1
 	beq	loc_01EAE7
-	dec	a:stage1_boss_head_pos
+	dec	a:boss_work_1
 	bra	loc_01EB0A
 loc_01EAE7:
-	dec	a:wram_163A
+	dec	a:boss_work_2
 	bpl	loc_01EB07
 	lda	#$0040
-	sta	a:stage1_boss_head_pos
+	sta	a:boss_work_1
 	ldy	difficulty
 	lda	rng_lo
 	and	#$00FF
 	adc	a:data_05CB43,y
-	sta	a:wram_163A
+	sta	a:boss_work_2
 	lda	$38,x
 	eor	#$FFFF
 	inc	a
@@ -3789,11 +3789,11 @@ update_object_type_3E:
 
 ; Object type $40: stage 3 spiked climber, its weak point (HP 80).
 update_stage3_spiked_climber_core:
-	lda	a:wram_1642
+	lda	a:boss_work_6
 	bne	loc_01EBAD
 	lda	$06,x
 	bpl	loc_01EBAD
-	inc	a:wram_1642
+	inc	a:boss_work_6
 	lda	#$0030
 	sta	a:wram_0396
 	sta	a:wram_0356
@@ -3882,12 +3882,12 @@ loc_01EC25:
 	inc	a
 	clc
 	adc	zp_02
-	adc	a:wram_1636
+	adc	a:boss_work_0
 	sta	a:wram_038E
 	rts
 
 object_type_3F_move_spikes:
-	lda	a:wram_1642
+	lda	a:boss_work_6
 	bne	loc_01EC63
 	inc	$24,x
 	lda	difficulty
@@ -3902,11 +3902,11 @@ loc_01EC63:
 	lda	#$0019
 	jsl	f:queue_sound
 loc_01EC72:
-	lda	a:wram_1636
+	lda	a:boss_work_0
 	cmp	#$FFF8
 	bcs	loc_01ECA9
 	clc
-	lda	a:wram_1636
+	lda	a:boss_work_0
 	adc	#$0004
 	cmp	#$FFF8
 	bcc	loc_01ECA6
@@ -3918,19 +3918,19 @@ loc_01EC8B:
 	lda	#$0018
 	jsl	f:queue_sound
 loc_01EC97:
-	lda	a:wram_1636
+	lda	a:boss_work_0
 	cmp	#$FFD4
 	bcc	loc_01ECA9
 	clc
-	lda	a:wram_1636
+	lda	a:boss_work_0
 	adc	#$FFFF
 loc_01ECA6:
-	sta	a:wram_1636
+	sta	a:boss_work_0
 loc_01ECA9:
 	rts
 
 spiked_climber_move_x:
-	ldy	a:wram_163E
+	ldy	a:boss_work_4
 	bne	loc_01ECC1
 	lda	$0A,x
 	cmp	#$0088
@@ -3950,9 +3950,9 @@ loc_01ECC1:
 	bcc	loc_01ECEC
 	bcs	loc_01ECDD
 loc_01ECD3:
-	lda	a:wram_163E
+	lda	a:boss_work_4
 	eor	#$0002
-	sta	a:wram_163E
+	sta	a:boss_work_4
 	rts
 loc_01ECDD:
 	clc
@@ -4073,9 +4073,9 @@ loc_01ED84:
 	stz	$30,x
 	stz	$32,x
 	stz	$24,x
-	stz	a:wram_1636
-	stz	a:stage1_boss_head_pos
-	stz	a:wram_163A
+	stz	a:boss_work_0
+	stz	a:boss_work_1
+	stz	a:boss_work_2
 	ldx	zp_FC
 	stz	$30,x
 	stz	$32,x
@@ -4112,7 +4112,7 @@ stage3_spiked_climber_state_0A:
 	cmp	#$0004
 	bne	loc_01EE44
 	inc	$12,x
-	inc	a:wram_1636
+	inc	a:boss_work_0
 	rtl
 loc_01EE44:
 	lda	stage_frame_counter
@@ -4129,7 +4129,7 @@ loc_01EE53:
 	lda	$24,x
 	beq	loc_01EE7D
 	dec	$24,x
-	lda	a:stage1_boss_head_pos
+	lda	a:boss_work_1
 	beq	loc_01EE7C
 	ldy	$36,x
 	lda	a:data_05CB99,y
@@ -4140,13 +4140,13 @@ loc_01EE53:
 	sta	a:$0032,y
 	inc	$36,x
 	inc	$36,x
-	dec	a:stage1_boss_head_pos
+	dec	a:boss_work_1
 loc_01EE7C:
 	rtl
 loc_01EE7D:
 	lda	#$0001
-	sta	a:wram_1636
-	ldy	a:wram_163A
+	sta	a:boss_work_0
+	ldy	a:boss_work_2
 	lda	a:wram_034E
 	bmi	loc_01EE7C
 	cmp	a:data_05CB7B,y
@@ -4163,13 +4163,13 @@ loc_01EE7D:
 	jsr	a:spiked_climber_fire_missile
 	plx
 	phx
-	inc	a:wram_163A
-	inc	a:wram_163A
+	inc	a:boss_work_2
+	inc	a:boss_work_2
 	stz	$36,x
 	lda	#$000A
 	sta	zp_02
 	inc	a
-	sta	a:stage1_boss_head_pos
+	sta	a:boss_work_1
 	lda	$30,x
 	eor	#$0016
 	sta	$30,x
@@ -4230,7 +4230,7 @@ update_object_type_60:
 
 ; Object type $5A: stage 3 spiked climber, spikes. Not identified exactly.
 update_object_type_5A:
-	lda	a:wram_1636
+	lda	a:boss_work_0
 	phx
 	asl	a
 	tax
@@ -4324,9 +4324,9 @@ update_object_type_52:
 	ldy	#$CCA3
 	jsr	a:spiked_climber_queue_tiles
 	inc	$12,x
-	stz	a:wram_1640
+	stz	a:boss_work_5
 	lda	#$0040
-	sta	a:wram_1642
+	sta	a:boss_work_6
 	lda	#$0003
 	sta	$32,x
 	rtl
@@ -4506,10 +4506,10 @@ loc_01F15E:
 	lda	#$1000
 	jsr	a:spiked_climber_accel_down
 loc_01F164:
-	ldy	a:wram_1640
+	ldy	a:boss_work_5
 	bne	loc_01F1A0
 	lda	$0A,x
-	cmp	a:wram_1642
+	cmp	a:boss_work_6
 	bcs	loc_01F1B2
 	cmp	#$0098
 	bcc	loc_01F195
@@ -4542,16 +4542,16 @@ loc_01F1A0:
 	bcc	loc_01F1DD
 	bcs	loc_01F1CE
 loc_01F1B2:
-	lda	a:wram_1640
+	lda	a:boss_work_5
 	eor	#$0002
-	sta	a:wram_1640
+	sta	a:boss_work_5
 	lda	#$0001
 	sta	$32,x
 	lda	rng_lo
 	and	#$0006
 	tay
 	lda	a:data_05CCCF,y
-	sta	a:wram_1642
+	sta	a:boss_work_6
 	bra	loc_01F1DD
 loc_01F1CE:
 	clc

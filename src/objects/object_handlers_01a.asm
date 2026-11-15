@@ -90,7 +90,7 @@ object_type_02_state_00:
 	lda	#$0100
 	sta	$06,x
 	lda	#$0080
-	sta	a:wram_1636
+	sta	a:boss_work_0
 	lda	#$009C
 	sta	$0A,x
 	lda	#$00A8

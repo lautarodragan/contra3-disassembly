@@ -58,7 +58,7 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $1C | `update_object_type_1C` | falling fragment (sprite by vertical speed) that explodes on the floor or when shot (stage 1 section 9). Not identified |
 | $1D | `update_effect` | effect (explosion, spark, fire): plays `OBJ_ANIM` and frees itself when the script ends (`make_effect_object`) |
 | $1E | `update_alien_dog` | alien dog that jumps out at the player (stage 1 sections 2-3; seen in the emulator) |
-| $1F | `update_stage1_boss_head` | stage 1 boss fight: moves `stage1_boss_head_pos` depending on whether it is hit. Not identified |
+| $1F | `update_stage1_boss_head` | stage 1 boss fight: moves `boss_work_1` depending on whether it is hit. Not identified |
 | $20 | `update_stage1_boss_part` | stage 1 boss (the giant turtle), a part with HP 256: explodes when destroyed or when the boss dies (`wram_0932`) |
 | $22 | `update_stage1_boss_wall_chunk` | stage 1 boss fight, sprite blinking. Not identified |
 | $23 | `update_falling_debris` | falling wall debris (stage 1 boss, the turtle breaking through the wall); explodes at y >= $C8 |

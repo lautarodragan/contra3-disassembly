@@ -457,7 +457,7 @@ object_type_06_state_03:
 	sta	$1C,x
 	lda	#$FFFD
 	sta	$1E,x
-	stz	a:wram_1636
+	stz	a:boss_work_0
 	lda	#$00A0
 	sta	f:wram_7E3824
 	lda	#$0320
@@ -559,9 +559,9 @@ loc_00D332:
 	adc	#$0000
 	sta	$1E,x
 	clc
-	lda	a:wram_1636
+	lda	a:boss_work_0
 	adc	$1C,x
-	sta	a:wram_1636
+	sta	a:boss_work_0
 	lda	f:wram_7E3824
 	adc	$1E,x
 	sta	f:wram_7E3824
