@@ -84,27 +84,27 @@ init_topdown_views:
 loc_02E6E0:
 	; (not executed in the CDL traces)
 	lda	a:p1_view_x
-	sta	a:wram_0ECA
-	stz	a:wram_0EC8
+	sta	a:td_p1_x
+	stz	a:td_p1_x_frac
 	lda	a:p1_view_y
-	sta	a:wram_0ECE
-	stz	a:wram_0ECC
+	sta	a:td_p1_y
+	stz	a:td_p1_y_frac
 	lda	a:p2_view_x
-	sta	a:wram_0F0A
-	stz	a:wram_0F08
+	sta	a:td_p2_x
+	stz	a:td_p2_x_frac
 	lda	a:p2_view_y
-	sta	a:wram_0F0E
-	stz	a:wram_0F0C
+	sta	a:td_p2_y
+	stz	a:td_p2_y_frac
 	stz	a:wram_150A
 	stz	a:wram_154A
 	stz	a:wram_1518
 	stz	a:wram_1558
 	stz	a:p1_view_angle
 	stz	a:p2_view_angle
-	stz	a:wram_0ED2
-	stz	a:wram_0F12
-	stz	a:wram_0EC4
-	stz	a:wram_0F04
+	stz	a:td_p1_state
+	stz	a:td_p2_state
+	stz	a:td_p1_angle
+	stz	a:td_p2_angle
 	rtl
 loc_02E723:
 	lda	#$0080
@@ -112,16 +112,16 @@ loc_02E723:
 	lda	#$00A0
 	sta	a:p1_view_anchor_y
 	lda	a:p1_view_x
-	sta	a:wram_0ECA
-	stz	a:wram_0EC8
+	sta	a:td_p1_x
+	stz	a:td_p1_x_frac
 	lda	a:p1_view_y
-	sta	a:wram_0ECE
-	stz	a:wram_0ECC
+	sta	a:td_p1_y
+	stz	a:td_p1_y_frac
 	stz	a:wram_150A
 	stz	a:p1_view_angle
 	stz	a:wram_1518
-	stz	a:wram_0ED2
-	stz	a:wram_0EC4
+	stz	a:td_p1_state
+	stz	a:td_p1_angle
 	rtl
 loc_02E751:
 	lda	#$0060
@@ -132,17 +132,17 @@ loc_02E751:
 	lda	#$00AC
 	sta	a:p2_view_anchor_y
 	lda	a:p1_view_x
-	sta	a:wram_0ECA
-	stz	a:wram_0EC8
+	sta	a:td_p1_x
+	stz	a:td_p1_x_frac
 	lda	a:p1_view_y
-	sta	a:wram_0ECE
-	stz	a:wram_0ECC
+	sta	a:td_p1_y
+	stz	a:td_p1_y_frac
 	lda	a:p2_view_x
-	sta	a:wram_0F0A
-	stz	a:wram_0F08
+	sta	a:td_p2_x
+	stz	a:td_p2_x_frac
 	lda	a:p2_view_y
-	sta	a:wram_0F0E
-	stz	a:wram_0F0C
+	sta	a:td_p2_y
+	stz	a:td_p2_y_frac
 	stz	a:wram_150A
 	stz	a:wram_154A
 	stz	a:p1_view_angle
@@ -150,11 +150,11 @@ loc_02E751:
 	lda	#$0040
 	sta	a:wram_1518
 	sta	a:wram_1558
-	stz	a:wram_0ED2
-	stz	a:wram_0F12
+	stz	a:td_p1_state
+	stz	a:td_p2_state
 	lda	#$0040
-	sta	a:wram_0EC4
-	sta	a:wram_0F04
+	sta	a:td_p1_angle
+	sta	a:td_p2_angle
 	rtl
 
 ; Each view's Mode 7 centre, scroll and angle from its player (1P, 2P-A
@@ -180,13 +180,13 @@ loc_02E7C8:
 	beq	loc_02E7D0
 	brl	loc_02E809
 loc_02E7D0:
-	lda	a:wram_0ECA
+	lda	a:td_p1_x
 	sta	a:p1_view_x
 	sta	a:p1_m7_center_x
 	sec
 	sbc	a:p1_view_anchor_x
 	sta	a:p1_m7_hofs
-	lda	a:wram_0ECE
+	lda	a:td_p1_y
 	sta	a:p1_view_y
 	sta	a:p1_m7_center_y
 	sec
@@ -194,7 +194,7 @@ loc_02E7D0:
 	sta	a:p1_m7_vofs
 	lda	a:wram_150A
 	bne	loc_02E7FB
-	lda	a:wram_0EC4
+	lda	a:td_p1_angle
 	sta	a:p1_view_angle
 loc_02E7FB:
 	lda	a:p1_view_angle
@@ -204,13 +204,13 @@ loc_02E7FB:
 	sta	a:p1_m7_angle
 	rtl
 loc_02E809:
-	lda	a:wram_0ECA
+	lda	a:td_p1_x
 	sta	a:p1_view_x
-	lda	a:wram_0ECE
+	lda	a:td_p1_y
 	sta	a:p1_view_y
 	lda	a:wram_150A
 	bne	loc_02E820
-	lda	a:wram_0EC4
+	lda	a:td_p1_angle
 	sta	a:p1_view_angle
 loc_02E820:
 	lda	a:p1_view_x
@@ -239,7 +239,7 @@ loc_02E84D:
 	sec
 	sbc	zp_02
 	sta	a:p1_m7_vofs
-	lda	a:wram_0AC4
+	lda	a:td_boss_angle
 	sec
 	sbc	a:p1_view_angle
 	eor	#$0080
@@ -252,13 +252,13 @@ loc_02E86D:
 	; (not executed in the CDL traces)
 	brl	loc_02E8F4
 loc_02E875:
-	lda	a:wram_0ECA
+	lda	a:td_p1_x
 	sta	a:p1_view_x
 	sta	a:p1_m7_center_x
 	sec
 	sbc	a:p1_view_anchor_x
 	sta	a:p1_m7_hofs
-	lda	a:wram_0ECE
+	lda	a:td_p1_y
 	sta	a:p1_view_y
 	sta	a:p1_m7_center_y
 	sec
@@ -266,7 +266,7 @@ loc_02E875:
 	sta	a:p1_m7_vofs
 	lda	a:wram_150A
 	bne	loc_02E8A7
-	lda	a:wram_0EC4
+	lda	a:td_p1_angle
 	sec
 	sbc	a:wram_1518
 	and	#$00FF
@@ -277,13 +277,13 @@ loc_02E8A7:
 	inc	a
 	and	#$00FF
 	sta	a:p1_m7_angle
-	lda	a:wram_0F0A
+	lda	a:td_p2_x
 	sta	a:p2_view_x
 	sta	a:p2_m7_center_x
 	sec
 	sbc	a:p2_view_anchor_x
 	sta	a:p2_m7_hofs
-	lda	a:wram_0F0E
+	lda	a:td_p2_y
 	sta	a:p2_view_y
 	sta	a:p2_m7_center_y
 	sec
@@ -291,7 +291,7 @@ loc_02E8A7:
 	sta	a:p2_m7_vofs
 	lda	a:wram_154A
 	bne	loc_02E8E6
-	lda	a:wram_0F04
+	lda	a:td_p2_angle
 	sec
 	sbc	a:wram_1558
 	and	#$00FF
@@ -305,13 +305,13 @@ loc_02E8E6:
 	rtl
 loc_02E8F4:
 	; (not executed in the CDL traces)
-	lda	a:wram_0ECA
+	lda	a:td_p1_x
 	sta	a:p1_view_x
-	lda	a:wram_0ECE
+	lda	a:td_p1_y
 	sta	a:p1_view_y
 	lda	a:wram_150A
 	bne	loc_02E912
-	lda	a:wram_0EC4
+	lda	a:td_p1_angle
 	sec
 	sbc	a:wram_1518
 	and	#$00FF
@@ -343,19 +343,19 @@ loc_02E93F:
 	sec
 	sbc	zp_02
 	sta	a:p1_m7_vofs
-	lda	a:wram_0AC4
+	lda	a:td_boss_angle
 	sec
 	sbc	a:p1_view_angle
 	eor	#$0080
 	sta	a:p1_m7_angle
 loc_02E95E:
-	lda	a:wram_0F0A
+	lda	a:td_p2_x
 	sta	a:p2_view_x
-	lda	a:wram_0F0E
+	lda	a:td_p2_y
 	sta	a:p2_view_y
 	lda	a:wram_154A
 	bne	loc_02E97C
-	lda	a:wram_0F04
+	lda	a:td_p2_angle
 	sec
 	sbc	a:wram_1558
 	and	#$00FF
@@ -387,7 +387,7 @@ loc_02E9A9:
 	sec
 	sbc	zp_02
 	sta	a:p2_m7_vofs
-	lda	a:wram_0AC4
+	lda	a:td_boss_angle
 	sec
 	sbc	a:p2_view_angle
 	eor	#$0080
@@ -419,12 +419,12 @@ loc_02E9D1:
 	sta	a:p2_view_anchor_y
 	lda	a:wram_150A
 	bne	loc_02EA0E
-	lda	a:wram_0EC4
+	lda	a:td_p1_angle
 	sta	a:wram_1518
 loc_02EA0E:
 	lda	a:wram_154A
 	bne	loc_02EA19
-	lda	a:wram_0F04
+	lda	a:td_p2_angle
 	sta	a:wram_1558
 loc_02EA19:
 	stz	a:p1_m7_angle
@@ -440,12 +440,12 @@ loc_02EA1D:
 	sta	a:p2_view_anchor_y
 	lda	a:wram_150A
 	bne	loc_02EA40
-	lda	a:wram_0EC4
+	lda	a:td_p1_angle
 	sta	a:wram_1518
 loc_02EA40:
 	lda	a:wram_154A
 	bne	loc_02EA4B
-	lda	a:wram_0F04
+	lda	a:td_p2_angle
 	sta	a:wram_1558
 loc_02EA4B:
 	lda	a:p1_view_x
@@ -478,7 +478,7 @@ loc_02EA7E:
 	sec
 	sbc	zp_02
 	sta	a:p1_m7_vofs
-	lda	a:wram_0AC4
+	lda	a:td_boss_angle
 	sec
 	sbc	a:p1_view_angle
 	eor	#$0080
@@ -495,9 +495,9 @@ td_scroll_shared_view_x:
 
 td_shared_view_follow_p1_x:
 	; (not executed in the CDL traces)
-	lda	a:wram_0ED2
+	lda	a:td_p1_state
 	beq	loc_02EAC0
-	lda	a:wram_0ECA
+	lda	a:td_p1_x
 	cmp	zp_18
 	beq	loc_02EABC
 	bpl	loc_02EAD4
@@ -509,9 +509,9 @@ loc_02EAC0:
 
 td_shared_view_follow_p2_x:
 	; (not executed in the CDL traces)
-	lda	a:wram_0F12
+	lda	a:td_p2_state
 	beq	loc_02EAD3
-	lda	a:wram_0F0A
+	lda	a:td_p2_x
 	cmp	zp_18
 	beq	loc_02EACF
 	bpl	loc_02EAD4
@@ -555,7 +555,7 @@ td_shared_view_follow_p1_y:
 	; (not executed in the CDL traces)
 	lda	a:p1_lives
 	beq	loc_02EB19
-	lda	a:wram_0ECE
+	lda	a:td_p1_y
 	cmp	zp_18
 	beq	loc_02EB15
 	bpl	loc_02EB2D
@@ -569,7 +569,7 @@ td_shared_view_follow_p2_y:
 	; (not executed in the CDL traces)
 	lda	a:p2_lives
 	beq	loc_02EB2C
-	lda	a:wram_0F0E
+	lda	a:td_p2_y
 	cmp	zp_18
 	beq	loc_02EB28
 	bpl	loc_02EB2D
@@ -610,11 +610,11 @@ td_run_collisions:
 	lda	stage_frame_counter
 	lsr	a
 	bcs	loc_02EB6B
-	lda	a:wram_0F12
+	lda	a:td_p2_state
 	beq	loc_02EB74
 	jml	f:td_run_p2_collisions
 loc_02EB6B:
-	lda	a:wram_0ED2
+	lda	a:td_p1_state
 	beq	loc_02EB74
 	jml	f:td_run_p1_collisions
 loc_02EB74:
@@ -1248,9 +1248,9 @@ stage5_boss_state_0:
 	sta	$0E,x
 	stz	$08,x
 	stz	$0C,x
-	stz	a:wram_15C0
-	stz	a:wram_15BC
-	stz	a:wram_15C8
+	stz	a:stage5_boss_body_step
+	stz	a:stage5_boss_palette_step
+	stz	a:stage5_boss_spit_step
 loc_02EFF1:
 	jsr	a:stage5_boss_spawn_arm
 	lda	#$0040
@@ -1280,7 +1280,7 @@ loc_02F015:
 	cmp	$06,x
 	bcc	loc_02F031
 	jsl	f:td_select_target_player_long
-	lda	a:wram_15A0
+	lda	a:boss_target_distance
 	cmp	#$4000
 	bcs	loc_02F02E
 	brl	loc_02F060
@@ -1328,7 +1328,7 @@ stage5_boss_state_6:
 	brl	loc_02EFF1
 loc_02F06D:
 	jsl	f:td_select_target_player_long
-	lda	a:wram_15A0
+	lda	a:boss_target_distance
 	cmp	#$4000
 	bcs	loc_02F07D
 	jsr	a:stage5_boss_target_circle
@@ -1344,7 +1344,7 @@ stage5_boss_state_7:
 	brl	loc_02EFF1
 loc_02F08A:
 	jsl	f:td_select_target_player_long
-	lda	a:wram_15A0
+	lda	a:boss_target_distance
 	cmp	#$4000
 	bcc	loc_02F060
 	jsr	a:stage5_boss_target_player
@@ -1407,7 +1407,7 @@ loc_02F106:
 	rtl
 
 stage5_boss_animate_body:
-	lda	a:wram_0AD2
+	lda	a:td_boss_state
 	cmp	#$0008
 	bcs	loc_02F182
 	cmp	#$0001
@@ -1425,7 +1425,7 @@ stage5_boss_animate_body:
 	cmp	#$0007
 	beq	loc_02F164
 	; (not executed in the CDL traces)
-	lda	a:wram_15C0
+	lda	a:stage5_boss_body_step
 	phx
 	asl	a
 	tax
@@ -1441,43 +1441,43 @@ tbl_stage5_boss_body_steps:
 
 stage5_boss_body_step_0:
 	; (not executed in the CDL traces)
-	stz	a:wram_1592
+	stz	a:boss_anim_frame
 loc_02F14F:
 	lda	#$0001
-	sta	a:wram_15C0
+	sta	a:stage5_boss_body_step
 
 stage5_boss_body_step_1:
-	lda	a:wram_1592
+	lda	a:boss_anim_frame
 	bne	loc_02F160
 	lda	#$1000
 	sta	$16,x
 	rts
 loc_02F160:
-	dec	a:wram_1592
+	dec	a:boss_anim_frame
 	rts
 loc_02F164:
 	lda	#$0002
-	sta	a:wram_15C0
+	sta	a:stage5_boss_body_step
 
 stage5_boss_body_step_2:
-	lda	a:wram_1592
+	lda	a:boss_anim_frame
 	cmp	#$0017
 	bcc	loc_02F17E
 	lda	#$0017
-	sta	a:wram_1592
+	sta	a:boss_anim_frame
 	lda	#$B000
 	sta	$16,x
 	rts
 loc_02F17E:
-	inc	a:wram_1592
+	inc	a:boss_anim_frame
 	rts
 loc_02F182:
 	lda	#$0003
-	sta	a:wram_15C0
+	sta	a:stage5_boss_body_step
 
 stage5_boss_body_step_3:
 	lda	#$0018
-	sta	a:wram_1592
+	sta	a:boss_anim_frame
 	rts
 
 stage5_boss_stream_chr:
@@ -1487,7 +1487,7 @@ stage5_boss_stream_chr:
 	sta	a:boss_chr_stream_bank
 	lda	#$0280
 	sta	a:boss_chr_stream_size
-	lda	a:wram_1592
+	lda	a:boss_anim_frame
 	lsr	a
 	lsr	a
 	and	#$0006
@@ -1497,7 +1497,7 @@ stage5_boss_stream_chr:
 	rtl
 
 stage5_boss_update_palette_cycle:
-	lda	a:wram_15BC
+	lda	a:stage5_boss_palette_step
 	phx
 	asl	a
 	tax
@@ -1516,10 +1516,10 @@ stage5_boss_palette_step_0:
 	lda	#$0001
 	sta	a:palette_cycle_paused
 	lda	#$0001
-	sta	a:wram_15BC
+	sta	a:stage5_boss_palette_step
 
 stage5_boss_palette_step_1:
-	lda	a:wram_0AD2
+	lda	a:td_boss_state
 	cmp	#$0008
 	bcs	loc_02F1EB
 	ldy	difficulty
@@ -1537,7 +1537,7 @@ loc_02F1EC:
 	sta	a:palette_cycle_speed
 	stz	a:palette_cycle_counter
 	lda	#$0002
-	sta	a:wram_15BC
+	sta	a:stage5_boss_palette_step
 
 stage5_boss_palette_step_2:
 	lda	a:wram_15C4
@@ -1551,14 +1551,14 @@ stage5_boss_palette_step_2:
 loc_02F219:
 	dec	a:palette_cycle_paused
 loc_02F21C:
-	lda	a:wram_0AD2
+	lda	a:td_boss_state
 	cmp	#$0008
 	bcs	stage5_boss_palette_step_0
 	rts
 
 stage5_boss_target_player:
 	jsl	f:td_select_target_player_long
-	ldy	a:wram_159E
+	ldy	a:boss_target_player
 	lda	a:$0ECA,y
 	sta	$3E,x
 	lda	a:$0ECE,y
@@ -1582,11 +1582,11 @@ stage5_boss_target_circle:
 	rts
 
 stage5_boss_update_spit:
-	lda	a:wram_0AC6
+	lda	a:td_boss_hp
 	bpl	loc_02F25F
 	brl	loc_02F306
 loc_02F25F:
-	lda	a:wram_15C8
+	lda	a:stage5_boss_spit_step
 	phx
 	asl	a
 	tax
@@ -1601,10 +1601,10 @@ tbl_stage5_boss_spit_steps:
 	.addr	stage5_boss_spit_step_3
 	.addr	stage5_boss_spit_step_4
 loc_02F279:
-	stz	a:wram_15C8
+	stz	a:stage5_boss_spit_step
 
 stage5_boss_spit_step_0:
-	lda	a:wram_0AD2
+	lda	a:td_boss_state
 	cmp	#$0006
 	beq	loc_02F285
 	rts
@@ -1613,27 +1613,27 @@ loc_02F285:
 	jsl	f:queue_sound
 	lda	rng_lo
 	and	#$0006
-	sta	a:wram_15CC
+	sta	a:stage5_boss_spit_position
 	lda	#$0020
-	sta	a:wram_15CA
+	sta	a:stage5_boss_spit_timer
 	lda	#$0300
 	jsr	a:stage5_boss_spawn_spit
 	stz	a:wram_0314
 	lda	#$0001
-	sta	a:wram_15C8
+	sta	a:stage5_boss_spit_step
 
 stage5_boss_spit_step_1:
-	dec	a:wram_15CA
+	dec	a:stage5_boss_spit_timer
 	bmi	loc_02F2AF
 	rts
 loc_02F2AF:
-	stz	a:wram_15CA
+	stz	a:stage5_boss_spit_timer
 	lda	#$0002
-	sta	a:wram_15C8
+	sta	a:stage5_boss_spit_step
 
 stage5_boss_spit_step_2:
-	lda	a:wram_15CA
-	inc	a:wram_15CA
+	lda	a:stage5_boss_spit_timer
+	inc	a:stage5_boss_spit_timer
 	cmp	#$0020
 	bcs	loc_02F2DC
 	bit	#$0003
@@ -1651,7 +1651,7 @@ loc_02F2DB:
 	rts
 loc_02F2DC:
 	lda	#$0000
-	sta	a:wram_15CA
+	sta	a:stage5_boss_spit_timer
 	stz	a:wram_0314
 	stz	a:wram_0334
 	stz	a:wram_0354
@@ -1661,16 +1661,16 @@ loc_02F2DC:
 	stz	a:wram_03D4
 	stz	a:wram_03F4
 	lda	#$0003
-	sta	a:wram_15C8
+	sta	a:stage5_boss_spit_step
 
 stage5_boss_spit_step_3:
-	dec	a:wram_15CA
+	dec	a:stage5_boss_spit_timer
 	bmi	loc_02F306
 	; (not executed in the CDL traces)
 	rts
 loc_02F306:
 	lda	#$0020
-	sta	a:wram_15CA
+	sta	a:stage5_boss_spit_timer
 	lda	#$0002
 	sta	a:wram_0312
 	sta	a:wram_0332
@@ -1681,10 +1681,10 @@ loc_02F306:
 	sta	a:wram_03D2
 	sta	a:wram_03F2
 	lda	#$0004
-	sta	a:wram_15C8
+	sta	a:stage5_boss_spit_step
 
 stage5_boss_spit_step_4:
-	dec	a:wram_15CA
+	dec	a:stage5_boss_spit_timer
 	bpl	loc_02F335
 	brl	loc_02F279
 loc_02F335:
@@ -1698,7 +1698,7 @@ stage5_boss_spawn_spit:
 	stz	$12,x
 	lda	#$2000
 	sta	$02,x
-	ldy	a:wram_15CC
+	ldy	a:stage5_boss_spit_position
 	lda	a:data_05E6A6,y
 	sta	$0A,x
 	stz	$08,x
@@ -1774,7 +1774,7 @@ stage5_boss_restore_palette:
 
 stage5_boss_spawn_arm:
 	jsl	f:td_select_target_player_long
-	ldy	a:wram_159E
+	ldy	a:boss_target_player
 	lda	a:$0ECA,y
 	sec
 	sbc	$0A,x
@@ -1864,7 +1864,7 @@ stage5_boss_spawn_arm:
 ; TDS_HOMING_ORB, pulls back. Damage to any arm part counts against its HP,
 ; 32/128/256 (stage5_boss_claw_hp); destroyed, it drops an item.
 update_stage5_boss_claw:
-	lda	a:wram_0AC6
+	lda	a:td_boss_hp
 	bpl	loc_02F4C0
 	brl	loc_02F5B6
 loc_02F4C0:
@@ -1872,7 +1872,7 @@ loc_02F4C0:
 	bcc	loc_02F4C8
 	brl	loc_02F5B6
 loc_02F4C8:
-	lda	a:wram_0AD2
+	lda	a:td_boss_state
 	cmp	#$0002
 	beq	loc_02F532
 	cmp	#$0003
@@ -2218,9 +2218,9 @@ loc_02F735:
 	rtl
 
 stage5_boss_arm_check_dead:
-	lda	a:wram_0AC6
+	lda	a:td_boss_hp
 	bmi	loc_02F751
-	lda	a:wram_0B46
+	lda	a:td_boss_core_hp
 	bmi	loc_02F751
 	clc
 	rts
@@ -2229,10 +2229,10 @@ loc_02F751:
 	rts
 
 stage5_boss_arm_pass_damage:
-	lda	a:wram_0B46
+	lda	a:td_boss_core_hp
 	clc
 	adc	$06,x
-	sta	a:wram_0B46
+	sta	a:td_boss_core_hp
 	stz	$06,x
 	rts
 
@@ -2430,7 +2430,7 @@ stage5_boss_claw_fire:
 	jsl	f:td_select_target_player_long
 	ply
 	plx
-	lda	a:wram_159E
+	lda	a:boss_target_player
 	clc
 	adc	#$0EC0
 	sta	a:$0014,y
@@ -2872,7 +2872,7 @@ loc_02FBB0:
 loc_02FBB1:
 	; (not executed in the CDL traces)
 	jsl	f:td_select_target_player_long
-	ldy	a:wram_159E
+	ldy	a:boss_target_player
 	lda	a:$152C,y
 	bit	#$4000
 	bne	loc_02FBB0
@@ -2942,7 +2942,7 @@ loc_02FC24:
 loc_02FC25:
 	jsl	f:td_select_target_player_long
 	jsl	f:td_angle_to_nearest_player
-	ldy	a:wram_159E
+	ldy	a:boss_target_player
 	sec
 	sbc	a:$0EC4,y
 	clc

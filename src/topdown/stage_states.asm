@@ -233,7 +233,7 @@ tbl_stage2_boss_end_steps:
 
 ; Waits for the boss object ($0AC0) to reach state $12 (defeated).
 stage2_boss_wait_defeat:
-	lda	a:wram_0AD2
+	lda	a:td_boss_state
 	cmp	#$0012
 	bne	loc_0281E8
 	lda	#$0081
@@ -374,7 +374,7 @@ tbl_stage5_boss_end_steps:
 
 ; Waits for the boss object ($0AC0) to reach state $09 (defeated).
 stage5_boss_wait_defeat:
-	lda	a:wram_0AD2
+	lda	a:td_boss_state
 	cmp	#$0009
 	bne	loc_028320
 	lda	#$0081
@@ -1584,8 +1584,8 @@ init_stage5_vars:
 	lda	#$0004
 	sta	a:targets_left_flag
 	lda	#$8000
-	sta	a:wram_15B2
-	stz	a:wram_15B4
+	sta	a:td_push_speed_frac
+	stz	a:td_push_speed
 	lda	#$0002
 	sta	a:palette_cycle_speed
 	stz	a:palette_cycle_counter
