@@ -1904,13 +1904,19 @@ data_05B09A:
 anim_05B172:
 	anim_frame	$0004, metasprite_06B0B9, metasprite_06B0B9
 	anim_frame	$0004, metasprite_06B0D2, metasprite_06B0D2
+; Metasprites by weapon capsule kind (weapon_capsule_set_kind, kinds 1-7).
+; Entry 0 is the jump word of the script above, and the last entry is also
+; the first word of data_05B18C: the tables overlap. The jump's $B172 is also
+; a metasprite ($06:B172, drawn in the CDL): a fixed reference, see the book
+; ("Shiftability").
 data_05B17E:
 	; CDL: read by update_objects, weapon_capsule_set_kind
 	anim_goto	anim_05B172
-	.byte	$C4, $AD, $ED, $AD, $16, $AE, $3F, $AE, $68, $AE, $7A, $B0
+	.addr	metasprite_06ADC4, metasprite_06ADED, metasprite_06AE16, metasprite_06AE3F, metasprite_06AE68, metasprite_06B07A
 data_05B18C:
 	; CDL: read by weapon_capsule_set_kind
-	.byte	$A3, $B0, $01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $02, $00, $03, $00
+	.addr	metasprite_06B0A3
+	.byte	$01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $02, $00, $03, $00
 data_05B19C:
 	; CDL: read by object_type_11_state_01; partly not accessed
 	.byte	$08, $B4, $03, $B4, $FE, $B3, $08, $B4, $03, $B4, $FE, $B3
