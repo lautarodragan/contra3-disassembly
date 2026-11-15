@@ -6,8 +6,9 @@
 ; a list of frames of 3 words: the number of frames to show it, the
 ; metasprite (bank $06) shown when OBJ_FACING is 0 and the one shown
 ; otherwise.  Some objects never face the other way and keep other values
-; in the third word.  A negative first word is a jump to that address (in
-; bank $05), 0 ends the script (OBJ_ANIM = 0, the last sprite stays).
+; in the third word.  A frame of 0 ends the script: its sprites are shown
+; and OBJ_ANIM becomes 0.  A negative word (one word, no sprites) jumps to
+; that address in bank $05.
 ; The items of the top-down stages (animate_td_item) use the same format with
 ; metasprites in bank $07 and OAM attributes in the third word.
 ; ---------------------------------------------------------------------------
@@ -20,8 +21,9 @@
 	.addr	script
 .endmacro
 
-.macro anim_end
+.macro anim_end sprite, sprite_facing
 	.word	0
+	.addr	sprite, sprite_facing
 .endmacro
 
 ; ---------------------------------------------------------------------------
