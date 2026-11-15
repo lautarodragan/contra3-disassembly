@@ -1079,6 +1079,7 @@ class Emitter:
         for k, v in hints.get('comments', {}).items():
             self.comments[rom_offset(parse_addr(k))] = v
         self.stats = collections.Counter()
+        self.rom_numbers = []     # (instr offset, reason) of ROM-range numbers
         self._build_labels()
 
     def _build_labels(self):
@@ -1151,6 +1152,8 @@ class Emitter:
                 return prefix + self.ref(data_tgt)
             if val >= 0x8000:
                 st['operand_rom_number'] += 1
+                self.rom_numbers.append((ins.off, 'DB unknown' if ins.db is None else
+                                         'DB=$%02X' % ins.db))
             else:
                 reg = snes_regs.NAMES.get(val)
                 if reg and ins.db not in (0x7E, 0x7F):
@@ -1487,6 +1490,8 @@ def make_report(d, em, cfg, path):
     section('M/X conflicts and overlaps', d.conflicts)
     section('Decoding stops', d.stops)
     section('Warnings', d.warnings)
+    section('Absolute operands >= $8000 left as numbers (bank unknown; may be ROM or, with DB=$7E/$7F, WRAM)',
+            em.rom_numbers)
     heur = sorted(o for o, k in d.spec_source.items() if k == 'heuristic' and o in d.instrs)
     lines.append('## Routines without a known caller, decoded heuristically (%d)' % len(heur))
     lines.append('')
