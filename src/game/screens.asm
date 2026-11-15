@@ -26,11 +26,11 @@ stage_clear_init:
 	lda	a:inidisp_shadow
 	and	#$000F
 	sta	a:inidisp_shadow
-	beq	loc_00B6A4
+	beq	@faded_out
 	dec	a:inidisp_shadow
 	plp
 	rtl
-loc_00B6A4:
+@faded_out:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
@@ -53,16 +53,16 @@ stage_clear_fade_in:
 	php
 	lda	a:inidisp_shadow
 	bit	#$0080
-	beq	loc_00B6DE
+	beq	@check_level
 	and	#$000F
 	sta	a:inidisp_shadow
-loc_00B6DE:
+@check_level:
 	cmp	#$000F
-	bcs	loc_00B6E8
+	bcs	@faded_in
 	inc	a:inidisp_shadow
 	plp
 	rtl
-loc_00B6E8:
+@faded_in:
 	plp
 	lda	#$006A
 	jsl	f:queue_sound
@@ -73,10 +73,10 @@ stage_clear_load_next_stage:
 	lda	stage_number
 	inc	a
 	cmp	#$0007
-	bcc	loc_00B6FF
+	bcc	@load_next
 	; (not executed in the CDL traces)
 	lda	#$0001
-loc_00B6FF:
+@load_next:
 	jsl	f:load_stage_graphics
 	lda	#$0001
 	sta	mode_timer
@@ -85,7 +85,7 @@ loc_00B6FF:
 
 stage_clear_show_scores:
 	dec	mode_timer
-	bpl	loc_00B738
+	bpl	@return
 	jsl	f:draw_score_board
 	lda	#$0001
 	sta	a:stage_bonus_hi
@@ -99,14 +99,14 @@ stage_clear_show_scores:
 	lda	#$0005
 	sta	a:tm_shadow
 	inc	a:mode_step
-loc_00B738:
+@return:
 	rtl
 
 stage_clear_wait:
 	dec	mode_timer
-	bpl	loc_00B740
+	bpl	@return
 	inc	a:mode_step
-loc_00B740:
+@return:
 	rtl
 
 stage_clear_count_bonus:
@@ -115,15 +115,15 @@ stage_clear_count_bonus:
 	jsr	a:draw_stage_bonus
 	lda	a:stage_bonus
 	bit	#$0100
-	bne	loc_00B75A
+	bne	@check_end
 	lda	#$0003
 	jsl	f:queue_sound
-loc_00B75A:
+@check_end:
 	lda	a:stage_bonus
 	ora	a:stage_bonus_hi
-	beq	loc_00B763
+	beq	@bonus_done
 	rtl
-loc_00B763:
+@bonus_done:
 	lda	#$0100
 	sta	mode_timer
 	inc	a:mode_step
@@ -131,16 +131,16 @@ loc_00B763:
 
 stage_clear_wait_button:
 	dec	mode_timer
-	bpl	loc_00B773
+	bpl	@check_button
 	; (not executed in the CDL traces)
-	brl	loc_00B77D
-loc_00B773:
+	brl	@next
+@check_button:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_B|JOY_Y|JOY_START|JOY_A|JOY_X
-	bne	loc_00B77D
+	bne	@next
 	rtl
-loc_00B77D:
+@next:
 	inc	a:mode_step
 	rtl
 
@@ -150,11 +150,11 @@ stage_clear_fade_out:
 	lda	a:inidisp_shadow
 	and	#$000F
 	sta	a:inidisp_shadow
-	beq	loc_00B794
+	beq	@faded_out
 	dec	a:inidisp_shadow
 	plp
 	rtl
-loc_00B794:
+@faded_out:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
@@ -162,11 +162,11 @@ loc_00B794:
 	inc	stage_number
 	lda	stage_number
 	cmp	#$0007
-	bcc	loc_00B7AC
+	bcc	@to_stage_card
 	; (not executed in the CDL traces)
 	lda	#$0001
 	sta	stage_number
-loc_00B7AC:
+@to_stage_card:
 	lda	#$0001
 	sta	mode_result
 	rtl
@@ -237,20 +237,20 @@ add_score:
 	lda	$38,x
 	sbc	#$0000
 	sta	$38,x
-	bmi	loc_00B854
+	bmi	@extra_life
 	lda	$36,x
 	ora	$38,x
-	bne	loc_00B877
-loc_00B854:
+	bne	@add_points
+@extra_life:
 	lda	#$003E
 	jsl	f:queue_sound
 	lda	$0A,x
 	inc	a
 	cmp	#$001E
-	bcc	loc_00B866
+	bcc	@store_lives
 	; (not executed in the CDL traces)
 	lda	#$001E
-loc_00B866:
+@store_lives:
 	sta	$0A,x
 	clc
 	lda	$36,x
@@ -259,7 +259,7 @@ loc_00B866:
 	lda	$38,x
 	adc	#$0006
 	sta	$38,x
-loc_00B877:
+@add_points:
 	lda	zp_FA
 	clc
 	adc	$20,x
@@ -272,13 +272,13 @@ loc_00B877:
 	sbc	#$9999
 	lda	$22,x
 	sbc	#$0999
-	bcc	loc_00B89C
+	bcc	@done
 	; (not executed in the CDL traces)
 	lda	#$9999
 	sta	$20,x
 	lda	#$0999
 	sta	$22,x
-loc_00B89C:
+@done:
 	cld
 	rtl
 
@@ -320,10 +320,10 @@ draw_two_digit_number:
 	jsl	f:begin_vram_transfer
 	plx
 	lda	$00,x
-	bpl	loc_00B8FC
+	bpl	@divide
 	; (not executed in the CDL traces)
 	lda	#$0000
-loc_00B8FC:
+@divide:
 	sta	a:WRDIVL
 	sep	#$20
 	.a8
@@ -363,18 +363,18 @@ draw_digit:
 
 transfer_stage_bonus:
 	lda	a:p1_lives
-	beq	loc_00B943
+	beq	@check_p2
 	lda	#$0100
 	ldx	#$1F80
 	jsl	f:add_score
-loc_00B943:
+@check_p2:
 	lda	a:p2_lives
-	beq	loc_00B952
+	beq	@decrease_bonus
 	; (not executed in the CDL traces)
 	lda	#$0100
 	ldx	#$1FC0
 	jsl	f:add_score
-loc_00B952:
+@decrease_bonus:
 	sed
 	sec
 	lda	a:stage_bonus
@@ -392,24 +392,24 @@ update_high_score:
 	sbc	a:p1_score
 	lda	a:high_score_hi
 	sbc	a:p1_score_hi
-	bcs	loc_00B983
+	bcs	@check_p2
 	lda	a:p1_score
 	sta	a:high_score
 	lda	a:p1_score_hi
 	sta	a:high_score_hi
-loc_00B983:
+@check_p2:
 	sec
 	lda	a:high_score
 	sbc	a:p2_score
 	lda	a:high_score_hi
 	sbc	a:p2_score_hi
-	bcs	loc_00B99E
+	bcs	@return
 	; (not executed in the CDL traces)
 	lda	a:p2_score
 	sta	a:high_score
 	lda	a:p2_score_hi
 	sta	a:high_score_hi
-loc_00B99E:
+@return:
 	rts
 
 load_stage_graphics:
@@ -455,31 +455,31 @@ options_input:
 	php
 	lda	a:inidisp_shadow
 	bit	#$0080
-	beq	loc_00B9FA
+	beq	@check_level
 	; (not executed in the CDL traces)
 	and	#$000F
 	sta	a:inidisp_shadow
-loc_00B9FA:
+@check_level:
 	cmp	#$000F
-	bcs	loc_00BA04
+	bcs	@faded_in
 	; (not executed in the CDL traces)
 	inc	a:inidisp_shadow
 	plp
 	rtl
-loc_00BA04:
+@faded_in:
 	plp
 	jsr	a:options_move_cursor
 	jsr	a:options_update_player_item
 	jsr	a:options_update_level_item
 	jsr	a:options_update_sound_item
 	jsr	a:options_update_exit_item
-	bcs	loc_00BA20
+	bcs	@exit
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_START
-	bne	loc_00BA20
+	bne	@exit
 	rtl
-loc_00BA20:
+@exit:
 	lda	#$0002
 	jsl	f:queue_sound
 	inc	a:mode_step
@@ -491,11 +491,11 @@ options_fade_out:
 	lda	a:inidisp_shadow
 	and	#$000F
 	sta	a:inidisp_shadow
-	beq	loc_00BA3E
+	beq	@faded_out
 	dec	a:inidisp_shadow
 	plp
 	rtl
-loc_00BA3E:
+@faded_out:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
@@ -507,40 +507,40 @@ options_move_cursor:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_UP|JOY_DOWN
-	beq	loc_00BA7E
+	beq	@return
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
 	bit	#JOY_UP
-	bne	loc_00BA72
+	bne	@move_up
 	lda	a:options_cursor
 	inc	a
 	cmp	#$0004
-	bcc	loc_00BA6E
+	bcc	@store
 	; (not executed in the CDL traces)
 	lda	#$0000
-loc_00BA6E:
+@store:
 	sta	a:options_cursor
 	rts
-loc_00BA72:
+@move_up:
 	lda	a:options_cursor
 	dec	a
-	bpl	loc_00BA7B
+	bpl	@store2
 	lda	#$0003
-loc_00BA7B:
+@store2:
 	sta	a:options_cursor
-loc_00BA7E:
+@return:
 	rts
 
 options_update_player_item:
 	lda	a:options_cursor
 	cmp	#$0000
-	beq	loc_00BA91
+	beq	@selected
 	ldx	#$8956
 	jsl	f:draw_text
 	jmp	a:options_draw_lives
-loc_00BA91:
+@selected:
 	ldx	#$8956
 	lda	#$2400
 	jsl	f:draw_text_attr
@@ -551,11 +551,11 @@ loc_00BA91:
 options_update_level_item:
 	lda	a:options_cursor
 	cmp	#$0001
-	beq	loc_00BAB6
+	beq	@selected
 	ldx	#$895F
 	jsl	f:draw_text
 	jmp	a:options_draw_level
-loc_00BAB6:
+@selected:
 	ldx	#$895F
 	lda	#$2400
 	jsl	f:draw_text_attr
@@ -565,11 +565,11 @@ loc_00BAB6:
 options_update_sound_item:
 	lda	a:options_cursor
 	cmp	#$0002
-	beq	loc_00BAD8
+	beq	@selected
 	ldx	#$8967
 	jsl	f:draw_text
 	jmp	a:options_draw_sound
-loc_00BAD8:
+@selected:
 	ldx	#$8967
 	lda	#$2400
 	jsl	f:draw_text_attr
@@ -579,20 +579,20 @@ loc_00BAD8:
 options_update_exit_item:
 	lda	a:options_cursor
 	cmp	#$0003
-	beq	loc_00BAF9
+	beq	@selected
 	ldx	#$896F
 	jsl	f:draw_text
-loc_00BAF7:
+@loop:
 	clc
 	rts
-loc_00BAF9:
+@selected:
 	ldx	#$896F
 	lda	#$2400
 	jsl	f:draw_text_attr
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_B|JOY_Y|JOY_A|JOY_X
-	beq	loc_00BAF7
+	beq	@loop
 	sec
 	rts
 
@@ -600,30 +600,30 @@ options_change_lives:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_LEFT|JOY_RIGHT
-	beq	loc_00BB41
+	beq	@return
 	; (not executed in the CDL traces)
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
 	bit	#JOY_RIGHT
-	bne	loc_00BB32
+	bne	@next_option
 	lda	a:options_lives_index
 	dec	a
-	bpl	loc_00BB2E
+	bpl	@store
 	lda	#$0002
-loc_00BB2E:
+@store:
 	sta	a:options_lives_index
 	rts
-loc_00BB32:
+@next_option:
 	lda	a:options_lives_index
 	inc	a
 	cmp	#$0003
-	bcc	loc_00BB3E
+	bcc	@store2
 	lda	#$0000
-loc_00BB3E:
+@store2:
 	sta	a:options_lives_index
-loc_00BB41:
+@return:
 	rts
 
 options_store_lives:
@@ -638,26 +638,26 @@ options_get_lives_index:
 	ldy	#$0000
 	lda	a:option_lives
 	cmp	#$0003
-	beq	loc_00BB66
+	beq	@store
 	; (not executed in the CDL traces)
 	iny
 	cmp	#$0005
-	beq	loc_00BB66
+	beq	@store
 	iny
 	cmp	#$0007
-	beq	loc_00BB66
+	beq	@store
 	iny
-loc_00BB66:
+@store:
 	sty	a:options_lives_index
 	rts
 options_draw_lives:
 	ldy	#$5992
 	lda	a:option_lives
 	cmp	#$0063
-	bcc	loc_00BB78
+	bcc	@divide
 	; (not executed in the CDL traces)
 	lda	#$0063
-loc_00BB78:
+@divide:
 	sta	a:WRDIVL
 	sep	#$20
 	.a8
@@ -683,32 +683,32 @@ options_change_level:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_LEFT|JOY_RIGHT
-	beq	loc_00BBDE
+	beq	@return
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
 	bit	#JOY_RIGHT
-	bne	loc_00BBCE
+	bne	@next_option
 	; (not executed in the CDL traces)
 	lda	a:option_level
 	dec	a
 	dec	a
-	bpl	loc_00BBCA
+	bpl	@store
 	lda	#$0004
-loc_00BBCA:
+@store:
 	sta	a:option_level
 	rts
-loc_00BBCE:
+@next_option:
 	lda	a:option_level
 	inc	a
 	inc	a
 	cmp	#$0006
-	bcc	loc_00BBDB
+	bcc	@store2
 	lda	#$0000
-loc_00BBDB:
+@store2:
 	sta	a:option_level
-loc_00BBDE:
+@return:
 	rts
 options_draw_level:
 	ldy	a:option_level
@@ -720,33 +720,33 @@ options_change_sound:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_LEFT|JOY_RIGHT
-	beq	loc_00BC11
+	beq	@return
 	; (not executed in the CDL traces)
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
 	bit	#JOY_RIGHT
-	bne	loc_00BC12
+	bne	@next_option
 	lda	a:option_sound
 	dec	a
 	dec	a
-	bpl	loc_00BC0B
+	bpl	@store_previous
 	lda	#$0002
-loc_00BC0B:
+@store_previous:
 	sta	a:option_sound
 	jsr	a:options_apply_sound_mode
-loc_00BC11:
+@return:
 	rts
-loc_00BC12:
+@next_option:
 	; (not executed in the CDL traces)
 	lda	a:option_sound
 	inc	a
 	inc	a
 	cmp	#$0004
-	bcc	loc_00BC1F
+	bcc	@store
 	lda	#$0000
-loc_00BC1F:
+@store:
 	sta	a:option_sound
 
 options_apply_sound_mode:
@@ -778,11 +778,11 @@ final_score_init:
 	lda	a:inidisp_shadow
 	and	#$000F
 	sta	a:inidisp_shadow
-	beq	loc_00BC5B
+	beq	@faded_out
 	dec	a:inidisp_shadow
 	plp
 	rtl
-loc_00BC5B:
+@faded_out:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
@@ -800,16 +800,16 @@ final_score_fade_in:
 	php
 	lda	a:inidisp_shadow
 	bit	#$0080
-	beq	loc_00BC8D
+	beq	@check_level
 	and	#$000F
 	sta	a:inidisp_shadow
-loc_00BC8D:
+@check_level:
 	cmp	#$000F
-	bcs	loc_00BC97
+	bcs	@faded_in
 	inc	a:inidisp_shadow
 	plp
 	rtl
-loc_00BC97:
+@faded_in:
 	plp
 	inc	a:mode_step
 	rtl
@@ -818,10 +818,10 @@ final_score_wait_start:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_START
-	beq	loc_00BCA8
+	beq	@return
 	; (not executed in the CDL traces)
 	inc	a:mode_step
-loc_00BCA8:
+@return:
 	rtl
 
 final_score_fade_out:
@@ -831,11 +831,11 @@ final_score_fade_out:
 	lda	a:inidisp_shadow
 	and	#$000F
 	sta	a:inidisp_shadow
-	beq	loc_00BCBC
+	beq	@faded_out
 	dec	a:inidisp_shadow
 	plp
 	rtl
-loc_00BCBC:
+@faded_out:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp

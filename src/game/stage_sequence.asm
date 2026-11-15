@@ -89,13 +89,13 @@ opening_scene_blank:
 	inc	a:opening_state
 	lda	a:opening_scene
 	cmp	#$0004
-	beq	loc_00ECA0
+	beq	@last_scene
 	lda	#$0004
 	sta	a:wram_13BA
 	lda	#$0000
 	sta	a:wram_13FA
 	rtl
-loc_00ECA0:
+@last_scene:
 	lda	#$0005
 	sta	a:wram_13BA
 	lda	#$000C
@@ -107,33 +107,33 @@ opening_scene_load:
 	jsr	a:opening_set_layers_normal
 	lda	a:opening_scene
 	cmp	#$0005
-	beq	loc_00ECCE
+	beq	@scene5_tiles
 	cmp	#$0004
-	bne	loc_00ECDA
+	bne	@load_scene_gfx
 	rep	#$10
 	ldy	#$0FFF
 	ldx	#$4000
 	jsl	f:clear_vram_words
-	bra	loc_00ECE7
-loc_00ECCE:
+	bra	@loaded
+@scene5_tiles:
 	rep	#$10
 	ldy	#$03FF
 	ldx	#$4400
 	jsl	f:clear_vram_words
-loc_00ECDA:
+@load_scene_gfx:
 	lda	a:opening_scene
 	asl	a
 	tay
 	lda	a:ptrs_05A7AF,y
 	tax
 	jsl	f:load_data_list
-loc_00ECE7:
+@loaded:
 	inc	a:opening_state
 	lda	a:opening_scene
-	beq	loc_00ECF5
+	beq	@return
 	lda	#$000F
 	sta	a:inidisp_shadow
-loc_00ECF5:
+@return:
 	rtl
 
 opening_scene_start:
@@ -150,25 +150,25 @@ opening_scene_run:
 	inc	a:opening_scene_timer
 	lda	a:opening_scene_timer
 	cmp	a:opening_scene_durations,y
-	bcc	loc_00ED2F
+	bcc	opening_scene_run_return
 	lda	a:opening_scene
 	inc	a
-	bra	loc_00ED21
+	bra	opening_set_scene
 
 ; (no caller found; decoded because it follows the end of a routine)
 opening_next_scene_unused:
 	; (not executed in the CDL traces)
 	cmp	#$0007
-	bcc	loc_00ED21
+	bcc	opening_set_scene
 	lda	#$0000
-loc_00ED21:
+opening_set_scene:
 	sta	a:opening_scene
 	asl	a
 	tay
 	lda	a:opening_scene_next_states,y
 	sta	a:opening_state
 	stz	a:opening_scene_timer
-loc_00ED2F:
+opening_scene_run_return:
 	rtl
 
 opening_cinematic_done:
@@ -196,14 +196,14 @@ tbl_opening_scenes:
 opening_scene_city:
 	lda	a:inidisp_shadow
 	bit	#$0080
-	beq	loc_00ED60
+	beq	@check_level
 	and	#$000F
 	sta	a:inidisp_shadow
-loc_00ED60:
+@check_level:
 	cmp	#$000F
-	bcs	loc_00ED68
+	bcs	@run_step
 	inc	a:inidisp_shadow
-loc_00ED68:
+@run_step:
 	lda	a:opening_step
 	phx
 	asl	a
@@ -219,12 +219,12 @@ tbl_opening_city_steps:
 
 opening_city_init:
 	ldx	#$0000
-loc_00ED81:
+@loop:
 	lda	f:data_05A85B,x
 	sta	f:$7EA000,x
 	inx
 	cpx	#$0016
-	bcc	loc_00ED81
+	bcc	@loop
 	lda	#$000D
 	sta	hdma_preset
 	stz	a:wram_1384
@@ -285,27 +285,27 @@ opening_vortex_scroll:
 	lda	a:wram_13D8
 	and	#$00FF
 	cmp	#$00E0
-	beq	loc_00EE1F
+	beq	@stop_scroll
 	lda	a:wram_13DC
 	sec
 	sbc	#$1000
 	sta	a:wram_13DC
-	bcs	loc_00EE1B
+	bcs	@update
 	dec	a:wram_13D8
-loc_00EE1B:
+@update:
 	jsr	a:opening_update_parallax
 	rts
-loc_00EE1F:
+@stop_scroll:
 	ldx	#$0300
 	lda	#$0000
 	sta	$00,x
 	inc	a:opening_step
-	bra	loc_00EE1B
+	bra	@update
 
 opening_vortex_spawn_objects:
 	jsr	a:opening_set_layers_normal
 	ldy	#$0000
-loc_00EE32:
+@loop:
 	lda	a:data_05A9D9,y
 	tax
 	lda	#$0053
@@ -325,7 +325,7 @@ loc_00EE32:
 	iny
 	iny
 	cpy	#$0020
-	bcc	loc_00EE32
+	bcc	@loop
 	ldy	#$A845
 	jsl	f:sub_009982
 	inc	a:opening_step
@@ -375,9 +375,9 @@ opening_beam_wait:
 	inc	a:opening_step_timer
 	lda	a:opening_step_timer
 	cmp	#$0010
-	bcc	loc_00EEC5
+	bcc	@update
 	inc	a:opening_step
-loc_00EEC5:
+@update:
 	jsr	a:opening_update_parallax
 	rts
 
@@ -404,14 +404,14 @@ opening_beam_start_flash:
 opening_beam_flash:
 	lda	a:p1_view_x
 	cmp	#$00FE
-	bcs	loc_00EF33
+	bcs	@update
 	lda	a:opening_flash_speed_lo
 	clc
 	adc	#$8000
 	sta	a:opening_flash_speed_lo
-	bcc	loc_00EF15
+	bcc	@accumulate
 	inc	a:opening_flash_speed_hi
-loc_00EF15:
+@accumulate:
 	lda	a:opening_flash_accum
 	clc
 	adc	a:opening_flash_speed_lo
@@ -419,12 +419,12 @@ loc_00EF15:
 	lda	a:p1_view_x
 	adc	a:opening_flash_speed_hi
 	cmp	#$00FE
-	bcc	loc_00EF2D
+	bcc	@store
 	lda	#$00FE
-loc_00EF2D:
+@store:
 	sta	a:p1_view_x
 	sta	a:p2_view_x
-loc_00EF33:
+@update:
 	jsr	a:opening_update_parallax
 	rts
 
@@ -466,16 +466,16 @@ opening_ruins_wait:
 	inc	a:opening_step_timer
 	lda	a:opening_step_timer
 	cmp	#$001E
-	bcc	loc_00EF8F
+	bcc	@return
 	stz	a:opening_step_timer
 	inc	a:opening_step
-loc_00EF8F:
+@return:
 	rts
 
 opening_ruins_fade:
 	lda	a:opening_step_timer
 	cmp	#$003F
-	bcs	loc_00EFAF
+	bcs	@next_step
 	inc	a:opening_step_timer
 	lda	a:opening_step_timer
 	lsr	a
@@ -484,9 +484,9 @@ opening_ruins_fade:
 	and	#$00FF
 	sta	a:p1_view_x
 	sta	a:p2_view_x
-	beq	loc_00EFAF
+	beq	@next_step
 	rts
-loc_00EFAF:
+@next_step:
 	stz	a:opening_step_timer
 	inc	a:opening_step
 	rts
@@ -495,7 +495,7 @@ opening_ruins_spawn_alien:
 	inc	a:opening_step_timer
 	lda	a:opening_step_timer
 	cmp	#$0050
-	bcc	loc_00EFEF
+	bcc	@return
 	jsr	a:opening_set_layers_flash
 	ldx	#$0300
 	lda	#$0053
@@ -513,20 +513,20 @@ opening_ruins_spawn_alien:
 	jsl	f:sub_009982
 	stz	a:opening_step_timer
 	inc	a:opening_step
-loc_00EFEF:
+@return:
 	rts
 
 opening_ruins_alien_wait:
 	inc	a:opening_step_timer
 	lda	a:opening_step_timer
 	cmp	#$003C
-	bcc	loc_00F009
+	bcc	@return
 	ldx	#$0300
 	lda	#$CFF9
 	sta	$00,x
 	stz	a:opening_step_timer
 	inc	a:opening_step
-loc_00F009:
+@return:
 	rts
 
 opening_ruins_idle:
@@ -534,12 +534,12 @@ opening_ruins_idle:
 
 opening_scene_scrolling_text:
 	lda	a:opening_step
-	beq	loc_00F015
+	beq	@init
 	dec	a
-	beq	loc_00F026
+	beq	@scroll
 	; (not executed in the CDL traces)
-	bne	loc_00F039
-loc_00F015:
+	bne	@return2
+@init:
 	lda	#$0000
 	sta	hdma_preset
 	ldx	#$0300
@@ -547,37 +547,37 @@ loc_00F015:
 	sta	$00,x
 	inc	a:opening_step
 	rts
-loc_00F026:
+@scroll:
 	lda	a:wram_1380
 	clc
 	adc	#$0004
 	sta	a:wram_1380
 	cmp	#$0900
-	bcc	loc_00F038
+	bcc	@return
 	; (not executed in the CDL traces)
 	inc	a:opening_step
-loc_00F038:
+@return:
 	rts
-loc_00F039:
+@return2:
 	; (not executed in the CDL traces)
 	rts
 
 opening_scene_hero_face:
 	lda	a:opening_step
-	bne	loc_00F04E
+	bne	@caption
 	stz	a:wram_13D8
 	stz	a:wram_1380
 	stz	a:opening_caption_index
 	stz	a:opening_caption_timer
 	inc	a:opening_step
-loc_00F04E:
+@caption:
 	sep	#$20
 	.a8
 	ldy	a:opening_caption_index
 	inc	a:opening_caption_timer
 	lda	a:opening_caption_timer
 	cmp	a:data_05A8D1,y
-	bcc	loc_00F09C
+	bcc	opening_caption_return
 	lda	a:data_05A8DB,y
 	rep	#$20
 	.a16
@@ -586,7 +586,7 @@ loc_00F04E:
 	inc	a:opening_caption_index
 	lda	a:opening_caption_index
 	cmp	#$0001
-	bne	loc_00F099
+	bne	opening_caption_next
 	ldy	#$A83C
 	jsl	f:sub_009982
 	ldx	#$0300
@@ -601,44 +601,44 @@ loc_00F04E:
 	sta	$02,x
 	lda	#$D16F
 	sta	$00,x
-loc_00F099:
+opening_caption_next:
 	stz	a:opening_caption_timer
-loc_00F09C:
+opening_caption_return:
 	rep	#$20
 	rts
 
 opening_scene_heroes:
 	lda	a:opening_step
-	beq	loc_00F0A9
+	beq	@init
 	dec	a
-	beq	loc_00F0B5
-	bne	loc_00F0CE
-loc_00F0A9:
+	beq	@scroll
+	bne	@caption
+@init:
 	ldx	#$0300
 	lda	#$0000
 	sta	$00,x
 	inc	a:opening_step
 	rts
-loc_00F0B5:
+@scroll:
 	lda	a:wram_1380
 	clc
 	adc	#$0004
 	sta	a:wram_1380
 	cmp	#$0080
-	bcc	loc_00F0CD
+	bcc	@return
 	stz	a:opening_caption_index
 	stz	a:opening_caption_timer
 	inc	a:opening_step
-loc_00F0CD:
+@return:
 	rts
-loc_00F0CE:
+@caption:
 	sep	#$20
 	.a8
 	ldy	a:opening_caption_index
 	inc	a:opening_caption_timer
 	lda	a:opening_caption_timer
 	cmp	a:data_05A8E5,y
-	bcc	loc_00F115
+	bcc	@check_end
 	lda	a:data_05A8F3,y
 	rep	#$20
 	.a16
@@ -647,7 +647,7 @@ loc_00F0CE:
 	inc	a:opening_caption_index
 	lda	a:opening_caption_index
 	cmp	#$0001
-	bne	loc_00F099
+	bne	opening_caption_next
 	ldx	#$0300
 	lda	#$0053
 	sta	$10,x
@@ -661,12 +661,12 @@ loc_00F0CE:
 	lda	#$D190
 	sta	$00,x
 	stz	a:opening_caption_timer
-loc_00F115:
+@check_end:
 	rep	#$20
 	jsr	a:opening_is_scene_ending
-	bcc	loc_00F11F
+	bcc	@return2
 	jsr	a:opening_clear_objects
-loc_00F11F:
+@return2:
 	rts
 
 opening_draw_caption_part:
@@ -716,7 +716,7 @@ opening_update_parallax:
 
 opening_clear_objects:
 	ldy	#$0000
-loc_00F177:
+@loop:
 	lda	a:data_05A9D9,y
 	tax
 	stz	$10,x
@@ -727,7 +727,7 @@ loc_00F177:
 	iny
 	iny
 	cpy	#$0020
-	bcc	loc_00F177
+	bcc	@loop
 	rts
 
 opening_set_layers_flash:
@@ -771,7 +771,7 @@ build_wave_table:
 	sta	zp_0A
 	phx
 	ldy	zp_02
-loc_00F1E7:
+@loop:
 	tya
 	and	#$003F
 	asl	a
@@ -785,43 +785,43 @@ loc_00F1E7:
 	pha
 	tya
 	bit	#$0040
-	beq	loc_00F206
+	beq	@positive
 	pla
 	eor	#$FFFF
 	inc	a
-	bra	loc_00F207
-loc_00F206:
+	bra	@add
+@positive:
 	pla
-loc_00F207:
+@add:
 	clc
 	adc	(zp_00)
 	sta	[zp_08],y
 	iny
 	iny
 	cpy	zp_04
-	bcc	loc_00F1E7
+	bcc	@loop
 	plx
 	rtl
 
 opening_init_ruins_wave:
 	ldy	#$0000
 	ldx	#$0000
-loc_00F21A:
+@loop:
 	lda	a:data_05A9F9,y
 	sta	f:$7EA000,x
 	inx
 	iny
 	cpy	#$0009
-	bcc	loc_00F21A
+	bcc	@loop
 	ldy	#$0000
 	ldx	#$0000
-loc_00F22E:
+@loop2:
 	lda	a:data_05AA03,y
 	sta	f:$7EA400,x
 	inx
 	iny
 	cpy	#$0009
-	bcc	loc_00F22E
+	bcc	@loop2
 	lda	a:wram_1380
 	sta	f:wram_7EA010
 	lda	a:wram_1398

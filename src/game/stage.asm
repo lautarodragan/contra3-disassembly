@@ -43,11 +43,11 @@ stage_init:
 	sta	a:stage_layout
 	sta	a:stage_layout_base
 	ldy	a:stage_checkpoint
-	beq	loc_00BD90
+	beq	@no_checkpoint
 	clc
 	adc	#$000A
 	sta	a:stage_layout
-loc_00BD90:
+@no_checkpoint:
 	ldy	#$8AC7
 	jsl	f:sub_009982
 	ldy	a:stage_layout
@@ -123,10 +123,10 @@ loc_00BD90:
 
 stage_setup_video:
 	lda	stage_number
-	bne	loc_00BE6E
+	bne	@not_opening
 	inc	a:stage_state
 	inc	a:stage_state
-loc_00BE6E:
+@not_opening:
 	inc	a:stage_state
 	lda	#$0041
 	sta	a:bg1sc_shadow
@@ -165,9 +165,9 @@ loc_00BE6E:
 	jsl	f:sub_00C612
 	lda	stage_number
 	cmp	#$0004
-	bne	loc_00BEEA
+	bne	@not_stage4
 	jsl	f:sub_00C575
-loc_00BEEA:
+@not_stage4:
 	jsl	f:sub_00E369
 	jsl	f:stage_layout_init
 	stz	a:wram_168A
@@ -213,9 +213,9 @@ update_stage_frame_counters:
 stage_exit:
 	lda	stage_frame_counter
 	bit	#$0007
-	bne	loc_00BF89
+	bne	stage_frame
 	dec	a:inidisp_shadow
-	bne	loc_00BF89
+	bne	stage_frame
 	stz	a:life_transfer_disabled
 	stz	a:inidisp_shadow
 	stz	hdma_preset
@@ -227,32 +227,32 @@ stage_exit:
 
 stage_play:
 	lda	a:stage_exit_request
-	beq	loc_00BF72
+	beq	@not_exiting
 	inc	a:stage_state
 	rtl
-loc_00BF72:
+@not_exiting:
 	lda	a:stage_pause_disabled
-	bne	loc_00BF79
+	bne	@fade_in
 	stz	pause_disabled
-loc_00BF79:
+@fade_in:
 	lda	a:inidisp_shadow
 	cmp	#$000F
-	bcs	loc_00BF89
+	bcs	stage_frame
 	inc	a:inidisp_shadow
 	lda	#$0002
 	sta	pause_disabled
-loc_00BF89:
+stage_frame:
 	lda	a:p1_lives
-	bne	loc_00BF99
+	bne	@check_timer_1688
 	lda	a:p2_lives
-	bne	loc_00BF99
+	bne	@check_timer_1688
 	lda	#STAGE_STATE_EXIT
 	sta	a:stage_state
-loc_00BF99:
+@check_timer_1688:
 	lda	a:wram_1688
-	beq	loc_00BFA1
+	beq	@frame
 	dec	a:wram_1688
-loc_00BFA1:
+@frame:
 	lda	#$0FC0
 	sta	oam_ptr
 	lda	#$11C0
@@ -268,24 +268,24 @@ loc_00BFA1:
 	stz	a:wram_1504
 	stz	a:wram_1544
 	lda	a:wram_16B6
-	bne	loc_00BFD4
+	bne	@objects
 	jsl	f:sub_00CE3A
-loc_00BFD4:
+@objects:
 	lda	stage_frame_odd
-	bne	loc_00BFE2
+	bne	@odd_frame
 	jsl	f:draw_players
 	jsl	f:update_objects
-	bra	loc_00BFEA
-loc_00BFE2:
+	bra	@hide_unused_sprites
+@odd_frame:
 	jsl	f:update_objects
 	jsl	f:draw_players
-loc_00BFEA:
+@hide_unused_sprites:
 	jsl	f:update_objects_0280
 	ldy	oam_hi_ptr
 	cpy	#$11E0
-	bcs	loc_00C034
+	bcs	@sprites_done
 	ldx	oam_ptr
-loc_00BFF7:
+@loop:
 	lda	#$0080
 	sta	$00,x
 	inx
@@ -295,12 +295,12 @@ loc_00BFF7:
 	sec
 	ror	oam_hi_bits
 	lsr	oam_hi_bits
-	bcc	loc_00BFF7
+	bcc	@loop
 	lda	oam_hi_bits
 	sta	a:$0000,y
-loc_00C00C:
+@loop2:
 	cpx	#$11C0
-	bcs	loc_00C034
+	bcs	@sprites_done
 	iny
 	iny
 	lda	#$0080
@@ -318,8 +318,8 @@ loc_00C00C:
 	clc
 	adc	#$0020
 	tax
-	bra	loc_00C00C
-loc_00C034:
+	bra	@loop2
+@sprites_done:
 	jsl	f:update_shake_side_view
 	jsl	f:sub_00FDB4
 	jsl	f:update_palette_anim
@@ -350,7 +350,7 @@ tbl_stage_layout_inits:
 layout_init_stage1_checkpoint:
 	lda	#$0000
 	sta	a:wram_13FA
-	bra	loc_00C07D
+	bra	layout_init_stage1_common
 
 layout_init_stage1:
 	jsl	f:sub_01B918
@@ -358,7 +358,7 @@ layout_init_stage1:
 	sta	hdma_preset
 	lda	#$0004
 	sta	a:wram_13FA
-loc_00C07D:
+layout_init_stage1_common:
 	lda	#$00C1
 	sta	a:m7sel_shadow
 	stz	a:wram_1666
@@ -370,14 +370,14 @@ layout_init_stage3_checkpoint:
 	stz	a:wram_13FA
 	stz	a:wram_13C0
 	stz	a:wram_13D8
-	bra	loc_00C0A3
+	bra	layout_init_stage3_common
 
 layout_init_stage3:
 	lda	#$0007
 	sta	hdma_preset
 	lda	#$003C
 	sta	a:wram_08D0
-loc_00C0A3:
+layout_init_stage3_common:
 	lda	#$004A
 	sta	a:bg2sc_shadow
 	lda	#$0062
@@ -393,7 +393,7 @@ layout_init_stage4_checkpoint:
 	sta	hdma_preset
 	lda	#$0030
 	sta	a:wram_0978
-	bra	loc_00C0DE
+	bra	layout_init_stage4_common
 
 layout_init_stage4:
 	lda	#$0084
@@ -402,7 +402,7 @@ layout_init_stage4:
 	jsl	f:queue_sound
 	lda	#$0040
 	sta	a:bg1sc_shadow
-loc_00C0DE:
+layout_init_stage4_common:
 	lda	#$0002
 	sta	a:wram_16B6
 	lda	#$0064
@@ -464,9 +464,9 @@ load_stage_dp_params:
 stage_cinematic:
 	lda	a:inidisp_shadow
 	cmp	#$000F
-	bcs	loc_00C17A
+	bcs	@frame
 	inc	a:inidisp_shadow
-loc_00C17A:
+@frame:
 	lda	#$0FC0
 	sta	oam_ptr
 	lda	#$11C0
@@ -482,9 +482,9 @@ loc_00C17A:
 	jsl	f:update_objects_0280
 	ldy	oam_hi_ptr
 	cpy	#$11E0
-	bcs	loc_00C1EA
+	bcs	@sprites_done
 	ldx	oam_ptr
-loc_00C1AD:
+@loop:
 	lda	#$0080
 	sta	$00,x
 	inx
@@ -494,12 +494,12 @@ loc_00C1AD:
 	sec
 	ror	oam_hi_bits
 	lsr	oam_hi_bits
-	bcc	loc_00C1AD
+	bcc	@loop
 	lda	oam_hi_bits
 	sta	a:$0000,y
-loc_00C1C2:
+@loop2:
 	cpx	#$11C0
-	bcs	loc_00C1EA
+	bcs	@sprites_done
 	iny
 	iny
 	lda	#$0080
@@ -517,23 +517,23 @@ loc_00C1C2:
 	clc
 	adc	#$0020
 	tax
-	bra	loc_00C1C2
-loc_00C1EA:
+	bra	@loop2
+@sprites_done:
 	jsl	f:update_shake_side_view
 	jsl	f:sub_00FDB4
 	rtl
-loc_00C1F3:
+player_autopilot_off:
 	rtl
 
 apply_player_autopilot:
 	lda	a:player_autopilot_mode
-	beq	loc_00C1F3
+	beq	player_autopilot_off
 	ldy	#$0000
 	cpx	#$0200
-	beq	loc_00C204
+	beq	@player1
 	; (not executed in the CDL traces)
 	ldy	#$0002
-loc_00C204:
+@player1:
 	stz	$2C,x
 	stz	$22,x
 	phx
@@ -554,47 +554,47 @@ player_autopilot_mode3:
 
 player_autopilot_mode1:
 	lda	$12,x
-	bne	loc_00C242
+	bne	@check_state
 	lda	#$0100
 	ldy	$0A,x
 	cpy	#$007A
-	bcc	loc_00C22F
+	bcc	@store_input
 	lda	#$0200
-loc_00C22F:
+@store_input:
 	sta	$22,x
 	lda	$0A,x
 	cmp	#$0030
-	bcc	loc_00C241
+	bcc	@return
 	cmp	#$00D0
-	bcs	loc_00C241
+	bcs	@return
 	lda	button_jump
 	sta	$2C,x
-loc_00C241:
+@return:
 	rtl
-loc_00C242:
+@check_state:
 	cmp	#$0001
-	beq	loc_00C248
+	beq	@walk_to_target
 	rtl
-loc_00C248:
+@walk_to_target:
 	sec
 	lda	$0A,x
 	sbc	a:data_058CDE,y
-	bpl	loc_00C265
-	beq	loc_00C257
+	bpl	@check_left
+	beq	@stop
 	cmp	#$FFFE
-	bcc	loc_00C25F
-loc_00C257:
+	bcc	@walk_right
+@stop:
 	stz	$04,x
 	lda	#$0000
 	sta	$22,x
 	rtl
-loc_00C25F:
+@walk_right:
 	lda	#$0100
 	sta	$22,x
 	rtl
-loc_00C265:
+@check_left:
 	cmp	#$0002
-	bcc	loc_00C257
+	bcc	@stop
 	lda	#$0200
 	sta	$22,x
 	rtl
@@ -602,11 +602,11 @@ loc_00C265:
 player_autopilot_mode2:
 	lda	$12,x
 	cmp	#$0001
-	bne	loc_00C280
+	bne	@store_y
 	lda	#$0400
 	sta	$22,x
 	lda	button_jump
 	sta	$2C,x
-loc_00C280:
+@store_y:
 	sty	$04,x
 	rtl

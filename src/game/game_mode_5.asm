@@ -33,16 +33,16 @@ sound_check_fade_in:
 	php
 	lda	a:inidisp_shadow
 	bit	#$0080
-	beq	loc_04D8B0
+	beq	@check_level
 	and	#$000F
 	sta	a:inidisp_shadow
-loc_04D8B0:
+@check_level:
 	cmp	#$000F
-	bcs	loc_04D8BA
+	bcs	@faded_in
 	inc	a:inidisp_shadow
 	plp
 	rtl
-loc_04D8BA:
+@faded_in:
 	plp
 	inc	a:mode_step
 
@@ -51,9 +51,9 @@ sound_check_input:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_START
-	bne	loc_04D8EF
+	bne	@start_pressed
 	bit	#JOY_B
-	bne	loc_04D8E7
+	bne	@b_pressed
 	ldx	#$F347
 	lda	#$2400
 	jsl	f:draw_text_attr
@@ -63,11 +63,11 @@ sound_check_input:
 	jsr	a:sound_check_play
 	jsr	a:sound_check_draw_id
 	rtl
-loc_04D8E7:
+@b_pressed:
 	lda	#$0084
 	jsl	f:queue_sound
 	rtl
-loc_04D8EF:
+@start_pressed:
 	inc	a:mode_step
 
 sound_check_fade_out:
@@ -77,11 +77,11 @@ sound_check_fade_out:
 	lda	a:inidisp_shadow
 	and	#$000F
 	sta	a:inidisp_shadow
-	beq	loc_04D905
+	beq	@faded_out
 	dec	a:inidisp_shadow
 	plp
 	rtl
-loc_04D905:
+@faded_out:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
@@ -94,45 +94,45 @@ sound_check_change_id:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_DPAD
-	beq	loc_04D920
+	beq	@check_held
 	stz	a:sound_check_repeat_delay
-	bra	loc_04D945
-loc_04D920:
+	bra	@move
+@check_held:
 	lda	joy1_held
 	ora	joy2_held
 	bit	#JOY_DPAD
-	beq	loc_04D966
+	beq	@return
 	inc	a:sound_check_repeat_delay
-	bne	loc_04D934
+	bne	@check_delay
 	lda	#$0020
 	sta	a:sound_check_repeat_delay
-loc_04D934:
+@check_delay:
 	lda	a:sound_check_repeat_delay
 	cmp	#$0020
-	bcc	loc_04D966
+	bcc	@return
 	bit	#$0003
-	bne	loc_04D966
+	bne	@return
 	lda	joy1_held
 	ora	joy2_held
-loc_04D945:
+@move:
 	bit	#JOY_DOWN|JOY_RIGHT
-	bne	loc_04D957
+	bne	@next_id
 	lda	a:sound_check_id
 	dec	a
-	bpl	loc_04D953
+	bpl	@store
 	lda	#$006A
-loc_04D953:
+@store:
 	sta	a:sound_check_id
 	rts
-loc_04D957:
+@next_id:
 	lda	a:sound_check_id
 	inc	a
 	cmp	#$006B
-	bcc	loc_04D963
+	bcc	@store_next
 	lda	#$0000
-loc_04D963:
+@store_next:
 	sta	a:sound_check_id
-loc_04D966:
+@return:
 	rts
 
 sound_check_play:
@@ -140,19 +140,19 @@ sound_check_play:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_Y
-	beq	loc_04D988
+	beq	@return
 	ldx	a:sound_check_id
 	lda	f:data_1DCCE0,x
 	and	#$00FF
 	cmp	#$0060
-	bcc	loc_04D984
+	bcc	@play_sound
 	cmp	#$0074
-	bcc	loc_04D989
-loc_04D984:
+	bcc	@play_song_set
+@play_sound:
 	jsl	f:queue_sound
-loc_04D988:
+@return:
 	rts
-loc_04D989:
+@play_song_set:
 	sec
 	sbc	#$0060
 	asl	a
@@ -196,10 +196,10 @@ sound_check_draw_id:
 hex_digit_to_tile:
 	; (not executed in the CDL traces)
 	cmp	#$000A
-	bcs	loc_04D9E9
+	bcs	@letter
 	inc	a
 	rts
-loc_04D9E9:
+@letter:
 	sbc	#$000A
 	clc
 	adc	#$003C

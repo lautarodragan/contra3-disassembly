@@ -38,7 +38,7 @@ tbl_game_modes:
 
 game_mode_konami_logo:
 	lda	game_submode
-	bne	loc_00A3C1
+	bne	@running
 	ldx	#$F537
 	jsl	f:load_song_set
 	stz	a:konami_logo_step
@@ -46,22 +46,22 @@ game_mode_konami_logo:
 	lda	#$0005
 	sta	force_blank_frames
 	inc	game_submode
-loc_00A3C0:
+@return:
 	rtl
-loc_00A3C1:
+@running:
 	jsl	f:run_konami_logo
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_START
-	beq	loc_00A3D9
+	beq	@check_done
 	; (not executed in the CDL traces)
 	lda	#$0002
 	sta	force_blank_frames
 	lda	#GAME_MODE_TITLE
 	brl	set_game_mode
-loc_00A3D9:
+@check_done:
 	lda	a:konami_logo_done
-	beq	loc_00A3C0
+	beq	@return
 	lda	#GAME_MODE_OPENING
 	brl	set_game_mode
 
@@ -116,21 +116,21 @@ opening_run_cinematic:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_START
-	beq	loc_00A44B
+	beq	@no_skip
 	; (not executed in the CDL traces)
 	stz	nmi_mode
 	stz	hdma_preset
 	brl	next_game_mode
-loc_00A44B:
+@no_skip:
 	lda	#$0002
 	sta	nmi_mode
 	jsl	f:run_side_view_stage
 	lda	mode_result
-	beq	loc_00A45F
+	beq	@return
 	stz	nmi_mode
 	stz	hdma_preset
 	brl	next_submode
-loc_00A45F:
+@return:
 	rtl
 
 opening_load_title:
@@ -149,11 +149,11 @@ opening_zoom_title_logo:
 	adc	#$0020
 	sta	a:m7d_shadow
 	cmp	#$0100
-	bcc	loc_00A490
+	bcc	opening_zoom_return
 	stz	a:m7a_shadow
 	stz	a:m7d_shadow
 	brl	next_submode
-loc_00A490:
+opening_zoom_return:
 	rtl
 
 opening_zoom_title_logo_last:
@@ -166,7 +166,7 @@ opening_zoom_title_logo_last:
 	adc	#$0010
 	sta	a:m7d_shadow
 	cmp	#$0100
-	bcc	loc_00A490
+	bcc	opening_zoom_return
 	lda	#$0100
 	sta	a:m7a_shadow
 	sta	a:m7d_shadow
@@ -192,9 +192,9 @@ opening_slide_title_the:
 	sbc	#$0004
 	sta	a:title_the_x
 	cmp	#$0068
-	bmi	loc_00A4F1
+	bmi	@arrived
 	rtl
-loc_00A4F1:
+@arrived:
 	lda	#$0068
 	sta	a:title_the_x
 	lda	#$0046
@@ -208,9 +208,9 @@ opening_slide_title_alien:
 	adc	#$0004
 	sta	a:title_alien_x
 	cmp	#$0050
-	bpl	loc_00A515
+	bpl	@arrived
 	rtl
-loc_00A515:
+@arrived:
 	lda	#$0050
 	sta	a:title_alien_x
 	lda	#$0046
@@ -224,9 +224,9 @@ opening_slide_title_wars:
 	sbc	#$0004
 	sta	a:title_wars_x
 	cmp	#$0050
-	bmi	loc_00A539
+	bmi	@arrived
 	rtl
-loc_00A539:
+@arrived:
 	lda	#$0050
 	sta	a:title_wars_x
 	lda	#$0047
@@ -242,30 +242,30 @@ opening_shake_title:
 	ldy	a:title_shake
 	lda	frame_counter
 	bit	#$0002
-	beq	loc_00A569
+	beq	@store_offset
 	tya
 	eor	#$FFFF
 	inc	a
 	tay
-loc_00A569:
+@store_offset:
 	sty	a:wram_1398
 	sty	a:wram_1418
 	lda	a:title_shake
-	beq	loc_00A57F
+	beq	@to_title_menu
 	lda	frame_counter
 	bit	#$000F
-	bne	loc_00A57E
+	bne	@return
 	dec	a:title_shake
-loc_00A57E:
+@return:
 	rtl
-loc_00A57F:
+@to_title_menu:
 	lda	#$0001
 	sta	game_submode
 	brl	next_game_mode_keep_submode
 
 game_mode_title:
 	lda	game_submode
-	bne	loc_00A5B9
+	bne	@running
 	lda	#$0068
 	sta	a:title_the_x
 	lda	#$0050
@@ -281,7 +281,7 @@ game_mode_title:
 	lda	#$0001
 	sta	hdma_preset
 	brl	next_submode
-loc_00A5B9:
+@running:
 	jsl	f:run_title_menu
 	jsl	f:draw_title_word_sprites
 	lda	mode_result
@@ -311,17 +311,17 @@ title_result_none:
 
 game_mode_demo:
 	lda	game_submode
-	bne	loc_00A60D
+	bne	@running
 	php
 	rep	#$20
 	lda	a:inidisp_shadow
 	and	#$000F
 	sta	a:inidisp_shadow
-	beq	loc_00A5F7
+	beq	@faded_out
 	dec	a:inidisp_shadow
 	plp
 	rtl
-loc_00A5F7:
+@faded_out:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
@@ -330,50 +330,50 @@ loc_00A5F7:
 	sta	a:title_menu_cursor
 	jsl	f:clear_ram_1c00_1cff
 	brl	next_submode
-loc_00A60D:
+@running:
 	jsl	f:run_demo
 	lda	mode_result
-	beq	loc_00A624
+	beq	@return
 	dec	a
-	bne	loc_00A61E
+	bne	@to_title
 	lda	#GAME_MODE_KONAMI_LOGO
 	brl	set_game_mode
-loc_00A61E:
+@to_title:
 	; (not executed in the CDL traces)
 	lda	#GAME_MODE_TITLE
 	brl	set_game_mode
-loc_00A624:
+@return:
 	rtl
 
 game_mode_sound_check:
 	; (not executed in the CDL traces)
 	lda	game_submode
-	bne	loc_00A63B
+	bne	@running
 	jsl	f:reset_sound_queue
 	jsl	f:reset_video_state
 	jsl	f:clear_ram_1c00_1cff
 	stz	a:inidisp_shadow
 	brl	next_submode
-loc_00A63B:
+@running:
 	jsl	f:run_sound_check
 	lda	mode_result
-	beq	loc_00A649
+	beq	@return
 	lda	#GAME_MODE_TITLE
 	brl	set_game_mode
-loc_00A649:
+@return:
 	rtl
 
 game_mode_game_start:
 	lda	game_submode
 	dec	a
-	beq	loc_00A65F
-	bpl	loc_00A67F
+	beq	@blink
+	bpl	@fade_out
 	lda	#$0001
 	sta	stage_number
 	stz	a:stage_checkpoint
 	ldx	#$0050
 	brl	next_submode_with_timer
-loc_00A65F:
+@blink:
 	lda	wait_timer
 	and	#$0004
 	sta	text_erase
@@ -384,21 +384,21 @@ loc_00A65F:
 	lda	#$2400
 	jsl	f:draw_text_attr
 	jsl	f:tick_wait_timer
-	bne	loc_00A67E
+	bne	@return
 	brl	next_submode
-loc_00A67E:
+@return:
 	rtl
-loc_00A67F:
+@fade_out:
 	php
 	rep	#$20
 	lda	a:inidisp_shadow
 	and	#$000F
 	sta	a:inidisp_shadow
-	beq	loc_00A692
+	beq	@faded_out
 	dec	a:inidisp_shadow
 	plp
 	rtl
-loc_00A692:
+@faded_out:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
@@ -407,16 +407,16 @@ loc_00A692:
 	jsr	a:init_continues
 	lda	a:title_menu_cursor
 	cmp	#TITLE_OPTION
-	bcs	loc_00A6BA
+	bcs	@to_options
 	lda	a:stage_select_enabled
-	beq	loc_00A6B4
+	beq	@to_stage_card
 	; (not executed in the CDL traces)
 	lda	#GAME_MODE_STAGE_SELECT
 	brl	set_game_mode
-loc_00A6B4:
+@to_stage_card:
 	lda	#GAME_MODE_STAGE_CARD
 	brl	set_game_mode
-loc_00A6BA:
+@to_options:
 	lda	#GAME_MODE_OPTIONS
 	brl	set_game_mode
 
@@ -457,9 +457,9 @@ init_players:
 	lda	a:option_lives
 	sta	a:p1_lives
 	lda	a:title_menu_cursor
-	beq	loc_00A72B
+	beq	@store_p2_lives
 	lda	a:option_lives
-loc_00A72B:
+@store_p2_lives:
 	sta	a:p2_lives
 	lda	a:option_level
 	sta	difficulty
@@ -475,10 +475,10 @@ game_mode_stage_select:
 	; (not executed in the CDL traces)
 	lda	game_submode
 	dec	a
-	beq	loc_00A77C
-	bmi	loc_00A747
-	brl	loc_00A7E1
-loc_00A747:
+	beq	@fade_in
+	bmi	@init
+	brl	@fade_out
+@init:
 	jsl	f:reset_sound_queue
 	jsl	f:reset_video_state
 	lda	#$0080
@@ -498,20 +498,20 @@ loc_00A747:
 	lda	#$0100
 	sta	demo_timer
 	brl	next_submode
-loc_00A77C:
+@fade_in:
 	php
 	lda	a:inidisp_shadow
 	bit	#$0080
-	beq	loc_00A78B
+	beq	@check_level
 	and	#$000F
 	sta	a:inidisp_shadow
-loc_00A78B:
+@check_level:
 	cmp	#$000F
-	bcs	loc_00A795
+	bcs	@select
 	inc	a:inidisp_shadow
 	plp
 	rtl
-loc_00A795:
+@select:
 	plp
 	lda	stage_number
 	asl	a
@@ -521,46 +521,46 @@ loc_00A795:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_START
-	beq	loc_00A7B4
+	beq	@check_move
 	lda	#$0002
 	jsl	f:queue_sound
 	brl	next_submode
-loc_00A7B4:
+@check_move:
 	bit	#$2C00
-	bne	loc_00A7BA
+	bne	@move
 	rtl
-loc_00A7BA:
+@move:
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
 	bit	#JOY_UP
-	beq	loc_00A7D2
+	beq	@next_stage
 	dec	stage_number
-	bne	loc_00A7E0
+	bne	@return
 	lda	#$0006
 	sta	stage_number
 	rtl
-loc_00A7D2:
+@next_stage:
 	inc	stage_number
 	lda	stage_number
 	cmp	#$0007
-	bcc	loc_00A7E0
+	bcc	@return
 	lda	#$0001
 	sta	stage_number
-loc_00A7E0:
+@return:
 	rtl
-loc_00A7E1:
+@fade_out:
 	php
 	rep	#$20
 	lda	a:inidisp_shadow
 	and	#$000F
 	sta	a:inidisp_shadow
-	beq	loc_00A7F4
+	beq	@faded_out
 	dec	a:inidisp_shadow
 	plp
 	rtl
-loc_00A7F4:
+@faded_out:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
@@ -569,12 +569,12 @@ loc_00A7F4:
 game_mode_stage_card:
 	lda	game_submode
 	dec	a
-	bne	loc_00A806
-	brl	loc_00A870
-loc_00A806:
-	bmi	loc_00A80B
-	brl	loc_00A8B8
-loc_00A80B:
+	bne	@not_submode1
+	brl	@fade_in
+@not_submode1:
+	bmi	@init
+	brl	@fade_out
+@init:
 	jsl	f:reset_sound_queue
 	jsl	f:reset_video_state
 	jsl	f:clear_ram_1c00_1cff
@@ -613,20 +613,20 @@ loc_00A80B:
 	lda	#$0010
 	sta	button_stand_still
 	brl	next_submode
-loc_00A870:
+@fade_in:
 	php
 	lda	a:inidisp_shadow
 	bit	#$0080
-	beq	loc_00A87F
+	beq	@check_level
 	and	#$000F
 	sta	a:inidisp_shadow
-loc_00A87F:
+@check_level:
 	cmp	#$000F
-	bcs	loc_00A889
+	bcs	@faded_in
 	inc	a:inidisp_shadow
 	plp
 	rtl
-loc_00A889:
+@faded_in:
 	plp
 	rep	#$30
 	phb
@@ -639,25 +639,25 @@ loc_00A889:
 	mvn	#$00, #$00
 	plb
 	lda	a:stage_gfx_loaded
-	bne	loc_00A8AB
+	bne	@gfx_loaded
 	lda	stage_number
 	jsl	f:load_stage_graphics
-loc_00A8AB:
+@gfx_loaded:
 	lda	#$0002
 	sta	a:stage_gfx_loaded
 	jsl	f:load_stage_music
 	brl	next_submode
-loc_00A8B8:
+@fade_out:
 	php
 	rep	#$20
 	lda	a:inidisp_shadow
 	and	#$000F
 	sta	a:inidisp_shadow
-	beq	loc_00A8CB
+	beq	@faded_out
 	dec	a:inidisp_shadow
 	plp
 	rtl
-loc_00A8CB:
+@faded_out:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
@@ -672,17 +672,17 @@ loc_00A8CB:
 game_mode_stage_play:
 	jsl	f:run_stage_with_life_transfer
 	lda	mode_result
-	beq	loc_00A931
+	beq	@return
 	lda	a:p1_lives
 	ora	a:p2_lives
-	bne	loc_00A8FB
+	bne	@lives_left
 	jsl	f:reset_sound_queue
 	lda	#GAME_MODE_GAME_OVER
 	brl	set_game_mode
-loc_00A8FB:
+@lives_left:
 	lda	stage_number
 	cmp	#$0006
-	bcc	loc_00A92B
+	bcc	@to_stage_clear
 	lda	#$0001
 	sta	stage_number
 	stz	a:stage_checkpoint
@@ -690,10 +690,10 @@ loc_00A8FB:
 	inc	a
 	inc	a
 	cmp	#$0006
-	bcc	loc_00A91A
+	bcc	@next_loop
 	lda	#GAME_MODE_FINAL_SCORE
 	brl	set_game_mode
-loc_00A91A:
+@next_loop:
 	; (not executed in the CDL traces)
 	sta	a:option_level
 	sta	difficulty
@@ -701,26 +701,26 @@ loc_00A91A:
 	jsr	a:init_continues
 	lda	#GAME_MODE_STAGE_CARD
 	brl	set_game_mode
-loc_00A92B:
+@to_stage_clear:
 	lda	#GAME_MODE_STAGE_CLEAR
 	brl	set_game_mode
-loc_00A931:
+@return:
 	rtl
 
 game_mode_stage_clear:
 	lda	game_submode
-	bne	loc_00A945
+	bne	@running
 	jsl	f:reset_sound_queue
 	jsl	f:reset_video_state
 	jsl	f:clear_ram_1c00_1cff
 	brl	next_submode
-loc_00A945:
+@running:
 	jsl	f:run_stage_clear
 	lda	mode_result
-	beq	loc_00A953
+	beq	@return
 	lda	#GAME_MODE_STAGE_CARD
 	brl	set_game_mode
-loc_00A953:
+@return:
 	rtl
 
 game_mode_game_over:
@@ -764,25 +764,25 @@ game_over_fade_in:
 	php
 	lda	a:inidisp_shadow
 	bit	#$0080
-	beq	loc_00A9B3
+	beq	@check_level
 	and	#$000F
 	sta	a:inidisp_shadow
-loc_00A9B3:
+@check_level:
 	cmp	#$000F
-	bcs	loc_00A9BD
+	bcs	@faded_in
 	inc	a:inidisp_shadow
 	plp
 	rtl
-loc_00A9BD:
+@faded_in:
 	plp
 	lda	#$006B
 	jsl	f:queue_sound
 	dec	a:continues_left
-	bmi	loc_00A9D2
+	bmi	@no_continues
 	lda	#$0080
 	sta	mode_timer
 	brl	next_submode
-loc_00A9D2:
+@no_continues:
 	; (not executed in the CDL traces)
 	lda	#$0180
 	sta	mode_timer
@@ -792,17 +792,17 @@ loc_00A9D2:
 
 game_over_wait_continue:
 	dec	mode_timer
-	bne	loc_00A9E4
+	bne	@return
 	brl	next_game_mode
-loc_00A9E4:
+@return:
 	rtl
 
 game_over_wait_final:
 	; (not executed in the CDL traces)
 	dec	mode_timer
-	bne	loc_00A9EC
+	bne	@return
 	brl	next_submode
-loc_00A9EC:
+@return:
 	rtl
 
 game_over_fade_out:
@@ -812,15 +812,15 @@ game_over_fade_out:
 	lda	a:inidisp_shadow
 	and	#$000F
 	sta	a:inidisp_shadow
-	beq	loc_00AA00
+	beq	@faded_out
 	dec	a:inidisp_shadow
 	plp
 	rtl
-loc_00AA00:
+@faded_out:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
-	brl	loc_00AAA8
+	brl	game_over_to_title
 
 game_mode_continue:
 	lda	game_submode
@@ -845,15 +845,15 @@ continue_menu:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_START
-	beq	loc_00AA5C
+	beq	@return
 	lda	#$0002
 	jsl	f:queue_sound
 	lda	a:continue_cursor
-	beq	loc_00AA46
+	beq	@continue_chosen
 	; (not executed in the CDL traces)
 	lda	#$0003
 	brl	set_submode
-loc_00AA46:
+@continue_chosen:
 	lda	a:title_menu_cursor
 	sta	a:continue_cursor
 	lda	#$0003
@@ -861,7 +861,7 @@ loc_00AA46:
 	ldx	#$8490
 	jsl	f:draw_text
 	brl	next_submode
-loc_00AA5C:
+@return:
 	rtl
 
 continue_player_menu:
@@ -870,14 +870,14 @@ continue_player_menu:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_START
-	beq	loc_00AA7F
+	beq	@return
 	lda	#$0002
 	jsl	f:queue_sound
 	lda	a:continue_cursor
 	sta	a:title_menu_cursor
 	stz	a:continue_cursor
 	brl	next_submode
-loc_00AA7F:
+@return:
 	rtl
 
 continue_fade_out:
@@ -886,20 +886,20 @@ continue_fade_out:
 	lda	a:inidisp_shadow
 	and	#$000F
 	sta	a:inidisp_shadow
-	beq	loc_00AA93
+	beq	@faded_out
 	dec	a:inidisp_shadow
 	plp
 	rtl
-loc_00AA93:
+@faded_out:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
 	lda	a:continue_cursor
-	bne	loc_00AAA8
+	bne	game_over_to_title
 	jsr	a:init_players
 	lda	#GAME_MODE_STAGE_CARD
 	brl	set_game_mode
-loc_00AAA8:
+game_over_to_title:
 	; (not executed in the CDL traces)
 	stz	a:stage_checkpoint
 	lda	#GAME_MODE_TITLE
@@ -909,30 +909,30 @@ continue_move_cursor:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_SELECT|JOY_UP|JOY_DOWN
-	beq	loc_00AAE5
+	beq	@return
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
 	bit	#JOY_UP
-	bne	loc_00AAD8
+	bne	@move_up
 	lda	a:continue_cursor
 	inc	a
 	cmp	a:continue_option_count
-	bcc	loc_00AAD4
+	bcc	@store
 	lda	#$0000
-loc_00AAD4:
+@store:
 	sta	a:continue_cursor
 	rts
-loc_00AAD8:
+@move_up:
 	lda	a:continue_cursor
 	dec	a
-	bpl	loc_00AAE2
+	bpl	@store_up
 	lda	a:continue_option_count
 	dec	a
-loc_00AAE2:
+@store_up:
 	sta	a:continue_cursor
-loc_00AAE5:
+@return:
 	rts
 
 continue_draw_menu:
@@ -990,35 +990,35 @@ continue_draw_player_menu:
 
 game_mode_options:
 	lda	game_submode
-	bne	loc_00AB68
+	bne	@running
 	jsl	f:reset_sound_queue
 	jsl	f:reset_video_state
 	jsl	f:clear_ram_1c00_1cff
 	bra	next_submode
-loc_00AB68:
+@running:
 	jsl	f:run_options
 	lda	mode_result
-	beq	loc_00AB75
+	beq	@return
 	lda	#GAME_MODE_TITLE
 	bra	set_game_mode
-loc_00AB75:
+@return:
 	rtl
 
 game_mode_final_score:
 	lda	game_submode
-	bne	loc_00AB88
+	bne	@running
 	jsl	f:reset_sound_queue
 	jsl	f:reset_video_state
 	jsl	f:clear_ram_1c00_1cff
 	bra	next_submode
-loc_00AB88:
+@running:
 	jsl	f:run_final_score
 	lda	mode_result
-	beq	loc_00AB95
+	beq	@return
 	; (not executed in the CDL traces)
 	lda	#GAME_MODE_OPENING
 	bra	set_game_mode
-loc_00AB95:
+@return:
 	rtl
 	; CDL: not accessed
 	.byte	$A2, $80, $00
@@ -1048,9 +1048,9 @@ next_game_mode_keep_submode:
 
 tick_wait_timer:
 	lda	wait_timer
-	beq	loc_00ABBC
+	beq	@return
 	dec	wait_timer
-loc_00ABBC:
+@return:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
@@ -1082,20 +1082,20 @@ run_stage:
 	rep	#$30
 	jsr	a:update_weapon_swap
 	lda	demo_mode
-	bne	loc_00AC1B
+	bne	@run
 	lda	pause_disabled
-	bne	loc_00AC1B
+	bne	@run
 	lda	#$0000
 	ldy	a:p1_lives
-	beq	loc_00ABF7
+	beq	@check_p2
 	ora	joy1_pressed
-loc_00ABF7:
+@check_p2:
 	ldy	a:p2_lives
-	beq	loc_00ABFE
+	beq	@check_start
 	ora	joy2_pressed
-loc_00ABFE:
+@check_start:
 	bit	#JOY_START
-	beq	loc_00AC16
+	beq	@check_paused
 	lda	paused
 	eor	#$0001
 	sta	paused
@@ -1104,11 +1104,11 @@ loc_00ABFE:
 	lda	a:pause_sounds,y
 	jsl	f:queue_sound
 	jsr	a:apply_pause_dimming
-loc_00AC16:
+@check_paused:
 	lda	paused
-	beq	loc_00AC1B
+	beq	@run
 	rtl
-loc_00AC1B:
+@run:
 	lda	stage_index
 	phx
 	asl	a
@@ -1139,21 +1139,21 @@ enter_top_down_stage:
 update_weapon_swap:
 	jsr	a:update_weapon_swap_p1
 	lda	a:p2_spin
-	beq	loc_00AC5C
+	beq	@not_forced
 	lda	#$0002
 	sta	a:wram_1FC2
 	sta	a:p2_weapon_slot
 	rts
-loc_00AC5C:
+@not_forced:
 	lda	a:p2_lives
-	beq	loc_00AC71
+	beq	@apply
 	lda	joy2_pressed
 	bit	#JOY_X
-	beq	loc_00AC71
+	beq	@apply
 	lda	a:wram_1FDE
 	eor	#$0002
 	sta	a:wram_1FDE
-loc_00AC71:
+@apply:
 	lda	a:wram_1FDE
 	sta	a:wram_1FC2
 	eor	#$0002
@@ -1162,21 +1162,21 @@ loc_00AC71:
 
 update_weapon_swap_p1:
 	lda	a:p1_spin
-	beq	loc_00AC8D
+	beq	@not_forced
 	lda	#$0002
 	sta	a:wram_1F82
 	sta	a:p1_weapon_slot
 	rts
-loc_00AC8D:
+@not_forced:
 	lda	a:p1_lives
-	beq	loc_00ACA2
+	beq	@apply
 	lda	joy1_pressed
 	bit	#JOY_X
-	beq	loc_00ACA2
+	beq	@apply
 	lda	a:wram_1F9E
 	eor	#$0002
 	sta	a:wram_1F9E
-loc_00ACA2:
+@apply:
 	lda	a:wram_1F9E
 	sta	a:wram_1F82
 	eor	#$0002
@@ -1185,7 +1185,7 @@ loc_00ACA2:
 
 apply_pause_dimming:
 	lda	paused
-	beq	loc_00ACCF
+	beq	@unpause
 	lda	a:inidisp_shadow
 	sta	a:pause_saved_brightness
 	lda	a:p1_view_brightness
@@ -1196,7 +1196,7 @@ apply_pause_dimming:
 	jsr	a:dim_p1_brightness
 	jsr	a:dim_p2_brightness
 	rts
-loc_00ACCF:
+@unpause:
 	lda	a:pause_saved_brightness
 	sta	a:inidisp_shadow
 	lda	a:pause_saved_p1_brightness
@@ -1208,83 +1208,83 @@ loc_00ACCF:
 dim_screen_brightness:
 	lda	a:inidisp_shadow
 	bit	#$0080
-	bne	loc_00ACF9
+	bne	@return
 	and	#$000F
 	sec
 	sbc	#$0004
-	bpl	loc_00ACF6
+	bpl	@store
 	; (not executed in the CDL traces)
 	lda	#$0000
-loc_00ACF6:
+@store:
 	sta	a:inidisp_shadow
-loc_00ACF9:
+@return:
 	rts
 
 dim_p1_brightness:
 	lda	a:p1_view_brightness
 	bit	#$0080
-	bne	loc_00AD11
+	bne	@return
 	and	#$000F
 	sec
 	sbc	#$0004
-	bpl	loc_00AD0E
+	bpl	@store
 	lda	#$0000
-loc_00AD0E:
+@store:
 	sta	a:p1_view_brightness
-loc_00AD11:
+@return:
 	rts
 
 dim_p2_brightness:
 	lda	a:p2_view_brightness
 	bit	#$0080
-	bne	loc_00AD29
+	bne	@return
 	and	#$000F
 	sec
 	sbc	#$0004
-	bpl	loc_00AD26
+	bpl	@store
 	lda	#$0000
-loc_00AD26:
+@store:
 	sta	a:p2_view_brightness
-loc_00AD29:
+@return:
 	rts
 
 update_life_transfer:
 	lda	a:life_transfer_disabled
-	bne	loc_00AD5A
+	bne	life_transfer_return
 	lda	a:title_menu_cursor
-	beq	loc_00AD5A
+	beq	life_transfer_return
 	jsr	a:life_transfer_to_p1
 	jmp	a:life_transfer_to_p2
 
 life_transfer_to_p1:
 	lda	a:p1_lives
-	bne	loc_00AD5A
+	bne	life_transfer_return
 	; (not executed in the CDL traces)
 	lda	joy1_pressed
 	bit	#JOY_A
-	beq	loc_00AD5A
+	beq	life_transfer_return
 	lda	a:p2_lives
 	cmp	#$0002
-	bcc	loc_00AD5A
+	bcc	life_transfer_return
 	inc	a:p1_lives
 	dec	a:p2_lives
 	lda	#$0001
 	sta	a:p1_bombs
-loc_00AD5A:
+life_transfer_return:
 	rts
 life_transfer_to_p2:
 	lda	a:p2_lives
-	bne	loc_00AD7B
+	bne	@return
 	; (not executed in the CDL traces)
 	lda	joy2_pressed
 	bit	#JOY_A
-	beq	loc_00AD7B
+	beq	@return
 	lda	a:p1_lives
 	cmp	#$0002
-	bcc	loc_00AD7B
+	bcc	@return
 	inc	a:p2_lives
 	dec	a:p1_lives
 	lda	#$0001
 	sta	a:p2_bombs
-loc_00AD7B:
+@return:
 	rts

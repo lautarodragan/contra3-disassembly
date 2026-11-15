@@ -53,33 +53,33 @@ demo_init:
 
 demo_play:
 	dec	demo_timer
-	beq	loc_00ADFF
+	beq	@timed_out
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_START
-	bne	loc_00AE0B
+	bne	@start_pressed
 	jsr	a:demo_update_input
 	jsl	f:run_stage
 	lda	a:demo_record_mode
-	beq	loc_00ADFA
+	beq	@check_result
 	; (not executed in the CDL traces)
 	lda	a:demo_p1_ptr
 	cmp	#$0400
-	bcs	loc_00ADFF
+	bcs	@timed_out
 	lda	a:demo_p2_ptr
 	cmp	#$0800
-	bcs	loc_00ADFF
-loc_00ADFA:
+	bcs	@timed_out
+@check_result:
 	lda	mode_result
-	bne	loc_00ADFF
+	bne	@timed_out
 	rtl
-loc_00ADFF:
+@timed_out:
 	stz	mode_result
 	lda	#$0001
 	sta	a:demo_result
 	inc	a:mode_step
 	rtl
-loc_00AE0B:
+@start_pressed:
 	; (not executed in the CDL traces)
 	lda	#$0002
 	sta	a:demo_result
@@ -88,13 +88,13 @@ loc_00AE0B:
 
 demo_end:
 	jsl	f:fade_out_step
-	bcs	loc_00AE38
+	bcs	@return
 	lda	a:demo_index
 	inc	a
 	cmp	#$0003
-	bcc	loc_00AE27
+	bcc	@store_index
 	lda	#$0000
-loc_00AE27:
+@store_index:
 	sta	a:demo_index
 	stz	hdma_preset
 	stz	nmi_mode
@@ -102,7 +102,7 @@ loc_00AE27:
 	sta	force_blank_frames
 	lda	a:demo_result
 	sta	mode_result
-loc_00AE38:
+@return:
 	rtl
 
 demo_update_input:
@@ -117,9 +117,9 @@ demo_record_p1:
 	inc	a:demo_p1_timer
 	lda	joy1_held
 	cmp	a:demo_p1_input
-	bne	loc_00AE4F
+	bne	@input_changed
 	rts
-loc_00AE4F:
+@input_changed:
 	ldy	#$0000
 	lda	a:demo_p1_ptr
 	sta	zp_00
@@ -143,9 +143,9 @@ demo_record_p2:
 	inc	a:demo_p2_timer
 	lda	joy2_held
 	cmp	a:demo_p2_input
-	bne	loc_00AE86
+	bne	@input_changed
 	rts
-loc_00AE86:
+@input_changed:
 	ldy	#$0000
 	lda	a:demo_p2_ptr
 	sta	zp_00
@@ -171,9 +171,9 @@ demo_playback_input:
 
 demo_playback_p1:
 	lda	a:demo_p1_timer
-	bne	loc_00AEC0
+	bne	@count_down
 	jsr	a:demo_read_p1_event
-loc_00AEC0:
+@count_down:
 	dec	a:demo_p1_timer
 	beq	demo_read_p1_event
 	lda	a:demo_p1_input
@@ -205,9 +205,9 @@ demo_read_p1_event:
 	rts
 demo_playback_p2:
 	lda	a:demo_p2_timer
-	bne	loc_00AF04
+	bne	@count_down
 	jsr	a:demo_read_p2_event
-loc_00AF04:
+@count_down:
 	dec	a:demo_p2_timer
 	beq	demo_read_p2_event
 	lda	a:demo_p2_input
@@ -261,12 +261,12 @@ demo_init_players:
 	stz	a:p2_bombs
 	stz	a:p2_lives
 	lda	a:title_menu_cursor
-	beq	loc_00AF8B
+	beq	@one_player
 	lda	#$0003
 	sta	a:p2_lives
 	lda	#$0001
 	sta	a:p2_bombs
-loc_00AF8B:
+@one_player:
 	lda	#$0002
 	sta	difficulty
 	stz	a:p1_weapon_slot
@@ -307,7 +307,7 @@ demo_init_input:
 	stz	a:demo_p1_input
 	stz	a:demo_p2_input
 	lda	a:demo_record_mode
-	beq	loc_00B00F
+	beq	@playback
 	; (not executed in the CDL traces)
 	lda	#$0000
 	sta	a:demo_p1_ptr
@@ -320,8 +320,8 @@ demo_init_input:
 	sta	a:demo_p2_ptr+2
 	rep	#$20
 	.a16
-	bra	loc_00B030
-loc_00B00F:
+	bra	@return
+@playback:
 	lda	a:demo_index
 	asl	a
 	clc
@@ -335,52 +335,52 @@ loc_00B00F:
 	sta	a:demo_p2_ptr
 	lda	a:data_0584F6,y
 	sta	a:demo_p2_ptr+1
-loc_00B030:
+@return:
 	rts
 
 fade_out_step:
 	lda	stage_number
 	cmp	#$0002
-	beq	loc_00B055
+	beq	@top_down
 	cmp	#$0005
-	beq	loc_00B055
+	beq	@top_down
 	lda	a:inidisp_shadow
 	and	#$000F
 	sta	a:inidisp_shadow
-	beq	loc_00B04D
+	beq	@faded_out
 	dec	a:inidisp_shadow
 	sec
 	rtl
-loc_00B04D:
+@faded_out:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	clc
 	rtl
-loc_00B055:
+@top_down:
 	lda	a:inidisp_shadow
 	and	#$000F
 	sta	a:inidisp_shadow
-	beq	loc_00B083
+	beq	@faded_out2
 	dec	a:inidisp_shadow
 	lda	a:p1_view_brightness
 	and	#$000F
 	dec	a
-	bpl	loc_00B06F
+	bpl	@store_p1
 	; (not executed in the CDL traces)
 	lda	#$0080
-loc_00B06F:
+@store_p1:
 	sta	a:p1_view_brightness
 	lda	a:p2_view_brightness
 	and	#$000F
 	dec	a
-	bpl	loc_00B07E
+	bpl	@store_p2
 	; (not executed in the CDL traces)
 	lda	#$0080
-loc_00B07E:
+@store_p2:
 	sta	a:p2_view_brightness
 	sec
 	rtl
-loc_00B083:
+@faded_out2:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	sta	a:p1_view_brightness
@@ -487,7 +487,7 @@ sub_00B17B:
 setup_hdma_from_list:
 	ldx	a:$0000,y
 	cpx	#$FFFF
-	bcs	loc_00B1A2
+	bcs	@end_of_list
 	lda	a:$0002,y
 	sta	$00,x
 	lda	a:$0004,y
@@ -499,7 +499,7 @@ setup_hdma_from_list:
 	adc	#$0007
 	tay
 	bra	setup_hdma_from_list
-loc_00B1A2:
+@end_of_list:
 	sep	#$20
 	.a8
 	lda	a:$0002,y
@@ -542,17 +542,17 @@ title_menu_fade_in:
 	php
 	lda	a:inidisp_shadow
 	bit	#$0080
-	beq	loc_00B1F7
+	beq	@check_level
 	; (not executed in the CDL traces)
 	and	#$000F
 	sta	a:inidisp_shadow
-loc_00B1F7:
+@check_level:
 	cmp	#$000F
-	bcs	loc_00B201
+	bcs	@faded_in
 	inc	a:inidisp_shadow
 	plp
 	rtl
-loc_00B201:
+@faded_in:
 	plp
 	jsr	a:load_demo_stage_graphics
 	inc	a:mode_step
@@ -560,16 +560,16 @@ loc_00B201:
 
 title_menu_input:
 	jsl	f:title_menu_update_cursor
-	bcs	loc_00B21A
+	bcs	@start_pressed
 	dec	a:title_menu_timeout
-	bne	loc_00B21F
+	bne	@return
 	lda	#$0001
 	sta	mode_result
 	rtl
-loc_00B21A:
+@start_pressed:
 	lda	#$0002
 	sta	mode_result
-loc_00B21F:
+@return:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
@@ -585,11 +585,11 @@ title_menu_fade_out:
 	lda	a:inidisp_shadow
 	and	#$000F
 	sta	a:inidisp_shadow
-	beq	loc_00B239
+	beq	@faded_out
 	dec	a:inidisp_shadow
 	plp
 	rtl
-loc_00B239:
+@faded_out:
 	lda	#$0080
 	sta	a:inidisp_shadow
 	plp
@@ -601,7 +601,7 @@ title_menu_update_cursor:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_START
-	bne	loc_00B2C3
+	bne	title_menu_start_pressed
 	bit	#JOY_SELECT|JOY_UP|JOY_DOWN
 	beq	draw_title_menu_cursor
 	lda	#$0300
@@ -611,13 +611,13 @@ title_menu_update_cursor:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_SELECT|JOY_DOWN
-	bne	loc_00B277
+	bne	@move_down
 	dec	a:title_menu_cursor
 	bpl	draw_title_menu_cursor
 	lda	#TITLE_OPTION
 	sta	a:title_menu_cursor
 	bra	draw_title_menu_cursor
-loc_00B277:
+@move_down:
 	inc	a:title_menu_cursor
 	lda	a:title_menu_cursor
 	cmp	#TITLE_OPTION+1
@@ -651,15 +651,15 @@ draw_title_menu_cursor:
 	jsl	f:draw_text_attr
 	clc
 	rtl
-loc_00B2C3:
+title_menu_start_pressed:
 	lda	a:title_menu_cursor
 	cmp	#TITLE_OPTION
-	beq	loc_00B2D4
+	beq	@option_chosen
 	lda	#$006D
 	jsl	f:queue_sound
 	sec
 	rtl
-loc_00B2D4:
+@option_chosen:
 	lda	#$0002
 	jsl	f:queue_sound
 	sec
@@ -685,42 +685,42 @@ load_demo_stage_graphics:
 check_button_code_unused:
 	; (not executed in the CDL traces)
 	lda	a:code1_timer
-	bne	loc_00B300
+	bne	@in_progress
 	ldy	#$0000
 	sty	a:code1_progress
-	bra	loc_00B30B
-loc_00B300:
+	bra	@check_dpad
+@in_progress:
 	dec	a:code1_timer
 	ldy	a:code1_progress
 	cpy	#$0006
-	bcs	loc_00B332
-loc_00B30B:
+	bcs	@check_button
+@check_dpad:
 	lda	joy1_held
 	ora	joy2_held
 	and	#JOY_DPAD
 	cmp	a:data_0586D3,y
-	bne	loc_00B33B
+	bne	@not_entered
 	cpy	#$0000
-	bne	loc_00B322
+	bne	@next_entry
 	lda	#$0010
 	sta	a:code1_timer
-loc_00B322:
+@next_entry:
 	iny
 	iny
 	sty	a:code1_progress
 	cpy	#$0006
-	bcc	loc_00B33B
+	bcc	@not_entered
 	lda	#$000C
 	sta	a:code1_timer
-loc_00B332:
+@check_button:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_X
-	bne	loc_00B33D
-loc_00B33B:
+	bne	@entered
+@not_entered:
 	clc
 	rts
-loc_00B33D:
+@entered:
 	lda	#$003E
 	jsl	f:queue_sound
 	sec
@@ -730,42 +730,42 @@ loc_00B33D:
 check_30_lives_code:
 	; (not executed in the CDL traces)
 	lda	a:code2_timer
-	bne	loc_00B353
+	bne	@in_progress
 	ldy	#$0000
 	sty	a:code2_progress
-	bra	loc_00B35E
-loc_00B353:
+	bra	@check_dpad
+@in_progress:
 	dec	a:code2_timer
 	ldy	a:code2_progress
 	cpy	#$0006
-	bcs	loc_00B385
-loc_00B35E:
+	bcs	@check_button
+@check_dpad:
 	lda	joy1_held
 	ora	joy2_held
 	and	#JOY_DPAD
 	cmp	a:data_0586D9,y
-	bne	loc_00B38E
+	bne	@not_entered
 	cpy	#$0000
-	bne	loc_00B375
+	bne	@next_entry
 	lda	#$0010
 	sta	a:code2_timer
-loc_00B375:
+@next_entry:
 	iny
 	iny
 	sty	a:code2_progress
 	cpy	#$0006
-	bcc	loc_00B38E
+	bcc	@not_entered
 	lda	#$000C
 	sta	a:code2_timer
-loc_00B385:
+@check_button:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_START
-	bne	loc_00B390
-loc_00B38E:
+	bne	@entered
+@not_entered:
 	clc
 	rts
-loc_00B390:
+@entered:
 	lda	#$0043
 	jsl	f:queue_sound
 	lda	#$001E
@@ -777,45 +777,45 @@ loc_00B390:
 check_stage_select_code:
 	; (not executed in the CDL traces)
 	lda	a:code3_timer
-	bne	loc_00B3AC
+	bne	@in_progress
 	ldy	#$0000
 	sty	a:code3_progress
-	bra	loc_00B3B7
-loc_00B3AC:
+	bra	@check_dpad
+@in_progress:
 	dec	a:code3_timer
 	ldy	a:code3_progress
 	cpy	#$0006
-	bcs	loc_00B3DE
-loc_00B3B7:
+	bcs	@check_button
+@check_dpad:
 	lda	joy1_held
 	ora	joy2_held
 	and	#JOY_DPAD
 	cmp	a:data_0586DF,y
-	bne	loc_00B3E7
+	bne	@not_entered
 	cpy	#$0000
-	bne	loc_00B3CE
+	bne	@next_entry
 	lda	#$0010
 	sta	a:code3_timer
-loc_00B3CE:
+@next_entry:
 	iny
 	iny
 	sty	a:code3_progress
 	cpy	#$0006
-	bcc	loc_00B3E7
+	bcc	@not_entered
 	lda	#$000C
 	sta	a:code3_timer
-loc_00B3DE:
+@check_button:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#JOY_START
-	bne	loc_00B3E9
-loc_00B3E7:
+	bne	@entered
+@not_entered:
 	clc
 	rts
-loc_00B3E9:
+@entered:
 	lda	a:title_menu_cursor
 	cmp	#TITLE_OPTION
-	beq	loc_00B3E7
+	beq	@not_entered
 	lda	#$0059
 	jsl	f:queue_sound
 	lda	#$0001
@@ -877,12 +877,12 @@ draw_title_word_sprites:
 	sta	zp_1C
 	ldy	#$0000
 	jsr	a:draw_title_sprite_group
-loc_00B489:
+@loop:
 	sec
 	ror	zp_14
 	sec
 	ror	zp_14
-	bcc	loc_00B489
+	bcc	@loop
 	ldy	zp_12
 	lda	zp_14
 	sta	a:$0000,y
@@ -903,7 +903,7 @@ draw_title_sprite_group:
 	ror	zp_14
 	sec
 	ror	zp_14
-	bcc	loc_00B4C7
+	bcc	@no_flush
 	phy
 	ldy	zp_12
 	lda	zp_14
@@ -914,7 +914,7 @@ draw_title_sprite_group:
 	lda	#$8000
 	sta	zp_14
 	ply
-loc_00B4C7:
+@no_flush:
 	pla
 	sep	#$20
 	.a8
@@ -984,7 +984,7 @@ konami_logo_init:
 konami_logo_sweep:
 	lda	frame_counter
 	and	#$0001
-	bne	loc_00B573
+	bne	@scroll
 	lda	a:konami_logo_count1
 	asl	a
 	tay
@@ -995,27 +995,27 @@ konami_logo_sweep:
 	lda	a:konami_logo_count1
 	and	#$0003
 	sta	a:konami_logo_count1
-loc_00B573:
+@scroll:
 	lda	a:wram_1380
 	sec
 	sbc	#$0008
 	sta	a:wram_1380
-	bne	loc_00B585
+	bne	@return
 	stz	a:wram_13C0
 	inc	a:konami_logo_step
-loc_00B585:
+@return:
 	rtl
 
 konami_logo_cycle_line:
 	lda	frame_counter
 	and	#$0003
-	bne	loc_00B59B
+	bne	@return
 	ldx	#$2264
 	jsr	a:rotate_palette_row
 	dec	a:konami_logo_count2
-	bne	loc_00B59B
+	bne	@return
 	inc	a:konami_logo_step
-loc_00B59B:
+@return:
 	rtl
 
 konami_logo_scroll_in:
@@ -1024,8 +1024,8 @@ konami_logo_scroll_in:
 	sbc	#$0002
 	sta	a:wram_1398
 	and	#$0100
-	bne	loc_00B5D2
-loc_00B5AB:
+	bne	konami_logo_step_return
+konami_logo_next_step:
 	lda	#$0001
 	sta	a:konami_logo_timer
 	inc	a:konami_logo_step
@@ -1041,46 +1041,46 @@ konami_logo_start_shine:
 	lda	#$0072
 	jsl	f:queue_sound
 	inc	a:konami_logo_step
-loc_00B5D2:
+konami_logo_step_return:
 	rtl
 
 konami_logo_shine:
 	lda	a:konami_logo_count1
-	beq	loc_00B5ED
+	beq	@check_count2
 	cmp	#$000A
-	bne	loc_00B5E4
+	bne	@rotate_row1
 	ldy	#$87EA
 	jsl	f:sub_009982
-loc_00B5E4:
+@rotate_row1:
 	dec	a:konami_logo_count1
 	ldx	#$222C
 	jsr	a:rotate_palette_row
-loc_00B5ED:
+@check_count2:
 	lda	a:konami_logo_count2
-	bmi	loc_00B602
+	bmi	@check_timer
 	ldx	#$224C
 	jsr	a:rotate_palette_row
 	dec	a:konami_logo_count2
 	lda	#$0003
 	sta	a:konami_logo_timer
 	rtl
-loc_00B602:
+@check_timer:
 	lda	a:konami_logo_timer
-	beq	loc_00B612
+	beq	@check_count3
 	dec	a:konami_logo_timer
-	bne	loc_00B627
+	bne	@return
 	ldy	#$87D8
 	jmp	a:sub_009982
-loc_00B612:
+@check_count3:
 	lda	a:konami_logo_count3
-	bmi	loc_00B5AB
+	bmi	konami_logo_next_step
 	lda	frame_counter
 	and	#$0001
-	bne	loc_00B627
+	bne	@return
 	dec	a:konami_logo_count3
 	ldx	#$220A
 	jsr	a:rotate_palette_row
-loc_00B627:
+@return:
 	rtl
 
 konami_logo_whiten:
@@ -1091,25 +1091,25 @@ konami_logo_whiten:
 	sta	f:$7E0000,x
 	sta	f:$7E0002,x
 	cmp	#$7FFF
-	bne	loc_00B649
+	bne	@return
 	lda	#$0100
 	sta	a:konami_logo_timer
 	inc	a:konami_logo_step
-loc_00B649:
+@return:
 	rtl
 
 konami_logo_wait:
 	dec	a:konami_logo_timer
-	bne	loc_00B652
+	bne	@return
 	inc	a:konami_logo_step
-loc_00B652:
+@return:
 	rtl
 
 konami_logo_fade_out:
 	dec	a:inidisp_shadow
-	bne	loc_00B65B
+	bne	@return
 	inc	a:konami_logo_done
-loc_00B65B:
+@return:
 	rtl
 
 rotate_palette_row:
@@ -1117,14 +1117,14 @@ rotate_palette_row:
 	pha
 	inx
 	inx
-loc_00B663:
+@loop:
 	lda	f:$7E0000,x
 	sta	f:$7DFFFE,x
 	inx
 	inx
 	txa
 	and	#$001F
-	bne	loc_00B663
+	bne	@loop
 	pla
 	sta	f:$7DFFFE,x
 	rts

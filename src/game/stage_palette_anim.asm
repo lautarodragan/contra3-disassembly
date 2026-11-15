@@ -13,32 +13,32 @@ start_palette_anim:
 apply_palette_anim_once:
 	ldy	a:palette_anim_id
 	stz	a:palette_anim_id
-	bra	loc_01F6C7
+	bra	palette_anim_apply_first
 
 update_palette_anim:
 	ldy	a:palette_anim_id
-	beq	loc_01F6E4
+	beq	palette_anim_return
 	dec	a:palette_anim_timer
-	bpl	loc_01F6D2
+	bpl	palette_anim_check_second
 	lda	#$0030
 	sta	a:palette_anim_timer
-loc_01F6C7:
+palette_anim_apply_first:
 	phx
 	lda	a:data_05CD1B,y
 	tay
 	jsl	f:sub_009982
 	plx
 	rtl
-loc_01F6D2:
+palette_anim_check_second:
 	lda	a:palette_anim_timer
 	cmp	#$0010
-	bne	loc_01F6E4
+	bne	palette_anim_return
 	phx
 	lda	a:data_05CD21,y
 	tay
 	jsl	f:sub_009982
 	plx
-loc_01F6E4:
+palette_anim_return:
 	rtl
 	; CDL: not accessed
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
