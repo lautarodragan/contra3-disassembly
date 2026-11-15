@@ -3130,7 +3130,8 @@ data_05E6D8:
 data_05E6DE:
 	; CDL: read by sub_02FC51; partly not accessed
 	.byte	$80, $00, $60, $00, $40, $00
-data_05E6E4:
+; addresses of the 40 shot slots ($0AC0 + n * SHOT_SIZE), searched by find_free_shot_slot
+shot_slot_addresses:
 	; CDL: read by find_free_shot_slot
 	.byte	$C0, $0A, $E0, $0A, $00, $0B, $20, $0B, $40, $0B, $60, $0B, $80, $0B, $A0, $0B
 	.byte	$C0, $0B, $E0, $0B, $00, $0C, $20, $0C, $40, $0C, $60, $0C, $80, $0C, $A0, $0C
@@ -3139,13 +3140,16 @@ data_05E6E4:
 	.byte	$E0, $0C, $00, $0D, $20, $0D, $40, $0D, $60, $0D, $80, $0D, $A0, $0D, $C0, $0D
 	.byte	$E0, $0D, $00, $0E, $20, $0E, $40, $0E, $60, $0E, $80, $0E, $A0, $0E, $C0, $0E
 	.byte	$E0, $0E, $00, $0F, $20, $0F, $40, $0F, $60, $0F, $80, $0F, $A0, $0F
-data_05E734:
+; shot type of the sparks of an ending firework, by its +$14 (0-3)
+firework_spark_types:
 	; CDL: read by spawn_firework_sparks
 	.byte	$17, $00, $18, $00, $19, $00, $1A, $00
-data_05E73C:
+; last spark index of an ending firework, by its +$14 (16 sparks each)
+firework_spark_counts:
 	; CDL: read by spawn_firework_sparks
 	.byte	$0F, $00, $0F, $00, $0F, $00, $0F, $00
-data_05E744:
+; speeds of radial_spark_velocity (bytes), by spark direction / 8
+radial_spark_speeds:
 	; CDL: read by radial_spark_velocity
 	.byte	$60, $00, $80, $00
 data_05E748:
@@ -3386,7 +3390,8 @@ data_05ECD0:
 data_05ECD9:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
 	.byte	$00, $01, $00, $30, $47, $D1, $0F, $FF, $FF
-data_05ECE2:
+; OBJ_HP of winged_alien by difficulty (easy, normal, hard)
+winged_alien_hp:
 	; CDL: read by winged_alien_state_01; partly not accessed
 	.byte	$80, $00, $A0, $00, $C0, $00
 data_05ECE8:
@@ -3414,7 +3419,8 @@ data_05ED34:
 	.byte	$3A, $ED, $46, $ED, $52, $ED, $00, $B0, $00, $B0, $00, $B0, $C0, $BD, $E0, $BD
 	.byte	$00, $BE, $80, $BC, $A0, $BC, $C0, $BC, $E0, $BC, $00, $BD, $20, $BD, $00, $B0
 	.byte	$20, $BE, $40, $BE, $00, $B0, $60, $BE, $80, $BE
-data_05ED5E:
+; OBJ_HP of face_boss by difficulty (easy, normal, hard)
+face_boss_hp:
 	; CDL: read by face_boss_state_00; partly not accessed
 	.byte	$80, $00, $00, $01, $80, $01
 data_05ED64:
@@ -3458,7 +3464,8 @@ data_05EDDC:
 	.byte	$C0, $B3, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $60, $C2
 	.byte	$A0, $BE, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0
 	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0
-data_05EE14:
+; OBJ_HP of floor_mouth by difficulty (easy, normal, hard; a 4th word unused)
+floor_mouth_hp:
 	; CDL: read by floor_mouth_state_00; partly not accessed
 	.byte	$20, $00, $28, $00, $30, $00, $38, $00
 data_05EE1C:
@@ -3467,7 +3474,8 @@ data_05EE1C:
 data_05EE28:
 	; CDL: read by floor_mouth_state_01; partly not accessed
 	.byte	$78, $00, $5A, $00, $3C, $00, $3C, $00
-data_05EE30:
+; OBJ_HP of floor_mouth_bug by difficulty (easy, normal, hard; a 4th word unused)
+floor_mouth_bug_hp:
 	; CDL: read by floor_mouth_bug_state_00; partly not accessed
 	.byte	$01, $00, $01, $00, $02, $00, $03, $00
 data_05EE38:
@@ -3483,7 +3491,8 @@ data_05EE4A:
 	; CDL: read by update_objects, floor_mouth_bug_state_00; partly not accessed
 	.byte	$01, $00, $FF, $FF, $FF, $FF, $07, $00, $76, $C3, $76, $C3, $07, $00, $7B, $C3
 	.byte	$7B, $C3, $50, $EE
-data_05EE5E:
+; OBJ_HP of wall_worm_larva by difficulty (easy, normal, hard)
+wall_worm_larva_hp:
 	; CDL: read by wall_worm_larva_state_00
 	.byte	$04, $00, $08, $00, $10, $00
 data_05EE64:
@@ -3492,7 +3501,8 @@ data_05EE64:
 	.byte	$03, $00, $A2, $C3, $A2, $C3, $03, $00, $B3, $C3, $B3, $C3, $03, $00, $C4, $C3
 	.byte	$C4, $C3, $03, $00, $D5, $C3, $D5, $C3, $03, $00, $E6, $C3, $E6, $C3, $03, $00
 	.byte	$F7, $C3, $F7, $C3, $68, $EE
-data_05EE9A:
+; OBJ_HP of face_boss_larva by difficulty (easy, normal, hard)
+face_boss_larva_hp:
 	; CDL: read by face_boss_larva_state_00; partly not accessed
 	.byte	$02, $00, $04, $00, $08, $00
 data_05EEA0:
@@ -3522,7 +3532,8 @@ data_05EEBE:
 	.byte	$04, $00, $29, $C3, $29, $C3, $04, $00, $18, $C3, $18, $C3, $C2, $EE, $04, $00
 	.byte	$43, $C3, $43, $C3, $04, $00, $54, $C3, $54, $C3, $04, $00, $65, $C3, $65, $C3
 	.byte	$04, $00, $54, $C3, $54, $C3, $DC, $EE, $00, $00, $F8, $FF
-data_05EEFA:
+; OBJ_HP of heart_boss by difficulty (easy, normal; hard = first word of data_05EEFE, $0180)
+heart_boss_hp:
 	; CDL: read by heart_boss_state_00
 	.byte	$80, $00, $00, $01
 data_05EEFE:
@@ -3550,7 +3561,8 @@ data_05EF66:
 data_05EF6E:
 	; CDL: read by sub_04B1C3
 	.byte	$00, $00, $90, $4C, $98, $4C, $90, $4E, $98, $4E
-data_05EF78:
+; OBJ_HP of heart_boss_bug by difficulty (easy, normal, hard)
+heart_boss_bug_hp:
 	; CDL: read by heart_boss_bug_state_00
 	.byte	$20, $00, $40, $00, $80, $00
 data_05EF7E:
@@ -3568,7 +3580,8 @@ data_05EFC6:
 data_05EFCA:
 	; CDL: read by sub_04B2C1
 	.byte	$F0, $FF, $0C, $00
-data_05EFCE:
+; OBJ_HP of wall_worm by difficulty (easy, normal, hard)
+wall_worm_hp:
 	; CDL: read by wall_worm_state_00
 	.byte	$40, $00, $80, $00, $00, $01
 data_05EFD4:
@@ -3634,7 +3647,8 @@ data_05F08A:
 data_05F0C6:
 	; CDL: read by update_cave_beast_fireball
 	.byte	$82, $AF, $87, $AF, $8C, $AF, $91, $AF
-data_05F0CE:
+; OBJ_HP of face_boss_side_head by difficulty (easy, normal, hard)
+face_boss_side_head_hp:
 	; CDL: read by face_boss_side_head_state_00; partly not accessed
 	.byte	$80, $00, $C0, $00, $00, $01
 data_05F0D4:
@@ -3768,7 +3782,8 @@ data_05F23A:
 data_05F260:
 	; CDL: read by update_lightning_pylon
 	.byte	$78, $00, $60, $00, $68, $00, $5C, $00, $50, $00, $44, $00
-data_05F26C:
+; OBJ_HP of lightning_pylon by difficulty: easy $40, normal $60; hard reads the next word, $7FFF
+lightning_pylon_hp:
 	; CDL: read by update_objects, update_lightning_pylon, update_enemy_type_80; partly not accessed
 	.byte	$40, $00, $60, $00, $FF, $7F, $C0, $59, $00, $50, $00, $50, $01, $00, $D9, $AF
 	.byte	$00, $32, $04, $00, $A5, $AE, $00, $3E, $78, $F2
@@ -3880,7 +3895,8 @@ data_05F5D0:
 data_05F5EE:
 	; CDL: read by spawn_ending_crowd
 	.byte	$C0, $03, $00, $05, $C0, $04, $40, $04, $00, $04, $80, $03, $00, $03, $40, $03
-data_05F5FE:
+; number of crowd members spawned by spawn_ending_crowd, by difficulty (6, 7, 8)
+ending_crowd_counts:
 	; CDL: read by update_objects, spawn_ending_crowd; partly not accessed
 	.byte	$06, $00, $07, $00, $08, $00, $10, $00, $E9, $D3, $E9, $D3, $10, $00, $22, $D4
 	.byte	$22, $D4, $04, $F6, $0C, $00, $63, $D4, $91, $D4, $0E, $00, $74, $D4, $A2, $D4
@@ -4160,7 +4176,8 @@ data_05FF8E:
 data_05FF93:
 	; CDL: read by sub_1DC498
 	.byte	$FF, $FF, $01, $00, $01, $00, $FF, $FF
-data_05FF9B:
+; OBJ_HP of brain_boss by difficulty (easy, normal, hard)
+brain_boss_hp:
 	; CDL: read by brain_boss_state_00; partly not accessed
 	.byte	$01, $04, $56, $42, $32, $75
 data_05FFA1:

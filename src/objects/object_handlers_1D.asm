@@ -1921,7 +1921,7 @@ loc_1DBE6F:
 ; Object type $6F, $8A. Stage 6 final boss: the giant brain (type $8A, slot
 ; $0900); its attacks are the brain_boss_* types. Type $6F uses the same
 ; handler but was not seen in the emulator. Initial HP by difficulty:
-; $0401/$4256/$7532 (data_05FF9B), halved in state 6 when at least $100.
+; $0401/$4256/$7532 (brain_boss_hp), halved in state 6 when at least $100.
 update_brain_boss:
 	lda	a:wram_1644
 	bmi	loc_1DBE80
@@ -2004,7 +2004,7 @@ brain_boss_state_00:
 	sta	OBJ_FLAGS,x
 	lda	#$0040
 	sta	OBJ_TIMER,x
-	lda	a:data_05FF9B,y
+	lda	a:brain_boss_hp,y
 	sta	OBJ_HP,x
 	lda	#$0038
 	sta	OBJ_HITBOX_W,x

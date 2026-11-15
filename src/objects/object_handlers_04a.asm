@@ -3537,7 +3537,7 @@ loc_049C0B:
 	rts
 
 ; Object type $5E. Stage 6, vertical section: the winged skeletal alien with a
-; segmented tail. HP by difficulty: 128/160/192 (data_05ECE2).
+; segmented tail. HP by difficulty: 128/160/192 (winged_alien_hp).
 update_winged_alien:
 	ldy	OBJ_SAVED_ATTR,x
 	beq	loc_049C1A
@@ -3587,7 +3587,7 @@ winged_alien_state_01:
 	rtl
 loc_049C61:
 	ldy	difficulty
-	lda	a:data_05ECE2,y
+	lda	a:winged_alien_hp,y
 	sta	OBJ_HP,x
 	jsr	a:sub_04A0A7
 	stz	OBJ_X_VEL_SUB,x
@@ -4648,7 +4648,7 @@ loc_04A40A:
 
 ; Object type $5F. Stage 6: the giant face with two side heads on necks
 ; (face_boss_side_head, face_boss_neck); spits face_boss_larva. HP by
-; difficulty: 128/256/384 (data_05ED5E).
+; difficulty: 128/256/384 (face_boss_hp).
 update_face_boss:
 	lda	#$0030
 	jsl	f:sub_04AA0D
@@ -4678,7 +4678,7 @@ tbl_face_boss_states:
 
 face_boss_state_00:
 	ldy	difficulty
-	lda	a:data_05ED5E,y
+	lda	a:face_boss_hp,y
 	sta	OBJ_HP,x
 	lda	#$004A
 	sta	a:bg2sc_shadow
@@ -5342,7 +5342,7 @@ loc_04AA18:
 	rtl
 
 ; Object type $61. Stage 6: toothed mouths in the floor that release
-; floor_mouth_bug. HP by difficulty: 32/40/48 (data_05EE14).
+; floor_mouth_bug. HP by difficulty: 32/40/48 (floor_mouth_hp).
 update_floor_mouth:
 	lda	OBJ_HP,x
 	bpl	loc_04AA24
@@ -5381,7 +5381,7 @@ floor_mouth_state_00:
 	lda	#$001F
 	sta	OBJ_FLAGS,x
 	ldy	difficulty
-	lda	a:data_05EE14,y
+	lda	a:floor_mouth_hp,y
 	sta	OBJ_HP,x
 	lda	#$0020
 	sta	OBJ_HITBOX_W,x
@@ -5578,7 +5578,7 @@ sub_04ABA3:
 	rts
 
 ; Object type $62. Stage 6: bug released by floor_mouth. HP by difficulty:
-; 1/1/2 (data_05EE30).
+; 1/1/2 (floor_mouth_bug_hp).
 update_floor_mouth_bug:
 	lda	OBJ_HP,x
 	bpl	loc_04ABC6
@@ -5610,7 +5610,7 @@ floor_mouth_bug_state_00:
 	lda	#$3600
 	sta	OBJ_ATTR,x
 	ldy	difficulty
-	lda	a:data_05EE30,y
+	lda	a:floor_mouth_bug_hp,y
 	sta	OBJ_HP,x
 	lda	#$0010
 	sta	OBJ_HITBOX_W,x
@@ -5748,7 +5748,7 @@ loc_04ACEC:
 	rtl
 
 ; Object type $63. Stage 6: larva spat by wall_worm (states shared with
-; face_boss_larva). HP by difficulty: 4/8/16 (data_05EE5E).
+; face_boss_larva). HP by difficulty: 4/8/16 (wall_worm_larva_hp).
 update_wall_worm_larva:
 	lda	a:wram_0912
 	cmp	#$0003
@@ -5779,7 +5779,7 @@ wall_worm_larva_state_00:
 	lda	#$3400
 	sta	OBJ_ATTR,x
 	ldy	difficulty
-	lda	a:data_05EE5E,y
+	lda	a:wall_worm_larva_hp,y
 	sta	OBJ_HP,x
 	lda	#$0014
 	sta	OBJ_HITBOX_W,x
@@ -5874,7 +5874,7 @@ loc_04ADBE:
 	bra	loc_04ADBA
 
 ; Object type $21. Stage 6: larva spat by face_boss's central mouth; crawls
-; toward a player. HP by difficulty: 2/4/8 (data_05EE9A).
+; toward a player. HP by difficulty: 2/4/8 (face_boss_larva_hp).
 update_face_boss_larva:
 	lda	a:wram_0906
 	bpl	loc_04ADCE
@@ -5904,7 +5904,7 @@ face_boss_larva_state_00:
 	lda	#$3400
 	sta	OBJ_ATTR,x
 	ldy	difficulty
-	lda	a:data_05EE9A,y
+	lda	a:face_boss_larva_hp,y
 	sta	OBJ_HP,x
 	lda	#$0014
 	sta	OBJ_HITBOX_W,x
@@ -6190,7 +6190,7 @@ enemy_type_68_state_05:
 	rtl
 
 ; Object type $58. Stage 6: the giant heart with tendrils (second boss of the
-; stage). HP by difficulty: 128/256/384 (data_05EEFA).
+; stage). HP by difficulty: 128/256/384 (heart_boss_hp).
 update_heart_boss:
 	lda	#$0060
 	jsl	f:sub_04AA0D
@@ -6230,7 +6230,7 @@ tbl_heart_boss_states:
 
 heart_boss_state_00:
 	ldy	difficulty
-	lda	a:data_05EEFA,y
+	lda	a:heart_boss_hp,y
 	sta	OBJ_HP,x
 	lda	#$0049
 	sta	a:bg2sc_shadow
@@ -6440,7 +6440,7 @@ loc_04B1EE:
 	rts
 
 ; Object type $67. Stage 6, heart_boss: crawling bugs. HP by difficulty:
-; 32/64/128 (data_05EF78).
+; 32/64/128 (heart_boss_bug_hp).
 update_heart_boss_bug:
 	lda	a:wram_0912
 	cmp	#$0003
@@ -6467,7 +6467,7 @@ tbl_heart_boss_bug_states:
 
 heart_boss_bug_state_00:
 	ldy	difficulty
-	lda	a:data_05EF78,y
+	lda	a:heart_boss_bug_hp,y
 	sta	OBJ_HP,x
 	stz	OBJ_X_SUB,x
 	stz	OBJ_Y_SUB,x
@@ -6619,7 +6619,7 @@ sub_04B32B:
 	jml	f:sub_00FE76
 
 ; Object type $5B. Stage 6: the giant worm that bursts out of the wall at the
-; start of the stage. HP by difficulty: 64/128/256 (data_05EFCE).
+; start of the stage. HP by difficulty: 64/128/256 (wall_worm_hp).
 update_wall_worm:
 	lda	OBJ_HP,x
 	bpl	loc_04B33A
@@ -6642,7 +6642,7 @@ tbl_wall_worm_states:
 
 wall_worm_state_00:
 	ldy	difficulty
-	lda	a:data_05EFCE,y
+	lda	a:wall_worm_hp,y
 	sta	OBJ_HP,x
 	stz	$34,x
 	stz	$36,x
@@ -8032,7 +8032,7 @@ loc_04BE23:
 	rtl
 
 ; Object type $75. Stage 6, face_boss: the two side heads that reach out on
-; necks. HP by difficulty: 128/192/256 (data_05F0CE).
+; necks. HP by difficulty: 128/192/256 (face_boss_side_head_hp).
 update_face_boss_side_head:
 	lda	OBJ_HP,x
 	bpl	loc_04BE2B
@@ -8061,7 +8061,7 @@ tbl_face_boss_side_head_states:
 
 face_boss_side_head_state_00:
 	ldy	difficulty
-	lda	a:data_05F0CE,y
+	lda	a:face_boss_side_head_hp,y
 	sta	OBJ_HP,x
 	stz	OBJ_FLAGS,x
 	lda	#$C49F
@@ -10053,7 +10053,7 @@ sub_04CE28:
 	rts
 
 ; Object type $7A. Stage 4, under the alien airship: hanging emitters that
-; drop lightning_bolt. HP by difficulty: 64/96/$7FFF (data_05F26C).
+; drop lightning_bolt. HP by difficulty: 64/96/$7FFF (lightning_pylon_hp).
 update_lightning_pylon:
 	jsr	a:scroll_with_airship
 	lda	OBJ_HP,x
@@ -10089,7 +10089,7 @@ loc_04CE80:
 	sta	OBJ_HITBOX_H,x
 	stz	OBJ_TIMER,x
 	ldy	difficulty
-	lda	a:data_05F26C,y
+	lda	a:lightning_pylon_hp,y
 	sta	OBJ_HP,x
 	rtl
 loc_04CE9F:

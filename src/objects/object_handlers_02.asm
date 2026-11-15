@@ -48,7 +48,7 @@ loc_02FD12:
 	txa
 	asl	a
 	tay
-	lda	a:data_05E6E4,y
+	lda	a:shot_slot_addresses,y
 	tay
 	lda	a:$0010,y
 	beq	loc_02FD27
@@ -123,7 +123,7 @@ loc_02FD76:
 	and	#$0003
 	asl	a
 	tay
-	lda	a:data_05E734,y
+	lda	a:firework_spark_types,y
 	ldy	zp_02
 	sta	a:$0010,y
 	lda	zp_00
@@ -148,7 +148,7 @@ loc_02FDB5:
 	and	#$0003
 	asl	a
 	tay
-	lda	a:data_05E73C,y
+	lda	a:firework_spark_counts,y
 	cmp	zp_00
 	bcs	loc_02FD76
 	rts
@@ -383,7 +383,7 @@ radial_spark_velocity:
 	lsr	a
 	asl	a
 	tay
-	lda	a:data_05E744,y
+	lda	a:radial_spark_speeds,y
 	and	#$00FF
 	sta	zp_00
 	tay

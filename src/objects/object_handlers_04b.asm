@@ -47,7 +47,7 @@ loc_04E222:
 	inc	zp_00
 	lda	zp_00
 	ldy	difficulty
-	cmp	a:data_05F5FE,y
+	cmp	a:ending_crowd_counts,y
 	bcc	loc_04E222
 	ply
 	plx
