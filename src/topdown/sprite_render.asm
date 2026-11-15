@@ -562,14 +562,14 @@ loc_03E4D9:
 	jsr	a:write_map_view_p2_marker
 	jsr	a:draw_map_view_targets
 	lda	#$F000
-loc_03E4E2:
+@loop:
 	sta	a:$0000,y
 	iny
 	iny
 	iny
 	iny
 	cpy	#$11C0
-	bcc	loc_03E4E2
+	bcc	@loop
 	rtl
 
 map_view_player_position:
@@ -749,9 +749,9 @@ draw_map_view_targets:
 	; (not executed in the CDL traces)
 	jsr	a:get_target_marker_attr
 	ldx	#$0AC0
-loc_03E613:
+@loop:
 	lda	$10,x
-	beq	loc_03E656
+	beq	@next
 	lda	$0A,x
 	and	#$03FF
 	sta	a:WRDIVL
@@ -787,13 +787,13 @@ loc_03E613:
 	adc	a:RDDIVL
 	sta	zp_02
 	jsr	a:write_target_marker
-loc_03E656:
+@next:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0D40
-	bcc	loc_03E613
+	bcc	@loop
 	rts
 
 write_target_marker:
@@ -838,14 +838,14 @@ loc_03E6A6:
 	jsr	a:draw_intro_target_markers
 loc_03E6B2:
 	lda	#$F000
-loc_03E6B5:
+@loop:
 	sta	a:$0000,y
 	iny
 	iny
 	iny
 	iny
 	cpy	#$11C0
-	bcc	loc_03E6B5
+	bcc	@loop
 	rtl
 
 ; Player 1's start-point cursor (blinks once chosen).
@@ -1102,7 +1102,7 @@ loc_03E87B:
 
 draw_intro_banner_sprites:
 	ldx	#$0014
-loc_03E87F:
+@loop:
 	lda	#$0008
 	sta	a:$0001,y
 	lda	a:data_05E796,x
@@ -1119,15 +1119,15 @@ loc_03E87F:
 	iny
 	dex
 	dex
-	bne	loc_03E87F
+	bne	@loop
 	rts
 
 draw_intro_target_markers:
 	jsr	a:get_target_marker_attr
 	ldx	#$0AC0
-loc_03E8A4:
+@loop:
 	lda	$10,x
-	beq	loc_03E8E7
+	beq	@next
 	lda	$0A,x
 	and	#$03FF
 	sta	a:WRDIVL
@@ -1163,13 +1163,13 @@ loc_03E8A4:
 	adc	a:RDDIVL
 	sta	zp_02
 	jsr	a:write_target_marker
-loc_03E8E7:
+@next:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0D40
-	bcc	loc_03E8A4
+	bcc	@loop
 	rts
 
 get_target_marker_attr:
@@ -1493,20 +1493,20 @@ loc_03EB39:
 	adc	#$0020
 	tax
 	cpx	#$0980
-	bcs	loc_03EB47
+	bcs	@return
 	brl	loc_03EAC2
-loc_03EB47:
+@return:
 	rts
 
 draw_td_items:
 	ldx	#$0980
-loc_03EB4B:
+@loop:
 	lda	$00,x
-	beq	loc_03EB66
+	beq	@next
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcs	loc_03EB66
+	bcs	@next
 	lda	$02,x
 	ora	#$0100
 	sta	zp_06
@@ -1514,35 +1514,35 @@ loc_03EB4B:
 	phx
 	jsr	a:draw_td_item_metasprite
 	plx
-loc_03EB66:
+@next:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0AC0
-	bcc	loc_03EB4B
+	bcc	@loop
 	rts
 
 ; Ends the first OAM section: hides the entries left up to $10C0.
 end_small_sprites:
 	lda	zp_14
-loc_03EB74:
+@loop:
 	lsr	a
-	bcc	loc_03EB74
+	bcc	@loop
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$10C0
-	bcs	loc_03EB8E
+	bcs	@return
 	lda	#$F000
-loc_03EB83:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$10C0
-	bcc	loc_03EB83
-loc_03EB8E:
+	bcc	@loop2
+@return:
 	rts
 
 ; Enemies ($0D40-$0EBF): metasprite by type and relative angle, and their
@@ -1643,23 +1643,23 @@ loc_03EC34:
 	brl	loc_03EBB3
 loc_03EC46:
 	lda	zp_14
-loc_03EC48:
+@loop:
 	lsr	a
-	bcc	loc_03EC48
+	bcc	@loop
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$1120
-	bcs	loc_03EC62
+	bcs	@return
 	lda	#$F000
-loc_03EC57:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$1120
-	bcc	loc_03EC57
-loc_03EC62:
+	bcc	@loop2
+@return:
 	rts
 
 ; Players ($0EC0, $0F00), like draw_enemies; their screen positions in +$B0/+$B4.
@@ -1756,23 +1756,23 @@ loc_03ED04:
 	brl	loc_03EC77
 loc_03ED16:
 	lda	zp_14
-loc_03ED18:
+@loop:
 	lsr	a
-	bcc	loc_03ED18
+	bcc	@loop
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$11A0
-	bcs	loc_03ED32
+	bcs	@return
 	lda	#$F000
-loc_03ED27:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$11A0
-	bcc	loc_03ED27
-loc_03ED32:
+	bcc	@loop2
+@return:
 	rts
 
 draw_stage2_boss_cannon:
@@ -1859,24 +1859,24 @@ loc_03EDCF:
 	sta	$2E,x
 loc_03EDD6:
 	lda	zp_14
-loc_03EDD8:
+@loop:
 	lsr	a
-	bcc	loc_03EDD8
+	bcc	@loop
 	ora	#$AAAA
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$10D0
-	bcs	loc_03EDF5
+	bcs	@return
 	lda	#$F000
-loc_03EDEA:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$10D0
-	bcc	loc_03EDEA
-loc_03EDF5:
+	bcc	@loop2
+@return:
 	rts
 
 draw_players_stage2_boss:
@@ -1958,23 +1958,23 @@ loc_03EE7B:
 	brl	loc_03EE0A
 loc_03EE8D:
 	lda	zp_14
-loc_03EE8F:
+@loop:
 	lsr	a
-	bcc	loc_03EE8F
+	bcc	@loop
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$1100
-	bcs	loc_03EEA9
+	bcs	@return
 	lda	#$F000
-loc_03EE9E:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$1100
-	bcc	loc_03EE9E
-loc_03EEA9:
+	bcc	@loop2
+@return:
 	rts
 
 draw_stage2_boss_arena:
@@ -2128,24 +2128,24 @@ loc_03EFD5:
 	dex
 	bne	loc_03EF73
 	lda	zp_14
-loc_03EFDB:
+@loop:
 	lsr	a
-	bcc	loc_03EFDB
+	bcc	@loop
 	ora	#$AAAA
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$1170
-	bcs	loc_03EFF8
+	bcs	@return
 	lda	#$F000
-loc_03EFED:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$1170
-	bcc	loc_03EFED
-loc_03EFF8:
+	bcc	@loop2
+@return:
 	rts
 
 ; Writes the metasprite at Y to OAM at screen zp_00/zp_02 (+screen shake),
@@ -2460,23 +2460,23 @@ draw_stage5_boss_claw_section:
 	jsr	a:draw_stage5_boss_claw
 loc_03F219:
 	lda	zp_14
-loc_03F21B:
+@loop:
 	lsr	a
-	bcc	loc_03F21B
+	bcc	@loop
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$10E0
-	bcs	loc_03F235
+	bcs	@return
 	lda	#$F000
-loc_03F22A:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$10E0
-	bcc	loc_03F22A
-loc_03F235:
+	bcc	@loop2
+@return:
 	rts
 
 draw_stage5_boss_claw:
@@ -2556,9 +2556,9 @@ loc_03F2BC:
 	adc	#$0040
 	tax
 	cpx	#$0BC0
-	bcs	loc_03F2CE
+	bcs	@return
 	brl	loc_03F23B
-loc_03F2CE:
+@return:
 	rts
 
 is_p1_view_falling_2:
@@ -2675,24 +2675,24 @@ loc_03F384:
 	brl	loc_03F307
 loc_03F392:
 	lda	zp_14
-loc_03F394:
+@loop:
 	lsr	a
-	bcc	loc_03F394
+	bcc	@loop
 	ora	#$AAAA
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$1130
-	bcs	loc_03F3B1
+	bcs	@return
 	lda	#$F000
-loc_03F3A6:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$1130
-	bcc	loc_03F3A6
-loc_03F3B1:
+	bcc	@loop2
+@return:
 	rts
 ; Sprites of player 2's view (2P-A, odd frames).
 draw_p2_view_sprites:
@@ -2993,20 +2993,20 @@ loc_03F5D3:
 	adc	#$0020
 	tax
 	cpx	#$0980
-	bcs	loc_03F5E1
+	bcs	@return
 	brl	loc_03F55C
-loc_03F5E1:
+@return:
 	rts
 
 draw_td_items_p2:
 	ldx	#$0980
-loc_03F5E5:
+@loop:
 	lda	$00,x
-	beq	loc_03F600
+	beq	@next
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcs	loc_03F600
+	bcs	@next
 	lda	$02,x
 	ora	#$0100
 	sta	zp_06
@@ -3014,34 +3014,34 @@ loc_03F5E5:
 	phx
 	jsr	a:draw_td_item_metasprite_p2
 	plx
-loc_03F600:
+@next:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0AC0
-	bcc	loc_03F5E5
+	bcc	@loop
 	rts
 
 end_small_sprites_p2:
 	lda	zp_14
-loc_03F60E:
+@loop:
 	lsr	a
-	bcc	loc_03F60E
+	bcc	@loop
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$10C0
-	bcs	loc_03F628
+	bcs	@return
 	lda	#$F000
-loc_03F61D:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$10C0
-	bcc	loc_03F61D
-loc_03F628:
+	bcc	@loop2
+@return:
 	rts
 
 draw_enemies_p2:
@@ -3140,23 +3140,23 @@ loc_03F6CE:
 	brl	loc_03F64D
 loc_03F6E0:
 	lda	zp_14
-loc_03F6E2:
+@loop:
 	lsr	a
-	bcc	loc_03F6E2
+	bcc	@loop
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$1180
-	bcs	loc_03F6FC
+	bcs	@return
 	lda	#$F000
-loc_03F6F1:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$1180
-	bcc	loc_03F6F1
-loc_03F6FC:
+	bcc	@loop2
+@return:
 	rts
 
 draw_topdown_players_p2:
@@ -3252,23 +3252,23 @@ loc_03F79E:
 	brl	loc_03F711
 loc_03F7B0:
 	lda	zp_14
-loc_03F7B2:
+@loop:
 	lsr	a
-	bcc	loc_03F7B2
+	bcc	@loop
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$11C0
-	bcs	loc_03F7CC
+	bcs	@return
 	lda	#$F000
-loc_03F7C1:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$11C0
-	bcc	loc_03F7C1
-loc_03F7CC:
+	bcc	@loop2
+@return:
 	rts
 
 draw_stage2_boss_cannon_p2:
@@ -3355,24 +3355,24 @@ loc_03F869:
 	sta	$2E,x
 loc_03F870:
 	lda	zp_14
-loc_03F872:
+@loop:
 	lsr	a
-	bcc	loc_03F872
+	bcc	@loop
 	ora	#$AAAA
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$10E0
-	bcs	loc_03F88F
+	bcs	@return
 	lda	#$F000
-loc_03F884:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$10E0
-	bcc	loc_03F884
-loc_03F88F:
+	bcc	@loop2
+@return:
 	rts
 
 draw_players_stage2_boss_p2:
@@ -3454,23 +3454,23 @@ loc_03F915:
 	brl	loc_03F8A4
 loc_03F927:
 	lda	zp_14
-loc_03F929:
+@loop:
 	lsr	a
-	bcc	loc_03F929
+	bcc	@loop
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$1120
-	bcs	loc_03F943
+	bcs	@return
 	lda	#$F000
-loc_03F938:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$1120
-	bcc	loc_03F938
-loc_03F943:
+	bcc	@loop2
+@return:
 	rts
 
 draw_stage2_boss_arena_p2:
@@ -3624,24 +3624,24 @@ loc_03FA6F:
 	dex
 	bne	loc_03FA0D
 	lda	zp_14
-loc_03FA75:
+@loop:
 	lsr	a
-	bcc	loc_03FA75
+	bcc	@loop
 	ora	#$AAAA
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$11C0
-	bcs	loc_03FA92
+	bcs	@return
 	lda	#$F000
-loc_03FA87:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$11C0
-	bcc	loc_03FA87
-loc_03FA92:
+	bcc	@loop2
+@return:
 	rts
 
 draw_topdown_metasprite_p2:
@@ -3954,23 +3954,23 @@ draw_stage5_boss_claw_section_p2:
 	jsr	a:draw_stage5_boss_claw_p2
 loc_03FCB3:
 	lda	zp_14
-loc_03FCB5:
+@loop:
 	lsr	a
-	bcc	loc_03FCB5
+	bcc	@loop
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$1100
-	bcs	loc_03FCCF
+	bcs	@return
 	lda	#$F000
-loc_03FCC4:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$1100
-	bcc	loc_03FCC4
-loc_03FCCF:
+	bcc	@loop2
+@return:
 	rts
 
 draw_stage5_boss_claw_p2:
@@ -4051,9 +4051,9 @@ loc_03FD56:
 	adc	#$0040
 	tax
 	cpx	#$0BC0
-	bcs	loc_03FD68
+	bcs	@return
 	brl	loc_03FCD5
-loc_03FD68:
+@return:
 	rts
 
 is_p2_view_falling_2:
@@ -4168,23 +4168,23 @@ loc_03FE1E:
 	brl	loc_03FDA1
 loc_03FE2C:
 	lda	zp_14
-loc_03FE2E:
+@loop:
 	lsr	a
-	bcc	loc_03FE2E
+	bcc	@loop
 	ora	#$AAAA
 	sta	(zp_12)
 	ldx	zp_10
 	cpx	#$1160
-	bcs	loc_03FE4B
+	bcs	@return
 	lda	#$F000
-loc_03FE40:
+@loop2:
 	sta	$00,x
 	inx
 	inx
 	inx
 	inx
 	cpx	#$1160
-	bcc	loc_03FE40
-loc_03FE4B:
+	bcc	@loop2
+@return:
 	rts
 	; The rest of the bank is free: filled with $FF by the linker (contra3.cfg).

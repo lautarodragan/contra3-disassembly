@@ -7,14 +7,14 @@
 ; Runs the two smart bomb objects ($0F40 player 1, $0F80 player 2).
 td_update_bombs:
 	ldx	#$0F40
-loc_02E662:
+@loop:
 	jsr	a:td_update_bomb
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0FC0
-	bcc	loc_02E662
+	bcc	@loop
 	rtl
 
 ; Smart bomb X (type 1, started by td_check_smart_bomb): grows its radius (+$14)
@@ -1314,9 +1314,9 @@ loc_02F052:
 
 stage5_boss_state_5:
 	jsr	a:stage5_boss_check_arm_out
-	bne	loc_02F05F
+	bne	@return
 	brl	loc_02EFF1
-loc_02F05F:
+@return:
 	rtl
 loc_02F060:
 	lda	#$0006
@@ -1521,13 +1521,13 @@ stage5_boss_palette_step_0:
 stage5_boss_palette_step_1:
 	lda	a:td_boss_state
 	cmp	#$0008
-	bcs	loc_02F1EB
+	bcs	@return
 	ldy	difficulty
 	lda	a:stage5_boss_hp,y
 	lsr	a
 	cmp	$06,x
 	bcs	loc_02F1EC
-loc_02F1EB:
+@return:
 	rts
 loc_02F1EC:
 	lda	#$0008
@@ -1637,7 +1637,7 @@ stage5_boss_spit_step_2:
 	cmp	#$0020
 	bcs	loc_02F2DC
 	bit	#$0003
-	bne	loc_02F2DB
+	bne	@return
 	lsr	a
 	and	#$000E
 	tay
@@ -1647,7 +1647,7 @@ stage5_boss_spit_step_2:
 	sta	a:$0014,y
 	tya
 	jsr	a:stage5_boss_spawn_spit
-loc_02F2DB:
+@return:
 	rts
 loc_02F2DC:
 	lda	#$0000
@@ -1685,9 +1685,9 @@ loc_02F306:
 
 stage5_boss_spit_step_4:
 	dec	a:stage5_boss_spit_timer
-	bpl	loc_02F335
+	bpl	@return
 	brl	loc_02F279
-loc_02F335:
+@return:
 	rts
 
 stage5_boss_spawn_spit:
@@ -1970,9 +1970,9 @@ loc_02F575:
 stage5_boss_claw_state_4:
 	lda	a:wram_0AE4
 	cmp	#$0010
-	bne	loc_02F58A
+	bne	@return
 	jsl	f:stage5_boss_claw_fire
-loc_02F58A:
+@return:
 	rtl
 loc_02F58B:
 	lda	#$0005
@@ -1992,9 +1992,9 @@ stage5_boss_claw_state_5:
 	jsr	a:stage5_boss_arm_follow_trail
 	lda	$3A,x
 	cmp	#$1900
-	bcs	loc_02F5B5
+	bcs	@return
 	brl	clear_topdown_slot
-loc_02F5B5:
+@return:
 	rtl
 loc_02F5B6:
 	lda	#$0006
@@ -2150,12 +2150,12 @@ stage5_boss_arm_segment_state_0:
 stage5_boss_arm_segment_state_1:
 	lda	a:wram_0B52
 	cmp	#$0002
-	bcc	loc_02F6D5
+	bcc	@return
 	lda	$3A,x
 	cmp	#$18E0
 	beq	loc_02F6D6
 	jsr	a:stage5_boss_arm_follow_trail
-loc_02F6D5:
+@return:
 	rtl
 loc_02F6D6:
 	lda	#$B000
@@ -2394,9 +2394,9 @@ loc_02F85C:
 stage5_boss_claw_fire:
 	lda	$2E,x
 	bit	#$0003
-	beq	loc_02F8D3
+	beq	@return
 	jsl	f:td_find_free_enemy_shot_slot
-	bcs	loc_02F8D3
+	bcs	@return
 	lda	#TDS_HOMING_ORB
 	sta	a:$0010,y
 	lda	#$0000
@@ -2434,7 +2434,7 @@ stage5_boss_claw_fire:
 	clc
 	adc	#$0EC0
 	sta	a:$0014,y
-loc_02F8D3:
+@return:
 	rtl
 
 ; TDMT_NEST, stage 5 target: a nest in the sand; when a player is near it
@@ -2535,11 +2535,11 @@ loc_02F96C:
 
 td_nest_state_4:
 	dec	$24,x
-	bpl	loc_02F989
+	bpl	@return
 	lda	#$0040
 	sta	$24,x
 	brl	loc_02F903
-loc_02F989:
+@return:
 	rtl
 loc_02F98A:
 	lda	#$0030
@@ -2692,11 +2692,11 @@ loc_02FA82:
 
 gun_hatch_state_4:
 	dec	$24,x
-	bpl	loc_02FA9F
+	bpl	@return
 	lda	#$0040
 	sta	$24,x
 	brl	loc_02FA25
-loc_02FA9F:
+@return:
 	rtl
 loc_02FAA0:
 	lda	#$0030
@@ -2777,9 +2777,9 @@ loc_02FB0E:
 
 gun_hatch_spin_state_2:
 	dec	$24,x
-	bne	loc_02FB32
+	bne	@return
 	brl	loc_02FA66
-loc_02FB32:
+@return:
 	rtl
 
 ; TDMT_GUN_HATCH_SWEEP, stage 2 target: as TDMT_GUN_HATCH_AIM with a
@@ -2828,9 +2828,9 @@ loc_02FB64:
 
 gun_hatch_sweep_state_2:
 	dec	$24,x
-	bne	loc_02FB7F
+	bne	@return
 	brl	loc_02FA66
-loc_02FB7F:
+@return:
 	rtl
 
 ; TDMT_GUN_HATCH_NO_FIRE, stage 2 target (HARD sets): opens only while the
@@ -2888,9 +2888,9 @@ loc_02FBB1:
 gun_hatch_no_fire_state_2:
 	; (not executed in the CDL traces)
 	dec	$24,x
-	bne	loc_02FBDB
+	bne	@return
 	brl	loc_02FBDC
-loc_02FBDB:
+@return:
 	rtl
 loc_02FBDC:
 	lda	#$0059
@@ -2960,9 +2960,9 @@ loc_02FC25:
 
 gun_hatch_behind_state_2:
 	dec	$24,x
-	bne	loc_02FC58
+	bne	@return
 	brl	loc_02FC59
-loc_02FC58:
+@return:
 	rtl
 loc_02FC59:
 	lda	#$0059

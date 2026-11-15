@@ -85,12 +85,12 @@ stage2_state_setup:
 stage2_state_intro:
 	jsl	f:animate_topdown_palettes
 	jsr	a:update_topdown_intro
-	bcc	loc_028096
+	bcc	@return
 	jsl	f:init_topdown_views
 	lda	#$0080
 	sta	a:topdown_timer
 	inc	a:topdown_state
-loc_028096:
+@return:
 	rtl
 
 ; State 3: play. Map view (Select), players, objects, views; when every
@@ -115,9 +115,9 @@ loc_02809D:
 	jsl	f:td_run_collisions
 	jsr	a:update_topdown_fade
 	jsr	a:check_topdown_game_over
-	bcs	loc_0280D8
+	bcs	@return
 	jsr	a:check_targets_destroyed
-loc_0280D8:
+@return:
 	rtl
 
 ; Carry set when neither player has lives left: fades out and
@@ -211,9 +211,9 @@ stage2_state_boss:
 loc_028199:
 	jsr	a:update_topdown_fade
 	jsr	a:check_topdown_game_over
-	bcs	loc_0281A4
+	bcs	@return
 	jsr	a:update_stage2_boss_end
-loc_0281A4:
+@return:
 	rtl
 
 ; Steps after the stage 2 boss: wait for its defeat, delay, fade, exit.
@@ -282,12 +282,12 @@ stage5_state_setup:
 stage5_state_intro:
 	jsl	f:animate_topdown_palettes
 	jsr	a:update_topdown_intro
-	bcc	loc_02822E
+	bcc	@return
 	jsl	f:init_topdown_views
 	lda	#$0080
 	sta	a:topdown_timer
 	inc	a:topdown_state
-loc_02822E:
+@return:
 	rtl
 
 ; State 3 of stage 5 (see stage2_state_play).
@@ -311,9 +311,9 @@ loc_028235:
 	jsl	f:td_run_collisions
 	jsr	a:update_topdown_fade
 	jsr	a:check_topdown_game_over
-	bcs	loc_028270
+	bcs	@return
 	jsr	a:check_targets_destroyed
-loc_028270:
+@return:
 	rtl
 
 ; State 4 of stage 5 (see stage2_state_boss_setup).
@@ -352,9 +352,9 @@ stage5_state_boss:
 loc_0282D1:
 	jsr	a:update_topdown_fade
 	jsr	a:check_topdown_game_over
-	bcs	loc_0282DC
+	bcs	@return
 	jsr	a:update_stage5_boss_end
-loc_0282DC:
+@return:
 	rtl
 
 ; Steps after the stage 5 boss (see update_stage2_boss_end).
@@ -888,14 +888,14 @@ loc_0286B7:
 	; (not executed in the CDL traces)
 	lda	a:p1_start_chosen
 	and	a:p2_start_chosen
-	bne	loc_0286CD
+	bne	@return
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#$5000
 	bne	loc_0286E8
 	bit	#$0F00
 	bne	loc_0286CE
-loc_0286CD:
+@return:
 	rts
 loc_0286CE:
 	pha
@@ -958,15 +958,15 @@ loc_02873F:
 	jsr	a:move_p2_start_cursor
 loc_028742:
 	lda	a:p1_lives
-	beq	loc_028758
+	beq	@return
 	lda	a:p1_start_chosen
-	bne	loc_028758
+	bne	@return
 	lda	joy1_pressed
 	bit	#$5000
 	bne	loc_028773
 	bit	#$0F00
 	bne	loc_028759
-loc_028758:
+@return:
 	rts
 loc_028759:
 	pha
@@ -1031,15 +1031,15 @@ loc_0287C2:
 ; Joypad 2 moves player 2's start cursor.
 move_p2_start_cursor:
 	lda	a:p2_lives
-	beq	loc_0287DC
+	beq	@return
 	lda	a:p2_start_chosen
-	bne	loc_0287DC
+	bne	@return
 	lda	joy2_pressed
 	bit	#$5000
 	bne	loc_0287F7
 	bit	#$0F00
 	bne	loc_0287DD
-loc_0287DC:
+@return:
 	rts
 loc_0287DD:
 	pha
@@ -1726,9 +1726,9 @@ update_topdown_fade:
 loc_028D51:
 	lda	a:p2_view_brightness
 	cmp	#$000F
-	bcs	loc_028D5C
+	bcs	@return
 	inc	a:p2_view_brightness
-loc_028D5C:
+@return:
 	rts
 loc_028D5D:
 	lda	stage_frame_counter
@@ -1759,7 +1759,7 @@ loc_028D85:
 	sta	zp_FA
 	ldy	#$0000
 	ldx	#$0AC0
-loc_028D91:
+@loop:
 	lda	(zp_FA),y
 	sta	$10,x
 	stz	$12,x
@@ -1778,14 +1778,14 @@ loc_028D91:
 	iny
 	iny
 	cpy	#$000A
-	bcc	loc_028D91
+	bcc	@loop
 	rtl
 
 ; Spawns the stage 2 boss objects (10 slots from $0AC0).
 spawn_stage2_boss:
 	ldy	#$0000
 	ldx	#$0AC0
-loc_028DBF:
+@loop:
 	stz	$12,x
 	lda	a:data_05CE30,y
 	sta	$10,x
@@ -1800,7 +1800,7 @@ loc_028DBF:
 	iny
 	iny
 	cpy	#$0014
-	bcc	loc_028DBF
+	bcc	@loop
 	rtl
 
 ; Spawns stage 5's five targets.
@@ -1815,7 +1815,7 @@ loc_028DE7:
 	sta	zp_FA
 	ldy	#$0000
 	ldx	#$0AC0
-loc_028DF3:
+@loop:
 	lda	(zp_FA),y
 	sta	$10,x
 	stz	$12,x
@@ -1834,7 +1834,7 @@ loc_028DF3:
 	iny
 	iny
 	cpy	#$000A
-	bcc	loc_028DF3
+	bcc	@loop
 	rtl
 
 ; Spawns the stage 5 boss object.

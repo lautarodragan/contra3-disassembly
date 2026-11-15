@@ -112,14 +112,14 @@ td_player_state_inactive:
 	stz	a:$10CC,x
 	stz	$12,x
 	lda	a:title_menu_cursor
-	beq	loc_028F0C
+	beq	@return
 	; (not executed in the CDL traces)
 	dec	a
 	bne	loc_028F0D
 	lda	a:$10F4,x
 	beq	loc_028F0D
 	dec	a:$10F4,x
-loc_028F0C:
+@return:
 	rtl
 loc_028F0D:
 	; (not executed in the CDL traces)
@@ -383,9 +383,9 @@ loc_0290E1:
 loc_0290E7:
 	lda	a:$0642,x
 	and	#$00FF
-	beq	loc_0290F2
+	beq	@return
 	dec	a:$0642,x
-loc_0290F2:
+@return:
 	rts
 
 ; +$0646 counts the frames fire is held (0 when newly pressed); the weapons fire on some of them.
@@ -490,19 +490,19 @@ loc_0291A4:
 td_check_smart_bomb:
 	lda	a:$066E,x
 	bit	button_bomb
-	beq	loc_0291CA
+	beq	@return
 	lda	a:$10CC,x
-	beq	loc_0291CA
+	beq	@return
 	lda	a:$0090,x
 	dec	a
-	beq	loc_0291CA
+	beq	@return
 	lda	#$005A
 	jsl	f:queue_sound
 	dec	a:$10CC,x
 	lda	#$0001
 	sta	a:$0090,x
 	stz	a:$0092,x
-loc_0291CA:
+@return:
 	rts
 
 ; State 5 (B): a jump of 8 frames; the player is drawn bigger, enemy shots
@@ -554,10 +554,10 @@ loc_029223:
 	tay
 	lda	a:data_05D15E,y
 	cmp	$20,x
-	beq	loc_029232
+	beq	@return
 	sta	$20,x
 	stz	$22,x
-loc_029232:
+@return:
 	rtl
 
 ; State 1: standing.
@@ -584,10 +584,10 @@ loc_029256:
 	ldy	a:$10DE,x
 	lda	a:data_05D166,y
 	cmp	$20,x
-	beq	loc_029264
+	beq	@return
 	sta	$20,x
 	stz	$22,x
-loc_029264:
+@return:
 	rtl
 
 ; State 2: standing and firing.
@@ -616,10 +616,10 @@ loc_029288:
 	tay
 	lda	a:data_05D16A,y
 	cmp	$20,x
-	beq	loc_02929C
+	beq	@return
 	sta	$20,x
 	stz	$22,x
-loc_02929C:
+@return:
 	rtl
 
 ; State 6: both turn buttons held (fire then spins, state 7).
@@ -663,10 +663,10 @@ td_set_turn_buttons_anim:
 loc_0292E6:
 	lda	#$0005
 	cmp	$20,x
-	beq	loc_0292F1
+	beq	@return
 	sta	$20,x
 	stz	$22,x
-loc_0292F1:
+@return:
 	rtl
 
 ; State 7: L+R+fire: spins 8 units a frame firing both weapons sideways.
@@ -714,10 +714,10 @@ td_set_spin_fire_anim:
 loc_029349:
 	lda	#$0006
 	cmp	$20,x
-	beq	loc_029354
+	beq	@return
 	sta	$20,x
 	stz	$22,x
-loc_029354:
+@return:
 	rts
 
 ; State 3: walking (D-pad, relative to the view).
@@ -799,10 +799,10 @@ loc_0293F5:
 	tay
 	lda	a:data_05D172,y
 	cmp	$20,x
-	beq	loc_029404
+	beq	@return
 	sta	$20,x
 	stz	$22,x
-loc_029404:
+@return:
 	rtl
 
 td_spin_dying_player:
@@ -922,10 +922,10 @@ loc_0294CB:
 	tay
 	lda	a:data_05D18C,y
 	cmp	$20,x
-	beq	loc_0294DA
+	beq	@return
 	sta	$20,x
 	stz	$22,x
-loc_0294DA:
+@return:
 	rts
 
 td_spin_falling_player:
@@ -1071,14 +1071,14 @@ td_keep_players_together:
 	lda	a:title_menu_cursor
 	dec	a
 	dec	a
-	bne	loc_0295E2
+	bne	@return
 	; (not executed in the CDL traces)
 	jsr	a:td_get_other_player
 	lda	a:$0012,y
-	beq	loc_0295E2
+	beq	@return
 	jsr	a:td_pull_towards_other_player_x
 	jsr	a:td_pull_towards_other_player_y
-loc_0295E2:
+@return:
 	rts
 
 td_pull_towards_other_player_x:
@@ -1143,10 +1143,10 @@ loc_029632:
 	tay
 	lda	a:data_05D194,y
 	cmp	$20,x
-	beq	loc_029647
+	beq	@return
 	sta	$20,x
 	stz	$22,x
-loc_029647:
+@return:
 	rts
 
 ; L/R turn the player (and its view) by the turning speed.
@@ -1300,10 +1300,10 @@ td_get_muzzle_position:
 fire_td_default:
 	lda	a:$0646,x
 	lsr	a
-	bcs	loc_029750
+	bcs	@return
 	jsl	f:td_find_free_shot_slot
 	bcc	loc_029751
-loc_029750:
+@return:
 	rtl
 loc_029751:
 	lda	a:$0646,x
@@ -1341,7 +1341,7 @@ loc_029785:
 loc_02979A:
 	lda	#$0005
 	sta	zp_18
-loc_02979F:
+@loop:
 	lda	#$0000
 	sta	a:$0012,y
 	lda	#TDS_SPREAD
@@ -1364,19 +1364,19 @@ loc_02979F:
 	and	#$00FF
 	sta	a:$0004,y
 	dec	zp_18
-	beq	loc_0297D7
+	beq	@return
 	jsl	f:td_find_free_shot_slot
-	bcc	loc_02979F
-loc_0297D7:
+	bcc	@loop
+@return:
 	rtl
 
 fire_td_homing:
 	lda	a:$0646,x
 	and	#$0003
-	bne	loc_0297E6
+	bne	@return
 	jsl	f:td_find_free_shot_slot
 	bcc	loc_0297E7
-loc_0297E6:
+@return:
 	rtl
 loc_0297E7:
 	lda	#$0008
@@ -1442,19 +1442,19 @@ loc_029858:
 td_play_flame_sound:
 	lda	a:$0646,x
 	and	#$000F
-	bne	loc_02987A
+	bne	@return
 	lda	#$000A
 	jsl	f:queue_sound
-loc_02987A:
+@return:
 	rts
 
 fire_td_crush:
 	lda	a:$0646,x
 	and	#$0001
-	bne	loc_029889
+	bne	@return
 	jsl	f:td_find_three_shot_slots
 	bcc	loc_02988A
-loc_029889:
+@return:
 	rtl
 loc_02988A:
 	lda	#$0007
@@ -1511,10 +1511,10 @@ loc_0298F6:
 	sta	zp_FA
 loc_0298F8:
 	lda	a:$0010,y
-	bne	loc_0298FF
+	bne	@next
 	clc
 	rtl
-loc_0298FF:
+@next:
 	tya
 	clc
 	adc	#$0020
@@ -1549,13 +1549,13 @@ loc_029934:
 loc_029936:
 	lda	a:$0010,y
 	cmp	#$0007
-	bne	loc_029948
+	bne	@next
 	lda	a:$0012,y
 	cmp	#$000E
-	bne	loc_029948
+	bne	@next
 	clc
 	rtl
-loc_029948:
+@next:
 	tya
 	clc
 	adc	#$0020
@@ -1590,23 +1590,23 @@ loc_02997D:
 loc_02997F:
 	phx
 	ldx	#$0006
-loc_029983:
+@loop:
 	lda	a:$0010,y
-	bne	loc_029991
+	bne	@next
 	dex
 	dex
 	sty	$00,x
-	bne	loc_029991
+	bne	@next
 	clc
 	plx
 	rtl
-loc_029991:
+@next:
 	tya
 	clc
 	adc	#$0020
 	tay
 	cpy	zp_FA
-	bcc	loc_029983
+	bcc	@loop
 	plx
 	rtl
 
@@ -1643,12 +1643,12 @@ loc_0299C3:
 loc_0299CE:
 	ldx	#$0DC0
 	jsr	a:td_place_enemy_near_player
-	bcs	loc_0299DF
+	bcs	@return
 	lda	#TDT_CENTIPEDE
 	sta	$10,x
 	stz	$00,x
 	stz	$2E,x
-loc_0299DF:
+@return:
 	rtl
 
 ; Stage 5 enemy generator (as spawn_stage2_enemies, type $0C).
@@ -1682,18 +1682,18 @@ loc_029A06:
 loc_029A11:
 	ldx	#$0DC0
 	jsr	a:td_place_enemy_near_player
-	bcs	loc_029A22
+	bcs	@return
 	lda	#TDT_BUG_CENTIPEDE
 	sta	$10,x
 	stz	$00,x
 	stz	$2E,x
-loc_029A22:
+@return:
 	rtl
 
 ; Enemy X at a random offset from a player (td_pick_spawn_player).
 td_place_enemy_near_player:
 	jsr	a:td_pick_spawn_player
-	bcs	loc_029A48
+	bcs	@return
 	lda	rng_lo
 	and	#$00FF
 	asl	a
@@ -1709,7 +1709,7 @@ td_place_enemy_near_player:
 	lda	#$2000
 	sta	$02,x
 	jsl	f:td_enemy_tile_collision
-loc_029A48:
+@return:
 	rts
 
 ; zp_FC/zp_FE = position of a living player (random in 2P); carry set if none.
@@ -1902,18 +1902,18 @@ td_fill_trail_buffer:
 td_find_free_enemy_slot_any:
 	; (not executed in the CDL traces)
 	ldx	#$0D40
-loc_029B65:
+@loop:
 	lda	$10,x
-	bne	loc_029B6B
+	bne	@next
 	clc
 	rtl
-loc_029B6B:
+@next:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0EC0
-	bcc	loc_029B65
+	bcc	@loop
 	rtl
 
 ; Y = the enemy slot a map object lets its enemy out into: $0D40 when player
@@ -1941,37 +1941,37 @@ loc_029B92:
 ; X = a free slot in $0DC0-$0EBF; carry set when none.
 td_find_free_enemy_slot:
 	ldx	#$0DC0
-loc_029B97:
+@loop:
 	lda	$10,x
-	bne	loc_029B9D
+	bne	@next
 	clc
 	rtl
-loc_029B9D:
+@next:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0EC0
-	bcc	loc_029B97
+	bcc	@loop
 	rtl
 
 ; Carry set when a slot of $0DC0-$0EBF is in use.
 td_check_enemies_alive:
 	phx
 	ldx	#$0DC0
-loc_029BAD:
+@loop:
 	lda	$10,x
-	beq	loc_029BB4
+	beq	@next
 	plx
 	sec
 	rtl
-loc_029BB4:
+@next:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0EC0
-	bcc	loc_029BAD
+	bcc	@loop
 	plx
 	clc
 	rtl
@@ -1979,35 +1979,35 @@ loc_029BB4:
 ; Y = a free enemy shot slot ($0300-$047F); carry set when none.
 td_find_free_enemy_shot_slot:
 	ldy	#$0300
-loc_029BC5:
+@loop:
 	lda	a:$0010,y
-	bne	loc_029BCC
+	bne	@next
 	clc
 	rtl
-loc_029BCC:
+@next:
 	tya
 	clc
 	adc	#$0020
 	tay
 	cpy	#$0480
-	bcc	loc_029BC5
+	bcc	@loop
 	rtl
 
 ; Y = a free item/effect slot ($0980-$0ABF); carry set when none.
 td_find_free_item_slot:
 	ldy	#$0980
-loc_029BDB:
+@loop:
 	lda	a:$0010,y
-	bne	loc_029BE2
+	bne	@next
 	clc
 	rtl
-loc_029BE2:
+@next:
 	tya
 	clc
 	adc	#$0040
 	tay
 	cpy	#$0AC0
-	bcc	loc_029BDB
+	bcc	@loop
 	rtl
 
 ; Hit flash of a boss drawn in the Mode 7 layer: when +$2E bit 6 (hit) is
@@ -2136,11 +2136,11 @@ td_update_enemies:
 	ldx	#$0D40
 loc_029CA6:
 	lda	$10,x
-	beq	loc_029CB6
+	beq	@next
 	jsl	f:td_run_enemy_handler
 	jsl	f:td_animate_enemy
 	jsl	f:td_flash_enemy_on_hit
-loc_029CB6:
+@next:
 	txa
 	clc
 	adc	#$0040
@@ -2225,9 +2225,9 @@ td_explosion_state_1:
 	brl	clear_topdown_slot
 loc_029D3B:
 	lda	$28,x
-	bne	loc_029D43
+	bne	@return
 	jml	f:clear_topdown_slot
-loc_029D43:
+@return:
 	rtl
 
 ; Steps the animation script at +$28 (entries of 3 words).
@@ -2240,10 +2240,10 @@ td_animate_enemy:
 	tya
 	clc
 	adc	#$0006
-loc_029D53:
+@loop:
 	tay
 	lda	a:$0000,y
-	bmi	loc_029D53
+	bmi	@loop
 	beq	loc_029D74
 	sty	$28,x
 loc_029D5D:
@@ -2274,12 +2274,12 @@ loc_029D74:
 td_flash_enemy_on_hit:
 	lda	stage_frame_counter
 	bit	#$0001
-	bne	loc_029DAB
+	bne	@return
 	lda	$2A,x
 	bne	loc_029DAC
 	lda	$2E,x
 	bit	#$0040
-	beq	loc_029DAB
+	beq	@return
 	and	#$FFBF
 	sta	$2E,x
 	lda	$02,x
@@ -2287,7 +2287,7 @@ td_flash_enemy_on_hit:
 	and	#$3000
 	ora	#$0600
 	sta	$02,x
-loc_029DAB:
+@return:
 	rtl
 loc_029DAC:
 	lda	$2A,x
@@ -2300,13 +2300,13 @@ loc_029DAC:
 
 td_play_hit_sound:
 	lda	$2A,x
-	bne	loc_029DCC
+	bne	@return
 	lda	$2E,x
 	bit	#$0040
-	beq	loc_029DCC
+	beq	@return
 	lda	#$0010
 	jsl	f:queue_sound
-loc_029DCC:
+@return:
 	rtl
 
 ; Turns one step towards the nearest player and walks forward ($0C).
@@ -2393,11 +2393,11 @@ loc_029E3C:
 td_fire_enemy_bullet:
 	lda	$2E,x
 	bit	#$0003
-	beq	loc_029EA3
+	beq	@return
 	phy
 	jsl	f:td_find_free_enemy_shot_slot
 	pla
-	bcs	loc_029EA3
+	bcs	@return
 	pha
 	lda	#TDS_ENEMY_BULLET
 	sta	a:$0010,y
@@ -2434,7 +2434,7 @@ td_fire_enemy_bullet:
 	plx
 	lda	#$FFFF
 	sta	a:$0004,y
-loc_029EA3:
+@return:
 	rtl
 
 ; TDT_RUNNER, stage 2: an alien that walks towards the nearest player for
@@ -2637,13 +2637,13 @@ loc_029FFB:
 	lda	a:td_gunner_fire_delays,y
 	lsr	a
 	cmp	$24,x
-	bne	loc_02A011
+	bne	@return
 	jsl	f:td_fire_gun_bullet
 	lda	#$D4CE
 	sta	$28,x
 	stz	$22,x
 	rtl
-loc_02A011:
+@return:
 	rtl
 loc_02A012:
 	lda	#$000B
@@ -2740,9 +2740,9 @@ loc_02A0B5:
 	ldy	difficulty
 	lda	stage_frame_counter
 	and	a:hatch_turret_aim_fire_masks,y
-	bne	loc_02A0C2
+	bne	@return
 	jsl	f:td_fire_gun_bullet
-loc_02A0C2:
+@return:
 	rtl
 loc_02A0C3:
 	lda	#$1000
@@ -2831,9 +2831,9 @@ hatch_turret_spin_state_2:
 	ldy	difficulty
 	lda	stage_frame_counter
 	and	a:hatch_turret_spin_fire_masks,y
-	bne	loc_02A166
+	bne	@return
 	jsl	f:td_fire_gun_bullet
-loc_02A166:
+@return:
 	rtl
 
 ; TDT_HATCH_TURRET_SWEEP, stage 2: like TDT_HATCH_TURRET_AIM, but it sweeps
@@ -2937,9 +2937,9 @@ loc_02A20E:
 td_fire_gun_bullet:
 	lda	$2E,x
 	bit	#$0003
-	beq	loc_02A27D
+	beq	@return
 	jsl	f:td_find_free_enemy_shot_slot
-	bcs	loc_02A27D
+	bcs	@return
 	lda	#TDS_ENEMY_BULLET
 	sta	a:$0010,y
 	lda	#$0000
@@ -2975,7 +2975,7 @@ td_fire_gun_bullet:
 	jsl	f:set_velocity_from_angle_y
 	lda	#$FFFF
 	sta	a:$0004,y
-loc_02A27D:
+@return:
 	rtl
 
 ; TDT_CENTIPEDE_UNUSED: a centipede like TDT_CENTIPEDE (HP 16/64/128,
@@ -3945,20 +3945,20 @@ loc_02A992:
 	lda	a:td_spitter_fire_delays,y
 	lsr	a
 	cmp	$24,x
-	bne	loc_02A9A5
+	bne	@return
 	jsl	f:td_fire_enemy_orb
 	lda	#$0002
 	sta	$22,x
-loc_02A9A5:
+@return:
 	rtl
 
 ; Fires a TDS_ENEMY_ORB from enemy X ($0C pixels ahead); only on screen.
 td_fire_enemy_orb:
 	lda	$2E,x
 	bit	#$0003
-	beq	loc_02A9F7
+	beq	@return
 	jsl	f:td_find_free_enemy_shot_slot
-	bcs	loc_02A9F7
+	bcs	@return
 	lda	#TDS_ENEMY_ORB
 	sta	a:$0010,y
 	lda	#$0000
@@ -3986,25 +3986,25 @@ td_fire_enemy_orb:
 	lda	a:$0004,y
 	ora	#$FF00
 	sta	a:$0004,y
-loc_02A9F7:
+@return:
 	rtl
 
 ; Runs the item and effect objects ($0980-$0ABF) by type (tbl_td_item_types,
 ; TDI_*), then their animation (animate_td_item).
 update_td_items:
 	ldx	#$0980
-loc_02A9FB:
+@loop:
 	lda	$10,x
-	beq	loc_02AA07
+	beq	@next
 	jsl	f:run_td_item_handler
 	jsl	f:animate_td_item
-loc_02AA07:
+@next:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0AC0
-	bcc	loc_02A9FB
+	bcc	@loop
 	rtl
 
 run_td_item_handler:
@@ -4109,9 +4109,9 @@ td_explosion_effect_state_0:
 
 td_explosion_effect_state_1:
 	lda	$20,x
-	bne	loc_02AAB9
+	bne	@return
 	brl	clear_topdown_slot
-loc_02AAB9:
+@return:
 	rtl
 
 ; TDI_SPREAD ... TDI_BOMB: an item on the floor for $140 frames; its kind is
@@ -4153,9 +4153,9 @@ loc_02AADA:
 
 td_item_state_1:
 	dec	$24,x
-	bpl	loc_02AAFC
+	bpl	@return
 	brl	clear_topdown_slot
-loc_02AAFC:
+@return:
 	rtl
 
 update_td_item_crush:
@@ -4293,10 +4293,10 @@ animate_td_item:
 	tya
 	clc
 	adc	#$0006
-loc_02ABDE:
+@loop:
 	tay
 	lda	a:$0000,y
-	bmi	loc_02ABDE
+	bmi	@loop
 	beq	loc_02ABFA
 	sty	$20,x
 loc_02ABE8:
@@ -4322,36 +4322,36 @@ loc_02ABFA:
 ; Stage 5 boss: runs the map objects $0AC0-$0B3F (the boss) by type.
 update_stage5_boss_objects:
 	ldx	#$0AC0
-loc_02AC0C:
+@loop:
 	lda	$10,x
-	beq	loc_02AC17
+	beq	@next
 	jsl	f:run_map_object_handler
 	jsr	a:update_map_object_block
-loc_02AC17:
+@next:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0B40
-	bcc	loc_02AC0C
+	bcc	@loop
 	rtl
 
 ; Runs the map objects ($0AC0-$0D3F: targets, turrets, boss parts) by type
 ; (tbl_map_object_types), then update_map_object_block.
 update_map_objects:
 	ldx	#$0AC0
-loc_02AC26:
+@loop:
 	lda	$10,x
-	beq	loc_02AC31
+	beq	@next
 	jsl	f:run_map_object_handler
 	jsr	a:update_map_object_block
-loc_02AC31:
+@next:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0D40
-	bcc	loc_02AC26
+	bcc	@loop
 
 td_map_object_none:
 	rtl
@@ -4389,7 +4389,7 @@ tbl_map_object_types:
 ; Spawns a TDI_EXPLOSION at object X's position.
 td_spawn_explosion_effect:
 	jsl	f:td_find_free_item_slot
-	bcs	loc_02AC8E
+	bcs	@return
 	lda	#TDI_EXPLOSION
 	sta	a:$0010,y
 	lda	#$0000
@@ -4398,7 +4398,7 @@ td_spawn_explosion_effect:
 	sta	a:$000A,y
 	lda	$0E,x
 	sta	a:$000E,y
-loc_02AC8E:
+@return:
 	rtl
 
 ; Destroyed map object X may drop an item: kind td_item_drop_kinds by its
@@ -4443,16 +4443,16 @@ loc_02ACCB:
 update_map_object_block:
 	lda	$20,x
 	cmp	$28,x
-	beq	loc_02ACE1
+	beq	@return
 	sta	$28,x
 	tay
 	lda	$26,x
 	phx
 	jsl	f:queue_m7_block_patch
 	plx
-	bcc	loc_02ACE1
+	bcc	@return
 	stz	$28,x
-loc_02ACE1:
+@return:
 	rts
 
 ; TDMT_STAGE2_BOSS ($0AC0): the stage 2 boss, a spiked machine with six arms
@@ -4814,9 +4814,9 @@ loc_02AF99:
 
 stage2_boss_state_0C:
 	dec	$24,x
-	bpl	loc_02AFD1
+	bpl	@return
 	brl	loc_02B02D
-loc_02AFD1:
+@return:
 	rtl
 loc_02AFD2:
 	lda	#$0080
@@ -5019,19 +5019,19 @@ loc_02B128:
 
 stage2_boss_wake_pods:
 	ldy	#$0BC0
-loc_02B12C:
+@loop:
 	lda	a:$0012,y
 	cmp	#$0002
-	bne	loc_02B13A
+	bne	@next
 	lda	#$0003
 	sta	a:$0012,y
-loc_02B13A:
+@next:
 	tya
 	clc
 	adc	#$0040
 	tay
 	cpy	#$0D40
-	bcc	loc_02B12C
+	bcc	@loop
 	rts
 
 td_set_players_priority_2:
@@ -5043,13 +5043,13 @@ td_set_players_priority_2:
 	sta	a:wram_0EC2
 loc_02B157:
 	lda	a:p2_lives
-	beq	loc_02B168
+	beq	@return
 	; (not executed in the CDL traces)
 	lda	a:wram_0F02
 	and	#$CFFF
 	ora	#$2000
 	sta	a:wram_0F02
-loc_02B168:
+@return:
 	rts
 
 td_set_players_priority_1:
@@ -5061,13 +5061,13 @@ td_set_players_priority_1:
 	sta	a:wram_0EC2
 loc_02B17A:
 	lda	a:p2_lives
-	beq	loc_02B18B
+	beq	@return
 	; (not executed in the CDL traces)
 	lda	a:wram_0F02
 	and	#$CFFF
 	ora	#$1000
 	sta	a:wram_0F02
-loc_02B18B:
+@return:
 	rts
 
 stage2_boss_next_frame:
@@ -5418,17 +5418,17 @@ stage2_boss_core_state_4:
 	bmi	loc_02B3EB
 	lda	$24,x
 	bit	#$0003
-	bne	loc_02B3EA
+	bne	@return
 	jsl	f:td_spawn_explosion_effect
-loc_02B3EA:
+@return:
 	rtl
 loc_02B3EB:
 	lda	#$0013
 	sta	$20,x
 	cmp	$28,x
-	bne	loc_02B3F7
+	bne	@return
 	brl	clear_topdown_slot
-loc_02B3F7:
+@return:
 	rtl
 
 stage2_boss_core_position:
@@ -5566,9 +5566,9 @@ stage2_boss_pod_state_5:
 	bmi	loc_02B4EF
 	lda	$24,x
 	and	#$000F
-	bne	loc_02B4EE
+	bne	@return
 	jsr	a:stage2_boss_pod_fire
-loc_02B4EE:
+@return:
 	rtl
 loc_02B4EF:
 	ldy	$14,x
@@ -5613,9 +5613,9 @@ loc_02B529:
 	cmp	#$0011
 	beq	loc_02B528
 	jsr	a:stage2_boss_pod_drop_item
-	bcs	loc_02B544
+	bcs	@return
 	brl	clear_topdown_slot
-loc_02B544:
+@return:
 	rtl
 
 stage2_boss_pod_drop_item:
@@ -5793,9 +5793,9 @@ stage2_boss_cannon_state_4:
 	bmi	loc_02B69A
 	lda	$24,x
 	bit	#$0003
-	bne	loc_02B699
+	bne	@return
 	jsl	f:td_spawn_explosion_effect
-loc_02B699:
+@return:
 	rtl
 loc_02B69A:
 	lda	#$141C
@@ -5804,22 +5804,22 @@ loc_02B69A:
 	lda	#$0012
 	sta	$20,x
 	cmp	$28,x
-	bne	loc_02B6AD
+	bne	@return
 	brl	clear_topdown_slot
-loc_02B6AD:
+@return:
 	rtl
 
 stage2_boss_cannon_end_anim:
 	lda	$28,x
 	cmp	$20,x
-	bne	loc_02B6C2
+	bne	@return
 	lda	#$0002
 	sta	$00,x
 	lda	#$2000
 	sta	$02,x
 	stz	$28,x
 	stz	$20,x
-loc_02B6C2:
+@return:
 	rts
 
 stage2_boss_cannon_close:
@@ -5833,14 +5833,14 @@ stage2_boss_cannon_close:
 
 stage2_boss_cannon_open:
 	lda	$00,x
-	bne	loc_02B6E4
+	bne	@return
 	lda	#$0037
 	sta	$20,x
 	lda	#$149C
 	sta	$26,x
 	stz	$00,x
 	stz	$02,x
-loc_02B6E4:
+@return:
 	rts
 
 stage2_boss_cannon_position:
@@ -5885,10 +5885,10 @@ stage2_boss_cannon_fire:
 	bcs	loc_02B734
 	lda	stage_frame_counter
 	and	a:stage2_boss_cannon_fire_masks,y
-	bne	loc_02B733
+	bne	@return
 	ldy	#$001C
 	jsl	f:td_fire_enemy_bullet
-loc_02B733:
+@return:
 	rts
 loc_02B734:
 	; (not executed in the CDL traces)
@@ -5993,17 +5993,17 @@ update_topdown_shots:
 	and	#$3000
 	sta	zp_1A
 	ldx	#$0480
-loc_02B7F6:
+@loop:
 	lda	$10,x
-	beq	loc_02B7FE
+	beq	@next
 	jsl	f:run_topdown_shot_handler
-loc_02B7FE:
+@next:
 	txa
 	clc
 	adc	#$0020
 	tax
 	cpx	#$0700
-	bcc	loc_02B7F6
+	bcc	@loop
 	lda	a:title_menu_cursor
 	beq	loc_02B82E
 	ldy	#$0F00
@@ -6011,30 +6011,30 @@ loc_02B7FE:
 	lda	a:$0002,y
 	and	#$3000
 	sta	zp_1A
-loc_02B81B:
+@loop2:
 	lda	$10,x
-	beq	loc_02B823
+	beq	@next2
 	jsl	f:run_topdown_shot_handler
-loc_02B823:
+@next2:
 	txa
 	clc
 	adc	#$0020
 	tax
 	cpx	#$0980
-	bcc	loc_02B81B
+	bcc	@loop2
 loc_02B82E:
 	ldx	#$0300
-loc_02B831:
+@loop:
 	lda	$10,x
-	beq	loc_02B839
+	beq	@next
 	jsl	f:run_topdown_shot_handler
-loc_02B839:
+@next:
 	txa
 	clc
 	adc	#$0020
 	tax
 	cpx	#$0480
-	bcc	loc_02B831
+	bcc	@loop
 	rtl
 
 run_topdown_shot_handler:
@@ -6475,12 +6475,12 @@ td_get_laser_muzzle_distance:
 	lda	a:$0012,y
 	ldy	#$0022
 	cmp	#$0005
-	beq	loc_02BB98
+	beq	@return
 	ldy	#$001E
 	cmp	#$0007
-	beq	loc_02BB98
+	beq	@return
 	ldy	#$0017
-loc_02BB98:
+@return:
 	rts
 
 ; TDS_FLAME: flame in front of the player, 14 frames, damage 1.
@@ -6824,9 +6824,9 @@ td_boss_spit_state_0:
 td_boss_spit_state_1:
 	jsr	a:td_boss_spit_frame
 	lda	$14,x
-	beq	loc_02BE3A
+	beq	@return
 	jsl	f:move_td_shot
-loc_02BE3A:
+@return:
 	rtl
 
 td_boss_spit_state_2:
@@ -7639,7 +7639,7 @@ td_tile_whirl_player:
 	bne	loc_02C40C
 	; (not executed in the CDL traces)
 	jsr	a:td_whirl_around_cell
-	bcc	loc_02C40B
+	bcc	@return
 	ldy	difficulty
 	lda	$04,x
 	clc
@@ -7652,11 +7652,11 @@ td_tile_whirl_player:
 	and	#$00FF
 	sta	a:$0658,x
 	clc
-loc_02C40B:
+@return:
 	rts
 loc_02C40C:
 	jsr	a:td_whirl_around_cell
-	bcc	loc_02C42C
+	bcc	@return
 	ldy	difficulty
 	lda	$04,x
 	clc
@@ -7669,7 +7669,7 @@ loc_02C40C:
 	and	#$00FF
 	sta	a:$0654,x
 	clc
-loc_02C42C:
+@return:
 	rts
 
 td_tile_sand_pit:
@@ -8117,9 +8117,9 @@ loc_02C75E:
 loc_02C768:
 	lda	zp_0E
 	cmp	#$0005
-	bcc	loc_02C772
+	bcc	@return
 	brl	loc_02C995
-loc_02C772:
+@return:
 	rts
 
 td_wall_push_right:
@@ -8510,17 +8510,17 @@ td_trigger_trap:
 	lsr	a
 	tay
 	lda	a:data_05DEAA,y
-	beq	loc_02CA1C
+	beq	@return
 	tay
 	lda	a:$187E,y
-	bne	loc_02CA1C
+	bne	@return
 	lda	#$0050
 	sta	a:$187E,y
 	phx
 	lda	#$0500
 	jsl	f:add_score_for_topdown_player
 	plx
-loc_02CA1C:
+@return:
 	rts
 
 ; TDA_BLOCK_ANIM: screen shake, sound $11 and $20 frames of block
@@ -8533,7 +8533,7 @@ td_trigger_block_anim:
 	ldy	#$0002
 loc_02CA2A:
 	lda	a:$18AC,y
-	bne	loc_02CA48
+	bne	@return
 	lda	#$0020
 	sta	a:$18AC,y
 	lda	#$0001
@@ -8542,7 +8542,7 @@ loc_02CA2A:
 	sta	a:screen_shake_timer
 	lda	#$0011
 	jsl	f:queue_sound
-loc_02CA48:
+@return:
 	rts
 
 ; TDA_SWITCH: Y or A pressed here starts one of three events (by y) run by
@@ -8838,27 +8838,27 @@ td_run_p1_collisions:
 	jsr	a:td_p1_vs_enemies
 	lda	a:wram_0F50
 	dec	a
-	bne	loc_02CC78
+	bne	@return
 	jsr	a:td_p1_bomb_vs_map_objects
-loc_02CC78:
+@return:
 	rtl
 loc_02CC79:
 	jsr	a:td_aim_p1_arrow_stage2_boss
 	jsr	a:td_p1_vs_stage2_boss
 	lda	a:wram_0F50
 	dec	a
-	bne	loc_02CC88
+	bne	@return
 	jsr	a:td_p1_bomb_vs_stage2_boss
-loc_02CC88:
+@return:
 	rtl
 loc_02CC89:
 	jsr	a:td_aim_p1_arrow_stage5_boss
 	jsr	a:td_p1_vs_stage5_boss
 	lda	a:wram_0F50
 	dec	a
-	bne	loc_02CC98
+	bne	@return
 	jsr	a:td_p1_bomb_vs_map_objects
-loc_02CC98:
+@return:
 	rtl
 
 ; Player 1's shots ($0480-) against the enemies ($0D40-$0EBF).
@@ -8883,24 +8883,24 @@ loc_02CCAF:
 	adc	a:$000E,y
 	sta	zp_1A
 	ldx	#$0480
-loc_02CCC4:
+@loop:
 	lda	$10,x
 	dec	a
-	bmi	loc_02CD03
+	bmi	@next
 	lda	a:$0002,y
 	eor	$02,x
 	bit	#$3000
-	bne	loc_02CD03
+	bne	@next
 	lda	zp_18
 	sec
 	sbc	$0A,x
 	cmp	#$0010
-	bcs	loc_02CD03
+	bcs	@next
 	lda	zp_1A
 	sec
 	sbc	$0E,x
 	cmp	#$0010
-	bcs	loc_02CD03
+	bcs	@next
 	jsl	f:td_end_shot
 	lda	a:$002E,y
 	ora	#$0040
@@ -8909,15 +8909,15 @@ loc_02CCC4:
 	sec
 	sbc	$06,x
 	sta	a:$0006,y
-	bpl	loc_02CD03
+	bpl	@next
 	jsl	f:td_score_shot_kill
-loc_02CD03:
+@next:
 	txa
 	clc
 	adc	#$0020
 	tax
 	cpx	#$0700
-	bcc	loc_02CCC4
+	bcc	@loop
 	lda	#$000C
 	clc
 	adc	a:$000A,y
@@ -8927,19 +8927,19 @@ loc_02CD03:
 	adc	a:$000E,y
 	sta	zp_1A
 	ldx	#$0980
-loc_02CD23:
+@loop2:
 	lda	$16,x
-	bpl	loc_02CD4D
+	bpl	@next2
 	lda	zp_18
 	sec
 	sbc	$0A,x
 	cmp	#$0018
-	bcs	loc_02CD4D
+	bcs	@next2
 	lda	zp_1A
 	sec
 	sbc	$0E,x
 	cmp	#$0018
-	bcs	loc_02CD4D
+	bcs	@next2
 	lda	a:$002E,y
 	ora	#$0040
 	sta	a:$002E,y
@@ -8947,22 +8947,22 @@ loc_02CD23:
 	sec
 	sbc	$06,x
 	sta	a:$0006,y
-loc_02CD4D:
+@next2:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0AC0
-	bcc	loc_02CD23
+	bcc	@loop2
 loc_02CD58:
 	tya
 	clc
 	adc	#$0040
 	tay
 	cpy	#$0EC0
-	bcs	loc_02CD66
+	bcs	@return
 	brl	loc_02CC9C
-loc_02CD66:
+@return:
 	rts
 
 ; Player 1's body against the enemies.
@@ -9022,7 +9022,7 @@ loc_02CDC6:
 loc_02CDD1:
 	lda	a:td_p1_state
 	cmp	#$0005
-	beq	loc_02CE2B
+	beq	@return
 	lda	#$0008
 	clc
 	adc	a:td_p1_x
@@ -9032,37 +9032,37 @@ loc_02CDD1:
 	adc	a:td_p1_y
 	sta	zp_1A
 	ldx	#$0300
-loc_02CDEE:
+@loop:
 	lda	$10,x
 	dec	a
-	bmi	loc_02CE20
+	bmi	@next
 	lda	$02,x
 	eor	a:wram_0EC2
 	bit	#$3000
-	bne	loc_02CE20
+	bne	@next
 	lda	zp_18
 	sec
 	sbc	$0A,x
 	cmp	#$0010
-	bcs	loc_02CE20
+	bcs	@next
 	lda	zp_1A
 	sec
 	sbc	$0E,x
 	cmp	#$0010
-	bcs	loc_02CE20
+	bcs	@next
 	jsl	f:td_end_shot
 	lda	a:p1_barrier_timer
-	bne	loc_02CE20
+	bne	@next
 	lda	#$FFFF
 	sta	a:td_p1_hp
-loc_02CE20:
+@next:
 	txa
 	clc
 	adc	#$0020
 	tax
 	cpx	#$0480
-	bcc	loc_02CDEE
-loc_02CE2B:
+	bcc	@loop
+@return:
 	rts
 
 ; Player 1 against the item/effect objects: picks up items (weapon into the
@@ -9231,30 +9231,30 @@ loc_02CF3B:
 	jsl	f:td_score_shot_kill
 loc_02CF78:
 	ldy	#$0BC0
-loc_02CF7B:
+@loop:
 	lda	a:$0016,y
-	bpl	loc_02CFCA
+	bpl	@next
 	lda	a:$002E,y
 	bit	#$0003
-	beq	loc_02CFCA
+	beq	@next
 	lda	a:$000A,y
 	clc
 	adc	#$000E
 	sec
 	sbc	$0A,x
 	cmp	#$001C
-	bcs	loc_02CFCA
+	bcs	@next
 	lda	a:$000E,y
 	clc
 	adc	#$000E
 	sec
 	sbc	$0E,x
 	cmp	#$001C
-	bcs	loc_02CFCA
+	bcs	@next
 	jsl	f:td_end_shot
 	lda	a:$0016,y
 	bit	#$1000
-	beq	loc_02CFCA
+	beq	@next
 	lda	a:$002E,y
 	ora	#$0040
 	sta	a:$002E,y
@@ -9262,16 +9262,16 @@ loc_02CF7B:
 	sec
 	sbc	$06,x
 	sta	a:$0006,y
-	bpl	loc_02CFCA
+	bpl	@next
 	; (not executed in the CDL traces)
 	jsl	f:td_score_shot_kill
-loc_02CFCA:
+@next:
 	tya
 	clc
 	adc	#$0040
 	tay
 	cpy	#$0D40
-	bcc	loc_02CF7B
+	bcc	@loop
 loc_02CFD5:
 	txa
 	clc
@@ -9433,22 +9433,22 @@ loc_02D10B:
 	adc	a:td_p1_bomb_radius
 	sta	zp_1A
 	ldx	#$0AC0
-loc_02D124:
+@loop:
 	lda	$16,x
-	bpl	loc_02D159
+	bpl	@next
 	lda	$2E,x
 	bit	#$0003
-	beq	loc_02D159
+	beq	@next
 	lda	zp_18
 	sec
 	sbc	$0A,x
 	cmp	zp_1C
-	bcs	loc_02D159
+	bcs	@next
 	lda	zp_1A
 	sec
 	sbc	$0E,x
 	cmp	zp_1C
-	bcs	loc_02D159
+	bcs	@next
 	lda	$2E,x
 	ora	#$0040
 	sta	$2E,x
@@ -9456,39 +9456,39 @@ loc_02D124:
 	sec
 	sbc	a:wram_0F46
 	sta	$06,x
-	bpl	loc_02D159
+	bpl	@next
 	ldy	#$1F80
 	jsl	f:td_score_kill
-loc_02D159:
+@next:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	zp_1E
-	bcc	loc_02D124
+	bcc	@loop
 	ldx	#$0300
-loc_02D166:
+@loop2:
 	lda	$10,x
 	dec	a
-	bmi	loc_02D181
+	bmi	@next2
 	lda	zp_18
 	sec
 	sbc	$0A,x
 	cmp	zp_1C
-	bcs	loc_02D181
+	bcs	@next2
 	lda	zp_1A
 	sec
 	sbc	$0E,x
 	cmp	zp_1C
-	bcs	loc_02D181
+	bcs	@next2
 	jsl	f:td_end_shot
-loc_02D181:
+@next2:
 	txa
 	clc
 	adc	#$0020
 	tax
 	cpx	#$0480
-	bcc	loc_02D166
+	bcc	@loop2
 	rts
 
 ; Points the arrow (objects $0200/$0240) at the nearest map target of
@@ -9498,14 +9498,14 @@ td_aim_p1_target_arrow:
 	sta	zp_18
 	stz	zp_1A
 	ldx	#$0AC0
-loc_02D197:
+@loop:
 	jsr	a:td_check_nearest_target
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0D40
-	bcc	loc_02D197
+	bcc	@loop
 	bra	loc_02D1BD
 
 td_aim_p1_arrow_stage5_boss:
@@ -9541,7 +9541,7 @@ loc_02D1D4:
 ; Keeps in zp_1A the target X nearer to player 1's view than zp_18.
 td_check_nearest_target:
 	lda	$10,x
-	beq	loc_02D205
+	beq	@return
 	lda	$0A,x
 	sec
 	sbc	a:p1_view_x
@@ -9552,14 +9552,14 @@ td_check_nearest_target:
 	sta	zp_0A
 	jsl	f:half_distance_squared
 	cmp	zp_18
-	bcs	loc_02D205
+	bcs	@return
 	sta	zp_18
 	stx	zp_1A
 	lda	zp_08
 	sta	zp_1C
 	lda	zp_0A
 	sta	zp_1E
-loc_02D205:
+@return:
 	rts
 loc_02D206:
 	lda	zp_1C
@@ -9716,30 +9716,30 @@ loc_02D2F9:
 	jsl	f:td_score_shot_kill
 loc_02D343:
 	ldy	#$0B40
-loc_02D346:
+@loop:
 	lda	a:$0016,y
-	bpl	loc_02D395
+	bpl	@next
 	lda	a:$002E,y
 	bit	#$0003
-	beq	loc_02D395
+	beq	@next
 	lda	a:$000A,y
 	clc
 	adc	#$0006
 	sec
 	sbc	$0A,x
 	cmp	#$000C
-	bcs	loc_02D395
+	bcs	@next
 	lda	a:$000E,y
 	clc
 	adc	#$0006
 	sec
 	sbc	$0E,x
 	cmp	#$000C
-	bcs	loc_02D395
+	bcs	@next
 	jsl	f:td_end_shot
 	lda	a:$0016,y
 	bit	#$1000
-	beq	loc_02D395
+	beq	@next
 	lda	a:$002E,y
 	ora	#$0040
 	sta	a:$002E,y
@@ -9747,24 +9747,24 @@ loc_02D346:
 	sec
 	sbc	$06,x
 	sta	a:$0006,y
-	bpl	loc_02D395
+	bpl	@next
 	jsl	f:td_score_shot_kill_enemy
-loc_02D395:
+@next:
 	tya
 	clc
 	adc	#$0040
 	tay
 	cpy	#$0EC0
-	bcc	loc_02D346
+	bcc	@loop
 loc_02D3A0:
 	txa
 	clc
 	adc	#$0020
 	tax
 	cpx	#$0700
-	bcs	loc_02D3AE
+	bcs	@return
 	brl	loc_02D2F1
-loc_02D3AE:
+@return:
 	rts
 loc_02D3AF:
 	lda	a:td_p1_hit_flags
@@ -9852,9 +9852,9 @@ td_run_p2_collisions:
 	jsr	a:td_p2_vs_enemies
 	lda	a:wram_0F90
 	dec	a
-	bne	loc_02D46A
+	bne	@return
 	jsr	a:td_p2_bomb_vs_map_objects
-loc_02D46A:
+@return:
 	rtl
 loc_02D46B:
 	; (not executed in the CDL traces)
@@ -9862,18 +9862,18 @@ loc_02D46B:
 	jsr	a:td_p2_vs_stage2_boss
 	lda	a:wram_0F90
 	dec	a
-	bne	loc_02D47A
+	bne	@return
 	jsr	a:td_p2_bomb_vs_stage2_boss
-loc_02D47A:
+@return:
 	rtl
 loc_02D47B:
 	jsr	a:td_aim_p2_arrow_stage5_boss
 	jsr	a:td_p2_vs_stage5_boss
 	lda	a:wram_0F90
 	dec	a
-	bne	loc_02D48A
+	bne	@return
 	jsr	a:td_p2_bomb_vs_map_objects
-loc_02D48A:
+@return:
 	rtl
 
 td_p2_shots_vs_enemies:
@@ -9897,24 +9897,24 @@ loc_02D4A1:
 	adc	a:$000E,y
 	sta	zp_1A
 	ldx	#$0700
-loc_02D4B6:
+@loop:
 	lda	$10,x
 	dec	a
-	bmi	loc_02D4F5
+	bmi	@next
 	lda	a:$0002,y
 	eor	$02,x
 	bit	#$3000
-	bne	loc_02D4F5
+	bne	@next
 	lda	zp_18
 	sec
 	sbc	$0A,x
 	cmp	#$0010
-	bcs	loc_02D4F5
+	bcs	@next
 	lda	zp_1A
 	sec
 	sbc	$0E,x
 	cmp	#$0010
-	bcs	loc_02D4F5
+	bcs	@next
 	jsl	f:td_end_shot
 	lda	a:$002E,y
 	ora	#$0040
@@ -9923,15 +9923,15 @@ loc_02D4B6:
 	sec
 	sbc	$06,x
 	sta	a:$0006,y
-	bpl	loc_02D4F5
+	bpl	@next
 	jsl	f:td_score_shot_kill
-loc_02D4F5:
+@next:
 	txa
 	clc
 	adc	#$0020
 	tax
 	cpx	#$0980
-	bcc	loc_02D4B6
+	bcc	@loop
 	lda	#$000C
 	clc
 	adc	a:$000A,y
@@ -9941,19 +9941,19 @@ loc_02D4F5:
 	adc	a:$000E,y
 	sta	zp_1A
 	ldx	#$0980
-loc_02D515:
+@loop2:
 	lda	$16,x
-	bpl	loc_02D53F
+	bpl	@next2
 	lda	zp_18
 	sec
 	sbc	$0A,x
 	cmp	#$0018
-	bcs	loc_02D53F
+	bcs	@next2
 	lda	zp_1A
 	sec
 	sbc	$0E,x
 	cmp	#$0018
-	bcs	loc_02D53F
+	bcs	@next2
 	; (not executed in the CDL traces)
 	lda	a:$002E,y
 	ora	#$0040
@@ -9962,22 +9962,22 @@ loc_02D515:
 	sec
 	sbc	$06,x
 	sta	a:$0006,y
-loc_02D53F:
+@next2:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0AC0
-	bcc	loc_02D515
+	bcc	@loop2
 loc_02D54A:
 	tya
 	clc
 	adc	#$0040
 	tay
 	cpy	#$0EC0
-	bcs	loc_02D558
+	bcs	@return
 	brl	loc_02D48E
-loc_02D558:
+@return:
 	rts
 
 td_p2_vs_enemies:
@@ -10036,7 +10036,7 @@ loc_02D5B8:
 loc_02D5C3:
 	lda	a:td_p2_state
 	cmp	#$0005
-	beq	loc_02D61D
+	beq	@return
 	lda	#$0008
 	clc
 	adc	a:td_p2_x
@@ -10046,37 +10046,37 @@ loc_02D5C3:
 	adc	a:td_p2_y
 	sta	zp_1A
 	ldx	#$0300
-loc_02D5E0:
+@loop:
 	lda	$10,x
 	dec	a
-	bmi	loc_02D612
+	bmi	@next
 	lda	$02,x
 	eor	a:wram_0F02
 	bit	#$3000
-	bne	loc_02D612
+	bne	@next
 	lda	zp_18
 	sec
 	sbc	$0A,x
 	cmp	#$0010
-	bcs	loc_02D612
+	bcs	@next
 	lda	zp_1A
 	sec
 	sbc	$0E,x
 	cmp	#$0010
-	bcs	loc_02D612
+	bcs	@next
 	jsl	f:td_end_shot
 	lda	a:p2_barrier_timer
-	bne	loc_02D612
+	bne	@next
 	lda	#$FFFF
 	sta	a:td_p2_hp
-loc_02D612:
+@next:
 	txa
 	clc
 	adc	#$0020
 	tax
 	cpx	#$0480
-	bcc	loc_02D5E0
-loc_02D61D:
+	bcc	@loop
+@return:
 	rts
 
 td_p2_vs_items:
@@ -10240,30 +10240,30 @@ loc_02D72D:
 	jsl	f:td_score_shot_kill
 loc_02D76A:
 	ldy	#$0BC0
-loc_02D76D:
+@loop:
 	lda	a:$0016,y
-	bpl	loc_02D7BC
+	bpl	@next
 	lda	a:$002E,y
 	bit	#$0003
-	beq	loc_02D7BC
+	beq	@next
 	lda	a:$000A,y
 	clc
 	adc	#$000E
 	sec
 	sbc	$0A,x
 	cmp	#$001C
-	bcs	loc_02D7BC
+	bcs	@next
 	lda	a:$000E,y
 	clc
 	adc	#$000E
 	sec
 	sbc	$0E,x
 	cmp	#$001C
-	bcs	loc_02D7BC
+	bcs	@next
 	jsl	f:td_end_shot
 	lda	a:$0016,y
 	bit	#$1000
-	beq	loc_02D7BC
+	beq	@next
 	lda	a:$002E,y
 	ora	#$0040
 	sta	a:$002E,y
@@ -10271,15 +10271,15 @@ loc_02D76D:
 	sec
 	sbc	$06,x
 	sta	a:$0006,y
-	bpl	loc_02D7BC
+	bpl	@next
 	jsl	f:td_score_shot_kill
-loc_02D7BC:
+@next:
 	tya
 	clc
 	adc	#$0040
 	tay
 	cpy	#$0D40
-	bcc	loc_02D76D
+	bcc	@loop
 loc_02D7C7:
 	txa
 	clc
@@ -10438,22 +10438,22 @@ loc_02D8FD:
 	adc	a:td_p2_bomb_radius
 	sta	zp_1A
 	ldx	#$0AC0
-loc_02D916:
+@loop:
 	lda	$16,x
-	bpl	loc_02D94B
+	bpl	@next
 	lda	$2E,x
 	bit	#$0003
-	beq	loc_02D94B
+	beq	@next
 	lda	zp_18
 	sec
 	sbc	$0A,x
 	cmp	zp_1C
-	bcs	loc_02D94B
+	bcs	@next
 	lda	zp_1A
 	sec
 	sbc	$0E,x
 	cmp	zp_1C
-	bcs	loc_02D94B
+	bcs	@next
 	lda	$2E,x
 	ora	#$0040
 	sta	$2E,x
@@ -10461,39 +10461,39 @@ loc_02D916:
 	sec
 	sbc	a:wram_0F86
 	sta	$06,x
-	bpl	loc_02D94B
+	bpl	@next
 	ldy	#$1FC0
 	jsl	f:td_score_kill
-loc_02D94B:
+@next:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	zp_1E
-	bcc	loc_02D916
+	bcc	@loop
 	ldx	#$0300
-loc_02D958:
+@loop2:
 	lda	$10,x
 	dec	a
-	bmi	loc_02D973
+	bmi	@next2
 	lda	zp_18
 	sec
 	sbc	$0A,x
 	cmp	zp_1C
-	bcs	loc_02D973
+	bcs	@next2
 	lda	zp_1A
 	sec
 	sbc	$0E,x
 	cmp	zp_1C
-	bcs	loc_02D973
+	bcs	@next2
 	jsl	f:td_end_shot
-loc_02D973:
+@next2:
 	txa
 	clc
 	adc	#$0020
 	tax
 	cpx	#$0480
-	bcc	loc_02D958
+	bcc	@loop2
 	rts
 
 td_aim_p2_target_arrow:
@@ -10501,14 +10501,14 @@ td_aim_p2_target_arrow:
 	sta	zp_18
 	stz	zp_1A
 	ldx	#$0AC0
-loc_02D989:
+@loop:
 	jsr	a:td_check_nearest_target_p2
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0D40
-	bcc	loc_02D989
+	bcc	@loop
 	bra	loc_02D9AF
 
 td_aim_p2_arrow_stage5_boss:
@@ -10544,7 +10544,7 @@ loc_02D9C6:
 
 td_check_nearest_target_p2:
 	lda	$10,x
-	beq	loc_02D9F7
+	beq	@return
 	lda	$0A,x
 	sec
 	sbc	a:p2_view_x
@@ -10555,14 +10555,14 @@ td_check_nearest_target_p2:
 	sta	zp_0A
 	jsl	f:half_distance_squared
 	cmp	zp_18
-	bcs	loc_02D9F7
+	bcs	@return
 	sta	zp_18
 	stx	zp_1A
 	lda	zp_08
 	sta	zp_1C
 	lda	zp_0A
 	sta	zp_1E
-loc_02D9F7:
+@return:
 	rts
 loc_02D9F8:
 	lda	zp_1C
@@ -10723,30 +10723,30 @@ loc_02DAEB:
 	jsl	f:td_score_shot_kill
 loc_02DB35:
 	ldy	#$0B40
-loc_02DB38:
+@loop:
 	lda	a:$0016,y
-	bpl	loc_02DB87
+	bpl	@next
 	lda	a:$002E,y
 	bit	#$0003
-	beq	loc_02DB87
+	beq	@next
 	lda	a:$000A,y
 	clc
 	adc	#$0006
 	sec
 	sbc	$0A,x
 	cmp	#$000C
-	bcs	loc_02DB87
+	bcs	@next
 	lda	a:$000E,y
 	clc
 	adc	#$0006
 	sec
 	sbc	$0E,x
 	cmp	#$000C
-	bcs	loc_02DB87
+	bcs	@next
 	jsl	f:td_end_shot
 	lda	a:$0016,y
 	bit	#$1000
-	beq	loc_02DB87
+	beq	@next
 	lda	a:$002E,y
 	ora	#$0040
 	sta	a:$002E,y
@@ -10754,24 +10754,24 @@ loc_02DB38:
 	sec
 	sbc	$06,x
 	sta	a:$0006,y
-	bpl	loc_02DB87
+	bpl	@next
 	jsl	f:td_score_shot_kill_enemy
-loc_02DB87:
+@next:
 	tya
 	clc
 	adc	#$0040
 	tay
 	cpy	#$0EC0
-	bcc	loc_02DB38
+	bcc	@loop
 loc_02DB92:
 	txa
 	clc
 	adc	#$0020
 	tax
 	cpx	#$0980
-	bcs	loc_02DBA0
+	bcs	@return
 	brl	loc_02DAE3
-loc_02DBA0:
+@return:
 	rts
 loc_02DBA1:
 	lda	a:td_p2_hit_flags
@@ -10978,7 +10978,7 @@ td_step_switch_event:
 	rts
 loc_02DD44:
 	jsr	a:td_patch_switch_event_block
-	bcs	loc_02DD68
+	bcs	@return
 	lda	#$0030
 	jsl	f:queue_sound
 	dec	$02,x
@@ -10993,7 +10993,7 @@ loc_02DD44:
 	clc
 	adc	a:data_05E274,y
 	sta	$0C,x
-loc_02DD68:
+@return:
 	rts
 loc_02DD69:
 	stz	$00,x
@@ -11024,9 +11024,9 @@ td_patch_switch_event_block:
 td_switch_event_explosion:
 	lda	$04,x
 	bit	#$0007
-	bne	loc_02DDC5
+	bne	@return
 	jsl	f:td_find_free_item_slot
-	bcs	loc_02DDC5
+	bcs	@return
 	lda	#TDI_EXPLOSION
 	sta	a:$0010,y
 	lda	#$0000
@@ -11045,5 +11045,5 @@ td_switch_event_explosion:
 	clc
 	adc	$0A,x
 	sta	a:$000E,y
-loc_02DDC5:
+@return:
 	rts

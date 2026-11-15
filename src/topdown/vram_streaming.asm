@@ -14,10 +14,10 @@
 ; Nothing during the intro and the map view.
 stream_topdown_sprite_gfx:
 	lda	a:intro_phase
-	bne	loc_009C22
+	bne	@return
 	lda	a:map_view_active
 	beq	loc_009C23
-loc_009C22:
+@return:
 	rtl
 loc_009C23:
 	lda	a:title_menu_cursor

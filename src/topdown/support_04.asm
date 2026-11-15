@@ -33,9 +33,9 @@ step_palette_anim_timer:
 	inc	a:td_palette_anim_timer
 	lda	a:td_palette_anim_timer
 	cmp	#$0060
-	bcc	loc_04DA35
+	bcc	@return
 	stz	a:td_palette_anim_timer
-loc_04DA35:
+@return:
 	rtl
 
 ; Starts the stage 2 palette tasks at timer 0 and $20.
@@ -46,10 +46,10 @@ start_stage2_palette_tasks:
 	jml	f:start_palette_task
 loc_04DA42:
 	cmp	#$0020
-	bne	loc_04DA4E
+	bne	@return
 	ldy	#.loword(palette_05F57C)
 	jml	f:start_palette_task
-loc_04DA4E:
+@return:
 	rtl
 
 ; Starts the stage 5 palette tasks at timer 0 and $20.
@@ -60,10 +60,10 @@ start_stage5_palette_tasks:
 	jml	f:start_palette_task
 loc_04DA5B:
 	cmp	#$0020
-	bne	loc_04DA67
+	bne	@return
 	ldy	#.loword(palette_05F588)
 	jml	f:start_palette_task
-loc_04DA67:
+@return:
 	rtl
 loc_04DA68:
 	lda	a:palette_cycle_paused
@@ -85,10 +85,10 @@ loc_04DA8A:
 	xba
 	and	#$00FF
 	sta	a:palette_cycle_counter
-loc_04DA91:
+@loop:
 	jsr	a:rotate_palette_colors_up
 	dec	a:palette_cycle_counter
-	bne	loc_04DA91
+	bne	@loop
 loc_04DA99:
 	rtl
 loc_04DA9A:
@@ -109,10 +109,10 @@ loc_04DAB4:
 	xba
 	and	#$00FF
 	sta	a:palette_cycle_counter
-loc_04DABB:
+@loop:
 	jsr	a:rotate_palette_colors_down
 	dec	a:palette_cycle_counter
-	bne	loc_04DABB
+	bne	@loop
 loc_04DAC3:
 	rtl
 
@@ -128,14 +128,14 @@ rotate_palette_colors_up:
 	.a16
 	lda	a:$227E
 	ldx	#$2270
-loc_04DAD3:
+@loop:
 	ldy	a:$0000,x
 	sta	a:$0000,x
 	tya
 	inx
 	inx
 	cpx	#$2280
-	bcc	loc_04DAD3
+	bcc	@loop
 	plb
 	rts
 
@@ -152,14 +152,14 @@ rotate_palette_colors_down:
 	.a16
 	lda	a:$2270
 	ldx	#$227E
-loc_04DAF2:
+@loop:
 	ldy	a:$0000,x
 	sta	a:$0000,x
 	tya
 	dex
 	dex
 	cpx	#$2270
-	bcs	loc_04DAF2
+	bcs	@loop
 	plb
 	rts
 
@@ -191,7 +191,7 @@ build_m7_tilemap:
 	pha
 	plb
 	rep	#$20
-loc_04DB31:
+@loop:
 	.a16
 	jsl	f:expand_m7_block_row
 	lda	zp_08
@@ -199,7 +199,7 @@ loc_04DB31:
 	adc	#$0080
 	sta	zp_08
 	dec	zp_12
-	bne	loc_04DB31
+	bne	@loop
 	jsl	f:upload_m7_tilemap_rows
 	jsl	f:build_tile_attr_rows
 	lda	#$3400
@@ -211,7 +211,7 @@ loc_04DB31:
 	lda	#$0004
 	sta	zp_12
 	dec	zp_16
-	bne	loc_04DB31
+	bne	@loop
 	lda	#$0008
 	sta	zp_16
 	lda	zp_08
@@ -219,7 +219,7 @@ loc_04DB31:
 	adc	#$0380
 	sta	zp_08
 	dec	zp_14
-	bne	loc_04DB31
+	bne	@loop
 	sep	#$20
 	.a8
 	lda	#^tables_05
@@ -357,7 +357,7 @@ tbl_tile_attr_builders:
 
 build_tile_attr_rows_stage2:
 	ldy	#$0000
-loc_04DC7E:
+@loop:
 	lda	a:$3400,y
 	and	#$00FF
 	tax
@@ -370,12 +370,12 @@ loc_04DC7E:
 	inc	zp_0A
 	iny
 	cpy	#$0200
-	bcc	loc_04DC7E
+	bcc	@loop
 	rtl
 
 build_tile_attr_rows_stage5:
 	ldy	#$0000
-loc_04DC9B:
+@loop:
 	lda	a:$3400,y
 	and	#$00FF
 	tax
@@ -388,12 +388,12 @@ loc_04DC9B:
 	inc	zp_0A
 	iny
 	cpy	#$0200
-	bcc	loc_04DC9B
+	bcc	@loop
 	rtl
 
 build_tile_attr_rows_stage5_boss:
 	ldy	#$0000
-loc_04DCB8:
+@loop:
 	lda	a:$3400,y
 	and	#$00FF
 	tax
@@ -406,7 +406,7 @@ loc_04DCB8:
 	inc	zp_0A
 	iny
 	cpy	#$0200
-	bcc	loc_04DCB8
+	bcc	@loop
 	rtl
 
 ; Queues a 4x4-tile block (Y) at VRAM address A in the first free patch
