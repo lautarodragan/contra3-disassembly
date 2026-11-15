@@ -431,10 +431,10 @@ sub_00A6C3:
 	stz	a:p2_weapon_slot
 	stz	a:wram_1F82
 	stz	a:wram_1FC2
-	stz	a:wram_1F84
-	stz	a:wram_1FC4
-	stz	a:wram_1F86
-	stz	a:wram_1FC6
+	stz	a:p1_weapon_1
+	stz	a:p2_weapon_1
+	stz	a:p1_weapon_2
+	stz	a:p2_weapon_2
 	stz	a:wram_1F9E
 	stz	a:wram_1FDE
 	stz	a:p1_barrier_timer
@@ -442,8 +442,8 @@ sub_00A6C3:
 	lda	#$0001
 	sta	a:p1_bombs
 	sta	a:p2_bombs
-	stz	a:wram_1F8E
-	stz	a:wram_1FCE
+	stz	a:p1_spin
+	stz	a:p2_spin
 	stz	a:wram_1FA0
 	stz	a:wram_1FA2
 	stz	a:wram_1FE0
@@ -1138,7 +1138,7 @@ sub_00AC3F:
 
 sub_00AC4A:
 	jsr	a:sub_00AC7E
-	lda	a:wram_1FCE
+	lda	a:p2_spin
 	beq	loc_00AC5C
 	lda	#$0002
 	sta	a:wram_1FC2
@@ -1161,7 +1161,7 @@ loc_00AC71:
 	rts
 
 sub_00AC7E:
-	lda	a:wram_1F8E
+	lda	a:p1_spin
 	beq	loc_00AC8D
 	lda	#$0002
 	sta	a:wram_1F82

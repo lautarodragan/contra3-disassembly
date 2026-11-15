@@ -128,7 +128,7 @@ nmi_frame_side_view:
 	.a16
 	lda	$18,x
 	sec
-	sbc	zp_A0
+	sbc	shake_bg1_y
 	sta	$22,x
 	ldx	#$13C0
 	lda	$0A,x
@@ -152,7 +152,7 @@ nmi_frame_side_view:
 	.a16
 	lda	$18,x
 	sec
-	sbc	zp_A2
+	sbc	shake_bg2_y
 	sta	$22,x
 	ldx	#$1400
 	sep	#$20

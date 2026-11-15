@@ -1,7 +1,7 @@
 ; objects/object_handlers_00b.asm -- Object handlers (bank $00, part 2)
 ; Bank $00, $00:DDC8-$00:E1B7. Included by main.asm in segment BANK00.
 ;
-; Handlers of the secondary object list (tbl_05A0B4, see
+; Handlers of the secondary object list (tbl_shot_types, see
 ; objects/secondary_objects.asm) and object slot helpers:
 ; sub_00E122/sub_00E134 find a free slot, sub_00E16E.
 

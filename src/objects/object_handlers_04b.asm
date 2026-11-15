@@ -2,7 +2,7 @@
 ; Bank $04, $04:E21B-$04:FFFF. Included by main.asm in segment BANK04.
 ;
 ; Object setup called from bank $1D (sub_04E21B) and handlers dispatched
-; through tbl_05A48A.
+; through tbl_object_types.
 
 sub_04E21B:
 	lda	zp_00

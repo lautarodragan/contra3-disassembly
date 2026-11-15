@@ -60,10 +60,10 @@ loc_00BD90:
 	jsl	f:sub_00C132
 	lda	a:data_0589FB,y
 	sta	a:wram_1672
-	stz	zp_A0
-	stz	zp_A2
-	stz	a:wram_1660
-	stz	a:wram_1662
+	stz	shake_bg1_y
+	stz	shake_bg2_y
+	stz	a:shake_continuous
+	stz	a:shake_timer
 	stz	zp_78
 	lda	#$000E
 	sta	a:player1_state
@@ -254,15 +254,15 @@ loc_00BF99:
 	dec	a:wram_1688
 loc_00BFA1:
 	lda	#$0FC0
-	sta	zp_AC
+	sta	oam_ptr
 	lda	#$11C0
-	sta	zp_AE
+	sta	oam_hi_ptr
 	lda	#$8000
-	sta	zp_9C
+	sta	oam_hi_bits
 	jsl	f:sub_00BF02
 	jsr	a:sub_00BF28
 	jsl	f:sub_01A624
-	jsl	f:sub_00E1B8
+	jsl	f:update_shots
 	stz	a:wram_023C
 	stz	a:wram_027C
 	stz	a:wram_1504
@@ -273,18 +273,18 @@ loc_00BFA1:
 loc_00BFD4:
 	lda	zp_BC
 	bne	loc_00BFE2
-	jsl	f:sub_00E960
-	jsl	f:sub_00E989
+	jsl	f:draw_players
+	jsl	f:update_objects
 	bra	loc_00BFEA
 loc_00BFE2:
-	jsl	f:sub_00E989
-	jsl	f:sub_00E960
+	jsl	f:update_objects
+	jsl	f:draw_players
 loc_00BFEA:
-	jsl	f:sub_00E97E
-	ldy	zp_AE
+	jsl	f:update_objects_0280
+	ldy	oam_hi_ptr
 	cpy	#$11E0
 	bcs	loc_00C034
-	ldx	zp_AC
+	ldx	oam_ptr
 loc_00BFF7:
 	lda	#$0080
 	sta	$00,x
@@ -293,10 +293,10 @@ loc_00BFF7:
 	inx
 	inx
 	sec
-	ror	zp_9C
-	lsr	zp_9C
+	ror	oam_hi_bits
+	lsr	oam_hi_bits
 	bcc	loc_00BFF7
-	lda	zp_9C
+	lda	oam_hi_bits
 	sta	a:$0000,y
 loc_00C00C:
 	cpx	#$11C0
@@ -320,7 +320,7 @@ loc_00C00C:
 	tax
 	bra	loc_00C00C
 loc_00C034:
-	jsl	f:sub_00FF01
+	jsl	f:update_shake_side_view
 	jsl	f:sub_00FDB4
 	jsl	f:sub_01F6B7
 	rtl
@@ -468,22 +468,22 @@ sub_00C16F:
 	inc	a:inidisp_shadow
 loc_00C17A:
 	lda	#$0FC0
-	sta	zp_AC
+	sta	oam_ptr
 	lda	#$11C0
-	sta	zp_AE
+	sta	oam_hi_ptr
 	lda	#$8000
-	sta	zp_9C
+	sta	oam_hi_bits
 	jsl	f:sub_00BF02
 	jsr	a:sub_00BF28
 	jsl	f:sub_00C67D
 	jsl	f:sub_00C917
 	jsl	f:sub_00EBD7
-	jsl	f:sub_00E989
-	jsl	f:sub_00E97E
-	ldy	zp_AE
+	jsl	f:update_objects
+	jsl	f:update_objects_0280
+	ldy	oam_hi_ptr
 	cpy	#$11E0
 	bcs	loc_00C1EA
-	ldx	zp_AC
+	ldx	oam_ptr
 loc_00C1AD:
 	lda	#$0080
 	sta	$00,x
@@ -492,10 +492,10 @@ loc_00C1AD:
 	inx
 	inx
 	sec
-	ror	zp_9C
-	lsr	zp_9C
+	ror	oam_hi_bits
+	lsr	oam_hi_bits
 	bcc	loc_00C1AD
-	lda	zp_9C
+	lda	oam_hi_bits
 	sta	a:$0000,y
 loc_00C1C2:
 	cpx	#$11C0
@@ -519,7 +519,7 @@ loc_00C1C2:
 	tax
 	bra	loc_00C1C2
 loc_00C1EA:
-	jsl	f:sub_00FF01
+	jsl	f:update_shake_side_view
 	jsl	f:sub_00FDB4
 	rtl
 loc_00C1F3:

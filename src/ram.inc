@@ -94,14 +94,14 @@ zp_96               = $96
 cgram_upload_addr   = $98	; CGRAM address (byte) of a 32-byte palette DMA from $05:cgram_upload_src in nmi_frame_side_view; 0 = none
 cgram_upload_addr2  = $99	; CGRAM address of a second copy of the same 32 bytes; 0 = none
 cgram_upload_src    = $9A	; bank $05 address of the palette uploaded by nmi_frame_side_view
-zp_9C               = $9C
+oam_hi_bits         = $9C	; OAM high-table bits being packed (2 per sprite, shifted in from the top; $8000 = empty) by draw_metasprite / draw_shot
 zp_9E               = $9E
-zp_A0               = $A0
-zp_A2               = $A2
+shake_bg1_y         = $A0	; screen shake: subtracted from BG1 VOFS (nmi) and added to sprite y (draw_metasprite); update_shake_side_view
+shake_bg2_y         = $A2	; screen shake for BG2 VOFS (half of shake_bg1_y)
 zp_A6               = $A6
-zp_AA               = $AA
-zp_AC               = $AC
-zp_AE               = $AE
+target_list_end     = $AA	; end of the target list at $15A0 (slots of OBJF_TARGET objects, 0-terminated), built by update_objects
+oam_ptr             = $AC	; next free entry of the OAM buffer ($0FC0-$11BF), reset every frame by the stage loop
+oam_hi_ptr          = $AE	; next byte of the OAM high table ($11C0-$11DF)
 zp_B0               = $B0
 zp_B2               = $B2
 zp_B4               = $B4
@@ -717,11 +717,11 @@ wram_1646           = $1646
 wram_1658           = $1658
 wram_165A           = $165A
 wram_165C           = $165C
-wram_1660           = $1660
-wram_1662           = $1662
+shake_continuous    = $1660	; non-zero: 1-pixel shake (update_shake_side_view) until cleared
+shake_timer         = $1662	; shake amplitude in pixels, decremented every 16 frames (update_shake_side_view); objects set it for explosions
 wram_1666           = $1666
 wram_1667           = $1667
-wram_166A           = $166A
+update_objects_stop = $166A	; slot where update_objects stops ($0AC0; $0300 for update_objects_0280)
 wram_166C           = $166C
 wram_1670           = $1670
 wram_1672           = $1672
@@ -1060,12 +1060,12 @@ wram_1F2C           = $1F2C
 wram_1F2E           = $1F2E
 p1_weapon_slot      = $1F80	; player 1 active weapon slot (player 2: $1FC0)
 wram_1F82           = $1F82
-wram_1F84           = $1F84
-wram_1F86           = $1F86
+p1_weapon_1         = $1F84	; player 1 weapon (WEAPON_*) of the first slot, fired when p1_weapon_slot = 2 (sub_00D656); PLAYER_WEAPON_1
+p1_weapon_2         = $1F86	; player 1 weapon of the second slot, fired when p1_weapon_slot = 0 (sub_00D692)
 p1_barrier_timer    = $1F88	; player 1 barrier (invincibility) timer
 p1_lives            = $1F8A	; player 1 lives
 p1_bombs            = $1F8C	; player 1 smart bombs
-wram_1F8E           = $1F8E
+p1_spin             = $1F8E	; 1 while player 1 holds L+R or spin-jumps: both weapons fire (sub_018000); PLAYER_SPIN
 p1_m7_center_x           = $1F90	; Mode 7 rotation centre x of player 1's view (copied to p1_m7x by compute_m7_matrix)
 p1_m7_center_y           = $1F92	; Mode 7 rotation centre y of player 1's view
 p1_m7_scale_x           = $1F94	; Mode 7 scale of player 1's view, $0100 = 1:1, larger = zoomed out ($0500 in the intro and the map view)
@@ -1097,12 +1097,12 @@ wram_1FB6           = $1FB6
 wram_1FB8           = $1FB8
 p2_weapon_slot      = $1FC0	; player 2 active weapon slot (by the $40 stride of the player blocks)
 wram_1FC2           = $1FC2
-wram_1FC4           = $1FC4
-wram_1FC6           = $1FC6
+p2_weapon_1         = $1FC4	; player 2 weapon of the first slot
+p2_weapon_2         = $1FC6	; player 2 weapon of the second slot
 p2_barrier_timer    = $1FC8	; player 2 barrier (invincibility) timer
 p2_lives            = $1FCA	; player 2 lives
 p2_bombs            = $1FCC	; player 2 smart bombs
-wram_1FCE           = $1FCE
+p2_spin             = $1FCE	; same for player 2
 p2_m7_center_x           = $1FD0	; Mode 7 rotation centre x of player 2's view (2P-A split screen)
 p2_m7_center_y           = $1FD2	; Mode 7 rotation centre y of player 2's view
 p2_m7_scale_x           = $1FD4	; Mode 7 scale of player 2's view
@@ -1223,33 +1223,143 @@ wram_7EFA03         = $7EFA03
 wram_7EFA04         = $7EFA04
 wram_7F0000         = $7F0000
 
-; ---- structures (offsets, not addresses; not applied to the code yet) ----
+; ---- structures (offsets, not addresses) ----
 ;
-; Main object list: slots of $40 bytes from $0200 (players at $0200 and
-; $0240, others from $0280; sub_00E989 runs $0300-$0ABF).  Code addresses
-; a slot with X = slot address, so fields appear as lda $12,x.
-; Each object also has fields in parallel arrays at slot + $1300 (e.g.
-; lda a:$1304,x) and the players at slot + $1D80: the player blocks
-; $1F80 (player 1) and $1FC0 (player 2) are $1D80 + $0200 / $0240, which
-; is why p1_lives ($1F8A) appears as lda a:$1D8A,x.
-; Fields seen in sub_00E989 / sub_00EB04 / sub_00E1B8:
+; Use these only on an indexed operand whose index register was checked to
+; hold a slot address (lda OBJ_STATE,x / lda a:OBJ_FLAGS,y); the same
+; numbers index other structures elsewhere.  See the book, "Objects".
+;
+; Main object list: slots of OBJ_SIZE bytes from $0200: players at $0200 /
+; $0240 (see PLAYER_* below), $0280 and $02C0 run by update_objects_0280, and
+; $0300-$0ABF (30 slots) run by update_objects.  New objects are allocated in
+; $0300-$077F (sub_019E83 / sub_019EAB search upwards); enemy bullets
+; (sub_01A11C) search downwards from $0740.  Freed by clearing the slot
+; (OBJ_FLAGS bit 15, or OBJ_TYPE 0 = free).
+OBJ_SIZE            = $40
+OBJ_SPRITE          = $00	; metasprite pointer (bank $06) drawn by draw_metasprite; 0 = not drawn.  Set from the animation script (OBJ_ANIM) or by the handler
+OBJ_ATTR            = $02	; OAM attribute bits (high byte: flip, priority, palette) ORed into every sprite of the metasprite
+OBJ_FACING          = $04	; 0: an animation frame shows its first sprite, else its second (the mirrored one); players: 0 right, 2 left
+OBJ_HP              = $06	; hit points: a shot subtracts its SHOT_DAMAGE, the bomb 1, the barrier 1; below 0 = destroyed (sub_00B829 adds type_scores[type] to the score). Negative also means "not a target"
 OBJ_X_SUB           = $08	; x position, fraction
-OBJ_X               = $0A	; x position, pixels
+OBJ_X               = $0A	; x position, pixels (screen; also the hitbox left edge)
 OBJ_Y_SUB           = $0C	; y position, fraction
-OBJ_Y               = $0E	; y position, pixels
-OBJ_TYPE            = $10	; object type: handler index into tbl_05A48A (tbl_05A0B4 for the secondary list); 0 = free slot
-OBJ_STATE           = $12	; state (player1_state is player 1's)
-OBJ_FLAGS           = $16	; bit 0: sub_00E989 adds the velocity and subtracts the BG scroll deltas ($138E/$13A6)
-OBJ_X_VEL_SUB       = $18	; x velocity, fraction (added to OBJ_X_SUB)
+OBJ_Y               = $0E	; y position, pixels (screen; also the hitbox bottom edge)
+OBJ_TYPE            = $10	; object type: handler index into tbl_object_types (call_object_handler); 0 = free slot
+OBJ_STATE           = $12	; state of the type's handler (player1_state is player 1's)
+OBJ_HIT             = $14	; non-zero during the frame the object was hit (shots store their SHOT_TYPE, the bomb $0100, the barrier 1); shows the flash palette, cleared by update_objects after drawing
+OBJ_FLAGS           = $16	; OBJF_* bits below
+OBJ_X_VEL_SUB       = $18	; x velocity, fraction (added to OBJ_X_SUB when OBJF_MOVE)
 OBJ_X_VEL           = $1A	; x velocity, pixels
 OBJ_Y_VEL_SUB       = $1C	; y velocity, fraction
 OBJ_Y_VEL           = $1E	; y velocity, pixels
+OBJ_ANIM            = $20	; animation script pointer (bank $05), 0 = none: entries of 3 words (duration, sprite, mirrored sprite); a negative word is a jump to that address, 0 ends the script (update_objects)
+OBJ_ANIM_TIMER      = $22	; frames left in the current animation entry; store 0 with a new OBJ_ANIM to start it
+OBJ_TIMER           = $24	; general-purpose counter of the handler (mostly a countdown)
+OBJ_SAVED_ATTR      = $26	; OBJ_ATTR saved while the hit flash palette replaces it (update_objects)
+OBJ_HITBOX_W        = $28	; hitbox width: box spans OBJ_X .. OBJ_X+OBJ_HITBOX_W
+OBJ_HITBOX_H        = $2A	; hitbox height, negative: box spans OBJ_Y+OBJ_HITBOX_H .. OBJ_Y
+OBJ_HITBOX_RIGHT    = $2C	; OBJ_X + OBJ_HITBOX_W, computed each frame for OBJF_TARGET objects (read by shot and bomb collision)
+OBJ_HITBOX_TOP      = $2E	; OBJ_Y + OBJ_HITBOX_H, likewise
+; $30-$3B: free for the handler (no common meaning)
+OBJ_TOUCHED_BY      = $3C	; slot of the player whose body overlaps the object this frame (OBJF_TOUCH); not cleared by the loop
 ;
-; Secondary object list: 40 slots of $20 bytes at $0AC0-$0FBF
-; (sub_00E1B8); the same offsets $08-$1E as above.
+; OBJ_FLAGS bits (tested in update_objects, update_shots, sub_01AB1F):
+OBJF_MOVE           = $0001	; add the velocity to the position and follow the BG scroll ($138E/$13A6)
+OBJF_OFFSCREEN_KILL = $0002	; freed when OBJ_X or OBJ_Y leaves -$20..$11F
+OBJF_HARMFUL        = $0004	; touching it kills the player (ORed into PLAYER_CONTACT; removed while the player has the barrier)
+OBJF_TOUCH          = $0008	; check the overlap with a player's body (sets OBJ_TOUCHED_BY, ORs OBJ_FLAGS into PLAYER_CONTACT)
+OBJF_TARGET         = $0010	; listed in shot_targets each frame: shots, the bomb and the barrier hit it
+OBJF_INVULNERABLE   = $0020	; hit (OBJ_HIT set, shots stop) but OBJ_HP is not reduced and no flash
+OBJF_CLANG          = $4000	; a shot that hits it without damage plays sound $10
+OBJF_DELETE         = $8000	; free the slot after its handler returns
 ;
-; Player stat block, $40 bytes per player at $1F80 / $1FC0 (see p1_*).
+; Player objects ($0200 player 1, $0240 player 2) are slots of the same
+; list run by their own code (sub_01A624); the fields above with the same
+; meaning are OBJ_SPRITE, OBJ_ATTR, OBJ_FACING, the position and velocity,
+; OBJ_STATE (PLAYER_STATE_* below) and OBJ_FLAGS (0 = not present,
+; bit 1 = invulnerable after respawn, bit 15 = not touchable).  Others
+; differ:
+; Player OBJ_FLAGS: 0 = absent (game over); also
+PLAYERF_INVULNERABLE = $0002	; set while PLAYER_INVULN_TIMER runs: enemies' bodies do not kill
+PLAYERF_INTANGIBLE  = $8000	; dying / not on the screen: not touched by objects
+PLAYER_HITBOX_LEFT  = $06	; body box, left (= OBJ_X)
+PLAYER_HITBOX_BOTTOM = $10	; body box, bottom (= OBJ_Y)
+PLAYER_FIRE_DELAY_2 = $14	; frames before PLAYER_WEAPON_2 can fire again (reloaded from weapon_fire_delays[weapon] by sub_00D692 / sub_00D6DC)
+PLAYER_POSE         = $20	; pose (index of the frame tables data_05B29E.., 16 bytes each), not an animation pointer
+PLAYER_JOY_HELD     = $22	; joypad buttons held (copied from joy1_held/joy2_held)
+PLAYER_INVULN_TIMER = $24	; respawn invulnerability: counts down, the player blinks, OBJ_FLAGS bit 1 cleared at 0
+PLAYER_AIM          = $26	; directions held this frame: 1 right, 2 up, 4 left, 8 down (index of the aim tables)
+PLAYER_HITBOX_RIGHT = $28	; body box, right
+PLAYER_HITBOX_TOP   = $2A	; body box, top
+PLAYER_JOY_PRESSED  = $2C	; joypad buttons newly pressed (copied from joy1_pressed/joy2_pressed)
+PLAYER_LOCKED       = $2E	; non-zero while the "stand still" button (zp_8E / wram_1628) is held: no walking
+PLAYER_FIRE_DELAY_1 = $3A	; frames before PLAYER_WEAPON_1 can fire again (sub_00D656 / sub_00D6DC)
+PLAYER_CONTACT      = $3C	; contact flags, PCONTACT_* bits
+; Player parallel fields at slot + $1300 ($1500 player 1, $1540 player 2):
+PLAYER_POSE_ADD     = $1300	; added to PLAYER_POSE (shooting poses), cleared every frame
+PLAYER_PLATFORM     = $1304	; slot of the solid object the player was last pushed by / stands on (sub_019F37)
+PLAYER_DX           = $1306	; x movement of this frame (sub_01AA20)
+PLAYER_DY           = $130C	; y movement of this frame
+PLAYER_BOMB_RADIUS  = $1310	; bomb blast half-size, 0 = no bomb active (sub_01801B starts it, sub_01AAF4 grows it to $FF)
+PLAYER_CENTER_X     = $1312	; point enemies aim at (sub_01A0C8, sub_01A0E9)
+PLAYER_CENTER_Y     = $1314
+PLAYER_BOMB_SPEED_SUB = $1318	; bomb growth per frame, fraction (accelerates by $0800 a frame)
+PLAYER_BOMB_SPEED   = $131A	; bomb growth per frame, pixels
+PLAYER_BOMB_X       = $131C	; bomb centre (PLAYER_CENTER_X when it was thrown)
+PLAYER_BOMB_Y       = $131E
+; Player stat block at slot + $1D80 ($1F80 player 1, $1FC0 player 2; see
+; p1_* / p2_*):
 PLAYER_STATS_STRIDE = $40
+PLAYER_WEAPON_SLOT  = $1D80	; p1_weapon_slot: 2 = fire PLAYER_WEAPON_1, 0 = PLAYER_WEAPON_2
+PLAYER_WEAPON_SLOT_OTHER = $1D82	; the other slot value (equal to PLAYER_WEAPON_SLOT when both fire)
+PLAYER_WEAPON_1     = $1D84	; weapon (WEAPON_*) in the first slot (active at the start)
+PLAYER_WEAPON_2     = $1D86	; weapon in the second slot
+PLAYER_BARRIER      = $1D88	; p1_barrier_timer
+PLAYER_LIVES        = $1D8A	; p1_lives
+PLAYER_BOMBS        = $1D8C	; p1_bombs
+PLAYER_SPIN         = $1D8E	; 1 while L and R are both held or in the spin jump (state PLAYER_STATE_SPIN_JUMP): both weapons fire (sub_018000)
+
+; Player states (OBJ_STATE of a player; handlers in tbl_01AACA, input
+; handling in tbl_01A6EF).  Seen in the emulator: 0 on the ground, 3 jump,
+; 4 falling (also the drop-in after a respawn), 7 / 8 death, $0E / $0F
+; respawn.  The others (climbing, hanging, scripted moves) are not
+; identified yet.
+PLAYER_STATE_GROUND = $00	; standing / walking / crouching
+PLAYER_STATE_JUMP   = $03	; jumping (sub_018354)
+PLAYER_STATE_FALL   = $04	; falling (sub_018317)
+PLAYER_STATE_DYING  = $07	; hit: thrown back (sub_019AEB), entered at loc_019A76
+PLAYER_STATE_DEAD   = $08	; lying dead; when the countdown at +$30 ends, takes a life (sub_019B66)
+PLAYER_STATE_SPIN_STANCE = $0B	; L+R held on the ground (sub_01AC71)
+PLAYER_STATE_SPIN_JUMP = $0C	; spin jump: fire pressed during PLAYER_STATE_SPIN_STANCE
+PLAYER_STATE_OUT    = $0E	; waiting to respawn (sub_019B9D: needs lives left)
+PLAYER_STATE_RESPAWN = $0F	; respawning (sub_019BC8)
+;
+; Weapons (PLAYER_WEAPON_1 / PLAYER_WEAPON_2, p1_weapon_1...): index of the
+; shot spawners tbl_00D686 / tbl_00D6C2 / tbl_00D717 and of weapon_fire_delays
+; (fire delay); checked in the emulator by poking p1_weapon_1.
+WEAPON_DEFAULT      = 0	; the starting gun
+WEAPON_SPREAD       = 1	; S
+WEAPON_CRUSH        = 2	; C (missiles that explode)
+WEAPON_HOMING       = 3	; H
+WEAPON_FLAME        = 4	; F
+WEAPON_LASER        = 5	; L
+;
+; PLAYER_CONTACT bits:
+PCONTACT_KILLED     = $0004	; killed: harmful object, enemy bullet, fell off the screen (checked by the states, loc_019A76)
+PCONTACT_ON_OBJECT  = $0080	; standing on a solid object
+PCONTACT_BLOCK_LEFT = $0200	; a solid object on the left: cannot walk left
+PCONTACT_BLOCK_RIGHT = $0400	; a solid object on the right: cannot walk right
+;
+; Secondary object list (player shots): 40 slots of SHOT_SIZE bytes at
+; $0AC0-$0FBF, run by update_shots: player 1's shots in $0AC0-$0D3F (first
+; weapon slot $0AC0-$0BFF, second $0C00-$0D3F), player 2's in $0D40-$0FBF
+; ($0D40 / $0E80).  Position and velocity at the same offsets as OBJ_*.
+SHOT_SIZE           = $20
+SHOT_ATTR           = $02	; OAM tile and attributes of the shot's single sprite; bit 8 set = 16x16 at (x, y), clear = 8x8 at (x+4, y+4); 0 = not drawn
+SHOTA_LARGE         = $0100	; SHOT_ATTR bit: 16x16 sprite
+SHOT_DAMAGE         = $06	; subtracted from the target's OBJ_HP; 0 = does not hit
+SHOT_TYPE           = $10	; handler index into tbl_shot_types (call_shot_handler); 0 = free
+SHOT_HIT            = $16	; set to 1 when the shot hit something (the handler then removes it); negative when it destroyed the target
 
 ; ---- top-down stages (src/topdown/) ----
 ;

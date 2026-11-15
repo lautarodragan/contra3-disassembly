@@ -93,7 +93,7 @@ loc_01A5C8:
 	lda	#$FFF9
 	sta	$36,x
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	#$0020
 	jsl	f:queue_sound
 loc_01A60B:
@@ -815,7 +815,7 @@ loc_01AB54:
 	lda	$10,x
 	asl	a
 	tay
-	lda	a:data_05A66D,y
+	lda	a:type_scores,y
 	ply
 	phx
 	tyx

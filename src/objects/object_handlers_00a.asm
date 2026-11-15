@@ -1,7 +1,7 @@
 ; objects/object_handlers_00a.asm -- Object handlers (bank $00, part 1)
 ; Bank $00, $00:CF0C-$00:D655. Included by main.asm in segment BANK00.
 ;
-; Handlers of object types dispatched through tbl_05A48A (see
+; Handlers of object types dispatched through tbl_object_types (see
 ; objects/object_loop.asm) and helpers they share.
 
 sub_00CF0C:
@@ -563,7 +563,7 @@ loc_00D37B:
 
 sub_00D37E:
 	lda	#$0003
-	sta	a:wram_1662
+	sta	a:shake_timer
 	inc	$24,x
 	lda	$24,x
 	cmp	#$0100

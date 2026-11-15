@@ -1,10 +1,16 @@
 ; objects/sprite_draw.asm -- Metasprite drawing
 ; Bank $00, $00:EB1A-$00:EBC3. Included by main.asm in segment BANK00.
 ;
-; sub_00EB1A draws an object's metasprite (data in bank $06, read with DB=$06)
+; draw_metasprite draws an object's metasprite (data in bank $06, read with DB=$06)
 ; into the OAM buffer.
 
-sub_00EB1A:
+; Appends the metasprite at Y (bank $06: a count byte, then 4 bytes per
+; sprite: dx, dy, tile, attributes) to the OAM buffer at oam_ptr, placed at
+; OBJ_X/OBJ_Y of the object at X (+ the screen shake shake_bg1_y), ORing OBJ_ATTR
+; into each sprite's attributes; sprites off the screen vertically are
+; skipped.  The size and x-high bits go to oam_hi_bits / oam_hi_ptr.
+; In: X = slot, Y = metasprite.  Uses zp_02-zp_0A, zp_16.
+draw_metasprite:
 	sep	#$20
 	.a8
 	lda	#$06
@@ -13,8 +19,8 @@ sub_00EB1A:
 	rep	#$20
 	.a16
 	clc
-	lda	$0E,x
-	adc	zp_A0
+	lda	OBJ_Y,x
+	adc	shake_bg1_y
 	sta	zp_0A
 	lda	a:$0000,y
 	and	#$00FF
@@ -45,10 +51,10 @@ loc_00EB4B:
 loc_00EB5D:
 	xba
 	clc
-	adc	$0A,x
+	adc	OBJ_X,x
 	xba
 	lsr	a
-	ror	zp_9C
+	ror	oam_hi_bits
 	asl	a
 	xba
 	and	#$00FF
@@ -61,25 +67,25 @@ loc_00EB5D:
 	bne	loc_00EB79
 	clc
 loc_00EB79:
-	ora	$02,x
+	ora	OBJ_ATTR,x
 	sta	zp_02
-	ror	zp_9C
+	ror	oam_hi_bits
 	bcc	loc_00EB97
 	phx
-	ldx	zp_AE
-	lda	zp_9C
+	ldx	oam_hi_ptr
+	lda	oam_hi_bits
 	sta	$00,x
 	inx
 	inx
-	stx	zp_AE
+	stx	oam_hi_ptr
 	cpx	#$11E0
 	bcs	loc_00EBBA
 	lda	#$8000
-	sta	zp_9C
+	sta	oam_hi_bits
 	plx
 loc_00EB97:
 	phx
-	ldx	zp_AC
+	ldx	oam_ptr
 	lda	zp_08
 	sta	$00,x
 	lda	zp_02
@@ -88,7 +94,7 @@ loc_00EB97:
 	inx
 	inx
 	inx
-	stx	zp_AC
+	stx	oam_ptr
 	plx
 loc_00EBA9:
 	iny

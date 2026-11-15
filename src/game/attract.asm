@@ -273,16 +273,16 @@ loc_00AF8B:
 	stz	a:p2_weapon_slot
 	stz	a:wram_1F82
 	stz	a:wram_1FC2
-	stz	a:wram_1F84
-	stz	a:wram_1FC4
-	stz	a:wram_1F86
-	stz	a:wram_1FC6
+	stz	a:p1_weapon_1
+	stz	a:p2_weapon_1
+	stz	a:p1_weapon_2
+	stz	a:p2_weapon_2
 	stz	a:wram_1F9E
 	stz	a:wram_1FDE
 	stz	a:p1_barrier_timer
 	stz	a:p2_barrier_timer
-	stz	a:wram_1F8E
-	stz	a:wram_1FCE
+	stz	a:p1_spin
+	stz	a:p2_spin
 	stz	a:wram_1600
 	stz	a:topdown_state
 	lda	#$0020

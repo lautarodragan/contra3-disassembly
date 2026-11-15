@@ -1,15 +1,28 @@
-; objects/secondary_objects.asm -- Secondary object list
+; objects/secondary_objects.asm -- Player shots (the secondary object list)
 ; Bank $00, $00:E1B8-$00:E368. Included by main.asm in segment BANK00.
 ;
-; sub_00E1B8 (once per frame from the stage loop) runs 40 slots of $20 bytes
-; at $0AC0-$0FBF: the handler of each slot's type (+$10) is called through
-; tbl_05A0B4 (sub_00E355), then velocity (+$18/+$1C) is added to position
-; (+$08/+$0C).
+; update_shots (once per frame from the stage loop) runs the 40 shot slots
+; of SHOT_SIZE ($20) bytes at $0AC0-$0FBF: calls each shot's handler
+; through tbl_shot_types, draws and moves it, and tests it against the
+; objects of the target list (damage to enemies).  The shots are spawned
+; by objects/player_shots.asm; their handlers are in object_handlers_00b.
 
-sub_00E1B8:
+; The player shot loop (secondary list, SHOT_SIZE slots at $0AC0-$0FBF):
+; calls each shot's handler (call_shot_handler), draws it (draw_shot; in
+; 2-player games only every other frame per player), adds its velocity,
+; frees it when off the screen, then tests its box (x..x+10, y..y+10)
+; against every object of the target list at $15A0.  On a hit:
+; target OBJ_HIT = SHOT_TYPE and, for an OBJF_TARGET object that is not
+; OBJF_INVULNERABLE, OBJ_HP -= SHOT_DAMAGE; when OBJ_HP goes negative,
+; SHOT_HIT = the new HP and the shooter scores type_scores[OBJ_TYPE]
+; (sub_00B829); otherwise SHOT_HIT = 1 (sound $10 if OBJF_CLANG).
+; A shot with SHOT_DAMAGE 0 hits nothing.  Each player's shots are tested
+; every other frame only: player 1's ($0AC0-$0D3F) when zp_BC = 1,
+; player 2's when zp_BC = 0.
+update_shots:
 	ldx	#$0AC0
 loc_00E1BB:
-	lda	$10,x
+	lda	SHOT_TYPE,x
 	bne	loc_00E1CB
 loc_00E1BF:
 	clc
@@ -20,7 +33,7 @@ loc_00E1BF:
 	bcc	loc_00E1BB
 	rtl
 loc_00E1CB:
-	jsl	f:sub_00E355
+	jsl	f:call_shot_handler
 	lda	a:title_menu_cursor
 	beq	loc_00E1E4
 	lda	zp_BC
@@ -32,30 +45,30 @@ loc_00E1DF:
 	cpx	#$0D40
 	bcc	loc_00E1ED
 loc_00E1E4:
-	lda	$02,x
+	lda	SHOT_ATTR,x
 	beq	loc_00E1ED
-	ldy	zp_AC
-	jsr	a:sub_00E2D7
+	ldy	oam_ptr
+	jsr	a:draw_shot
 loc_00E1ED:
 	clc
-	lda	$0C,x
-	adc	$1C,x
-	sta	$0C,x
-	lda	$0E,x
-	adc	$1E,x
-	sta	$0E,x
+	lda	OBJ_Y_SUB,x
+	adc	OBJ_Y_VEL_SUB,x
+	sta	OBJ_Y_SUB,x
+	lda	OBJ_Y,x
+	adc	OBJ_Y_VEL,x
+	sta	OBJ_Y,x
 	clc
-	lda	$08,x
-	adc	$18,x
-	sta	$08,x
-	lda	$0A,x
-	adc	$1A,x
-	sta	$0A,x
-	ldy	$02,x
+	lda	OBJ_X_SUB,x
+	adc	OBJ_X_VEL_SUB,x
+	sta	OBJ_X_SUB,x
+	lda	OBJ_X,x
+	adc	OBJ_X_VEL,x
+	sta	OBJ_X,x
+	ldy	SHOT_ATTR,x
 	beq	loc_00E1BF
 	cmp	#$00F8
 	bcs	loc_00E21C
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$FFC0
 	bcs	loc_00E22A
 	cmp	#$00F0
@@ -70,7 +83,7 @@ loc_00E21C:
 	plx
 	bra	loc_00E1BF
 loc_00E22A:
-	lda	$06,x
+	lda	SHOT_DAMAGE,x
 	beq	loc_00E1BF
 	lda	zp_BC
 	bne	loc_00E239
@@ -81,10 +94,10 @@ loc_00E239:
 	cpx	#$0D40
 	bcs	loc_00E1BF
 loc_00E23E:
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$000A
 	sta	zp_00
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$000A
 	sta	zp_02
 	txy
@@ -98,39 +111,39 @@ loc_00E251:
 	beq	loc_00E2C7
 	phx
 	tax
-	lda	$06,x
+	lda	OBJ_HP,x
 	bmi	loc_00E251
 	lda	zp_00
-	cmp	$0A,x
+	cmp	OBJ_X,x
 	bmi	loc_00E251
-	lda	a:$000E,y
-	cmp	$0E,x
+	lda	a:OBJ_Y,y
+	cmp	OBJ_Y,x
 	bpl	loc_00E251
 	lda	zp_02
-	cmp	$2E,x
+	cmp	OBJ_HITBOX_TOP,x
 	bmi	loc_00E251
-	lda	a:$000A,y
-	cmp	$2C,x
+	lda	a:OBJ_X,y
+	cmp	OBJ_HITBOX_RIGHT,x
 	bpl	loc_00E251
 	pla
-	lda	a:$0010,y
-	sta	$14,x
-	lda	$16,x
-	bit	#$0010
+	lda	a:SHOT_TYPE,y
+	sta	OBJ_HIT,x
+	lda	OBJ_FLAGS,x
+	bit	#OBJF_TARGET
 	beq	loc_00E2B3
-	bit	#$0020
+	bit	#OBJF_INVULNERABLE
 	bne	loc_00E2B3
 	sec
-	lda	$06,x
-	sbc	a:$0006,y
-	sta	$06,x
+	lda	OBJ_HP,x
+	sbc	a:SHOT_DAMAGE,y
+	sta	OBJ_HP,x
 	bpl	loc_00E2B3
-	sta	a:$0016,y
+	sta	a:SHOT_HIT,y
 	phy
-	lda	$10,x
+	lda	OBJ_TYPE,x
 	asl	a
 	tay
-	lda	a:data_05A66D,y
+	lda	a:type_scores,y
 	ply
 	phx
 	ldx	#$0200
@@ -142,14 +155,14 @@ loc_00E2AC:
 	plx
 	bra	loc_00E2C7
 loc_00E2B3:
-	lda	$16,x
-	bit	#$4000
+	lda	OBJ_FLAGS,x
+	bit	#OBJF_CLANG
 	beq	loc_00E2C1
 	lda	#$0010
 	jsl	f:queue_sound
 loc_00E2C1:
 	lda	#$0001
-	sta	a:$0016,y
+	sta	a:SHOT_HIT,y
 loc_00E2C7:
 	tyx
 	clc
@@ -162,22 +175,24 @@ loc_00E2C7:
 loc_00E2D6:
 	rtl
 
-sub_00E2D7:
-	bit	#$0100
+; Writes one OAM entry for the shot at X from SHOT_ATTR (SHOTA_LARGE: 16x16
+; at x, y; else 8x8 at x+4, y+4).  In: Y = oam_ptr.
+draw_shot:
+	bit	#SHOTA_LARGE
 	beq	loc_00E320
-	lda	$0A,x
+	lda	OBJ_X,x
 	cmp	#$00FE
 	bcs	loc_00E31F
 	and	#$00FF
 	sta	zp_08
-	lda	$0E,x
+	lda	OBJ_Y,x
 	cmp	#$00F0
 	bcs	loc_00E31F
 	and	#$00FF
 	xba
 	ora	zp_08
 	sta	a:$0000,y
-	lda	$02,x
+	lda	SHOT_ATTR,x
 	and	#$FEFF
 	sta	a:$0002,y
 	iny
@@ -185,33 +200,33 @@ sub_00E2D7:
 	iny
 	iny
 	clc
-	ror	zp_9C
+	ror	oam_hi_bits
 	sec
-	ror	zp_9C
+	ror	oam_hi_bits
 	bcc	loc_00E31D
 loc_00E30C:
 	phx
-	ldx	zp_AE
-	lda	zp_9C
+	ldx	oam_hi_ptr
+	lda	oam_hi_bits
 	sta	$00,x
 	inx
 	inx
 	lda	#$8000
-	sta	zp_9C
-	stx	zp_AE
+	sta	oam_hi_bits
+	stx	oam_hi_ptr
 	plx
 loc_00E31D:
-	sty	zp_AC
+	sty	oam_ptr
 loc_00E31F:
 	rts
 loc_00E320:
-	lda	$0A,x
+	lda	OBJ_X,x
 	adc	#$0004
 	cmp	#$00FE
 	bcs	loc_00E31F
 	and	#$00FF
 	sta	zp_08
-	lda	$0E,x
+	lda	OBJ_Y,x
 	adc	#$0004
 	cmp	#$00F4
 	bcs	loc_00E31F
@@ -219,27 +234,28 @@ loc_00E320:
 	xba
 	ora	zp_08
 	sta	a:$0000,y
-	lda	$02,x
+	lda	SHOT_ATTR,x
 	sta	a:$0002,y
 	iny
 	iny
 	iny
 	iny
 	clc
-	ror	zp_9C
+	ror	oam_hi_bits
 	clc
-	ror	zp_9C
+	ror	oam_hi_bits
 	bcc	loc_00E31D
 	bcs	loc_00E30C
 
-sub_00E355:
+; Jumps (JML) to the handler of shot type A in tbl_shot_types.
+call_shot_handler:
 	sta	zp_00
 	asl	a
 	clc
 	adc	zp_00
 	tay
-	lda	a:tbl_05A0B4,y
+	lda	a:tbl_shot_types,y
 	sta	zp_00
-	lda	a:tbl_05A0B4+2,y
+	lda	a:tbl_shot_types+2,y
 	sta	zp_02
 	jml	[zp_00]

@@ -1,7 +1,7 @@
 ; objects/object_handlers_01a.asm -- Object handlers (bank $01, part 1)
 ; Bank $01, $01:B194-$01:CF8A. Included by main.asm in segment BANK01.
 ;
-; Handlers of object types dispatched through tbl_05A48A and their helpers;
+; Handlers of object types dispatched through tbl_object_types and their helpers;
 ; sub_01CF25..sub_01CF66 are helpers used by every bank.
 
 sub_01B194:
@@ -104,7 +104,7 @@ loc_01B266:
 
 sub_01B267:
 	lda	#$0003
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	#$0078
 	sta	zp_00
 	lda	#$00D0
@@ -201,7 +201,7 @@ loc_01B338:
 	rtl
 
 sub_01B339:
-	inc	a:wram_1660
+	inc	a:shake_continuous
 	lda	$0E,x
 	cmp	#$00C8
 	bcc	loc_01B353
@@ -254,7 +254,7 @@ loc_01B38F:
 	rtl
 
 sub_01B39E:
-	inc	a:wram_1660
+	inc	a:shake_continuous
 	lda	$0A,x
 	cmp	#$0028
 	bcs	loc_01B3E0
@@ -266,7 +266,7 @@ sub_01B39E:
 	rtl
 
 sub_01B3B4:
-	inc	a:wram_1660
+	inc	a:shake_continuous
 	lda	$04,x
 	beq	loc_01B3C3
 	lda	$0A,x
@@ -856,7 +856,7 @@ loc_01B849:
 	bne	loc_01B861
 	rtl
 loc_01B85E:
-	inc	a:wram_1660
+	inc	a:shake_continuous
 loc_01B861:
 	lda	zp_BE
 	bne	loc_01B89B
@@ -2671,7 +2671,7 @@ loc_01C636:
 
 sub_01C637:
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	jsl	f:sub_01B956
 	lda	zp_BC
 	bne	loc_01C66B
@@ -3391,7 +3391,7 @@ loc_01CBBD:
 	lda	#$0041
 	jsl	f:queue_sound
 	lda	#$0005
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	#$00FF
 	sta	zp_FA
 	lda	#$0078

@@ -2,7 +2,7 @@
 ; Bank $01, $01:8000-$01:9E43. Included by main.asm in segment BANK01.
 ;
 ; Code reached from the player update (sub_01A624) and from object types of
-; tbl_05A48A: weapon firing (the routines that call the shot spawners in
+; tbl_object_types: weapon firing (the routines that call the shot spawners in
 ; objects/player_shots.asm, e.g. sub_0183DA, sub_018930..sub_018E4B) and the
 ; players' shot objects.
 

@@ -1,7 +1,7 @@
 ; objects/object_handlers_1D.asm -- Object handlers (bank $1D)
 ; Bank $1D, $1D:AF27-$1D:CCDF. Included by main.asm in segment BANK1D.
 ;
-; Handlers of object types dispatched through tbl_05A48A and their helpers.
+; Handlers of object types dispatched through tbl_object_types and their helpers.
 
 sub_1DAF27:
 	lda	$12,x
@@ -340,7 +340,7 @@ loc_1DB1E3:
 	sta	a:wram_16A8
 loc_1DB1F2:
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	jsr	a:sub_1DB44A
 	jsr	a:sub_1DB4E2
 	jsr	a:sub_1DB4F5
@@ -1383,7 +1383,7 @@ loc_1DBA36:
 
 sub_1DBA68:
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	zp_BC
 	beq	loc_1DBA8B
 	stz	zp_06
@@ -1769,7 +1769,7 @@ sub_1DBD69:
 
 sub_1DBD6A:
 	lda	#$0002
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	zp_78
 	bit	#$0001
 	bne	loc_1DBD88
@@ -2060,7 +2060,7 @@ sub_1DBFA3:
 	jsr	a:sub_1DCCC0
 loc_1DBFB5:
 	lda	#$0001
-	sta	a:wram_1660
+	sta	a:shake_continuous
 	lda	a:wram_163C
 	cmp	#$0030
 	bcs	loc_1DBFCA
@@ -2203,7 +2203,7 @@ loc_1DC0C6:
 	lda	#$0020
 	sta	$24,x
 	lda	#$0003
-	sta	a:wram_1662
+	sta	a:shake_timer
 loc_1DC0DB:
 	dec	$36,x
 	jsr	a:sub_1DCB66
@@ -2237,12 +2237,12 @@ loc_1DC119:
 	inc	$36,x
 	jsr	a:sub_1DCB66
 	lda	#$0001
-	sta	a:wram_1660
+	sta	a:shake_continuous
 	rtl
 
 sub_1DC125:
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	dec	$24,x
 	bpl	loc_1DC13D
 	lda	#$0006
@@ -2293,7 +2293,7 @@ loc_1DC182:
 	jsl	f:sub_00FD8D
 loc_1DC18D:
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	#$00FF
 	sta	zp_02
 	stz	zp_00
@@ -2398,7 +2398,7 @@ sub_1DC259:
 	bcc	loc_1DC281
 	stz	$1E,x
 	lda	#$0003
-	sta	a:wram_1662
+	sta	a:shake_timer
 	inc	a:wram_1642
 	lda	a:wram_1642
 	cmp	#$0005
@@ -2454,7 +2454,7 @@ loc_1DC2BF:
 	rtl
 loc_1DC2C0:
 	lda	#$0001
-	sta	a:wram_1660
+	sta	a:shake_continuous
 	jsr	a:sub_1DCB7A
 	lda	a:wram_1644
 	bpl	loc_1DC2D1
@@ -2558,13 +2558,13 @@ sub_1DC372:
 	stz	$1C,x
 	stz	$1E,x
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	inc	a:wram_1642
 loc_1DC39C:
 	rtl
 loc_1DC39D:
 	lda	#$0001
-	sta	a:wram_1660
+	sta	a:shake_continuous
 	lda	zp_78
 	bit	#$007F
 	bne	loc_1DC3F4
@@ -2621,7 +2621,7 @@ sub_1DC3FC:
 loc_1DC404:
 	ldy	$38,x
 	lda	#$0001
-	sta	a:wram_1660
+	sta	a:shake_continuous
 	lda	a:wram_1642
 	phx
 	asl	a
@@ -2653,7 +2653,7 @@ loc_1DC437:
 	bcc	loc_1DC44B
 	inc	a:wram_1642
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 loc_1DC44B:
 	rtl
 
@@ -2729,7 +2729,7 @@ loc_1DC4C3:
 	adc	#$0004
 	sta	$24,x
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	#$0039
 	jsl	f:queue_sound
 loc_1DC4DA:
@@ -2935,7 +2935,7 @@ sub_1DC64E:
 	bpl	loc_1DC674
 loc_1DC65C:
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	jsr	a:sub_1DCAC9
 	lda	#$0030
 	jsl	f:queue_sound
@@ -3050,7 +3050,7 @@ sub_1DC73F:
 	inc	$12,x
 loc_1DC749:
 	lda	#$0001
-	sta	a:wram_1660
+	sta	a:shake_continuous
 	lda	$0A,x
 	bmi	loc_1DC761
 	cmp	#$0020
@@ -3270,7 +3270,7 @@ loc_1DC8DE:
 	sta	$1A,x
 	inc	$30,x
 	lda	#$0002
-	sta	a:wram_1662
+	sta	a:shake_timer
 loc_1DC902:
 	clc
 	lda	$1C,x
@@ -3432,7 +3432,7 @@ loc_1DCA2B:
 	inc	a
 	sta	$1E,x
 	lda	#$0002
-	sta	a:wram_1662
+	sta	a:shake_timer
 loc_1DCA38:
 	lda	$0A,x
 	ldy	$1A,x

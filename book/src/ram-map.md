@@ -41,25 +41,40 @@ the ones in the lead's notes confirmed by the code):
 | `stage_number` | `$86` | stage number, 1-6 |
 | `rng_lo` | `$E8` | random number generator state, low word (sub_00816C) |
 | `rng_hi` | `$EA` | random number generator state, high word |
+| `oam_hi_bits` | `$9C` | OAM high-table bits being packed by `draw_metasprite` / `draw_shot` |
+| `shake_bg1_y` | `$A0` | screen shake: subtracted from BG1 VOFS and added to sprites' y (`update_shake_side_view`) |
+| `shake_bg2_y` | `$A2` | screen shake of BG2 (half of `shake_bg1_y`) |
+| `target_list_end` | `$AA` | end of the list of shot targets at `$15A0`, built by `update_objects` |
+| `oam_ptr` | `$AC` | next free entry of the OAM buffer (`$0FC0`) |
+| `oam_hi_ptr` | `$AE` | next byte of the OAM high table (`$11C0`) |
 | `sound_queue` | `$0100` | ring of commands for the sound CPU (sub_00868F, sub_0085F3) |
 | `player1_obj` | `$0200` | player 1 object ($40 bytes; player 2 at $0240) |
 | `player1_state` | `$0212` | player 1 object field +$12, state |
 | `player2_obj` | `$0240` | player 2 object ($40 bytes) |
 | `player2_state` | `$0252` | player 2 object field +$12, state |
 | `stage_progress` | `$13BD` | stage progress counter |
+| `shake_continuous` | `$1660` | non-zero: 1-pixel screen shake until cleared |
+| `shake_timer` | `$1662` | screen shake amplitude, counted down every 16 frames |
+| `update_objects_stop` | `$166A` | slot where `update_objects` stops |
 | `title_menu_cursor` | `$1E02` | title menu choice; also read during play as 1 player (0) / 2 players (1) |
 | `demo_index` | `$1E48` | attract demo index |
 | `nmitimen_shadow` | `$1E82` | written to NMITIMEN by nmi and irq |
 | `htime_shadow` | `$1EC0` | written to HTIMEL/H by nmi |
 | `vtime_shadow` | `$1EC2` | written to VTIMEL/H by nmi |
 | `p1_weapon_slot` | `$1F80` | player 1 active weapon slot (player 2: $1FC0) |
+| `p1_weapon_1` | `$1F84` | player 1 weapon (`WEAPON_*`) of the first slot, fired when `p1_weapon_slot` = 2 |
+| `p1_weapon_2` | `$1F86` | player 1 weapon of the second slot, fired when `p1_weapon_slot` = 0 |
 | `p1_barrier_timer` | `$1F88` | player 1 barrier (invincibility) timer |
 | `p1_lives` | `$1F8A` | player 1 lives |
 | `p1_bombs` | `$1F8C` | player 1 smart bombs |
+| `p1_spin` | `$1F8E` | 1 while L+R are held or in the spin jump: both weapons fire |
 | `p2_weapon_slot` | `$1FC0` | player 2 active weapon slot (by the $40 stride of the player blocks) |
+| `p2_weapon_1` | `$1FC4` | player 2 weapon of the first slot |
+| `p2_weapon_2` | `$1FC6` | player 2 weapon of the second slot |
 | `p2_barrier_timer` | `$1FC8` | player 2 barrier (invincibility) timer |
 | `p2_lives` | `$1FCA` | player 2 lives |
 | `p2_bombs` | `$1FCC` | player 2 smart bombs |
+| `p2_spin` | `$1FCE` | player 2, as `p1_spin` |
 
 `stage_index` (`$70`) had been noted as the attract-demo stage; the code
 sets it to `stage_number - 1` both in normal play (`sub_00A7FE`) and in the
@@ -69,14 +84,14 @@ side-view and the top-down stage code, so it is the 0-based stage number.
 ## Structures
 
 The main object list has slots of `$40` bytes from `$0200` (players at
-`$0200` and `$0240`); the secondary list has 40 slots of `$20` bytes at
-`$0AC0`. Code reaches a field with X holding the slot address, so the field
-offsets appear as direct-page numbers (`lda $12,x`). `src/ram.inc` defines
-the offsets seen in the object loops as constants (`OBJ_TYPE`, `OBJ_STATE`,
-`OBJ_X`, ...), not yet applied to the code: each use has to be checked to
-really index an object. Objects also have parallel arrays at slot +
-`$1300`, and the players a stat block at slot + `$1D80`, so `p1_lives`
-(`$1F8A`) also appears as `lda a:$1D8A,x` with X = `$0200`.
+`$0200` and `$0240`); the player shots are a second list of 40 slots of
+`$20` bytes at `$0AC0`. Code reaches a field with X holding the slot
+address, so the field offsets appear as direct-page numbers (`lda $12,x`).
+`src/ram.inc` defines them as constants (`OBJ_*`, `PLAYER_*`, `SHOT_*`),
+applied where the index register was checked to hold a slot; the players
+also have fields at slot + `$1300` and a stat block at slot + `$1D80`, so
+`p1_lives` (`$1F8A`) also appears as `lda a:PLAYER_LIVES,x` with X =
+`$0200`. See [Objects](objects.md) for the layout.
 
 When you name a variable, rename its placeholder everywhere (src/ and book/), add
 it to the table above with how you know, and update its comment in

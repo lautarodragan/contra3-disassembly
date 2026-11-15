@@ -2,7 +2,7 @@
 ; Bank $00, $00:F27C-$00:FD8C. Included by main.asm in segment BANK00.
 ;
 ; Object type 1 (sub_00F27C) with its sub-states and helpers, and other
-; handlers dispatched through tbl_05A48A.
+; handlers dispatched through tbl_object_types.
 
 sub_00F27C:
 	lda	$32,x
@@ -208,7 +208,7 @@ sub_00F415:
 	lda	#$0056
 	jsl	f:queue_sound
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	inc	$12,x
 	rtl
 loc_00F42D:
@@ -384,7 +384,7 @@ loc_00F572:
 	stz	a:wram_03DE
 	stz	a:wram_03F0
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	#$0056
 	jsl	f:queue_sound
 	lda	#$0056
@@ -551,7 +551,7 @@ sub_00F6C7:
 	lda	#$0002
 	sta	$3E,x
 	lda	#$0001
-	sta	a:wram_1660
+	sta	a:shake_continuous
 	dec	$38,x
 	bne	loc_00F6DD
 	stz	$36,x

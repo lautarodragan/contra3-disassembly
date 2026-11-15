@@ -15,3 +15,4 @@
 - [The cartridge](cartridge.md)
 - [RAM map](ram-map.md)
 - [Routines](routines.md)
+- [Objects](objects.md)

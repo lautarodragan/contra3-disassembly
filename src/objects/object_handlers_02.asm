@@ -1,7 +1,7 @@
 ; objects/object_handlers_02.asm -- Object handlers (bank $02)
 ; Bank $02, $02:FCCB-$02:FFFF. Included by main.asm in segment BANK02.
 ;
-; Handlers of the secondary object list (tbl_05A0B4) and a routine called from
+; Handlers of the secondary object list (tbl_shot_types) and a routine called from
 ; bank $1D.
 
 sub_02FCCB:

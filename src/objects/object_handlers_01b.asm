@@ -1,7 +1,7 @@
 ; objects/object_handlers_01b.asm -- Object handlers (bank $01, part 2)
 ; Bank $01, $01:CF8B-$01:F6A7. Included by main.asm in segment BANK01.
 ;
-; Handlers of object types dispatched through tbl_05A48A and their helpers.
+; Handlers of object types dispatched through tbl_object_types and their helpers.
 
 ; (no caller found; decoded because it follows the end of a routine)
 sub_01CF8B:
@@ -580,7 +580,7 @@ loc_01D3B0:
 	lda	zp_BE
 	bne	loc_01D382
 	lda	#$0001
-	sta	a:wram_1660
+	sta	a:shake_continuous
 	ldy	#$0840
 	jsl	f:sub_019EC1
 	bcc	loc_01D382
@@ -860,7 +860,7 @@ loc_01D5F1:
 	rtl
 loc_01D600:
 	lda	#$0001
-	sta	a:wram_1660
+	sta	a:shake_continuous
 	ldy	#$FFFD
 	lda	$24,x
 	bit	#$0100
@@ -871,7 +871,7 @@ loc_01D600:
 	jsl	f:queue_sound
 loc_01D61C:
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	ldy	#$FFF9
 loc_01D625:
 	sty	$30,x
@@ -1129,7 +1129,7 @@ loc_01D830:
 
 sub_01D831:
 	lda	#$0003
-	sta	a:wram_1662
+	sta	a:shake_timer
 	dec	$24,x
 	bne	loc_01D83E
 	inc	$12,x
@@ -2820,7 +2820,7 @@ sub_01E48F:
 	sta	a:$001E,y
 loc_01E4C0:
 	lda	#$0003
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	$1E,x
 	bmi	loc_01E4CF
 	cmp	#$0001
@@ -4017,7 +4017,7 @@ sub_01EDFC:
 	lda	#$007C
 	sta	a:wram_034A
 	lda	#$0003
-	sta	a:wram_1662
+	sta	a:shake_timer
 	stz	a:wram_0358
 	stz	a:wram_035A
 	inc	$12,x
@@ -4207,7 +4207,7 @@ loc_01EF77:
 	bne	loc_01EF96
 loc_01EF89:
 	lda	#$0002
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	#$0049
 	jsl	f:queue_sound
 loc_01EF96:
@@ -4277,7 +4277,7 @@ sub_01EFEF:
 	ldy	#$CCAF
 	jsr	a:sub_01F2B0
 	lda	#$0003
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	#$0020
 	sta	$24,x
 	lda	#$004A
@@ -4287,7 +4287,7 @@ sub_01EFEF:
 sub_01F025:
 	jsr	a:sub_01F3E3
 	lda	#$0001
-	sta	a:wram_1660
+	sta	a:shake_continuous
 	lda	f:wram_7E3821
 	cmp	#$00A0
 	bcc	loc_01F039
@@ -4307,7 +4307,7 @@ loc_01F039:
 sub_01F04F:
 	jsr	a:sub_01F3E3
 	lda	#$0003
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	#$8000
 	sta	a:wram_0416
 	sta	a:wram_0456
@@ -4438,7 +4438,7 @@ loc_01F164:
 	lda	#$004B
 	jsl	f:queue_sound
 	lda	#$0002
-	sta	a:wram_1662
+	sta	a:shake_timer
 	phy
 	jsr	a:sub_01F38B
 	ply
@@ -4498,7 +4498,7 @@ sub_01F1E1:
 loc_01F1EF:
 	jsl	f:sub_00FD92
 	lda	#$0002
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	$0A,x
 	sta	zp_00
 	lda	#$00B8
@@ -4519,7 +4519,7 @@ loc_01F21E:
 sub_01F21F:
 	jsr	a:sub_01F3E3
 	lda	#$0001
-	sta	a:wram_1660
+	sta	a:shake_continuous
 	lda	f:wram_7E3821
 	bpl	loc_01F24A
 	lda	#$0000

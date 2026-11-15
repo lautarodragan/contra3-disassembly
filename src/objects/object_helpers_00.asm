@@ -221,32 +221,32 @@ loc_00FEE9:
 loc_00FF00:
 	rtl
 
-sub_00FF01:
+update_shake_side_view:
 	lda	zp_E4
 	bne	loc_00FF28
-	lda	a:wram_1662
+	lda	a:shake_timer
 	beq	loc_00FF1D
 	lda	zp_78
 	and	#$000F
 	bne	loc_00FF14
-	dec	a:wram_1662
+	dec	a:shake_timer
 loc_00FF14:
-	lda	a:wram_1662
-	sta	zp_A0
+	lda	a:shake_timer
+	sta	shake_bg1_y
 	lsr	a
-	sta	zp_A2
+	sta	shake_bg2_y
 	rtl
 loc_00FF1D:
-	lda	a:wram_1660
+	lda	a:shake_continuous
 	beq	loc_00FF2B
 	lda	#$0001
-	sta	zp_A0
+	sta	shake_bg1_y
 	rtl
 loc_00FF28:
-	stz	a:wram_1660
+	stz	a:shake_continuous
 loc_00FF2B:
-	stz	zp_A0
-	stz	zp_A2
+	stz	shake_bg1_y
+	stz	shake_bg2_y
 	rtl
 
 sub_00FF30:

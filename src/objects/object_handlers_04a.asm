@@ -1,7 +1,7 @@
 ; objects/object_handlers_04a.asm -- Object handlers (bank $04, part 1)
 ; Bank $04, $04:8000-$04:D877. Included by main.asm in segment BANK04.
 ;
-; Handlers of object types dispatched through tbl_05A48A and their helpers.
+; Handlers of object types dispatched through tbl_object_types and their helpers.
 
 sub_048000:
 	.a16
@@ -10,7 +10,7 @@ sub_048000:
 	cmp	#$000D
 	bcc	loc_04802A
 	lda	#$0001
-	sta	a:wram_1660
+	sta	a:shake_continuous
 	ldy	#$0050
 	jsl	f:sub_019E6E
 	lda	zp_78
@@ -403,7 +403,7 @@ loc_04830B:
 	stz	$18,x
 	stz	$1A,x
 	lda	#$0003
-	sta	a:wram_1662
+	sta	a:shake_timer
 	rtl
 loc_04831A:
 	clc
@@ -866,7 +866,7 @@ sub_04867C:
 	lda	#$0004
 	sta	a:wram_1680
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	inc	$12,x
 loc_048699:
 	rtl
@@ -1022,13 +1022,13 @@ loc_0487C2:
 	adc	#$0000
 	sta	$1E,x
 	lda	#$0001
-	sta	a:wram_1660
+	sta	a:shake_continuous
 	jml	f:loc_01D83E
 
 sub_0487DB:
 	jsl	f:sub_00FD8D
 	lda	#$0003
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	#$00C0
 	sta	zp_02
 	lda	#$0038
@@ -1202,7 +1202,7 @@ loc_04893D:
 
 sub_04893E:
 	lda	#$0003
-	sta	a:wram_1662
+	sta	a:shake_timer
 	phx
 	lda	a:wram_1638
 	asl	a
@@ -4683,7 +4683,7 @@ loc_04A518:
 	jsr	a:sub_04A8AF
 loc_04A52A:
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	jsr	a:sub_04A74A
 	jsr	a:sub_04A907
 	rtl
@@ -4723,7 +4723,7 @@ loc_04A576:
 	jsr	a:sub_04A74A
 	jsr	a:sub_04A907
 	lda	#$0002
-	sta	a:wram_1662
+	sta	a:shake_timer
 	rtl
 loc_04A586:
 	lda	#$0006
@@ -4757,7 +4757,7 @@ loc_04A5BA:
 	jsr	a:sub_04A93B
 	jsr	a:sub_04A907
 	lda	#$0002
-	sta	a:wram_1662
+	sta	a:shake_timer
 	rtl
 loc_04A5CD:
 	lda	#$0004
@@ -4775,7 +4775,7 @@ sub_04A5D2:
 	jsr	a:sub_04A8AF
 loc_04A5E4:
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	jsr	a:sub_04A74A
 	jsr	a:sub_04A907
 	jsr	a:sub_04A997
@@ -4795,7 +4795,7 @@ sub_04A606:
 	brl	loc_04A4FC
 loc_04A60D:
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	jsr	a:sub_04A74A
 	ldy	#$0700
 	jsr	a:sub_04A7D1
@@ -4824,7 +4824,7 @@ sub_04A64C:
 	bmi	loc_04A681
 	jsl	f:sub_00FD92
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	#$0040
 	sta	zp_00
 	lda	#$0040
@@ -6221,7 +6221,7 @@ sub_04B0A7:
 	dec	$24,x
 	bmi	loc_04B0D8
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	#$0080
 	sta	zp_00
 	lda	#$00A0
@@ -6629,7 +6629,7 @@ sub_04B3A5:
 	dec	$24,x
 	bmi	loc_04B3D5
 	lda	#$0004
-	sta	a:wram_1662
+	sta	a:shake_timer
 	lda	$0A,x
 	sta	zp_00
 	lda	#$0080
@@ -7003,7 +7003,7 @@ loc_04B6AC:
 	jmp	a:loc_04B674
 loc_04B6BC:
 	lda	#$0003
-	sta	a:wram_1662
+	sta	a:shake_timer
 	jsl	f:sub_019EAB
 	bcs	loc_04B6F1
 	lda	#$0066
@@ -7154,7 +7154,7 @@ sub_04B7EF:
 	lda	#$0009
 	jsr	a:sub_04BC10
 	lda	#$0003
-	sta	a:wram_1662
+	sta	a:shake_timer
 	stz	$30,x
 	stz	$24,x
 	lda	#$0056
@@ -7163,7 +7163,7 @@ sub_04B7EF:
 	jmp	a:loc_04B7EC
 
 sub_04B80B:
-	lda	a:wram_1662
+	lda	a:shake_timer
 	bne	loc_04B816
 	stz	$30,x
 	stz	$24,x
@@ -7217,7 +7217,7 @@ loc_04B861:
 	lda	#$00B8
 	sta	$0E,x
 	lda	#$0000
-	sta	a:wram_1660
+	sta	a:shake_continuous
 	lda	#$0007
 	jsr	a:sub_04BC10
 	inc	$12,x
@@ -7277,7 +7277,7 @@ loc_04B8EA:
 	jsr	a:sub_04BC10
 loc_04B8ED:
 	lda	#$0001
-	sta	a:wram_1660
+	sta	a:shake_continuous
 	jmp	a:loc_04B674
 
 sub_04B8F6:

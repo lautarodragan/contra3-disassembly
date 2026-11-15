@@ -14,7 +14,7 @@ sub_00D656:
 	pha
 	asl	a
 	tay
-	lda	a:data_05A008,y
+	lda	a:weapon_fire_delays,y
 	sta	$3A,x
 	txy
 	lda	#$0AC0
@@ -49,7 +49,7 @@ sub_00D692:
 	pha
 	asl	a
 	tay
-	lda	a:data_05A008,y
+	lda	a:weapon_fire_delays,y
 	sta	$14,x
 	txy
 	lda	#$0C00
@@ -97,7 +97,7 @@ loc_00D6E2:
 	pha
 	asl	a
 	tay
-	lda	a:data_05A008,y
+	lda	a:weapon_fire_delays,y
 	sta	$3A,x
 	txy
 	lda	#$0AC0
@@ -131,7 +131,7 @@ loc_00D723:
 	pha
 	asl	a
 	tay
-	lda	a:data_05A008,y
+	lda	a:weapon_fire_delays,y
 	sta	$14,x
 	txy
 	lda	#$0C00

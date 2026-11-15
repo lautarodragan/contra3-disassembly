@@ -62,7 +62,7 @@ banks, stay as source because they contain pointers that will become labels.
 | `src/objects/object_handlers_00a.asm` | `$00:CF0C-$00:D655` | Object handlers (bank $00, part 1) |
 | `src/objects/player_shots.asm` | `$00:D656-$00:DDC7` | Player shots |
 | `src/objects/object_handlers_00b.asm` | `$00:DDC8-$00:E1B7` | Object handlers (bank $00, part 2) |
-| `src/objects/secondary_objects.asm` | `$00:E1B8-$00:E368` | Secondary object list |
+| `src/objects/secondary_objects.asm` | `$00:E1B8-$00:E368` | Player shots (the secondary object list) |
 | `src/engine/hdma.asm` | `$00:E369-$00:E7EE` | HDMA tables and their NMI-time transfers |
 | `src/engine/window_effect.asm` | `$00:E7EF-$00:E95F` | Window effect around a player |
 | `src/objects/object_loop.asm` | `$00:E960-$00:EB19` | Object loop and type dispatcher |

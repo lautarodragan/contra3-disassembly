@@ -100,7 +100,7 @@ loc_00E3E0:
 	sta	a:wram_1713
 	sta	a:wram_1751
 	sta	a:wram_1753
-	ldx	a:wram_1F84
+	ldx	a:p1_weapon_1
 	lda	a:data_05A1D5,x
 	sta	a:wram_170A
 	lda	a:data_05A1DB,x
@@ -109,7 +109,7 @@ loc_00E3E0:
 	sta	a:wram_174A
 	lda	a:data_05A1E7,x
 	sta	a:wram_174C
-	ldx	a:wram_1F86
+	ldx	a:p1_weapon_2
 	lda	a:data_05A1D5,x
 	sta	a:wram_1710
 	lda	a:data_05A1DB,x
@@ -161,7 +161,7 @@ loc_00E46A:
 	sta	a:wram_1733
 	sta	a:wram_1771
 	sta	a:wram_1773
-	ldx	a:wram_1FC4
+	ldx	a:p2_weapon_1
 	lda	a:data_05A1D5,x
 	sta	a:wram_172A
 	lda	a:data_05A1DB,x
@@ -170,7 +170,7 @@ loc_00E46A:
 	sta	a:wram_176A
 	lda	a:data_05A1E7,x
 	sta	a:wram_176C
-	ldx	a:wram_1FC6
+	ldx	a:p2_weapon_2
 	lda	a:data_05A1D5,x
 	sta	a:wram_1730
 	lda	a:data_05A1DB,x
