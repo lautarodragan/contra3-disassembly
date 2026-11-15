@@ -1683,8 +1683,12 @@ data_05A9F9:
 	.byte	$50, $10, $A0, $EE, $20, $A0, $30, $10, $A0, $00
 data_05AA03:
 	; CDL: read by build_wave_table, opening_init_ruins_wave
-	.byte	$50, $10, $A4, $EE, $20, $A4, $30, $10, $A4, $00, $80, $13, $00, $00, $70, $00
-	.byte	$20, $A0, $7E, $98, $13, $00, $00, $70, $00, $20, $A4, $7E
+	.byte	$50, $10, $A4, $EE, $20, $A4, $30, $10, $A4, $00
+ruins_wave_params_0:
+	.byte	$80, $13, $00, $00, $70, $00
+	.byte	$20, $A0, $7E
+ruins_wave_params_1:
+	.byte	$98, $13, $00, $00, $70, $00, $20, $A4, $7E
 load_list_05AA1F:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk (+4 more); DMA / HDMA; partly not accessed
 	load_list	$00, $01
@@ -2955,8 +2959,11 @@ palette_task_05CD4D:
 	palette_fade_in	$10, palette_08F06E, $22C4
 palette_task_05CD53:
 	palette_fade_out	$10, palette_08F06E, $22C4
-	.byte	$70, $43, $01, $28, $63, $CD, $05, $FF
-	.byte	$FF, $80, $18, $01, $00, $01, $18, $E8, $00
+hdma_list_05CD59:
+	hdma_channel	$4370, $01, $28, hdma_table_05CD63
+	hdma_channels_end	$80
+hdma_table_05CD63:
+	.byte	$18, $01, $00, $01, $18, $E8, $00
 topdown_stage_songs:
 	; CDL: read by intro_play_music
 	.byte	$63, $00, $66, $00

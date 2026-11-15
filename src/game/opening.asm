@@ -843,9 +843,9 @@ opening_init_ruins_wave:
 	lda	a:bg1_y
 	inc	a
 	sta	f:wram_7EA410
-	ldy	#$AA0D
+	ldy	#.loword(ruins_wave_params_0)
 	jsl	f:build_wave_table
-	ldy	#$AA16
+	ldy	#.loword(ruins_wave_params_1)
 	jsl	f:build_wave_table
 	rts
 

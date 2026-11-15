@@ -497,7 +497,7 @@ draw_title_texts:
 ; Never called: setup_hdma_from_list with the list at $05:84FE.
 setup_hdma_list_unused:
 	; (not executed in the CDL traces)
-	ldy	#$84FE
+	ldy	#.loword(hdma_list_0584FE)
 	jsl	f:setup_hdma_from_list
 	rts
 

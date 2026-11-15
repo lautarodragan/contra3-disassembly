@@ -247,7 +247,7 @@ pointers not found yet)."""
 POINTER_CONSUMERS = re.compile(
     r"^(sta|stx|sty)\t(OBJ_ANIM,[xy]|OBJ_SPRITE,[xy]|a:\$0020,y|a:\$0000,y|cgram_upload_src)$"
     r"|^j[sm][lr]\t[fa]:(make_effect_object|spawn_effect\w*|start_palette_task\w*|draw_text\w*"
-    r"|load_data_list|load_song_set|copy_hdma_table)$")
+    r"|load_data_list|load_song_set|copy_hdma_table|build_wave_table|setup_hdma_from_list)$")
 
 
 def scan_source(srcdir="src"):

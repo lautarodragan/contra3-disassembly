@@ -709,7 +709,7 @@ intro_init:
 	rep	#$20
 	.a16
 	stz	m7_split_screen
-	ldy	#$CD59
+	ldy	#.loword(hdma_list_05CD59)
 	jsl	f:setup_hdma_from_list
 	lda	#$0080
 	sta	a:hdmaen_shadow
