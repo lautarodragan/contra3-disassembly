@@ -371,7 +371,7 @@ layout_init_stage1_checkpoint:
 	bra	layout_init_stage1_common
 
 layout_init_stage1:
-	jsl	f:sub_01B918
+	jsl	f:init_tank_hdma_table
 	lda	#$0003
 	sta	hdma_preset
 	lda	#$0004

@@ -36,9 +36,9 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $06 | `update_object_type_06` | stage 1 scripted scene (section 9): BG/HDMA effect with 9 states. Not identified |
 | $07 | `update_load_list_trigger` | stage trigger: loads the list `data_059E4A`[field `$3A`] with `load_data_list` |
 | $08 | `update_object_type_08` | stage trigger (stage 1 section 4): stops `bg1_autoscroll`, `bg1_scroll_mode` = 4 |
-| $09 | `update_object_type_09` | seen in stage 1 (section 4), HP 16. Not identified |
+| $09 | `update_player_tank` | seen in stage 1 (section 4), HP 16. Not identified |
 | $0A | `update_foot_soldier` | running foot soldier (stage 1; checked in the emulator). Killed: becomes type $1B (dying soldier) |
-| $0B | `update_object_type_0B` | invisible, at the start of stage 1. Not identified |
+| $0B | `update_soldier_spawner` | invisible, at the start of stage 1. Not identified |
 | $0C | `update_bomber_bomb` | bomb dropped by the bomber plane (stage 1 section 10, seen in the emulator); falls with gravity, trailing type $1D fire effects |
 | $0D | `update_popup_turret` | gun turret that rises out of the rubble (stage 1, HP 16; seen in the emulator) |
 | $0E | `update_bg1_scroll_mode_trigger` | stage trigger: sets `bg1_scroll_mode` from field `$3A`, stops `bg1_autoscroll`, rounds the BG1 position |

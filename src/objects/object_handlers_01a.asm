@@ -700,8 +700,14 @@ loc_01B6E9:
 loc_01B711:
 	rtl
 
-; Object type $09: seen in stage 1 (section 4), HP 16. Not identified.
-update_object_type_09:
+; Object type $09: the tank the players can drive in stage 1 (sections 4-5;
+; seen in the emulator), drawn on BG2 (tiles queue_vram_blocks, position
+; through the HDMA table at $7E:3800, init_tank_hdma_table). A player who
+; lands on its hatch (player_tank_check_boarding) enters it
+; (PLAYER_STATE_ENTER_TANK, then PLAYER_STATE_TANK) and becomes tank_driver.
+; The tank's damage counter is wram_09C6 (OBJ_HP of slot $09C0): objects
+; with OBJ_FLAGS bit $1000 touching it decrement it.
+update_player_tank:
 	lda	$12,x
 	cmp	#$0003
 	beq	loc_01B723
@@ -732,18 +738,18 @@ loc_01B74B:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_09_states,x
+	lda	f:tbl_player_tank_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_09_states:
-	.addr	object_type_09_state_00
-	.addr	object_type_09_state_01
-	.addr	object_type_09_state_02
-	.addr	object_type_09_state_03
-	.addr	object_type_09_state_04
+tbl_player_tank_states:
+	.addr	player_tank_state_00
+	.addr	player_tank_state_01
+	.addr	player_tank_state_02
+	.addr	player_tank_state_03
+	.addr	player_tank_state_04
 
-object_type_09_state_00:
+player_tank_state_00:
 	stz	a:wram_16AE
 	lda	#$0041
 	sta	$16,x
@@ -759,30 +765,30 @@ object_type_09_state_00:
 	stz	$38,x
 	inc	$12,x
 	lda	#$0200
-	sta	a:wram_1658
+	sta	a:tank_driver
 	stz	a:wram_165A
 	stz	a:wram_165C
 	rtl
 
-object_type_09_state_01:
+player_tank_state_01:
 	lda	a:wram_0216
 	beq	loc_01B7A8
 	bmi	loc_01B7A8
 	ldy	#$0200
-	jsr	a:sub_01B9DE
+	jsr	a:player_tank_check_boarding
 	lda	a:player1_state
 	cmp	#$0009
-	beq	object_type_09_state_02
+	beq	player_tank_state_02
 loc_01B7A8:
 	lda	a:wram_0256
 	beq	loc_01B7DD
 	bmi	loc_01B7DD
 	ldy	#$0240
-	jsr	a:sub_01B9DE
+	jsr	a:player_tank_check_boarding
 	bra	loc_01B7DD
 
-object_type_09_state_02:
-	lda	a:wram_1658
+player_tank_state_02:
+	lda	a:tank_driver
 	tay
 	lda	a:$1306,y
 	sta	$1A,x
@@ -814,7 +820,7 @@ loc_01B7F3:
 	lda	a:$0016,y
 	bit	#$0800
 	beq	loc_01B83E
-	jsr	a:sub_01BA47
+	jsr	a:solid_object_vs_object
 	lda	zp_0E
 	beq	loc_01B83E
 	bit	#$1000
@@ -897,7 +903,7 @@ loc_01B895:
 loc_01B89B:
 	rtl
 
-object_type_09_state_04:
+player_tank_state_04:
 	lda	a:bg2_scroll_mode
 	cmp	#$0002
 	bne	loc_01B8B5
@@ -910,7 +916,7 @@ object_type_09_state_04:
 loc_01B8B5:
 	rtl
 
-object_type_09_state_03:
+player_tank_state_03:
 	; (not executed in the CDL traces)
 	dec	$24,x
 	beq	loc_01B8C6
@@ -943,7 +949,7 @@ loc_01B8D5:
 	lda	#$C5DC
 	jsl	f:spawn_effect_random_offset
 loc_01B8FA:
-	jsr	a:sub_01B993
+	jsr	a:player_tank_push_objects
 	lda	$24,x
 	cmp	#$0060
 	bcs	loc_01B90D
@@ -958,7 +964,7 @@ loc_01B90D:
 	sta	f:wram_7E3807
 	rtl
 
-sub_01B918:
+init_tank_hdma_table:
 	lda	#$007F
 	sta	f:wram_7E3800
 	lda	#$1C00
@@ -973,7 +979,7 @@ sub_01B918:
 	sta	f:wram_7E380A
 	rtl
 
-sub_01B943:
+set_solid_push_flags:
 	lda	#$0080
 	sta	zp_04
 	lda	#$0200
@@ -983,7 +989,10 @@ sub_01B943:
 	ldy	#$0280
 	rts
 
-sub_01B956:
+; The object at X is solid for the players (solid_object_vs_player) and
+; pushes foot soldiers (type $0A) and alien dogs (type $1E) out of it
+; (solid_object_vs_object).
+solid_object_vs_players_and_soldiers:
 	lda	a:wram_0216
 	beq	loc_01B966
 	ldy	#$0200
@@ -997,7 +1006,7 @@ loc_01B966:
 	stz	zp_0C
 	jsl	f:solid_object_vs_player
 loc_01B974:
-	jsr	a:sub_01B943
+	jsr	a:set_solid_push_flags
 loc_01B977:
 	lda	a:$0010,y
 	cmp	#$000A
@@ -1005,7 +1014,7 @@ loc_01B977:
 	cmp	#$001E
 	bne	loc_01B987
 loc_01B984:
-	jsr	a:sub_01BA47
+	jsr	a:solid_object_vs_object
 loc_01B987:
 	tya
 	clc
@@ -1015,7 +1024,7 @@ loc_01B987:
 	bcc	loc_01B977
 	rtl
 
-sub_01B993:
+player_tank_push_objects:
 	; (not executed in the CDL traces)
 	lda	a:wram_0216
 	beq	loc_01B9A5
@@ -1032,12 +1041,12 @@ loc_01B9A5:
 	stz	zp_0C
 	jsl	f:solid_object_vs_player
 loc_01B9B5:
-	jsr	a:sub_01B943
+	jsr	a:set_solid_push_flags
 loc_01B9B8:
 	lda	a:$0016,y
 	bit	#$0800
 	beq	loc_01B9D2
-	jsr	a:sub_01BA47
+	jsr	a:solid_object_vs_object
 	lda	zp_0E
 	beq	loc_01B9D2
 	bit	#$1000
@@ -1053,7 +1062,9 @@ loc_01B9D2:
 	bcc	loc_01B9B8
 	rts
 
-sub_01B9DE:
+; Solid for the player at Y; when that player stands on the tank 40-48
+; pixels right of its x, it enters: tank_driver = Y, player state 9.
+player_tank_check_boarding:
 	lda	$34,x
 	sta	zp_0C
 	jsl	f:solid_object_vs_player
@@ -1084,7 +1095,7 @@ loc_01BA08:
 loc_01BA1B:
 	rts
 loc_01BA1C:
-	sty	a:wram_1658
+	sty	a:tank_driver
 	lda	$0A,x
 	clc
 	adc	#$0028
@@ -1103,7 +1114,10 @@ loc_01BA1C:
 loc_01BA46:
 	rts
 
-sub_01BA47:
+; Pushes the object at Y out of the hitbox of the object at X along the
+; shallower axis and ORs the side flag (zp_00 left, zp_02 right, zp_04 top)
+; into its field $3E; zp_0E = its OBJ_FLAGS (0: no overlap).
+solid_object_vs_object:
 	stz	zp_0E
 	clc
 	lda	$0A,x
@@ -1222,13 +1236,13 @@ tbl_foot_soldier_states:
 	.addr	foot_soldier_state_04
 	.addr	foot_soldier_state_05
 
-sub_01BB1A:
+soldier_stop_and_run:
 	stz	$1C,x
 	stz	$1E,x
 	lda	#$0008
 	sta	$24,x
 
-sub_01BB23:
+soldier_set_run_direction:
 	lda	$0A,x
 	cmp	#$0080
 	bcc	loc_01BB3A
@@ -1247,21 +1261,23 @@ loc_01BB3A:
 	sta	$18,x
 	rts
 loc_01BB45:
-	jsr	a:sub_01BB1A
+	jsr	a:soldier_stop_and_run
 	bra	loc_01BB68
 
-sub_01BB4A:
+init_foot_soldier_running:
 	lda	#$000C
 	sta	$24,x
 	lda	#$0003
 	sta	$12,x
-	jsr	a:sub_01BB23
+	jsr	a:soldier_set_run_direction
 	jsl	f:foot_soldier_state_00
 	lda	#$0068
 	sta	$0E,x
 	rtl
 
-sub_01BB61:
+; Turns the slot into a foot soldier with HP soldier_hp[difficulty] (the
+; others have 0) and a random start delay.
+init_foot_soldier_with_hp:
 	lda	rng_lo
 	and	#$003F
 	sta	$24,x
@@ -1501,7 +1517,7 @@ loc_01BD30:
 	lda	stage_frame_mod4
 	cmp	#$0003
 	bne	loc_01BD3B
-	jsl	f:sub_01C302
+	jsl	f:queue_object_tiles
 loc_01BD3B:
 	rtl
 
@@ -1573,8 +1589,12 @@ loc_01BDA5:
 	sta	$1E,x
 	rtl
 
-; Object type $0B: invisible, at the start of stage 1. Not identified.
-update_object_type_0B:
+; Object type $0B: invisible soldier spawner (stage 1 from the start): every
+; data_05AFD2[difficulty] + rnd frames a foot soldier runs in from the right
+; edge, every data_05AFD8 + rnd frames one from the left, unless a big
+; enemy (OBJ_FLAGS bit $0040, slots $0900-$09FF) is near that edge; some
+; get HP (init_foot_soldier_with_hp), the others die at the first hit.
+update_soldier_spawner:
 	lda	$12,x
 	bne	loc_01BDC4
 	lda	#$0040
@@ -1661,7 +1681,7 @@ loc_01BE60:
 	and	#$000F
 	cmp	a:data_05AFDE,y
 	bcs	loc_01BE72
-	jsl	f:sub_01BB61
+	jsl	f:init_foot_soldier_with_hp
 	plx
 loc_01BE71:
 	rtl
@@ -2035,7 +2055,7 @@ loc_01C12E:
 	ldx	#$06C0
 	jsl	f:find_free_slot_x_down
 	bcc	loc_01C161
-	jsl	f:sub_01C166
+	jsl	f:object_type_7E_reset_sprite
 	lda	#$007E
 	sta	$10,x
 	lda	#$0004
@@ -2053,7 +2073,7 @@ loc_01C162:
 object_type_7E_state_03:
 	inc	$12,x
 
-sub_01C166:
+object_type_7E_reset_sprite:
 	lda	#$0001
 	sta	$16,x
 	lda	#$C697
@@ -2215,7 +2235,7 @@ popup_turret_state_02:
 	lda	stage_frame_mod8
 	cmp	#$0001
 	bne	loc_01C2AF
-	jsl	f:sub_01C302
+	jsl	f:queue_object_tiles
 	lda	$32,x
 	clc
 	adc	#$0004
@@ -2253,11 +2273,11 @@ loc_01C2C8:
 	cmp	#$0010
 	beq	loc_01C2E1
 	lda	$34,x
-	bne	sub_01C2FB
+	bne	queue_object_tiles_every_4
 	inc	$34,x
 	lda	#$B04E
 	sta	$32,x
-	bra	sub_01C2FB
+	bra	queue_object_tiles_every_4
 loc_01C2E1:
 	lda	$0A,x
 	sta	zp_00
@@ -2270,12 +2290,14 @@ loc_01C2E1:
 	lda	#$B052
 	sta	$32,x
 
-sub_01C2FB:
+queue_object_tiles_every_4:
 	lda	stage_frame_mod4
 	cmp	#$0001
 	bne	loc_01C31B
 
-sub_01C302:
+; Queues the BG tiles of a BG-drawn object: field $32 = tile data, VRAM
+; address data_05B036[field $3A] (popup turret, type $35).
+queue_object_tiles:
 	lda	#$0001
 	sta	zp_02
 	lda	#$0010
@@ -2293,7 +2315,7 @@ loc_01C31B:
 popup_turret_state_05:
 	lda	$34,x
 	beq	loc_01C324
-	jsl	f:sub_01C2FB
+	jsl	f:queue_object_tiles_every_4
 loc_01C324:
 	dec	$24,x
 	bne	loc_01C32E
@@ -2351,9 +2373,9 @@ loc_01C385:
 tbl_wall_hatch_states:
 	.addr	wall_hatch_state_00
 	.addr	wall_hatch_state_01
-	.addr	sub_01C3F1
+	.addr	wall_hatch_state_02
 	.addr	wall_hatch_state_03
-	.addr	sub_01C3F1
+	.addr	wall_hatch_state_02
 	.addr	wall_hatch_state_05
 
 wall_hatch_state_00:
@@ -2400,7 +2422,7 @@ loc_01C3EE:
 loc_01C3F0:
 	rtl
 
-sub_01C3F1:
+wall_hatch_state_02:
 	dec	$24,x
 	lda	$24,x
 	bpl	loc_01C404
@@ -2552,7 +2574,7 @@ loc_01C4FA:
 	rtl
 
 object_type_04_state_01:
-	jsl	f:sub_01B956
+	jsl	f:solid_object_vs_players_and_soldiers
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	loc_01C4FA
@@ -2643,7 +2665,7 @@ loc_01C515:
 	rtl
 
 object_type_04_state_02:
-	jsl	f:sub_01B956
+	jsl	f:solid_object_vs_players_and_soldiers
 	lda	a:wram_08C6
 	bpl	loc_01C5F8
 	lda	#$8000
@@ -2655,7 +2677,7 @@ loc_01C5F8:
 	rtl
 
 object_type_04_state_03:
-	jsl	f:sub_01B956
+	jsl	f:solid_object_vs_players_and_soldiers
 	lda	#$B0A0
 	sta	$30,x
 	lda	#$0044
@@ -2680,7 +2702,7 @@ loc_01C622:
 	rtl
 
 object_type_04_state_04:
-	jsl	f:sub_01B956
+	jsl	f:solid_object_vs_players_and_soldiers
 	lda	stage_frame_counter
 	and	#$000F
 	bne	loc_01C636
@@ -2691,7 +2713,7 @@ loc_01C636:
 object_type_04_state_05:
 	lda	#$0004
 	sta	a:shake_timer
-	jsl	f:sub_01B956
+	jsl	f:solid_object_vs_players_and_soldiers
 	lda	stage_frame_odd
 	bne	loc_01C66B
 	lda	#$00A0
@@ -2715,33 +2737,33 @@ loc_01C66B:
 	lda	stage_frame_counter
 	and	#$000F
 	cmp	#$0004
-	bcs	sub_01C6EB
+	bcs	object_type_04_collapse_wait
 	phx
 	asl	a
 	tax
-	lda	f:tbl_01C689,x
+	lda	f:tbl_object_type_04_collapse_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_01C689:
-	.addr	sub_01C6EB
-	.addr	sub_01C691
-	.addr	sub_01C697
-	.addr	sub_01C6A3
+tbl_object_type_04_collapse_steps:
+	.addr	object_type_04_collapse_wait
+	.addr	object_type_04_collapse_step_1
+	.addr	object_type_04_collapse_step_2
+	.addr	object_type_04_collapse_step_3
 
-sub_01C691:
+object_type_04_collapse_step_1:
 	stz	zp_00
 	stz	zp_0C
 	bra	loc_01C6B2
 
-sub_01C697:
+object_type_04_collapse_step_2:
 	lda	#$0100
 	sta	zp_0C
 	lda	#$000C
 	sta	zp_00
 	bra	loc_01C6B2
 
-sub_01C6A3:
+object_type_04_collapse_step_3:
 	lda	#$0200
 	sta	zp_0C
 	lda	#$0018
@@ -2763,19 +2785,19 @@ loc_01C6B2:
 	lda	stage_frame_counter
 	and	#$000F
 	cmp	#$0002
-	bne	sub_01C6EB
+	bne	object_type_04_collapse_wait
 	clc
 	lda	$30,x
 	adc	#$001E
 	sta	$30,x
 	cmp	#$B172
-	bcc	sub_01C6EB
+	bcc	object_type_04_collapse_wait
 	lda	#$8000
 	sta	$16,x
 	lda	#$0001
 	sta	a:bg1_scroll_mode
 
-sub_01C6EB:
+object_type_04_collapse_wait:
 	rtl
 
 ; Object type $14: stage 1 section 4: part of the wall structure, HP 64
@@ -2932,7 +2954,7 @@ weapon_capsule_state_00:
 	inc	$12,x
 	lda	$3E,x
 	beq	loc_01C813
-	jsr	a:sub_01C9A5
+	jsr	a:weapon_capsule_set_kind
 	rtl
 loc_01C813:
 	lda	#$0012
@@ -2958,7 +2980,7 @@ loc_01C835:
 	rtl
 
 weapon_capsule_state_01:
-	jsr	a:sub_01C99D
+	jsr	a:weapon_capsule_check_shot
 	lda	$34,x
 	cmp	$0E,x
 	bcc	loc_01C85A
@@ -3135,13 +3157,15 @@ loc_01C98D:
 	sta	$1E,x
 	rtl
 
-sub_01C99D:
+weapon_capsule_check_shot:
 	lda	$06,x
 	bpl	loc_01C9D7
 	stz	$18,x
 	stz	$1A,x
 
-sub_01C9A5:
+; Sprite (data_05B17E) and state offset (data_05B18C) from the kind in field
+; $3A, then flies (y velocity -2).
+weapon_capsule_set_kind:
 	stz	$20,x
 	stz	$22,x
 	lda	$3A,x
@@ -3225,7 +3249,7 @@ object_type_11_state_00:
 	inc	$12,x
 	rtl
 loc_01CA3F:
-	jml	f:sub_01B956
+	jml	f:solid_object_vs_players_and_soldiers
 
 object_type_11_state_01:
 	lda	$06,x
@@ -3463,7 +3487,7 @@ loc_01CC21:
 ; Object type $12: stage 1 soldier variant, HP 6 (seen in the emulator). Not
 ; identified exactly.
 update_object_type_12:
-	jsr	a:sub_01CD18
+	jsr	a:object_type_12_aim_at_nearest_player
 	lda	$06,x
 	bpl	loc_01CC34
 	stz	$06,x
@@ -3481,13 +3505,13 @@ loc_01CC34:
 	jmp	(zp_00)
 tbl_object_type_12_states:
 	.addr	object_type_12_state_00
-	.addr	sub_01CC7C
-	.addr	sub_01CC90
+	.addr	object_type_12_state_01
+	.addr	object_type_12_state_02
 	.addr	object_type_12_state_03
-	.addr	sub_01CC90
+	.addr	object_type_12_state_02
 	.addr	object_type_12_state_05
-	.addr	sub_01CC90
-	.addr	sub_01CC7C
+	.addr	object_type_12_state_02
+	.addr	object_type_12_state_01
 
 object_type_12_state_00:
 	lda	#$3400
@@ -3509,7 +3533,7 @@ object_type_12_state_00:
 	sta	$06,x
 	inc	$12,x
 
-sub_01CC7C:
+object_type_12_state_01:
 	ldy	$04,x
 	lda	a:data_05B278,y
 	sta	$00,x
@@ -3520,7 +3544,7 @@ sub_01CC7C:
 	sta	$12,x
 	rtl
 
-sub_01CC90:
+object_type_12_state_02:
 	dec	$24,x
 	bne	loc_01CC96
 	inc	$12,x
@@ -3591,7 +3615,7 @@ loc_01CD06:
 	sta	$12,x
 	rtl
 
-sub_01CD18:
+object_type_12_aim_at_nearest_player:
 	lda	a:p1_lives
 	ora	a:p2_lives
 	beq	loc_01CD76
@@ -3704,8 +3728,8 @@ update_window_sniper:
 	lda	$12,x
 	cmp	#$0003
 	bcs	loc_01CDF3
-	jsr	a:sub_01CE99
-	jsl	f:sub_01CF15
+	jsr	a:window_sniper_aim_at_nearest_player
+	jsl	f:window_sniper_set_aim_sprite
 loc_01CDF3:
 	lda	$06,x
 	bpl	loc_01CE02
@@ -3724,11 +3748,11 @@ loc_01CE02:
 	jmp	(zp_00)
 tbl_window_sniper_states:
 	.addr	window_sniper_state_00
-	.addr	sub_01CE44
-	.addr	sub_01CE51
+	.addr	window_sniper_state_01
+	.addr	window_sniper_state_02
 	.addr	window_sniper_state_03
-	.addr	sub_01CE51
-	.addr	sub_01CE44
+	.addr	window_sniper_state_02
+	.addr	window_sniper_state_01
 
 window_sniper_state_00:
 	lda	#$2600
@@ -3749,7 +3773,7 @@ window_sniper_state_00:
 	sta	$06,x
 	inc	$12,x
 
-sub_01CE44:
+window_sniper_state_01:
 	ldy	difficulty
 	lda	a:data_05C444,y
 	sta	$24,x
@@ -3757,7 +3781,7 @@ sub_01CE44:
 	sta	$12,x
 	rtl
 
-sub_01CE51:
+window_sniper_state_02:
 	dec	$24,x
 	bne	loc_01CE57
 	inc	$12,x
@@ -3791,7 +3815,7 @@ window_sniper_state_03:
 	plx
 	jsl	f:spawn_enemy_bullet
 	bcc	loc_01CE98
-	jsl	f:sub_01CF1D
+	jsl	f:window_sniper_set_fire_sprite
 	lda	#$0010
 	sta	$24,x
 	lda	#$0004
@@ -3799,7 +3823,9 @@ window_sniper_state_03:
 loc_01CE98:
 	rtl
 
-sub_01CE99:
+; Picks the nearer player (x distance) and the aim direction to it (field
+; $32).
+window_sniper_aim_at_nearest_player:
 	lda	#$FFFF
 	sta	zp_1C
 	sta	zp_1E
@@ -3867,13 +3893,13 @@ loc_01CEEE:
 loc_01CF14:
 	rts
 
-sub_01CF15:
+window_sniper_set_aim_sprite:
 	ldy	$32,x
 	lda	a:data_05C48E,y
 	sta	$00,x
 	rtl
 
-sub_01CF1D:
+window_sniper_set_fire_sprite:
 	ldy	$32,x
 	lda	a:data_05C4AE,y
 	sta	$00,x

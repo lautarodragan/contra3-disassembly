@@ -1119,7 +1119,7 @@ loc_01D7BB:
 	sta	a:$000A,y
 	phx
 	tyx
-	jsl	f:sub_01BB4A
+	jsl	f:init_foot_soldier_running
 	plx
 loc_01D7E1:
 	rtl

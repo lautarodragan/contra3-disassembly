@@ -952,9 +952,9 @@ tbl_object_types:
 	.faraddr	update_object_type_06
 	.faraddr	update_load_list_trigger
 	.faraddr	update_object_type_08
-	.faraddr	update_object_type_09
+	.faraddr	update_player_tank
 	.faraddr	update_foot_soldier
-	.faraddr	update_object_type_0B
+	.faraddr	update_soldier_spawner
 	.faraddr	update_bomber_bomb
 	.faraddr	update_popup_turret
 	.faraddr	update_bg1_scroll_mode_trigger
@@ -1422,10 +1422,10 @@ data_05AC87:
 	.byte	$80, $60, $A0, $60, $A0, $60, $C0, $60, $20, $50, $40, $50, $60, $50, $A0, $50
 	.byte	$C0, $50, $E0, $50, $80, $50, $00, $51, $20, $51
 data_05AF31:
-	; CDL: read by object_type_09_state_02
+	; CDL: read by player_tank_state_02
 	.byte	$00, $02, $00, $02, $04, $02
 data_05AF37:
-	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, object_type_09_state_02; partly not accessed
+	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, player_tank_state_02; partly not accessed
 	.byte	$00, $04, $04, $04, $00, $04, $00, $C9, $20, $C9, $40, $C9, $80, $C9, $A0, $C9
 	.byte	$C0, $C9, $60, $C9, $E0, $C9, $00, $CA, $20, $CA, $40, $CA, $60, $CA, $60, $C8
 	.byte	$E0, $C8, $80, $CA, $20, $CA, $40, $CA, $60, $CA, $70, $43, $02, $0F, $00, $38
@@ -1447,17 +1447,17 @@ data_05AF90:
 	.byte	$66, $B4, $0C, $00, $97, $B1, $51, $B4, $00, $00, $97, $B1, $51, $B4, $40, $55
 	.byte	$C0, $55
 data_05AFD2:
-	; CDL: read by update_object_type_0B
+	; CDL: read by update_soldier_spawner
 	.byte	$40, $00, $28, $00, $10, $00
 data_05AFD8:
-	; CDL: read by update_object_type_0B
+	; CDL: read by update_soldier_spawner
 	.byte	$80, $00, $60, $00, $40, $00
 data_05AFDE:
-	; CDL: read by update_object_type_0B
+	; CDL: read by update_soldier_spawner
 	.byte	$02, $00, $04, $00, $0C, $00
 ; OBJ_HP of update_foot_soldier and type $35 by difficulty (easy, normal, hard)
 soldier_hp:
-	; CDL: read by sub_01BB61
+	; CDL: read by init_foot_soldier_with_hp
 	.byte	$00, $00, $01, $00, $03, $00
 data_05AFEA:
 	; CDL: read by object_type_73_state_00
@@ -1478,7 +1478,7 @@ data_05B02E:
 	; CDL: read by object_type_7E_state_01
 	.byte	$18, $00, $58, $00, $98, $00, $D8, $00
 data_05B036:
-	; CDL: read by queue_vram_blocks_at_x, sub_01C302
+	; CDL: read by queue_vram_blocks_at_x, queue_object_tiles
 	.byte	$9C, $42, $9C, $46, $80, $46, $88, $46, $18, $42, $00, $46, $0C, $42, $18, $42
 	.byte	$00, $51, $60, $83, $80, $83, $A0, $83, $C0, $83, $E0, $83, $20, $84, $40, $84
 	.byte	$00, $51, $00, $84
@@ -1487,13 +1487,13 @@ wall_hatch_hp:
 	; CDL: read by wall_hatch_state_00; partly not accessed
 	.byte	$04, $00, $08, $00, $10, $00
 data_05B060:
-	; CDL: read by sub_01C3F1
+	; CDL: read by wall_hatch_state_02
 	.byte	$80, $69, $A0, $69
 data_05B064:
 	; CDL: read by wall_hatch_state_03
 	.byte	$40, $69, $60, $69, $80, $68, $A0, $68, $C0, $68, $E0, $68, $00, $69, $20, $69
 data_05B074:
-	; CDL: read by sub_01C3F1
+	; CDL: read by wall_hatch_state_02
 	.byte	$40, $69, $A0, $69, $80, $69
 data_05B07A:
 	; CDL: read by wall_hatch_state_03; partly not accessed
@@ -1520,10 +1520,10 @@ data_05B09A:
 	.byte	$00, $50, $80, $50, $80, $50, $80, $50, $C0, $73, $E0, $73, $E0, $73, $60, $74
 	.byte	$80, $79, $A0, $79, $04, $00, $B9, $B0, $B9, $B0, $04, $00, $D2, $B0, $D2, $B0
 data_05B17E:
-	; CDL: read by update_objects, sub_01C9A5
+	; CDL: read by update_objects, weapon_capsule_set_kind
 	.byte	$72, $B1, $C4, $AD, $ED, $AD, $16, $AE, $3F, $AE, $68, $AE, $7A, $B0
 data_05B18C:
-	; CDL: read by sub_01C9A5
+	; CDL: read by weapon_capsule_set_kind
 	.byte	$A3, $B0, $01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $02, $00, $03, $00
 data_05B19C:
 	; CDL: read by object_type_11_state_01; partly not accessed
@@ -1540,7 +1540,7 @@ object_type_12_hp:
 	; CDL: read by object_type_12_state_00
 	.byte	$04, $00, $06, $00, $08, $00
 data_05B1CE:
-	; CDL: read by sub_01CC7C
+	; CDL: read by object_type_12_state_01
 	.byte	$60, $00, $40, $00, $10, $00
 data_05B1D4:
 	; CDL: read by object_type_12_state_05
@@ -1562,7 +1562,7 @@ data_05B228:
 	.byte	$00, $00, $00, $00, $00, $40, $00, $C0, $00, $80, $00, $80, $00, $C0, $00, $40
 	.byte	$00, $00, $00, $00, $00, $40, $00, $C0, $00, $80, $00, $80, $00, $C0, $00, $40
 data_05B278:
-	; CDL: read by sub_01CC7C
+	; CDL: read by object_type_12_state_01
 	.byte	$F0, $B1, $AA, $B4
 data_05B27C:
 	; CDL: read by object_type_12_state_03
@@ -1906,10 +1906,10 @@ window_sniper_hp:
 	; CDL: read by window_sniper_state_00
 	.byte	$04, $00, $06, $00, $08, $00
 data_05C444:
-	; CDL: read by sub_01CE44
+	; CDL: read by window_sniper_state_01
 	.byte	$50, $00, $40, $00, $10, $00
 data_05C44A:
-	; CDL: read by sub_01CE99
+	; CDL: read by window_sniper_aim_at_nearest_player
 	.byte	$00, $02, $40, $02
 data_05C44E:
 	; CDL: read by window_sniper_state_03; partly not accessed
@@ -1920,11 +1920,11 @@ data_05C46E:
 	.byte	$CA, $FF, $CA, $FF, $D9, $FF, $D9, $FF, $EE, $FF, $EE, $FF, $06, $00, $06, $00
 	.byte	$12, $00, $12, $00, $06, $00, $06, $00, $EF, $FF, $EF, $FF, $DB, $FF, $DB, $FF
 data_05C48E:
-	; CDL: read by sub_01CF15; partly not accessed
+	; CDL: read by window_sniper_set_aim_sprite; partly not accessed
 	.byte	$2F, $B2, $E9, $B4, $59, $B2, $13, $B5, $83, $B2, $3D, $B5, $AD, $B2, $67, $B5
 	.byte	$D7, $B2, $91, $B5, $AD, $B2, $67, $B5, $83, $B2, $3D, $B5, $59, $B2, $13, $B5
 data_05C4AE:
-	; CDL: read by update_objects, sub_01CF1D, update_effect; partly not accessed
+	; CDL: read by update_objects, window_sniper_set_fire_sprite, update_effect; partly not accessed
 	.byte	$44, $B2, $FE, $B4, $6E, $B2, $28, $B5, $98, $B2, $52, $B5, $C2, $B2, $7C, $B5
 	.byte	$EC, $B2, $A6, $B5, $C2, $B2, $7C, $B5, $98, $B2, $52, $B5, $44, $B2, $FE, $B4
 	.byte	$01, $00, $EA, $AF, $00, $32, $01, $00, $D9, $AF, $00, $32, $02, $00, $A5, $AE

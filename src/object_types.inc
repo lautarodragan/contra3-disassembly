@@ -9,7 +9,9 @@
 OBJECT_TYPES_INC = 1
 
 OBJT_STAGE1_BOSS_CONTROLLER     = $01	; stage 1 boss (giant turtle): invisible controller (update_stage1_boss_controller)
+OBJT_PLAYER_TANK                = $09	; tank the players can drive (stage 1)
 OBJT_FOOT_SOLDIER               = $0A	; running foot soldier (update_foot_soldier)
+OBJT_SOLDIER_SPAWNER            = $0B	; invisible: sends foot soldiers in from the screen edges
 OBJT_BOMBER_BOMB                = $0C	; bomb of the stage 1 bomber plane
 OBJT_POPUP_TURRET               = $0D	; gun turret rising from the rubble (stage 1)
 OBJT_WEAPON_CAPSULE             = $0F	; flying weapon capsule
