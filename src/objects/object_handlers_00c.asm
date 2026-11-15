@@ -1290,7 +1290,7 @@ loc_00FC58:
 	stz	a:wram_0464
 	lda	#$8000	; [num]
 	sta	$16,x
-	lda	#.loword(anim_05C540)
+	lda	#$C540	; [num] WRAM $7E:C540, the tiles queue_vram_block copies
 	sta	zp_00
 	ldy	#$0010
 	lda	#$4E94
