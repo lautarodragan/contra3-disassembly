@@ -1,4 +1,4 @@
-; Included by every bank file.
+; Included once, at the top of main.asm.
 
 .ifndef COMMON_INC
 COMMON_INC = 1

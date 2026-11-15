@@ -10,12 +10,14 @@ In LoROM each 32 KiB of the ROM file appears in the upper half
 `$XX * $8000 + $7FFF`, so a CPU address in bank `$XX` is at file offset
 `$XX * $8000` plus the address minus `$8000`:
 
-| bank | CPU addresses | ROM file offsets | source |
+| bank | CPU addresses | ROM file offsets | segment |
 |---|---|---|---|
-| `$00` | `$00:8000-$00:FFFF` | `$00000-$07FFF` | `src/bank_00.asm` |
-| `$01` | `$01:8000-$01:FFFF` | `$08000-$0FFFF` | `src/bank_01.asm` |
+| `$00` | `$00:8000-$00:FFFF` | `$00000-$07FFF` | `BANK00` |
+| `$01` | `$01:8000-$01:FFFF` | `$08000-$0FFFF` | `BANK01` |
 | ... | | | |
-| `$1F` | `$1F:8000-$1F:FFFF` | `$F8000-$FFFFF` | `src/bank_1F.asm` |
+| `$1F` | `$1F:8000-$1F:FFFF` | `$F8000-$FFFFF` | `BANK1F` |
+
+Which source files make up each bank is in [Source layout](layout.md).
 
 The same ROM is also visible at banks `$80-$9F` (the "FastROM" mirror,
 which the CPU can read faster when `MEMSEL` bit 0 is set). Contra III runs
@@ -65,7 +67,7 @@ header at `$FFB0-$FFBF`. In fact the code of `sub_00FF48` ends with an `RTL`
 at `$00:FFB1`, inside that area (the CDL confirms that it runs), and
 `$FFB2-$FFBF` are `$FF` that nothing reads.
 
-In `src/bank_00.asm` the header starts at `rom_header` (`$00:FFC0`) with
+In `src/header.asm` the header starts at `rom_header` (`$00:FFC0`) with
 one line per field and a comment that decodes it:
 
 ```
@@ -105,7 +107,7 @@ disassembler's recursive descent.
 disables interrupts, and sets the stack pointer to `$1DFF`,
 the direct page to `$0000` and the data bank to `$05`.
 
-The vector table is at `vectors` in `src/bank_00.asm`, written as
+The vector table is at `vectors` in `src/header.asm`, written as
 `.addr reset`, `.addr nmi` and `.addr irq` (and `.word $FFFF` for the
 reserved ones).
 

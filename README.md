@@ -55,10 +55,18 @@ minute.
 
 | path | contents |
 |---|---|
-| `src/main.asm` | top-level file: includes every bank |
-| `src/bank_XX.asm` | bank `$XX` (`$XX:8000-$XX:FFFF`), one ld65 segment `BANKXX` each |
+| `src/main.asm` | top-level file: opens each bank's segment and includes its files in address order |
+| `src/engine/` | reset, NMI/IRQ, PPU init, DMA/VRAM, loaders, decompressor, palette tasks, HDMA, math |
+| `src/sound/` | sound CPU communication; data-only files of the sound banks |
+| `src/game/` | game modes, attract mode, screens, side-view stage state machine |
+| `src/objects/` | object lists/dispatchers, players, weapons, object type handlers |
+| `src/topdown/` | the top-down (Mode 7) stages 2 and 5 |
+| `src/effects/` | window/raster effect shapes |
+| `src/data/` | shared tables (bank `$05`), metasprites (bank `$06`) |
+| `src/gfx/` | data-only files of the graphics banks |
+| `src/header.asm` | internal header and vectors |
 | `src/contra3.cfg` | ld65 memory map: 32 LoROM banks of `$8000` at `$XX:8000` |
-| `src/common.inc` | included by every bank (`.p816`, register names) |
+| `src/common.inc` | included first by `main.asm` (`.p816`, register names) |
 | `src/snes_registers.inc` | SNES hardware register names (`INIDISP`, `NMITIMEN`, `DMAP0`, ...) |
 | `contra3.sha1` | SHA-1 of the original ROM |
 | `tools/disasm.py` | the disassembler that generated `src/` (reference only now) |
@@ -67,6 +75,11 @@ minute.
 | `docs/disasm_report.md` | coverage / quality report written by the disassembler with the CDL (included in the book's Progress page) |
 | `book/` | the book (mdBook): `book.toml`, pages in `book/src/`, `names-ignore.txt` |
 | `tools/check_book_names.py` | checks that every label, constant and path the book names exists |
+
+Every file starts with its title, address range and what is known about
+it; the full list is in the book's "Source layout" page. A bank's files must
+stay contiguous and in address order in `main.asm` (one ld65 segment per
+bank).
 
 The game runs in banks `$00-$1F` (SlowROM; it never jumps to the `$80+`
 mirrors), so labels are named and placed by their `$00-$1F` address, e.g.
@@ -103,7 +116,7 @@ target), `tbl_` (jump table), `ptrs_` (table of data pointers), `data_`
   address really accessed); `; CDL: read by sub_..., DMA (started in
   sub_...)` or `; CDL: not accessed` above data, naming the routine of the
   first instruction that read it.
-- The internal header and the vectors at the end of `bank_00.asm`
+- The internal header and the vectors in `src/header.asm`
   (`rom_header`, `vectors`) have one line per field with a comment.
 
 ## The generator (`tools/disasm.py`)
@@ -121,8 +134,10 @@ python3 tools/disasm.py ROM [--hints tools/disasm_hints.json] [--cdl FILE] \
 diff -r src build/disasm/src
 ```
 
-It is deterministic: with the committed hints and the same CDL it reproduces
-the generated `src/` and `docs/disasm_report.md` exactly (the report records
+It still writes the old one-file-per-bank layout (`bank_00.asm` ...), so it
+cannot reproduce today's `src/` (split by subsystem and edited by hand); it
+is deterministic: with the committed hints and the same CDL it reproduces
+the `src/` of the CDL-pass commit (8442b77) and `docs/disasm_report.md` exactly (the report records
 the CDL's SHA-1). Without a CDL the output is close but differs (no CDL
 comments, a few operands stay numbers, a few false pointers come back).
 

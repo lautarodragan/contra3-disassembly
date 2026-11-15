@@ -24,8 +24,9 @@ The build is two steps:
 2. `ld65 -C src/contra3.cfg -m build/contra3.map -Ln build/contra3.lbl -o build/contra3.sfc build/main.o`.
    The linker config `src/contra3.cfg` has one memory area per bank
    (`ROM00` to `ROM1F`, `$8000` bytes each at `$XX:8000`, filled with `$FF`)
-   and one segment per bank (`BANK00` to `BANK1F`). Each bank file
-   (`src/bank_00.asm` to `src/bank_1F.asm`) puts its bank in its own segment.
+   and one segment per bank (`BANK00` to `BANK1F`). `src/main.asm` opens
+   each bank's segment and includes that bank's files in address order (see
+   [Source layout](layout.md)).
 
 Besides the ROM, ld65 writes a map file (`build/contra3.map`, segment sizes)
 and a label file (`build/contra3.lbl`, every label with its address), which
@@ -98,7 +99,7 @@ book and checks that the names in it exist:
   the ca65 sources (a label, a `=` constant, a `.define`, a macro, a segment)
   or appear in `tools/`, the `Makefile` or the workflows;
 - paths such as `src/contra3.cfg` must be files or directories in the
-  repository, and bare file names such as `bank_00.asm` must be the name of
+  repository, and bare file names such as `nmi.asm` must be the name of
   one.
 
 Names mentioned on purpose although the code doesn't have them (an old

@@ -12,3 +12,5 @@ sub_Y
 
 # history: a false pointer label inside the vector table, removed by the CDL pass (cartridge.md)
 data_00FFF6
+# the generator still writes one file per bank (layout.md)
+bank_00.asm

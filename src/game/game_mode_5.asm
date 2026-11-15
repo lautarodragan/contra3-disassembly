@@ -1,0 +1,206 @@
+; game/game_mode_5.asm -- Game mode 5
+; Bank $04, $04:D878-$04:D9F0. Included by main.asm in segment BANK04.
+;
+; sub_04D878: the handler of game mode 5 (via sub_00A625), with sub-modes
+; tbl_04D888. Never run in the CDL traces.
+
+sub_04D878:
+	; (not executed in the CDL traces)
+	lda	a:$1C00
+	phx
+	asl	a
+	tax
+	lda	f:tbl_04D888,x
+	plx
+	sta	$00
+	jmp	($0000)
+tbl_04D888:
+	.addr	sub_04D890
+	.addr	sub_04D8A1
+	.addr	sub_04D8BE
+	.addr	sub_04D8F2
+
+sub_04D890:
+	; (not executed in the CDL traces)
+	ldx	#.loword(data_05CF41)
+	jsl	f:sub_0090A8
+	ldy	#$8412
+	jsl	f:sub_009982
+	inc	a:$1C00
+
+sub_04D8A1:
+	; (not executed in the CDL traces)
+	php
+	lda	a:$1E80
+	bit	#$0080
+	beq	loc_04D8B0
+	and	#$000F
+	sta	a:$1E80
+loc_04D8B0:
+	cmp	#$000F
+	bcs	loc_04D8BA
+	inc	a:$1E80
+	plp
+	rtl
+loc_04D8BA:
+	plp
+	inc	a:$1C00
+
+sub_04D8BE:
+	; (not executed in the CDL traces)
+	lda	$28
+	ora	$2A
+	bit	#$1000
+	bne	loc_04D8EF
+	bit	#$8000
+	bne	loc_04D8E7
+	ldx	#$F347
+	lda	#$2400
+	jsl	f:sub_009015
+	ldx	#$F35A
+	jsl	f:sub_009024
+	jsr	a:sub_04D912
+	jsr	a:sub_04D967
+	jsr	a:sub_04D9AF
+	rtl
+loc_04D8E7:
+	lda	#$0084
+	jsl	f:sub_00868F
+	rtl
+loc_04D8EF:
+	inc	a:$1C00
+
+sub_04D8F2:
+	; (not executed in the CDL traces)
+	php
+	rep	#$20
+	lda	a:$1E80
+	and	#$000F
+	sta	a:$1E80
+	beq	loc_04D905
+	dec	a:$1E80
+	plp
+	rtl
+loc_04D905:
+	lda	#$0080
+	sta	a:$1E80
+	plp
+	lda	#$0001
+	sta	$36
+	rtl
+
+sub_04D912:
+	; (not executed in the CDL traces)
+	lda	$28
+	ora	$2A
+	bit	#$0F00
+	beq	loc_04D920
+	stz	a:$1C04
+	bra	loc_04D945
+loc_04D920:
+	lda	$20
+	ora	$22
+	bit	#$0F00
+	beq	loc_04D966
+	inc	a:$1C04
+	bne	loc_04D934
+	lda	#$0020
+	sta	a:$1C04
+loc_04D934:
+	lda	a:$1C04
+	cmp	#$0020
+	bcc	loc_04D966
+	bit	#$0003
+	bne	loc_04D966
+	lda	$20
+	ora	$22
+loc_04D945:
+	bit	#$0500
+	bne	loc_04D957
+	lda	a:$1C02
+	dec	a
+	bpl	loc_04D953
+	lda	#$006A
+loc_04D953:
+	sta	a:$1C02
+	rts
+loc_04D957:
+	lda	a:$1C02
+	inc	a
+	cmp	#$006B
+	bcc	loc_04D963
+	lda	#$0000
+loc_04D963:
+	sta	a:$1C02
+loc_04D966:
+	rts
+
+sub_04D967:
+	; (not executed in the CDL traces)
+	lda	$28
+	ora	$2A
+	bit	#$4000
+	beq	loc_04D988
+	ldx	a:$1C02
+	lda	f:data_1DCCE0,x
+	and	#$00FF
+	cmp	#$0060
+	bcc	loc_04D984
+	cmp	#$0074
+	bcc	loc_04D989
+loc_04D984:
+	jsl	f:sub_00868F
+loc_04D988:
+	rts
+loc_04D989:
+	sec
+	sbc	#$0060
+	asl	a
+	tay
+	lda	a:data_05F362,y
+	tax
+	phy
+	jsl	f:sub_0098D4
+	ply
+	lda	a:data_05F388,y
+	jsl	f:sub_008624
+	ldx	a:$1C02
+	lda	f:data_1DCCE0,x
+	and	#$00FF
+	jsl	f:sub_008624
+	rts
+
+sub_04D9AF:
+	; (not executed in the CDL traces)
+	ldy	#$5A52
+	lda	a:$1C02
+	sta	$FA
+	jsl	f:sub_008D41
+	lda	$FA
+	and	#$00F0
+	lsr	a
+	lsr	a
+	lsr	a
+	lsr	a
+	jsr	a:sub_04D9E2
+	ora	#$2000
+	jsl	f:sub_008DA5
+	lda	$FA
+	and	#$000F
+	jsr	a:sub_04D9E2
+	ora	#$2000
+	jsl	f:sub_008DA5
+	jsl	f:sub_008DB0
+	rts
+
+sub_04D9E2:
+	; (not executed in the CDL traces)
+	cmp	#$000A
+	bcs	loc_04D9E9
+	inc	a
+	rts
+loc_04D9E9:
+	sbc	#$000A
+	clc
+	adc	#$003C
+	rts

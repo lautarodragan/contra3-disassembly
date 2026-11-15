@@ -5,6 +5,7 @@
 # Working on the code
 
 - [Building](building.md)
+- [Source layout](layout.md)
 - [The disassembler](disassembler.md)
 - [Progress](progress.md)
 
