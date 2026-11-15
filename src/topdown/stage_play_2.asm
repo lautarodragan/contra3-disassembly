@@ -1193,6 +1193,13 @@ loc_02EF81:
 	inc	a:screen_shake_offset
 	bra	loc_02EF5C
 
+; TDMT_STAGE5_BOSS ($0AC0): the stage 5 boss, a creature in a sand pit
+; drawn as the Mode 7 layer. It sends out its arm (stage5_boss_spawn_arm:
+; TDT_STAGE5_BOSS_CLAW, TDT_STAGE5_BOSS_ARM_BASE, 12
+; TDT_STAGE5_BOSS_ARM_SEGMENT) towards a player, spits shots from the
+; pit's edge (stage5_boss_update_spit), and the funnel (TDA_SAND_PIT)
+; pulls the players in. HP 512/1024/2048 (stage5_boss_hp). Checked in the
+; emulator.
 update_stage5_boss:
 	jsl	f:stage5_boss_run_state
 	jsr	a:stage5_boss_animate_body
@@ -1852,6 +1859,10 @@ stage5_boss_spawn_arm:
 	sta	a:wram_0BBA
 	rts
 
+; TDT_STAGE5_BOSS_CLAW ($0B40): the claw at the end of the stage 5 boss's
+; arm: turns to its target, reaches out recording its trail, fires
+; TDS_HOMING_ORB, pulls back. Damage to any arm part counts against its HP,
+; 32/128/256 (stage5_boss_claw_hp); destroyed, it drops an item.
 update_stage5_boss_claw:
 	lda	a:wram_0AC6
 	bpl	loc_02F4C0
@@ -2002,6 +2013,7 @@ stage5_boss_claw_state_6:
 	jsl	f:td_start_explosion
 	rtl
 
+; TDT_STAGE5_BOSS_ARM_BASE ($0B80): the end of the stage 5 boss's arm in the pit.
 update_stage5_boss_arm_base:
 	lda	a:wram_0B50
 	bne	loc_02F5E0
@@ -2092,6 +2104,8 @@ loc_02F675:
 	jsl	f:td_start_explosion
 	rtl
 
+; TDT_STAGE5_BOSS_ARM_SEGMENT: one of the 12 segments of the stage 5 boss's
+; arm; follows the claw's trail.
 update_stage5_boss_arm_segment:
 	lda	a:wram_0B50
 	bne	loc_02F684
@@ -2423,6 +2437,9 @@ stage5_boss_claw_fire:
 loc_02F8D3:
 	rtl
 
+; TDMT_NEST, stage 5 target: a nest in the sand; when a player is near it
+; opens and lets out a TDT_NEST_CRAWLER. HP 32/80/128 (td_nest_hp);
+; destroyed, it may drop an item.
 update_td_nest:
 	lda	$06,x
 	bpl	loc_02F8DB
@@ -2579,6 +2596,11 @@ loc_02F9EA:
 loc_02F9F5:
 	rtl
 
+; TDMT_GUN_HATCH_AIM, stage 2 target: a hatch in the floor (map blocks $50
+; closed, $5B opening, $59 open, $57 destroyed). When a player is near, it
+; opens and lets out a TDT_HATCH_TURRET_AIM, stays open $80 frames
+; (hittable), closes for $40. HP 32/80/128 (gun_hatch_hp); destroyed, it
+; may drop an item. Checked in the emulator.
 update_gun_hatch_aim:
 	lda	$06,x
 	bpl	loc_02F9FD
@@ -2706,6 +2728,8 @@ loc_02FACA:
 	bcs	loc_02FAC9
 	jml	f:clear_topdown_slot
 
+; TDMT_GUN_HATCH_SPIN, stage 2 target: as TDMT_GUN_HATCH_AIM with a
+; TDT_HATCH_TURRET_SPIN.
 update_gun_hatch_spin:
 	lda	$06,x
 	bpl	loc_02FAE4
@@ -2758,6 +2782,8 @@ gun_hatch_spin_state_2:
 loc_02FB32:
 	rtl
 
+; TDMT_GUN_HATCH_SWEEP, stage 2 target: as TDMT_GUN_HATCH_AIM with a
+; TDT_HATCH_TURRET_SWEEP.
 update_gun_hatch_sweep:
 	lda	$06,x
 	bpl	loc_02FB3A
@@ -2807,6 +2833,8 @@ gun_hatch_sweep_state_2:
 loc_02FB7F:
 	rtl
 
+; TDMT_GUN_HATCH_NO_FIRE, stage 2 target (HARD sets): opens only while the
+; nearest player does not hold Y; stays open gun_hatch_no_fire time.
 update_gun_hatch_no_fire:
 	lda	$06,x
 	bpl	loc_02FB87
@@ -2876,6 +2904,8 @@ loc_02FBDC:
 	inc	$12,x
 	jmp	a:gun_hatch_state_3
 
+; TDMT_GUN_HATCH_BEHIND, stage 2 target (HARD sets): opens only when the
+; nearest player faces away from it.
 update_gun_hatch_behind:
 	lda	$06,x
 	bpl	loc_02FBFB

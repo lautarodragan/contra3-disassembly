@@ -236,6 +236,7 @@ tbl_respawn_by_map:
 	.addr	respawn_at_start_point_stage5
 	.addr	td_respawn_none
 
+; tbl_respawn_by_map entry of the stage 5 boss map: nothing to do.
 td_respawn_none:
 	rts
 loc_028FEE:
@@ -431,6 +432,9 @@ loc_02912F:
 	rts
 
 ; (no caller found; decoded because it follows the end of a routine)
+; Never called: with X held, pressed buttons change the weapons, the bombs
+; (up to 9), the barrier ($FFFF) and the lives (up to 99) of the player.
+; Probably a leftover debug feature.
 td_debug_cheat_buttons:
 	; (not executed in the CDL traces)
 	lda	a:$066C,x
@@ -501,6 +505,9 @@ td_check_smart_bomb:
 loc_0291CA:
 	rts
 
+; State 5 (B): a jump of 8 frames; the player is drawn bigger, enemy shots
+; miss it (td_p1_vs_enemies), and Y+B at mid-jump fires (td_fire_jump_shot).
+; Checked in the emulator.
 td_player_state_jump:
 	lda	#$0005
 	cmp	$12,x
@@ -1225,6 +1232,7 @@ td_fire_spin_shots:
 	ldy	#$001E
 	bra	fire_topdown_weapon
 
+; Fires the active weapon from the jump (muzzle $20 ahead).
 td_fire_jump_shot:
 	stz	zp_12
 	ldy	a:$10DE,x
@@ -1755,6 +1763,8 @@ loc_029A8A:
 	clc
 	rts
 
+; zp_18/zp_1A = position of the living player nearest to object X (random
+; when both are as near); carry set when no player is alive.
 td_get_nearest_player:
 	lda	a:title_menu_cursor
 	bne	loc_029AA2
@@ -1820,6 +1830,7 @@ loc_029AFF:
 	sec
 	rtl
 
+; A = angle from object X to the nearest player (td_get_nearest_player).
 td_angle_to_nearest_player:
 	jsl	f:td_get_nearest_player
 	bcc	loc_029B0D
@@ -1905,6 +1916,9 @@ loc_029B6B:
 	bcc	loc_029B65
 	rtl
 
+; Y = the enemy slot a map object lets its enemy out into: $0D40 when player
+; 1 is near (+$2E bit 4), $0D80 for player 2 (bit 5); carry set when it is
+; in use or no player is near.
 td_get_hatch_enemy_slot:
 	lda	$2E,x
 	bit	#$0010
@@ -1962,6 +1976,7 @@ loc_029BB4:
 	clc
 	rtl
 
+; Y = a free enemy shot slot ($0300-$047F); carry set when none.
 td_find_free_enemy_shot_slot:
 	ldy	#$0300
 loc_029BC5:
@@ -1978,6 +1993,7 @@ loc_029BCC:
 	bcc	loc_029BC5
 	rtl
 
+; Y = a free item/effect slot ($0980-$0ABF); carry set when none.
 td_find_free_item_slot:
 	ldy	#$0980
 loc_029BDB:
@@ -1994,6 +2010,9 @@ loc_029BE2:
 	bcc	loc_029BDB
 	rtl
 
+; Hit flash of a boss drawn in the Mode 7 layer: when +$2E bit 6 (hit) is
+; set, fills the palette range zp_02 (zp_04 bytes) with white for 4 frames,
+; then td_restore_boss_palette copies it back from zp_00 (bank $08).
 td_flash_boss_palette_on_hit:
 	lda	$2A,x
 	beq	loc_029C04
@@ -2051,6 +2070,8 @@ td_restore_boss_palette:
 	sta	$2E,x
 	rts
 
+; Turns object X by A (at most) towards the nearest player; carry set when
+; already facing it.
 td_turn_towards_nearest_player:
 	pha
 	jsl	f:td_angle_to_nearest_player
@@ -2082,6 +2103,7 @@ loc_029C7D:
 loc_029C7E:
 	rtl
 
+; Velocity A along the angle +$04, then move_topdown_object.
 td_move_at_angle:
 	jsl	f:set_velocity_from_angle
 
@@ -2103,6 +2125,8 @@ move_topdown_object:
 	sta	$0E,x
 	rtl
 
+; Stage 5 boss: runs the slots $0B40-$0EBF (claw, arm base, arm segments)
+; with the enemy handlers (td_update_enemies from $0B40).
 update_stage5_boss_arm:
 	ldx	#$0B40
 	bra	loc_029CA6
@@ -2124,6 +2148,7 @@ loc_029CB6:
 	cpx	#$0EC0
 	bcc	loc_029CA6
 
+; Type 0 / 7: nothing (also the end of td_update_enemies).
 td_enemy_type_none:
 	rtl
 
@@ -2158,6 +2183,8 @@ tbl_td_enemy_types:
 	.addr	update_td_spitter
 	.addr	update_stage5_boss_arm_base
 
+; TDT_EXPLOSION: an enemy turned into an explosion by td_start_explosion;
+; freed when the animation ends or it is out of range.
 update_td_explosion:
 	lda	$12,x
 	phx
@@ -2171,6 +2198,7 @@ tbl_td_explosion_states:
 	.addr	td_start_explosion
 	.addr	td_explosion_state_1
 
+; Turns object X into TDT_EXPLOSION (the explosion animation).
 td_start_explosion:
 	lda	#TDT_EXPLOSION
 	sta	$10,x
@@ -2281,6 +2309,7 @@ td_play_hit_sound:
 loc_029DCC:
 	rtl
 
+; Turns one step towards the nearest player and walks forward ($0C).
 td_walk_towards_nearest_player:
 	jsr	a:td_get_angle_to_nearest_player
 	bcs	loc_029DD5
@@ -2359,6 +2388,8 @@ loc_029E3C:
 	sta	$04,x
 	rts
 
+; Fires a TDS_ENEMY_BULLET from enemy X along its angle, Y pixels ahead
+; (only when the enemy is on screen and a shot slot is free).
 td_fire_enemy_bullet:
 	lda	$2E,x
 	bit	#$0003
@@ -2406,6 +2437,9 @@ td_fire_enemy_bullet:
 loc_029EA3:
 	rtl
 
+; TDT_RUNNER, stage 2: an alien that walks towards the nearest player for
+; up to $40 frames until it is on screen, then while it is in range.
+; HP 0/2/4 (td_runner_hp). Spawned by spawn_stage2_enemies.
 update_td_runner:
 	lda	$12,x
 	phx
@@ -2422,6 +2456,8 @@ tbl_td_runner_states:
 	.addr	td_runner_state_3
 	.addr	td_runner_state_4
 
+; State 0 shared by the walking enemies: freed if it appears on screen
+; (+$2E bits 0-1), else cleared and on to state 1.
 td_enemy_state_spawn:
 	lda	$2E,x
 	bit	#$0003
@@ -2441,6 +2477,7 @@ loc_029EC7:
 	inc	$12,x
 	rtl
 
+; State 1 shared by the walking enemies: as state 0, one more frame.
 td_enemy_state_appear:
 	lda	$2E,x
 	bit	#$0003
@@ -2499,6 +2536,9 @@ loc_029F37:
 td_runner_state_4:
 	brl	td_start_explosion
 
+; TDT_GUNNER, stage 2: like TDT_RUNNER, but once on screen it turns to face
+; the nearest player and fires bullets (td_fire_gun_bullet) every
+; td_gunner_fire_delays frames. HP 0/2/4 (td_gunner_hp).
 update_td_gunner:
 	lda	$12,x
 	phx
@@ -2610,6 +2650,11 @@ loc_02A012:
 	jsl	f:queue_sound
 	jmp	a:td_start_explosion
 
+; TDT_HATCH_TURRET_AIM, stage 2: the gun turret of a hatch (TDMT_GUN_HATCH_*,
+; parent in +$3A). Hidden until the hatch opens (parent state 3), then turns
+; towards the nearest player and fires when roughly facing it
+; (hatch_turret_aim_fire_masks); hides when the hatch closes, explodes when
+; the hatch is destroyed. HP 16/32/64 (hatch_turret_hp).
 update_hatch_turret_aim:
 	lda	$06,x
 	bpl	loc_02A023
@@ -2720,6 +2765,8 @@ loc_02A0D4:
 hatch_turret_state_4:
 	brl	td_start_explosion
 
+; TDT_HATCH_TURRET_SPIN, stage 2: like TDT_HATCH_TURRET_AIM, but it turns all
+; the time and fires on a timer (hatch_turret_spin_fire_masks).
 update_hatch_turret_spin:
 	lda	$06,x
 	bpl	loc_02A0EC
@@ -2789,6 +2836,8 @@ hatch_turret_spin_state_2:
 loc_02A166:
 	rtl
 
+; TDT_HATCH_TURRET_SWEEP, stage 2: like TDT_HATCH_TURRET_AIM, but it sweeps
+; left and right (hatch_turret_sweep_fire_masks).
 update_hatch_turret_sweep:
 	lda	$06,x
 	bpl	loc_02A16E
@@ -2883,6 +2932,8 @@ loc_02A20E:
 	sta	$04,x
 	rts
 
+; Fires a TDS_ENEMY_BULLET from the gun of enemy X ($12 pixels ahead,
+; slightly to the side); only when it is on screen.
 td_fire_gun_bullet:
 	lda	$2E,x
 	bit	#$0003
@@ -2927,6 +2978,9 @@ td_fire_gun_bullet:
 loc_02A27D:
 	rtl
 
+; TDT_CENTIPEDE_UNUSED: a centipede like TDT_CENTIPEDE (HP 16/64/128,
+; td_centipede_unused_hp); no generator spawns it (not executed in the CDL
+; traces).
 update_td_centipede_unused:
 	; (not executed in the CDL traces)
 	lda	$12,x
@@ -3092,6 +3146,9 @@ loc_02A39A:
 	jsl	f:clear_topdown_slot
 	rtl
 
+; TDT_CENTIPEDE_SEGMENT: body segment of a centipede ($0E00, $0E40, $0E80);
+; follows the trail its head records at $7E:1900-$1AFF, each segment a few
+; positions behind. Hit damage counts for the whole centipede.
 update_td_centipede_segment:
 	lda	$12,x
 	phx
@@ -3178,6 +3235,11 @@ loc_02A44A:
 	plx
 	rts
 
+; TDT_BUG_CENTIPEDE, stage 5: centipede head ($0DC0) with three
+; TDT_BUG_CENTIPEDE_SEGMENT; HP 16/64/128 for the whole body
+; (td_bug_centipede_hp, the sum of the four parts). When killed, the four
+; parts become TDT_CENTIPEDE_BUG running off in random directions.
+; Spawned by spawn_stage5_enemies when no enemy is alive.
 update_td_bug_centipede:
 	lda	$12,x
 	phx
@@ -3301,6 +3363,7 @@ td_set_bug_direction:
 	sta	a:$0038,y
 	rts
 
+; TDT_BUG_CENTIPEDE_SEGMENT: body segment of TDT_BUG_CENTIPEDE (follows its trail).
 update_td_bug_centipede_segment:
 	lda	$12,x
 	phx
@@ -3345,6 +3408,9 @@ td_bug_centipede_segment_state_1:
 	jsl	f:td_enemy_tile_collision
 	rtl
 
+; TDT_CENTIPEDE_BUG, stage 5: what is left of a TDT_BUG_CENTIPEDE: runs off
+; for $20 frames, fires an orb, then walks towards the nearest player.
+; HP 2/4/8 (td_centipede_bug_hp).
 update_td_centipede_bug:
 	lda	$06,x
 	bpl	loc_02A5B6
@@ -3457,6 +3523,10 @@ loc_02A678:
 	jsl	f:queue_sound
 	jmp	a:td_start_explosion
 
+; TDT_CENTIPEDE, stage 2: centipede head ($0DC0) with three
+; TDT_CENTIPEDE_SEGMENT; wiggles towards the nearest player and fires bullets
+; when facing it (td_centipede_fire_masks). HP 16/64/128 for the whole body
+; (td_centipede_hp). Spawned by spawn_stage2_enemies when no enemy is alive.
 update_td_centipede:
 	lda	$12,x
 	phx
@@ -3600,6 +3670,9 @@ loc_02A79B:
 	jsl	f:td_enemy_tile_collision
 	rts
 
+; TDT_NEST_CRAWLER, stage 5: comes out of a nest (TDMT_NEST, parent in +$3A)
+; when it opens, walks towards the nearest player and fires orbs.
+; HP 2/16/32 (td_nest_crawler_hp).
 update_td_nest_crawler:
 	lda	$06,x
 	bpl	loc_02A7AC
@@ -3710,6 +3783,8 @@ loc_02A86C:
 	jsl	f:queue_sound
 	jmp	a:td_start_explosion
 
+; TDT_CRAWLER, stage 5: walks towards the nearest player. HP 2/4/8
+; (td_crawler_hp). Spawned by spawn_stage5_enemies.
 update_td_crawler:
 	lda	$12,x
 	phx
@@ -3770,6 +3845,9 @@ loc_02A8D9:
 	jsl	f:queue_sound
 	jmp	a:td_start_explosion
 
+; TDT_SPITTER, stage 5: walks, turns to face the nearest player and fires
+; orbs (td_spitter_fire_delays). HP 2/4/8 (td_spitter_hp). Spawned by
+; spawn_stage5_enemies.
 update_td_spitter:
 	lda	$12,x
 	phx
@@ -3874,6 +3952,7 @@ loc_02A992:
 loc_02A9A5:
 	rtl
 
+; Fires a TDS_ENEMY_ORB from enemy X ($0C pixels ahead); only on screen.
 td_fire_enemy_orb:
 	lda	$2E,x
 	bit	#$0003
@@ -3910,6 +3989,8 @@ td_fire_enemy_orb:
 loc_02A9F7:
 	rtl
 
+; Runs the item and effect objects ($0980-$0ABF) by type (tbl_td_item_types,
+; TDI_*), then their animation (animate_td_item).
 update_td_items:
 	ldx	#$0980
 loc_02A9FB:
@@ -3946,6 +4027,9 @@ tbl_td_item_types:
 	.addr	update_td_item_barrier
 	.addr	update_td_item_bomb
 
+; TDI_BLAST: a blast (damage 16, +$16 bit 15) that hurts the enemies and the
+; players (unless barrier) until its animation ends. Set off by the stage 2
+; traps (TDA_TRAP).
 update_td_blast:
 	lda	$12,x
 	phx
@@ -3985,6 +4069,8 @@ td_blast_state_1:
 td_item_none:
 	rtl
 
+; TDI_EXPLOSION: an explosion animation at a random offset of up to 8
+; pixels, no collision (td_spawn_explosion_effect).
 update_td_explosion_effect:
 	lda	$12,x
 	phx
@@ -4028,6 +4114,10 @@ td_explosion_effect_state_1:
 loc_02AAB9:
 	rtl
 
+; TDI_SPREAD ... TDI_BOMB: an item on the floor for $140 frames; its kind is
+; in +$14 (1-5 the weapon WEAPON_*, TDIK_BARRIER, TDIK_BOMB) and the player
+; picks it up by touching it (td_p1_vs_items). Dropped by destroyed targets
+; and boss pods (td_spawn_item_drop).
 update_td_item_spread:
 	lda	$12,x
 	phx
@@ -4229,6 +4319,7 @@ loc_02ABFA:
 	sta	$02,x
 	rtl
 
+; Stage 5 boss: runs the map objects $0AC0-$0B3F (the boss) by type.
 update_stage5_boss_objects:
 	ldx	#$0AC0
 loc_02AC0C:
@@ -4295,6 +4386,7 @@ tbl_map_object_types:
 	.addr	td_map_object_none
 	.addr	td_map_object_none
 
+; Spawns a TDI_EXPLOSION at object X's position.
 td_spawn_explosion_effect:
 	jsl	f:td_find_free_item_slot
 	bcs	loc_02AC8E
@@ -4309,6 +4401,9 @@ td_spawn_explosion_effect:
 loc_02AC8E:
 	rtl
 
+; Destroyed map object X may drop an item: kind td_item_drop_kinds by its
+; +$14 and random (0 = none), type td_item_kind_types. Carry set when no
+; slot is free.
 td_spawn_item_drop:
 	jsl	f:td_find_free_item_slot
 	bcs	loc_02ACCB
@@ -4360,6 +4455,13 @@ update_map_object_block:
 loc_02ACE1:
 	rts
 
+; TDMT_STAGE2_BOSS ($0AC0): the stage 2 boss, a spiked machine with six arms
+; drawn as the Mode 7 layer (the arena floor is sprites,
+; draw_stage2_boss_arena). It falls from above (Mode 7 scale growing from 0
+; to 1:1, screen shake), turns and walks towards the nearest player, and
+; jumps on it (scale shrinking, then growing again over the player).
+; Its parts: TDMT_STAGE2_BOSS_CORE, TDMT_STAGE2_BOSS_CANNON and six
+; TDMT_STAGE2_BOSS_POD. It dies with the core. Checked in the emulator.
 update_stage2_boss:
 	lda	$12,x
 	cmp	#$0011
@@ -4986,6 +5088,8 @@ td_select_target_player_long:
 	jsr	a:td_select_target_player
 	rtl
 
+; Picks the player the boss goes for: the nearest living one; wram_159E =
+; its slot offset (0 or $40), wram_15A0 = half its squared distance.
 td_select_target_player:
 	lda	a:p1_lives
 	ora	a:p2_lives
@@ -5136,6 +5240,10 @@ stage2_boss_move:
 	sta	$0E,x
 	rts
 
+; Stage 2 boss map: rotates the point (zp_18, zp_1A) around the boss
+; (wram_0ACA / wram_0ACE) by the angle zp_16 with the hardware multiplier;
+; screen position (plus zp_1C / zp_1E) in zp_00 / zp_02. This is the
+; boss-centred camera (boss_centered_view).
 project_around_stage2_boss:
 	lda	a:wram_0ACE
 	sec
@@ -5231,6 +5339,10 @@ loc_02B350:
 	clc
 	rtl
 
+; TDMT_STAGE2_BOSS_CORE: the stage 2 boss's weak point, at the centre of the
+; body; hittable only while the boss is on the ground. HP 256/384/512
+; (stage2_boss_core_hp); below half HP the boss always jumps instead of
+; spinning (stage2_boss_state_07).
 update_stage2_boss_core:
 	jsr	a:stage2_boss_core_position
 	lda	#$8C60
@@ -5335,6 +5447,9 @@ stage2_boss_core_position:
 	sta	$0E,x
 	rts
 
+; TDMT_STAGE2_BOSS_POD: one of the six spiked pods at the ends of the stage 2
+; boss's arms (+$14 = arm x2); opens and fires bullets; drops an item when
+; destroyed. HP 32/64/128 (stage2_boss_pod_hp).
 update_stage2_boss_pod:
 	jsr	a:stage2_boss_pod_position
 	jsl	f:stage2_boss_pod_run_state
@@ -5561,6 +5676,9 @@ stage2_boss_pod_fire:
 	jsl	f:td_fire_enemy_bullet
 	rts
 
+; TDMT_STAGE2_BOSS_CANNON: the cannon turning around the stage 2 boss's body
+; ($3A pixels from the centre); fires bullets (flames on HARD,
+; TDS_CANNON_FLAME). HP 128/192/256 (stage2_boss_cannon_hp).
 update_stage2_boss_cannon:
 	jsl	f:stage2_boss_cannon_run_state
 	jml	f:td_flash_enemy_on_hit
@@ -5954,6 +6072,7 @@ tbl_topdown_shot_types:
 	.addr	update_td_enemy_orb
 	.addr	update_td_homing_orb
 
+; TDS_ENEMY_BULLET: $40 frames, ends on walls (td_check_enemy_shot_tile).
 update_td_enemy_bullet:
 	lda	$12,x
 	bne	loc_02B8AA
@@ -5997,6 +6116,8 @@ loc_02B8CD:
 td_shot_type_none:
 	rtl
 
+; Shot X hit something: becomes TDS_IMPACT (a spark), except the flame and
+; the crush blasts; a crush missile explodes.
 td_end_shot:
 	lda	$10,x
 	cmp	#TDS_FLAME
@@ -6034,6 +6155,7 @@ td_shot_hidden:
 	sta	$04,x
 	rtl
 
+; TDS_DEFAULT (and type 1): 16 frames at speed $80, damage 2.
 update_td_default_shot:
 	lda	$12,x
 	bne	loc_02B94C
@@ -6081,6 +6203,7 @@ move_td_shot:
 	sta	$0E,x
 	rtl
 
+; TDS_SPREAD: as TDS_DEFAULT, bigger after 8 frames; damage 2.
 update_td_spread_shot:
 	lda	$12,x
 	bne	loc_02B9A7
@@ -6120,6 +6243,8 @@ loc_02B9BD:
 loc_02B9C6:
 	jmp	a:move_td_shot
 
+; TDS_HOMING: picks a visible hittable target (+$16 bit 13, cycling with
+; wram_1596) and turns towards it 8 units a frame; $40 frames, damage 2.
 update_td_homing_shot:
 	lda	$12,x
 	beq	loc_02B9D0
@@ -6268,6 +6393,8 @@ td_homing_shot_set_velocity:
 	jsl	f:set_velocity_from_angle
 	rtl
 
+; TDS_LASER: a segment kept at a distance ahead of the player; 7 frames,
+; damage 4.
 update_td_laser_shot:
 	lda	$12,x
 	bne	loc_02BB08
@@ -6356,6 +6483,7 @@ td_get_laser_muzzle_distance:
 loc_02BB98:
 	rts
 
+; TDS_FLAME: flame in front of the player, 14 frames, damage 1.
 update_td_flame_shot:
 	lda	$12,x
 	bne	loc_02BBCC
@@ -6442,6 +6570,7 @@ loc_02BC30:
 	sta	$00,x
 	rts
 
+; TDS_CRUSH: 16 frames, damage 2; on a hit becomes TDS_CRUSH_BLAST.
 update_td_crush_missile:
 	lda	$12,x
 	bne	loc_02BC66
@@ -6484,6 +6613,8 @@ loc_02BC8B:
 	sta	$10,x
 	rtl
 
+; TDS_CRUSH_BLAST: $40 frames of explosions around the hit point, damage 1;
+; starts its two TDS_CRUSH_BLAST_PART slots.
 update_td_crush_blast:
 	lda	$12,x
 	bne	loc_02BCDA
@@ -6611,6 +6742,8 @@ td_crush_blast_frame:
 	sta	$16,x
 	rtl
 
+; TDS_CANNON_FLAME: the stage 2 boss cannon's flame on HARD (not executed in
+; the CDL traces).
 update_td_cannon_flame:
 	; (not executed in the CDL traces)
 	lda	$12,x
@@ -6659,6 +6792,7 @@ loc_02BDF1:
 loc_02BDFA:
 	jmp	a:td_flicker_shot
 
+; TDS_BOSS_SPIT: shot spat by the stage 5 boss (stage5_boss_spawn_spit).
 update_td_boss_spit:
 	lda	$12,x
 	phx
@@ -6725,6 +6859,7 @@ td_boss_spit_frame:
 	sta	$00,x
 	rts
 
+; TDS_ENEMY_ORB: $40 frames straight ahead.
 update_td_enemy_orb:
 	lda	$12,x
 	bne	loc_02BE8F
@@ -6759,6 +6894,8 @@ loc_02BE96:
 	jsl	f:move_td_shot
 	rtl
 
+; TDS_HOMING_ORB: $80 frames, steering towards the player in +$14
+; (td_homing_orb_steer, rate by difficulty).
 update_td_homing_orb:
 	lda	$12,x
 	bne	loc_02BEDA
@@ -6861,6 +6998,8 @@ loc_02BF77:
 	sta	$00,x
 	rts
 
+; Player shot X against the tile attribute map: carry set when it hits a wall
+; or a map object tile (TDA_MAP_OBJECT, which damages that object).
 td_check_shot_tile:
 	lda	a:topdown_map
 	cmp	#TD_MAP_STAGE2_BOSS
@@ -6954,6 +7093,7 @@ loc_02C02C:
 	sec
 	rts
 
+; Enemy shot X against the tile attribute map: carry set on a wall.
 td_check_enemy_shot_tile:
 	lda	a:boss_centered_view
 	beq	loc_02C035
@@ -7011,6 +7151,8 @@ loc_02C07F:
 	sec
 	rts
 
+; Enemy X against the tile attribute map: corners (td_read_enemy_corner_tiles),
+; walls (td_push_out_of_walls), special tiles (td_enemy_tile_effect).
 td_enemy_tile_collision:
 	lda	a:boss_centered_view
 	beq	loc_02C08D
@@ -7044,6 +7186,7 @@ loc_02C09D:
 	plx
 	sta	zp_00
 	jmp	(zp_00)
+; Indexed by $FF - attribute (TDA_HOLE first).
 tbl_td_enemy_special_tiles:
 	.addr	td_tile_kill_enemy
 	.addr	td_tile_no_effect
@@ -7380,6 +7523,8 @@ loc_02C32E:
 	sta	zp_06
 	rts
 
+; Player X against the tile attribute map: corners, walls, then the special
+; tile under it (td_player_tile_effect, tbl_td_player_special_tiles).
 td_player_tile_collision:
 	lda	a:boss_centered_view
 	beq	loc_02C33B
@@ -7427,6 +7572,7 @@ loc_02C377:
 	plx
 	sta	zp_00
 	jmp	(zp_00)
+; Indexed by $FF - attribute (TDA_HOLE first).
 tbl_td_player_special_tiles:
 	.addr	td_tile_hole
 	.addr	td_tile_block_anim_trigger
@@ -8353,6 +8499,8 @@ loc_02C9F6:
 	sec
 	rts
 
+; TDA_TRAP: 500 points and a timer per column ($187E): $30 frames later a
+; TDI_BLAST explodes there (td_update_stage2_map_events).
 td_trigger_trap:
 	lda	$0A,x
 	and	#$FFE0
@@ -8375,6 +8523,8 @@ td_trigger_trap:
 loc_02CA1C:
 	rts
 
+; TDA_BLOCK_ANIM: screen shake, sound $11 and $20 frames of block
+; animation (wram_18AC for x < $200, wram_18AE for the right half).
 td_trigger_block_anim:
 	ldy	#$0000
 	lda	$0A,x
@@ -8395,6 +8545,9 @@ loc_02CA2A:
 loc_02CA48:
 	rts
 
+; TDA_SWITCH: Y or A pressed here starts one of three events (by y) run by
+; td_update_switch_events: shake, explosions and map blocks redrawn step by
+; step.
 td_trigger_switch_event:
 	lda	a:$066C,x
 	bit	#$4080
@@ -8520,6 +8673,9 @@ loc_02CB57:
 	sec
 	rts
 
+; Y = the map object owning the TDA_MAP_OBJECT tile under X (by 256-pixel
+; cell: data_05DF02 on stage 2, data_05DF22 on stage 5; $0AC0 on the
+; boss maps).
 td_get_map_object_at:
 	lda	$0A,x
 	xba
@@ -8548,6 +8704,8 @@ loc_02CB80:
 	tay
 	rts
 
+; Moves object X around the centre of its 32 x 32-pixel cell (whirlpool);
+; carry clear at the centre.
 td_whirl_around_cell:
 	lda	$0A,x
 	and	#$001F
@@ -8619,6 +8777,8 @@ loc_02CBD7:
 	sec
 	rts
 
+; Stage 5 boss: moves player X one angle step around ($200,$200) and one
+; pixel closer (the funnel pulls it in).
 td_spiral_into_sand_pit:
 	lda	$0A,x
 	sec
@@ -8905,6 +9065,9 @@ loc_02CE20:
 loc_02CE2B:
 	rts
 
+; Player 1 against the item/effect objects: picks up items (weapon into the
+; active slot, barrier $200 frames, one more bomb up to 9), and is killed by
+; blasts unless the barrier is on.
 td_p1_vs_items:
 	lda	#$000C
 	clc
@@ -10786,6 +10949,8 @@ loc_02DD14:
 	bne	loc_02DCCB
 	rtl
 
+; Stage 5: runs the three switch events ($18B0, $18BE, $18CC, $0E bytes
+; each) started by td_trigger_switch_event.
 td_update_switch_events:
 	ldx	#$18B0
 loc_02DD1C:
