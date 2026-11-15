@@ -142,7 +142,13 @@ Shifted alone, banks `$00`, `$01`, `$02`, `$03`, `$04`, `$06` and `$1D`
 show no anomaly in `tools/shift_diag.py` over the attract sequence, and
 with all of them shifted together every screenshot test passes (the CDL
 tracer's own vector check (`tests/test_cdl.py`) fails by design: it expects the reset
-code at `$00:8000`). Bank `$05`
+code at `$00:8000`). So do they with a byte also inserted before 186 of
+their data labels:
+
+```sh
+python3 tools/shift.py build --amounts 00=3,01=7,02=11,03=5,04=9,06=6,1D=12 \
+    --banks 00,01,02,03,04,06,1D --labels 0.3 --seed 2
+``` Bank `$05`
 runs the intro, title, the stage 1 demo and part of the stage 2 demo; the
 graphics/sound banks the attract sequence until the top-down sprite
 graphics stream. Not yet shiftable: most of bank `$05`'s other tables,
