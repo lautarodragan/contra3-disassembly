@@ -939,7 +939,7 @@ loc_048704:
 	tay
 	asl	a
 	clc
-	adc	#$EB21
+	adc	#.loword(vram_blocks_05EB21)
 	pha
 	lda	a:data_05E8B7,y
 	sta	$30,x

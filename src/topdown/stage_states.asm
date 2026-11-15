@@ -1755,7 +1755,7 @@ spawn_stage2_targets:
 	ora	a:data_05CD72,y
 loc_028D85:
 	clc
-	adc	#$CD78
+	adc	#.loword(stage2_target_type_sets)
 	sta	zp_FA
 	ldy	#$0000
 	ldx	#$0AC0
@@ -1811,7 +1811,7 @@ spawn_stage5_targets:
 	and	#$0070
 loc_028DE7:
 	clc
-	adc	#$CE7C
+	adc	#.loword(stage5_target_type_sets)
 	sta	zp_FA
 	ldy	#$0000
 	ldx	#$0AC0

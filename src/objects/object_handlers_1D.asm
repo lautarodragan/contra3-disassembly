@@ -661,7 +661,7 @@ ending_queue_tile_changes:
 	clc
 	lda	a:data_05F900,y
 	and	#$00FF
-	adc	#$F914
+	adc	#.loword(vram_blocks_05F914)
 	tay
 	clc
 	adc	#$0006
