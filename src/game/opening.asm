@@ -1,10 +1,13 @@
-; game/stage_sequence.asm -- Scripted stage sequence
+; game/opening.asm -- Opening cinematic
 ; Bank $00, $00:EBC4-$00:F27B. Included by main.asm in segment BANK00.
 ;
-; A scripted sequence run from the stage state machine (run_opening_cinematic, state in
-; $1C80, table tbl_opening_states): colour-math fades, graphics loads, and state
-; tables at $1C82; it clears both players' lives ($1F8A/$1FCA) at its start.
+; The opening cinematic of GAME_MODE_OPENING, run as stage 0 by the
+; side-view stage code (stage_cinematic -> run_opening_cinematic): seven
+; scenes (city, vortex, beam strike, ruins and the alien, scrolling text,
+; the hero's face, both heroes) with their HDMA parallax / wave tables and
+; captions. It clears both players' lives at its start.
 
+; Stage layout init of the opening (stage 0).
 layout_init_opening:
 	lda	#$0005
 	sta	a:wram_13BA
@@ -14,6 +17,10 @@ layout_init_opening:
 	sta	a:cgadsub_shadow
 	rtl
 
+; The opening cinematic, state in opening_state (tbl_opening_states):
+; init, blank, load the scene's graphics, run the scene for
+; opening_scene_durations[opening_scene] frames, next scene
+; (opening_scene_next_states), done (mode_result + 1).
 run_opening_cinematic:
 	jsl	f:opening_cinematic_step
 	rtl
@@ -175,6 +182,9 @@ opening_cinematic_done:
 	inc	a:mode_result
 	rtl
 
+; Scenes (tbl_opening_scenes, see the book): 0 city (A.D. 2636), 1 vortex,
+; 2 beam strike, 3 ruins and the alien, 4 scrolling text, 5 the hero's face
+; and caption, 6 both heroes and caption.
 opening_run_scene:
 	lda	a:opening_scene
 	phx
@@ -669,6 +679,7 @@ opening_scene_heroes:
 @return2:
 	rts
 
+; A = entry: queues a strip of caption tiles (data_05A901...) with sub_00FEA3.
 opening_draw_caption_part:
 	asl	a
 	tay
@@ -686,6 +697,7 @@ opening_draw_caption_part:
 	plx
 	rts
 
+; Carry set if the scene ends next frame.
 opening_is_scene_ending:
 	lda	a:opening_scene
 	asl	a
@@ -695,6 +707,7 @@ opening_is_scene_ending:
 	cmp	a:opening_scene_durations,y
 	rts
 
+; Writes the HDMA scroll table at $7E:A000 from wram_1380 and opening_frame_counter.
 opening_update_parallax:
 	lda	a:wram_1380
 	sta	f:wram_7EA013
@@ -714,6 +727,7 @@ opening_update_parallax:
 	sta	f:wram_7EA010
 	rts
 
+; Clears the 16 object slots listed in data_05A9D9.
 opening_clear_objects:
 	ldy	#$0000
 @loop:
@@ -754,6 +768,8 @@ opening_set_layers_normal:
 	sta	a:CGWSEL
 	rts
 
+; Y = parameters: fills a table with a value modulated by the sign of a
+; sine table (data_058010); used for the wavy ruins effect.
 build_wave_table:
 	lda	a:$0000,y
 	sta	zp_00

@@ -1,12 +1,13 @@
-; game/attract.asm -- Attract mode: intro, title, demo
+; game/attract.asm -- Attract mode: demo, title, Konami logo
 ; Bank $00, $00:AD7C-$00:B678. Included by main.asm in segment BANK00.
 ;
-; Game modes 0, 3 and 4 and their helpers: the intro (run_konami_logo, sub-modes
-; tbl_konami_logo_steps), the title screen helpers, and the attract demo (run_demo;
-; demo index $1E48; sub_00AECD/sub_00AF11 read data from banks $15/$16,
-; probably the recorded inputs). check_button_code_unused..sub_00B39F (never run in the
-; traces) look like button-code checks.
+; The attract demo (run_demo: recorded pad input played back through
+; run_stage, demo_index chooses one of three stages), the title screen
+; (load_title_screen, run_title_menu, the sprite words of the logo) and the
+; Konami logo (run_konami_logo). Also three button codes that nothing
+; calls (30 lives, stage select).
 
+; Attract demo, steps in mode_step: demo_init, demo_play, demo_end.
 run_demo:
 	lda	a:mode_step
 	asl	a
@@ -17,6 +18,9 @@ tbl_demo_steps:
 	.addr	demo_play
 	.addr	demo_end
 
+; Sets up the demo stage (demo_stages[demo_index], checkpoint from
+; demo_stage_checkpoints), the players, the recorded input and the RNG
+; (seeded with 0 so the recording replays exactly); demo_timer = $800.
 demo_init:
 	rep	#$30
 	phb
@@ -51,6 +55,9 @@ demo_init:
 	inc	a:mode_step
 	rtl
 
+; Plays a frame: replaces the pads with the recording (demo_update_input)
+; and runs run_stage. Ends on timeout, at the end of the stage or on Start
+; (demo_result 1 / 2).
 demo_play:
 	dec	demo_timer
 	beq	@timed_out
@@ -86,6 +93,7 @@ demo_play:
 	inc	a:mode_step
 	rtl
 
+; Fades out, advances demo_index (0-2), mode_result = demo_result.
 demo_end:
 	jsl	f:fade_out_step
 	bcs	@return
@@ -105,6 +113,8 @@ demo_end:
 @return:
 	rtl
 
+; demo_record_mode: record the pads to SRAM; otherwise replace joy1/joy2
+; held/pressed with the recorded events (buttons, duration).
 demo_update_input:
 	lda	a:demo_record_mode
 	beq	demo_playback_input
@@ -301,6 +311,8 @@ demo_init_players:
 	sta	button_stand_still
 	rts
 
+; Event pointers for demo_index (data_0584EC / data_0584F5, 3-byte
+; pointers) or, when recording, $70:0000 / $70:0400.
 demo_init_input:
 	stz	a:demo_p1_timer
 	stz	a:demo_p2_timer
@@ -338,6 +350,8 @@ demo_init_input:
 @return:
 	rts
 
+; One step of a fade out (also of the top-down views on stages 2 and 5).
+; Carry set while fading; clear when done (display blanked).
 fade_out_step:
 	lda	stage_number
 	cmp	#$0002
@@ -388,6 +402,7 @@ fade_out_step:
 	clc
 	rtl
 
+; Loads the title for the opening: Mode 7 logo scaled to 0.
 opening_load_title_screen:
 	jsl	f:reset_video_state
 	jsr	a:load_title_graphics
@@ -418,6 +433,7 @@ init_title_logo_zoomed_out:
 	stz	a:m7sel_shadow
 	rts
 
+; Loads the title with the logo at full size (from the demo or the menu).
 load_title_screen:
 	jsl	f:reset_sound_queue
 	jsl	f:reset_video_state
@@ -478,12 +494,15 @@ draw_title_texts:
 	rts
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_00B17B:
+; Never called: setup_hdma_from_list with the list at $05:84FE.
+setup_hdma_list_unused:
 	; (not executed in the CDL traces)
 	ldy	#$84FE
 	jsl	f:setup_hdma_from_list
 	rts
 
+; Y = list of (register address, 4 bytes) entries ended by $FFFF and the
+; HDMAEN value; writes them to the DMA registers.
 setup_hdma_from_list:
 	ldx	a:$0000,y
 	cpx	#$FFFF
@@ -508,6 +527,7 @@ setup_hdma_from_list:
 	.a16
 	rtl
 
+; Title menu, steps in mode_step: init, fade in, input, fade out (unused).
 run_title_menu:
 	rep	#$20
 	rep	#$10
@@ -558,6 +578,7 @@ title_menu_fade_in:
 	inc	a:mode_step
 	rtl
 
+; mode_result = 1 when title_menu_timeout runs out (demo), 2 on Start.
 title_menu_input:
 	jsl	f:title_menu_update_cursor
 	bcs	@start_pressed
@@ -597,6 +618,8 @@ title_menu_fade_out:
 	sta	mode_result
 	rtl
 
+; Up/Down/Select move title_menu_cursor (0-3, TITLE_*) and redraw it;
+; carry set (and sound) on Start.
 title_menu_update_cursor:
 	lda	joy1_pressed
 	ora	joy2_pressed
@@ -665,6 +688,8 @@ title_menu_start_pressed:
 	sec
 	rtl
 
+; Loads the graphics of the next demo's stage (ptrs_0585CB[demo_index])
+; while the title is shown.
 load_demo_stage_graphics:
 	jsl	f:clear_bg_scroll_state
 	jsl	f:clear_wram_7e4000_7effff
@@ -682,6 +707,9 @@ load_demo_stage_graphics:
 ; probably button-code checks.  DB is assumed to be $05, the game's usual data
 ; bank (hint): the sequences are then d-pad masks at $05:86D3/86D9/86DF.
 ; (no caller found; decoded because it follows the end of a routine)
+; Button codes on the title: never called. Each compares the d-pad with a
+; 3-entry sequence (data_0586D3/D9/DF) within a time limit, then a button.
+; This one only plays a sound.
 check_button_code_unused:
 	; (not executed in the CDL traces)
 	lda	a:code1_timer
@@ -727,6 +755,7 @@ check_button_code_unused:
 	rts
 
 ; (no caller found; decoded because it follows the end of a routine)
+; Sets option_lives to 30 (never called).
 check_30_lives_code:
 	; (not executed in the CDL traces)
 	lda	a:code2_timer
@@ -774,6 +803,7 @@ check_30_lives_code:
 	rts
 
 ; (no caller found; decoded because it follows the end of a routine)
+; Sets stage_select_enabled (never called).
 check_stage_select_code:
 	; (not executed in the CDL traces)
 	lda	a:code3_timer
@@ -823,6 +853,8 @@ check_stage_select_code:
 	sec
 	rts
 
+; Builds the OAM entries of the words THE, ALIEN, WARS (and a 4th group
+; at wram_1E5C) at their X positions, Y offset by the title shake.
 draw_title_word_sprites:
 	ldx	#$0FC0
 	lda	#$11C0
@@ -932,6 +964,9 @@ draw_title_sprite_group:
 	bpl	draw_title_sprite_group
 	rts
 
+; Konami logo, steps in konami_logo_step (tbl_konami_logo_steps): a line
+; sweeps in, the logo scrolls in, shines (palette rows rotated), turns
+; white and fades out; then konami_logo_done = 1.
 run_konami_logo:
 	rep	#$20
 	rep	#$10
@@ -1112,6 +1147,7 @@ konami_logo_fade_out:
 @return:
 	rtl
 
+; Rotates the 16 colours at $7E:0000+X (the CGRAM buffer) by one entry.
 rotate_palette_row:
 	lda	f:$7E0000,x
 	pha

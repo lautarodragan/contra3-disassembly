@@ -1,10 +1,15 @@
-; game/screens.asm -- Other non-gameplay screens
+; game/screens.asm -- Stage clear, OPTION and FINAL SCORE screens; scores
 ; Bank $00, $00:B679-$00:BD3F. Included by main.asm in segment BANK00.
 ;
-; Sub-mode tables of game modes 10, 13 and 14 (run_stage_clear, run_options,
-; run_final_score) and the tilemap/number drawing helpers they share with other
-; modes (draw_score_board, add_score...).
+; run_stage_clear (GAME_MODE_STAGE_CLEAR), run_options (GAME_MODE_OPTIONS),
+; run_final_score (GAME_MODE_FINAL_SCORE); the score board and number
+; drawing helpers; add_score (BCD scores and extra lives) used by the
+; players and the top-down stages; load_stage_graphics.
 
+; GAME_MODE_STAGE_CLEAR screen: loads the stage clear picture
+; (data_0587F1[stage_number]), loads the next stage's graphics, counts the
+; 10000-point stage_bonus into the scores (transfer_stage_bonus), waits a
+; button or $100 frames; stage_number + 1, stage_checkpoint = 0.
 run_stage_clear:
 	lda	a:mode_step
 	asl	a
@@ -171,6 +176,7 @@ stage_clear_fade_out:
 	sta	mode_result
 	rtl
 
+; Draws HI SCORE, 1P/2P SCORE and REST (update_high_score first).
 draw_score_board:
 	jsr	a:update_high_score
 	ldx	#$8892
@@ -210,6 +216,7 @@ draw_score_board:
 	jsl	f:draw_two_digit_number
 	rtl
 
+; add_score with X = player object ($0200/$0240): stat block = X + $1D80.
 add_score_for_player_obj:
 	pha
 	txa
@@ -219,6 +226,7 @@ add_score_for_player_obj:
 	pla
 	bra	add_score
 
+; add_score with X = top-down player ($0EC0/$0F00): stat block = X + $10C0.
 add_score_for_topdown_player:
 	pha
 	txa
@@ -227,6 +235,10 @@ add_score_for_topdown_player:
 	tax
 	pla
 
+; Adds A (BCD) to the score of the player whose stat block ($1F80 / $1FC0)
+; is in X (field +$20, capped at 9999999). Counts down the next-extend
+; counter (+$36): at 0 an extra life (+$0A, max 30, sound $3E) and 60000
+; more points to the next one.
 add_score:
 	sed
 	sta	zp_FA
@@ -282,6 +294,8 @@ add_score:
 	cld
 	rtl
 
+; Draws the 7-digit BCD number at X (4 bytes) at VRAM word address Y,
+; tile attributes in A.
 draw_bcd_number:
 	sta	zp_FA
 	phx
@@ -314,6 +328,7 @@ draw_stage_bonus:
 	jsl	f:draw_bcd_number
 	rts
 
+; Draws the word at X (0-99) as two decimal digits at VRAM word address Y.
 draw_two_digit_number:
 	sta	zp_FA
 	phx
@@ -352,6 +367,8 @@ draw_digit_high_nibble:
 	lsr	a
 	lsr	a
 
+; Writes digit A & $F (tile = digit + 1 | attributes zp_FA) to the VRAM
+; write started by the caller.
 draw_digit:
 	and	#$000F
 	inc	a
@@ -361,6 +378,7 @@ draw_digit:
 	plx
 	rtl
 
+; Moves 100 points of stage_bonus to each living player per frame.
 transfer_stage_bonus:
 	lda	a:p1_lives
 	beq	@check_p2
@@ -386,6 +404,7 @@ transfer_stage_bonus:
 	cld
 	rts
 
+; high_score = max(high_score, p1_score, p2_score).
 update_high_score:
 	sec
 	lda	a:high_score
@@ -412,6 +431,7 @@ update_high_score:
 @return:
 	rts
 
+; A = stage number: loads its graphics sets (ptrs_0588E1 / ptrs_0588ED).
 load_stage_graphics:
 	pha
 	jsl	f:clear_bg_scroll_state
@@ -429,6 +449,9 @@ load_stage_graphics:
 	jsl	f:load_data_list
 	rtl
 
+; OPTION MODE: PLAYER (option_lives 3/5/7), LEVEL (option_level),
+; SOUND (option_sound, STEREO / MONO), EXIT. Up/Down move options_cursor,
+; Left/Right change the entry; EXIT + a button or Start leaves.
 run_options:
 	lda	a:mode_step
 	asl	a
@@ -761,6 +784,7 @@ options_draw_sound:
 	jsl	f:draw_text
 	rts
 
+; FINAL SCORE screen: fade in, draw the scores, wait for Start, fade out.
 run_final_score:
 	lda	a:mode_step
 	asl	a

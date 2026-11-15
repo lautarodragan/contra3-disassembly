@@ -1,9 +1,13 @@
-; game/game_mode_5.asm -- Game mode 5
+; game/sound_check.asm -- Sound check mode (game mode 5)
 ; Bank $04, $04:D878-$04:D9F0. Included by main.asm in segment BANK04.
 ;
-; run_sound_check: the handler of game mode 5 (via game_mode_sound_check), with sub-modes
-; tbl_sound_check_steps. Never run in the CDL traces.
+; run_sound_check: "SOUND CHECK MODE", the handler of GAME_MODE_SOUND_CHECK
+; (game_mode_sound_check), steps in mode_step. Nothing enters this mode;
+; never run in the CDL traces (checked in the emulator by poking game_mode).
 
+; SOUND CHECK MODE (game mode 5, never run): d-pad picks sound_check_id
+; ($00-$6A, auto-repeat), Y plays it (data_1DCCE0; ids $60-$73 load a song
+; set first), B sends $84 (stop), Start leaves.
 run_sound_check:
 	; (not executed in the CDL traces)
 	lda	a:mode_step
@@ -193,6 +197,7 @@ sound_check_draw_id:
 	jsl	f:end_vram_transfer
 	rts
 
+; A = 0-15 -> tile number (digits 1-10, letters from $3C).
 hex_digit_to_tile:
 	; (not executed in the CDL traces)
 	cmp	#$000A

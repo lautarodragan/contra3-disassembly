@@ -1,11 +1,14 @@
 ; game/stage.asm -- Side-view stage state machine
 ; Bank $00, $00:BD40-$00:C282. Included by main.asm in segment BANK00.
 ;
-; run_side_view_stage dispatches the stage sub-mode through tbl_stage_states: stage start
-; effects (stage_init), stage setup (stage_setup_video: video mode, graphics, BG),
-; and the per-frame stage loop (stage_play: players update_players, object lists
-; sub_00E1B8/sub_00E989, HUD...).
+; run_side_view_stage dispatches stage_state (STAGE_STATE_*) through
+; tbl_stage_states: stage_init, stage_setup_video, stage_play (one frame:
+; stage_frame), stage_exit (fade out) and stage_cinematic (the opening,
+; stage 0). Also the per-layout stage start (stage_layout_init) and the
+; scripted player input (apply_player_autopilot).
 
+; Side-view stage state machine, state in stage_state (STAGE_STATE_*,
+; tbl_stage_states). pause_disabled = 2 on entry (stage_play clears it).
 run_side_view_stage:
 	rep	#$30
 	lda	#$0002
@@ -25,6 +28,9 @@ tbl_stage_states:
 	.addr	stage_exit
 	.addr	stage_cinematic
 
+; STAGE_STATE_INIT: stage_layout from stage_layouts[stage_number] (+$0A
+; past the checkpoint), per-layout scroll parameters, the players start
+; dead (state $0E, they drop in), colour math and window defaults.
 stage_init:
 	sep	#$20
 	.a8
@@ -121,6 +127,9 @@ stage_init:
 	stz	a:wram_1678
 	rtl
 
+; STAGE_STATE_SETUP: BG modes and maps, graphics, stage_layout_init.
+; Stage 0 (the opening) goes on to STAGE_STATE_CINEMATIC instead of
+; STAGE_STATE_PLAY.
 stage_setup_video:
 	lda	stage_number
 	bne	@not_opening
@@ -176,6 +185,7 @@ stage_setup_video:
 	stz	a:stage_exit_request
 	stz	a:stage_pause_disabled
 
+; Empties the per-frame VRAM update lists ($1800 list, zp_B6, zp_B0).
 reset_vram_update_queues:
 	stz	zp_B0
 	stz	zp_B6
@@ -193,6 +203,7 @@ reset_vram_update_queues:
 	stz	cgram_upload_addr
 	rtl
 
+; stage_frame_counter + 1 and its low bits in stage_frame_odd/mod4/mod8/bit1.
 update_stage_frame_counters:
 	inc	stage_frame_counter
 	lda	stage_frame_counter
@@ -210,6 +221,8 @@ update_stage_frame_counters:
 	sta	zp_E6
 	rts
 
+; STAGE_STATE_EXIT: keeps the stage running while fading out (every 8th
+; frame), then stage_state = 0, nmi_mode = 0, mode_result = 1.
 stage_exit:
 	lda	stage_frame_counter
 	bit	#$0007
@@ -225,6 +238,8 @@ stage_exit:
 	sta	mode_result
 	rtl
 
+; STAGE_STATE_PLAY: exit when stage_exit_request is set or both players are
+; out of lives; else fade in and run one frame (stage_frame).
 stage_play:
 	lda	a:stage_exit_request
 	beq	@not_exiting
@@ -241,6 +256,8 @@ stage_play:
 	inc	a:inidisp_shadow
 	lda	#$0002
 	sta	pause_disabled
+; One frame of a side-view stage: players, objects (order alternating by
+; stage_frame_odd), hides the unused sprites, BG scroll, palette animation.
 stage_frame:
 	lda	a:p1_lives
 	bne	@check_timer_1688
@@ -325,6 +342,7 @@ stage_frame:
 	jsl	f:update_palette_anim
 	rtl
 
+; Per-layout start of a side-view stage (music, effects): tbl_stage_layout_inits[stage_layout / 2].
 stage_layout_init:
 	lda	a:stage_layout
 	lsr	a
@@ -434,6 +452,7 @@ layout_init_stage6:
 	lda	#$0062
 	jml	f:queue_sound
 
+; Copies 12 words from X to zp_C8-zp_DF (per-layout parameters, data_058A03).
 load_stage_dp_params:
 	lda	a:$0000,x
 	sta	zp_C8
@@ -461,6 +480,8 @@ load_stage_dp_params:
 	sta	zp_DE
 	rtl
 
+; STAGE_STATE_CINEMATIC: one frame of the opening cinematic (run_opening_cinematic)
+; with objects and sprites.
 stage_cinematic:
 	lda	a:inidisp_shadow
 	cmp	#$000F
@@ -525,6 +546,8 @@ stage_cinematic:
 player_autopilot_off:
 	rtl
 
+; X = player object. When player_autopilot_mode is non-zero, replaces the
+; player's input (fields $22 held / $2C pressed) as scripted by mode 1-3.
 apply_player_autopilot:
 	lda	a:player_autopilot_mode
 	beq	player_autopilot_off

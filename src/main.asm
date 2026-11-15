@@ -37,7 +37,7 @@
 .include "engine/window_effect.asm"
 .include "objects/object_loop.asm"
 .include "objects/sprite_draw.asm"
-.include "game/stage_sequence.asm"
+.include "game/opening.asm"
 .include "objects/object_handlers_00c.asm"
 .include "objects/object_helpers_00.asm"
 .include "header.asm"
@@ -67,7 +67,7 @@
 ; ---- bank $04 ----
 .segment "BANK04"
 .include "objects/object_handlers_04a.asm"
-.include "game/game_mode_5.asm"
+.include "game/sound_check.asm"
 .include "sound/stage_music.asm"
 .include "topdown/support_04.asm"
 .include "objects/object_handlers_04b.asm"

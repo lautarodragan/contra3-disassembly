@@ -1,12 +1,18 @@
 ; game/game_modes.asm -- Game mode state machine
 ; Bank $00, $00:A377-$00:AD7B. Included by main.asm in segment BANK00.
 ;
-; run_game_mode increments the frame counter $3A and dispatches the game mode $32
-; through tbl_game_modes (15 modes, game_mode_konami_logo..sub_00AB76); many modes dispatch a
-; sub-mode $34 through their own table. Also the end-of-life/continue checks
-; (run_stage) and the per-stage choice between side-view and top-down
-; (tbl_stage_runners, indexed by $70).
+; run_game_mode (every frame) dispatches game_mode (GAME_MODE_*, game.inc)
+; through tbl_game_modes; each mode steps its own sub-mode game_submode
+; (next_submode, set_game_mode...). The modes and their order are described
+; in the book ("Game flow"). Also the code shared by every stage frame
+; (run_stage: pause, weapon swap, side-view or top-down dispatch), the
+; life transfer between players, the new-game / continue initialisation
+; of the players and the opening's title logo animation.
 
+; Called once per frame by the NMI frame handler: increments frame_counter
+; and jumps to the handler of game_mode (GAME_MODE_*) in tbl_game_modes.
+; Handlers end with rtl; they change mode with set_game_mode / next_game_mode
+; and step their sub-mode game_submode with next_submode.
 run_game_mode:
 	.a16
 	rep	#$30
@@ -36,6 +42,9 @@ tbl_game_modes:
 	.addr	game_mode_options
 	.addr	game_mode_final_score
 
+; GAME_MODE_KONAMI_LOGO. Submode 0 loads the song set and resets the logo;
+; then runs run_konami_logo until konami_logo_done -> GAME_MODE_OPENING.
+; Start skips to GAME_MODE_TITLE.
 game_mode_konami_logo:
 	lda	game_submode
 	bne	@running
@@ -65,10 +74,15 @@ game_mode_konami_logo:
 	lda	#GAME_MODE_OPENING
 	brl	set_game_mode
 
+; Mode 1: never entered.
 game_mode_unused_1:
 	; (not executed in the CDL traces)
 	rtl
 
+; GAME_MODE_OPENING: the opening cinematic (run by the side-view stage code
+; with stage_number 0, see stage_cinematic), then the title logo: Mode 7
+; zoom of CONTRA III, the words THE / ALIEN / WARS sliding in, a shake;
+; ends in GAME_MODE_TITLE, sub-mode 1 (title already drawn).
 game_mode_opening:
 	lda	game_submode
 	asl	a
@@ -88,6 +102,7 @@ tbl_opening_submodes:
 	.addr	opening_slide_title_wars
 	.addr	opening_shake_title
 
+; Clears $1500-$18FF, the stage state and the title cursor; stage_number = 0.
 opening_init:
 	jsl	f:reset_sound_queue
 	jsl	f:reset_video_state
@@ -112,6 +127,8 @@ opening_start_music:
 	jsl	f:load_stage_music
 	brl	next_submode
 
+; Runs run_side_view_stage (stage 0 = cinematic) until mode_result;
+; Start skips to the title.
 opening_run_cinematic:
 	lda	joy1_pressed
 	ora	joy2_pressed
@@ -263,6 +280,9 @@ opening_shake_title:
 	sta	game_submode
 	brl	next_game_mode_keep_submode
 
+; GAME_MODE_TITLE. Submode 0 draws the title (load_title_screen); then
+; run_title_menu; mode_result 1 (timeout) -> GAME_MODE_DEMO,
+; 2 (Start) -> GAME_MODE_GAME_START, 3 -> GAME_MODE_SOUND_CHECK (unreachable).
 game_mode_title:
 	lda	game_submode
 	bne	@running
@@ -309,6 +329,8 @@ title_result_sound_check:
 title_result_none:
 	rtl
 
+; GAME_MODE_DEMO: fades out, sets 2 players, runs run_demo; mode_result 1
+; (demo over) -> GAME_MODE_KONAMI_LOGO, 2 (Start) -> GAME_MODE_TITLE.
 game_mode_demo:
 	lda	game_submode
 	bne	@running
@@ -345,6 +367,9 @@ game_mode_demo:
 @return:
 	rtl
 
+; GAME_MODE_SOUND_CHECK ("SOUND CHECK MODE"): run_sound_check, then
+; GAME_MODE_TITLE. Nothing in the game enters this mode (the title menu's
+; result 3 is only set by the unreferenced title_menu_unused_sound_check).
 game_mode_sound_check:
 	; (not executed in the CDL traces)
 	lda	game_submode
@@ -363,6 +388,10 @@ game_mode_sound_check:
 @return:
 	rtl
 
+; GAME_MODE_GAME_START: stage_number = 1, blinks the chosen title entry for
+; $50 frames (wait_timer), fades out, init_new_game + init_continues, then
+; GAME_MODE_OPTIONS for OPTION, GAME_MODE_STAGE_SELECT if
+; stage_select_enabled, else GAME_MODE_STAGE_CARD.
 game_mode_game_start:
 	lda	game_submode
 	dec	a
@@ -420,9 +449,13 @@ game_mode_game_start:
 	lda	#GAME_MODE_OPTIONS
 	brl	set_game_mode
 
+; New game: clears stage_gfx_loaded and falls into init_players.
 init_new_game:
 	stz	a:stage_gfx_loaded
 
+; Resets both players' weapons, barrier, bombs (1), scores, next-extend
+; counters (20000) and lives (option_lives; player 2 gets 0 in a 1-player
+; game); difficulty = option_level. Also used by the continue.
 init_players:
 	stz	a:stage_state
 	stz	a:topdown_state
@@ -465,12 +498,15 @@ init_players:
 	sta	difficulty
 	rts
 
+; continues_left = continues_per_difficulty[difficulty].
 init_continues:
 	ldy	difficulty
 	lda	a:continues_per_difficulty,y
 	sta	a:continues_left
 	rts
 
+; GAME_MODE_STAGE_SELECT (never run): Up/Down/Select choose stage_number
+; 1-6 on the stage card screen, Start -> GAME_MODE_STAGE_CARD.
 game_mode_stage_select:
 	; (not executed in the CDL traces)
 	lda	game_submode
@@ -566,6 +602,10 @@ game_mode_stage_select:
 	plp
 	brl	next_game_mode
 
+; GAME_MODE_STAGE_CARD: draws the stage name (data_058428), scores and
+; lives; button masks; fades in, loads the stage graphics unless
+; stage_gfx_loaded, starts the music, fades out; stage_index =
+; stage_number - 1 -> GAME_MODE_STAGE_PLAY.
 game_mode_stage_card:
 	lda	game_submode
 	dec	a
@@ -669,6 +709,10 @@ game_mode_stage_card:
 	sta	stage_index
 	brl	next_game_mode
 
+; GAME_MODE_STAGE_PLAY: run_stage_with_life_transfer until mode_result.
+; No lives left -> GAME_MODE_GAME_OVER; stage < 6 -> GAME_MODE_STAGE_CLEAR;
+; after stage 6: on HARD -> GAME_MODE_FINAL_SCORE, otherwise (never run)
+; the game restarts at stage 1 one level harder.
 game_mode_stage_play:
 	jsl	f:run_stage_with_life_transfer
 	lda	mode_result
@@ -707,6 +751,7 @@ game_mode_stage_play:
 @return:
 	rtl
 
+; GAME_MODE_STAGE_CLEAR: run_stage_clear, then GAME_MODE_STAGE_CARD.
 game_mode_stage_clear:
 	lda	game_submode
 	bne	@running
@@ -723,6 +768,8 @@ game_mode_stage_clear:
 @return:
 	rtl
 
+; GAME_MODE_GAME_OVER: score board and GAME OVER; uses a continue: with
+; continues left -> GAME_MODE_CONTINUE, else back to the title.
 game_mode_game_over:
 	lda	game_submode
 	phx
@@ -822,6 +869,10 @@ game_over_fade_out:
 	plp
 	brl	game_over_to_title
 
+; GAME_MODE_CONTINUE: CONTINUE / END (continue_cursor), then the player
+; choice (1 PLAYER, 2 PLAYERS A/B, stored in title_menu_cursor);
+; init_players -> GAME_MODE_STAGE_CARD (the stage and stage_checkpoint
+; are kept); END -> GAME_MODE_TITLE.
 game_mode_continue:
 	lda	game_submode
 	asl	a
@@ -905,6 +956,7 @@ game_over_to_title:
 	lda	#GAME_MODE_TITLE
 	brl	set_game_mode
 
+; Up/Down/Select move continue_cursor through continue_option_count entries.
 continue_move_cursor:
 	lda	joy1_pressed
 	ora	joy2_pressed
@@ -956,6 +1008,8 @@ continue_draw_menu:
 	jsl	f:draw_text_attr
 	rts
 
+; Draws the word at X + 1 as one digit at VRAM word address Y, tile
+; attributes in A.
 draw_digit_of_value:
 	sta	zp_FA
 	phx
@@ -988,6 +1042,7 @@ continue_draw_player_menu:
 	jsl	f:draw_text_attr
 	rts
 
+; GAME_MODE_OPTIONS: run_options, then GAME_MODE_TITLE.
 game_mode_options:
 	lda	game_submode
 	bne	@running
@@ -1004,6 +1059,8 @@ game_mode_options:
 @return:
 	rtl
 
+; GAME_MODE_FINAL_SCORE ("FINAL SCORE" after the ending): run_final_score,
+; then GAME_MODE_OPENING.
 game_mode_final_score:
 	lda	game_submode
 	bne	@running
@@ -1022,30 +1079,37 @@ game_mode_final_score:
 	rtl
 	; CDL: not accessed
 	.byte	$A2, $80, $00
+; wait_timer = X, then next_submode.
 next_submode_with_timer:
 	stx	wait_timer
+; game_submode + 1 (clears zp_38). Jumped to (brl) by the mode handlers, returns with rtl.
 next_submode:
 	lda	game_submode
 	inc	a
 	bra	set_submode
+; game_mode + 1, sub-mode 0.
 next_game_mode:
 	lda	game_mode
 	inc	a
 
+; game_mode = A, sub-mode 0, mode_result = 0.
 set_game_mode:
 	sta	game_mode
 	lda	#$0000
 	sta	mode_result
+; game_submode = A.
 set_submode:
 	sta	game_submode
 	stz	zp_38
 	rtl
+; game_mode + 1 keeping game_submode (the opening enters the title at sub-mode 1).
 next_game_mode_keep_submode:
 	inc	game_mode
 	stz	mode_result
 	stz	zp_38
 	rtl
 
+; Decrements wait_timer down to 0; Z set when it is 0.
 tick_wait_timer:
 	lda	wait_timer
 	beq	@return
@@ -1054,14 +1118,16 @@ tick_wait_timer:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_00ABBD:
+; Never called: unpause_and_reset_display, demo_mode = 0.
+stop_demo_and_reset_display:
 	; (not executed in the CDL traces)
-	jsl	f:sub_00ABC6
+	jsl	f:unpause_and_reset_display
 	rep	#$20
 	stz	demo_mode
 	rtl
 
-sub_00ABC6:
+; Never called: paused = 0, display off, clears the mode work area, display on.
+unpause_and_reset_display:
 	; (not executed in the CDL traces)
 	rep	#$10
 	rep	#$20
@@ -1075,9 +1141,14 @@ sub_00ABC6:
 	.a16
 	rtl
 
+; update_life_transfer, then run_stage.
 run_stage_with_life_transfer:
 	jsr	a:update_life_transfer
 
+; One frame of a stage: weapon swap (X), pause / unpause with Start
+; (not in the demo or while pause_disabled; pause_sounds, apply_pause_dimming),
+; then the side-view or top-down stage code chosen by stage_index
+; (tbl_stage_runners). Also called by demo_play.
 run_stage:
 	rep	#$30
 	jsr	a:update_weapon_swap
@@ -1136,6 +1207,8 @@ enter_top_down_stage:
 	inc	stage_frame_counter
 	jml	f:run_topdown_stage
 
+; X toggles each player's weapon slot (p1_weapon_slot / p2_weapon_slot and
+; their copies); $1F8E / $1FCE non-zero force slot 2.
 update_weapon_swap:
 	jsr	a:update_weapon_swap_p1
 	lda	a:p2_spin
@@ -1183,6 +1256,8 @@ update_weapon_swap_p1:
 	sta	a:p1_weapon_slot
 	rts
 
+; On pause: saves inidisp_shadow and the top-down view brightnesses and
+; lowers them by 4; on unpause: restores them.
 apply_pause_dimming:
 	lda	paused
 	beq	@unpause
@@ -1248,6 +1323,8 @@ dim_p2_brightness:
 @return:
 	rts
 
+; Two players only, unless life_transfer_disabled: a player with no
+; lives who presses A takes one from the other player (if they have 2+).
 update_life_transfer:
 	lda	a:life_transfer_disabled
 	bne	life_transfer_return

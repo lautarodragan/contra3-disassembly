@@ -54,9 +54,9 @@ banks, stay as source because they contain pointers that will become labels.
 | `src/sound/sound_load.asm` | `$00:9627-$00:9970` | Song set loading and sound streaming |
 | `src/engine/palette_tasks.asm` | `$00:9971-$00:9C17` | Palette tasks and VRAM script tasks |
 | `src/topdown/vram_streaming.asm` | `$00:9C18-$00:A376` | Top-down stages: VRAM streaming |
-| `src/game/game_modes.asm` | `$00:A377-$00:AD7B` | Game mode state machine |
-| `src/game/attract.asm` | `$00:AD7C-$00:B678` | Attract mode: intro, title, demo |
-| `src/game/screens.asm` | `$00:B679-$00:BD3F` | Other non-gameplay screens |
+| `src/game/game_modes.asm` | `$00:A377-$00:AD7B` | Game mode state machine, stage frame (pause, weapon swap) |
+| `src/game/attract.asm` | `$00:AD7C-$00:B678` | Attract mode: demo, title screen and menu, Konami logo |
+| `src/game/screens.asm` | `$00:B679-$00:BD3F` | Stage clear, OPTION and FINAL SCORE screens; scores |
 | `src/game/stage.asm` | `$00:BD40-$00:C282` | Side-view stage state machine |
 | `src/engine/bg_scroll.asm` | `$00:C283-$00:CF0B` | BG scrolling and tilemap updates |
 | `src/objects/object_handlers_00a.asm` | `$00:CF0C-$00:D655` | Object handlers (bank $00, part 1) |
@@ -67,7 +67,7 @@ banks, stay as source because they contain pointers that will become labels.
 | `src/engine/window_effect.asm` | `$00:E7EF-$00:E95F` | Window effect around a player |
 | `src/objects/object_loop.asm` | `$00:E960-$00:EB19` | Object loop and type dispatcher |
 | `src/objects/sprite_draw.asm` | `$00:EB1A-$00:EBC3` | Metasprite drawing |
-| `src/game/stage_sequence.asm` | `$00:EBC4-$00:F27B` | Scripted stage sequence |
+| `src/game/opening.asm` | `$00:EBC4-$00:F27B` | Opening cinematic |
 | `src/objects/object_handlers_00c.asm` | `$00:F27C-$00:FD8C` | Object handlers (bank $00, part 3) |
 | `src/objects/object_helpers_00.asm` | `$00:FD8D-$00:FFBF` | Object helpers (bank $00) |
 | `src/header.asm` | `$00:FFC0-$00:FFFF` | Internal header and vectors |
@@ -76,7 +76,7 @@ banks, stay as source because they contain pointers that will become labels.
 | `src/objects/player.asm` | `$01:A548-$01:B193` | Players |
 | `src/objects/object_handlers_01a.asm` | `$01:B194-$01:CF8A` | Object handlers (bank $01, part 1) |
 | `src/objects/object_handlers_01b.asm` | `$01:CF8B-$01:F6A7` | Object handlers (bank $01, part 2) |
-| `src/game/stage_palette_anim.asm` | `$01:F6A8-$01:FFFF` | Stage palette animation trigger |
+| `src/game/stage_palette_anim.asm` | `$01:F6A8-$01:FFFF` | Stage palette animation |
 | `src/topdown/stage_states.asm` | `$02:8000-$02:8E32` | Top-down stages: state machine and setup |
 | `src/topdown/stage_play.asm` | `$02:8E33-$02:DDC5` | Top-down stages: gameplay (part 1) |
 | `src/effects/window_shapes.asm` | `$02:DDC6-$02:E65E` | Window shapes |
@@ -85,7 +85,7 @@ banks, stay as source because they contain pointers that will become labels.
 | `src/topdown/sine_products.asm` | `$03:8000-$03:E17F` | Top-down stages: products k*sin(angle) for sprite projection |
 | `src/topdown/sprite_render.asm` | `$03:E180-$03:FFFF` | Top-down stages: sprite projection and OAM |
 | `src/objects/object_handlers_04a.asm` | `$04:8000-$04:D877` | Object handlers (bank $04, part 1) |
-| `src/game/game_mode_5.asm` | `$04:D878-$04:D9F0` | Game mode 5 |
+| `src/game/sound_check.asm` | `$04:D878-$04:D9F0` | Sound check mode (game mode 5) |
 | `src/sound/stage_music.asm` | `$04:D9F1-$04:DA06` | Stage music |
 | `src/topdown/support_04.asm` | `$04:DA07-$04:E21A` | Top-down stages: support routines (bank $04) |
 | `src/objects/object_handlers_04b.asm` | `$04:E21B-$04:FFFF` | Object handlers (bank $04, part 2) |
