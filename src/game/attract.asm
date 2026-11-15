@@ -311,7 +311,7 @@ demo_init_players:
 	sta	button_stand_still
 	rts
 
-; Event pointers for demo_index (data_0584EC / data_0584F5, 3-byte
+; Event pointers for demo_index (demo_p1_input_ptrs / demo_p2_input_ptrs, 3-byte
 ; pointers) or, when recording, $70:0000 / $70:0400.
 demo_init_input:
 	stz	a:demo_p1_timer
@@ -339,13 +339,13 @@ demo_init_input:
 	clc
 	adc	a:demo_index
 	tay
-	lda	a:data_0584EC,y
+	lda	a:demo_p1_input_ptrs,y
 	sta	a:demo_p1_ptr
-	lda	a:data_0584ED,y
+	lda	a:demo_p1_input_ptrs+1,y
 	sta	a:demo_p1_ptr+1
-	lda	a:data_0584F5,y
+	lda	a:demo_p2_input_ptrs,y
 	sta	a:demo_p2_ptr
-	lda	a:data_0584F6,y
+	lda	a:demo_p2_input_ptrs+1,y
 	sta	a:demo_p2_ptr+1
 @return:
 	rts

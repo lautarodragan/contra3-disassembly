@@ -154,18 +154,14 @@ demo_stages:
 demo_stage_checkpoints:
 	; CDL: read by demo_init, demo_init_players; partly not accessed
 	.byte	$04, $00, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-data_0584EC:
+demo_p1_input_ptrs:
 	; CDL: read by demo_init_input
-	.byte	$C5
-data_0584ED:
+	.faraddr	demo_input_p1_0, demo_input_p1_1, demo_input_p1_2
+demo_p2_input_ptrs:
 	; CDL: read by demo_init_input
-	.byte	$F4, $16, $C5, $F6, $16, $C5, $F8, $16
-data_0584F5:
-	; CDL: read by demo_init_input
-	.byte	$97
-data_0584F6:
-	; CDL: read by setup_hdma_channels, demo_init_input; DMA / HDMA
-	.byte	$F3, $15, $97, $F5, $15, $97, $F7, $15, $70, $43, $00, $05, $0F, $85, $05, $60
+	.faraddr	demo_input_p2_0, demo_input_p2_1, demo_input_p2_2
+	; CDL: read by setup_hdma_channels; DMA / HDMA
+	.byte	$70, $43, $00, $05, $0F, $85, $05, $60
 	.byte	$43, $00, $2C, $14, $85, $05, $FF, $FF, $C0, $80, $0F, $01, $09, $00, $80, $11
 	.byte	$01, $04, $00
 data_058519:

@@ -109,7 +109,7 @@ random number generator and `frame_counter` so the game replays exactly.
 `demo_update_input` replaces `joy1_held`/`joy1_pressed` and the pad 2
 copies with recorded events: each event is a button word and a frame count
 (4 bytes), read through the 24-bit pointers `demo_p1_ptr` / `demo_p2_ptr`
-(set from the tables `data_0584EC` / `data_0584F5`). The demo ends after
+(set from the tables `demo_p1_input_ptrs` / `demo_p2_input_ptrs`). The demo ends after
 `demo_timer` (`$0800`) frames, at the end of the stage or on Start
 (`demo_result`). `demo_mode` keeps `run_stage` from pausing.
 
