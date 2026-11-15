@@ -4249,22 +4249,22 @@ quarter_cosine:
 	.byte	$B5, $B0, $AB, $A7, $A2, $9D, $98, $93, $8E, $88, $83, $7E, $78, $73, $6D, $67
 	.byte	$61, $5C, $56, $50, $4A, $44, $3E, $38, $31, $2B, $25, $1F, $19, $12, $0C, $06
 data_05F894:
-	; CDL: read by sub_1DB51E
+	; CDL: read by ending_creature_aim_arm
 	.byte	$00, $00, $40, $00
 data_05F898:
-	; CDL: read by sub_1DB51E
+	; CDL: read by ending_creature_aim_arm
 	.byte	$FC, $FF, $04, $00
 data_05F89C:
-	; CDL: read by setup_stage_hdma, sub_1DB51E; partly not accessed
+	; CDL: read by setup_stage_hdma, ending_creature_aim_arm; partly not accessed
 	.byte	$05, $00, $FB, $FF, $70, $43, $42, $10, $00, $E8, $7E, $7E, $FF, $FF, $80
 data_05F8AB:
 	; CDL: read by setup_stage_hdma, update_enemy_type_96
 	.byte	$9C, $C5, $BE, $C5, $AD, $C5, $F2, $C4
 data_05F8B3:
-	; CDL: read by sub_1DB614
+	; CDL: read by ending_creature_feed_arm
 	.byte	$48, $00, $B0, $00, $60, $00, $98, $00
 data_05F8BB:
-	; CDL: read by sub_1DB5B6; partly not accessed
+	; CDL: read by ending_creature_swing; partly not accessed
 	.byte	$04, $00, $08, $00, $02, $00, $FE, $FF
 data_05F8C3:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
@@ -4278,11 +4278,11 @@ palette_05F8DA:
 palette_05F8E3:
 	.byte	$01, $00, $00, $CA, $EF, $00, $22, $00, $00
 data_05F8EC:
-	; CDL: read by sub_1DB472
+	; CDL: read by ending_queue_tile_changes
 	.byte	$10, $10, $00, $14, $00, $24, $00, $04, $58, $00, $04, $A8, $04, $08, $FC, $04
 	.byte	$08, $6C, $08, $6C
 data_05F900:
-	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, sub_1DB472; DMA / HDMA; partly not accessed
+	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, ending_queue_tile_changes; DMA / HDMA; partly not accessed
 	.byte	$00, $0C, $18, $24, $30, $3C, $48, $54, $00, $60, $30, $3C, $6C, $18, $78, $60
 	.byte	$84, $90, $60, $60, $A0, $B5, $40, $C4, $40, $B4, $C0, $B5, $60, $C4, $60, $B4
 	.byte	$C0, $C2, $80, $C2, $A0, $C3, $E0, $C2, $A0, $C2, $C0, $C3, $80, $B5, $A0, $B4
@@ -4458,35 +4458,35 @@ data_05FF30:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
 	.byte	$00, $01, $00, $10, $60, $94, $0F, $00, $20, $0E, $9D, $11, $FF, $FF
 data_05FF3E:
-	; CDL: read by sub_1DCA7D
+	; CDL: read by brain_boss_init_minion
 	.byte	$1C, $00, $3D, $40, $00, $40, $3F, $40, $3D, $40, $3D, $40, $1F, $00, $3F
 data_05FF4D:
-	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, sub_1DCA7D; partly not accessed
+	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, brain_boss_init_minion; partly not accessed
 	.byte	$40, $70, $43, $42, $10, $00, $EA, $7E, $7E, $FF, $FF, $80, $A0, $B3, $C0, $B3
 	.byte	$C0, $BE, $E0, $BE
 data_05FF61:
-	; CDL: read by sub_1DC2AB; partly not accessed
+	; CDL: read by brain_boss_attack_3; partly not accessed
 	.byte	$40, $00, $50, $00, $80, $00
 data_05FF67:
-	; CDL: read by sub_1DCC58
+	; CDL: read by brain_boss_spawn_orb_clusters
 	.byte	$14, $C5, $25, $C5, $36, $C5, $58, $C5, $47, $C5, $69, $C5, $7A, $C5, $8B, $C5
 data_05FF77:
-	; CDL: read by sub_1DCC58
+	; CDL: read by brain_boss_spawn_orb_clusters
 	.byte	$00, $06, $00, $06, $00, $06, $00, $04, $00, $00, $00, $0E, $00, $04, $00, $00
 data_05FF87:
-	; CDL: read by sub_1DC44C, sub_1DC4F9
+	; CDL: read by brain_boss_attack_4_step_01, brain_boss_attack_4_step_04
 	.byte	$00, $04, $40
 data_05FF8A:
-	; CDL: read by sub_1DC44C
+	; CDL: read by brain_boss_attack_4_step_01
 	.byte	$05
 data_05FF8B:
-	; CDL: read by sub_1DC498
+	; CDL: read by brain_boss_attack_4_step_02
 	.byte	$74, $00, $8C
 data_05FF8E:
-	; CDL: read by sub_1DC498
+	; CDL: read by brain_boss_attack_4_step_02
 	.byte	$00, $80, $00, $80, $00
 data_05FF93:
-	; CDL: read by sub_1DC498
+	; CDL: read by brain_boss_attack_4_step_02
 	.byte	$FF, $FF, $01, $00, $01, $00, $FF, $FF
 ; OBJ_HP of brain_boss by difficulty (easy, normal, hard)
 brain_boss_hp:

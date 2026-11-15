@@ -153,7 +153,7 @@ loc_1DB06A:
 	rtl
 
 ending_sequence_state_02:
-	jsr	a:sub_1DB41F
+	jsr	a:ending_set_missile_hdma
 	lda	a:wram_028E
 	bmi	loc_1DB086
 	cmp	#$006C
@@ -167,7 +167,7 @@ loc_1DB086:
 	rtl
 
 ending_sequence_state_03:
-	jsr	a:sub_1DB41F
+	jsr	a:ending_set_missile_hdma
 	lda	a:p1_lives
 	beq	loc_1DB097
 	lda	a:player1_state
@@ -188,7 +188,7 @@ loc_1DB0AB:
 	rtl
 
 ending_sequence_state_04:
-	jsr	a:sub_1DB41F
+	jsr	a:ending_set_missile_hdma
 	dec	OBJ_TIMER,x
 	bpl	loc_1DB0C1
 	lda	#$FFFF
@@ -200,7 +200,7 @@ loc_1DB0C1:
 	rtl
 
 ending_sequence_state_05:
-	jsr	a:sub_1DB41F
+	jsr	a:ending_set_missile_hdma
 	lda	a:wram_028E
 	bpl	loc_1DB0DC
 	cmp	#$FFDD
@@ -243,7 +243,7 @@ loc_1DB102:
 	bne	loc_1DB10F
 	ldy	#$FF5D
 loc_1DB10F:
-	jsr	a:sub_1DCC1C
+	jsr	a:queue_brain_boss_tiles
 	rtl
 
 ending_sequence_state_08:
@@ -293,14 +293,14 @@ ending_sequence_state_09:
 	lda	#$00FF
 	sta	zp_04
 	jsr	a:sub_1DBA68
-	jsr	a:sub_1DB472
+	jsr	a:ending_queue_tile_changes
 	lda	a:boss_work_0
 	cmp	#$0012
 	bcc	loc_1DB19C
 	lda	#$0049
 	jsl	f:queue_sound
 	inc	OBJ_STATE,x
-	jsr	a:sub_1DB642
+	jsr	a:ending_start_vertical_autoscroll
 	lda	#$0002
 	sta	a:wram_16B6
 loc_1DB19C:
@@ -349,9 +349,9 @@ loc_1DB1F2:
 	lda	#$0004
 	sta	a:shake_timer
 	jsr	a:sub_1DB44A
-	jsr	a:sub_1DB4E2
-	jsr	a:sub_1DB4F5
-	jsr	a:sub_1DB5ED
+	jsr	a:ending_creature_update_angles
+	jsr	a:ending_creature_set_arm_angles
+	jsr	a:ending_creature_feed_arms
 	rtl
 
 ending_sequence_state_0C:
@@ -361,9 +361,9 @@ ending_sequence_state_0C:
 	bcc	loc_1DB237
 	stz	a:player_autopilot_mode
 	ldy	#$0200
-	jsr	a:sub_1DB741
+	jsr	a:ending_protect_player
 	ldy	#$0240
-	jsr	a:sub_1DB741
+	jsr	a:ending_protect_player
 	inc	OBJ_STATE,x
 
 ending_sequence_state_0D:
@@ -374,16 +374,16 @@ ending_sequence_state_0D:
 	lda	#$0400
 	sta	$36,x
 loc_1DB22E:
-	jsr	a:sub_1DB5A2
+	jsr	a:ending_creature_extend_arms
 	jsr	a:sub_1DB758
 	jsr	a:sub_1DB70F
 loc_1DB237:
 	jsr	a:sub_1DB685
 	jsr	a:sub_1DB44A
-	jsr	a:sub_1DB4E2
-	jsr	a:sub_1DB4F5
-	jsr	a:sub_1DB5ED
-	jsr	a:sub_1DB41F
+	jsr	a:ending_creature_update_angles
+	jsr	a:ending_creature_set_arm_angles
+	jsr	a:ending_creature_feed_arms
+	jsr	a:ending_set_missile_hdma
 	rtl
 
 ending_sequence_state_0E:
@@ -391,10 +391,10 @@ ending_sequence_state_0E:
 	jsr	a:sub_1DB70F
 	jsr	a:sub_1DB685
 	jsr	a:sub_1DB44A
-	jsr	a:sub_1DB4E2
-	jsr	a:sub_1DB509
-	jsr	a:sub_1DB5ED
-	jsr	a:sub_1DB41F
+	jsr	a:ending_creature_update_angles
+	jsr	a:ending_creature_aim_arms
+	jsr	a:ending_creature_feed_arms
+	jsr	a:ending_set_missile_hdma
 	dec	$36,x
 	bpl	loc_1DB268
 	dec	OBJ_STATE,x
@@ -435,7 +435,7 @@ ending_sequence_state_14:
 loc_1DB2BB:
 	jsr	a:sub_1DB685
 	jsr	a:sub_1DB758
-	jsr	a:sub_1DB41F
+	jsr	a:ending_set_missile_hdma
 	rtl
 
 ending_sequence_state_10:
@@ -459,23 +459,23 @@ ending_sequence_state_10:
 loc_1DB2F1:
 	jsr	a:sub_1DB685
 	jsr	a:sub_1DB758
-	jsr	a:sub_1DB41F
+	jsr	a:ending_set_missile_hdma
 	lda	a:boss_work_0
 	cmp	#$0014
 	bcs	loc_1DB305
-	jsr	a:sub_1DB472
+	jsr	a:ending_queue_tile_changes
 loc_1DB305:
 	rtl
 
 ending_sequence_state_15:
-	jsr	a:sub_1DB7DE
+	jsr	a:ending_set_scroll_split
 	jsr	a:sub_1DB6B6
 	lda	#$0064
 	sta	zp_00
 	lda	#$0080
 	sta	zp_02
 	jsr	a:sub_1DB762
-	jsr	a:sub_1DB43F
+	jsr	a:ending_bg2_follow_missile
 	lda	a:bg1_y
 	bpl	loc_1DB337
 	stz	a:bg1_y
@@ -505,14 +505,14 @@ ending_sequence_state_20:
 	sta	a:wram_13B0
 	jsl	f:spawn_ending_crowd
 loc_1DB360:
-	jsr	a:sub_1DB7DE
+	jsr	a:ending_set_scroll_split
 	jsr	a:sub_1DB98D
 	lda	#$0074
 	sta	zp_00
 	lda	#$0080
 	sta	zp_02
 	jsr	a:sub_1DB762
-	jsr	a:sub_1DB43F
+	jsr	a:ending_bg2_follow_missile
 	rtl
 
 ending_sequence_state_21:
@@ -524,8 +524,8 @@ ending_sequence_state_21:
 	lda	#$0090
 	sta	zp_02
 	jsr	a:sub_1DB762
-	jsr	a:sub_1DB43F
-	jsr	a:sub_1DB7DE
+	jsr	a:ending_bg2_follow_missile
+	jsr	a:ending_set_scroll_split
 	lda	#$0100
 	cmp	a:bg1_y
 	bcs	loc_1DB3CA
@@ -590,11 +590,11 @@ ending_sequence_state_24:
 loc_1DB412:
 	jsr	a:sub_1DB6D3
 	jsr	a:sub_1DB7B9
-	jsr	a:sub_1DB43F
-	jsr	a:sub_1DB7DE
+	jsr	a:ending_bg2_follow_missile
+	jsr	a:ending_set_scroll_split
 	rtl
 
-sub_1DB41F:
+ending_set_missile_hdma:
 	sec
 	lda	#$0077
 	sbc	a:wram_028E
@@ -611,7 +611,7 @@ loc_1DB437:
 loc_1DB43E:
 	rts
 
-sub_1DB43F:
+ending_bg2_follow_missile:
 	sec
 	lda	#$0078
 	sbc	a:wram_028E
@@ -637,7 +637,7 @@ sub_1DB44A:
 	sta	a:wram_169C
 	rts
 
-sub_1DB472:
+ending_queue_tile_changes:
 	ldy	a:boss_work_0
 	bmi	loc_1DB43E
 	cpy	#$0014
@@ -688,8 +688,8 @@ sub_1DB472:
 	inc	a:boss_work_0
 	rts
 
-sub_1DB4E2:
-	jsr	a:sub_1DB5B6
+ending_creature_update_angles:
+	jsr	a:ending_creature_swing
 	clc
 	lda	$32,x
 	sta	a:boss_work_7
@@ -698,7 +698,7 @@ sub_1DB4E2:
 	sta	a:boss_work_6
 	rts
 
-sub_1DB4F5:
+ending_creature_set_arm_angles:
 	eor	#$007F
 	and	#$00FF
 	sta	a:boss_work_4
@@ -708,18 +708,21 @@ sub_1DB4F5:
 	sta	a:boss_work_5
 	rts
 
-sub_1DB509:
+; Ending on HARD: the creature chasing the helicopter. Turns its two arms
+; (slots $0300, $0440; angles in boss_work_4/5, lengths at $16A2) towards a
+; player at intervals (sound $5C).
+ending_creature_aim_arms:
 	phx
 	ldx	#$0300
 	ldy	#$0000
-	jsr	a:sub_1DB51E
+	jsr	a:ending_creature_aim_arm
 	ldx	#$0440
 	ldy	#$0002
-	jsr	a:sub_1DB51E
+	jsr	a:ending_creature_aim_arm
 	plx
 	rts
 
-sub_1DB51E:
+ending_creature_aim_arm:
 	lda	a:wram_0936
 	cmp	#$03C0
 	bcs	loc_1DB55B
@@ -782,7 +785,7 @@ loc_1DB594:
 loc_1DB5A1:
 	rts
 
-sub_1DB5A2:
+ending_creature_extend_arms:
 	lda	stage_frame_odd
 	bne	loc_1DB5B5
 	lda	a:wram_16A2
@@ -794,7 +797,7 @@ sub_1DB5A2:
 loc_1DB5B5:
 	rts
 
-sub_1DB5B6:
+ending_creature_swing:
 	lda	$32,x
 	ldy	$30,x
 	bne	loc_1DB5CD
@@ -824,24 +827,26 @@ loc_1DB5E5:
 	sta	$30,x
 	rts
 
-sub_1DB5ED:
+; Writes each arm root (slots $0300, $0440, $0580, $0640) into the trail
+; ring buffers ($7E:E000-E2FF) that the claw segments follow.
+ending_creature_feed_arms:
 	phx
 	ldx	#$0300
 	ldy	#$0000
-	jsr	a:sub_1DB614
+	jsr	a:ending_creature_feed_arm
 	ldx	#$0440
 	ldy	#$0002
-	jsr	a:sub_1DB614
+	jsr	a:ending_creature_feed_arm
 	ldx	#$0580
 	ldy	#$0004
-	jsr	a:sub_1DB614
+	jsr	a:ending_creature_feed_arm
 	ldx	#$0640
 	ldy	#$0006
-	jsr	a:sub_1DB614
+	jsr	a:ending_creature_feed_arm
 	plx
 	rts
 
-sub_1DB614:
+ending_creature_feed_arm:
 	lda	a:$16A2,y
 	sta	$30,x
 	clc
@@ -863,7 +868,7 @@ loc_1DB628:
 	sta	f:$7EE200,x
 	rts
 
-sub_1DB642:
+ending_start_vertical_autoscroll:
 	lda	#$0002
 	sta	a:bg1_scroll_mode
 	sta	a:bg1_autoscroll
@@ -986,7 +991,9 @@ loc_1DB739:
 	sta	$34,x
 	rts
 
-sub_1DB741:
+; Player at Y, if it has lives: 96 frames of invulnerability
+; (PLAYER_INVULN_TIMER, PLAYERF_INVULNERABLE).
+ending_protect_player:
 	lda	a:$1D8A,y
 	beq	loc_1DB757
 	lda	a:$0016,y
@@ -1066,7 +1073,7 @@ loc_1DB7CA:
 	sta	a:wram_029E
 	rts
 
-sub_1DB7DE:
+ending_set_scroll_split:
 	lda	#$0003
 	sta	a:scroll_split_pattern
 	lda	a:bg1_y
@@ -1410,13 +1417,13 @@ loc_1DBA8B:
 
 ending_sequence_state_16:
 	jsr	a:sub_1DB6F1
-	jsr	a:sub_1DB7DE
+	jsr	a:ending_set_scroll_split
 	lda	#$0030
 	sta	zp_00
 	lda	#$0040
 	sta	zp_02
 	jsr	a:sub_1DB762
-	jsr	a:sub_1DB43F
+	jsr	a:ending_bg2_follow_missile
 	lda	OBJ_TIMER,x
 	bmi	loc_1DBAAA
 	dec	OBJ_TIMER,x
@@ -1652,7 +1659,7 @@ ending_sequence_state_25:
 	jsl	f:queue_vram_blocks
 	plx
 	inc	OBJ_STATE,x
-	jsr	a:sub_1DB642
+	jsr	a:ending_start_vertical_autoscroll
 	lda	#$0012
 	sta	a:boss_work_0
 	lda	#$0059
@@ -1724,7 +1731,7 @@ loc_1DBD02:
 	jsr	a:sub_1DB758
 	jsr	a:sub_1DB685
 	jsr	a:sub_1DB44A
-	jsr	a:sub_1DB41F
+	jsr	a:ending_set_missile_hdma
 	jsr	a:sub_1DBD6A
 	lda	#$003F
 	sta	zp_04
@@ -1735,7 +1742,7 @@ loc_1DBD02:
 ending_sequence_state_11:
 	jsr	a:sub_1DB758
 	jsr	a:sub_1DB685
-	jsr	a:sub_1DB41F
+	jsr	a:ending_set_missile_hdma
 	jsr	a:sub_1DBD89
 	jsr	a:sub_1DBD6A
 	dec	OBJ_TIMER,x
@@ -1747,7 +1754,7 @@ loc_1DBD31:
 ending_sequence_state_12:
 	jsr	a:sub_1DB758
 	jsr	a:sub_1DB685
-	jsr	a:sub_1DB41F
+	jsr	a:ending_set_missile_hdma
 	jsr	a:sub_1DBD89
 	jsr	a:sub_1DBD6A
 	inc	OBJ_STATE,x
@@ -2043,7 +2050,7 @@ loc_1DBF72:
 	jml	f:init_line_hdma_table
 
 brain_boss_state_02:
-	jsr	a:sub_1DCB48
+	jsr	a:brain_boss_pulse
 	lda	OBJ_Y,x
 	bmi	loc_1DBF88
 	cmp	#$0070
@@ -2055,8 +2062,8 @@ loc_1DBF88:
 	rtl
 
 brain_boss_state_03:
-	jsr	a:sub_1DCC58
-	jsr	a:sub_1DCCC0
+	jsr	a:brain_boss_spawn_orb_clusters
+	jsr	a:brain_boss_random_spin
 	lda	rng_lo
 	and	#$00FF
 	sta	a:boss_work_2
@@ -2073,7 +2080,7 @@ brain_boss_state_04:
 	lda	stage_frame_counter
 	bit	#$003F
 	bne	loc_1DBFB5
-	jsr	a:sub_1DCCC0
+	jsr	a:brain_boss_random_spin
 loc_1DBFB5:
 	lda	#$0001
 	sta	a:shake_continuous
@@ -2111,7 +2118,7 @@ loc_1DBFEE:
 	sta	a:boss_work_0
 	inc	a:boss_work_4
 	ldy	#$FF5D
-	jsr	a:sub_1DCC1C
+	jsr	a:queue_brain_boss_tiles
 loc_1DC004:
 	rtl
 loc_1DC005:
@@ -2128,38 +2135,42 @@ loc_1DC005:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_1DC02B,x
+	lda	f:tbl_brain_boss_attack_starts,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_1DC02B:
-	.addr	sub_1DC559
-	.addr	sub_1DC5B7
-	.addr	sub_1DC586
-	.addr	sub_1DC580
-	.addr	sub_1DC5C9
-	.addr	sub_1DC57A
-	.addr	sub_1DC5A7
-	.addr	sub_1DC5FF
+; Brain boss attacks: boss_work_0 (0-7, chosen in state 4) selects the
+; routine that starts the attack (this table, state 4) and the one that runs
+; it every frame (tbl_brain_boss_attacks, state 5); attacks 4 and 5 are
+; sequences of steps (boss_work_6).
+tbl_brain_boss_attack_starts:
+	.addr	brain_boss_attack_start_0
+	.addr	brain_boss_attack_start_1
+	.addr	brain_boss_attack_start_2
+	.addr	brain_boss_attack_start_3
+	.addr	brain_boss_attack_start_4
+	.addr	brain_boss_attack_start_5
+	.addr	brain_boss_attack_start_6
+	.addr	brain_boss_attack_start_7
 
 brain_boss_state_05:
 	lda	a:boss_work_0
 	phx
 	asl	a
 	tax
-	lda	f:tbl_1DC04B,x
+	lda	f:tbl_brain_boss_attacks,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_1DC04B:
-	.addr	sub_1DC1B8
-	.addr	sub_1DC372
-	.addr	sub_1DC31B
-	.addr	sub_1DC2AB
-	.addr	sub_1DC3FC
-	.addr	sub_1DC23D
-	.addr	sub_1DC35A
-	.addr	sub_1DC51B
+tbl_brain_boss_attacks:
+	.addr	brain_boss_attack_0
+	.addr	brain_boss_attack_1
+	.addr	brain_boss_attack_2
+	.addr	brain_boss_attack_3
+	.addr	brain_boss_attack_4
+	.addr	brain_boss_attack_5
+	.addr	brain_boss_attack_6
+	.addr	brain_boss_attack_7
 
 brain_boss_state_06:
 	lda	OBJ_HP,x
@@ -2181,7 +2192,7 @@ loc_1DC065:
 	stz	OBJ_Y_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
 	stz	$3E,x
-	jsr	a:sub_1DCB48
+	jsr	a:brain_boss_pulse
 	stz	a:boss_work_6
 	rtl
 
@@ -2222,7 +2233,7 @@ loc_1DC0C6:
 	sta	a:shake_timer
 loc_1DC0DB:
 	dec	$36,x
-	jsr	a:sub_1DCB66
+	jsr	a:brain_boss_build_hdma
 	rtl
 loc_1DC0E1:
 	cpy	#$0002
@@ -2236,11 +2247,11 @@ loc_1DC0E1:
 	lda	a:data_05FF1B,y
 	sta	OBJ_Y,x
 	ldy	#$FF59
-	jsr	a:sub_1DCC1C
+	jsr	a:queue_brain_boss_tiles
 	lda	#$0059
 	jsl	f:queue_sound
 loc_1DC106:
-	jsr	a:sub_1DCB66
+	jsr	a:brain_boss_build_hdma
 	rtl
 loc_1DC10A:
 	cmp	#$014B
@@ -2251,7 +2262,7 @@ loc_1DC10A:
 	stz	hdma_preset
 loc_1DC119:
 	inc	$36,x
-	jsr	a:sub_1DCB66
+	jsr	a:brain_boss_build_hdma
 	lda	#$0001
 	sta	a:shake_continuous
 	rtl
@@ -2327,13 +2338,13 @@ loc_1DC18D:
 loc_1DC1B7:
 	rtl
 
-sub_1DC1B8:
-	jsr	a:sub_1DCB7A
+brain_boss_attack_0:
+	jsr	a:brain_boss_sway_x
 	lda	#$0070
 	sta	zp_00
 	lda	#$00A0
 	sta	zp_02
-	jsr	a:sub_1DCBD1
+	jsr	a:brain_boss_sway_y
 	lda	a:boss_work_7
 	bpl	loc_1DC1D0
 	inc	OBJ_STATE,x
@@ -2353,7 +2364,7 @@ loc_1DC1E5:
 	sta	zp_00
 	lda	#$FFFF
 	sta	zp_02
-	jsr	a:sub_1DCB04
+	jsr	a:brain_boss_oscillate
 	lda	stage_frame_counter
 	bit	#$003F
 	bne	loc_1DC208
@@ -2391,24 +2402,24 @@ loc_1DC221:
 loc_1DC23C:
 	rtl
 
-sub_1DC23D:
+brain_boss_attack_5:
 	lda	a:boss_work_6
 	phx
 	asl	a
 	tax
-	lda	f:tbl_1DC24D,x
+	lda	f:tbl_brain_boss_attack_5_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_1DC24D:
-	.addr	sub_1DC259
-	.addr	sub_1DC282
-	.addr	sub_1DC29D
-	.addr	sub_1DC28F
-	.addr	sub_1DC259
-	.addr	sub_1DC2AA
+tbl_brain_boss_attack_5_steps:
+	.addr	brain_boss_attack_5_step_00
+	.addr	brain_boss_attack_5_step_01
+	.addr	brain_boss_attack_5_step_02
+	.addr	brain_boss_attack_5_step_03
+	.addr	brain_boss_attack_5_step_00
+	.addr	brain_boss_attack_5_step_05
 
-sub_1DC259:
+brain_boss_attack_5_step_00:
 	lda	OBJ_Y,x
 	cmp	#$00BC
 	bcc	loc_1DC281
@@ -2423,11 +2434,11 @@ sub_1DC259:
 	sta	OBJ_TIMER,x
 	lda	#$008C
 	ldy	#$0340
-	jsr	a:sub_1DCA52
+	jsr	a:brain_boss_fill_slots
 loc_1DC281:
 	rtl
 
-sub_1DC282:
+brain_boss_attack_5_step_01:
 	dec	OBJ_TIMER,x
 	bpl	loc_1DC28E
 	lda	#$FFFE
@@ -2436,7 +2447,7 @@ sub_1DC282:
 loc_1DC28E:
 	rtl
 
-sub_1DC28F:
+brain_boss_attack_5_step_03:
 	lda	a:boss_work_7
 	bpl	loc_1DC29C
 	lda	#$0001
@@ -2445,7 +2456,7 @@ sub_1DC28F:
 loc_1DC29C:
 	rtl
 
-sub_1DC29D:
+brain_boss_attack_5_step_02:
 	lda	OBJ_Y,x
 	cmp	#$0070
 	bcs	loc_1DC2A9
@@ -2454,10 +2465,10 @@ sub_1DC29D:
 loc_1DC2A9:
 	rtl
 
-sub_1DC2AA:
+brain_boss_attack_5_step_05:
 	rtl
 
-sub_1DC2AB:
+brain_boss_attack_3:
 	lda	a:boss_work_6
 	bne	loc_1DC2C0
 	ldy	a:difficulty
@@ -2471,7 +2482,7 @@ loc_1DC2BF:
 loc_1DC2C0:
 	lda	#$0001
 	sta	a:shake_continuous
-	jsr	a:sub_1DCB7A
+	jsr	a:brain_boss_sway_x
 	lda	a:boss_work_7
 	bpl	loc_1DC2D1
 	inc	OBJ_STATE,x
@@ -2484,12 +2495,12 @@ loc_1DC2D1:
 	bne	loc_1DC2F0
 	lda	#$008E
 	phx
-	jsr	a:sub_1DCA73
+	jsr	a:brain_boss_spawn_minion
 	bcs	loc_1DC31A
 	lda	#$3400
 	sta	$02,x
 	txy
-	jsr	a:sub_1DCC30
+	jsr	a:brain_boss_launch_from_mouth
 	plx
 	rtl
 loc_1DC2F0:
@@ -2500,7 +2511,7 @@ loc_1DC2F0:
 	sta	a:$0010,y
 	lda	#$0001
 	sta	a:$003E,y
-	jsr	a:sub_1DCC30
+	jsr	a:brain_boss_launch_from_mouth
 	lda	rng_hi
 	xba
 	and	#$0007
@@ -2513,13 +2524,13 @@ loc_1DC317:
 loc_1DC31A:
 	rtl
 
-sub_1DC31B:
-	jsr	a:sub_1DCB7A
+brain_boss_attack_2:
+	jsr	a:brain_boss_sway_x
 	lda	#$0038
 	sta	zp_00
 	lda	#$0040
 	sta	zp_02
-	jsr	a:sub_1DCBD1
+	jsr	a:brain_boss_sway_y
 	lda	a:boss_work_3
 	cmp	#$00F0
 	bcs	loc_1DC34E
@@ -2534,7 +2545,7 @@ loc_1DC341:
 	sta	zp_00
 	lda	#$FFFC
 	sta	zp_02
-	jsr	a:sub_1DCB04
+	jsr	a:brain_boss_oscillate
 loc_1DC34E:
 	lda	stage_frame_odd
 	bne	loc_1DC359
@@ -2544,20 +2555,20 @@ loc_1DC34E:
 loc_1DC359:
 	rtl
 
-sub_1DC35A:
-	jsr	a:sub_1DCB7A
+brain_boss_attack_6:
+	jsr	a:brain_boss_sway_x
 	lda	#$0078
 	sta	zp_00
 	lda	#$0080
 	sta	zp_02
-	jsr	a:sub_1DCBD1
+	jsr	a:brain_boss_sway_y
 	lda	a:boss_work_7
 	bpl	loc_1DC371
 	inc	OBJ_STATE,x
 loc_1DC371:
 	rtl
 
-sub_1DC372:
+brain_boss_attack_1:
 	lda	a:boss_work_6
 	bne	loc_1DC39D
 	clc
@@ -2586,7 +2597,7 @@ loc_1DC39D:
 	bne	loc_1DC3F4
 	lda	#$0091
 	phx
-	jsr	a:sub_1DCA73
+	jsr	a:brain_boss_spawn_minion
 	bcs	loc_1DC3F3
 	lda	#$0001
 	sta	$3A,x
@@ -2604,7 +2615,7 @@ loc_1DC39D:
 	sta	zp_FA
 loc_1DC3D1:
 	lda	#$0091
-	jsr	a:sub_1DCA73
+	jsr	a:brain_boss_spawn_minion
 	bcs	loc_1DC3ED
 	clc
 	lda	zp_FE
@@ -2629,7 +2640,7 @@ loc_1DC3F4:
 loc_1DC3FB:
 	rtl
 
-sub_1DC3FC:
+brain_boss_attack_4:
 	lda	a:boss_work_7
 	bpl	loc_1DC404
 	inc	OBJ_STATE,x
@@ -2642,22 +2653,22 @@ loc_1DC404:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_1DC41C,x
+	lda	f:tbl_brain_boss_attack_4_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_1DC41C:
-	.addr	sub_1DC42E
-	.addr	sub_1DC44C
-	.addr	sub_1DC498
-	.addr	sub_1DC492
-	.addr	sub_1DC4F9
-	.addr	sub_1DC487
-	.addr	sub_1DC481
-	.addr	sub_1DC4F9
-	.addr	sub_1DC44C
+tbl_brain_boss_attack_4_steps:
+	.addr	brain_boss_attack_4_step_00
+	.addr	brain_boss_attack_4_step_01
+	.addr	brain_boss_attack_4_step_02
+	.addr	brain_boss_attack_4_step_03
+	.addr	brain_boss_attack_4_step_04
+	.addr	brain_boss_attack_4_step_05
+	.addr	brain_boss_attack_4_step_06
+	.addr	brain_boss_attack_4_step_04
+	.addr	brain_boss_attack_4_step_01
 
-sub_1DC42E:
+brain_boss_attack_4_step_00:
 	lda	OBJ_Y,x
 	cmp	#$007C
 	bcs	loc_1DC437
@@ -2673,7 +2684,7 @@ loc_1DC437:
 loc_1DC44B:
 	rtl
 
-sub_1DC44C:
+brain_boss_attack_4_step_01:
 	lda	OBJ_X,x
 	cmp	#$0040
 	bcs	loc_1DC458
@@ -2700,13 +2711,13 @@ loc_1DC467:
 	sta	a:boss_work_6
 	rtl
 
-sub_1DC481:
+brain_boss_attack_4_step_06:
 	tya
 	clc
 	adc	#$0004
 	tay
 
-sub_1DC487:
+brain_boss_attack_4_step_05:
 	lda	$3E,x
 	cmp	#$00D0
 	bcs	loc_1DC490
@@ -2714,13 +2725,13 @@ sub_1DC487:
 loc_1DC490:
 	bra	loc_1DC4A1
 
-sub_1DC492:
+brain_boss_attack_4_step_03:
 	tya
 	clc
 	adc	#$0004
 	tay
 
-sub_1DC498:
+brain_boss_attack_4_step_02:
 	lda	$3E,x
 	cmp	#$00C0
 	bcc	loc_1DC4A1
@@ -2766,7 +2777,7 @@ loc_1DC4DA:
 	sta	OBJ_Y,x
 	rtl
 
-sub_1DC4F9:
+brain_boss_attack_4_step_04:
 	dec	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	bpl	loc_1DC51A
@@ -2784,13 +2795,13 @@ sub_1DC4F9:
 loc_1DC51A:
 	rtl
 
-sub_1DC51B:
+brain_boss_attack_7:
 	lda	stage_frame_counter
 	bit	#$003F
 	bne	loc_1DC544
 	lda	#$0093
 	phx
-	jsr	a:sub_1DCA73
+	jsr	a:brain_boss_spawn_minion
 	bcs	loc_1DC544
 	lda	#$0003
 	ldy	rng_lo
@@ -2810,17 +2821,17 @@ loc_1DC544:
 	sta	zp_00
 	lda	#$0080
 	sta	zp_02
-	jsr	a:sub_1DCBD1
+	jsr	a:brain_boss_sway_y
 	lda	a:boss_work_7
 	bpl	loc_1DC558
 	inc	OBJ_STATE,x
 loc_1DC558:
 	rtl
 
-sub_1DC559:
+brain_boss_attack_start_0:
 	lda	#$008B
 	ldy	#$0700
-	jsr	a:sub_1DCA52
+	jsr	a:brain_boss_fill_slots
 	lda	#$0001
 	sta	$38,x
 	stz	$36,x
@@ -2832,23 +2843,23 @@ sub_1DC559:
 	sta	a:boss_work_4
 	rtl
 
-sub_1DC57A:
+brain_boss_attack_start_5:
 	lda	#$0001
 	sta	OBJ_Y_VEL,x
 	rtl
 
-sub_1DC580:
+brain_boss_attack_start_3:
 	lda	#$FFFF
 	sta	OBJ_Y_VEL,x
 	rtl
 
-sub_1DC586:
+brain_boss_attack_start_2:
 	lda	#$0002
 	jsl	f:pick_target_player
 	sty	a:boss_work_4
 	lda	#$008F
 	ldy	#$0500
-	jsr	a:sub_1DCA52
+	jsr	a:brain_boss_fill_slots
 	lda	#$0001
 	sta	$38,x
 	stz	$36,x
@@ -2856,17 +2867,17 @@ sub_1DC586:
 	sta	a:boss_work_3
 	rtl
 
-sub_1DC5A7:
+brain_boss_attack_start_6:
 	lda	#$0090
 	phx
-	jsr	a:sub_1DCA73
+	jsr	a:brain_boss_spawn_minion
 	lda	#$3400
 	sta	$02,x
 	stz	$16,x
 	plx
 	rtl
 
-sub_1DC5B7:
+brain_boss_attack_start_1:
 	stz	OBJ_TIMER,x
 	clc
 	lda	a:boss_work_7
@@ -2876,10 +2887,10 @@ sub_1DC5B7:
 	sta	OBJ_X_VEL,x
 	rtl
 
-sub_1DC5C9:
+brain_boss_attack_start_4:
 	lda	#$0092
 	ldy	#$0580
-	jsr	a:sub_1DCA52
+	jsr	a:brain_boss_fill_slots
 	lda	#$8000
 	sta	a:wram_033A
 	sta	a:wram_047A
@@ -2897,7 +2908,7 @@ sub_1DC5C9:
 	sta	a:boss_work_7
 	rtl
 
-sub_1DC5FF:
+brain_boss_attack_start_7:
 	lda	difficulty
 	cmp	#$0004
 	bne	loc_1DC60C
@@ -2956,7 +2967,7 @@ update_brain_boss_orb_ring:
 loc_1DC65C:
 	lda	#$0004
 	sta	a:shake_timer
-	jsr	a:sub_1DCAC9
+	jsr	a:brain_orb_set_velocity
 	lda	#$0030
 	jsl	f:queue_sound
 	lda	#$C4CE
@@ -2973,7 +2984,7 @@ loc_1DC674:
 	adc	#$0020
 loc_1DC687:
 	pha
-	jsr	a:sub_1DCAE9
+	jsr	a:brain_orb_angle
 	ply
 	jsl	f:polar_to_xy
 	clc
@@ -3199,14 +3210,14 @@ loc_1DC822:
 	lda	OBJ_HP,x
 	bpl	loc_1DC847
 loc_1DC835:
-	jsr	a:sub_1DCAC9
+	jsr	a:brain_orb_set_velocity
 	lda	#$0030
 	jsl	f:queue_sound
 	lda	#$C4CE
 	txy
 	jml	f:make_effect_object
 loc_1DC847:
-	jsr	a:sub_1DCAE9
+	jsr	a:brain_orb_angle
 	ldy	a:boss_work_3
 	cpy	#$0040
 	bcc	loc_1DC855
@@ -3256,7 +3267,7 @@ loc_1DC88A:
 	bit	#$001F
 	bne	loc_1DC8DC
 	lda	#$0090
-	jsr	a:sub_1DCA73
+	jsr	a:brain_boss_spawn_minion
 	bcs	loc_1DC8DC
 	inc	$12,x
 	lda	zp_FC
@@ -3277,7 +3288,7 @@ loc_1DC88A:
 	inc	a
 loc_1DC8D7:
 	sta	$1A,x
-	jsr	a:sub_1DCCD4
+	jsr	a:brain_eyeball_random_jump
 loc_1DC8DC:
 	plx
 	rtl
@@ -3288,7 +3299,7 @@ loc_1DC8DE:
 	bmi	loc_1DC902
 	cmp	#$00B0
 	bcc	loc_1DC902
-	jsr	a:sub_1DCCD4
+	jsr	a:brain_eyeball_random_jump
 	lda	$30,x
 	bne	loc_1DC902
 	lda	OBJ_X_VEL,x
@@ -3482,14 +3493,16 @@ loc_1DCA4A:
 loc_1DCA51:
 	rtl
 
-sub_1DCA52:
+; Fills the slots from $0300 up to Y with objects of type A
+; (brain_boss_init_minion), numbering them in OBJ_TIMER.
+brain_boss_fill_slots:
 	sta	zp_02
 	sty	zp_04
 	phx
 	stz	zp_00
 	ldx	#$0300
 loc_1DCA5C:
-	jsr	a:sub_1DCA7D
+	jsr	a:brain_boss_init_minion
 	lda	zp_00
 	sta	$24,x
 	inc	zp_00
@@ -3503,14 +3516,16 @@ loc_1DCA5C:
 	plx
 	rts
 
-sub_1DCA73:
+brain_boss_spawn_minion:
 	pha
 	jsl	f:find_free_slot
 	pla
 	bcs	loc_1DCAC8
 	bra	loc_1DCA7F
 
-sub_1DCA7D:
+; Slot X becomes an object of type zp_02 at the brain's mouth (slot $0900 x
+; + $1C), HP 10 + difficulty, 8x8 hitbox.
+brain_boss_init_minion:
 	lda	zp_02
 loc_1DCA7F:
 	sta	OBJ_TYPE,x
@@ -3550,9 +3565,9 @@ loc_1DCA7F:
 loc_1DCAC8:
 	rts
 
-sub_1DCAC9:
-	jsr	a:sub_1DCAE9
-	jsr	a:sub_1DCAE9
+brain_orb_set_velocity:
+	jsr	a:brain_orb_angle
+	jsr	a:brain_orb_angle
 	lsr	a
 	and	#$007E
 	tay
@@ -3566,7 +3581,7 @@ sub_1DCAC9:
 	sta	OBJ_X_VEL_SUB,x
 	rts
 
-sub_1DCAE9:
+brain_orb_angle:
 	lda	OBJ_TIMER,x
 	asl	a
 	asl	a
@@ -3584,7 +3599,7 @@ loc_1DCB00:
 	and	#$00FF
 	rts
 
-sub_1DCB04:
+brain_boss_oscillate:
 	lda	$36,x
 	bne	loc_1DCB21
 	lda	$34,x
@@ -3623,7 +3638,9 @@ loc_1DCB38:
 	sta	a:boss_work_2
 	rts
 
-sub_1DCB48:
+; Grows and shrinks the brain (field $36 between $120 and $14B) and builds
+; its line HDMA table (brain_boss_build_hdma).
+brain_boss_pulse:
 	lda	$36,x
 	ldy	$34,x
 	beq	loc_1DCB56
@@ -3644,7 +3661,7 @@ loc_1DCB5C:
 loc_1DCB64:
 	sta	$36,x
 
-sub_1DCB66:
+brain_boss_build_hdma:
 	sec
 	lda	a:bg2_y
 	sta	zp_00
@@ -3655,7 +3672,7 @@ sub_1DCB66:
 	jsl	f:fill_line_hdma_table
 	rts
 
-sub_1DCB7A:
+brain_boss_sway_x:
 	lda	OBJ_X,x
 	bmi	loc_1DCB8C
 	cmp	#$0040
@@ -3700,14 +3717,14 @@ loc_1DCBC6:
 	rts
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_1DCBC7:
+brain_boss_sway_y_default:
 	; (not executed in the CDL traces)
 	lda	#$0040
 	sta	zp_00
 	lda	#$0080
 	sta	zp_02
 
-sub_1DCBD1:
+brain_boss_sway_y:
 	lda	OBJ_Y,x
 	bmi	loc_1DCBE1
 	cmp	zp_00
@@ -3751,7 +3768,7 @@ loc_1DCC0C:
 loc_1DCC1B:
 	rts
 
-sub_1DCC1C:
+queue_brain_boss_tiles:
 	lda	#$0002
 	sta	zp_02
 	lda	#$0010
@@ -3762,7 +3779,7 @@ sub_1DCC1C:
 	plx
 	rts
 
-sub_1DCC30:
+brain_boss_launch_from_mouth:
 	clc
 	lda	a:wram_090A
 	adc	#$001C
@@ -3780,7 +3797,7 @@ sub_1DCC30:
 	sta	a:$001E,y
 	rts
 
-sub_1DCC58:
+brain_boss_spawn_orb_clusters:
 	phx
 	lda	difficulty
 	bne	loc_1DCC65
@@ -3837,7 +3854,7 @@ loc_1DCCB3:
 	plx
 	rts
 
-sub_1DCCC0:
+brain_boss_random_spin:
 	lda	rng_lo
 	and	#$0003
 	clc
@@ -3849,7 +3866,7 @@ loc_1DCCD1:
 	sta	$3E,x
 	rts
 
-sub_1DCCD4:
+brain_eyeball_random_jump:
 	clc
 	lda	rng_hi
 	and	#$0001
