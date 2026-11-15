@@ -46,7 +46,7 @@ A play frame (`stage2_state_play`) runs, in order: the Select map view
 (`update_map_view`, which suspends the rest while open), the players
 (`update_topdown_players`), the smart bombs (`td_update_bombs`), the map
 objects (`update_map_objects`), the enemies (`td_update_enemies`), the
-enemy generator (`spawn_stage2_enemies`), the slots at `$0980`, the shots
+enemy generator (`spawn_stage2_enemies`), the items (`update_td_items`), the shots
 (`update_topdown_shots`), the stage's map events
 (`td_update_stage2_map_events`), screen shake (`update_screen_shake`),
 palette animation (`animate_topdown_palettes`), the views
@@ -180,7 +180,7 @@ The top-down stages use the object RAM in their own way:
 | `$0300-$047F` | `$20` | enemy shots | `update_topdown_shots` |
 | `$0480-$06FF` | `$20` | player 1's shots (second weapon from `$05C0`) | `update_topdown_shots` |
 | `$0700-$097F` | `$20` | player 2's shots | `update_topdown_shots` |
-| `$0980-$0ABF` | `$40` | other objects (not identified yet) | `update_td_items` |
+| `$0980-$0ABF` | `$40` | items and effects (`TDI_*`): weapon items, barrier, bomb, explosions, trap blasts | `update_td_items`, `tbl_td_item_types` |
 | `$0AC0-$0D3F` | `$40` | map objects: the targets, the bosses | `update_map_objects`, `tbl_map_object_types` |
 | `$0D40-$0EBF` | `$40` | enemies | `td_update_enemies`, `tbl_td_enemy_types` |
 | `$0EC0`, `$0F00` | `$40` | players 1 and 2 | `update_topdown_player` |
@@ -207,11 +207,11 @@ chosen from the buttons every frame (states checked in the emulator):
 | 2 | `td_player_state_stand_fire` | standing, Y held |
 | 3 | `td_player_state_walk` | walking: up/down forward and back along the view, left/right sideways (`td_walk_by_dpad`) |
 | 4 | `td_player_state_walk_fire` | walking and firing |
-| 5 | `td_player_state_jump` | B pressed: a short action (8 frames), not identified yet |
+| 5 | `td_player_state_jump` | B: a jump of 8 frames; the player is drawn bigger and enemy shots miss it; Y at mid-jump fires (`td_fire_jump_shot`) |
 | 6 | `td_player_state_turn_buttons` | L and R held together |
 | 7 | `td_player_state_spin_fire` | L+R+Y: the player spins 8 units a frame firing both weapons sideways |
 | 8 | `td_player_state_dying` | hit: spins, slows down, respawns after `$80` frames |
-| 9 | `td_player_state_falling` | the view zooms in and fades out while the player spins (probably a fall into a hole) |
+| 9 | `td_player_state_falling` | fall into a hole (`TDA_HOLE`, or the slopes `TDA_FALL_*`): the view zooms in and fades out while the player spins |
 
 L and R turn the player and its view (`td_turn_player`, speed from
 `td_update_turn_speed`). Weapons are the same as on the side-view stages
@@ -224,27 +224,177 @@ object at `$0F40`/`$0F80` whose radius grows for `$70` frames
 
 ## Enemies and targets
 
-The first part of each top-down stage is to destroy its targets: five map objects
-spawned at the start (`spawn_stage2_targets`, types chosen by difficulty
-and at random) and drawn into the floor. The arrow points at the nearest
-one; when `td_aim_p1_target_arrow` finds none left it sets
+The first part of each top-down stage is to destroy its targets: five map
+objects spawned at the start (`spawn_stage2_targets`, sets chosen by
+difficulty and at random) and drawn into the floor. The arrow points at
+the nearest one; when `td_aim_p1_target_arrow` finds none left it sets
 `targets_left_flag`, and `check_targets_destroyed` waits `$80` frames,
 fades out and moves to the boss map.
 
 Meanwhile `spawn_stage2_enemies` (`spawn_stage5_enemies`) keeps enemies
 coming: in alternating periods of `$200` frames it either puts a random
-type (by difficulty) at a random offset around a player
+type (`stage2_spawn_types`: mostly `TDT_RUNNER`, sometimes `TDT_GUNNER`;
+stage 5: `TDT_SPITTER`, `TDT_CRAWLER`) at a random offset around a player
 (`td_place_enemy_near_player`) whenever one of the slots `$0DC0-$0EBF` is
-free, or, when none is alive, spawns type `$0F` (`$0C` in stage 5). Each
-enemy runs its type's handler from `tbl_td_enemy_types`, its animation
-(`td_animate_enemy`) and hit flash (`td_flash_enemy_on_hit`). Points go
-to the owner of the shot (`td_score_shot_kill`, tables
-`td_enemy_scores` and `td_map_object_scores`).
+free, or, when none is alive, spawns a centipede (`TDT_CENTIPEDE`, stage 5
+`TDT_BUG_CENTIPEDE`). Each enemy runs its type's handler from
+`tbl_td_enemy_types`, its animation (`td_animate_enemy`) and hit flash
+(`td_flash_enemy_on_hit`). A walking enemy that appears already on screen
+is dropped (`td_enemy_state_spawn`); one that leaves the range of the
+views (`+$2E` bits 2-3) is freed. Points go to the owner of the shot
+(`td_score_shot_kill`, tables `td_enemy_scores` and
+`td_map_object_scores`).
+
+The types (constants in `src/object_types.inc`; identified by dumping the
+slots every frame in the emulator, isolating each type and taking
+screenshots; HP easy / normal / hard, an object dies when its HP goes
+negative):
+
+| type | constant | handler | what | HP |
+|---|---|---|---|---|
+| `$01` | `TDT_GUNNER` | `update_td_gunner` | stage 2 alien that walks, turns to the player and fires | 0/2/4 |
+| `$02` | `TDT_RUNNER` | `update_td_runner` | stage 2 alien that walks to the nearest player | 0/2/4 |
+| `$03` | `TDT_CENTIPEDE_UNUSED` | `update_td_centipede_unused` | a centipede never spawned | 16/64/128 |
+| `$04` | `TDT_CENTIPEDE_SEGMENT` | `update_td_centipede_segment` | body segment of a centipede | (head's) |
+| `$05` | `TDT_CRAWLER` | `update_td_crawler` | stage 5 creature that walks to the player | 2/4/8 |
+| `$06` | `TDT_NEST_CRAWLER` | `update_td_nest_crawler` | stage 5 creature out of a nest, fires orbs | 2/16/32 |
+| `$08` | `TDT_EXPLOSION` | `update_td_explosion` | an enemy's explosion (`td_start_explosion`) | |
+| `$09` | `TDT_HATCH_TURRET_SPIN` | `update_hatch_turret_spin` | stage 2 hatch turret, turns all the time | 16/32/64 |
+| `$0A` | `TDT_STAGE5_BOSS_CLAW` | `update_stage5_boss_claw` | stage 5 boss: claw of the arm | 32/128/256 |
+| `$0B` | `TDT_STAGE5_BOSS_ARM_SEGMENT` | `update_stage5_boss_arm_segment` | stage 5 boss: arm segment (12) | (claw's) |
+| `$0C` | `TDT_BUG_CENTIPEDE` | `update_td_bug_centipede` | stage 5 centipede; splits into four bugs | 16/64/128 |
+| `$0D` | `TDT_BUG_CENTIPEDE_SEGMENT` | `update_td_bug_centipede_segment` | its body segments | (head's) |
+| `$0E` | `TDT_CENTIPEDE_BUG` | `update_td_centipede_bug` | bug left by it; fires an orb | 2/4/8 |
+| `$0F` | `TDT_CENTIPEDE` | `update_td_centipede` | stage 2 spiked centipede, fires | 16/64/128 |
+| `$10` | `TDT_HATCH_TURRET_AIM` | `update_hatch_turret_aim` | stage 2 hatch turret aiming at the player | 16/32/64 |
+| `$11` | `TDT_HATCH_TURRET_SWEEP` | `update_hatch_turret_sweep` | stage 2 hatch turret sweeping | 16/32/64 |
+| `$12` | `TDT_SPITTER` | `update_td_spitter` | stage 5 creature that turns to the player and fires orbs | 2/4/8 |
+| `$13` | `TDT_STAGE5_BOSS_ARM_BASE` | `update_stage5_boss_arm_base` | stage 5 boss: end of the arm in the pit | (claw's) |
+
+A centipede is a head and three segments in fixed slots (`$0DC0`, `$0E00`,
+`$0E40`, `$0E80`): the head records its positions in a ring at
+`$7E:1900-$1AFF` (`td_centipede_record_trail`) and each segment replays
+them some steps behind (`td_segment_follow_trail`); hits on any part count
+against the sum of their HP (`td_centipede_check_killed`).
+
+Map objects (`tbl_map_object_types`, `TDMT_*`) are the targets and the
+bosses; HP is `+$06` too:
+
+| type | constant | handler | what | HP |
+|---|---|---|---|---|
+| `$01` | `TDMT_GUN_HATCH_AIM` | `update_gun_hatch_aim` | stage 2 target: a hatch that opens near a player and lets out a turret | 32/80/128 |
+| `$02` | `TDMT_NEST` | `update_td_nest` | stage 5 target: a nest that lets out a `TDT_NEST_CRAWLER` | 32/80/128 |
+| `$03` | `TDMT_STAGE2_BOSS` | `update_stage2_boss` | stage 2 boss, the body | (core's) |
+| `$04` | `TDMT_STAGE2_BOSS_CORE` | `update_stage2_boss_core` | its weak point | 256/384/512 |
+| `$05` | `TDMT_STAGE2_BOSS_CANNON` | `update_stage2_boss_cannon` | its cannon | 128/192/256 |
+| `$06` | `TDMT_STAGE2_BOSS_POD` | `update_stage2_boss_pod` | one of its six spiked pods | 32/64/128 |
+| `$07` | `TDMT_GUN_HATCH_SPIN` | `update_gun_hatch_spin` | stage 2 target with a spinning turret | 32/80/128 |
+| `$08` | `TDMT_STAGE5_BOSS` | `update_stage5_boss` | stage 5 boss | 512/1024/2048 |
+| `$0C` | `TDMT_GUN_HATCH_SWEEP` | `update_gun_hatch_sweep` | stage 2 target with a sweeping turret | 32/80/128 |
+| `$0D` | `TDMT_GUN_HATCH_NO_FIRE` | `update_gun_hatch_no_fire` | HARD: opens only while the player does not fire | 32/80/128 |
+| `$0E` | `TDMT_GUN_HATCH_BEHIND` | `update_gun_hatch_behind` | HARD: opens only behind the player's back | 32/80/128 |
+
+A gun hatch is a floor block (`+$20`: `$50` closed, `$5B` opening, `$59`
+open, `$57` destroyed). When a player comes near (`+$2E` bits 4-5) it
+opens and lets its turret out into `$0D40` (player 1) or `$0D80`
+(`td_get_hatch_enemy_slot`, `gun_hatch_spawn_turret`); the turret, which
+keeps its hatch in `+$3A`, hides when it closes and explodes with it. A
+destroyed target may drop an item (`td_spawn_item_drop`).
+
+Items and effects (`$0980-$0ABF`, `tbl_td_item_types`, `TDI_*`):
+`TDI_BLAST` (a trap's blast, damage 16 to enemies, deadly to players
+without the barrier), `TDI_EXPLOSION` (decoration), and the items
+`TDI_SPREAD` ... `TDI_LASER`, `TDI_BARRIER`, `TDI_BOMB`, which stay
+`$140` frames. Touching one (`td_p1_vs_items`) puts the weapon into the
+active slot, gives `$200` frames of barrier, or one more smart bomb (up
+to 9).
+
+Shots (`tbl_topdown_shot_types`, indexed by type + 8, `TDS_*`): the
+player's (`TDS_DEFAULT` damage 2, `TDS_SPREAD` 2, `TDS_HOMING` 2,
+`TDS_LASER` 4, `TDS_FLAME` 1, `TDS_CRUSH` 2 then `TDS_CRUSH_BLAST` 1 for
+`$40` frames), and the enemies' (`TDS_ENEMY_BULLET`, `TDS_ENEMY_ORB`,
+`TDS_HOMING_ORB`, `TDS_BOSS_SPIT`, `TDS_CANNON_FLAME`). A shot that hits
+becomes `TDS_IMPACT` (`td_end_shot`).
 
 Collisions are checked for one player per frame (alternating in
 two-player games, `td_run_collisions`): its shots against the enemies,
-its body against the enemies, its bomb against the map objects, and the
-target arrow.
+its body against the enemies and the items, its bomb against the map
+objects, and the target arrow; the boss maps have their own versions
+(`td_p1_vs_stage2_boss`, `td_p1_vs_stage5_boss` ...). Enemy shots miss a
+jumping player (state 5).
+
+## Bosses
+
+Both bosses are drawn in the Mode 7 layer, their graphics streamed from
+`$7E` by frame (`boss_anim_frame`, `stage2_boss_stream_chr`,
+`stage5_boss_stream_chr`).
+
+**Stage 2** (`TDMT_STAGE2_BOSS` at `$0AC0`, states `tbl_stage2_boss_states`):
+a spiked machine with six arms. The map is the boss: `boss_centered_view`
+makes the views follow the boss object (`td_boss_x`, `td_boss_y`,
+`td_boss_angle`) and the floor of the arena is drawn with sprites
+(`draw_stage2_boss_arena`); everything else is projected around the boss
+by `project_around_stage2_boss`, which multiplies with the hardware
+multiplier instead of the tables of `sine_products.asm`. The boss falls
+in (Mode 7 scale from 0 up to 1:1, screen shake), turns to the nearest
+player (`td_select_target_player`) and walks at it, spins, or jumps: the
+scale shrinks to 0, the boss is moved over the player and falls again. It
+dies with its core (`TDMT_STAGE2_BOSS_CORE`, `td_boss_core_hp`); below
+half of the core's HP it always jumps. The cannon
+(`TDMT_STAGE2_BOSS_CANNON`) turns around the body and fires, the six pods
+(`TDMT_STAGE2_BOSS_POD`, `+$14` = arm) open and fire, and drop items when
+destroyed. Checked in the emulator (`stage_checkpoint` poked to 1 at the
+start to begin at the boss).
+
+**Stage 5** (`TDMT_STAGE5_BOSS`, states `tbl_stage5_boss_states`): a
+creature at the bottom of a sand funnel (`$200,$200`). It sends its arm
+out of the pit at the nearest player (`stage5_boss_spawn_arm`: claw at
+`$0B40`, arm base at `$0B80`, twelve segments from `$0BC0`, run by
+`update_stage5_boss_arm` with the enemy handlers): the claw turns to its
+target, reaches out recording a trail that the segments follow, fires
+`TDS_HOMING_ORB`, and pulls back; damage to any part of the arm counts
+against the claw's HP. The boss also spits shots from the edge of the
+pit (`stage5_boss_update_spit`) and the funnel tiles (`TDA_SAND_PIT`)
+pull the players to the centre (`td_spiral_into_sand_pit`). Its HP is
+`td_boss_hp`.
+
+## Tile attributes
+
+The tile attribute map at `$7E:4000` (one byte per tile, built by
+`build_tile_attr_rows` from `tile_attrs_stage2`, `tile_attrs_stage5`,
+`tile_attrs_stage5_boss`; none on the stage 2 boss map) holds `TDA_*`
+values (`src/ram.inc`):
+
+| value | constant | effect |
+|---|---|---|
+| `$00` | `TDA_FLOOR` | walkable |
+| bits 0-2 | `TDA_WALL_MASK` | wall: 1 solid, 3-5 other shapes (`td_push_out_of_walls` checks the 2 x 2 tiles around an object and pushes it out) |
+| bit 4 (+ bit 3) | `TDA_SET_PRIORITY`, `TDA_PRIORITY_HIGH` | sets the sprite priority of who crosses it: under or over a structure |
+| `$ED-$F4` | `TDA_FALL_*` | stage 5 slopes: the player slides that way and falls |
+| `$F5-$F8` | `TDA_PUSH_*` | stage 5 currents: move players and enemies by `td_push_speed` |
+| `$F9` | `TDA_SAND_PIT` | stage 5 boss funnel |
+| `$FA` | `TDA_WHIRL` | stage 5 whirlpool: turns the player around the cell's centre; enemies lose HP |
+| `$FB` | `TDA_SWITCH` | stage 5: Y or A here starts a switch event (`td_update_switch_events`) |
+| `$FC` | `TDA_MAP_OBJECT` | a target or boss: blocks shots, which damage it (`td_get_map_object_at`) |
+| `$FD` | `TDA_TRAP` | stage 2: 500 points, then a `TDI_BLAST` there `$30` frames later |
+| `$FE` | `TDA_BLOCK_ANIM` | stage 2: shake and a block animation |
+| `$FF` | `TDA_HOLE` | the player falls (state 9), an enemy dies |
+
+Special values (from `$ED` up) are handled by entry `$FF` - value of
+`tbl_td_player_special_tiles` (players) and `tbl_td_enemy_special_tiles`
+(enemies: most kill them).
+
+## For cheats
+
+- Player 1's HP is `td_p1_hp` (`$0EC6`): any hit writes `$FFFF` unless
+  `p1_barrier_timer` (`$1F88`) is non-zero; the items set it to `$200`.
+- The boss HP: stage 5 `td_boss_hp` (`$0AC6`); stage 2 core and stage 5
+  claw `td_boss_core_hp` (`$0B46`); the HP tables are `stage2_boss_core_hp`,
+  `stage5_boss_hp` ... (by difficulty, in bank `$05`).
+- Smart bombs: `p1_bombs`, up to 9 from items. Weapons: `td_p1_vs_items`
+  writes the item kind (`WEAPON_*`) into the active weapon slot.
+- `td_debug_cheat_buttons` is a leftover, never called, that changes
+  weapons, bombs, barrier and lives with X and other buttons.
 
 ## Palettes
 
@@ -254,13 +404,14 @@ map a rotation of colours `$38-$3F` (`rotate_palette_colors_up`).
 
 ## Still to do
 
-The enemy, map object and shot handlers (`tbl_td_enemy_types`,
-`tbl_map_object_types`, `tbl_topdown_shot_types`, `tbl_td_item_types`), the
-bosses, the stage 2 boss camera (`project_around_stage2_boss`) and the tile attribute
-values are not named yet. Data that milestone 3 must turn into labels:
-the pointers in `sprite_data_07.asm` (metasprites and stream tables read
-through `ptrs_td_metasprite_sets` / `ptrs_td_stream_sets`), the per-angle walking vectors
-(`td_walk_y_int`, `td_walk_x_int`, `td_walk_y_frac`, `td_walk_x_frac`), the
-stream-list pointers built from immediates in `draw_enemies`, and the
-loader lists passed as immediates (`load_stage2_assets` and its
-siblings).
+Many state routines are named only by number (`stage2_boss_state_0B`
+...); the stage 5 slopes and whirlpools were read in the code but not
+watched in the emulator; shot type 1 shares the default shot's handler
+but nothing fires it. Data that milestone 3 must turn into labels: the
+pointers in `sprite_data_07.asm` (metasprites and stream tables read
+through `ptrs_td_metasprite_sets` / `ptrs_td_stream_sets`), the per-angle
+walking vectors (`td_walk_y_int`, `td_walk_x_int`, `td_walk_y_frac`,
+`td_walk_x_frac`), the stream-list pointers built from immediates in
+`draw_enemies`, the animation scripts loaded as immediates into `+$28` by
+the enemy handlers, and the loader lists passed as immediates
+(`load_stage2_assets` and its siblings).
