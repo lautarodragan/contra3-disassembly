@@ -76,10 +76,12 @@ make goldens                       # rewrite tests/goldens/*.png from the curren
   stage from its start and from its midpoint (the bosses, the stage
   transitions, the NORMAL ending of stage 6), 2-player modes A and B (the
   top-down split screen), HARD; plus the attract sequence. Every 60 frames
-  the screen (15-bit) is hashed, and the audio stream in blocks of 16 KB
-  (not per frame: the number of samples the core returns in a frame moves
-  with the CPU's timing), and compared with `tests/goldens/play/<play>.json` (hashes only,
-  taken from the original ROM). On a mismatch the first differing
+  the screen (15-bit) and the sound command ring (`$0100-$01FF`, what
+  `queue_sound` sends) are hashed, and the loudness of every half second
+  of audio is taken (within 8%: the exact samples move by a few when the
+  CPU's timing changes by some cycles, as in a ROM with another layout),
+  and compared with `tests/goldens/play/<play>.json` (taken from the
+  original ROM). On a mismatch the first differing
   checkpoint is reported and the actual frame, the original ROM's frame and
   a diff go to `out/play/`. The plays run in parallel (`C3_JOBS`, default
   the CPU count); about 330,000 frames, 100 s on 4 cores.

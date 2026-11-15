@@ -1,9 +1,12 @@
 """Scripted plays through every stage (tools/c3emu/plays.py), checked every
-CHECK frames against goldens: a hash of the screen (15-bit); and the audio
-stream, hashed in blocks of AUDIO_BLOCK bytes (not per frame: how many
-samples the core hands over in a frame depends on when the CPU talks to
-the sound CPU, which moves by a few cycles in a ROM with another layout,
-while the stream itself stays the same).  VRAM is not compared: the
+CHECK frames against goldens: a hash of the screen (15-bit) and of the
+sound command ring (WRAM $0100-$01FF, what queue_sound sends to the sound
+CPU); and the loudness of the audio stream in blocks of AUDIO_BLOCK bytes,
+within AUDIO_TOLERANCE.  The audio itself is not compared exactly: when a
+command reaches the sound CPU depends on the main CPU's timing to the
+cycle, which changes in a ROM with another layout (indexed reads that
+cross a page take a cycle more), so a sound can start a few samples
+earlier or later; a wrong song or sample is far louder or quieter.  VRAM is not compared: the
 game DMAs some WRAM to VRAM that never shows (the empty slots of the
 top-down sprite stream copy the direct page), and WRAM holds ROM addresses,
 which differ in a ROM rebuilt with another layout.
@@ -34,7 +37,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 GOLDENS = os.path.join(HERE, "goldens", "play")
 OUT = os.path.join(os.path.dirname(HERE), "out", "play")
 CHECK = 60
-AUDIO_BLOCK = 16384           # bytes: 4096 stereo samples, about 0.13 s
+AUDIO_BLOCK = 65536           # bytes: 16384 stereo samples, about 0.5 s
+AUDIO_TOLERANCE = 0.08        # relative difference of mean absolute amplitude
 ATTRACT_FRAMES = 21000          # logos, intro, title, the three demos, the logo again
 
 NAMES = ["attract"] + list(plays.PLAYS)
@@ -51,17 +55,22 @@ def _frames(c, name):
         yield from plays.run(c, plays.PLAYS[name], every=CHECK)
 
 
+def _level(block):
+    v = memoryview(block).cast("h")
+    return sum(map(abs, v)) // len(v)
+
+
 def _digest(data):
     return hashlib.sha1(data).hexdigest()[:12]
 
 
 def record(rom, core, name, stop_at=None):
-    """Runs a play; returns {"screen": [[frame, hash], ...], "audio":
-    [[frame, hash], ...]} (an audio entry per complete block, with the
-    checkpoint by which it was complete), or with stop_at the screen image
-    at that frame."""
+    """Runs a play; returns {"screen": [[frame, hash], ...], "sound": [[frame,
+    hash], ...], "audio": [[frame, level], ...]} (an audio entry per complete
+    block, with the checkpoint by which it was complete), or with stop_at
+    the screen image at that frame."""
     c = retro.Console(rom, core=core, audio=True)
-    screen, audio = [], []
+    screen, sound, audio = [], [], []
     for frame in _frames(c, name):
         if stop_at is not None:
             if frame == stop_at:
@@ -71,12 +80,13 @@ def record(rom, core, name, stop_at=None):
             c.audio = bytearray()
             continue
         screen.append([frame, _digest(retro.fifteen_bits(c.image()))])
+        sound.append([frame, _digest(c.ram(0x0100, 0x100))])
         n = len(c.audio) // AUDIO_BLOCK * AUDIO_BLOCK
         for k in range(0, n, AUDIO_BLOCK):
-            audio.append([frame, _digest(bytes(c.audio[k:k + AUDIO_BLOCK]))])
+            audio.append([frame, _level(bytes(c.audio[k:k + AUDIO_BLOCK]))])
         del c.audio[:n]
     c.close()
-    return {"screen": screen, "audio": audio}
+    return {"screen": screen, "sound": sound, "audio": audio}
 
 
 def _worker(args):
@@ -108,12 +118,16 @@ def test_play(play_runs, rom, core, name, update_goldens):
         pytest.fail("no golden %s; run with --update-goldens" % path)
     want = json.load(open(path))
     first = None
-    for what in ("screen", "audio"):
+    for what in ("screen", "sound", "audio"):
         g, w = got[what], want[what]
         if what == "screen" and len(g) != len(w):
             pytest.fail("%s: %d checkpoints, golden %d" % (name, len(g), len(w)))
         for i, (x, y) in enumerate(zip(g, w)):
-            if x[1] != y[1]:
+            if what == "audio":
+                bad = abs(x[1] - y[1]) > AUDIO_TOLERANCE * max(x[1], y[1]) + 16
+            else:
+                bad = x[1] != y[1]
+            if bad:
                 if first is None or x[0] < first[0]:
                     first = (x[0], what, i, len(w))
                 break
