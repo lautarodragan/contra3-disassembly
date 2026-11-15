@@ -115,7 +115,7 @@ nmi_frame_default:
 
 ; Frame handler for nmi_mode 2 (side-view stages). BG1/BG2 horizontal scroll
 ; is written one frame late (BG_HOFS_LATCH); the vertical scroll subtracts
-; zp_A0/zp_A2. Also the 32-byte palette uploads (cgram_upload_addr), HUD
+; shake_bg1_y/shake_bg2_y. Also the 32-byte palette uploads (cgram_upload_addr), HUD
 ; uploads, stage HDMA, tilemap column/row DMA (dma_bg_tilemap_updates), window
 ; registers, and the scroll-split HDMA tables (double-buffered by the two
 ; MVNs in $7E:D000-$7E:D8FF).
