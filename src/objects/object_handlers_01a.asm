@@ -215,10 +215,10 @@ object_type_02_state_03:
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
 loc_01B353:
-	ldy	#$AC97
+	ldy	#.loword(vram_blocks_05AC97)
 	lda	stage_frame_bit1
 	bne	loc_01B35D
-	ldy	#$ACA7
+	ldy	#.loword(vram_blocks_05ACA7)
 loc_01B35D:
 	lda	#$0004
 	sta	zp_02
@@ -240,7 +240,7 @@ object_type_02_state_04:
 	lda	#$0040
 	bra	loc_01B38F
 loc_01B383:
-	ldy	#$ACC7
+	ldy	#.loword(vram_blocks_05ACC7)
 	dec	$24,x
 	lda	#$4E88
 	pha
@@ -294,14 +294,14 @@ loc_01B3E0:
 	bne	loc_01B3F2
 	lda	#$B600
 	sta	zp_FC
-	ldy	#$ACCF
+	ldy	#.loword(vram_blocks_05ACCF)
 	lda	#$4E88
 	pha
 	bra	loc_01B3FE
 loc_01B3F2:
 	lda	#$BF40
 	sta	zp_FC
-	ldy	#$ACD7
+	ldy	#.loword(vram_blocks_05ACD7)
 	lda	#$4E88
 	pha
 loc_01B3FE:
@@ -474,7 +474,7 @@ loc_01B555:
 	bpl	loc_01B568
 	cmp	#$FFFE
 	bcs	loc_01B563
-	lda	#$AF96
+	lda	#.loword(metasprite_06AF96)
 	bra	loc_01B57F
 loc_01B563:
 	lda	#$AFB9
@@ -482,15 +482,15 @@ loc_01B563:
 loc_01B568:
 	cmp	#$0001
 	bcs	loc_01B572
-	lda	#$AFB4
+	lda	#.loword(metasprite_06AFB4)
 	bra	loc_01B57F
 loc_01B572:
 	cmp	#$0003
 	bcs	loc_01B57C
-	lda	#$AFAF
+	lda	#.loword(metasprite_06AFAF)
 	bra	loc_01B57F
 loc_01B57C:
-	lda	#$AFAA
+	lda	#.loword(metasprite_06AFAA)
 loc_01B57F:
 	sta	$00,x
 	lda	$1E,x
@@ -640,10 +640,10 @@ loc_01B682:
 	sta	zp_08
 	lda	stage_frame_bit1
 	bne	loc_01B69E
-	ldy	#$AF25
+	ldy	#.loword(vram_blocks_05AF25)
 	bra	loc_01B6A1
 loc_01B69E:
-	ldy	#$AF2B
+	ldy	#.loword(vram_blocks_05AF2B)
 loc_01B6A1:
 	lda	#$4688
 	phx
@@ -758,7 +758,7 @@ player_tank_state_00:
 	lda	#$0058
 	sta	OBJ_HITBOX_W,x
 	stz	$34,x
-	lda	#$AF3D
+	lda	#.loword(vram_blocks_05AF3D)
 	sta	$3A,x
 	lda	#$0010
 	sta	OBJ_HP,x
@@ -1438,7 +1438,7 @@ tbl_object_type_35_states:
 	.addr	object_type_35_state_04
 
 object_type_35_state_00:
-	lda	#$AFCE
+	lda	#.loword(vram_blocks_05AFCE)
 	sta	$32,x
 	lda	#$0001
 	sta	OBJ_FLAGS,x
@@ -2225,7 +2225,7 @@ popup_turret_state_01:
 	lda	OBJ_X,x
 	cmp	#$00E8
 	bcs	@return
-	lda	#$B046
+	lda	#.loword(vram_blocks_05B046)
 	sta	$32,x
 	inc	OBJ_STATE,x
 @return:
@@ -2678,7 +2678,7 @@ object_type_04_state_02:
 
 object_type_04_state_03:
 	jsl	f:solid_object_vs_players_and_soldiers
-	lda	#$B0A0
+	lda	#.loword(vram_blocks_05B0A0)
 	sta	$30,x
 	lda	#$0044
 	jsl	f:queue_sound

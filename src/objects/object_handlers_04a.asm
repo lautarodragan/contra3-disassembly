@@ -605,7 +605,7 @@ stage3_robot_cables_state_01:
 	bcc	@return
 	lda	#$0018
 	sta	OBJ_TIMER,x
-	lda	#$E7C8
+	lda	#.loword(vram_blocks_05E7C8)
 	sta	$30,x
 	inc	OBJ_STATE,x
 @return:
@@ -876,7 +876,7 @@ stage3_boss_state_0A:
 	bne	loc_048699
 	dec	OBJ_TIMER,x
 	bne	loc_048699
-	lda	#$F48A
+	lda	#.loword(song_set_05F48A)
 	sta	a:song_change_set
 	lda	#$0004
 	sta	a:song_change_mode
@@ -6336,7 +6336,7 @@ heart_boss_state_05:
 	rtl
 loc_04B10C:
 	phx
-	ldx	#$F497
+	ldx	#.loword(song_set_05F497)
 	jsl	f:request_song_set
 	plx
 	inc	OBJ_STATE,x

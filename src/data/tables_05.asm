@@ -1908,6 +1908,7 @@ data_05AA98:
 data_05AAB0:
 	; CDL: read by update_stage1_boss_wall_chunk, queue_vram_blocks_at_x
 	.addr	metasprite_06B699, metasprite_06B688, metasprite_06B673, metasprite_06B6FD
+vram_blocks_05AAB8:
 	.byte	$00, $80, $20, $80, $80, $80, $A0, $80
 	.byte	$00, $81, $20, $81, $80, $81, $A0, $81, $40, $80, $60, $80, $C0, $80, $E0, $80
 	.byte	$40, $81, $60, $81
@@ -1941,8 +1942,11 @@ anim_05AB14:
 	anim_goto	anim_05AB14
 anim_05AB22:
 	anim_frame	$0080, metasprite_06AFD9, $3E00
+vram_blocks_05AB28:
 	.byte	$20, $C4
-	.byte	$40, $C4, $A0, $C4, $C0, $C4, $00, $C5
+	.byte	$40, $C4, $A0, $C4, $C0, $C4
+vram_blocks_05AB30:
+	.byte	$00, $C5
 	.byte	$20, $C5, $80, $C5, $A0, $C5, $00, $B5, $60, $C4, $00, $B5, $E0, $C4
 stage1_boss_shell_hp:
 	; CDL: read by spawn_stage1_boss_parts; DMA / HDMA
@@ -2051,11 +2055,17 @@ data_05AC77:
 data_05AC87:
 	; CDL: read by queue_vram_blocks_at_x, object_type_02_state_07; partly not accessed
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FD, $FF, $FE, $FF, $FD, $FF, $FE, $FF, $FD, $FF
+vram_blocks_05AC97:
 	.byte	$00, $B7, $20, $B7, $40, $B7, $60, $B7, $80, $B7, $A0, $B7, $C0, $B7, $E0, $B7
+vram_blocks_05ACA7:
 	.byte	$60, $BF, $80, $C0, $A0, $C0, $C0, $C0, $00, $C0, $20, $C0, $40, $C0, $60, $C0
 vram_blocks_05ACB7:
 	.byte	$00, $B5, $A0, $B5, $C0, $B5, $E0, $B5, $00, $B6, $20, $B6, $40, $B6, $60, $B6
-	.byte	$80, $B6, $A0, $B6, $C0, $B6, $E0, $B6, $80, $B6, $A0, $B6, $C0, $B6, $E0, $B6
+vram_blocks_05ACC7:
+	.byte	$80, $B6, $A0, $B6, $C0, $B6, $E0, $B6
+vram_blocks_05ACCF:
+	.byte	$80, $B6, $A0, $B6, $C0, $B6, $E0, $B6
+vram_blocks_05ACD7:
 	.byte	$80, $BF, $A0, $BF, $C0, $BF, $E0, $BF, $00, $62, $20, $62, $40, $62, $60, $62
 	.byte	$00, $61, $20, $61, $20, $61, $40, $61, $80, $61, $A0, $61, $A0, $61, $C0, $61
 	.byte	$00, $61, $20, $61, $20, $61, $40, $61, $80, $61, $A0, $61, $A0, $61, $C0, $61
@@ -2094,14 +2104,20 @@ vram_blocks_05ACB7:
 	.byte	$80, $5E, $A0, $5E, $C0, $5E, $E0, $5E, $00, $60, $20, $60, $20, $60, $40, $60
 	.byte	$80, $60, $A0, $60, $A0, $60, $C0, $60
 vram_blocks_05AF1F:
-	.byte	$20, $50, $40, $50, $60, $50, $A0, $50
-	.byte	$C0, $50, $E0, $50, $80, $50, $00, $51, $20, $51
+	.byte	$20, $50, $40, $50, $60, $50
+vram_blocks_05AF25:
+	.byte	$A0, $50
+	.byte	$C0, $50, $E0, $50
+vram_blocks_05AF2B:
+	.byte	$80, $50, $00, $51, $20, $51
 data_05AF31:
 	; CDL: read by player_tank_state_02
 	.byte	$00, $02, $00, $02, $04, $02
 data_05AF37:
 	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, player_tank_state_02; partly not accessed
-	.byte	$00, $04, $04, $04, $00, $04, $00, $C9, $20, $C9, $40, $C9, $80, $C9, $A0, $C9
+	.byte	$00, $04, $04, $04, $00, $04
+vram_blocks_05AF3D:
+	.byte	$00, $C9, $20, $C9, $40, $C9, $80, $C9, $A0, $C9
 	.byte	$C0, $C9, $60, $C9, $E0, $C9, $00, $CA, $20, $CA, $40, $CA, $60, $CA
 vram_blocks_05AF55:
 	.byte	$60, $C8
@@ -2132,6 +2148,7 @@ anim_05AFB6:
 	anim_frame	$0006, metasprite_06B1AC, metasprite_06B466
 	anim_frame	$000C, metasprite_06B197, metasprite_06B451
 	anim_end	metasprite_06B197, metasprite_06B451
+vram_blocks_05AFCE:
 	.byte	$40, $55
 	.byte	$C0, $55
 data_05AFD2:
@@ -2176,6 +2193,7 @@ data_05B02E:
 data_05B036:
 	; CDL: read by queue_vram_blocks_at_x, queue_object_tiles
 	.byte	$9C, $42, $9C, $46, $80, $46, $88, $46, $18, $42, $00, $46, $0C, $42, $18, $42
+vram_blocks_05B046:
 	.byte	$00, $51, $60, $83, $80, $83, $A0, $83, $C0, $83, $E0, $83, $20, $84, $40, $84
 	.byte	$00, $51, $00, $84
 ; OBJ_HP of update_wall_hatch by difficulty (easy, normal, hard)
@@ -2199,7 +2217,9 @@ data_05B08A:
 	.byte	$E4, $FF, $EA, $FF, $F6, $FF, $02, $00, $00, $00, $00, $00, $F6, $FF, $EA, $FF
 data_05B09A:
 	; CDL: read by queue_vram_blocks_at_x, wall_hatch_state_03; partly not accessed
-	.byte	$03, $00, $01, $00, $00, $00, $00, $50, $40, $76, $60, $76, $A0, $76, $C0, $76
+	.byte	$03, $00, $01, $00, $00, $00
+vram_blocks_05B0A0:
+	.byte	$00, $50, $40, $76, $60, $76, $A0, $76, $C0, $76
 	.byte	$E0, $76, $20, $77, $40, $77, $60, $77, $A0, $77, $C0, $77, $E0, $77, $60, $74
 	.byte	$00, $77, $80, $77
 	; CDL: read by update_objects, queue_vram_blocks_at_x; partly not accessed
@@ -2647,6 +2667,7 @@ anim_05C51C:
 	anim_frame	$0002, metasprite_06AECF, $3E00
 	anim_frame	$0002, metasprite_06AF11, $3E00
 	anim_frame	$0001, metasprite_06AEE5, $3E00
+anim_05C540:
 	anim_frame	$0001, metasprite_06AEF6, $3E00
 	anim_frame	$0001, metasprite_06AF22, $3E00
 	anim_frame	$0001, metasprite_06AFFB, $3E00
@@ -2730,10 +2751,12 @@ anim_05C6BA:
 anim_05C6DE:
 	anim_frame	$0008, metasprite_06B14E, $3200
 	anim_frame	$0008, metasprite_06B14E, $3E00
+anim_05C6EA:
 	anim_frame	$0008, metasprite_06B14E, $3200
 	anim_frame	$0008, metasprite_06B14E, $3E00
 	anim_frame	$0008, metasprite_06B14E, $3200
 	anim_frame	$0008, metasprite_06B14E, $3000
+anim_05C702:
 	anim_frame	$0008, metasprite_06B14E, $3200
 	anim_frame	$0008, metasprite_06B14E, $3000
 ; OBJ_HP of update_alien_dog (the first 3 words; other data follows) by difficulty (easy, normal, hard)
@@ -2814,6 +2837,7 @@ data_05C828:
 data_05C838:
 	; CDL: read by queue_vram_blocks_at_x, shake_and_explode_state
 	.byte	$00, $20, $00, $40, $00, $60, $00, $80, $00, $A0, $00, $C0, $00, $E0, $00, $80
+vram_blocks_05C848:
 	.byte	$00, $50, $00, $50, $00, $50, $00, $50, $80, $57, $A0, $57, $00, $50, $00, $50
 	.byte	$00, $50, $00, $50, $C0, $57, $00, $50
 data_05C860:
@@ -3020,6 +3044,7 @@ data_05CB3D:
 data_05CB43:
 	; CDL: read by update_objects, stage3_spiked_climber_state_05; partly not accessed
 	.byte	$00, $03, $00, $02, $40, $00
+anim_05CB49:
 	.byte	$03, $00, $22, $B9, $F9, $B8
 	.byte	$03, $00, $43, $B9, $1F, $BB
 	.byte	$03, $00, $8B, $BA, $F6, $BA
@@ -3100,6 +3125,7 @@ anim_05CC95:
 	anim_frame	$0002, metasprite_06BA5A, $0000
 	anim_goto	anim_05CC95
 	; CDL: read by queue_vram_blocks_at_x
+vram_blocks_05CCA3:
 	.byte	$00, $5B, $00, $5B, $00, $5B, $00, $5B, $40, $5C, $60, $5C, $80, $5B, $80, $5B
 	.byte	$80, $5B, $80, $5B, $00, $75, $20, $75, $00, $50, $00, $50, $00, $50, $00, $50
 	.byte	$00, $50, $00, $50
@@ -4271,7 +4297,9 @@ data_05E7AA:
 	.byte	$4E, $3F, $60, $3F, $62, $3F
 data_05E7C0:
 	; CDL: read by start_palette_task_at, palette_task_animate, update_objects (+2 more); partly not accessed
-	.byte	$28, $3F, $28, $37, $2E, $3D, $2E, $3F, $A0, $73, $20, $74, $E0, $73, $C0, $73
+	.byte	$28, $3F, $28, $37, $2E, $3D, $2E, $3F
+vram_blocks_05E7C8:
+	.byte	$A0, $73, $20, $74, $E0, $73, $C0, $73
 	.byte	$40, $74, $E0, $73, $00, $72, $80, $72, $00, $73, $60, $74, $80, $74, $00, $6D
 	.byte	$20, $6D
 palette_task_05E7E2:
@@ -5144,7 +5172,10 @@ song_set_05F46B:
 	load_spc_raw	$B08E, spc_block_1D8710, $2490
 	load_spc_raw	$3000, spc_block_1AA9CC, $12D8
 	load_end
-	.byte	$02, $00, $FE, $FF, $00, $30, $CC, $A9, $1A, $D8, $12, $FF, $FF, $02, $00, $FE
+song_set_05F48A:
+	.byte	$02, $00, $FE, $FF, $00, $30, $CC, $A9, $1A, $D8, $12, $FF, $FF
+song_set_05F497:
+	.byte	$02, $00, $FE
 	.byte	$FF, $00, $30, $23, $CA, $1A, $A6, $1F, $FF, $FF
 song_set_05F4A4:
 	load_list	$02, $00
@@ -5545,7 +5576,9 @@ data_05FEF1:
 	.byte	$00, $E0, $00, $20
 data_05FEF5:
 	; CDL: read by draw_text, sub_1DBDA0
-	.byte	$FF, $FF, $00, $00, $E9, $5E, $0B, $4F, $4D, $43, $00, $4D, $4E, $3C, $4C, $4E
+	.byte	$FF, $FF, $00, $00
+text_05FEF9:
+	.byte	$E9, $5E, $0B, $4F, $4D, $43, $00, $4D, $4E, $3C, $4C, $4E
 	.byte	$00, $46, $40, $53, $FF
 text_05FF0A:
 	.byte	$E9, $5E, $00, $00, $00, $00, $00, $00, $00, $00, $00

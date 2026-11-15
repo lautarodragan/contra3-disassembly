@@ -56,7 +56,7 @@ tbl_stage1_boss_controller_states:
 stage1_boss_controller_state_00:
 	lda	#$0002
 	jsl	f:start_palette_anim
-	lda	#$F48A
+	lda	#.loword(song_set_05F48A)
 	sta	a:song_change_set
 	lda	#$0004
 	sta	a:song_change_mode
@@ -118,7 +118,7 @@ stage1_boss_controller_state_03:
 	phx
 	jsr	a:spawn_stage1_boss_falling_debris
 	plx
-	ldy	#$AAB8
+	ldy	#.loword(vram_blocks_05AAB8)
 	lda	#$4018
 	sta	zp_0C
 	lda	#$0040
@@ -288,11 +288,11 @@ stage1_boss_death_explosions:
 	rts
 
 stage1_boss_queue_face_tiles:
-	ldy	#$AB28
+	ldy	#.loword(vram_blocks_05AB28)
 	lda	$3E,x
 	beq	loc_00F4C3
 	dec	$3E,x
-	ldy	#$AB30
+	ldy	#.loword(vram_blocks_05AB30)
 loc_00F4C3:
 	lda	#$0002
 	sta	zp_02
@@ -1290,7 +1290,7 @@ loc_00FC58:
 	stz	a:wram_0464
 	lda	#$8000
 	sta	$16,x
-	lda	#$C540
+	lda	#.loword(anim_05C540)
 	sta	zp_00
 	ldy	#$0010
 	lda	#$4E94

@@ -150,6 +150,9 @@ class Editor:
                     line = code.replace(old, new, 1) + sep + comment
             m = BYTE_RE.match(line)
             if not m or ln not in addrs:
+                if ln in addrs:     # a label in front of another statement
+                    for name in self.labels.get(addrs[ln][0][0], []):
+                        out.append("%s:" % name)
                 out.append(line)
                 i += 1
                 continue

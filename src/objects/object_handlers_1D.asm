@@ -1897,10 +1897,10 @@ sub_1DBE30:
 	sta	zp_02
 	lda	#$0010
 	sta	zp_00
-	lda	#$C6EA
+	lda	#.loword(anim_05C6EA)
 	ldy	stage_frame_odd
 	bne	loc_1DBE4C
-	lda	#$C702
+	lda	#.loword(anim_05C702)
 loc_1DBE4C:
 	ldy	#$0300
 	jsl	f:spawn_effect_random_offset
@@ -1914,7 +1914,7 @@ loc_1DBE60:
 
 sub_1DBE61:
 	phx
-	ldx	#$FEF9
+	ldx	#.loword(text_05FEF9)
 	lda	stage_frame_counter
 	bit	#$0010
 	bne	loc_1DBE6F

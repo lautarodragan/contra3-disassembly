@@ -1713,10 +1713,19 @@ metasprite_06AF87:
 metasprite_06AF8C:
 	.byte	$01, $00, $F0, $48, $20
 metasprite_06AF91:
-	.byte	$01, $00, $F0, $4C, $A0, $01, $00, $F0, $6E
-	.byte	$20, $01, $00, $F0, $80, $20, $01, $00, $F0, $6C, $20, $01, $00, $F0, $80, $A0
+	.byte	$01, $00, $F0, $4C, $A0
+metasprite_06AF96:
+	.byte	$01, $00, $F0, $6E
+	.byte	$20, $01, $00, $F0, $80, $20
+metasprite_06AFA0:
+	.byte	$01, $00, $F0, $6C, $20, $01, $00, $F0, $80, $A0
 	; CDL: read by draw_metasprite
-	.byte	$01, $00, $F0, $6E, $A0, $01, $00, $F0, $80, $E0, $01, $00, $F0, $6C, $60, $01
+metasprite_06AFAA:
+	.byte	$01, $00, $F0, $6E, $A0
+metasprite_06AFAF:
+	.byte	$01, $00, $F0, $80, $E0
+metasprite_06AFB4:
+	.byte	$01, $00, $F0, $6C, $60, $01
 	.byte	$00, $F0, $80, $60
 metasprite_06AFBE:
 	.byte	$01, $00, $F0, $C6, $E0
@@ -2356,7 +2365,9 @@ metasprite_06C1A6:
 metasprite_06C1B7:
 	.byte	$05, $10, $D0, $CE
 	.byte	$61, $F0, $D0, $CE, $21, $08, $D8, $E2, $21, $F8, $D8, $E0, $21, $00, $E8, $E4
-	.byte	$21, $05, $08, $D0, $E8, $21, $F8, $D0, $E6, $21, $08, $E0, $EC, $21, $F8, $E0
+	.byte	$21
+metasprite_06C1CC:
+	.byte	$05, $08, $D0, $E8, $21, $F8, $D0, $E6, $21, $08, $E0, $EC, $21, $F8, $E0
 	.byte	$EA, $21, $01, $F0, $EE, $21
 metasprite_06C1E1:
 	.byte	$05, $08, $DB, $20, $61, $08, $EB, $22, $61, $FC

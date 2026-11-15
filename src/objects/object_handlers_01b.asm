@@ -1096,7 +1096,7 @@ object_type_34_state_01:
 	lda	#$001D
 	jsl	f:queue_sound
 	inc	$12,x
-	lda	#$C848
+	lda	#.loword(vram_blocks_05C848)
 	sta	$32,x
 	lda	#$4418
 	sta	$30,x
@@ -1609,7 +1609,7 @@ update_object_type_48:
 	lda	OBJ_HP,x
 	bpl	loc_01DB72
 	stz	OBJ_HP,x
-	lda	#$C1CC
+	lda	#.loword(metasprite_06C1CC)
 	jml	f:start_dying_soldier_sprite
 loc_01DB72:
 	lda	$12,x
@@ -3983,7 +3983,7 @@ spiked_climber_check_fallen:
 	sta	a:bg1_autoscroll_speed
 	lda	#$0007
 	sta	a:bg2_scroll_mode
-	lda	#$CB49
+	lda	#.loword(anim_05CB49)
 	sta	a:wram_0360
 	stz	a:wram_0356
 	lda	#$0080
@@ -4321,7 +4321,7 @@ update_object_type_52:
 	sta	$30,x
 	clc
 	adc	#$4000
-	ldy	#$CCA3
+	ldy	#.loword(vram_blocks_05CCA3)
 	jsr	a:spiked_climber_queue_tiles
 	inc	$12,x
 	stz	a:boss_work_5

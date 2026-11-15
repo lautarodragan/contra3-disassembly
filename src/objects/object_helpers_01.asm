@@ -820,19 +820,19 @@ loc_01A34F:
 	sta	zp_04
 	cpy	#$0000
 	bne	loc_01A384
-	ldy	#$AFB4
+	ldy	#.loword(metasprite_06AFB4)
 	lda	$1A,x
 	bmi	loc_01A395
-	ldy	#$AFA0
+	ldy	#.loword(metasprite_06AFA0)
 	lda	zp_06
 	eor	#$FFFF
 	sta	zp_06
 	bra	loc_01A395
 loc_01A384:
-	ldy	#$AF96
+	ldy	#.loword(metasprite_06AF96)
 	lda	$1E,x
 	bmi	loc_01A395
-	ldy	#$AFAA
+	ldy	#.loword(metasprite_06AFAA)
 	lda	zp_04
 	eor	#$FFFF
 	sta	zp_04
