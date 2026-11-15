@@ -6,14 +6,27 @@ emulator's code/data log (CDL): every byte the game executed in the traces
 is decoded as code, nothing decoded as code is read as data, and the data
 bank of every absolute operand is known. `src/` is now the source of truth;
 the generator is a reference tool (see [The disassembler](disassembler.md)).
-Milestones 2 to 4 (names and files, shiftable source, cheats; see the
+
+**Milestone 2 (names, many files) has started.** Done so far:
+
+- `src/` is split into 80 files by subsystem (see [Source layout](layout.md));
+- RAM operands are symbols from `src/ram.inc` (see [RAM map](ram-map.md)):
+  about 10,900 operands (5,723 direct-page, 4,820 absolute, 220 long, 171
+  indirect-jump pointers) now name one of 1,196 RAM addresses, most still
+  placeholders; 306 direct-page operands that run (or may run) with D other
+  than 0, and all indexed operands, are numbers on purpose;
+- a rename tool and naming conventions for the parallel naming work (see
+  [Contributing: naming](contributing.md)).
+
+Still to do: real names for the routines, tables and variables. Milestones
+3 and 4 (shiftable source, cheats; see the
 [Introduction](introduction.md#goals)) have not started.
 
 The rest of this page is `docs/disasm_report.md`, the report that
 `tools/disasm.py` wrote along with the source in the CDL pass, included here
 as it is in the repository so that there is one copy of the numbers. It
-describes the generated source as committed; hand edits to `src/` don't
-update it.
+describes the generated source as committed in the CDL pass (one file per
+bank, RAM operands still numbers); hand edits to `src/` don't update it.
 
 How to read it:
 

@@ -14,3 +14,25 @@ sub_Y
 data_00FFF6
 # the generator still writes one file per bank (layout.md)
 bank_00.asm
+
+# made-up examples and placeholder patterns in the naming guide (contributing.md)
+next_random
+OLD1
+NEW1
+OLD2
+NEW2
+load_stage_graphics
+update_players
+queue_sound
+check_soft_reset
+loc_XXXXXX
+tbl_game_modes
+tbl_nmi_handlers
+ptrs_stage_palettes
+aim_velocity_x
+stage_song_sets
+UPPER_CASE
+zp_XX
+wram_XXXX
+wram_7EXXXX
+update_players_next

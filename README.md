@@ -5,8 +5,10 @@ the original ROM byte for byte:
 
     build/contra3.sfc  sha1: 265886e3f665adf2507e7b2f08b6b2ed9d0018b2
 
-Status: milestone 1 (matching build), checked against the emulator's
-code/data log (CDL). **`src/` is the source of truth** and is edited by hand;
+Status: milestone 1 (matching build, checked against the emulator's
+code/data log, CDL) is done; milestone 2 (names, many files) is under way:
+the source is split by subsystem and RAM operands are symbols (mostly
+placeholders) from `src/ram.inc`. **`src/` is the source of truth** and is edited by hand;
 the generator in `tools/` is kept for reference and research only. See
 [`docs/disasm_report.md`](docs/disasm_report.md) for how much of the ROM is
 decoded as code vs. data, how much of the code the CDL saw run, and how many
@@ -67,6 +69,7 @@ minute.
 | `src/header.asm` | internal header and vectors |
 | `src/contra3.cfg` | ld65 memory map: 32 LoROM banks of `$8000` at `$XX:8000` |
 | `src/common.inc` | included first by `main.asm` (`.p816`, register names) |
+| `src/ram.inc` | RAM symbols (placeholders `zp_XX` / `wram_XXXX` until named) and structure offsets |
 | `src/snes_registers.inc` | SNES hardware register names (`INIDISP`, `NMITIMEN`, `DMAP0`, ...) |
 | `contra3.sha1` | SHA-1 of the original ROM |
 | `tools/disasm.py` | the disassembler that generated `src/` (reference only now) |
@@ -74,6 +77,7 @@ minute.
 | `tools/cdl.py` | reads the emulator's code/data log (CDL) for the disassembler |
 | `docs/disasm_report.md` | coverage / quality report written by the disassembler with the CDL (included in the book's Progress page) |
 | `book/` | the book (mdBook): `book.toml`, pages in `book/src/`, `names-ignore.txt` |
+| `tools/rename.py` | renames symbols across `src/` and the book, refusing collisions (see below) |
 | `tools/check_book_names.py` | checks that every label, constant and path the book names exists |
 
 Every file starts with its title, address range and what is known about
@@ -85,9 +89,24 @@ The game runs in banks `$00-$1F` (SlowROM; it never jumps to the `$80+`
 mirrors), so labels are named and placed by their `$00-$1F` address, e.g.
 `sub_0090A8` is at `$00:90A8`.
 
-Label prefixes: `sub_` (called / dispatched routine), `loc_` (branch or jump
-target), `tbl_` (jump table), `ptrs_` (table of data pointers), `data_`
-(anything else referenced). Labels named in the hints file keep their name.
+Generated label prefixes (meaning "not named yet"): `sub_` (called /
+dispatched routine), `loc_` (branch or jump target), `tbl_` (jump table),
+`ptrs_` (table of data pointers), `data_` (anything else referenced), and
+for RAM `zp_XX` (direct page) and `wram_XXXX`. Naming conventions for real
+names are in the book's "Contributing: naming" page.
+
+## Naming things: `tools/rename.py`
+
+```
+python3 tools/rename.py OLD NEW [OLD NEW ...]   # rename across src/ and the book
+python3 tools/rename.py --map names.txt         # batch, "OLD NEW" per line
+python3 tools/rename.py -n ...                  # dry run
+python3 tools/rename.py --scope LABEL @old @new # a cheap local label
+```
+
+Whole-word, path-safe, all-or-nothing; refuses undefined old names,
+collisions, invalid identifiers and mnemonics. Then `make` (hash) and
+`make book-check`.
 
 ### Conventions in the source
 
@@ -105,7 +124,9 @@ target), `tbl_` (jump table), `ptrs_` (table of data pointers), `data_`
   statically through `PHK/PLB`, `LDA #n/PHA/PLB`, `PEA/PLB`, `MVN`), jump
   tables, recognised pointer immediates (`#.loword(label)` / `#^label`) and
   data-pointer tables (`.addr label`); a reference into the middle of a table
-  is `table+n`. Everything else is still a number; turning the remaining
+  is `table+n`. RAM operands without an index are symbols from
+  `src/ram.inc` (see the book's "RAM map" for exactly which). Everything
+  else is still a number; turning the remaining
   ROM pointers (immediates, `f:$050000,x` bank bases, pointers inside
   `.byte` data) into labels is part of making the source shiftable
   (milestone 3).

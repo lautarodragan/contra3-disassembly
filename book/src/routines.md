@@ -1,7 +1,9 @@
 # Routines
 
 > **Stub.** This page will list the game's routines by subsystem as they get
-> names (milestone 2). Only the entry points below are known so far.
+> names (milestone 2). Only the entry points below are named so far; what is
+> known about each part of the code is in the headers of the files in
+> `src/` (see [Source layout](layout.md)).
 
 ## Entry points
 
