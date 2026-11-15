@@ -540,7 +540,7 @@ stage4_tank_state_00:
 	sta	zp_02
 	lda	#$0030
 	sta	zp_08
-	ldy	#$AF1F
+	ldy	#.loword(vram_blocks_05AF1F)
 	lda	#$4608
 	phx
 	jsl	f:queue_vram_blocks
@@ -662,7 +662,7 @@ stage4_tank_state_03:
 	sta	zp_02
 	lda	#$0040
 	sta	zp_08
-	ldy	#$946A
+	ldy	#.loword(vram_blocks_05946A)
 	lda	#$4608
 	phx
 	jsl	f:queue_vram_blocks
@@ -3465,7 +3465,7 @@ loc_01CBBD:
 	asl	a
 	clc
 	adc	#$411C
-	ldy	#$B1C0
+	ldy	#.loword(vram_blocks_05B1C0)
 	phx
 	jsl	f:queue_vram_blocks
 	plx

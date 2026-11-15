@@ -1750,7 +1750,7 @@ stage4_controller_state_05:
 	lda	#$0030
 	sta	zp_08
 	lda	#$401C
-	ldy	#$ECC6
+	ldy	#.loword(vram_blocks_05ECC6)
 	phx
 	jsl	f:queue_vram_blocks
 	plx
@@ -1784,7 +1784,7 @@ stage4_controller_state_07:
 	lda	#$0040
 	sta	zp_08
 	lda	$34,x
-	ldy	#$946A
+	ldy	#.loword(vram_blocks_05946A)
 	phx
 	jsl	f:queue_vram_blocks
 	plx
@@ -2169,7 +2169,7 @@ loc_049105:
 	sta	zp_02
 	lda	#$0020
 	sta	zp_08
-	ldy	#$EC34
+	ldy	#.loword(vram_blocks_05EC34)
 	lda	#$4588
 	phx
 	jsl	f:queue_vram_blocks
@@ -3100,7 +3100,7 @@ stage4_queue_tiles:
 	sty	zp_02
 	ldy	#$0038
 	sty	zp_08
-	ldy	#$EC26
+	ldy	#.loword(vram_blocks_05EC26)
 	phx
 	jsl	f:queue_vram_blocks
 	plx
@@ -10485,7 +10485,7 @@ update_airship_gun_arm:
 	sta	zp_02
 	lda	#$0018
 	sta	zp_08
-	ldy	#$F272
+	ldy	#.loword(vram_blocks_05F272)
 	lda	#$4100
 	phx
 	ldx	#$0000
@@ -10494,7 +10494,7 @@ update_airship_gun_arm:
 	sta	zp_02
 	lda	#$0030
 	sta	zp_08
-	ldy	#$F272
+	ldy	#.loword(vram_blocks_05F272)
 	lda	#$451C
 	ldx	#$0018
 	jsl	f:queue_vram_blocks_at_x

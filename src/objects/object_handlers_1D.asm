@@ -1653,7 +1653,7 @@ ending_sequence_state_25:
 	sta	zp_02
 	lda	#$0020
 	sta	zp_08
-	ldy	#$946A
+	ldy	#.loword(vram_blocks_05946A)
 	lda	#$4C0C
 	phx
 	jsl	f:queue_vram_blocks

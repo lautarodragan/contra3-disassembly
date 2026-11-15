@@ -881,6 +881,7 @@ data_05942A:
 	.byte	$00, $00, $3E, $F1, $8A, $C5, $91, $7E, $0E, $1F, $AD, $AA, $E6, $25, $D4, $95
 	.byte	$00, $00, $2C, $6A, $1A, $DA, $53, $55, $F2, $E0, $6F, $81, $76, $3A, $C2, $0E
 	.byte	$00, $00, $C2, $0E, $76, $3A, $6F, $81, $F2, $E0, $53, $55, $1A, $DA, $2C, $6A
+vram_blocks_05946A:
 	.byte	$00, $50, $00, $50, $00, $50, $00, $50, $00, $50, $00, $50, $00, $50, $00, $50
 ptrs_stage_spawn_pages:
 	; CDL: read by init_stage_spawns, spawn_next_stage_object, find_free_object_slot_in_range; partly not accessed
@@ -1800,8 +1801,15 @@ data_05A911:
 	.byte	$6C, $42, $6C, $42, $0E, $49, $0E, $49
 data_05A919:
 	; CDL: read by update_objects, opening_draw_caption_part, queue_vram_blocks_at_x; partly not accessed
-	.byte	$21, $A9, $25, $A9, $29, $A9, $2B, $A9, $00, $68, $20, $68, $40, $68, $60, $68
-	.byte	$E0, $67, $80, $68
+	.addr	vram_blocks_05A921, vram_blocks_05A925, vram_blocks_05A929, vram_blocks_05A92B
+vram_blocks_05A921:
+	.byte	$00, $68, $20, $68
+vram_blocks_05A925:
+	.byte	$40, $68, $60, $68
+vram_blocks_05A929:
+	.byte	$E0, $67
+vram_blocks_05A92B:
+	.byte	$80, $68
 anim_05A92D:
 	anim_frame	$0002, metasprite_06D3C1, metasprite_06D3C1
 anim_05A933:
@@ -2083,7 +2091,9 @@ data_05AC87:
 	.byte	$00, $67, $20, $67, $20, $67, $40, $67, $80, $5D, $A0, $5D, $C0, $5D, $E0, $5D
 	.byte	$00, $5E, $20, $5E, $40, $5E, $60, $5E, $00, $5E, $20, $5E, $40, $5E, $60, $5E
 	.byte	$80, $5E, $A0, $5E, $C0, $5E, $E0, $5E, $00, $60, $20, $60, $20, $60, $40, $60
-	.byte	$80, $60, $A0, $60, $A0, $60, $C0, $60, $20, $50, $40, $50, $60, $50, $A0, $50
+	.byte	$80, $60, $A0, $60, $A0, $60, $C0, $60
+vram_blocks_05AF1F:
+	.byte	$20, $50, $40, $50, $60, $50, $A0, $50
 	.byte	$C0, $50, $E0, $50, $80, $50, $00, $51, $20, $51
 data_05AF31:
 	; CDL: read by player_tank_state_02
@@ -2228,7 +2238,9 @@ data_05B1A8:
 	.byte	$FD, $FF, $FC, $FF, $FA, $FF, $FB, $FF, $FD, $FF, $FC, $FF
 data_05B1B4:
 	; CDL: read by queue_vram_blocks_at_x, object_type_11_state_01; partly not accessed
-	.byte	$03, $00, $02, $00, $01, $00, $FF, $FF, $FE, $FF, $FD, $FF, $A0, $63, $60, $63
+	.byte	$03, $00, $02, $00, $01, $00, $FF, $FF, $FE, $FF, $FD, $FF
+vram_blocks_05B1C0:
+	.byte	$A0, $63, $60, $63
 	.byte	$E0, $63, $80, $65
 ; OBJ_HP of update_object_type_12 by difficulty (easy, normal, hard)
 object_type_12_hp:
@@ -2894,14 +2906,25 @@ data_05C9E8:
 	.byte	$D8, $FF, $D8, $FF, $E8, $FF, $EC, $FF, $F0, $FF, $EC, $FF, $E8, $FF, $D8, $FF
 data_05C9F8:
 	; CDL: read by object_type_4E_state_05
-	.byte	$0C, $CA, $1C, $CA, $2C, $CA, $3C, $CA, $4C, $CA
+	.addr	vram_blocks_05CA0C, vram_blocks_05CA1C, vram_blocks_05CA2C, vram_blocks_05CA3C
+	.addr	vram_blocks_05CA4C
 data_05CA02:
 	; CDL: read by queue_vram_blocks_at_x, object_type_4E_state_05
-	.byte	$00, $41, $80, $41, $00, $42, $80, $42, $00, $43, $40, $61, $60, $61, $00, $50
-	.byte	$00, $61, $40, $61, $60, $61, $00, $50, $80, $61, $C0, $61, $E0, $61, $00, $61
-	.byte	$80, $61, $C0, $61, $E0, $61, $00, $61, $80, $61, $C0, $61, $E0, $61, $80, $61
-	.byte	$A0, $61, $C0, $61, $E0, $61, $80, $61, $A0, $61, $40, $5F, $60, $5F, $00, $5F
-	.byte	$20, $5F, $40, $5F, $60, $5F, $00, $5F, $20, $5F, $C0, $5F, $E0, $5F, $80, $5F
+	.byte	$00, $41, $80, $41, $00, $42, $80, $42, $00, $43
+vram_blocks_05CA0C:
+	.byte	$40, $61, $60, $61, $00, $50
+	.byte	$00, $61, $40, $61, $60, $61, $00, $50, $80, $61
+vram_blocks_05CA1C:
+	.byte	$C0, $61, $E0, $61, $00, $61
+	.byte	$80, $61, $C0, $61, $E0, $61, $00, $61, $80, $61
+vram_blocks_05CA2C:
+	.byte	$C0, $61, $E0, $61, $80, $61
+	.byte	$A0, $61, $C0, $61, $E0, $61, $80, $61, $A0, $61
+vram_blocks_05CA3C:
+	.byte	$40, $5F, $60, $5F, $00, $5F
+	.byte	$20, $5F, $40, $5F, $60, $5F, $00, $5F, $20, $5F
+vram_blocks_05CA4C:
+	.byte	$C0, $5F, $E0, $5F, $80, $5F
 	.byte	$A0, $5E, $C0, $5F, $E0, $5F, $80, $5F, $A0, $5E
 data_05CA5C:
 	; CDL: read by object_type_4E_state_08
@@ -2909,12 +2932,22 @@ data_05CA5C:
 ; OBJ_HP of update_object_type_4E (the first 3 words; other data follows) by difficulty (easy, normal, hard)
 object_type_4E_hp:
 	; CDL: read by update_objects, queue_vram_blocks_at_x, object_type_4E_state_09; DMA / HDMA; partly not accessed
-	.byte	$40, $00, $48, $00, $50, $00, $58, $00, $60, $B8, $80, $B8, $E0, $B8, $00, $B9
-	.byte	$20, $B9, $40, $B9, $A0, $B7, $C0, $B7, $80, $C2, $80, $C2, $80, $C2, $80, $C2
-	.byte	$00, $00, $FF, $FF, $E0, $B7, $20, $B8, $00, $B8, $40, $B8
+	.byte	$40, $00, $48, $00, $50, $00, $58, $00
+vram_blocks_05CA6C:
+	.byte	$60, $B8, $80, $B8, $E0, $B8, $00, $B9
+	.byte	$20, $B9, $40, $B9
+vram_blocks_05CA78:
+	.byte	$A0, $B7, $C0, $B7, $80, $C2, $80, $C2, $80, $C2, $80, $C2
+	.byte	$00, $00, $FF, $FF
+vram_blocks_05CA88:
+	.byte	$E0, $B7, $20, $B8, $00, $B8, $40, $B8
 hdma_table_05CA90:
 	.byte	$6D, $20, $60, $02
-	.byte	$00, $80, $B6, $A0, $B6, $00, $B7, $20, $B7, $A0, $B8, $C0, $B8
+	.byte	$00
+vram_blocks_05CA95:
+	.byte	$80, $B6, $A0, $B6, $00, $B7, $20, $B7
+vram_blocks_05CA9D:
+	.byte	$A0, $B8, $C0, $B8
 anim_05CAA1:
 	anim_frame	$0001, metasprite_06B712, metasprite_06B873
 	anim_frame	$0002, metasprite_06B72B, metasprite_06B88C
@@ -4433,7 +4466,11 @@ data_05EBA2:
 	.byte	$00, $28, $00, $28, $00, $88
 data_05EBA8:
 	; CDL: read by queue_vram_blocks_at_x, update_stage4_boss_pod
-	.byte	$AC, $EB, $B0, $EB, $A0, $B5, $C0, $B5, $00, $B7, $E0, $B5
+	.addr	vram_blocks_05EBAC, vram_blocks_05EBB0
+vram_blocks_05EBAC:
+	.byte	$A0, $B5, $C0, $B5
+vram_blocks_05EBB0:
+	.byte	$00, $B7, $E0, $B5
 data_05EBB4:
 	; CDL: read by update_objects, update_stage4_boss_pod; partly not accessed
 	.byte	$10, $4C, $90, $4E
@@ -4458,17 +4495,33 @@ data_05EBE6:
 	.byte	$06, $00, $07, $00, $04, $40, $80, $40, $04, $41, $80, $41, $60, $53, $80, $53
 	.byte	$A0, $53, $C0, $53, $E0, $53, $80, $55, $A0, $55, $00, $52, $20, $52, $40, $52
 	.byte	$60, $52, $40, $53, $00, $53, $80, $52, $A0, $52, $C0, $52, $E0, $52, $20, $53
-	.byte	$00, $50, $00, $50, $40, $51, $60, $51, $C0, $51, $E0, $51, $00, $50, $00, $50
+vram_blocks_05EC26:
+	.byte	$00, $50, $00, $50, $40, $51, $60, $51, $C0, $51, $E0, $51, $00, $50
+vram_blocks_05EC34:
+	.byte	$00, $50
 	.byte	$00, $50, $00, $50, $00, $50
 data_05EC3C:
 	; CDL: read by queue_vram_blocks_at_x, rideable_missile_state_01
-	.byte	$44, $EC, $50, $EC, $5C, $EC, $68, $EC, $60, $53, $80, $53, $A0, $53, $C0, $53
-	.byte	$E0, $53, $00, $50, $00, $50, $60, $53, $00, $54, $20, $54, $40, $54, $60, $54
-	.byte	$00, $50, $00, $50, $80, $54, $A0, $54, $80, $53, $C0, $54, $00, $50, $E0, $54
+	.addr	vram_blocks_05EC44, vram_blocks_05EC50, vram_blocks_05EC5C, vram_blocks_05EC68
+vram_blocks_05EC44:
+	.byte	$60, $53, $80, $53, $A0, $53, $C0, $53
+	.byte	$E0, $53, $00, $50
+vram_blocks_05EC50:
+	.byte	$00, $50, $60, $53, $00, $54, $20, $54, $40, $54, $60, $54
+vram_blocks_05EC5C:
+	.byte	$00, $50, $00, $50, $80, $54, $A0, $54, $80, $53, $C0, $54
+vram_blocks_05EC68:
+	.byte	$00, $50, $E0, $54
 	.byte	$00, $55, $20, $55, $C0, $54, $00, $50
 data_05EC74:
 	; CDL: read by queue_vram_blocks_at_x, rideable_missile_state_01
-	.byte	$7A, $EC, $7E, $EC, $82, $EC, $40, $55, $60, $55, $80, $55, $A0, $55, $C0, $55
+	.addr	vram_blocks_05EC7A, vram_blocks_05EC7E, vram_blocks_05EC82
+vram_blocks_05EC7A:
+	.byte	$40, $55, $60, $55
+vram_blocks_05EC7E:
+	.byte	$80, $55, $A0, $55
+vram_blocks_05EC82:
+	.byte	$C0, $55
 	.byte	$E0, $55
 data_05EC86:
 	; CDL: read by rideable_missile_set_hdma
@@ -4499,7 +4552,9 @@ data_05ECB6:
 	.byte	$F9, $FF, $FA, $FF, $FB, $FF, $FC, $FF
 data_05ECBE:
 	; CDL: read by queue_vram_blocks_at_x, stage4_spawn_hoverbike_rider; partly not accessed
-	.byte	$38, $00, $30, $00, $28, $00, $A0, $51, $80, $51, $E0, $5B, $E0, $5F, $E0, $5F
+	.byte	$38, $00, $30, $00, $28, $00, $A0, $51
+vram_blocks_05ECC6:
+	.byte	$80, $51, $E0, $5B, $E0, $5F, $E0, $5F
 	.byte	$00, $60
 load_list_05ECD0:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk
@@ -4592,7 +4647,13 @@ floor_mouth_hp:
 	.byte	$20, $00, $28, $00, $30, $00, $38, $00
 data_05EE1C:
 	; CDL: read by queue_vram_blocks_at_x, sub_04ABA3
-	.byte	$22, $EE, $24, $EE, $26, $EE, $A0, $62, $20, $70, $00, $70
+	.addr	vram_blocks_05EE22, vram_blocks_05EE24, vram_blocks_05EE26
+vram_blocks_05EE22:
+	.byte	$A0, $62
+vram_blocks_05EE24:
+	.byte	$20, $70
+vram_blocks_05EE26:
+	.byte	$00, $70
 data_05EE28:
 	; CDL: read by floor_mouth_state_01; partly not accessed
 	.byte	$78, $00, $5A, $00, $3C, $00, $3C, $00
@@ -4782,10 +4843,32 @@ data_05F074:
 	.byte	$90, $4E, $98, $4E, $98, $4E
 data_05F08A:
 	; CDL: read by queue_vram_blocks_at_x, sub_04BC10
-	.byte	$A0, $F0, $A2, $F0, $A4, $F0, $A6, $F0, $A8, $F0, $AA, $F0, $AC, $F0, $AE, $F0
-	.byte	$B2, $F0, $B6, $F0, $BE, $F0, $80, $BB, $C0, $B6, $E0, $B6, $E0, $BB, $20, $B4
-	.byte	$00, $B7, $20, $B7, $40, $B6, $60, $B6, $40, $B7, $60, $B7, $80, $B6, $A0, $B6
-	.byte	$00, $B0, $00, $B0, $80, $B7, $A0, $B7, $C0, $B7, $E0, $B7
+	.addr	vram_blocks_05F0A0, vram_blocks_05F0A2, vram_blocks_05F0A4, vram_blocks_05F0A6
+	.addr	vram_blocks_05F0A8, vram_blocks_05F0AA, vram_blocks_05F0AC, vram_blocks_05F0AE
+	.addr	vram_blocks_05F0B2, vram_blocks_05F0B6, vram_blocks_05F0BE
+vram_blocks_05F0A0:
+	.byte	$80, $BB
+vram_blocks_05F0A2:
+	.byte	$C0, $B6
+vram_blocks_05F0A4:
+	.byte	$E0, $B6
+vram_blocks_05F0A6:
+	.byte	$E0, $BB
+vram_blocks_05F0A8:
+	.byte	$20, $B4
+vram_blocks_05F0AA:
+	.byte	$00, $B7
+vram_blocks_05F0AC:
+	.byte	$20, $B7
+vram_blocks_05F0AE:
+	.byte	$40, $B6, $60, $B6
+vram_blocks_05F0B2:
+	.byte	$40, $B7, $60, $B7
+vram_blocks_05F0B6:
+	.byte	$80, $B6, $A0, $B6
+	.byte	$00, $B0, $00, $B0
+vram_blocks_05F0BE:
+	.byte	$80, $B7, $A0, $B7, $C0, $B7, $E0, $B7
 data_05F0C6:
 	; CDL: read by update_cave_beast_fireball
 	.addr	metasprite_06AF82, metasprite_06AF87, metasprite_06AF8C, metasprite_06AF91
@@ -4931,7 +5014,9 @@ data_05F260:
 ; OBJ_HP of lightning_pylon by difficulty: easy $40, normal $60; hard reads the next word, $7FFF
 lightning_pylon_hp:
 	; CDL: read by update_objects, update_lightning_pylon, update_enemy_type_80; partly not accessed
-	.byte	$40, $00, $60, $00, $FF, $7F, $C0, $59, $00, $50, $00, $50
+	.byte	$40, $00, $60, $00, $FF, $7F
+vram_blocks_05F272:
+	.byte	$C0, $59, $00, $50, $00, $50
 anim_05F278:
 	anim_frame	$0001, metasprite_06AFD9, $3200
 	anim_frame	$0004, metasprite_06AEA5, $3E00

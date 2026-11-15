@@ -65,18 +65,24 @@ def _readers(c):
     return (ctypes.c_uint32 * n).from_address(L.retro_cdl_readers())
 
 
-def run_reference(private, rom, scenario, frames, q):
+def run_reference(private, rom, scenario, frames, q, wram_at=None):
     sys.path.insert(0, private)
     from tools.c3emu import game, retro
     c = retro.Console(rom)
     c.cdl_enable(True)
     _start(c, game, scenario)
-    c.run(frames)
-    q.put(_plane_a(c))
+    if wram_at is not None:
+        c.run(wram_at - c.frame_count)
+        q.put(bytes(c.ram(0, 0x2000)))
+    else:
+        c.run(frames)
+        L = c.lib
+        L.retro_cdl_readers.restype = ctypes.c_void_p
+        q.put((_plane_a(c), ctypes.string_at(L.retro_cdl_readers(), 4 * len(_plane_a(c)))))
     c.close()
 
 
-def run_shifted(private, rom, scenario, frames, chunk, ref, mapping, q):
+def run_shifted(private, rom, scenario, frames, chunk, ref, ref_readers, mapping, q):
     """Stops at the first chunk with anomalies; returns them with readers."""
     sys.path.insert(0, private)
     from tools.c3emu import game, retro
@@ -90,6 +96,7 @@ def run_shifted(private, rom, scenario, frames, chunk, ref, mapping, q):
         c.run(n)
         done += n
         a = _plane_a(c)
+        rd = _readers(c)
         bad = []
         for off in range(len(a)):
             if a[off] & DATA and not seen[off]:
@@ -99,12 +106,19 @@ def run_shifted(private, rom, scenario, frames, chunk, ref, mapping, q):
                     bad.append((off, None))
                 elif not ref[orig] & DATA:
                     bad.append((off, orig))
+                elif rd[off]:
+                    # read first by another instruction than in the normal build
+                    r = rd[off] - 1
+                    ro = mapping.get(lorom_offset(r & 0x7FFFFF), -1)
+                    want = int.from_bytes(ref_readers[4 * orig:4 * orig + 4], "little")
+                    if want and ro != -1 and ro != lorom_offset((want - 1) & 0x7FFFFF):
+                        bad.append((off, orig))
         if bad:
             rd = _readers(c)
-            q.put((c.frame_count, [(off, orig, rd[off]) for off, orig in bad]))
+            q.put((c.frame_count, [(off, orig, rd[off]) for off, orig in bad], bytes(c.ram(0, 0x2000))))
             c.close()
             return
-    q.put((c.frame_count, []))
+    q.put((c.frame_count, [], b""))
     c.close()
 
 
@@ -159,6 +173,7 @@ def main(argv):
     ap.add_argument("--frames", type=int, default=18300)
     ap.add_argument("--chunk", type=int, default=60)
     ap.add_argument("--max", type=int, default=40)
+    ap.add_argument("-v", "--verbose", action="store_true", help="dump the object slots of both runs")
     args = ap.parse_args(argv[1:])
     private = os.path.abspath(args.private)
     mapping, base = build_mapping(args.out)
@@ -167,13 +182,35 @@ def main(argv):
     p = ctx.Process(target=run_reference, args=(private, os.path.abspath(os.path.join(args.out, "base", "contra3.sfc")),
                                                args.scenario, args.frames, q))
     p.start()
-    ref = q.get()
+    ref, ref_readers = q.get()
     p.join()
     p = ctx.Process(target=run_shifted, args=(private, os.path.abspath(os.path.join(args.out, "contra3.sfc")),
-                                             args.scenario, args.frames, args.chunk, ref, mapping, q))
+                                             args.scenario, args.frames, args.chunk, ref, ref_readers, mapping, q))
     p.start()
-    frame, bad = q.get()
+    frame, bad, wram_b = q.get()
     p.join()
+    objects = []
+    if bad:
+        # the object slots of both runs at that frame: an animation script or
+        # metasprite pointer that did not move with its bank is suspect
+        p = ctx.Process(target=run_reference, args=(private, os.path.abspath(os.path.join(args.out, "base", "contra3.sfc")),
+                                                   args.scenario, args.frames, q, frame))
+        p.start()
+        wram_a = q.get()
+        p.join()
+        w16 = lambda m, a: m[a] | m[a + 1] << 8
+        for slot in range(0x0200, 0x0AC0, 0x40):
+            ta, tb = w16(wram_a, slot + 0x10), w16(wram_b, slot + 0x10)
+            if args.verbose and (ta or tb):
+                objects.append("slot $%04X: type $%02X/$%02X sprite $%04X/$%04X anim $%04X/$%04X state $%04X/$%04X" % (
+                    slot, ta, tb, w16(wram_a, slot), w16(wram_b, slot), w16(wram_a, slot + 0x20),
+                    w16(wram_b, slot + 0x20), w16(wram_a, slot + 0x12), w16(wram_b, slot + 0x12)))
+            if not ta or ta != tb:
+                continue
+            for field, name in ((0x00, "OBJ_SPRITE"), (0x20, "OBJ_ANIM")):
+                va, vb = w16(wram_a, slot + field), w16(wram_b, slot + field)
+                if va >= 0x8000 and va == vb:
+                    objects.append("slot $%04X type $%02X: %s = $%04X in both builds" % (slot, ta, name, va))
 
     labs = sorted((v, n) for n, v in base.labels.items() if v >> 16 < 0x40)
     lv = [v for v, _n in labs]
@@ -186,6 +223,8 @@ def main(argv):
     if not bad:
         print("%s: no anomalies in %d frames" % (args.scenario, frame))
         return 0
+    for o in objects:
+        print("  " + o)
     print("%s: %d anomalous data reads by frame %d (first chunk with any):" % (args.scenario, len(bad), frame))
     # group by reader
     groups = {}

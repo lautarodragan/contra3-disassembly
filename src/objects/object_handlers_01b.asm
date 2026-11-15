@@ -2347,7 +2347,7 @@ object_type_4E_state_0B:
 	sta	zp_02
 	lda	#$0030
 	sta	zp_08
-	ldy	#$CA6C
+	ldy	#.loword(vram_blocks_05CA6C)
 	lda	#$4D8C
 	phx
 	jsl	f:queue_vram_blocks
@@ -2360,7 +2360,7 @@ object_type_4E_state_0E:
 	sta	zp_02
 	lda	#$0030
 	sta	zp_08
-	ldy	#$CA78
+	ldy	#.loword(vram_blocks_05CA78)
 	lda	#$4D8C
 	phx
 	jsl	f:queue_vram_blocks
@@ -2515,7 +2515,7 @@ loc_01E202:
 	sta	zp_02
 	lda	#$0020
 	sta	zp_08
-	ldy	#$CA88
+	ldy	#.loword(vram_blocks_05CA88)
 	lda	#$4C8C
 	phx
 	jsl	f:queue_vram_blocks
@@ -2628,7 +2628,7 @@ object_type_4E_state_15:
 	sta	zp_02
 	lda	#$0020
 	sta	zp_08
-	ldy	#$CA95
+	ldy	#.loword(vram_blocks_05CA95)
 	lda	#$4C8C
 	phx
 	jsl	f:queue_vram_blocks
@@ -2834,7 +2834,7 @@ object_type_4E_state_18:
 	sta	zp_02
 	lda	#$0010
 	sta	zp_08
-	ldy	#$CA9D
+	ldy	#.loword(vram_blocks_05CA9D)
 	lda	#$4D0C
 	phx
 	jsl	f:queue_vram_blocks
