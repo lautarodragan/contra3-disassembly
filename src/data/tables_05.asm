@@ -556,8 +556,11 @@ text_rest_03_2:
 text_stage_clear_bonus:
 	.byte	$0B, $5A, $4D, $4E, $3C, $42, $40, $00, $3E, $47, $40
 	.byte	$3C, $4C, $FE, $6B, $5A, $3E, $47, $40, $3C, $4C, $00, $3D, $4A, $49, $4F
+; Stage graphics load lists by stage_number (1-6, load_stage_graphics); entry 0
+; is the end of the string above ("S" and $FF), and entry 6 is also entry 0 of
+; ptrs_0588ED: the tables overlap.
 ptrs_0588E1:
-	.addr	data_05FF4D
+	.byte	$4D, $FF
 	.addr	load_list_058A93
 	.addr	load_list_05CF4A
 	.addr	load_list_058A93
