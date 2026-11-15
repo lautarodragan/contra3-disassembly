@@ -11,7 +11,7 @@
 ; (hud_weapon_slot_attrs).
 ;
 ; setup_stage_hdma (side-view NMI) programs the HDMA channels: the preset
-; hdma_preset (data_05A1ED), channel 3 for the window (table at zp_9E, WH0/WH1)
+; hdma_preset (ptrs_stage_hdma_lists), channel 3 for the window (table at zp_9E, WH0/WH1)
 ; and channel 4 for COLDATA (table at zp_C6).
 ;
 ; build_scroll_split_hdma builds, from a pattern (scroll_split_pattern,
@@ -284,7 +284,7 @@ setup_stage_hdma:
 	dec	a
 	asl	a
 	tax
-	ldy	a:data_05A1ED,x
+	ldy	a:ptrs_stage_hdma_lists,x
 @channel_loop:
 	ldx	a:$0000,y
 	cpx	#$FFFF

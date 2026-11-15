@@ -105,3 +105,27 @@
 	.addr	palette
 	.word	destination
 .endmacro
+
+; ---------------------------------------------------------------------------
+; HDMA channel lists (bank $05): for each channel, its register base ($43x0),
+; DMAP and BBAD, and the table (long address); $FFFF and the HDMAEN value
+; end the list.  setup_hdma_channels reads 7-byte entries; setup_stage_hdma
+; 8-byte ones whose last byte is the indirect-data bank (DASB).
+; ---------------------------------------------------------------------------
+.macro hdma_channel channel, dmap, bbad, table
+	.word	channel
+	.byte	dmap, bbad
+	.faraddr	table
+.endmacro
+
+.macro hdma_channel_ind channel, dmap, bbad, table, indirect_bank
+	.word	channel
+	.byte	dmap, bbad
+	.faraddr	table
+	.byte	indirect_bank
+.endmacro
+
+.macro hdma_channels_end hdmaen
+	.word	$FFFF
+	.byte	hdmaen
+.endmacro

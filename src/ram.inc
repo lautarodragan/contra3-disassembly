@@ -64,7 +64,7 @@ force_blank_frames  = $3E	; frames left with forced blank: the NMI frame handler
 m7_split_screen               = $40	; non-zero (2) in 2-player mode A: the IRQ switches to player 2's Mode 7 matrix at line $70 (irq_mode7_top_view)
 nmi_mode            = $42	; NMI frame handler, x2 index into tbl_nmi_frame_handlers (0, 2 = side-view stages, 4 = top-down stages)
 irq_mode            = $44	; IRQ handler, x2 index into tbl_irq_handlers (0 none, 2 irq_mode7_top_view, 4 irq_mode7_bottom_view)
-hdma_preset         = $46	; HDMA preset: index into data_05822E (setup_hdma_channels, nmi_frame_default) or, minus 1, into data_05A1ED (setup_stage_hdma, side-view stages); 0 = none
+hdma_preset         = $46	; HDMA preset: index into data_05822E (setup_hdma_channels, nmi_frame_default) or, minus 1, into ptrs_stage_hdma_lists (setup_stage_hdma, side-view stages); 0 = none
 cgram_dma_src       = $48	; low word of the $7E:xxxx buffer DMAd to CGRAM (512 bytes) every frame by dma_oam_and_palette; always $2200
 demo_mode               = $4A	; 2 while the attract demo plays (demo_init): run_stage then skips the pause check
 demo_timer               = $4C	; frames left in the attract demo ($0800 from demo_init, demo_play); also set to $0100 by the unused game_mode_stage_select

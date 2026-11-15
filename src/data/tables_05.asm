@@ -58,7 +58,9 @@ data_058228:
 	.byte	$01, $00, $02, $00, $04, $00
 data_05822E:
 	; CDL: read by read_joypads, setup_hdma_channels; partly not accessed
-	.byte	$08, $00, $FE, $84, $00, $00, $02, $00, $00, $22, $E0, $23, $00, $00, $00, $00
+	.byte	$08, $00
+	.addr	hdma_list_0584FE
+	.byte	$00, $00, $02, $00, $00, $22, $E0, $23, $00, $00, $00, $00
 	.byte	$01, $00, $5E, $82, $01, $00, $6C, $82, $01, $00, $E2, $82, $01, $00, $F0, $82
 	.byte	$01, $00, $66, $83, $01, $00, $70, $83, $01, $00, $AE, $83, $01, $00, $D2, $83
 	.byte	$03, $00, $00, $80, $7A, $82, $87, $82, $94, $82, $A1, $82, $00, $00, $03, $00
@@ -163,8 +165,14 @@ demo_p2_input_ptrs:
 	; CDL: read by demo_init_input
 	.faraddr	demo_input_p2_0, demo_input_p2_1, demo_input_p2_2
 	; CDL: read by setup_hdma_channels; DMA / HDMA
-	.byte	$70, $43, $00, $05, $0F, $85, $05, $60
-	.byte	$43, $00, $2C, $14, $85, $05, $FF, $FF, $C0, $80, $0F, $01, $09, $00, $80, $11
+hdma_list_0584FE:
+	hdma_channel	$4370, $00, $05, hdma_table_05850F
+	hdma_channel	$4360, $00, $2C, hdma_table_058514
+	hdma_channels_end	$C0
+hdma_table_05850F:
+	.byte	$80, $0F, $01, $09, $00
+hdma_table_058514:
+	.byte	$80, $11
 	.byte	$01, $04, $00
 data_058519:
 	; CDL: read by draw_title_menu_cursor
@@ -1129,11 +1137,21 @@ load_list_059FBA:
 	load_list	$01, $01
 	load_wram	$7EA000, packed_0A9BC6
 	load_end
+hdma_table_059FC4:
 	.byte	$7F, $20, $21, $20, $80, $02
-	.byte	$00, $7F, $49, $20, $49, $80, $48, $00, $70, $43, $00, $05, $40, $38, $7E, $7E
-	.byte	$60, $43, $02, $0D, $00, $38, $7E, $7E, $50, $43, $02, $0E, $20, $38, $7E, $7E
-	.byte	$FF, $FF, $E0, $70, $43, $00, $30, $C4, $9F, $05, $05, $60, $43, $00, $08, $CB
-	.byte	$9F, $05, $05, $50, $43, $02, $0F, $20, $38, $7E, $7E, $FF, $FF, $E0
+	.byte	$00
+hdma_table_059FCB:
+	.byte	$7F, $49, $20, $49, $80, $48, $00
+hdma_list_059FD2:
+	hdma_channel_ind	$4370, $00, $05, $7E3840, $7E
+	hdma_channel_ind	$4360, $02, $0D, $7E3800, $7E
+	hdma_channel_ind	$4350, $02, $0E, $7E3820, $7E
+	hdma_channels_end	$E0
+hdma_list_059FED:
+	hdma_channel_ind	$4370, $00, $30, hdma_table_059FC4, $05
+	hdma_channel_ind	$4360, $00, $08, hdma_table_059FCB, $05
+	hdma_channel_ind	$4350, $02, $0F, $7E3820, $7E
+	hdma_channels_end	$E0
 weapon_fire_delays:
 	; CDL: read by spin_fire_weapon_2, fire_weapon
 	.byte	$03, $00, $04, $00, $05, $00, $04, $00, $01, $00, $01, $00
@@ -1242,15 +1260,30 @@ hud_weapon_tiles_bl:
 hud_weapon_tiles_br:
 	; CDL: read by update_p1_hud, update_p2_hud
 	.byte	$13, $17, $1B, $23, $1F, $27
-data_05A1ED:
+ptrs_stage_hdma_lists:
 	; CDL: read by setup_stage_hdma; partly not accessed
-	.byte	$26, $A2, $26, $A2, $61, $AF, $ED, $9F, $D2, $9F, $31, $AA, $26, $A2, $62, $A3
-	.byte	$13, $A2, $31, $A2, $3C, $A2, $4F, $A2, $75, $A3, $80, $A3, $93, $A3, $4E, $FF
-	.byte	$A0, $F8, $B0, $F9, $8B, $FD, $70, $43, $02, $0D, $20, $38, $7E, $7E, $60, $43
-	.byte	$42, $0F, $00, $D2, $7E, $7E, $FF, $FF, $C0, $60, $43, $42, $0F, $00, $D2, $7E
-	.byte	$7E, $FF, $FF, $40, $60, $43, $42, $0F, $00, $D2, $7E, $7E, $FF, $FF, $40, $60
-	.byte	$43, $03, $0D, $00, $38, $7E, $7E, $70, $43, $02, $11, $20, $38, $7E, $7E, $FF
-	.byte	$FF, $C0, $70, $43, $02, $11, $20, $38, $7E, $7E, $FF, $FF, $80
+	.addr	hdma_list_05A226, hdma_list_05A226, hdma_list_05AF61, hdma_list_059FED
+	.addr	hdma_list_059FD2, hdma_list_05AA31, hdma_list_05A226, hdma_list_05A362
+	.addr	hdma_list_05A213, hdma_list_05A231, hdma_list_05A23C, hdma_list_05A24F
+	.addr	hdma_list_05A375, hdma_list_05A380, hdma_list_05A393, hdma_list_05FF4E
+	.addr	hdma_list_05F8A0, hdma_list_05F9B0, hdma_list_05FD8B
+hdma_list_05A213:
+	hdma_channel_ind	$4370, $02, $0D, $7E3820, $7E
+	hdma_channel_ind	$4360, $42, $0F, $7ED200, $7E
+	hdma_channels_end	$C0
+hdma_list_05A226:
+	hdma_channel_ind	$4360, $42, $0F, $7ED200, $7E
+	hdma_channels_end	$40
+hdma_list_05A231:
+	hdma_channel_ind	$4360, $42, $0F, $7ED200, $7E
+	hdma_channels_end	$40
+hdma_list_05A23C:
+	hdma_channel_ind	$4360, $03, $0D, $7E3800, $7E
+	hdma_channel_ind	$4370, $02, $11, $7E3820, $7E
+	hdma_channels_end	$C0
+hdma_list_05A24F:
+	hdma_channel_ind	$4370, $02, $11, $7E3820, $7E
+	hdma_channels_end	$80
 data_05A25A:
 	; CDL: read by build_scroll_split_hdma, build_split_line_table; partly not accessed
 	.byte	$60, $A2, $66, $A2, $6A, $A2, $70, $A2, $78, $A2, $BC, $A2, $DC, $A2, $EC, $A2
@@ -1276,10 +1309,20 @@ tbl_05A35C:
 	.addr	split_value_bg2_x
 	.addr	split_value_bg1_x
 	; CDL: read by setup_stage_hdma; partly not accessed
-	.byte	$70, $43, $00, $30, $90, $CA, $05, $7E, $60, $43, $42, $0F, $00, $A0, $7E, $7E
-	.byte	$FF, $FF, $C0, $70, $43, $02, $0D, $00, $A0, $7E, $7E, $FF, $FF, $80, $70, $43
-	.byte	$42, $0E, $00, $A4, $7E, $7E, $60, $43, $42, $0D, $00, $A0, $7E, $7E, $FF, $FF
-	.byte	$C0, $70, $43, $42, $10, $00, $E8, $7E, $7E, $FF, $FF, $80
+hdma_list_05A362:
+	hdma_channel_ind	$4370, $00, $30, hdma_table_05CA90, $7E
+	hdma_channel_ind	$4360, $42, $0F, $7EA000, $7E
+	hdma_channels_end	$C0
+hdma_list_05A375:
+	hdma_channel_ind	$4370, $02, $0D, $7EA000, $7E
+	hdma_channels_end	$80
+hdma_list_05A380:
+	hdma_channel_ind	$4370, $42, $0E, $7EA400, $7E
+	hdma_channel_ind	$4360, $42, $0D, $7EA000, $7E
+	hdma_channels_end	$C0
+hdma_list_05A393:
+	hdma_channel_ind	$4370, $42, $10, $7EE800, $7E
+	hdma_channels_end	$80
 data_05A39E:
 	; CDL: read by update_player_window
 	.byte	$00, $02, $40, $02
@@ -1651,8 +1694,14 @@ palette_task_05AA28:
 	palette_animate	$00, $00
 	palette_copy	palette_08841C, $2380
 	palette_copy_end
-	.byte	$70, $43, $00, $05, $44, $AA, $05, $05, $60, $43, $02, $12, $49, $AA
-	.byte	$05, $05, $FF, $FF, $C0, $18, $09, $80, $0A, $00, $18, $00, $00, $80, $80, $00
+hdma_list_05AA31:
+	hdma_channel_ind	$4370, $00, $05, hdma_table_05AA44, $05
+	hdma_channel_ind	$4360, $02, $12, hdma_table_05AA49, $05
+	hdma_channels_end	$C0
+hdma_table_05AA44:
+	.byte	$18, $09, $80, $0A, $00
+hdma_table_05AA49:
+	.byte	$18, $00, $00, $80, $80, $00
 	.byte	$00
 data_05AA50:
 	; CDL: read by spawn_stage1_boss_wall_chunks
@@ -1871,8 +1920,10 @@ data_05AF37:
 	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, player_tank_state_02; partly not accessed
 	.byte	$00, $04, $04, $04, $00, $04, $00, $C9, $20, $C9, $40, $C9, $80, $C9, $A0, $C9
 	.byte	$C0, $C9, $60, $C9, $E0, $C9, $00, $CA, $20, $CA, $40, $CA, $60, $CA, $60, $C8
-	.byte	$E0, $C8, $80, $CA, $20, $CA, $40, $CA, $60, $CA, $70, $43, $02, $0F, $00, $38
-	.byte	$7E, $7E, $FF, $FF, $80
+	.byte	$E0, $C8, $80, $CA, $20, $CA, $40, $CA, $60, $CA
+hdma_list_05AF61:
+	hdma_channel_ind	$4370, $02, $0F, $7E3800, $7E
+	hdma_channels_end	$80
 data_05AF6C:
 	; CDL: read by setup_stage_hdma, object_type_35_state_02
 	.byte	$02, $00, $0E, $00, $00, $00, $10, $00, $02, $00, $0E, $00
@@ -2688,7 +2739,9 @@ object_type_4E_hp:
 	; CDL: read by update_objects, queue_vram_blocks_at_x, object_type_4E_state_09; DMA / HDMA; partly not accessed
 	.byte	$40, $00, $48, $00, $50, $00, $58, $00, $60, $B8, $80, $B8, $E0, $B8, $00, $B9
 	.byte	$20, $B9, $40, $B9, $A0, $B7, $C0, $B7, $80, $C2, $80, $C2, $80, $C2, $80, $C2
-	.byte	$00, $00, $FF, $FF, $E0, $B7, $20, $B8, $00, $B8, $40, $B8, $6D, $20, $60, $02
+	.byte	$00, $00, $FF, $FF, $E0, $B7, $20, $B8, $00, $B8, $40, $B8
+hdma_table_05CA90:
+	.byte	$6D, $20, $60, $02
 	.byte	$00, $80, $B6, $A0, $B6, $00, $B7, $20, $B7, $A0, $B8, $C0, $B8
 anim_05CAA1:
 	anim_frame	$0001, metasprite_06B712, metasprite_06B873
@@ -5006,7 +5059,10 @@ data_05F898:
 	.byte	$FC, $FF, $04, $00
 data_05F89C:
 	; CDL: read by setup_stage_hdma, ending_creature_aim_arm; partly not accessed
-	.byte	$05, $00, $FB, $FF, $70, $43, $42, $10, $00, $E8, $7E, $7E, $FF, $FF, $80
+	.byte	$05, $00, $FB, $FF
+hdma_list_05F8A0:
+	hdma_channel_ind	$4370, $42, $10, $7EE800, $7E
+	hdma_channels_end	$80
 data_05F8AB:
 	; CDL: read by setup_stage_hdma, update_enemy_type_96
 	.addr	metasprite_06C59C
@@ -5053,8 +5109,12 @@ data_05F900:
 	.byte	$00, $B0, $80, $B4, $00, $B5, $00, $B0, $E0, $B4, $60, $B5, $A0, $B5, $00, $C4
 	.byte	$80, $B3, $C0, $B5, $20, $C4, $60, $B3, $00, $B0, $00, $C3, $80, $C3, $00, $B0
 	.byte	$60, $C3, $E0, $C3, $C0, $C2, $20, $C3, $A0, $C3, $E0, $C2, $40, $C3, $C0, $C3
-	.byte	$70, $43, $00, $30, $C3, $F9, $05, $05, $60, $43, $42, $0D, $00, $D2, $7E, $7E
-	.byte	$FF, $FF, $C0, $1F, $00, $7F, $02, $00
+hdma_list_05F9B0:
+	hdma_channel_ind	$4370, $00, $30, hdma_table_05F9C3, $05
+	hdma_channel_ind	$4360, $42, $0D, $7ED200, $7E
+	hdma_channels_end	$C0
+hdma_table_05F9C3:
+	.byte	$1F, $00, $7F, $02, $00
 data_05F9C8:
 	; CDL: read by sub_1DB98D
 	.byte	$00, $1C, $00, $14, $00, $0C, $00, $04
@@ -5126,7 +5186,12 @@ data_05FA52:
 	.byte	$44, $44, $00, $4E, $99, $96, $00, $3C, $9D, $9A, $96, $9F, $00, $51, $92, $A3
 	.byte	$A4, $00, $32, $FF, $A4, $5D, $3C, $00, $0B, $96, $92, $94, $96, $97, $A6, $9D
 	.byte	$00, $4E, $9A, $9E, $96, $00, $51, $9A, $9D, $9D, $00, $3E, $A0, $9E, $96, $AD
-	.byte	$FF, $70, $43, $00, $2C, $96, $FD, $05, $05, $FF, $FF, $80, $1F, $12, $7F, $16
+	.byte	$FF
+hdma_list_05FD8B:
+	hdma_channel_ind	$4370, $00, $2C, hdma_table_05FD96, $05
+	hdma_channels_end	$80
+hdma_table_05FD96:
+	.byte	$1F, $12, $7F, $16
 	.byte	$00
 data_05FD9B:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk (+1 more); partly not accessed
@@ -5247,7 +5312,11 @@ data_05FF3E:
 	.byte	$1C, $00, $3D, $40, $00, $40, $3F, $40, $3D, $40, $3D, $40, $1F, $00, $3F
 data_05FF4D:
 	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, brain_boss_init_minion; partly not accessed
-	.byte	$40, $70, $43, $42, $10, $00, $EA, $7E, $7E, $FF, $FF, $80, $A0, $B3, $C0, $B3
+	.byte	$40
+hdma_list_05FF4E:
+	hdma_channel_ind	$4370, $42, $10, $7EEA00, $7E
+	hdma_channels_end	$80
+	.byte	$A0, $B3, $C0, $B3
 	.byte	$C0, $BE, $E0, $BE
 data_05FF61:
 	; CDL: read by brain_boss_attack_3; partly not accessed
