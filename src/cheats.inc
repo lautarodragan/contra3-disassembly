@@ -146,13 +146,9 @@ CHEAT_CODE_NEEDED = (CHEAT_INVINCIBLE | CHEAT_NO_PIT_DEATH | (CHEAT_DAMAGE_MULT 
 ; --- helpers --------------------------------------------------------------
 
 ; An enemy's starting HP: n scaled by CHEAT_ENEMY_HP percent, except
-; HP_UNKILLABLE (and HP that is not a positive number, such as $FFFF).
-.define ENEMY_HP(n) ((((n) = HP_UNKILLABLE) | ((n) >= $8000) | (CHEAT_ENEMY_HP = 100)) * (n) + ((((n) = HP_UNKILLABLE) | ((n) >= $8000) | (CHEAT_ENEMY_HP = 100)) = 0) * ((n) * CHEAT_ENEMY_HP / 100))
-
-; Per-difficulty HP table row (easy, normal, hard), as words.
-.macro enemy_hp_table easy, normal, hard
-	.word	ENEMY_HP(easy), ENEMY_HP(normal), ENEMY_HP(hard)
-.endmacro
+; HP_UNKILLABLE and $7FFF (both mean "not to be destroyed by shots") and HP
+; that is not a positive number ($FFFF...).
+.define ENEMY_HP(n) ((((n) = HP_UNKILLABLE) | ((n) >= $7FFF) | (CHEAT_ENEMY_HP = 100)) * (n) + ((((n) = HP_UNKILLABLE) | ((n) >= $7FFF) | (CHEAT_ENEMY_HP = 100)) = 0) * ((n) * CHEAT_ENEMY_HP / 100))
 
 ; `sbc $06,x` where A = a target's HP and X = a top-down player shot or
 ; smart bomb (+$06 = its damage): with CHEAT_DAMAGE_MULT, subtracts it that

@@ -113,7 +113,7 @@ stage3_robot_state_00:
 	sta	OBJ_HITBOX_W,x
 	lda	#$FFB8
 	sta	OBJ_HITBOX_H,x
-	lda	#$0140
+	lda	#ENEMY_HP($0140)
 	sta	OBJ_HP,x
 	stz	$38,x
 	phx
@@ -815,7 +815,7 @@ stage3_boss_check_hp:
 	bne	loc_048630
 	lda	#$0007
 	sta	OBJ_STATE,x
-	lda	#$0030
+	lda	#ENEMY_HP($0030)
 	sta	OBJ_HP,x
 loc_04861E:
 	lda	#$0001
@@ -836,7 +836,7 @@ loc_048631:
 	bpl	loc_048630
 loc_04863C:
 	inc	OBJ_STATE,x
-	lda	#$0400
+	lda	#ENEMY_HP($0400)
 	sta	OBJ_HP,x
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
@@ -2636,7 +2636,7 @@ stage4_boss_state_00:
 	sta	OBJ_X,x
 	lda	#$0088
 	sta	OBJ_Y,x
-	lda	#$0180
+	lda	#ENEMY_HP($0180)
 	sta	OBJ_HP,x
 	lda	#$0020
 	sta	OBJ_HITBOX_W,x
@@ -2652,7 +2652,7 @@ stage4_boss_state_00:
 	ldy	#$0000
 	stz	$30,x
 	jsr	a:stage4_boss_init_part
-	lda	#$0080
+	lda	#ENEMY_HP($0080)
 	sta	$06,x
 	ldx	#$0740
 	sta	$06,x
@@ -2911,7 +2911,7 @@ stage4_boss_fireball_state_00:
 	sta	OBJ_HITBOX_W,x
 	lda	#$FFF4
 	sta	OBJ_HITBOX_H,x
-	lda	#$0010
+	lda	#ENEMY_HP($0010)
 	sta	OBJ_HP,x
 	lda	#$0001
 	sta	OBJ_X_VEL,x
@@ -8848,7 +8848,7 @@ snake_robot_state_00:
 	sta	a:$0016,y
 	lda	#$3E00
 	sta	a:$0002,y
-	lda	#$0100
+	lda	#ENEMY_HP($0100)
 	sta	a:$0006,y
 	lda	#$0010
 	sta	a:$0028,y
@@ -10505,7 +10505,7 @@ loc_04D1A6:
 	inc	$12,x
 	lda	#$4010
 	sta	$16,x
-	lda	#$0080
+	lda	#ENEMY_HP($0080)
 	sta	$06,x
 	lda	#$003C
 	sta	$28,x
@@ -10705,7 +10705,7 @@ helicopter_rope_state_01:
 	sta	OBJ_HITBOX_W,x
 	lda	#$FFEE
 	sta	OBJ_HITBOX_H,x
-	lda	#$0080
+	lda	#ENEMY_HP($0080)
 	sta	OBJ_HP,x
 	lda	#$FFFE
 	sta	OBJ_Y_VEL,x

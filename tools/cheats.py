@@ -126,7 +126,7 @@ def build(words, name=None, quiet=False):
     ld65 = os.environ.get("LD65", "ld65")
     obj = os.path.join(out, "main.o")
     sfc = os.path.join(out, "contra3.sfc")
-    cmd = [ca65, "--cpu", "65816", "-I", "src"]
+    cmd = [ca65, "--cpu", "65816", "-g", "-I", "src"]
     for sym, value in defs:
         cmd += ["-D", "%s=%d" % (sym, value)]
     cmd += ["-o", obj, "src/main.asm"]

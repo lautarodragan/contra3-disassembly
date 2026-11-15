@@ -87,7 +87,7 @@ object_type_02_state_00:
 	sta	OBJ_HITBOX_W,x
 	lda	#$FFC0
 	sta	OBJ_HITBOX_H,x
-	lda	#$0100
+	lda	#ENEMY_HP($0100)
 	sta	OBJ_HP,x
 	lda	#$0080
 	sta	a:boss_work_0
@@ -558,7 +558,7 @@ stage4_tank_state_01:
 	sta	OBJ_FLAGS,x
 	lda	#$1000
 	sta	OBJ_TIMER,x
-	lda	#$0140
+	lda	#ENEMY_HP($0140)
 	sta	OBJ_HP,x
 	inc	OBJ_STATE,x
 @return:
@@ -1957,7 +1957,7 @@ object_type_7E_state_00:
 	jsl	f:object_type_7E_state_03
 	lda	#$0600
 	sta	$02,x
-	lda	#$0080
+	lda	#ENEMY_HP($0080)
 	sta	$06,x
 	lda	#$0018
 	sta	$0A,x
@@ -2216,7 +2216,7 @@ popup_turret_state_00:
 	sta	OBJ_HITBOX_W,x
 	lda	#$FFF0
 	sta	OBJ_HITBOX_H,x
-	lda	#$0010
+	lda	#ENEMY_HP($0010)
 	sta	OBJ_HP,x
 	inc	OBJ_STATE,x
 	rtl
@@ -2619,7 +2619,7 @@ object_type_04_state_01:
 	sta	a:wram_08EA
 	sta	a:wram_086A
 	sta	a:wram_08AA
-	lda	#$0040
+	lda	#ENEMY_HP($0040)
 	sta	a:wram_08C6
 	lda	#$0015
 	sta	a:wram_0850
@@ -2631,7 +2631,7 @@ object_type_04_state_01:
 	lda	#$0080
 	sta	a:wram_084E
 	sta	a:wram_088E
-	lda	#$0028
+	lda	#ENEMY_HP($0028)
 	sta	a:wram_0846
 	sta	a:wram_0886
 	lda	#$4194
@@ -3240,7 +3240,7 @@ object_type_11_state_00:
 	sta	$34,x
 	lda	#$0400
 	sta	$36,x
-	lda	#$0010
+	lda	#ENEMY_HP($0010)
 	sta	OBJ_HP,x
 	lda	#$FFD8
 	sta	OBJ_HITBOX_H,x
@@ -3430,7 +3430,7 @@ update_object_type_43:
 	sta	OBJ_HITBOX_H,x
 	lda	#$0020
 	sta	OBJ_HITBOX_W,x
-	lda	#$0040
+	lda	#ENEMY_HP($0040)
 	sta	OBJ_HP,x
 	rtl
 loc_01CBB0:

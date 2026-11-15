@@ -1960,9 +1960,11 @@ vram_blocks_05AB28:
 vram_blocks_05AB30:
 	.byte	$00, $C5
 	.byte	$20, $C5, $80, $C5, $A0, $C5, $00, $B5, $60, $C4, $00, $B5, $E0, $C4
+.if CHEAT_ENEMY_HP = 100
 stage1_boss_shell_hp:
+.endif
 	; CDL: read by spawn_stage1_boss_parts; DMA / HDMA
-	.byte	$80, $00, $00, $01, $FF, $7F
+	.byte	$80, $00, $00, $01, $FF, $7F	; cheats: see cheat_enemy_hp_tables
 data_05AB46:
 	; CDL: read by update_stage1_boss_tracking_shot; DMA / HDMA
 	.byte	$00, $04, $00, $06, $00, $08
@@ -2175,7 +2177,7 @@ data_05AFDE:
 ; OBJ_HP of update_foot_soldier and type $35 by difficulty (easy, normal, hard)
 soldier_hp:
 	; CDL: read by init_foot_soldier_with_hp
-	.byte	$00, $00, $01, $00, $03, $00
+	.word	ENEMY_HP($0000), ENEMY_HP($0001), ENEMY_HP($0003)
 data_05AFEA:
 	; CDL: read by object_type_73_state_00
 	.byte	$F8, $FF, $F9, $FF, $FA, $FF
@@ -2211,7 +2213,7 @@ vram_blocks_05B046:
 ; OBJ_HP of update_wall_hatch by difficulty (easy, normal, hard)
 wall_hatch_hp:
 	; CDL: read by wall_hatch_state_00; partly not accessed
-	.byte	$04, $00, $08, $00, $10, $00
+	.word	ENEMY_HP($0004), ENEMY_HP($0008), ENEMY_HP($0010)
 data_05B060:
 	; CDL: read by wall_hatch_state_02
 	.byte	$80, $69, $A0, $69
@@ -2280,7 +2282,7 @@ vram_blocks_05B1C0:
 ; OBJ_HP of update_object_type_12 by difficulty (easy, normal, hard)
 object_type_12_hp:
 	; CDL: read by object_type_12_state_00
-	.byte	$04, $00, $06, $00, $08, $00
+	.word	ENEMY_HP($0004), ENEMY_HP($0006), ENEMY_HP($0008)
 data_05B1CE:
 	; CDL: read by object_type_12_state_01
 	.byte	$60, $00, $40, $00, $10, $00
@@ -2630,7 +2632,7 @@ player_frames:
 ; OBJ_HP of update_window_sniper by difficulty (easy, normal, hard)
 window_sniper_hp:
 	; CDL: read by window_sniper_state_00
-	.byte	$04, $00, $06, $00, $08, $00
+	.word	ENEMY_HP($0004), ENEMY_HP($0006), ENEMY_HP($0008)
 data_05C444:
 	; CDL: read by window_sniper_state_01
 	.byte	$50, $00, $40, $00, $10, $00
@@ -2772,9 +2774,11 @@ anim_05C702:
 	anim_frame	$0008, metasprite_06B14E, $3200
 	anim_frame	$0008, metasprite_06B14E, $3000
 ; OBJ_HP of update_alien_dog (the first 3 words; other data follows) by difficulty (easy, normal, hard)
+.if CHEAT_ENEMY_HP = 100
 alien_dog_hp:
+.endif
 	; CDL: read by update_objects, alien_dog_state_02; partly not accessed
-	anim_end	$0002, $0008
+	anim_end	$0002, $0008	; cheats: see cheat_enemy_hp_tables
 anim_05C714:
 	anim_frame	$0060, metasprite_06B301, metasprite_06B301
 	anim_frame	$0008, metasprite_06B312, metasprite_06B312
@@ -2839,7 +2843,7 @@ anim_05C802:
 	anim_goto	anim_05C802
 data_05C81C:
 	; CDL: read by update_object_type_31
-	.byte	$10, $00, $40, $00, $FF, $7F
+	.word	ENEMY_HP($0010), ENEMY_HP($0040), ENEMY_HP($7FFF)
 data_05C822:
 	; CDL: read by update_object_type_2C
 	.byte	$00, $00, $10, $00, $20, $00
@@ -2880,7 +2884,7 @@ data_05C8CE:
 ; OBJ_HP of types $48 and $51 (a 4th word unused) by difficulty (easy, normal, hard)
 object_type_48_hp:
 	; CDL: read by object_type_48_state_00; partly not accessed
-	.byte	$00, $00, $00, $00, $01, $00, $01, $00
+	.word	ENEMY_HP($0000), ENEMY_HP($0000), ENEMY_HP($0001), ENEMY_HP($0001)
 data_05C916:
 	; CDL: read by object_type_48_set_x_velocity; partly not accessed
 	.byte	$00, $80, $00, $C0, $01, $00, $01, $40
@@ -2907,7 +2911,7 @@ data_05C956:
 ; OBJ_HP of update_rolling_mine by difficulty (easy, normal, hard)
 rolling_mine_hp:
 	; CDL: read by rolling_mine_state_00
-	.byte	$04, $00, $06, $00, $10, $00
+	.word	ENEMY_HP($0004), ENEMY_HP($0006), ENEMY_HP($0010)
 data_05C964:
 	; CDL: read by rolling_mine_state_00
 	.byte	$00, $78, $FF, $87
@@ -3003,7 +3007,7 @@ data_05CABF:
 ; OBJ_HP of types $56 and $24 (a 4th word unused) by difficulty (easy, normal, hard)
 object_type_56_hp:
 	; CDL: read by object_type_56_state_00; partly not accessed
-	.byte	$01, $00, $02, $00, $03, $00, $04, $00
+	.word	ENEMY_HP($0001), ENEMY_HP($0002), ENEMY_HP($0003), ENEMY_HP($0004)
 data_05CAD3:
 	; CDL: read by object_type_56_set_velocity; partly not accessed
 	.byte	$00, $00, $00, $80, $00, $00, $00, $00
@@ -3161,15 +3165,15 @@ anim_05CCDD:
 ; OBJ_HP of the stage 3 spiked climber's core (type $40) by difficulty (easy, normal, hard)
 stage3_spiked_climber_core_hp:
 	; CDL: read by stage3_spiked_climber_state_03
-	.byte	$38, $00, $50, $00, $80, $00
+	.word	ENEMY_HP($0038), ENEMY_HP($0050), ENEMY_HP($0080)
 ; OBJ_HP of update_stage3_spiked_climber by difficulty (easy, normal, hard)
 stage3_spiked_climber_hp:
 	; CDL: read by stage3_spiked_climber_state_0F
-	.byte	$60, $00, $A0, $00, $B8, $00
+	.word	ENEMY_HP($0060), ENEMY_HP($00A0), ENEMY_HP($00B8)
 ; OBJ_HP of update_hoverbike_rider by difficulty (easy, normal, hard)
 hoverbike_rider_hp:
 	; CDL: read by hoverbike_rider_state_00
-	.byte	$08, $00, $10, $00, $20, $00
+	.word	ENEMY_HP($0008), ENEMY_HP($0010), ENEMY_HP($0020)
 data_05CD07:
 	; CDL: read by update_objects, hoverbike_rider_state_00; partly not accessed
 	.addr	metasprite_06C6C6, metasprite_06C6EB
@@ -3526,9 +3530,11 @@ td_anim_05D45A:
 	anim_frame	$0002, $0009, $0E00
 	anim_frame	$0002, $000A, $0E00
 	anim_end	$000A, $0E00
+.if CHEAT_ENEMY_HP = 100
 td_runner_hp:
+.endif
 	; CDL: read by td_animate_enemy, td_runner_state_2
-	.byte	$00, $00, $02, $00, $04, $00
+	.byte	$00, $00, $02, $00, $04, $00	; cheats: see cheat_enemy_hp_tables
 td_anim_05D4A8:
 	anim_frame	$0008, $0000, $0000
 	anim_frame	$0008, $0001, $0000
@@ -3537,16 +3543,18 @@ td_anim_05D4A8:
 	anim_goto	td_anim_05D4A8
 td_gunner_hp:
 	; CDL: read by td_gunner_state_2
-	.byte	$00, $00, $02, $00, $04, $00
+	.word	ENEMY_HP($0000), ENEMY_HP($0002), ENEMY_HP($0004)
 td_gunner_fire_delays:
 	; CDL: read by td_animate_enemy, td_gunner_state_3; partly not accessed
 	.byte	$40, $00, $20, $00, $10, $00
 td_anim_05D4CE:
 	anim_frame	$0002, $0000, $0200
 	anim_end	$0001, $0200
+.if CHEAT_ENEMY_HP = 100
 hatch_turret_hp:
+.endif
 	; CDL: read by td_animate_enemy, hatch_turret_state_1, update_hatch_turret_sweep
-	.byte	$10, $00, $20, $00, $40, $00
+	.byte	$10, $00, $20, $00, $40, $00	; cheats: see cheat_enemy_hp_tables
 td_anim_05D4E0:
 	anim_frame	$0008, $0000, $0200
 	anim_frame	$0008, $0001, $0200
@@ -3578,35 +3586,41 @@ data_05D51E:
 hatch_turret_sweep_fire_masks:
 	; CDL: read by hatch_turret_sweep_state_2; partly not accessed
 	.byte	$03, $00, $03, $00, $01, $00
+.if CHEAT_ENEMY_HP = 100
 td_centipede_unused_hp:
+.endif
 	; CDL: read by td_animate_enemy; partly not accessed
-	.byte	$10, $00, $40, $00, $80, $00
+	.byte	$10, $00, $40, $00, $80, $00	; cheats: see cheat_enemy_hp_tables
 td_anim_05D530:
 	anim_frame	$0004, $0000, $0400
 	anim_frame	$0004, $0001, $0400
 	anim_goto	td_anim_05D530
+.if CHEAT_ENEMY_HP = 100
 td_bug_centipede_hp:
+.endif
 	; CDL: read by td_animate_enemy, td_bug_centipede_state_2
-	.byte	$10, $00, $40, $00, $80, $00
+	.byte	$10, $00, $40, $00, $80, $00	; cheats: see cheat_enemy_hp_tables
 td_anim_05D544:
 	anim_frame	$0003, $0000, $0E00
 	anim_frame	$0003, $0001, $0E00
 	anim_goto	td_anim_05D544
 td_centipede_bug_hp:
 	; CDL: read by td_centipede_bug_state_0
-	.byte	$02, $00, $04, $00, $08, $00
+	.word	ENEMY_HP($0002), ENEMY_HP($0004), ENEMY_HP($0008)
 data_05D558:
 	; CDL: read by td_centipede_bug_state_2
 	.byte	$80, $00, $40, $00, $20, $00
 td_centipede_hp:
 	; CDL: read by td_centipede_state_2
-	.byte	$10, $00, $40, $00, $80, $00
+	.word	ENEMY_HP($0010), ENEMY_HP($0040), ENEMY_HP($0080)
 td_centipede_fire_masks:
 	; CDL: read by td_centipede_state_4
 	.byte	$FF, $FF, $01, $00, $00, $00
+.if CHEAT_ENEMY_HP = 100
 td_nest_crawler_hp:
+.endif
 	; CDL: read by td_animate_enemy, td_nest_crawler_state_0
-	.byte	$02, $00, $10, $00, $20, $00
+	.byte	$02, $00, $10, $00, $20, $00	; cheats: see cheat_enemy_hp_tables
 td_anim_05D570:
 	anim_frame	$0008, $0000, $0000
 	anim_frame	$0008, $0001, $0000
@@ -3616,9 +3630,11 @@ td_anim_05D570:
 data_05D58A:
 	; CDL: read by td_nest_crawler_state_2
 	.byte	$00, $01, $80, $00, $20, $00
+.if CHEAT_ENEMY_HP = 100
 td_crawler_hp:
+.endif
 	; CDL: read by td_animate_enemy, td_crawler_state_2
-	.byte	$02, $00, $04, $00, $08, $00
+	.byte	$02, $00, $04, $00, $08, $00	; cheats: see cheat_enemy_hp_tables
 td_anim_05D596:
 	anim_frame	$0008, $0000, $0200
 	anim_frame	$0008, $0001, $0200
@@ -3627,7 +3643,7 @@ td_anim_05D596:
 	anim_goto	td_anim_05D596
 td_spitter_hp:
 	; CDL: read by td_spitter_state_2; partly not accessed
-	.byte	$02, $00, $04, $00, $08, $00
+	.word	ENEMY_HP($0002), ENEMY_HP($0004), ENEMY_HP($0008)
 td_spitter_fire_delays:
 	; CDL: read by td_spitter_state_3, animate_td_item; partly not accessed
 	.byte	$40, $00, $20, $00, $10, $00
@@ -3787,10 +3803,10 @@ data_05D7C8:
 	.byte	$30, $00, $40, $00, $60, $00
 stage2_boss_core_hp:
 	; CDL: read by stage2_boss_core_state_0; partly not accessed
-	.byte	$00, $01, $80, $01, $00, $02
+	.word	ENEMY_HP($0100), ENEMY_HP($0180), ENEMY_HP($0200)
 stage2_boss_pod_hp:
 	; CDL: read by stage2_boss_pod_state_0; partly not accessed
-	.byte	$20, $00, $40, $00, $80, $00
+	.word	ENEMY_HP($0020), ENEMY_HP($0040), ENEMY_HP($0080)
 stage2_boss_pod_drop_kinds:
 	; CDL: read by stage2_boss_pod_drop_item; partly not accessed
 	.byte	$01, $00, $02, $00, $03, $00, $07, $00, $04, $00, $04, $00, $05, $00, $05, $00
@@ -3801,7 +3817,7 @@ stage2_boss_pod_item_types:
 	.byte	$07, $00, $03, $00, $04, $00, $05, $00, $06, $00, $07, $00, $08, $00, $09, $00
 stage2_boss_cannon_hp:
 	; CDL: read by stage2_boss_cannon_state_0; partly not accessed
-	.byte	$80, $00, $C0, $00, $00, $01
+	.word	ENEMY_HP($0080), ENEMY_HP($00C0), ENEMY_HP($0100)
 data_05D81E:
 	; CDL: read by stage2_boss_cannon_state_3
 	.byte	$04, $00, $FC, $FF
@@ -4261,7 +4277,7 @@ cosine_table:
 	.byte	$8A, $7D, $1D, $7E, $9D, $7E, $09, $7F, $62, $7F, $A7, $7F, $D8, $7F, $F6, $7F
 stage5_boss_hp:
 	; CDL: read by stage5_boss_state_0; partly not accessed
-	.byte	$00, $02, $00, $04, $00, $08
+	.word	ENEMY_HP($0200), ENEMY_HP($0400), ENEMY_HP($0800)
 data_05E676:
 	; CDL: read by stage5_boss_stream_chr
 	.byte	$00, $C5, $80, $C2, $00, $C0, $80, $C7
@@ -4285,7 +4301,7 @@ data_05E6AE:
 	.byte	$CC, $01, $00, $02, $30, $02, $00, $02
 stage5_boss_claw_hp:
 	; CDL: read by stage5_boss_claw_state_0; partly not accessed
-	.byte	$20, $00, $80, $00, $00, $01
+	.word	ENEMY_HP($0020), ENEMY_HP($0080), ENEMY_HP($0100)
 data_05E6BC:
 	; CDL: read by stage5_boss_arm_segment_state_4
 	.byte	$A0, $01, $A2, $01, $A4, $01, $8E, $01
@@ -4294,10 +4310,10 @@ data_05E6C4:
 	.byte	$00, $2C, $00, $2C, $00, $2C, $00, $2A
 td_nest_hp:
 	; CDL: read by td_nest_state_0
-	.byte	$20, $00, $50, $00, $80, $00
+	.word	ENEMY_HP($0020), ENEMY_HP($0050), ENEMY_HP($0080)
 gun_hatch_hp:
 	; CDL: read by gun_hatch_state_0
-	.byte	$20, $00, $50, $00, $80, $00
+	.word	ENEMY_HP($0020), ENEMY_HP($0050), ENEMY_HP($0080)
 data_05E6D8:
 	; CDL: not accessed
 	.byte	$40, $00, $30, $00, $20, $00
@@ -4652,7 +4668,7 @@ load_list_05ECD9:
 ; OBJ_HP of winged_alien by difficulty (easy, normal, hard)
 winged_alien_hp:
 	; CDL: read by winged_alien_state_01; partly not accessed
-	.byte	$80, $00, $A0, $00, $C0, $00
+	.word	ENEMY_HP($0080), ENEMY_HP($00A0), ENEMY_HP($00C0)
 data_05ECE8:
 	; CDL: read by winged_alien_state_03; partly not accessed
 	.byte	$40, $00, $50, $00, $60, $00
@@ -4682,7 +4698,7 @@ data_05ED34:
 ; OBJ_HP of face_boss by difficulty (easy, normal, hard)
 face_boss_hp:
 	; CDL: read by face_boss_state_00; partly not accessed
-	.byte	$80, $00, $00, $01, $80, $01
+	.word	ENEMY_HP($0080), ENEMY_HP($0100), ENEMY_HP($0180)
 data_05ED64:
 	; CDL: read by face_boss_state_06; partly not accessed
 	.byte	$7F, $00, $3F, $00, $1F, $00
@@ -4727,7 +4743,7 @@ data_05EDDC:
 ; OBJ_HP of floor_mouth by difficulty (easy, normal, hard; a 4th word unused)
 floor_mouth_hp:
 	; CDL: read by floor_mouth_state_00; partly not accessed
-	.byte	$20, $00, $28, $00, $30, $00, $38, $00
+	.word	ENEMY_HP($0020), ENEMY_HP($0028), ENEMY_HP($0030), ENEMY_HP($0038)
 data_05EE1C:
 	; CDL: read by queue_vram_blocks_at_x, sub_04ABA3
 	.addr	vram_blocks_05EE22, vram_blocks_05EE24, vram_blocks_05EE26
@@ -4743,7 +4759,7 @@ data_05EE28:
 ; OBJ_HP of floor_mouth_bug by difficulty (easy, normal, hard; a 4th word unused)
 floor_mouth_bug_hp:
 	; CDL: read by floor_mouth_bug_state_00; partly not accessed
-	.byte	$01, $00, $01, $00, $02, $00, $03, $00
+	.word	ENEMY_HP($0001), ENEMY_HP($0001), ENEMY_HP($0002), ENEMY_HP($0003)
 data_05EE38:
 	; CDL: read by floor_mouth_bug_state_00
 	.byte	$00, $00, $00, $F0, $00, $10
@@ -4763,7 +4779,7 @@ anim_05EE50:
 ; OBJ_HP of wall_worm_larva by difficulty (easy, normal, hard)
 wall_worm_larva_hp:
 	; CDL: read by wall_worm_larva_state_00
-	.byte	$04, $00, $08, $00, $10, $00
+	.word	ENEMY_HP($0004), ENEMY_HP($0008), ENEMY_HP($0010)
 data_05EE64:
 	; CDL: read by update_objects, wall_worm_larva_state_00; partly not accessed
 	.byte	$80, $00, $C0, $00
@@ -4780,10 +4796,10 @@ anim_05EE68:
 ; OBJ_HP of face_boss_larva by difficulty (easy, normal, hard)
 face_boss_larva_hp:
 	; CDL: read by face_boss_larva_state_00; partly not accessed
-	.byte	$02, $00, $04, $00, $08, $00
+	.word	ENEMY_HP($0002), ENEMY_HP($0004), ENEMY_HP($0008)
 data_05EEA0:
 	; CDL: read by enemy_type_68_state_00
-	.byte	$00, $00, $02, $00, $04, $00
+	.word	ENEMY_HP($0000), ENEMY_HP($0002), ENEMY_HP($0004)
 data_05EEA6:
 	; CDL: read by enemy_type_68_state_00
 	.byte	$FC, $FF, $04, $00
@@ -4819,9 +4835,11 @@ anim_05EEDC:
 	anim_goto	anim_05EEDC
 	.byte	$00, $00, $F8, $FF
 ; OBJ_HP of heart_boss by difficulty (easy, normal; hard = first word of data_05EEFE, $0180)
+.if CHEAT_ENEMY_HP = 100
 heart_boss_hp:
+.endif
 	; CDL: read by heart_boss_state_00
-	.byte	$80, $00, $00, $01
+	.byte	$80, $00, $00, $01	; cheats: see cheat_enemy_hp_tables
 data_05EEFE:
 	; CDL: read by heart_boss_state_00, sub_04B12E
 	.byte	$80, $01, $90, $4C, $90, $4D
@@ -4850,7 +4868,7 @@ data_05EF6E:
 ; OBJ_HP of heart_boss_bug by difficulty (easy, normal, hard)
 heart_boss_bug_hp:
 	; CDL: read by heart_boss_bug_state_00
-	.byte	$20, $00, $40, $00, $80, $00
+	.word	ENEMY_HP($0020), ENEMY_HP($0040), ENEMY_HP($0080)
 data_05EF7E:
 	; CDL: read by heart_boss_bug_state_00
 	.byte	$80, $00, $A8, $00, $D0, $00, $F8, $00, $40, $00, $52, $00, $64, $00, $76, $00
@@ -4869,7 +4887,7 @@ data_05EFCA:
 ; OBJ_HP of wall_worm by difficulty (easy, normal, hard)
 wall_worm_hp:
 	; CDL: read by wall_worm_state_00
-	.byte	$40, $00, $80, $00, $00, $01
+	.word	ENEMY_HP($0040), ENEMY_HP($0080), ENEMY_HP($0100)
 data_05EFD4:
 	; CDL: read by queue_vram_blocks_at_x, sub_04B403
 	.byte	$E0, $EF, $D8, $EF, $60, $51, $80, $51, $A0, $51, $C0, $51, $40, $72, $60, $72
@@ -4958,7 +4976,7 @@ data_05F0C6:
 ; OBJ_HP of face_boss_side_head by difficulty (easy, normal, hard)
 face_boss_side_head_hp:
 	; CDL: read by face_boss_side_head_state_00; partly not accessed
-	.byte	$80, $00, $C0, $00, $00, $01
+	.word	ENEMY_HP($0080), ENEMY_HP($00C0), ENEMY_HP($0100)
 data_05F0D4:
 	; CDL: read by face_boss_side_head_state_02
 	.byte	$00, $19, $00, $1A, $00, $19, $00, $19
@@ -5095,9 +5113,11 @@ data_05F260:
 	; CDL: read by update_lightning_pylon
 	.byte	$78, $00, $60, $00, $68, $00, $5C, $00, $50, $00, $44, $00
 ; OBJ_HP of lightning_pylon by difficulty: easy $40, normal $60; hard reads the next word, $7FFF
+.if CHEAT_ENEMY_HP = 100
 lightning_pylon_hp:
+.endif
 	; CDL: read by update_objects, update_lightning_pylon, update_enemy_type_80; partly not accessed
-	.byte	$40, $00, $60, $00, $FF, $7F
+	.byte	$40, $00, $60, $00, $FF, $7F	; cheats: see cheat_enemy_hp_tables
 vram_blocks_05F272:
 	.byte	$C0, $59, $00, $50, $00, $50
 anim_05F278:
@@ -5696,11 +5716,40 @@ data_05FF93:
 ; OBJ_HP of brain_boss by difficulty (easy, normal, hard)
 brain_boss_hp:
 	; CDL: read by brain_boss_state_00; partly not accessed
-	.byte	$01, $04, $56, $42, $32, $75
+	.word	ENEMY_HP($0401), ENEMY_HP($4256), ENEMY_HP($7532)
 data_05FFA1:
 	; CDL: read by brain_boss_state_0A
 	.byte	$F8, $FF, $FF, $FF
 data_05FFA5:
 	; CDL: read by brain_boss_state_0A; partly not accessed
 	.byte	$EA, $C6, $58, $C5, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+
+.if CHEAT_ENEMY_HP <> 100
+; cheat_enemy_hp_tables: with CHEAT_ENEMY_HP, the scaled copies of the HP tables
+; whose bytes are also read as something else (the end of an animation
+; script read by td_animate_enemy or update_objects, a DMA, the next
+; table): the original bytes stay where they were, unlabelled, for those
+; readers, and the HP label moves here (in the free space of the bank).
+cheat_enemy_hp_tables:
+alien_dog_hp:
+	.word	ENEMY_HP($0000), ENEMY_HP($0002), ENEMY_HP($0008)
+stage1_boss_shell_hp:
+	.word	ENEMY_HP($0080), ENEMY_HP($0100), ENEMY_HP($7FFF)
+td_runner_hp:
+	.word	ENEMY_HP($0000), ENEMY_HP($0002), ENEMY_HP($0004)
+hatch_turret_hp:
+	.word	ENEMY_HP($0010), ENEMY_HP($0020), ENEMY_HP($0040)
+td_centipede_unused_hp:
+	.word	ENEMY_HP($0010), ENEMY_HP($0040), ENEMY_HP($0080)
+td_bug_centipede_hp:
+	.word	ENEMY_HP($0010), ENEMY_HP($0040), ENEMY_HP($0080)
+td_nest_crawler_hp:
+	.word	ENEMY_HP($0002), ENEMY_HP($0010), ENEMY_HP($0020)
+td_crawler_hp:
+	.word	ENEMY_HP($0002), ENEMY_HP($0004), ENEMY_HP($0008)
+lightning_pylon_hp:
+	.word	ENEMY_HP($0040), ENEMY_HP($0060), ENEMY_HP($7FFF)
+heart_boss_hp:
+	.word	ENEMY_HP($0080), ENEMY_HP($0100), ENEMY_HP($0180)
+.endif
 	; The rest of the bank is free: filled with $FF by the linker (contra3.cfg).

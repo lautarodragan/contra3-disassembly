@@ -265,7 +265,7 @@ ending_sequence_state_08:
 	sta	OBJ_X,x
 	lda	#$00C0
 	sta	OBJ_Y,x
-	lda	#$0180
+	lda	#ENEMY_HP($0180)
 	sta	OBJ_HP,x
 	stz	$34,x
 	stz	$36,x

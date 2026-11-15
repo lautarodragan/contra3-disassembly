@@ -890,7 +890,7 @@ spawn_stage1_boss_parts:
 	cpy	#$0006
 	bcc	@loop
 	ldy	difficulty
-	lda	#$0160
+	lda	#ENEMY_HP($0160)
 	sta	a:wram_0406
 	lda	a:stage1_boss_shell_hp,y
 	sta	a:wram_0486
