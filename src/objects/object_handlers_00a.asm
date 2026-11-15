@@ -123,8 +123,8 @@ loc_00CFB9:
 	plx
 	rtl
 
-; Object type $08: invisible stage trigger (stage 1 section 4): sets
-; wram_13BA = 4 and adjusts the scroll target.
+; Object type $08: invisible stage trigger (stage 1 section 4): stops
+; bg1_autoscroll, sets bg1_scroll_mode = 4 and adjusts the scroll target.
 update_object_type_08:
 	lda	#$8000
 	sta	$16,x
@@ -150,9 +150,10 @@ update_object_type_89:
 	sta	a:stage_checkpoint
 	rtl
 
-; Object type $03: invisible stage trigger (stage 1, 3, 6): copies field $3A
-; into wram_13FA / wram_13FC and waits for wram_13FE.
-update_object_type_03:
+; Object type $03: stage trigger (stages 1, 3, 6): sets bg2_map_offset from
+; field $3A, waits for bg2_screen_drawn, then sets bg2_scroll_mode (low
+; nibble of field $3A) and deletes itself.
+update_bg2_scroll_mode_trigger:
 	lda	$12,x
 	bne	loc_00D019
 	lda	#$0001
@@ -174,18 +175,17 @@ loc_00D019:
 loc_00D02B:
 	rtl
 
-; Object type $05: invisible stage trigger: sets wram_13B4 to 1 and deletes
-; itself.
-update_object_type_05:
+; Object type $05: stage trigger: turns bg1_autoscroll on and deletes itself.
+update_bg1_autoscroll_trigger:
 	lda	#$0001
 	sta	a:bg1_autoscroll
 	lda	#$8000
 	sta	$16,x
 	rtl
 
-; Object type $3B: invisible stage trigger (like type $0E, also sets
-; wram_13F0 / wram_13FA).
-update_object_type_3B:
+; Object type $3B: stage trigger: sets bg2_scroll_mode from field $3B (and
+; wram_13F0), then does what type $0E does.
+update_scroll_modes_trigger:
 	clc
 	lda	a:bg2_y
 	adc	#$00FF
@@ -195,9 +195,9 @@ update_object_type_3B:
 	and	#$00FF
 	sta	a:bg2_scroll_mode
 
-; Object type $0E: invisible stage trigger: sets wram_13BA from field $3A and
-; aligns the scroll position.
-update_object_type_0E:
+; Object type $0E: stage trigger: sets bg1_scroll_mode from field $3A, stops
+; bg1_autoscroll, rounds the BG1 position up to 256 and deletes itself.
+update_bg1_scroll_mode_trigger:
 	lda	$3A,x
 	and	#$00FF
 	sta	a:bg1_scroll_mode
@@ -216,9 +216,9 @@ update_object_type_0E:
 	sta	$16,x
 	rtl
 
-; Object type $07: invisible stage trigger: queues loader list
-; data_059E4A[field $3A] (load_*) and deletes itself.
-update_object_type_07:
+; Object type $07: stage trigger: loads the list
+; data_059E4A[field $3A] with load_data_list and deletes itself.
+update_load_list_trigger:
 	lda	#$8000
 	sta	$16,x
 	lda	$3A,x

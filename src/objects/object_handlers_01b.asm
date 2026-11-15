@@ -316,7 +316,7 @@ loc_01D1A1:
 	sta	$1E,x
 	rtl
 
-; Object type $18: enemy bullet (sub_01A11C allocates them); deleted when it
+; Object type $18: enemy bullet (spawn_enemy_bullet allocates them); deleted when it
 ; touches a player.
 update_enemy_bullet:
 	lda	$12,x

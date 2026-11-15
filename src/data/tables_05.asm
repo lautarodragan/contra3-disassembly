@@ -946,18 +946,18 @@ tbl_object_types:
 	.faraddr	$000000
 	.faraddr	update_object_type_01
 	.faraddr	update_object_type_02
-	.faraddr	update_object_type_03
+	.faraddr	update_bg2_scroll_mode_trigger
 	.faraddr	update_object_type_04
-	.faraddr	update_object_type_05
+	.faraddr	update_bg1_autoscroll_trigger
 	.faraddr	update_object_type_06
-	.faraddr	update_object_type_07
+	.faraddr	update_load_list_trigger
 	.faraddr	update_object_type_08
 	.faraddr	update_object_type_09
 	.faraddr	update_foot_soldier
 	.faraddr	update_object_type_0B
 	.faraddr	update_bomber_bomb
 	.faraddr	update_popup_turret
-	.faraddr	update_object_type_0E
+	.faraddr	update_bg1_scroll_mode_trigger
 	.faraddr	update_weapon_capsule
 	.faraddr	update_bouncing_debris
 	.faraddr	update_object_type_11
@@ -1002,7 +1002,7 @@ tbl_object_types:
 	.faraddr	update_stage1_boss_fire
 	.faraddr	update_object_type_39
 	.faraddr	update_object_type_3A
-	.faraddr	update_object_type_3B
+	.faraddr	update_scroll_modes_trigger
 	.faraddr	update_object_type_3C
 	.faraddr	update_stage3_spiked_climber
 	.faraddr	update_object_type_3E
