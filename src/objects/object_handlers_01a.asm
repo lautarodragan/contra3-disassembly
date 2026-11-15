@@ -95,7 +95,7 @@ object_type_02_state_00:
 	sta	OBJ_X,x
 	lda	#$00A8
 	sta	OBJ_Y,x
-	lda	#$ACDF
+	lda	#.loword(vram_blocks_05ACDF)
 	sta	$30,x
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
@@ -174,7 +174,7 @@ loc_01B2D8:
 	lda	$30,x
 	adc	#$0030
 	sta	$30,x
-	cmp	#$AF1F
+	cmp	#.loword(vram_blocks_05ACDF + $240)	; past the last block
 	bcc	loc_01B30F
 	inc	$12,x
 	lda	#$0060
@@ -477,7 +477,7 @@ loc_01B555:
 	lda	#.loword(metasprite_06AF96)
 	bra	loc_01B57F
 loc_01B563:
-	lda	#$AFB9
+	lda	#.loword(metasprite_06AFB9)
 	bra	loc_01B57F
 loc_01B568:
 	cmp	#$0001
@@ -848,7 +848,7 @@ loc_01B831:
 	; (not executed in the CDL traces)
 	lda	#$0001
 	sta	a:wram_165A
-	lda	#$AF49
+	lda	#.loword(vram_blocks_05AF49)
 	sta	$3A,x
 	bra	loc_01B849
 loc_01B83E:
@@ -1707,7 +1707,7 @@ loc_01BE83:
 loc_01BE8C:
 	lda	#OBJT_DYING_SOLDIER
 	sta	$10,x
-	lda	#$C7EA
+	lda	#.loword(metasprite_06C7EA)
 	jml	f:start_dying_soldier_sprite
 loc_01BE98:
 	ldy	$30,x
@@ -1892,13 +1892,13 @@ loc_01BFFF:
 	cmp	#$0050
 	bcc	loc_01C01C
 	lda	$00,x
-	cmp	#$C80C
+	cmp	#.loword(metasprite_06C80C)
 	bne	loc_01C03B
 	lda	#$0028
 	bra	loc_01C026
 loc_01C01C:
 	lda	$00,x
-	cmp	#$C5F1
+	cmp	#.loword(metasprite_06C5F1)
 	bne	loc_01C03B
 	lda	#$0020
 loc_01C026:
@@ -1932,7 +1932,7 @@ loc_01C045:
 loc_01C055:
 	lda	#OBJT_DYING_SOLDIER
 	sta	$10,x
-	lda	#$C7EA
+	lda	#.loword(metasprite_06C7EA)
 	jml	f:start_dying_soldier_sound_0D
 loc_01C061:
 	lda	$12,x
@@ -2182,7 +2182,7 @@ loc_01C226:
 	jsl	f:queue_sound
 	stz	$3E,x
 	stz	$06,x
-	lda	#$B056
+	lda	#.loword(vram_blocks_05B056)
 	sta	$32,x
 	lda	#$0001
 	sta	$34,x
@@ -2240,7 +2240,7 @@ popup_turret_state_02:
 	clc
 	adc	#$0004
 	sta	$32,x
-	cmp	#$B052
+	cmp	#.loword(vram_blocks_05B052)
 	bcc	@return
 	lda	#$481F
 	sta	$16,x
@@ -2275,7 +2275,7 @@ loc_01C2C8:
 	lda	$34,x
 	bne	queue_object_tiles_every_4
 	inc	$34,x
-	lda	#$B04E
+	lda	#.loword(vram_blocks_05B04E)
 	sta	$32,x
 	bra	queue_object_tiles_every_4
 loc_01C2E1:
@@ -2287,7 +2287,7 @@ loc_01C2E1:
 	jsl	f:spawn_enemy_bullet
 	lda	#$0001
 	sta	$34,x
-	lda	#$B052
+	lda	#.loword(vram_blocks_05B052)
 	sta	$32,x
 
 queue_object_tiles_every_4:
@@ -2790,7 +2790,7 @@ loc_01C6B2:
 	lda	$30,x
 	adc	#$001E
 	sta	$30,x
-	cmp	#$B172
+	cmp	#.loword(vram_blocks_05B0A0 + $D2)
 	bcc	object_type_04_collapse_wait
 	lda	#$8000
 	sta	$16,x

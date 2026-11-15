@@ -527,7 +527,7 @@ unused_debug_scroll_split:
 	sta	a:scroll_split_y
 	lda	#$D000
 	sta	zp_00
-	lda	#$A260
+	lda	#.loword(data_05A25A + $6)
 	sta	zp_04
 	lda	#$D400
 	rts

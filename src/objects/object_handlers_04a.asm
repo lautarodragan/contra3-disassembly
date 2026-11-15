@@ -666,7 +666,7 @@ stage3_robot_cables_state_03:
 	inc	OBJ_STATE,x
 	lda	#$0010
 	sta	OBJ_TIMER,x
-	lda	#$E7DA
+	lda	#.loword(vram_blocks_05E7DA)
 	sta	$30,x
 @return:
 	rtl
@@ -4177,7 +4177,7 @@ winged_alien_spawn_tail:
 	sta	a:wram_0790
 	lda	#$003D
 	sta	a:wram_0796
-	lda	#$C46D
+	lda	#.loword(metasprite_06C46D)
 	sta	a:wram_0780
 	lda	#$3600
 	sta	a:wram_0782
@@ -4203,10 +4203,10 @@ loc_04A11F:
 	stz	$12,x
 	cpy	#$0010
 	bcs	loc_04A139
-	lda	#$C46D
+	lda	#.loword(metasprite_06C46D)
 	bra	loc_04A13C
 loc_04A139:
-	lda	#$C472
+	lda	#.loword(metasprite_06C472)
 loc_04A13C:
 	sta	$00,x
 	lda	#$3600
@@ -10811,7 +10811,7 @@ loc_04D43A:
 	lda	#$0000
 	ldy	a:boss_work_4
 	bne	loc_04D445
-	lda	#$CB86
+	lda	#.loword(metasprite_06CB86)
 loc_04D445:
 	sta	OBJ_SPRITE,x
 	jsr	a:sub_04D686

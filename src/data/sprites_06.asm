@@ -1725,7 +1725,9 @@ metasprite_06AFAA:
 metasprite_06AFAF:
 	.byte	$01, $00, $F0, $80, $E0
 metasprite_06AFB4:
-	.byte	$01, $00, $F0, $6C, $60, $01
+	.byte	$01, $00, $F0, $6C, $60
+metasprite_06AFB9:
+	.byte	$01
 	.byte	$00, $F0, $80, $60
 metasprite_06AFBE:
 	.byte	$01, $00, $F0, $C6, $E0
@@ -2158,7 +2160,9 @@ metasprite_06B9E0:
 	.byte	$01, $00, $F0
 	.byte	$42, $21
 metasprite_06B9E5:
-	.byte	$01, $00, $F0, $42, $61, $03, $08, $F8, $6E, $A1, $08, $E8, $6E, $21
+	.byte	$01, $00, $F0, $42, $61
+metasprite_06B9EA:
+	.byte	$03, $08, $F8, $6E, $A1, $08, $E8, $6E, $21
 	.byte	$F8, $F0, $6C, $21
 metasprite_06B9F7:
 	.byte	$06, $00, $F0, $42, $21, $00, $E0, $42, $21, $00, $D0, $42
@@ -2483,7 +2487,11 @@ metasprite_06C447:
 	.byte	$04, $F8, $F0, $42
 	.byte	$61, $08, $F0, $40, $61, $F8, $E0, $2E, $61, $F8, $D0, $2C, $61, $05, $F8, $F0
 	.byte	$4C, $61, $08, $F0, $4A, $61, $F8, $E0, $48, $61, $08, $E0, $46, $61, $04, $D0
-	.byte	$44, $61, $01, $FC, $F4, $C0, $21, $01, $00, $F8, $EC, $01
+	.byte	$44, $61
+metasprite_06C46D:
+	.byte	$01, $FC, $F4, $C0, $21
+metasprite_06C472:
+	.byte	$01, $00, $F8, $EC, $01
 metasprite_06C477:
 	.byte	$01, $FC, $F3, $C2
 	.byte	$21
@@ -2632,7 +2640,9 @@ metasprite_06C7C4:
 	.byte	$8A, $A1, $00, $D1, $8C, $A1, $00, $C1, $8E, $A1, $00, $B1, $8E, $21, $00, $A1
 	.byte	$8C, $21, $00, $91, $8A, $21, $00, $81, $88, $21
 metasprite_06C7E5:
-	.byte	$01, $00, $F0, $EE, $21, $04
+	.byte	$01, $00, $F0, $EE, $21
+metasprite_06C7EA:
+	.byte	$04
 	.byte	$0C, $F4, $49, $41, $FC, $EC, $46, $61, $04, $E4, $44, $61, $FC, $E4, $48, $41
 metasprite_06C7FB:
 	.byte	$04, $0A, $F8, $28, $41, $00, $E8, $0C, $61, $08, $D8, $08, $61, $F8, $D8, $0A
@@ -2767,7 +2777,9 @@ metasprite_06CB7C:
 	.byte	$01, $F8, $F8, $A0, $61
 metasprite_06CB81:
 	.byte	$01
-	.byte	$F8, $F8, $A2, $61, $01, $FD, $FD, $B8, $41
+	.byte	$F8, $F8, $A2, $61
+metasprite_06CB86:
+	.byte	$01, $FD, $FD, $B8, $41
 metasprite_06CB8B:
 	.byte	$09, $10, $E4, $6E, $21, $10, $EC
 	.byte	$66, $21, $00, $F4, $62, $21, $20, $EC, $68, $21, $F0, $F4, $60, $21, $08, $EC

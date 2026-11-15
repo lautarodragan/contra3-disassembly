@@ -79,7 +79,7 @@ setup_barrier_window:
 	lda	#$0203
 	sta	a:tmw_shadow
 	stz	a:coldata_shadow
-	lda	#$A42A
+	lda	#.loword(data_05A3AA + $80)
 	sta	zp_12
 	lda	#$0018
 	sta	zp_10

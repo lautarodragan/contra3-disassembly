@@ -133,7 +133,7 @@ loc_00F362:
 	sta	$28,x
 	lda	#$FFA0
 	sta	$2A,x
-	ldy	#$AAC8
+	ldy	#.loword(vram_blocks_05AAC8)
 	lda	#$4218
 	sta	zp_0C
 	lda	#$0030

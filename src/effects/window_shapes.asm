@@ -619,7 +619,7 @@ loc_02E173:
 	sta	zp_1E
 	lda	#$0010
 	sta	zp_10
-	lda	#$E2F6
+	lda	#.loword(window_widths_05E2F6)
 	sta	zp_12
 	lda	a:title_menu_cursor
 	beq	loc_02E1D8
@@ -928,7 +928,7 @@ loc_02E424:
 	sta	zp_1E
 	lda	#$0010
 	sta	zp_10
-	lda	#$E2F6
+	lda	#.loword(window_widths_05E2F6)
 	sta	zp_12
 	lda	a:title_menu_cursor
 	beq	loc_02E489

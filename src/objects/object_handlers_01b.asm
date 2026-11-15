@@ -1138,7 +1138,7 @@ object_type_34_state_02:
 	phx
 	jsl	f:queue_vram_blocks
 	plx
-	lda	#$C854
+	lda	#.loword(vram_blocks_05C854)
 	sta	$32,x
 	lda	#$4000
 	sta	$30,x
@@ -4052,7 +4052,7 @@ update_object_type_59:
 	tax
 	cmp	#$0640
 	bcc	@loop
-	lda	#$B9EA
+	lda	#.loword(metasprite_06B9EA)
 	sta	a:wram_03C0
 	sta	a:wram_0600
 	stz	a:wram_03E0
@@ -4336,7 +4336,7 @@ stage3_spiked_climber_state_0C:
 	clc
 	lda	$30,x
 	adc	#$4280
-	ldy	#$CCBB
+	ldy	#.loword(vram_blocks_05CCBB)
 	jsr	a:spiked_climber_queue_tiles
 	rtl
 
@@ -4352,7 +4352,7 @@ stage3_spiked_climber_state_0D:
 	clc
 	lda	$30,x
 	adc	#$4300
-	ldy	#$CCAF
+	ldy	#.loword(vram_blocks_05CCAF)
 	jsr	a:spiked_climber_queue_tiles
 	lda	#$0003
 	sta	a:shake_timer

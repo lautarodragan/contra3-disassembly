@@ -5364,7 +5364,7 @@ loc_02B350:
 ; spinning (stage2_boss_state_07).
 update_stage2_boss_core:
 	jsr	a:stage2_boss_core_position
-	lda	#$8C60
+	lda	#.loword(palette_088C60)
 	sta	zp_00
 	lda	#$2260
 	sta	zp_02
