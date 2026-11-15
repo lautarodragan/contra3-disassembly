@@ -1,12 +1,12 @@
 ; gfx/gfx_09.asm -- Compressed graphics (bank $09)
 ; Bank $09, $09:8000-$09:FFFF. Included by main.asm in segment BANK09.
 ;
-; Graphics compressed for the decompressor (sub_0094A9, see
+; Graphics compressed for the decompressor (decompress_chunk, see
 ; engine/decompress.asm).
 ;
 ; Data only (no labels, no code). Each block starts at a CDL comment.
 
-	; CDL: read by sub_0094A9
+	; CDL: read by decompress_chunk
 	.byte	$8E, $19, $FE, $89, $7F, $80, $81, $7E, $E8, $1F, $E3, $1F, $FF, $A1, $FF, $FF
 	.byte	$83, $81, $7C, $EE, $08, $09, $00, $20, $84, $EF, $FE, $7F, $F0, $00, $21, $84
 	.byte	$F8, $07, $E7, $1F, $EE, $90, $F0, $0F, $C3, $3F, $4F, $F0, $E0, $1F, $88, $77
@@ -1964,7 +1964,7 @@
 	.byte	$02, $0A, $0A, $03, $00, $46, $4A, $49, $3C, $48, $44, $00, $00, $00, $00, $00
 	.byte	$7D, $D5, $7D, $F6, $7E, $17, $7E, $38, $7E, $59, $7E, $7A, $7E, $9B, $7E, $BC
 	.byte	$7E, $DD, $7E, $FE, $7F, $1F, $7F, $40, $7F, $61, $7F, $82, $7F, $A3, $63, $C4
-	; CDL: read by sub_0094A9
+	; CDL: read by decompress_chunk
 	.byte	$C0, $01, $8E, $F8, $16, $F9, $16, $FA, $16, $FB, $16, $ED, $16, $EE, $16, $EF
 	.byte	$16, $C0, $17, $9F, $20, $17, $21, $17, $22, $17, $23, $17, $2C, $17, $2D, $17
 	.byte	$2E, $17, $2B, $17, $F1, $16, $F5, $16, $F6, $16, $F7, $16, $E9, $16, $EA, $16

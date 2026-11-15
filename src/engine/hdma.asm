@@ -19,7 +19,7 @@ sub_00E369:
 	plb
 	lda	#$2000
 	ldx	#$A105
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	ldx	#$0020
 loc_00E38C:
 	lda	a:data_05A14F,x
@@ -38,7 +38,7 @@ loc_00E399:
 	beq	loc_00E3CC
 	lda	#$2400
 	ldx	#$A12B
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	ldx	#$0020
 loc_00E3B5:
 	lda	a:data_05A16F,x

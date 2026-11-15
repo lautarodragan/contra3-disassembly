@@ -20,7 +20,7 @@ python3 tools/rename.py sub_00816C next_random           # one symbol
 python3 tools/rename.py OLD1 NEW1 OLD2 NEW2              # several
 python3 tools/rename.py --map names.txt                  # a batch: "OLD NEW" per line, # comments
 python3 tools/rename.py -n --map names.txt               # dry run: show the files it would change
-python3 tools/rename.py --scope sub_0094A9 @old @new     # a cheap local label, inside one scope
+python3 tools/rename.py --scope decompress_chunk @old @new     # a cheap local label, inside one scope
 ```
 
 It replaces whole words (a name inside a path such as `src/engine/nmi.asm` is

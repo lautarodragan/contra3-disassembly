@@ -381,7 +381,7 @@ loc_00C637:
 	bne	loc_00C648
 	jsl	f:sub_00CC37
 loc_00C648:
-	jsl	f:sub_008CFF
+	jsl	f:run_vram_queue
 	ldx	zp_FC
 	clc
 	lda	$00,x
@@ -942,7 +942,7 @@ loc_00CAA8:
 	.a16
 	lda	#$0080
 	ldy	zp_04
-	jsl	f:sub_008D44
+	jsl	f:begin_vram_transfer_vmain
 loc_00CABB:
 	lda	(zp_00)
 	and	#$3FFF
@@ -989,7 +989,7 @@ loc_00CAEF:
 	inc	zp_00
 	dec	zp_06
 	bne	loc_00CABB
-	jsl	f:sub_008DB0
+	jsl	f:end_vram_transfer
 	sep	#$20
 	.a8
 	lda	#$05
@@ -1069,7 +1069,7 @@ loc_00CB98:
 	.a16
 	lda	#$0081
 	ldy	zp_04
-	jsl	f:sub_008D44
+	jsl	f:begin_vram_transfer_vmain
 loc_00CBAB:
 	lda	(zp_02)
 	and	#$3FFF
@@ -1118,7 +1118,7 @@ loc_00CBDF:
 	sta	zp_02
 	dec	zp_06
 	bne	loc_00CBAB
-	jsl	f:sub_008DB0
+	jsl	f:end_vram_transfer
 	sep	#$20
 	.a8
 	lda	#$05

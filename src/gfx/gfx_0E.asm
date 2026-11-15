@@ -1,12 +1,12 @@
 ; gfx/gfx_0E.asm -- Compressed graphics (bank $0E)
 ; Bank $0E, $0E:8000-$0E:FFFF. Included by main.asm in segment BANK0E.
 ;
-; Graphics compressed for the decompressor (sub_0094A9, see
+; Graphics compressed for the decompressor (decompress_chunk, see
 ; engine/decompress.asm).
 ;
 ; Data only (no labels, no code). Each block starts at a CDL comment.
 
-	; CDL: read by sub_0094A9
+	; CDL: read by decompress_chunk
 	.byte	$07, $03, $C0, $01, $83, $02, $03, $05, $C1, $04, $82, $02, $06, $03, $E7, $A0
 	.byte	$06, $06, $0B, $DF, $82, $06, $07, $03, $F3, $81, $04, $17, $F6, $C0, $80, $C0
 	.byte	$40, $81, $20, $C0, $60, $83, $20, $C0, $A0, $00, $07, $81, $80, $08, $0A, $81

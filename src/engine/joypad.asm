@@ -2,9 +2,10 @@
 ; Bank $00, $00:8B19-$00:8BA6. Included by main.asm in segment BANK00.
 ;
 ; read_joypads waits for auto-read and stores the four pads' held buttons at
-; $20-$27 and newly pressed buttons at $28-$2F; pressing Select while holding
-; L+R+Start+Select jumps to the warm boot (warm_boot). sub_008B64 (never run
-; in the traces) is a pause/exit check.
+; joy1_held.. ($20-$27) and newly pressed buttons at joy1_pressed.. ($28-$2F);
+; on a pad enabled in soft_reset_pad_mask, pressing Select while holding
+; L+R+Start+Select jumps to warm_boot (not while force_blank_frames is
+; counting). sub_008B64 (never run in the traces) is a pause/exit check.
 
 read_joypads:
 	rep	#$10

@@ -3,7 +3,7 @@
 ;
 ; Palettes copied to the WRAM palette buffer by the palette tasks (sub_0099C9,
 ; sub_009AA5; see engine/palette_tasks.asm) and by sub_02F3C1, then graphics
-; compressed for sub_0094A9.
+; compressed for decompress_chunk.
 ;
 ; Data only (no labels, no code). Each block starts at a CDL comment.
 
@@ -275,7 +275,7 @@
 	.byte	$1F, $00, $00, $00, $B5, $11, $19, $00, $00, $00, $00, $00, $A5, $14, $31, $46
 	.byte	$FF, $7F, $00, $00, $50, $66, $92, $6E, $D4, $76, $00, $00, $1D, $2C, $FF, $01
 	.byte	$74, $4E, $00, $00, $00, $00, $00, $00, $00, $00
-	; CDL: read by sub_0094A9
+	; CDL: read by decompress_chunk
 	.byte	$0A, $02, $AF, $08, $08, $08, $08, $08, $08, $08, $08, $08, $08, $08, $08, $08
 	.byte	$08, $08, $08, $08, $7F, $FF, $7C, $20, $7C, $41, $7C, $62, $7C, $83, $7C, $A4
 	.byte	$7C, $C5, $38, $E6, $81, $04, $00, $F7, $85, $90, $04, $02, $04, $30, $14, $FE

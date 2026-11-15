@@ -1,12 +1,12 @@
 ; gfx/gfx_13.asm -- Compressed graphics (bank $13)
 ; Bank $13, $13:8000-$13:FFFF. Included by main.asm in segment BANK13.
 ;
-; Compressed graphics (sub_0094A9) and tile data DMA'd to VRAM by the top-down
+; Compressed graphics (decompress_chunk) and tile data DMA'd to VRAM by the top-down
 ; streaming code (sub_009C18).
 ;
 ; Data only (no labels, no code). Each block starts at a CDL comment.
 
-	; CDL: read by sub_0094A9
+	; CDL: read by decompress_chunk
 	.byte	$67, $15, $E0, $C0, $01, $C0, $03, $C0, $01, $23, $D9, $84, $02, $03, $00, $03
 	.byte	$03, $F1, $23, $E5, $84, $40, $80, $C0, $00, $C0, $18, $88, $0B, $13, $0C, $0D
 	.byte	$0B, $08, $0F, $0C, $C0, $C0, $8C, $30, $F0, $38, $F8, $E6, $FE, $64, $7C, $32
@@ -1226,7 +1226,7 @@
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	; CDL: read by sub_0094A9
+	; CDL: read by decompress_chunk
 	.byte	$1E, $18, $DD, $BC, $7F, $FD, $81, $BB, $00, $1E, $82, $C5, $BA, $C0, $BB, $81
 	.byte	$BC, $00, $23, $04, $26, $04, $23, $C0, $BB, $82, $BA, $B9, $00, $29, $04, $1E
 	.byte	$C0, $BA, $00, $22, $81, $B9, $00, $2C, $82, $B9, $C5, $00, $30, $00, $39, $C0

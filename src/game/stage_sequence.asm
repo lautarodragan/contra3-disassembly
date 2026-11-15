@@ -40,7 +40,7 @@ opening_cinematic_init:
 	lda	#$0061
 	jsl	f:queue_sound
 	ldx	#.loword(data_05A84B)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldy	#$A815
 	jsl	f:sub_009982
 	stz	a:opening_frame_counter
@@ -113,20 +113,20 @@ opening_scene_load:
 	rep	#$10
 	ldy	#$0FFF
 	ldx	#$4000
-	jsl	f:sub_008E4B
+	jsl	f:clear_vram_words
 	bra	loc_00ECE7
 loc_00ECCE:
 	rep	#$10
 	ldy	#$03FF
 	ldx	#$4400
-	jsl	f:sub_008E4B
+	jsl	f:clear_vram_words
 loc_00ECDA:
 	lda	a:opening_scene
 	asl	a
 	tay
 	lda	a:ptrs_05A7AF,y
 	tax
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 loc_00ECE7:
 	inc	a:opening_state
 	lda	a:opening_scene

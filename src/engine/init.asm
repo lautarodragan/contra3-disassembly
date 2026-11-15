@@ -1,8 +1,9 @@
 ; engine/init.asm -- PPU init and RAM clear helpers
 ; Bank $00, $00:86AC-$00:8985. Included by main.asm in segment BANK00.
 ;
-; init_ppu_registers writes every PPU register with its start-up value (and the shadow
-; copies at $1E8x); clear_ram_0000_1bff to clear_wram_7e8000_and_7ec000 clear RAM areas with MVN.
+; init_ppu_registers writes every PPU register with its start-up value (and
+; the shadows at $1E84-$1E9C); the clear_* routines zero RAM areas with MVN
+; (each named by what it clears; those named by address have no caller).
 
 init_ppu_registers:
 	php
@@ -232,6 +233,7 @@ clear_ram_1200_1aff:
 	plb
 	rtl
 
+; Clears $1380-$147F: the BG scroll states (BG1 $1380, BG2 $13C0, BG3 $1400).
 clear_bg_scroll_state:
 	.a8
 	.i8
@@ -249,6 +251,8 @@ clear_bg_scroll_state:
 	plb
 	rtl
 
+; Clears $0200-$0FBF (main and secondary object lists) and the OAM buffer at
+; $7E:0FC0-$7E:11DF.
 clear_objects_and_oam:
 	.a8
 	rep	#$30
@@ -274,6 +278,8 @@ clear_objects_and_oam:
 	plb
 	rtl
 
+; Clears $1200-$127F (palette task slots) and $7E:2000-$7E:23FF (palette
+; buffers, the one DMAd to CGRAM at $7E:2200).
 clear_palette_tasks_and_buffer:
 	rep	#$30
 	phb
@@ -297,6 +303,7 @@ clear_palette_tasks_and_buffer:
 	plb
 	rtl
 
+; Clears $1280-$12FF (VRAM script task slots).
 clear_vram_tasks:
 	rep	#$30
 	phb

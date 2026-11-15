@@ -1,12 +1,12 @@
 ; gfx/gfx_16.asm -- Compressed graphics (bank $16)
 ; Bank $16, $16:8000-$16:FFFF. Included by main.asm in segment BANK16.
 ;
-; Compressed graphics (sub_0094A9), data DMA'd by the top-down streaming code
+; Compressed graphics (decompress_chunk), data DMA'd by the top-down streaming code
 ; (sub_009C18) and data read by the attract demo code (demo_read_p1_event).
 ;
 ; Data only (no labels, no code). Each block starts at a CDL comment.
 
-	; CDL: read by sub_0094A9
+	; CDL: read by decompress_chunk
 	.byte	$FE, $28, $DD, $AC, $7F, $FD, $C1, $AB, $00, $1E, $10, $1A, $C5, $AC, $81, $AD
 	.byte	$10, $2E, $81, $AD, $00, $29, $81, $AE, $04, $35, $04, $20, $08, $37, $0C, $28
 	.byte	$82, $AB, $AA, $28, $14, $0C, $42, $10, $45, $81, $AE, $0C, $5B, $00, $3C, $0C
@@ -1010,7 +1010,7 @@
 	.byte	$2F, $00, $17, $00, $07, $00, $01, $00, $05, $00, $00, $00, $00, $00, $00, $00
 	.byte	$B5, $F6, $49, $3E, $96, $D8, $EA, $6C, $D4, $B8, $68, $50, $30, $C0, $C0, $00
 	.byte	$E8, $00, $E0, $00, $E0, $00, $90, $00, $40, $00, $80, $00, $00, $00, $00, $00
-	; CDL: read by sub_0094A9
+	; CDL: read by decompress_chunk
 	.byte	$C1, $08, $E0, $84, $10, $08, $20, $18, $03, $E1, $13, $E5, $82, $40, $3E, $C0
 	.byte	$3D, $C0, $65, $C0, $45, $C0, $65, $C2, $25, $C0, $E7, $C0, $81, $E0, $84, $80
 	.byte	$7C, $84, $42, $08, $03, $00, $01, $82, $80, $40, $00, $0B, $C0, $FE, $C0, $03
@@ -1538,7 +1538,7 @@
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $8C, $00, $07, $00, $7E, $00, $28, $00
 	.byte	$0A, $0E, $04, $06, $02, $02, $1A, $1A, $36, $3E, $F2, $FE, $5C, $5C, $00, $00
 	.byte	$0E, $00, $06, $00, $02, $00, $1A, $00, $3E, $00, $FE, $00, $5C, $00, $00, $00
-	; CDL: read by sub_0094A9
+	; CDL: read by decompress_chunk
 	.byte	$73, $15, $7B, $DE, $85, $0A, $39, $0B, $39, $0C, $04, $00, $9A, $0E, $39, $0F
 	.byte	$39, $10, $39, $11, $39, $14, $39, $15, $39, $16, $39, $17, $39, $20, $39, $21
 	.byte	$39, $22, $39, $23, $39, $0D, $39, $A0, $38, $38, $82, $0D, $79, $00, $0B, $81

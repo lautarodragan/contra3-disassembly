@@ -1,12 +1,26 @@
 ; engine/nmi.asm -- NMI handler and per-frame drivers
 ; Bank $00, $00:819B-$00:85F2. Included by main.asm in segment BANK00.
 ;
-; nmi saves the registers and calls one of three frame handlers through
-; tbl_nmi_frame_handlers, indexed by $42: nmi_frame_default, nmi_frame_side_view (side-view stages) and
-; nmi_frame_top_down (top-down Mode 7 stages, see game/game_modes.asm enter_top_down_stage).
-; They upload PPU state (scroll, BG/colour-math registers, OAM, CGRAM) and
-; then run the game logic for the frame (joypads, game mode state machine
-; run_game_mode, palette tasks, loaders, sound queue).
+; The whole game runs in the NMI. nmi saves the registers, sets D = 0 and
+; DB = $05, writes NMITIMEN/HTIME/VTIME from their shadows and, unless the
+; previous frame is still running (nmi_busy), calls the frame handler
+; selected by nmi_mode through tbl_nmi_frame_handlers:
+;
+;   0  nmi_frame_default    menus, screens, loading (no stage scrolling)
+;   2  nmi_frame_side_view  side-view stages (BG1/BG2/BG3 scroll, windows, HUD)
+;   4  nmi_frame_top_down   top-down Mode 7 stages 2 and 5
+;
+; Each handler first does the vblank work with the screen blanked (scroll and
+; PPU registers from their shadows, OAM and palette DMA, the VRAM queue,
+; loaders' DMA), restores INIDISP from inidisp_shadow (kept blank while
+; force_blank_frames counts down), then runs the frame's logic: read_joypads,
+; the game mode state machine (run_game_mode), next_random, palette tasks
+; (run_palette_tasks), pending loads (run_pending_loads), VRAM script tasks
+; and send_queued_sound.
+;
+; Also here: helpers to switch the display and NMI off and on around loading
+; (disable_display_and_nmi, enable_nmi, wait_nmi_and_disable_display,
+; start_display).
 
 nmi:
 	.a8
@@ -60,6 +74,7 @@ tbl_nmi_frame_handlers:
 	.addr	nmi_frame_side_view
 	.addr	nmi_frame_top_down
 
+; Frame handler for nmi_mode 0 (menus, screens, loading).
 nmi_frame_default:
 	sep	#$20
 	.a8
@@ -69,10 +84,10 @@ nmi_frame_default:
 	.a16
 	jsr	a:write_bg_scroll_regs
 	jsr	a:write_ppu_shadows
-	jsl	f:sub_00913D
+	jsl	f:dma_vram_loader_chunk
 	jsl	f:setup_hdma_channels
 	jsr	a:dma_oam_and_palette
-	jsl	f:sub_008CFF
+	jsl	f:run_vram_queue
 	sep	#$20
 	.a8
 	lda	force_blank_frames
@@ -93,11 +108,17 @@ nmi_frame_default:
 	jsl	f:run_game_mode
 	jsl	f:next_random
 	jsl	f:sub_009995
-	jsl	f:sub_0090C7
+	jsl	f:run_pending_loads
 	jsl	f:sub_009B76
 	jsl	f:send_queued_sound
 	rts
 
+; Frame handler for nmi_mode 2 (side-view stages). BG1/BG2 horizontal scroll
+; is written one frame late (BG_HOFS_LATCH); the vertical scroll subtracts
+; zp_A0/zp_A2. Also the 32-byte palette uploads (cgram_upload_addr), HUD
+; uploads, stage HDMA, tilemap column/row DMA (dma_bg_tilemap_updates), window
+; registers, and the scroll-split HDMA tables (double-buffered by the two
+; MVNs in $7E:D000-$7E:D8FF).
 nmi_frame_side_view:
 	sep	#$20
 	.a8
@@ -175,7 +196,7 @@ nmi_frame_side_view:
 	rep	#$20
 	.a16
 	jsr	a:write_ppu_shadows
-	jsl	f:sub_00913D
+	jsl	f:dma_vram_loader_chunk
 	jsr	a:dma_oam_and_palette
 	sep	#$20
 	.a8
@@ -204,7 +225,7 @@ nmi_frame_side_view:
 @no_cgram_upload:
 	rep	#$20
 	.a16
-	jsl	f:sub_008CFF
+	jsl	f:run_vram_queue
 	jsl	f:sub_00E4F6
 	lda	a:title_menu_cursor
 	beq	@one_player
@@ -252,7 +273,7 @@ nmi_frame_side_view:
 	jsl	f:run_game_mode
 	jsl	f:next_random
 	jsl	f:sub_009995
-	jsl	f:sub_0090C7
+	jsl	f:run_pending_loads
 	jsl	f:sub_009B76
 	jsl	f:send_queued_sound
 	lda	frame_counter
@@ -267,6 +288,9 @@ nmi_frame_side_view:
 	jsl	f:sub_00E464
 	rts
 
+; Frame handler for nmi_mode 4 (top-down stages): Mode 7, split screen for
+; two players (per-player brightness at $1FB4/$1FF4 written to the INIDISP
+; HDMA table at $7E:38A1).
 nmi_frame_top_down:
 	sep	#$20
 	.a8
@@ -331,10 +355,12 @@ nmi_frame_top_down:
 	jsl	f:compute_m7_matrix
 	jsl	f:sub_03E180
 	jsl	f:sub_009995
-	jsl	f:sub_0090C7
+	jsl	f:run_pending_loads
 	jsl	f:send_queued_sound
 	rts
 
+; DMA channel 0: OAM from $7E:0FC0 ($220 bytes); channel 1: CGRAM from
+; $7E:cgram_dma_src (512 bytes).
 dma_oam_and_palette:
 	sep	#$20
 	.a8
@@ -362,6 +388,9 @@ dma_oam_and_palette:
 	.a16
 	rts
 
+; Sets full brightness in inidisp_shadow, enables NMI and joypad auto-read
+; (NMITIMEN = $81), clears the BG scroll state (clear_bg_scroll_state) and
+; keeps the screen blank for 4 frames (force_blank_frames).
 start_display:
 	php
 	sep	#$30
@@ -386,6 +415,8 @@ start_display:
 	.i16
 	rtl
 
+; Writes TM, TS, CGWSEL, CGADSUB, COLDATA, OBSEL, BGMODE, MOSAIC, BGnSC and the
+; Mode 7 registers from their shadows ($1E84-$1EAA).
 write_ppu_shadows:
 	sep	#$20
 	.a8
@@ -443,6 +474,8 @@ write_ppu_shadows:
 	.a16
 	rts
 
+; Writes BG1-BG3 scroll registers from the BG scroll states at $1380, $13C0
+; and $1400 (BG_X, BG_Y - 1).
 write_bg_scroll_regs:
 	rep	#$30
 	ldx	#$1380
@@ -501,6 +534,8 @@ write_bg_scroll_regs:
 	.a16
 	rts
 
+; Turns NMI, HDMA and DMA off and forces blank (INIDISP = $8F); sets
+; force_blank_frames to 4.
 disable_display_and_nmi:
 	php
 	sep	#$20
@@ -515,6 +550,8 @@ set_forced_blank:
 	sta	a:INIDISP
 	bra	display_off_common
 
+; Turns NMI back on from nmitimen_shadow; sets force_blank_frames to 4 and
+; stops HDMA.
 enable_nmi:
 	.a16
 	php
@@ -534,6 +571,8 @@ display_off_common:
 	.a16
 	rtl
 
+; If NMI is on, waits for the next NMI (sets nmi_busy bit 7, which the NMI
+; clears), then like disable_display_and_nmi but leaves NMI on.
 wait_nmi_and_disable_display:
 	php
 	sep	#$20

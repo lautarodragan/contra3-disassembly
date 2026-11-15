@@ -1,7 +1,7 @@
 ; sound/sound_1D.asm -- Sound data (bank $1D, $8000-$AB9F)
 ; Bank $1D, $1D:8000-$1D:AB9F. Included by main.asm in segment BANK1D.
 ;
-; Sound data uploaded to the sound CPU (read by sub_009429).
+; Sound data uploaded to the sound CPU (read by upload_spc_raw_block).
 ;
 ; Data only (no labels, no code).
 
@@ -118,7 +118,7 @@
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $90, $24
-	; CDL: read by sub_009429
+	; CDL: read by upload_spc_raw_block
 	.byte	$02, $00, $00, $00, $00, $00, $00, $00, $00, $C2, $00, $00, $FE, $F4, $3E, $F1
 	.byte	$14, $2C, $C2, $D1, $12, $1C, $D1, $0F, $FC, $E3, $1D, $C2, $DC, $E3, $1C, $DE
 	.byte	$F3, $2D, $E0, $02, $C2, $1C, $E3, $33, $2E, $05, $42, $1E, $06, $C2, $40, $0F

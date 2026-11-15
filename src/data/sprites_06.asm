@@ -2,7 +2,7 @@
 ; Bank $06, $06:8000-$06:FFFF. Included by main.asm in segment BANK06.
 ;
 ; Read by draw_metasprite (metasprite drawing, with DB=$06); a few blocks are
-; compressed graphics (read by sub_0094A9).
+; compressed graphics (read by decompress_chunk).
 
 	; CDL: not accessed
 	.byte	$00, $00, $7F, $00, $C0, $00, $7F, $00, $80, $01, $7F, $00, $40, $02, $7F, $00
@@ -1488,7 +1488,7 @@
 	.byte	$E0, $C0, $61, $04, $E0, $E8, $C8, $61, $FC, $F8, $F1, $41, $00, $EC, $F0, $41
 	.byte	$F0, $EB, $C6, $61, $03, $F0, $ED, $CC, $61, $00, $EC, $CA, $61, $E0, $F0, $CE
 	.byte	$61
-	; CDL: read by sub_0094A9
+	; CDL: read by decompress_chunk
 	.byte	$ED, $15, $FF, $EE, $81, $FF, $34, $0F, $8E, $00, $0E, $01, $31, $0F, $56, $DE
 	.byte	$33, $0F, $08, $07, $DB, $3C, $7C, $A7, $00, $00, $00, $21, $00, $00, $00, $00
 	.byte	$0C, $83, $03, $71, $8F, $C0, $FE, $82, $09, $00, $C0, $FC, $86, $18, $F8, $E7
@@ -2050,7 +2050,7 @@
 	.byte	$7D, $47, $7D, $68, $7D, $89, $7D, $AA, $7D, $CB, $7D, $EC, $7E, $0D, $7E, $2E
 	.byte	$7E, $4F, $7E, $70, $7E, $91, $7E, $B2, $7E, $D3, $7E, $F4, $7F, $15, $7F, $36
 	.byte	$7F, $57, $7F, $78, $7F, $99, $7F, $BA, $07, $DB
-	; CDL: read by sub_0094A9
+	; CDL: read by decompress_chunk
 	.byte	$49, $01, $7F, $DE, $7F, $FF, $7C, $20, $7C, $41, $7C, $62, $7C, $83, $7C, $A4
 	.byte	$7C, $C5, $7C, $E6, $7D, $07, $7D, $28, $7D, $49, $7D, $6A, $F9, $81, $53, $AF
 	.byte	$A0, $A6, $AC, $A3, $96, $00, $98, $96, $A5, $A5, $9A, $9F, $98, $00, $93, $96

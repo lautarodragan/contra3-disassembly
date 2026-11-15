@@ -1,10 +1,14 @@
 ; engine/math.asm -- Arithmetic helpers
 ; Bank $00, $00:8986-$00:8B18. Included by main.asm in segment BANK00.
 ;
-; Division (sub_0089E4) and multiplication (multiply_16x16) with the hardware
-; divider/multiplier, and helpers the CDL traces never ran.
+; Helpers the CDL traces never ran: a Mode 7 matrix calculation
+; (unused_calc_mode7_matrix), sub_0089E4 (about A * X / $8000, done with two
+; hardware divisions), sub_008A58, clear_object_slot and multiply_16x16.
 
 ; (no caller found; decoded because it follows the end of a routine)
+; (No caller.) Mode 7 matrix shadows m7a-m7d from the angle at $1F98 (sine
+; table data_058010) and the scales at $1F94/$1F96, and M7X/M7Y from
+; $1F90/$1F92.
 unused_calc_mode7_matrix:
 	; (not executed in the CDL traces)
 	rep	#$10
@@ -55,6 +59,9 @@ unused_calc_mode7_matrix:
 	sta	a:m7y_shadow
 	rtl
 
+; (Not run in the traces.) A, X 16-bit: computes about A * X / $8000 in zp_00
+; as (A / 2) / ($8000 / X), with the hardware 16/8 divider, scaling the
+; divisors down to 8 bits. Uses zp_00-zp_04.
 sub_0089E4:
 	; (not executed in the CDL traces)
 	rep	#$30
@@ -131,6 +138,8 @@ loc_008A4C:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
+; (No caller.) zp_08:zp_0A = (zp_00 - zp_02) shifted left by Y (right if Y
+; is negative); zp_00:zp_02 = zp_04:zp_06 - zp_08:zp_0A.
 sub_008A58:
 	; (not executed in the CDL traces)
 	rep	#$20
@@ -169,6 +178,7 @@ sub_008A58:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
+; (No caller.) Same with the slot in Y.
 clear_object_slot_y:
 	; (not executed in the CDL traces)
 	phx
@@ -177,6 +187,7 @@ clear_object_slot_y:
 	plx
 	rtl
 
+; (Not run in the traces.) Clears the $40 bytes at X (an object slot).
 clear_object_slot:
 	; (not executed in the CDL traces)
 	stz	$04,x
@@ -214,6 +225,7 @@ clear_object_slot:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
+; (No caller.) zp_04-zp_07 = zp_00 * zp_02 (unsigned 16 x 16 -> 32 bits).
 multiply_16x16:
 	; (not executed in the CDL traces)
 	sep	#$10

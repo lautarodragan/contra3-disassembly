@@ -1,12 +1,12 @@
 ; gfx/gfx_15.asm -- Compressed graphics (bank $15)
 ; Bank $15, $15:8000-$15:FFFF. Included by main.asm in segment BANK15.
 ;
-; Compressed graphics (sub_0094A9) and data read by the attract demo code
+; Compressed graphics (decompress_chunk) and data read by the attract demo code
 ; (demo_read_p2_event).
 ;
 ; Data only (no labels, no code). Each block starts at a CDL comment.
 
-	; CDL: read by sub_0094A9
+	; CDL: read by decompress_chunk
 	.byte	$77, $24, $C7, $2C, $82, $2B, $2D, $C2, $2C, $81, $2E, $03, $E7, $03, $EE, $2B
 	.byte	$E2, $0B, $F6, $C3, $2C, $1B, $F1, $0C, $08, $04, $02, $03, $FA, $08, $02, $10
 	.byte	$18, $81, $2E, $0C, $02, $04, $1E, $81, $2A, $C1, $2C, $82, $2F, $2E, $07, $FA

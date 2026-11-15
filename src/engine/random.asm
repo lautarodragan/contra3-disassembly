@@ -1,8 +1,9 @@
 ; engine/random.asm -- Random number generator
 ; Bank $00, $00:816C-$00:819A. Included by main.asm in segment BANK00.
 ;
-; next_random: 32-bit shift-register generator at $E8/$EA, seeded from the
-; frame counter when 0. Called once per frame by the NMI frame handlers.
+; next_random: 32-bit shift-register generator in rng_lo/rng_hi, seeded from
+; frame_counter while 0. Called once per frame by the NMI frame handlers.
+; Returns the new rng_lo in A (16-bit); uses zp_E6.
 
 next_random:
 	rep	#$30

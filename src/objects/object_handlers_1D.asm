@@ -438,7 +438,7 @@ sub_1DB2C5:
 	inc	$12,x
 	phx
 	ldx	#.loword(data_05F8C3)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldy	#$F8DA
 	jsl	f:sub_009982
 	plx
@@ -1270,7 +1270,7 @@ sub_1DB952:
 	plx
 	phx
 	ldx	#.loword(data_05F8D1)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	plx
 loc_1DB98C:
 	rts
@@ -1372,12 +1372,12 @@ loc_1DBA36:
 	lda	f:$7EE900,x
 	tax
 	pla
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	ldx	a:wram_169C
 	lda	f:$7EE910,x
 	tax
 	lda	zp_FC
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	plx
 	rts
 
@@ -1447,7 +1447,7 @@ sub_1DBAEA:
 	phx
 	ldy	difficulty
 	ldx	a:data_05FD9B,y
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldy	#$FEE8
 	jsl	f:sub_009982
 	plx
@@ -1486,13 +1486,13 @@ loc_1DBB45:
 loc_1DBB47:
 	phx
 	ldx	#$F4C3
-	jsl	f:sub_0098D4
+	jsl	f:load_song_set
 	lda	#$0071
 	jsl	f:queue_sound
 	ldy	#$FEC7
 	jsl	f:sub_009982
 	ldx	#.loword(data_05FEDF)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	plx
 	lda	#$0013
 	sta	hdma_preset
@@ -1509,7 +1509,7 @@ sub_1DBB6B:
 	ldy	a:wram_163E
 	lda	a:ptrs_05FDBC,y
 	tax
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	plx
 loc_1DBB83:
 	rtl
@@ -1857,7 +1857,7 @@ loc_1DBE11:
 	phx
 	ldx	#$FF0A
 	lda	#$0400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	plx
 	lda	#$0100
 	sta	a:stage_exit_request
@@ -1902,7 +1902,7 @@ sub_1DBE61:
 	ldx	#$FF0A
 loc_1DBE6F:
 	lda	#$0400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	plx
 	rts
 
@@ -2007,7 +2007,7 @@ sub_1DBF13:
 	stz	a:wram_1638
 	phx
 	ldx	#.loword(data_05FF27)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	plx
 	stz	a:wram_1642
 	stz	a:wram_16BA
@@ -2249,7 +2249,7 @@ sub_1DC125:
 	sta	$12,x
 	phx
 	ldx	#.loword(data_05FF30)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	plx
 loc_1DC13D:
 	jsl	f:sub_00FD92

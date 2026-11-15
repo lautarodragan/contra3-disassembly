@@ -28,7 +28,7 @@ entirely from banks `$00-$1F` at the slow speed:
 - the vectors point into bank `$00`, and no long address in the decoded code
   points into `$80-$9F`.
 
-That is why labels are named by their `$00-$1F` address (`sub_0090A8` is at
+That is why labels are named by their `$00-$1F` address (`load_data_list` is at
 `$00:90A8`) and why `src/contra3.cfg` places bank `$XX` at `$XX:8000`. The
 disassembler can label the `$80+` mirror instead (the `fastrom` hint, see
 [The disassembler](disassembler.md#hints)); for this game it is off.

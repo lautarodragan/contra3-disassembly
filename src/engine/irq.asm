@@ -1,11 +1,20 @@
 ; engine/irq.asm -- HDMA channel setup and IRQ handler
 ; Bank $00, $00:8BA7-$00:8CFE. Included by main.asm in segment BANK00.
 ;
-; setup_hdma_channels (called from NMI) sets up the HDMA channels from the list
-; selected by $46 (data_05822E). irq (also the COP/BRK/ABORT vector)
-; dispatches through tbl_irq_handlers to the raster handlers; irq_mode7_top_view and
-; irq_mode7_bottom_view write the Mode 7 matrix and scroll registers mid-frame.
+; setup_hdma_channels (from nmi_frame_default) programs the HDMA channels
+; from the preset hdma_preset (data_05822E). irq (also the COP/BRK/ABORT
+; vector) acknowledges TIMEUP, masks the H/V IRQ in NMITIMEN and dispatches
+; on irq_mode through tbl_irq_handlers. The two handlers serve the two-player
+; split screen of the top-down stages: irq_mode7_top_view loads player 1's
+; Mode 7 matrix and BG1 scroll ($1FA4-$1FB3) and, when zp_40 is set,
+; schedules irq_mode7_bottom_view at line $70, which loads player 2's
+; ($1FE4-$1FF3).
+; reset_vram_queue (end of the file) belongs to engine/vram.asm.
 
+; hdma_preset = 0: just HDMAEN = 0. Otherwise the preset's list in bank $05
+; (pointer at data_05822E + 2*preset): 7-byte entries {channel register
+; base $43x0, DMAP/BBAD word, table address (3 bytes)}, ended by $FFFF and
+; the HDMAEN value.
 setup_hdma_channels:
 	sep	#$20
 	.a8
@@ -173,10 +182,11 @@ irq_mode7_bottom_view:
 	ldx	#$0002
 	stx	irq_mode
 	rts
+; Empties the VRAM DMA queue (vram_queue_end, vram_queue_data_ptr).
 reset_vram_queue:
 	.a16
-	lda	#$3000
+	lda	#VRAM_QUEUE
 	sta	vram_queue_end
-	lda	#$3400
+	lda	#VRAM_QUEUE_DATA
 	sta	vram_queue_data_ptr
 	rtl

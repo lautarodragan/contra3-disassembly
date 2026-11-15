@@ -1,8 +1,8 @@
 ; sound/sound_1A.asm -- Sound data (bank $1A)
 ; Bank $1A, $1A:8000-$1A:FFFF. Included by main.asm in segment BANK1A.
 ;
-; Data uploaded to the sound CPU (read by sub_009429, see
-; sound/spc_upload.asm) and compressed graphics (sub_0094A9).
+; Data uploaded to the sound CPU (read by upload_spc_raw_block, see
+; sound/spc_upload.asm) and compressed graphics (decompress_chunk).
 ;
 ; Data only (no labels, no code). Each block starts at a CDL comment.
 
@@ -1193,7 +1193,7 @@
 	.byte	$83, $80, $B5, $00, $01, $0C, $82, $3F, $81, $00, $FE, $85, $D3, $80, $B0, $82
 	.byte	$D5, $09, $DF, $09, $E1, $00, $E9, $84, $81, $CB, $81, $DC, $01, $E9, $8A, $FF
 	.byte	$0E, $0C, $C3, $8F, $C3, $90, $C3, $91, $C3, $01, $D0, $A6, $1F
-	; CDL: read by sub_009429
+	; CDL: read by upload_spc_raw_block
 	.byte	$0C, $30, $AD, $32, $FC, $34, $28, $38, $2E, $3A, $B5, $3C, $F4, $33, $50, $50
 	.byte	$F5, $05, $46, $02, $EA, $38, $E2, $12, $EE, $00, $E3, $08, $F2, $03, $EF, $BE
 	.byte	$7F, $FA, $28, $D2, $00, $27, $BE, $63, $5F, $EE, $50, $FA, $96, $D2, $00, $2D
@@ -1701,7 +1701,7 @@
 	.byte	$E2, $02, $E3, $09, $FF, $B6, $E4, $B5, $E4, $B4, $E4, $B3, $E4, $FF, $94, $C6
 	.byte	$94, $D0, $94, $DA, $94, $63, $64, $60, $FF, $EA, $49, $E2, $16, $EE, $7F, $E3
 	.byte	$09, $FA, $96, $D2, $00, $FF
-	; CDL: read by sub_0094A9
+	; CDL: read by decompress_chunk
 	.byte	$B9, $09, $81, $0F, $A0, $8F, $8E, $87, $01, $1C, $03, $19, $07, $33, $0F, $03
 	.byte	$E9, $82, $61, $1F, $EE, $91, $96, $77, $2C, $EF, $6D, $EE, $D9, $DE, $DB, $DC
 	.byte	$F3, $FC, $F7, $F8, $E7, $F8, $08, $A6, $10, $10, $20, $20, $00, $00, $00, $20

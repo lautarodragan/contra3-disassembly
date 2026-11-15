@@ -207,7 +207,7 @@ sub_00D078:
 	tay
 	stx	zp_FA
 	ldx	a:data_059E4A,y
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldx	zp_FA
 	rtl
 
@@ -291,7 +291,7 @@ sub_00D107:
 	rep	#$20
 	.a16
 	ldy	a:wram_1620
-	jsl	f:sub_008D41
+	jsl	f:begin_vram_transfer
 loc_00D11D:
 	lda	a:wram_161C
 	tay
@@ -351,7 +351,7 @@ loc_00D196:
 	beq	loc_00D19D
 	brl	loc_00D11D
 loc_00D19D:
-	jsl	f:sub_008DB0
+	jsl	f:end_vram_transfer
 	sep	#$20
 	.a8
 	lda	#$05
@@ -515,7 +515,7 @@ sub_00D2F8:
 	stz	$24,x
 	stx	zp_FC
 	ldx	#.loword(data_059FBA)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldx	zp_FC
 	rtl
 loc_00D323:

@@ -900,7 +900,7 @@ sub_04869A:
 	stz	$16,x
 	phx
 	ldx	#.loword(data_05EB45)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	plx
 	lda	#$0004
 	jsl	f:start_palette_anim
@@ -1808,7 +1808,7 @@ loc_048E0D:
 sub_048E14:
 	phx
 	ldx	#.loword(data_05ECD9)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	plx
 	lda	#$FFFC
 	sta	a:wram_168E
@@ -1923,7 +1923,7 @@ sub_048F05:
 	sta	$24,x
 	phx
 	ldx	#.loword(data_05ECD0)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	plx
 loc_048F1D:
 	jml	f:loc_00D5ED
@@ -2120,7 +2120,7 @@ sub_0490B2:
 	jsl	f:queue_sound
 	phx
 	ldx	#.loword(data_05ECD0)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	plx
 loc_0490DE:
 	jsr	a:sub_049878
@@ -6253,7 +6253,7 @@ loc_04B0E7:
 	jsl	f:queue_sound
 	phx
 	ldx	#.loword(data_059EC9)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	plx
 	lda	#$0080
 	sta	$24,x
@@ -6270,7 +6270,7 @@ loc_04B10B:
 loc_04B10C:
 	phx
 	ldx	#$F497
-	jsl	f:sub_00994F
+	jsl	f:request_song_set
 	plx
 	inc	$12,x
 
@@ -10577,7 +10577,7 @@ sub_04D316:
 	sta	$24,x
 	phx
 	ldx	#.loword(data_05F286)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	plx
 loc_04D32E:
 	rtl

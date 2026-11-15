@@ -75,7 +75,7 @@ sub_00FDFC:
 	stz	a:wram_1682
 	lda	#$0040
 	sta	a:wram_167A
-	jml	f:sub_00994F
+	jml	f:request_song_set
 
 sub_00FE0F:
 	lda	a:wram_167A

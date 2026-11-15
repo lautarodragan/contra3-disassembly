@@ -1385,11 +1385,11 @@ set_intro_scroll:
 ; Runs the loader lists data_05CF33 and data_05CF41.
 load_topdown_common_assets:
 	ldx	#.loword(data_05CF33)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	jsl	f:sub_00E369
 	ldx	#.loword(data_05CF41)
-	jsl	f:sub_0090A8
-	jsl	f:sub_008CFF
+	jsl	f:load_data_list
+	jsl	f:run_vram_queue
 	rts
 
 ; BG maps/character bases, BG mode 1 + BG3 priority, sprites; display off.
@@ -1508,7 +1508,7 @@ sub_028B4B:
 ; Loads stage 2's graphics (loader list data_05CF2A) and palettes.
 load_stage2_assets:
 	ldx	#.loword(data_05CF2A)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldy	#$CFB2
 	jsl	f:sub_009982
 	jsl	f:sub_04DB02
@@ -1517,7 +1517,7 @@ load_stage2_assets:
 ; Loads stage 5's graphics and palettes.
 load_stage5_assets:
 	ldx	#.loword(data_05D01F)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldy	#$D056
 	jsl	f:sub_009982
 	jsl	f:sub_04DB02
@@ -1526,11 +1526,11 @@ load_stage5_assets:
 ; Loads the stage 2 boss graphics and palettes.
 load_stage2_boss_assets:
 	ldx	#$F46B
-	jsl	f:sub_0098D4
+	jsl	f:load_song_set
 	ldx	#.loword(data_05CFCF)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldx	#.loword(data_05CFD8)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldy	#$D006
 	jsl	f:sub_009982
 	jsl	f:sub_04DB02
@@ -1539,11 +1539,11 @@ load_stage2_boss_assets:
 ; Loads the stage 5 boss graphics and palettes.
 load_stage5_boss_assets:
 	ldx	#$F46B
-	jsl	f:sub_0098D4
+	jsl	f:load_song_set
 	ldx	#.loword(data_05D073)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldx	#.loword(data_05D07C)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldy	#$D0AA
 	jsl	f:sub_009982
 	jsl	f:sub_04DB02

@@ -1,419 +1,435 @@
 ; sound/sound_load.asm -- Song set loading and sound streaming
 ; Bank $00, $00:9627-$00:9970. Included by main.asm in segment BANK00.
 ;
-; sub_0098D4 loads a song set (pointer in X) into the sound CPU through
-; sub_0098E2; sub_00994F requests one for the main loop (sub_00995A).
-; sub_009627..sub_00988E (never run in the traces) stream data through APUIO2.
+; Music and sound effects come in "song sets": data lists of type 2
+; (engine/gfx_loader.asm) in bank $05, in the table song_lists. load_song_set
+; (X = list) stops the sound (SOUND_CMD_STOP), makes the running driver enter
+; its upload mode (SOUND_CMD_UPLOAD, start_song_set_upload), uploads the list
+; and then lets the queue run again; apu_pending_cmd = $FF meanwhile.
+; request_song_set does the same from the main loop instead of the NMI: it
+; stores the list in pending_spc_list and service_song_set_request (main
+; loop, engine/reset.asm) uploads it, while the NMI keeps running the game.
+;
+; unused_spc_stream_list .. unused_check_spc_busy never run in the traces
+; (no caller): a second protocol through APUIO2/3 ($AABB/$A0B0 handshake,
+; address, then bytes tagged with a 7-bit counter) to send data to the
+; driver while it runs, and a request/status scheme in the LOADER_SPC context
+; (LDR_SPC_STREAM_*).
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_009627:
+unused_spc_stream_list:
 	; (not executed in the CDL traces)
 	.a16
 	lda	f:$050000,x
 	and	#$00FF
-	beq	loc_009633
-	brl	loc_00978C
-loc_009633:
+	beq	@no_stream
+	brl	unused_request_stream
+@no_stream:
 	jsl	f:stop_sound_now
 	lda	f:$050001,x
 	and	#$00FF
-	bne	loc_009643
-	brl	loc_0096F8
-loc_009643:
+	bne	@compressed_list
+	brl	unused_stream_raw_list
+@compressed_list:
 	php
 	phd
-	lda	#$1F00
+	lda	#LOADER_SPC
 	pha
 	pld
 	lda	#$2C00
-	sta	$03
+	sta	LDR_RING
 	sep	#$20
 	.a8
 	lda	#$7E
-	sta	$05
+	sta	LDR_RING+2
 	rep	#$20
 	.a16
-	stz	$12
+	stz	LDR_PENDING
 	lda	#$0001
-	sta	$16
+	sta	LDR_FLAGS
 	inx
 	inx
-	stx	$18
-loc_009662:
-	ldx	$18
+	stx	LDR_LIST
+@loop:
+	ldx	LDR_LIST
 	lda	f:$050000,x
 	cmp	#$FFFF
-	beq	loc_009672
-	jsr	a:sub_00967D
-	bra	loc_009662
-loc_009672:
-	stz	$16
-	stz	$12
-	stz	$10
-	stz	$1C
+	beq	@end
+	jsr	a:unused_stream_compressed_block
+	bra	@loop
+@end:
+	stz	LDR_FLAGS
+	stz	LDR_PENDING
+	stz	LDR_ACTIVE
+	stz	LDR_RING_LIMIT
 	pld
 	plp
 	rtl
 
-sub_00967D:
+unused_stream_compressed_block:
 	; (not executed in the CDL traces)
 	lda	#$0001
-	sta	$26
-	stz	$10
-	stz	$1C
-	stz	$20
+	sta	LDR_SPC_STREAM_ON
+	stz	LDR_ACTIVE
+	stz	LDR_RING_LIMIT
+	stz	LDR_SPC_COUNTER
 	lda	#$AABB
-	jsr	a:sub_0096EF
+	jsr	a:write_apuio2_wait
 	lda	#$A0B0
-	jsr	a:sub_0096EF
-	ldx	$18
+	jsr	a:write_apuio2_wait
+	ldx	LDR_LIST
 	lda	f:$050000,x
-	sta	$22
+	sta	LDR_SPC_DEST
 	sep	#$20
 	.a8
 	lda	#$80
 	xba
-	lda	$22
+	lda	LDR_SPC_DEST
 	rep	#$20
 	.a16
-	jsr	a:sub_0096EF
+	jsr	a:write_apuio2_wait
 	sep	#$20
 	.a8
 	lda	#$81
 	xba
-	lda	$23
+	lda	LDR_SPC_DEST+1
 	rep	#$20
 	.a16
-	jsr	a:sub_0096EF
+	jsr	a:write_apuio2_wait
 	inx
 	inx
-	stx	$18
-loc_0096B8:
-	jsl	f:sub_00949C
-	jsr	a:sub_0096CA
-	ldx	$10
-	bne	loc_0096B8
+	stx	LDR_LIST
+@loop:
+	jsl	f:decompress_ring
+	jsr	a:unused_stream_ring
+	ldx	LDR_ACTIVE
+	bne	@loop
 	lda	#$BBAA
-	jsr	a:sub_0096EF
+	jsr	a:write_apuio2_wait
 	rts
 
-sub_0096CA:
+unused_stream_ring:
 	; (not executed in the CDL traces)
-	ldy	$1A
-	cpy	$0C
-	beq	loc_0096EA
-loc_0096D0:
+	ldy	LDR_RING_DONE
+	cpy	LDR_RING_POS
+	beq	@done
+@loop:
 	sep	#$20
 	.a8
-	lda	$20
+	lda	LDR_SPC_COUNTER
 	and	#$7F
 	xba
-	lda	[$03],y
+	lda	[LDR_RING],y
 	iny
 	rep	#$20
-loc_0096DC:
+@wait:
 	.a16
 	sta	a:APUIO2
 	cmp	a:APUIO2
-	bne	loc_0096DC
-	inc	$20
-	cpy	$0C
-	bne	loc_0096D0
-loc_0096EA:
-	lda	$0C
-	sta	$1A
+	bne	@wait
+	inc	LDR_SPC_COUNTER
+	cpy	LDR_RING_POS
+	bne	@loop
+@done:
+	lda	LDR_RING_POS
+	sta	LDR_RING_DONE
 	rts
 
-sub_0096EF:
+write_apuio2_wait:
 	; (not executed in the CDL traces)
 	sta	a:APUIO2
-loc_0096F2:
+@wait:
 	cmp	a:APUIO2
-	bne	loc_0096F2
+	bne	@wait
 	rts
-loc_0096F8:
+unused_stream_raw_list:
 	php
 	phd
 	rep	#$20
 	inx
 	inx
-	stx	$18
-loc_009700:
-	ldx	$18
+	stx	LDR_LIST
+@loop:
+	ldx	LDR_LIST
 	lda	f:$050000,x
 	cmp	#$FFFF
-	beq	loc_009710
-	jsr	a:sub_009713
-	bra	loc_009700
-loc_009710:
+	beq	@end
+	jsr	a:unused_stream_raw_block
+	bra	@loop
+@end:
 	pld
 	plp
 	rtl
 
-sub_009713:
+unused_stream_raw_block:
 	; (not executed in the CDL traces)
-	stz	$20
+	stz	LDR_SPC_COUNTER
 	lda	#$AABB
-	jsr	a:sub_0096EF
+	jsr	a:write_apuio2_wait
 	lda	#$A0B0
-	jsr	a:sub_0096EF
-	ldx	$18
+	jsr	a:write_apuio2_wait
+	ldx	LDR_LIST
 	lda	f:$050000,x
-	sta	$22
+	sta	LDR_SPC_DEST
 	sep	#$20
 	.a8
 	lda	#$80
 	xba
-	lda	$22
+	lda	LDR_SPC_DEST
 	rep	#$20
 	.a16
-	jsr	a:sub_0096EF
+	jsr	a:write_apuio2_wait
 	sep	#$20
 	.a8
 	lda	#$81
 	xba
-	lda	$23
+	lda	LDR_SPC_DEST+1
 	rep	#$20
 	.a16
-	jsr	a:sub_0096EF
+	jsr	a:write_apuio2_wait
 	inx
 	inx
-	stx	$18
+	stx	LDR_LIST
 	sep	#$20
 	.a8
 	lda	f:$050002,x
-	sta	$05
+	sta	LDR_RING+2
 	rep	#$20
 	.a16
 	lda	f:$050000,x
 	dec	a
 	dec	a
-	sta	$03
+	sta	LDR_RING
 	inx
 	inx
 	inx
-	stx	$18
-	lda	[$03]
-	sta	$08
-	inc	$03
-	inc	$03
-	jsr	a:sub_00976E
+	stx	LDR_LIST
+	lda	[LDR_RING]
+	sta	LDR_SRC_END
+	inc	LDR_RING
+	inc	LDR_RING
+	jsr	a:unused_stream_raw_bytes
 	lda	#$BBAA
-	jsr	a:sub_0096EF
+	jsr	a:write_apuio2_wait
 	rts
 
-sub_00976E:
+unused_stream_raw_bytes:
 	; (not executed in the CDL traces)
 	ldy	#$0000
-loc_009771:
+@loop:
 	sep	#$20
 	.a8
-	lda	$20
+	lda	LDR_SPC_COUNTER
 	and	#$7F
 	xba
-	lda	[$03],y
+	lda	[LDR_RING],y
 	iny
 	rep	#$20
 	.a16
 	sta	a:APUIO2
-loc_009780:
+@wait:
 	cmp	a:APUIO2
-	bne	loc_009780
-	inc	$20
-	cpy	$08
-	bcc	loc_009771
+	bne	@wait
+	inc	LDR_SPC_COUNTER
+	cpy	LDR_SRC_END
+	bcc	@loop
 	rts
-loc_00978C:
-	stx	a:wram_1F2C
-	stz	a:wram_1F26
+; D is 0 here as far as the code shows: the stz $16 below is probably meant
+; for LOADER_SPC+LDR_FLAGS.
+unused_request_stream:
+	stx	a:pending_spc_list
+	stz	a:LOADER_SPC+LDR_SPC_STREAM_ON
 	lda	f:$050001,x
 	and	#$00FF
 	ora	#$C000
-	sta	a:wram_1F2E
+	sta	a:LOADER_SPC+LDR_SPC_STREAM_STATUS
 	stz	$5A
 	stz	$6A
 	stz	$16
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_0097A6:
+unused_service_stream:
 	; (not executed in the CDL traces)
 	phd
-	ldy	#$1F00
+	ldy	#LOADER_SPC
 	phy
 	pld
-	lda	$16
-	beq	loc_0097B8
+	lda	LDR_FLAGS
+	beq	@check_request
 	cmp	#$0004
-	beq	loc_0097B8
-	brl	loc_00985B
-loc_0097B8:
-	ldx	$2C
-	bne	loc_0097BF
-	brl	loc_00985B
-loc_0097BF:
+	beq	@check_request
+	brl	@exit
+@check_request:
+	ldx	LDR_SPC_PENDING_LIST
+	bne	@start
+	brl	@exit
+@start:
 	lda	#$0001
 	sta	$2A
-	sta	$26
-	ldx	$2C
-	stz	$2C
+	sta	LDR_SPC_STREAM_ON
+	ldx	LDR_SPC_PENDING_LIST
+	stz	LDR_SPC_PENDING_LIST
 	stz	$2A
 	cpx	#$0000
-	bne	loc_0097D4
-	brl	loc_00985B
-loc_0097D4:
-	jsl	f:sub_009341
+	bne	@upload
+	brl	@exit
+@upload:
+	jsl	f:load_spc_list
 	lda	#$0001
-	sta	$12
+	sta	LDR_PENDING
 	lda	#$0002
-	sta	$16
-	stz	$10
-	stz	$1C
-	stz	$20
+	sta	LDR_FLAGS
+	stz	LDR_ACTIVE
+	stz	LDR_RING_LIMIT
+	stz	LDR_SPC_COUNTER
 	lda	#$AABB
-	jsl	f:sub_00987B
+	jsl	f:stream_write_apuio2
 	lda	#$A0B0
-	jsl	f:sub_00987B
-	ldx	$18
+	jsl	f:stream_write_apuio2
+	ldx	LDR_LIST
 	sep	#$20
 	.a8
 	lda	f:$050000,x
-	sta	$24
+	sta	LDR_SPC_STREAM_ID
 	inx
 	rep	#$20
 	.a16
 	lda	f:$050000,x
-	sta	$22
+	sta	LDR_SPC_DEST
 	sep	#$20
 	.a8
 	lda	#$80
 	xba
-	lda	$22
+	lda	LDR_SPC_DEST
 	rep	#$20
 	.a16
-	jsl	f:sub_00987B
+	jsl	f:stream_write_apuio2
 	sep	#$20
 	.a8
 	lda	#$81
 	xba
-	lda	$23
+	lda	LDR_SPC_DEST+1
 	rep	#$20
 	.a16
-	jsl	f:sub_00987B
+	jsl	f:stream_write_apuio2
 	inx
 	inx
-	stx	$18
-loc_009827:
-	jsl	f:sub_0094A9
-	jsl	f:sub_00988E
-	lda	$26
-	beq	loc_00985D
-	ldx	$10
-	bne	loc_009827
+	stx	LDR_LIST
+@loop:
+	jsl	f:decompress_chunk
+	jsl	f:stream_ring_to_apuio2
+	lda	LDR_SPC_STREAM_ON
+	beq	@aborted
+	ldx	LDR_ACTIVE
+	bne	@loop
 	lda	#$BBAA
-	jsl	f:sub_00987B
-	lda	$16
+	jsl	f:stream_write_apuio2
+	lda	LDR_FLAGS
 	cmp	#$0002
-	bne	loc_00985D
-	lda	$24
+	bne	@aborted
+	lda	LDR_SPC_STREAM_ID
 	and	#$0001
 	asl	a
 	tax
-	lda	$24
+	lda	LDR_SPC_STREAM_ID
 	and	#$00FF
-	sta	$2E,x
-	stz	$16
-	stz	$12
-	stz	$10
-	stz	$1C
-loc_00985B:
+	sta	LDR_SPC_STREAM_STATUS,x
+	stz	LDR_FLAGS
+	stz	LDR_PENDING
+	stz	LDR_ACTIVE
+	stz	LDR_RING_LIMIT
+@exit:
 	pld
 	rtl
-loc_00985D:
+@aborted:
 	lda	#$BBAA
-	jsl	f:sub_00987B
-	lda	$24
+	jsl	f:stream_write_apuio2
+	lda	LDR_SPC_STREAM_ID
 	and	#$0001
 	asl	a
 	tax
-	lda	$24
+	lda	LDR_SPC_STREAM_ID
 	and	#$00FF
 	ora	#$8000
-	sta	$2E,x
+	sta	LDR_SPC_STREAM_STATUS,x
 	lda	#$0004
-	sta	$16
+	sta	LDR_FLAGS
 	rtl
 
-sub_00987B:
+stream_write_apuio2:
 	; (not executed in the CDL traces)
 	rep	#$20
-	sta	$28
-loc_00987F:
-	lda	$26
-	beq	loc_00988D
-	lda	$28
+	sta	LDR_SPC_PORT_WORD
+@loop:
+	lda	LDR_SPC_STREAM_ON
+	beq	@done
+	lda	LDR_SPC_PORT_WORD
 	sta	a:APUIO2
 	cmp	a:APUIO2
-	bne	loc_00987F
-loc_00988D:
+	bne	@loop
+@done:
 	rtl
 
-sub_00988E:
+stream_ring_to_apuio2:
 	; (not executed in the CDL traces)
 	rep	#$20
-	ldy	$1A
-	cpy	$0C
-	beq	loc_0098B8
-loc_009896:
+	ldy	LDR_RING_DONE
+	cpy	LDR_RING_POS
+	beq	@done
+@loop:
 	sep	#$20
 	.a8
-	lda	$20
+	lda	LDR_SPC_COUNTER
 	and	#$7F
 	xba
-	lda	[$03],y
+	lda	[LDR_RING],y
 	iny
 	rep	#$20
 	.a16
-	sta	$28
-loc_0098A4:
-	lda	$26
-	beq	loc_0098B8
-	lda	$28
+	sta	LDR_SPC_PORT_WORD
+@wait:
+	lda	LDR_SPC_STREAM_ON
+	beq	@done
+	lda	LDR_SPC_PORT_WORD
 	sta	a:APUIO2
 	cmp	a:APUIO2
-	bne	loc_0098A4
-	inc	$20
-	cpy	$0C
-	bne	loc_009896
-loc_0098B8:
+	bne	@wait
+	inc	LDR_SPC_COUNTER
+	cpy	LDR_RING_POS
+	bne	@loop
+@done:
 	rep	#$20
-	lda	$0C
-	sta	$1A
+	lda	LDR_RING_POS
+	sta	LDR_RING_DONE
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_0098BF:
+unused_check_spc_busy:
 	; (not executed in the CDL traces)
 	rep	#$20
-	lda	a:wram_1F2C
-	bne	loc_0098D3
-	lda	a:wram_1F16
-	beq	loc_0098D3
+	lda	a:pending_spc_list
+	bne	@done
+	lda	a:LOADER_SPC+LDR_FLAGS
+	beq	@done
 	cmp	#$0004
-	bne	loc_0098D3
+	bne	@done
 	lda	#$0000
-loc_0098D3:
+@done:
 	rtl
 
-sub_0098D4:
+; X = song set list (bank $05). Uploads it now (in the NMI: the game waits).
+load_song_set:
 	rep	#$30
 	lda	#$00FF
 	sta	apu_pending_cmd
-	jsl	f:sub_0098E2
+	jsl	f:upload_spc_list
 	stz	apu_pending_cmd
 	rtl
 
-sub_0098E2:
+; X = song set list: empties the sound queue, stops the driver and uploads
+; the list through load_spc_list_entries.
+upload_spc_list:
 	rep	#$20
 	stz	sound_queue_read
 	stz	sound_queue_write
@@ -423,30 +439,32 @@ sub_0098E2:
 	inx
 	php
 	phd
-	ldy	#$1F00
+	ldy	#LOADER_SPC
 	lda	#$2C00
-	jsr	a:sub_009271
+	jsr	a:init_loader_context
 	rep	#$20
 	and	#$0001
-	sta	$16	; $1F16 (D=$1F00)
-	jsr	a:sub_00990E
+	sta	LDR_FLAGS	; $1F16 (D=$1F00)
+	jsr	a:start_song_set_upload
 	lda	#$0001
-	sta	$20	; $1F20 (D=$1F00)
-	jmp	a:loc_00935A
+	sta	LDR_SPC_COUNTER	; $1F20 (D=$1F00)
+	jmp	a:load_spc_list_entries
 
-sub_00990E:
+; Sends SOUND_CMD_STOP and SOUND_CMD_UPLOAD (waiting for each echo), then an
+; IPL-style start of a transfer to $3000 ($CC kick) and the first counter.
+start_song_set_upload:
 	sep	#$20
 	.a8
-	lda	#$84
+	lda	#SOUND_CMD_STOP
 	sta	a:APUIO0
-loc_009915:
+@wait_stop:
 	cmp	a:APUIO0
-	bne	loc_009915
+	bne	@wait_stop
 	lda	#$FF
-loc_00991C:
+@wait_upload:
 	sta	a:APUIO0
 	cmp	a:APUIO0
-	bne	loc_00991C
+	bne	@wait_upload
 	lda	#$00
 	sta	a:APUIO2
 	lda	#$30
@@ -459,35 +477,37 @@ loc_00991C:
 	.a16
 	sta	a:APUIO0
 	sep	#$20
-loc_00993D:
+@wait_kick:
 	.a8
 	cmp	a:APUIO0
-	bne	loc_00993D
+	bne	@wait_kick
 	lda	#$00
 	sta	a:APUIO0
-loc_009947:
+@wait_start:
 	cmp	a:APUIO0
-	bne	loc_009947
+	bne	@wait_start
 	rep	#$20
 	.a16
 	rts
 
-sub_00994F:
+; X = song set list: uploaded later by the main loop.
+request_song_set:
 	rep	#$20
 	lda	#$00FF
 	sta	apu_pending_cmd
-	stx	a:wram_1F2C
+	stx	a:pending_spc_list
 	rtl
 
-sub_00995A:
+; Main loop: uploads pending_spc_list when requested (apu_pending_cmd = $FF).
+service_song_set_request:
 	rep	#$20
 	lda	apu_pending_cmd
 	cmp	#$00FF
-	bne	loc_009970
-	ldx	a:wram_1F2C
-	jsl	f:sub_0098E2
+	bne	@done
+	ldx	a:pending_spc_list
+	jsl	f:upload_spc_list
 	stz	sound_queue_read
 	stz	sound_queue_write
 	stz	apu_pending_cmd
-loc_009970:
+@done:
 	rtl

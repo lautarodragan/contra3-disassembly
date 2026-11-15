@@ -137,11 +137,11 @@ rng_lo              = $E8	; random number generator state, low word (next_random
 zp_E9               = $E9
 rng_hi              = $EA	; random number generator state, high word
 zp_EB               = $EB
-zp_F0               = $F0
-zp_F2               = $F2
-zp_F4               = $F4
-zp_F6               = $F6
-zp_F8               = $F8
+text_erase               = $F0
+typewriter_vram_addr               = $F2
+typewriter_ptr               = $F4
+typewriter_active               = $F6
+typewriter_attr               = $F8
 zp_FA               = $FA
 zp_FC               = $FC
 zp_FE               = $FE
@@ -1064,11 +1064,7 @@ wram_1EBC           = $1EBC
 htime_shadow        = $1EC0	; written to HTIMEL/H by nmi
 vtime_shadow        = $1EC2	; written to VTIMEL/H by nmi
 hdmaen_shadow       = $1EC4	; HDMAEN, written by nmi_frame_top_down
-wram_1F00           = $1F00
-wram_1F16           = $1F16
-wram_1F26           = $1F26
-wram_1F2C           = $1F2C
-wram_1F2E           = $1F2E
+pending_spc_list           = $1F2C
 p1_weapon_slot      = $1F80	; player 1 active weapon slot (player 2: $1FC0)
 wram_1F82           = $1F82
 p1_weapon_1         = $1F84	; player 1 weapon (WEAPON_*) of the first slot, fired when p1_weapon_slot = 2 (sub_00D656); PLAYER_WEAPON_1
@@ -1382,4 +1378,49 @@ TD_MAP_STAGE5_BOSS  = $0006	; stage 5 boss map
 ; Mode 7 scale (p1_m7_scale_x/y): texels per pixel, 8.8 fixed point.
 M7_SCALE_1X         = $0100	; 1:1, normal play
 M7_SCALE_MAP        = $0500	; zoomed out to the whole map (intro and map view)
+; ---- engine and sound constants ----
+
+; nmi_mode values (frame handler, tbl_nmi_frame_handlers)
+NMI_MODE_DEFAULT    = 0	; nmi_frame_default: menus, screens, loading
+NMI_MODE_SIDE_VIEW  = 2	; nmi_frame_side_view: side-view stages
+NMI_MODE_TOP_DOWN   = 4	; nmi_frame_top_down: top-down Mode 7 stages
+; Sound CPU commands (APUIO0) with a known meaning
+SOUND_CMD_STOP      = $84	; queued first by reset_sound_queue before screen changes and sent before uploads: stops all sound (by its use)
+SOUND_CMD_UPLOAD    = $FF	; sent by start_song_set_upload after SOUND_CMD_STOP: the driver enters its upload loop
+; VRAM DMA queue in $7E (run_vram_queue)
+VRAM_QUEUE          = $3000	; start of the queue entries ($7E:3000)
+VRAM_QUEUE_DATA     = $3400	; start of the data buffer ($7E:3400)
+
+; Loader contexts (engine/gfx_loader.asm): the loader and the decompressor
+; run with the direct page register D at one of these, so their direct-page
+; operands are the LDR_* fields below (the "; $13xx (D=$1300)" comments give
+; the address really accessed).
+LOADER_VRAM         = $1300	; context of VRAM lists (type 0, and 3+), ring buffer $7E:2400
+LOADER_WRAM         = $1340	; context of WRAM lists (type 1), ring buffer $7E:2800
+LOADER_SPC          = $1F00	; context of sound CPU lists (type 2), ring buffer $7E:2C00
+LDR_SRC             = $00	; long pointer to the compressed stream (or raw block)
+LDR_RING            = $03	; long pointer to the context's 1 KiB ring buffer (decompressor output and window)
+LDR_SRC_POS         = $06	; read offset in the stream (raw SPC block: its size)
+LDR_SRC_END         = $08	; stream length: its first word (offset where it ends)
+LDR_COPY            = $0A	; back-reference position in the ring / RLE byte (+1: command byte)
+LDR_RING_POS        = $0C	; write offset in the ring (bytes decompressed so far)
+LDR_COUNT           = $0E	; bytes left in the current command
+LDR_ACTIVE          = $10	; non-zero while a stream is being decompressed
+LDR_PENDING         = $12	; non-zero while a deferred list is being loaded frame by frame
+LDR_STATE           = $14	; decompressor state to resume in (0 = read a command; 1-5 = inside a command)
+LDR_FLAGS           = $16	; the list's flags byte (bit 0: deferred, or low bytes for types 3+)
+LDR_LIST            = $18	; pointer to the next entry of the list (bank $05)
+LDR_RING_DONE       = $1A	; ring offset up to which the output was consumed (DMAd/copied/sent)
+LDR_RING_LIMIT      = $1C	; ring offset where the decompressor stops this call
+LDR_VRAM_DEST       = $22	; VRAM: word address of the next chunk
+LDR_DMA_READY       = $26	; VRAM: a decompressed chunk waits for dma_vram_loader_chunk (NMI)
+LDR_WRAM_DEST       = $20	; WRAM: long pointer to the next destination byte
+LDR_SPC_COUNTER     = $20	; SPC: transfer counter written to APUIO0
+LDR_SPC_DEST        = $22	; SPC: address of the block
+LDR_SPC_STREAM_ID   = $24	; SPC streaming (never run): id byte of the stream
+LDR_SPC_STREAM_ON   = $26	; SPC streaming: cleared to abort the stream
+LDR_SPC_PORT_WORD   = $28	; SPC streaming: word being written to APUIO2/3
+LDR_SPC_PENDING_LIST = $2C	; SPC: song set list to upload (pending_spc_list)
+LDR_SPC_STREAM_STATUS = $2E	; SPC streaming: status word per stream (2 words)
+
 .endif

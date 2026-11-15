@@ -37,13 +37,13 @@ loc_00B6A4:
 	lda	#$0001
 	sta	a:tm_shadow
 	ldx	#$F4EF
-	jsl	f:sub_0098D4
+	jsl	f:load_song_set
 	lda	stage_number
 	asl	a
 	tay
 	lda	a:data_0587F1,y
 	tax
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldy	#$8880
 	jsl	f:sub_009982
 	inc	a:mode_step
@@ -137,7 +137,7 @@ stage_clear_wait_button:
 loc_00B773:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_B|JOY_Y|JOY_START|JOY_A|JOY_X
+	bit	#$D0C0
 	bne	loc_00B77D
 	rtl
 loc_00B77D:
@@ -175,19 +175,19 @@ draw_score_board:
 	jsr	a:update_high_score
 	ldx	#$8892
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	ldx	#$889D
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	ldx	#$88A8
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	ldx	#$88B2
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	ldx	#$88BD
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	ldx	#$1E44
 	ldy	#$58AD
 	lda	#$2000
@@ -285,7 +285,7 @@ loc_00B89C:
 draw_bcd_number:
 	sta	zp_FA
 	phx
-	jsl	f:sub_008D41
+	jsl	f:begin_vram_transfer
 	plx
 	lda	$03,x
 	jsl	f:draw_digit
@@ -301,13 +301,13 @@ draw_bcd_number:
 	jsl	f:draw_digit_high_nibble
 	lda	$00,x
 	jsl	f:draw_digit
-	jsl	f:sub_008DB0
+	jsl	f:end_vram_transfer
 	rtl
 
 draw_stage_bonus:
 	ldx	#$88C7
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	ldx	#$1C02
 	ldy	#$5AAD
 	lda	#$2000
@@ -317,7 +317,7 @@ draw_stage_bonus:
 draw_two_digit_number:
 	sta	zp_FA
 	phx
-	jsl	f:sub_008D41
+	jsl	f:begin_vram_transfer
 	plx
 	lda	$00,x
 	bpl	loc_00B8FC
@@ -343,7 +343,7 @@ loc_00B8FC:
 	jsl	f:draw_digit
 	lda	a:RDMPYL
 	jsl	f:draw_digit
-	jsl	f:sub_008DB0
+	jsl	f:end_vram_transfer
 	rtl
 
 draw_digit_high_nibble:
@@ -357,7 +357,7 @@ draw_digit:
 	inc	a
 	ora	zp_FA
 	phx
-	jsl	f:sub_008DA5
+	jsl	f:push_vram_word
 	plx
 	rtl
 
@@ -422,11 +422,11 @@ load_stage_graphics:
 	lda	a:ptrs_0588E1,y
 	tax
 	phy
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ply
 	lda	a:ptrs_0588ED,y
 	tax
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	rtl
 
 run_options:
@@ -441,13 +441,13 @@ tbl_options_steps:
 
 options_init:
 	ldx	#.loword(data_05CF41)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldy	#$8412
 	jsl	f:sub_009982
 	jsr	a:options_get_lives_index
 	ldx	#$8948
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	inc	a:mode_step
 	rtl
 
@@ -476,7 +476,7 @@ loc_00BA04:
 	bcs	loc_00BA20
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_START
+	bit	#$1000
 	bne	loc_00BA20
 	rtl
 loc_00BA20:
@@ -506,13 +506,13 @@ loc_00BA3E:
 options_move_cursor:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_UP|JOY_DOWN
+	bit	#$0C00
 	beq	loc_00BA7E
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
-	bit	#JOY_UP
+	bit	#$0800
 	bne	loc_00BA72
 	lda	a:options_cursor
 	inc	a
@@ -538,12 +538,12 @@ options_update_player_item:
 	cmp	#$0000
 	beq	loc_00BA91
 	ldx	#$8956
-	jsl	f:sub_009024
+	jsl	f:draw_text
 	jmp	a:options_draw_lives
 loc_00BA91:
 	ldx	#$8956
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	jsr	a:options_change_lives
 	jsr	a:options_store_lives
 	jmp	a:options_draw_lives
@@ -553,12 +553,12 @@ options_update_level_item:
 	cmp	#$0001
 	beq	loc_00BAB6
 	ldx	#$895F
-	jsl	f:sub_009024
+	jsl	f:draw_text
 	jmp	a:options_draw_level
 loc_00BAB6:
 	ldx	#$895F
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	jsr	a:options_change_level
 	jmp	a:options_draw_level
 
@@ -567,12 +567,12 @@ options_update_sound_item:
 	cmp	#$0002
 	beq	loc_00BAD8
 	ldx	#$8967
-	jsl	f:sub_009024
+	jsl	f:draw_text
 	jmp	a:options_draw_sound
 loc_00BAD8:
 	ldx	#$8967
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	jsr	a:options_change_sound
 	jmp	a:options_draw_sound
 
@@ -581,17 +581,17 @@ options_update_exit_item:
 	cmp	#$0003
 	beq	loc_00BAF9
 	ldx	#$896F
-	jsl	f:sub_009024
+	jsl	f:draw_text
 loc_00BAF7:
 	clc
 	rts
 loc_00BAF9:
 	ldx	#$896F
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_B|JOY_Y|JOY_A|JOY_X
+	bit	#$C0C0
 	beq	loc_00BAF7
 	sec
 	rts
@@ -599,14 +599,14 @@ loc_00BAF9:
 options_change_lives:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_LEFT|JOY_RIGHT
+	bit	#$0300
 	beq	loc_00BB41
 	; (not executed in the CDL traces)
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
-	bit	#JOY_RIGHT
+	bit	#$0100
 	bne	loc_00BB32
 	lda	a:options_lives_index
 	dec	a
@@ -665,30 +665,30 @@ loc_00BB78:
 	sta	a:WRDIVB
 	rep	#$20
 	.a16
-	jsl	f:sub_008D41
+	jsl	f:begin_vram_transfer
 	lda	a:RDDIVL
 	and	#$00FF
 	inc	a
 	ora	#$2000
-	jsl	f:sub_008DA5
+	jsl	f:push_vram_word
 	lda	a:RDMPYL
 	and	#$00FF
 	inc	a
 	ora	#$2000
-	jsl	f:sub_008DA5
-	jsl	f:sub_008DB0
+	jsl	f:push_vram_word
+	jsl	f:end_vram_transfer
 	rts
 
 options_change_level:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_LEFT|JOY_RIGHT
+	bit	#$0300
 	beq	loc_00BBDE
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
-	bit	#JOY_RIGHT
+	bit	#$0100
 	bne	loc_00BBCE
 	; (not executed in the CDL traces)
 	lda	a:option_level
@@ -713,20 +713,20 @@ loc_00BBDE:
 options_draw_level:
 	ldy	a:option_level
 	ldx	a:data_058903,y
-	jsl	f:sub_009024
+	jsl	f:draw_text
 	rts
 
 options_change_sound:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_LEFT|JOY_RIGHT
+	bit	#$0300
 	beq	loc_00BC11
 	; (not executed in the CDL traces)
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
-	bit	#JOY_RIGHT
+	bit	#$0100
 	bne	loc_00BC12
 	lda	a:option_sound
 	dec	a
@@ -758,7 +758,7 @@ options_apply_sound_mode:
 options_draw_sound:
 	ldy	a:option_sound
 	ldx	a:data_05892E,y
-	jsl	f:sub_009024
+	jsl	f:draw_text
 	rts
 
 run_final_score:
@@ -789,7 +789,7 @@ loc_00BC5B:
 	lda	#$0005
 	sta	a:tm_shadow
 	ldx	#.loword(data_058976)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldy	#$898E
 	jsl	f:sub_009982
 	jsl	f:draw_final_scores
@@ -817,7 +817,7 @@ loc_00BC97:
 final_score_wait_start:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_START
+	bit	#$1000
 	beq	loc_00BCA8
 	; (not executed in the CDL traces)
 	inc	a:mode_step
@@ -847,19 +847,19 @@ draw_final_scores:
 	jsr	a:update_high_score
 	ldx	#$8997
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	ldx	#$89A2
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	ldx	#$89AD
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	ldx	#$89B7
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	ldx	#$89C2
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	ldx	#$1E44
 	ldy	#$58ED
 	lda	#$2000

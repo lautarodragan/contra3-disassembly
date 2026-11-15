@@ -1,11 +1,21 @@
 ; sound/sound_queue.asm -- Sound command queue
 ; Bank $00, $00:85F3-$00:86AB. Included by main.asm in segment BANK00.
 ;
-; Commands for the sound CPU are queued in a ring at $0100 (queue_sound queues
-; the command in A, skipping repeats; $56 write index, $54 read index) and
-; sent one per frame to APUIO0 by send_queued_sound. reset_sound_queue resets the queue with
-; command $84.
+; Sound and music commands are single bytes written to APUIO0; the sound
+; CPU echoes them back on APUIO0 when it has taken them. queue_sound appends
+; the command in A to the ring at sound_queue ($0100, indexes
+; sound_queue_write / sound_queue_read), dropping a repeat of the last
+; command queued in the same frame (sound_last_queued, cleared by the NMI
+; frame handlers). send_queued_sound, once per frame, sends the next command
+; once the previous one (apu_pending_cmd) has been echoed.
+; send_sound_command_now sends one at once and waits for the echo (stage
+; music start). reset_sound_queue restarts the queue with SOUND_CMD_STOP.
+; check_sound_stream / sound_cmd_override belong to the streaming code in
+; sound/sound_load.asm, which never runs in the traces.
 
+; Once per frame (NMI): if the last command was echoed (or none is pending),
+; sends sound_cmd_override or the next queued command to APUIO0. Nothing is
+; sent while apu_pending_cmd is $FF (song set upload).
 send_queued_sound:
 	.a16
 	sep	#$30
@@ -42,6 +52,8 @@ send_queued_sound:
 	bne	check_sound_stream_index
 	rtl
 
+; A = command (8-bit). Sends it to APUIO0, waits for the echo and empties the
+; queue.
 send_sound_command_now:
 	php
 	sep	#$20
@@ -61,6 +73,7 @@ send_sound_command_now:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
+; (No caller.) Sends SOUND_CMD_STOP, waits for the echo and empties the queue.
 stop_sound_now:
 	; (not executed in the CDL traces)
 	php
@@ -68,26 +81,27 @@ stop_sound_now:
 	pha
 	sep	#$20
 	.a8
-	lda	#$84
-	stz	$52
+	lda	#SOUND_CMD_STOP
+	stz	apu_pending_cmd
 	sta	a:APUIO0
 @wait:
 	cmp	a:APUIO0
 	bne	@wait
-	stz	$54
-	stz	$56
-	stz	$5A
-	stz	$6A
+	stz	sound_queue_read
+	stz	sound_queue_write
+	stz	sound_stream_check_index
+	stz	sound_cmd_override
 	rep	#$20
 	.a16
 	pla
 	plp
 	rtl
 
+; Empties the queue and queues SOUND_CMD_STOP as its first command.
 reset_sound_queue:
 	sep	#$20
 	.a8
-	lda	#$84
+	lda	#SOUND_CMD_STOP
 	sta	a:sound_queue
 	stz	sound_queue_read
 	lda	#$01
@@ -99,6 +113,8 @@ reset_sound_queue:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
+; (No caller.) Checks the status word of stream 1 at $1F2E: when the stream
+; has finished (bit 15 clear), its id is sent through sound_cmd_override.
 check_sound_stream:
 	; (not executed in the CDL traces)
 	lda	#$0001
@@ -119,6 +135,9 @@ check_sound_stream_index:
 	stz	sound_stream_check_index
 	rtl
 
+; A = sound command (low byte). Appends it to the queue unless it repeats
+; sound_last_queued; on overflow the oldest entry is dropped. Keeps all
+; registers and flags.
 queue_sound:
 	phx
 	phy

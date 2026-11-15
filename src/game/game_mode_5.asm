@@ -23,7 +23,7 @@ tbl_sound_check_steps:
 sound_check_init:
 	; (not executed in the CDL traces)
 	ldx	#.loword(data_05CF41)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldy	#$8412
 	jsl	f:sub_009982
 	inc	a:mode_step
@@ -50,15 +50,15 @@ sound_check_input:
 	; (not executed in the CDL traces)
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_START
+	bit	#$1000
 	bne	loc_04D8EF
-	bit	#JOY_B
+	bit	#$8000
 	bne	loc_04D8E7
 	ldx	#$F347
 	lda	#$2400
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	ldx	#$F35A
-	jsl	f:sub_009024
+	jsl	f:draw_text
 	jsr	a:sound_check_change_id
 	jsr	a:sound_check_play
 	jsr	a:sound_check_draw_id
@@ -93,14 +93,14 @@ sound_check_change_id:
 	; (not executed in the CDL traces)
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_DPAD
+	bit	#$0F00
 	beq	loc_04D920
 	stz	a:sound_check_repeat_delay
 	bra	loc_04D945
 loc_04D920:
 	lda	joy1_held
 	ora	joy2_held
-	bit	#JOY_DPAD
+	bit	#$0F00
 	beq	loc_04D966
 	inc	a:sound_check_repeat_delay
 	bne	loc_04D934
@@ -115,7 +115,7 @@ loc_04D934:
 	lda	joy1_held
 	ora	joy2_held
 loc_04D945:
-	bit	#JOY_DOWN|JOY_RIGHT
+	bit	#$0500
 	bne	loc_04D957
 	lda	a:sound_check_id
 	dec	a
@@ -139,7 +139,7 @@ sound_check_play:
 	; (not executed in the CDL traces)
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_Y
+	bit	#$4000
 	beq	loc_04D988
 	ldx	a:sound_check_id
 	lda	f:data_1DCCE0,x
@@ -157,12 +157,12 @@ loc_04D989:
 	sbc	#$0060
 	asl	a
 	tay
-	lda	a:data_05F362,y
+	lda	a:song_lists,y
 	tax
 	phy
-	jsl	f:sub_0098D4
+	jsl	f:load_song_set
 	ply
-	lda	a:data_05F388,y
+	lda	a:song_start_commands,y
 	jsl	f:send_sound_command_now
 	ldx	a:sound_check_id
 	lda	f:data_1DCCE0,x
@@ -175,7 +175,7 @@ sound_check_draw_id:
 	ldy	#$5A52
 	lda	a:sound_check_id
 	sta	zp_FA
-	jsl	f:sub_008D41
+	jsl	f:begin_vram_transfer
 	lda	zp_FA
 	and	#$00F0
 	lsr	a
@@ -184,13 +184,13 @@ sound_check_draw_id:
 	lsr	a
 	jsr	a:hex_digit_to_tile
 	ora	#$2000
-	jsl	f:sub_008DA5
+	jsl	f:push_vram_word
 	lda	zp_FA
 	and	#$000F
 	jsr	a:hex_digit_to_tile
 	ora	#$2000
-	jsl	f:sub_008DA5
-	jsl	f:sub_008DB0
+	jsl	f:push_vram_word
+	jsl	f:end_vram_transfer
 	rts
 
 hex_digit_to_tile:

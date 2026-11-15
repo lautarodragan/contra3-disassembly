@@ -34,7 +34,7 @@ demo_init:
 	lda	a:demo_stages,y
 	sta	stage_number
 	jsr	a:demo_init_players
-	jsl	f:sub_04D9F1
+	jsl	f:load_stage_music
 	lda	stage_number
 	dec	a
 	sta	stage_index
@@ -56,7 +56,7 @@ demo_play:
 	beq	loc_00ADFF
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_START
+	bit	#$1000
 	bne	loc_00AE0B
 	jsr	a:demo_update_input
 	jsl	f:run_stage
@@ -389,7 +389,7 @@ loc_00B083:
 	rtl
 
 opening_load_title_screen:
-	jsl	f:sub_008DBE
+	jsl	f:reset_video_state
 	jsr	a:load_title_graphics
 	jsr	a:init_title_logo_zoomed_out
 	jsr	a:draw_title_texts
@@ -420,7 +420,7 @@ init_title_logo_zoomed_out:
 
 load_title_screen:
 	jsl	f:reset_sound_queue
-	jsl	f:sub_008DBE
+	jsl	f:reset_video_state
 	jsr	a:load_title_graphics
 	jsr	a:init_title_logo
 	jsr	a:draw_title_texts
@@ -436,13 +436,13 @@ load_title_graphics:
 	ldy	#$854B
 	jsl	f:sub_009982
 	ldx	#.loword(data_058527)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldx	#.loword(data_058530)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldx	#.loword(data_058539)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldx	#.loword(data_058542)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	rts
 
 init_title_logo:
@@ -465,15 +465,15 @@ init_title_logo:
 
 draw_title_texts:
 	ldx	#$8561
-	jsl	f:sub_009024
+	jsl	f:draw_text
 	ldx	#$8599
-	jsl	f:sub_009024
+	jsl	f:draw_text
 	ldx	#$85A6
-	jsl	f:sub_009024
+	jsl	f:draw_text
 	ldx	#$85B4
-	jsl	f:sub_009024
+	jsl	f:draw_text
 	ldx	#$85C2
-	jsl	f:sub_009024
+	jsl	f:draw_text
 	jsl	f:draw_title_menu_cursor
 	rts
 
@@ -600,9 +600,9 @@ loc_00B239:
 title_menu_update_cursor:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_START
+	bit	#$1000
 	bne	loc_00B2C3
-	bit	#JOY_SELECT|JOY_UP|JOY_DOWN
+	bit	#$2C00
 	beq	draw_title_menu_cursor
 	lda	#$0300
 	sta	a:title_menu_timeout
@@ -610,17 +610,17 @@ title_menu_update_cursor:
 	jsl	f:queue_sound
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_SELECT|JOY_DOWN
+	bit	#$2400
 	bne	loc_00B277
 	dec	a:title_menu_cursor
 	bpl	draw_title_menu_cursor
-	lda	#TITLE_OPTION
+	lda	#$0003
 	sta	a:title_menu_cursor
 	bra	draw_title_menu_cursor
 loc_00B277:
 	inc	a:title_menu_cursor
 	lda	a:title_menu_cursor
-	cmp	#TITLE_OPTION+1
+	cmp	#$0004
 	bcc	draw_title_menu_cursor
 	stz	a:title_menu_cursor
 
@@ -630,30 +630,30 @@ draw_title_menu_cursor:
 	tay
 	lda	a:data_05851F,y
 	ldx	#$8599
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	lda	a:title_menu_cursor
 	asl	a
 	tay
 	lda	a:data_05851D,y
 	ldx	#$85A6
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	lda	a:title_menu_cursor
 	asl	a
 	tay
 	lda	a:data_05851B,y
 	ldx	#$85B4
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	lda	a:title_menu_cursor
 	asl	a
 	tay
 	lda	a:data_058519,y
 	ldx	#$85C2
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	clc
 	rtl
 loc_00B2C3:
 	lda	a:title_menu_cursor
-	cmp	#TITLE_OPTION
+	cmp	#$0003
 	beq	loc_00B2D4
 	lda	#$006D
 	jsl	f:queue_sound
@@ -673,7 +673,7 @@ load_demo_stage_graphics:
 	tay
 	lda	a:ptrs_0585CB,y
 	tax
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	rts
 
 ; check_button_code_unused, check_30_lives_code, check_stage_select_code: never executed in the CDL traces (found
@@ -697,7 +697,7 @@ loc_00B300:
 loc_00B30B:
 	lda	joy1_held
 	ora	joy2_held
-	and	#JOY_DPAD
+	and	#$0F00
 	cmp	a:data_0586D3,y
 	bne	loc_00B33B
 	cpy	#$0000
@@ -715,7 +715,7 @@ loc_00B322:
 loc_00B332:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_X
+	bit	#$0040
 	bne	loc_00B33D
 loc_00B33B:
 	clc
@@ -742,7 +742,7 @@ loc_00B353:
 loc_00B35E:
 	lda	joy1_held
 	ora	joy2_held
-	and	#JOY_DPAD
+	and	#$0F00
 	cmp	a:data_0586D9,y
 	bne	loc_00B38E
 	cpy	#$0000
@@ -760,7 +760,7 @@ loc_00B375:
 loc_00B385:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_START
+	bit	#$1000
 	bne	loc_00B390
 loc_00B38E:
 	clc
@@ -789,7 +789,7 @@ loc_00B3AC:
 loc_00B3B7:
 	lda	joy1_held
 	ora	joy2_held
-	and	#JOY_DPAD
+	and	#$0F00
 	cmp	a:data_0586DF,y
 	bne	loc_00B3E7
 	cpy	#$0000
@@ -807,14 +807,14 @@ loc_00B3CE:
 loc_00B3DE:
 	lda	joy1_pressed
 	ora	joy2_pressed
-	bit	#JOY_START
+	bit	#$1000
 	bne	loc_00B3E9
 loc_00B3E7:
 	clc
 	rts
 loc_00B3E9:
 	lda	a:title_menu_cursor
-	cmp	#TITLE_OPTION
+	cmp	#$0003
 	beq	loc_00B3E7
 	lda	#$0059
 	jsl	f:queue_sound
@@ -960,13 +960,13 @@ konami_logo_init:
 	jsl	f:wait_nmi_and_disable_display
 	jsl	f:disable_display_and_nmi
 	jsl	f:reset_sound_queue
-	jsl	f:sub_008DBE
+	jsl	f:reset_video_state
 	jsl	f:clear_ram_1c00_1cff
 	lda	#$0009
 	sta	a:bgmode_shadow
 	lda	#$0001
 	ldx	#.loword(data_0587AB)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldy	#$87C3
 	jsl	f:sub_009982
 	lda	#$0400
@@ -990,7 +990,7 @@ konami_logo_sweep:
 	tay
 	ldx	a:data_058793,y
 	lda	#$2C00
-	jsl	f:sub_009015
+	jsl	f:draw_text_attr
 	inc	a:konami_logo_count1
 	lda	a:konami_logo_count1
 	and	#$0003

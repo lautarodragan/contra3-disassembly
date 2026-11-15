@@ -151,12 +151,12 @@ loc_00BE6E:
 	lda	#$0002
 	sta	a:ts_shadow
 	ldx	#.loword(data_058ADD)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldx	#.loword(data_058AD4)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldy	a:stage_layout
 	ldx	a:data_058A0D,y
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldx	#$1380
 	ldy	#$4000
 	jsl	f:sub_00C612
@@ -246,7 +246,7 @@ loc_00BF89:
 	bne	loc_00BF99
 	lda	a:p2_lives
 	bne	loc_00BF99
-	lda	#STAGE_STATE_EXIT
+	lda	#$0003
 	sta	a:stage_state
 loc_00BF99:
 	lda	a:wram_1688

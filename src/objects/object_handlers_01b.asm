@@ -3547,7 +3547,7 @@ sub_01EA21:
 	sta	$24,x
 	phx
 	ldx	#.loword(data_059E95)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	plx
 loc_01EA35:
 	rtl
@@ -4527,7 +4527,7 @@ sub_01F21F:
 	sta	f:wram_7E382A
 	phx
 	ldx	#.loword(data_059EB1)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	plx
 	inc	$12,x
 	lda	#$0020

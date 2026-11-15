@@ -1,29 +1,44 @@
 ; engine/decompress.asm -- Decompressor
 ; Bank $00, $00:949C-$00:9626. Included by main.asm in segment BANK00.
 ;
-; sub_0094A9 (and the entry sub_00949C) decompress graphics from banks
-; $06/$08-$1F. They run with D pointing at a loader context
-; ($1300/$1340/$1F00), so their direct-page operands are fields of that
-; context.
+; An LZ77-style decompressor with a 1 KiB window: the output goes to the
+; context's ring buffer (LDR_RING), which is also the window. It runs with D
+; at a loader context (LDR_* fields) and can stop at any byte and resume
+; later (LDR_STATE), so streams are decompressed in pieces: decompress_ring
+; fills the whole ring (1024 bytes), decompress_chunk the next $80 bytes; the
+; caller then consumes the bytes from LDR_RING_DONE to LDR_RING_POS. Both
+; start a new stream when LDR_ACTIVE is 0 (taking its long address from the
+; list at LDR_LIST, clearing the ring) and clear LDR_ACTIVE at its end.
+;
+; Stream format: a word, the stream length (including the word); then
+; commands, n = (byte & $1F) + 2 unless noted:
+;   $00-$7F  back-reference: copy (byte >> 2) + 2 bytes from ring position
+;            (((byte & 3) << 8 | next byte) + $21) & $3FF
+;   $80-$9F  (byte & $1F) literal bytes follow
+;   $A0-$BF  n times: a zero, then a literal byte (zero-interleaved bytes)
+;   $C0-$DF  n copies of the next byte
+;   $E0-$FF  n zeros
 
-sub_00949C:
+; Resets the ring and decompresses up to $400 bytes.
+decompress_ring:
 	rep	#$20
 	lda	#$0400
-	sta	$1C	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
-	stz	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
-	stz	$1A	; $131A (D=$1300) / $135A (D=$1340) / $1F1A (D=$1F00)
-	bra	loc_0094BA
+	sta	LDR_RING_LIMIT	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
+	stz	LDR_RING_POS	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	stz	LDR_RING_DONE	; $131A (D=$1300) / $135A (D=$1340) / $1F1A (D=$1F00)
+	bra	decompress_continue
 
-sub_0094A9:
+; Decompresses up to the next $80 bytes (the limit wraps in the ring).
+decompress_chunk:
 	rep	#$20
-	lda	$1C	; $131C (D=$1300) / $135C (D=$1340)
+	lda	LDR_RING_LIMIT	; $131C (D=$1300) / $135C (D=$1340)
 	and	#$03FF
-	sta	$0C	; $130C (D=$1300) / $134C (D=$1340)
-	sta	$1A	; $131A (D=$1300) / $135A (D=$1340)
+	sta	LDR_RING_POS	; $130C (D=$1300) / $134C (D=$1340)
+	sta	LDR_RING_DONE	; $131A (D=$1300) / $135A (D=$1340)
 	clc
 	adc	#$0080
-	sta	$1C	; $131C (D=$1300) / $135C (D=$1340)
-loc_0094BA:
+	sta	LDR_RING_LIMIT	; $131C (D=$1300) / $135C (D=$1340)
+decompress_continue:
 	sep	#$20
 	.a8
 	phb
@@ -32,223 +47,223 @@ loc_0094BA:
 	plb
 	rep	#$30
 	.a16
-	lda	$10	; $1310 (D=$1300) / $1350 (D=$1340) / $1F10 (D=$1F00)
-	bne	loc_009503
-	inc	$10	; $1310 (D=$1300) / $1350 (D=$1340) / $1F10 (D=$1F00)
-	ldx	$18	; $1318 (D=$1300) / $1358 (D=$1340) / $1F18 (D=$1F00)
+	lda	LDR_ACTIVE	; $1310 (D=$1300) / $1350 (D=$1340) / $1F10 (D=$1F00)
+	bne	@dispatch
+	inc	LDR_ACTIVE	; $1310 (D=$1300) / $1350 (D=$1340) / $1F10 (D=$1F00)
+	ldx	LDR_LIST	; $1318 (D=$1300) / $1358 (D=$1340) / $1F18 (D=$1F00)
 	lda	f:$050000,x
-	sta	$00	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
+	sta	LDR_SRC	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
 	inx
 	inx
 	sep	#$20
 	.a8
 	lda	f:$050000,x
-	sta	$02	; $1302 (D=$1300) / $1342 (D=$1340) / $1F02 (D=$1F00)
+	sta	LDR_SRC+2	; $1302 (D=$1300) / $1342 (D=$1340) / $1F02 (D=$1F00)
 	inx
-	stx	$18	; $1318 (D=$1300) / $1358 (D=$1340) / $1F18 (D=$1F00)
+	stx	LDR_LIST	; $1318 (D=$1300) / $1358 (D=$1340) / $1F18 (D=$1F00)
 	ldy	#$0000
-	stz	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
-	sty	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	stz	LDR_STATE	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
+	sty	LDR_RING_POS	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
 	rep	#$20
 	.a16
-	lda	[$00],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
-	sta	$08	; $1308 (D=$1300) / $1348 (D=$1340) / $1F08 (D=$1F00)
+	lda	[LDR_SRC],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
+	sta	LDR_SRC_END	; $1308 (D=$1300) / $1348 (D=$1340) / $1F08 (D=$1F00)
 	iny
 	iny
-	sty	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	sty	LDR_SRC_POS	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
 	ldy	#$03FE
 	lda	#$0000
-loc_0094F5:
-	sta	[$03],y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
+@clear_window:
+	sta	[LDR_RING],y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
 	dey
 	dey
-	bpl	loc_0094F5
-	bra	loc_009503
-loc_0094FD:
+	bpl	@clear_window
+	bra	@dispatch
+@stream_end:
 	.a8
-	stz	$10	; $1310 (D=$1300) / $1350 (D=$1340) / $1F10 (D=$1F00)
-loc_0094FF:
+	stz	LDR_ACTIVE	; $1310 (D=$1300) / $1350 (D=$1340) / $1F10 (D=$1F00)
+@exit:
 	plb
 	rep	#$20
 	.a16
 	rtl
-loc_009503:
+@dispatch:
 	sep	#$20
 	.a8
-	lda	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
-	beq	loc_009526
+	lda	LDR_STATE	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
+	beq	@next_command
 	cmp	#$01
-	bne	loc_009510
-	brl	loc_0095F9
-loc_009510:
+	bne	@not_state1
+	brl	@backref_resume
+@not_state1:
 	cmp	#$02
-	bne	loc_009517
-	brl	loc_0095B9
-loc_009517:
+	bne	@not_state2
+	brl	@literal_resume
+@not_state2:
 	cmp	#$03
-	bne	loc_00951E
-	brl	loc_009598
-loc_00951E:
+	bne	@not_state3
+	brl	@rle_resume
+@not_state3:
 	cmp	#$04
-	beq	loc_00954D
+	beq	@zi_loop
 	cmp	#$05
-	beq	loc_009565
-loc_009526:
-	ldy	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
-	cpy	$08	; $1308 (D=$1300) / $1348 (D=$1340) / $1F08 (D=$1F00)
-	bcs	loc_0094FD
-	lda	[$00],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
+	beq	@zi_literal
+@next_command:
+	ldy	LDR_SRC_POS	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	cpy	LDR_SRC_END	; $1308 (D=$1300) / $1348 (D=$1340) / $1F08 (D=$1F00)
+	bcs	@stream_end
+	lda	[LDR_SRC],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
 	iny
-	sty	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	sty	LDR_SRC_POS	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
 	cmp	#$80
-	bcs	loc_009538
-	brl	loc_0095D4
-loc_009538:
+	bcs	@not_backref
+	brl	@backref
+@not_backref:
 	cmp	#$A0
-	bcc	loc_0095B1
+	bcc	@literal_run
 	cmp	#$C0
-	bcc	loc_009546
+	bcc	@zero_interleaved
 	cmp	#$E0
-	bcc	loc_00957D
-	bcs	loc_009587
-loc_009546:
+	bcc	@rle_byte
+	bcs	@rle_zero
+@zero_interleaved:
 	and	#$1F
 	clc
 	adc	#$02
-	sta	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
-loc_00954D:
-	dec	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
-	bpl	loc_009554
-	brl	loc_009620
-loc_009554:
+	sta	LDR_COUNT	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
+@zi_loop:
+	dec	LDR_COUNT	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
+	bpl	@zi_zero
+	brl	@command_done
+@zi_zero:
 	lda	#$05
-	sta	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
+	sta	LDR_STATE	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
 	lda	#$00
-	ldy	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
-	sta	($03),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
+	ldy	LDR_RING_POS	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	sta	(LDR_RING),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
 	iny
-	sty	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
-	cpy	$1C	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
-	bcs	loc_0094FF
-loc_009565:
+	sty	LDR_RING_POS	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	cpy	LDR_RING_LIMIT	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
+	bcs	@exit
+@zi_literal:
 	lda	#$04
-	sta	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
-	ldy	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
-	lda	[$00],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
+	sta	LDR_STATE	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
+	ldy	LDR_SRC_POS	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	lda	[LDR_SRC],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
 	iny
-	sty	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
-	ldy	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
-	sta	($03),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
+	sty	LDR_SRC_POS	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	ldy	LDR_RING_POS	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	sta	(LDR_RING),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
 	iny
-	sty	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
-	cpy	$1C	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
-	bcc	loc_00954D
-	bra	loc_0094FF
-loc_00957D:
+	sty	LDR_RING_POS	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	cpy	LDR_RING_LIMIT	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
+	bcc	@zi_loop
+	bra	@exit
+@rle_byte:
 	pha
-	ldy	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
-	lda	[$00],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
+	ldy	LDR_SRC_POS	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	lda	[LDR_SRC],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
 	iny
-	sty	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
-	bra	loc_00958A
-loc_009587:
+	sty	LDR_SRC_POS	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	bra	@rle_start
+@rle_zero:
 	pha
 	lda	#$00
-loc_00958A:
-	sta	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
+@rle_start:
+	sta	LDR_COPY	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
 	lda	#$03
-	sta	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
+	sta	LDR_STATE	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
 	pla
 	and	#$1F
 	clc
 	adc	#$02
-	sta	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
-loc_009598:
-	lda	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
-	ldy	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
-loc_00959C:
-	dec	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
-	bmi	loc_0095AC
-	sta	($03),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
+	sta	LDR_COUNT	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
+@rle_resume:
+	lda	LDR_COPY	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
+	ldy	LDR_RING_POS	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+@rle_loop:
+	dec	LDR_COUNT	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
+	bmi	@rle_done
+	sta	(LDR_RING),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
 	iny
-	cpy	$1C	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
-	bcc	loc_00959C
-	sty	$0C	; $130C (D=$1300) / $134C (D=$1340)
-	brl	loc_0094FF
-loc_0095AC:
-	sty	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
-	brl	loc_009620
-loc_0095B1:
+	cpy	LDR_RING_LIMIT	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
+	bcc	@rle_loop
+	sty	LDR_RING_POS	; $130C (D=$1300) / $134C (D=$1340)
+	brl	@exit
+@rle_done:
+	sty	LDR_RING_POS	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	brl	@command_done
+@literal_run:
 	and	#$1F
-	sta	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
+	sta	LDR_COUNT	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
 	lda	#$02
-	sta	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
-loc_0095B9:
-	ldx	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
-loc_0095BB:
-	dec	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
-	bmi	loc_00961C
+	sta	LDR_STATE	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
+@literal_resume:
+	ldx	LDR_SRC_POS	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+@literal_loop:
+	dec	LDR_COUNT	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
+	bmi	@literal_done
 	txy
-	lda	[$00],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
+	lda	[LDR_SRC],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
 	iny
 	tyx
-	ldy	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
-	sta	($03),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
+	ldy	LDR_RING_POS	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	sta	(LDR_RING),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
 	iny
-	sty	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
-	cpy	$1C	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
-	bcc	loc_0095BB
-	stx	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
-	brl	loc_0094FF
-loc_0095D4:
-	sta	$0B	; $130B (D=$1300) / $134B (D=$1340) / $1F0B (D=$1F00)
+	sty	LDR_RING_POS	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	cpy	LDR_RING_LIMIT	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
+	bcc	@literal_loop
+	stx	LDR_SRC_POS	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	brl	@exit
+@backref:
+	sta	LDR_COPY+1	; $130B (D=$1300) / $134B (D=$1340) / $1F0B (D=$1F00)
 	lsr	a
 	lsr	a
 	clc
 	adc	#$02
-	sta	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
-	ldy	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
-	lda	[$00],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
+	sta	LDR_COUNT	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
+	ldy	LDR_SRC_POS	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	lda	[LDR_SRC],y	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
 	iny
-	sty	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
-	sta	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
+	sty	LDR_SRC_POS	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	sta	LDR_COPY	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
 	rep	#$20
 	.a16
-	lda	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
+	lda	LDR_COPY	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
 	sec
 	sbc	#$03DF
 	and	#$03FF
-	sta	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
+	sta	LDR_COPY	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
 	sep	#$20
 	.a8
 	lda	#$01
-	sta	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
-loc_0095F9:
-	ldx	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
-loc_0095FB:
-	dec	$0E	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
-	bmi	loc_009620
+	sta	LDR_STATE	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
+@backref_resume:
+	ldx	LDR_COPY	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
+@backref_loop:
+	dec	LDR_COUNT	; $130E (D=$1300) / $134E (D=$1340) / $1F0E (D=$1F00)
+	bmi	@command_done
 	txy
-	lda	($03),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
+	lda	(LDR_RING),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
 	iny
 	cpy	#$0400
-	bcc	loc_00960B
+	bcc	@backref_nowrap
 	ldy	#$0000
-loc_00960B:
+@backref_nowrap:
 	tyx
-	ldy	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
-	sta	($03),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
+	ldy	LDR_RING_POS	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	sta	(LDR_RING),y	; $1303 (D=$1300) / $1343 (D=$1340) / $1F03 (D=$1F00)
 	iny
-	sty	$0C	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
-	cpy	$1C	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
-	bcc	loc_0095FB
-	stx	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
-	brl	loc_0094FF
-loc_00961C:
-	stx	$06	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
-	bra	loc_009622
-loc_009620:
-	stz	$0A	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
-loc_009622:
-	stz	$14	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
-	brl	loc_009526
+	sty	LDR_RING_POS	; $130C (D=$1300) / $134C (D=$1340) / $1F0C (D=$1F00)
+	cpy	LDR_RING_LIMIT	; $131C (D=$1300) / $135C (D=$1340) / $1F1C (D=$1F00)
+	bcc	@backref_loop
+	stx	LDR_COPY	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
+	brl	@exit
+@literal_done:
+	stx	LDR_SRC_POS	; $1306 (D=$1300) / $1346 (D=$1340) / $1F06 (D=$1F00)
+	bra	@command_done_keep
+@command_done:
+	stz	LDR_COPY	; $130A (D=$1300) / $134A (D=$1340) / $1F0A (D=$1F00)
+@command_done_keep:
+	stz	LDR_STATE	; $1314 (D=$1300) / $1354 (D=$1340) / $1F14 (D=$1F00)
+	brl	@next_command

@@ -91,7 +91,7 @@ binary works locally.
 `tools/check_book_names.py` reads every code span and code block in the
 book and checks that the names in it exist:
 
-- generated labels such as `sub_0090A8` must be defined in `src/`, so
+- generated labels such as `load_data_list` must be defined in `src/`, so
   renaming a routine breaks the check until the pages that name it are
   updated;
 - other names that look like code (with an underscore, CamelCase, or upper

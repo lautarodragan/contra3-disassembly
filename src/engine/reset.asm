@@ -1,10 +1,22 @@
 ; engine/reset.asm -- Reset: cold boot, warm boot and the main loop
 ; Bank $00, $00:8000-$00:816B. Included by main.asm in segment BANK00.
 ;
-; The reset vector (reset) and the warm boot entry warm_boot (jumped to by
-; the soft-reset check in engine/joypad.asm): CPU, stack, PPU and RAM setup.
-; The main loop at the end only polls sub_00995A (sound); the game itself runs
-; in the NMI handler (engine/nmi.asm).
+; reset: native mode, stack at $1DFF, D = 0, DB = $05, NMI off, forced blank.
+; If boot_signature is not in RAM ($1E0A, ">JIN L<" + $0400), it is a cold
+; boot: $1E00-$1FFF is cleared, the signature written and the option
+; defaults set ($1E3C = 3 lives, $1E3E = 2 normal difficulty, ...). Either
+; way the sound driver is uploaded (loader list data_05F55B, type 2) and
+; warm_boot follows.
+;
+; warm_boot (also the target of the soft reset in read_joypads): clears VRAM,
+; $0000-$1DFF, $1F80-$1FFF and $7E:2000-$7F:FFFF, initialises the PPU
+; (init_ppu_registers), the VRAM queue, the palette buffer address and the
+; sound CPU context ($1F00), enables the display (start_display) and NMI
+; (nmi_mode 0), and falls into the main loop.
+;
+; The main loop only calls service_song_set_request (an upload of a song set
+; requested with request_song_set); everything else runs in the NMI handler
+; (engine/nmi.asm).
 
 reset:
 	.a8
@@ -81,7 +93,7 @@ reset:
 	sta	a:option_level
 @upload_sound_driver:
 	ldx	#.loword(data_05F55B)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 warm_boot:
 	sei
 	cld
@@ -106,7 +118,7 @@ warm_boot:
 	rep	#$10
 	ldy	#$7FFF
 	ldx	#$0000
-	jsl	f:sub_008E4B
+	jsl	f:clear_vram_words
 	rep	#$30
 	phb
 	lda	#$0000
@@ -148,16 +160,16 @@ warm_boot:
 	mvn	#$7F, #$7F
 	plb
 	jsl	f:init_ppu_registers
-	lda	#$3000
+	lda	#VRAM_QUEUE
 	sta	vram_queue_end
-	lda	#$3400
+	lda	#VRAM_QUEUE_DATA
 	sta	vram_queue_data_ptr
 	lda	#$2200
 	sta	cgram_dma_src
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:wram_1F00
+	sta	f:LOADER_SPC
 	lda	#$003E
 	ldx	#$1F00
 	txy
@@ -173,5 +185,5 @@ warm_boot:
 	sta	a:nmitimen_shadow
 	cli
 @main_loop:
-	jsl	f:sub_00995A
+	jsl	f:service_song_set_request
 	bra	@main_loop

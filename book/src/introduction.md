@@ -20,7 +20,7 @@ the original:
    assemble into a ROM with the original's SHA-1. This is done: see
    [Building](building.md) and [Progress](progress.md).
 2. **Semantic names, many files.** Every routine and variable gets a real
-   name instead of an address (`sub_0090A8` today), and the 32 bank files are
+   name instead of an address (`load_data_list` today), and the 32 bank files are
    split into files by subsystem.
 3. **Shiftable.** No hard-coded ROM address anywhere, in code or in data
    tables, so code and data can grow or move and the game still works. Today

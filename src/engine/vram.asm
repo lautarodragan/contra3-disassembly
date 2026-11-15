@@ -1,13 +1,24 @@
 ; engine/vram.asm -- VRAM transfer queue and VRAM helpers
 ; Bank $00, $00:8CFF-$00:90A7. Included by main.asm in segment BANK00.
 ;
-; sub_008CFF (called from NMI) runs the queue of DMA transfers built in WRAM
-; at $7E0000 by sub_008D41..sub_008DB0; sub_008DBE resets the screen;
-; sub_008E0A..sub_008E4B fill VRAM; sub_009015/sub_009024 queue transfers.
+; The VRAM queue: game code builds DMA transfers to VRAM during the frame and
+; run_vram_queue (NMI) executes them. Entries are 11 bytes in $7E from
+; VRAM_QUEUE ($7E:3000) up to vram_queue_end: +0 VMAIN, +2 DMAP/BBAD word,
+; +4 VRAM word address, +6 source address and +8 bank, +9 size. The data
+; usually goes to the buffer at VRAM_QUEUE_DATA ($7E:3400), filled through
+; vram_queue_data_ptr: begin_vram_transfer (Y = VRAM address) opens an
+; entry, push_vram_word appends data, end_vram_transfer sets the size.
+; reset_vram_queue (in engine/irq.asm) empties the queue after it ran.
+;
+; draw_text / draw_text_attr write a text string through the queue (format
+; below). reset_video_state turns the display off and resets PPU, VRAM, OAM,
+; palette and loader state. The unused_* routines never ran in the traces.
 
-sub_008CFF:
-	ldx	#$3000
-loc_008D02:
+; NMI: executes the queued transfers on DMA channel 0, then empties the
+; queue (falls into reset_vram_queue).
+run_vram_queue:
+	ldx	#VRAM_QUEUE
+@loop:
 	cpx	vram_queue_end
 	bcs	reset_vram_queue
 	lda	f:$7E0004,x
@@ -32,12 +43,15 @@ loc_008D02:
 	clc
 	adc	#$000B
 	tax
-	bra	loc_008D02
+	bra	@loop
 
-sub_008D41:
+; Y = VRAM word address. Opens a queue entry (VMAIN $80: increment after the
+; high byte, DMAP $01 to VMDATA) whose data starts at vram_queue_data_ptr.
+begin_vram_transfer:
 	lda	#$0080
 
-sub_008D44:
+; Same with A = VMAIN value ($81 for columns: increment by 32).
+begin_vram_transfer_vmain:
 	ldx	vram_queue_end
 	sta	f:$7E0000,x
 	tya
@@ -55,7 +69,8 @@ sub_008D44:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008D6B:
+; (No caller.) Same for low bytes only (VMAIN 0, DMAP $00 to VMDATAL).
+begin_vram_transfer_low:
 	; (not executed in the CDL traces)
 	ldx	vram_queue_end
 	lda	#$0000
@@ -75,7 +90,7 @@ sub_008D6B:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008D95:
+push_vram_byte:
 	; (not executed in the CDL traces)
 	phb
 	sep	#$20
@@ -89,7 +104,8 @@ sub_008D95:
 	plb
 	rtl
 
-sub_008DA5:
+; Appends the word in A to the open transfer's data.
+push_vram_word:
 	ldx	vram_queue_data_ptr
 	sta	f:$7E0000,x
 	inx
@@ -97,7 +113,8 @@ sub_008DA5:
 	stx	vram_queue_data_ptr
 	rtl
 
-sub_008DB0:
+; Closes the last entry: its size = vram_queue_data_ptr - its source.
+end_vram_transfer:
 	ldx	vram_queue_end
 	sec
 	lda	vram_queue_data_ptr
@@ -105,7 +122,10 @@ sub_008DB0:
 	sta	f:$7DFFFE,x
 	rtl
 
-sub_008DBE:
+; Display, NMI and DMA off; clears HDMA/IRQ modes, objects and OAM, palette
+; and VRAM tasks, VRAM, the BG scroll state; re-initialises the PPU
+; (init_ppu_registers) and the display (start_display).
+reset_video_state:
 	stz	hdma_preset
 	stz	irq_mode
 	lda	#$2200
@@ -115,9 +135,9 @@ sub_008DBE:
 	lda	#$0009
 	sta	a:bgmode_shadow
 	stz	a:mosaic_shadow
-	lda	#$3000
+	lda	#VRAM_QUEUE
 	sta	vram_queue_end
-	lda	#$3400
+	lda	#VRAM_QUEUE_DATA
 	sta	vram_queue_data_ptr
 	jsl	f:disable_display_and_nmi
 	sep	#$20
@@ -127,7 +147,7 @@ sub_008DBE:
 	.a16
 	jsl	f:clear_palette_tasks_and_buffer
 	jsl	f:clear_vram_tasks
-	jsl	f:sub_008E0A
+	jsl	f:clear_vram
 	jsl	f:clear_bg_scroll_state
 	sep	#$20
 	.a8
@@ -138,50 +158,51 @@ sub_008DBE:
 	rep	#$20
 	rtl
 
-sub_008E0A:
+clear_vram:
 	rep	#$10
 	ldy	#$7FFF
 	ldx	#$0000
-	jsl	f:sub_008E4B
+	jsl	f:clear_vram_words
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008E17:
+clear_vram_0000_0fff:
 	; (not executed in the CDL traces)
 	rep	#$10
 	ldy	#$0FFF
 	ldx	#$0000
-	jsl	f:sub_008E4B
+	jsl	f:clear_vram_words
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008E24:
+clear_vram_1000_1fff:
 	; (not executed in the CDL traces)
 	rep	#$10
 	ldy	#$0FFF
 	ldx	#$1000
-	jsl	f:sub_008E4B
+	jsl	f:clear_vram_words
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008E31:
+clear_vram_5800_5bff:
 	; (not executed in the CDL traces)
 	rep	#$10
 	ldy	#$03FF
 	ldx	#$5800
-	jsl	f:sub_008E4B
+	jsl	f:clear_vram_words
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008E3E:
+clear_vram_5800_5bff_2:
 	; (not executed in the CDL traces)
 	rep	#$10
 	ldy	#$03FF
 	ldx	#$5800
-	jsl	f:sub_008E4B
+	jsl	f:clear_vram_words
 	rtl
 
-sub_008E4B:
+; X = VRAM word address, Y = word count - 1: writes zeros.
+clear_vram_words:
 	rep	#$20
 	lda	#$0000
 	sta	zp_00
@@ -193,14 +214,17 @@ sub_008E4B:
 	rep	#$20
 	.a16
 	lda	zp_00
-loc_008E60:
+@loop:
 	sta	a:VMDATAL
 	dey
-	bpl	loc_008E60
+	bpl	@loop
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008E67:
+; (No caller.) Builds a Mode 7 tilemap (low bytes) from a map of 4x4
+; metatiles at $7E:6000 and metatile data at $7E:4000, 4 rows at a time
+; through $7E:3400; sets BGMODE 7.
+unused_build_mode7_tilemap:
 	; (not executed in the CDL traces)
 	ldx	#$6000
 	ldy	#$4000
@@ -226,16 +250,16 @@ sub_008E67:
 	pha
 	plb
 	rep	#$20
-loc_008E96:
+@loop:
 	.a16
-	jsl	f:sub_008EE0
+	jsl	f:unused_mode7_map_row
 	lda	zp_08
 	clc
 	adc	#$0080
 	sta	zp_08
 	dec	zp_12
-	bne	loc_008E96
-	jsl	f:sub_008F40
+	bne	@loop
+	jsl	f:unused_dma_mode7_map_rows
 	lda	#$3400
 	sta	zp_0C
 	lda	zp_08
@@ -245,7 +269,7 @@ loc_008E96:
 	lda	#$0004
 	sta	zp_12
 	dec	zp_16
-	bne	loc_008E96
+	bne	@loop
 	lda	#$0008
 	sta	zp_16
 	lda	zp_08
@@ -253,7 +277,7 @@ loc_008E96:
 	adc	#$0380
 	sta	zp_08
 	dec	zp_14
-	bne	loc_008E96
+	bne	@loop
 	sep	#$20
 	.a8
 	lda	#$05
@@ -265,42 +289,42 @@ loc_008E96:
 	sta	a:bgmode_shadow
 	rtl
 
-sub_008EE0:
+unused_mode7_map_row:
 	; (not executed in the CDL traces)
 	ldy	zp_08
 	lda	a:$0000,y
 	and	#$00FF
-	jsl	f:sub_008F71
+	jsl	f:unused_mode7_put_metatile
 	ldy	zp_08
 	lda	a:$0002,y
 	and	#$00FF
-	jsl	f:sub_008F71
+	jsl	f:unused_mode7_put_metatile
 	ldy	zp_08
 	lda	a:$0004,y
 	and	#$00FF
-	jsl	f:sub_008F71
+	jsl	f:unused_mode7_put_metatile
 	ldy	zp_08
 	lda	a:$0006,y
 	and	#$00FF
-	jsl	f:sub_008F71
+	jsl	f:unused_mode7_put_metatile
 	ldy	zp_08
 	lda	a:$0008,y
 	and	#$00FF
-	jsl	f:sub_008F71
+	jsl	f:unused_mode7_put_metatile
 	ldy	zp_08
 	lda	a:$000A,y
 	and	#$00FF
-	jsl	f:sub_008F71
+	jsl	f:unused_mode7_put_metatile
 	ldy	zp_08
 	lda	a:$000C,y
 	and	#$00FF
-	jsl	f:sub_008F71
+	jsl	f:unused_mode7_put_metatile
 	ldy	zp_08
 	lda	a:$000E,y
 	and	#$00FF
-	jml	f:sub_008F71
+	jml	f:unused_mode7_put_metatile
 
-sub_008F40:
+unused_dma_mode7_map_rows:
 	; (not executed in the CDL traces)
 	sep	#$20
 	.a8
@@ -332,7 +356,7 @@ sub_008F40:
 	.a16
 	rtl
 
-sub_008F71:
+unused_mode7_put_metatile:
 	; (not executed in the CDL traces)
 	asl	a
 	asl	a
@@ -386,115 +410,124 @@ sub_008F71:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008FE8:
+; (No caller.) Typewriter text: X = string; draws the first character and
+; leaves the rest for unused_typewriter_step (one character per call), using
+; typewriter_ptr / typewriter_vram_addr / typewriter_attr.
+unused_start_typewriter_text:
 	; (not executed in the CDL traces)
-	stx	zp_F4
-	inc	zp_F6
-	jsl	f:sub_009024
-	bra	loc_009012
+	stx	typewriter_ptr
+	inc	typewriter_active
+	jsl	f:draw_text
+	bra	typewriter_done
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008FF2:
+unused_typewriter_step:
 	; (not executed in the CDL traces)
-	ldx	zp_F4
-	beq	loc_009012
-	jsl	f:sub_008D41
+	ldx	typewriter_ptr
+	beq	typewriter_done
+	jsl	f:begin_vram_transfer
 	rep	#$20
-	lda	zp_F2
-	jsl	f:sub_008DA5
-	lda	zp_F8
-	ldx	zp_F4
-	inc	zp_F6
-	jsl	f:sub_00901E
-	lda	zp_F6
-	bne	loc_009012
-	stz	zp_F4
-loc_009012:
-	stz	zp_F6
+	lda	typewriter_vram_addr
+	jsl	f:push_vram_word
+	lda	typewriter_attr
+	ldx	typewriter_ptr
+	inc	typewriter_active
+	jsl	f:unused_draw_text_continue
+	lda	typewriter_active
+	bne	typewriter_done
+	stz	typewriter_ptr
+typewriter_done:
+	stz	typewriter_active
 	rtl
 
-sub_009015:
+; A = tile attributes (high byte bits), X = string (bank $05). See draw_text.
+draw_text_attr:
 	sta	zp_04
 	lda	#$0001
 	sta	zp_02
-	bra	loc_009032
+	bra	draw_text_common
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_00901E:
+unused_draw_text_continue:
 	; (not executed in the CDL traces)
 	stz	zp_02
 	sta	zp_04
-	bra	loc_009032
+	bra	draw_text_common
 
-sub_009024:
+; X = string in bank $05, written to the VRAM queue with attributes $2000
+; (priority). Format: a VRAM word address, then tile numbers (bytes); $FD n:
+; attribute high byte becomes n; $FE: a new VRAM address word follows (next
+; line); $FF: end. With text_erase set, every tile is written as 0 (the
+; string is erased) and text_erase is cleared.
+draw_text:
 	lda	#$0001
 	sta	zp_02
-	bra	loc_00902D
+	bra	@default_attr
 	; CDL: not accessed
 	.byte	$64, $02
-loc_00902D:
+@default_attr:
 	lda	#$2000
 	sta	zp_04
-loc_009032:
+draw_text_common:
 	stx	zp_00
 	lda	zp_02
-	beq	loc_00904D
-loc_009038:
+	beq	@next_char
+@new_line:
 	ldx	zp_00
 	ldy	a:$0000,x
 	inx
 	inx
 	stx	zp_00
-	jsl	f:sub_008D41
-	lda	zp_F6
-	beq	loc_00904B
+	jsl	f:begin_vram_transfer
+	lda	typewriter_active
+	beq	@no_typewriter
 	; (not executed in the CDL traces)
-	sty	zp_F2
-loc_00904B:
+	sty	typewriter_vram_addr
+@no_typewriter:
 	stz	zp_02
-loc_00904D:
+@next_char:
 	ldx	zp_00
 	lda	a:$0000,x
 	inx
 	stx	zp_00
 	and	#$00FF
 	cmp	#$00FF
-	beq	loc_00909F
+	beq	@end
 	cmp	#$00FE
-	beq	loc_009099
+	beq	@end_line
 	cmp	#$00FD
-	beq	loc_00908F
-	ldy	zp_F0
-	beq	loc_00906E
+	beq	@set_attr
+	ldy	text_erase
+	beq	@put_tile
 	lda	#$0000
-loc_00906E:
+@put_tile:
 	ora	zp_04
-	jsl	f:sub_008DA5
-	lda	zp_F6
-	beq	loc_00904D
+	jsl	f:push_vram_word
+	lda	typewriter_active
+	beq	@next_char
 	; (not executed in the CDL traces)
 	ldx	zp_00
-	stx	zp_F4
+	stx	typewriter_ptr
 	lda	zp_04
-	sta	zp_F8
-	inc	zp_F2
+	sta	typewriter_attr
+	inc	typewriter_vram_addr
 	lda	a:$0000,x
 	and	#$00FF
 	cmp	#$00FF
-	beq	loc_00909F
-	bra	loc_0090A3
-loc_00908F:
+	beq	@end
+	bra	@close
+@set_attr:
 	lda	a:$0000,x
 	inx
 	stx	zp_00
 	sta	zp_05
-	bra	loc_00904D
-loc_009099:
-	jsl	f:sub_008DB0
-	bra	loc_009038
-loc_00909F:
-	stz	zp_F0
-	stz	zp_F6
-loc_0090A3:
-	jsl	f:sub_008DB0
+	bra	@next_char
+@end_line:
+	jsl	f:end_vram_transfer
+	bra	@new_line
+@end:
+	stz	text_erase
+	stz	typewriter_active
+@close:
+	jsl	f:end_vram_transfer
 	rtl

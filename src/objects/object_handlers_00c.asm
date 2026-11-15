@@ -70,7 +70,7 @@ sub_00F2EF:
 	sta	$24,x
 	stx	zp_FC
 	ldx	#.loword(data_05AA1F)
-	jsl	f:sub_0090A8
+	jsl	f:load_data_list
 	ldy	#$AA28
 	jsl	f:sub_009982
 	ldx	zp_FC
