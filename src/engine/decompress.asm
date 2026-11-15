@@ -51,13 +51,13 @@ decompress_continue:
 	bne	@dispatch
 	inc	LDR_ACTIVE	; $1310 (D=$1300) / $1350 (D=$1340) / $1F10 (D=$1F00)
 	ldx	LDR_LIST	; $1318 (D=$1300) / $1358 (D=$1340) / $1F18 (D=$1F00)
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	sta	LDR_SRC	; $1300 (D=$1300) / $1340 (D=$1340) / $1F00 (D=$1F00)
 	inx
 	inx
 	sep	#$20
 	.a8
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	sta	LDR_SRC+2	; $1302 (D=$1300) / $1342 (D=$1340) / $1F02 (D=$1F00)
 	inx
 	stx	LDR_LIST	; $1318 (D=$1300) / $1358 (D=$1340) / $1F18 (D=$1F00)

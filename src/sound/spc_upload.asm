@@ -52,7 +52,7 @@ load_spc_list:
 load_spc_list_entries:
 	rep	#$20
 	ldx	LDR_LIST	; $1F18 (D=$1F00)
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	cmp	#$FFFF
 	bne	@not_end
 	brl	finish_loader_list
@@ -154,7 +154,7 @@ spc_check_list_end:
 	rep	#$20
 	.a16
 	ldx	LDR_LIST	; $1F18 (D=$1F00)
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	cmp	#$FFFF
 	bne	@more
 	brl	@end
@@ -183,17 +183,17 @@ upload_spc_raw_block:
 	stz	LDR_ACTIVE	; $1F10 (D=$1F00)
 	stz	LDR_RING_LIMIT	; $1F1C (D=$1F00)
 	ldx	LDR_LIST	; $1F18 (D=$1F00)
-	lda	f:$050002,x
+	lda	f:TABLES_05_BASE+2,x
 	sta	LDR_SPC_DEST	; $1F22 (D=$1F00)
-	lda	f:$050004,x
+	lda	f:TABLES_05_BASE+4,x
 	sta	LDR_SRC	; $1F00 (D=$1F00)
 	sep	#$20
 	.a8
-	lda	f:$050006,x
+	lda	f:TABLES_05_BASE+6,x
 	sta	LDR_SRC+2	; $1F02 (D=$1F00)
 	rep	#$20
 	.a16
-	lda	f:$050007,x
+	lda	f:TABLES_05_BASE+7,x
 	sta	LDR_SRC_POS	; $1F06 (D=$1F00)
 	txa
 	clc
@@ -226,7 +226,7 @@ upload_spc_compressed_block:
 	stz	LDR_ACTIVE	; $1F10 (D=$1F00)
 	stz	LDR_RING_LIMIT	; $1F1C (D=$1F00)
 	ldx	LDR_LIST	; $1F18 (D=$1F00)
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	sta	LDR_SPC_DEST	; $1F22 (D=$1F00)
 	inx
 	inx

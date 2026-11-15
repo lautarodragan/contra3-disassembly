@@ -13,7 +13,7 @@
 draw_metasprite:
 	sep	#$20
 	.a8
-	lda	#$06
+	lda	#^sprites_06
 	pha
 	plb
 	rep	#$20
@@ -105,7 +105,7 @@ loc_00EBA9:
 	bne	loc_00EB32
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -116,7 +116,7 @@ loc_00EBBA:
 	plx
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20

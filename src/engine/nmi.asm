@@ -38,7 +38,7 @@ nmi:
 	ldx	#$0000
 	phx
 	pld
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	lda	a:RDNMI

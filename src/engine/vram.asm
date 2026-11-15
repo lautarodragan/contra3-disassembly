@@ -280,7 +280,7 @@ unused_build_mode7_tilemap:
 	bne	@loop
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -328,7 +328,7 @@ unused_dma_mode7_map_rows:
 	; (not executed in the CDL traces)
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20

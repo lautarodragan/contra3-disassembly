@@ -1212,7 +1212,7 @@ loc_03E932:
 loc_03E93A:
 	sep	#$20
 	.a8
-	lda	#$07
+	lda	#^sprite_data_07
 	pha
 	plb
 	rep	#$20
@@ -1232,7 +1232,7 @@ loc_03E956:
 	jsr	a:project_td_bombs
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -1241,7 +1241,7 @@ loc_03E956:
 loc_03E96E:
 	sep	#$20
 	.a8
-	lda	#$07
+	lda	#^sprite_data_07
 	pha
 	plb
 	rep	#$20
@@ -1259,7 +1259,7 @@ loc_03E96E:
 	jsr	a:project_td_bombs
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -1268,7 +1268,7 @@ loc_03E96E:
 loc_03E9A0:
 	sep	#$20
 	.a8
-	lda	#$07
+	lda	#^sprite_data_07
 	pha
 	plb
 	rep	#$20
@@ -1289,7 +1289,7 @@ loc_03E9BC:
 	jsr	a:project_td_bombs
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -2716,7 +2716,7 @@ loc_03F3CC:
 loc_03F3D4:
 	sep	#$20
 	.a8
-	lda	#$07
+	lda	#^sprite_data_07
 	pha
 	plb
 	rep	#$20
@@ -2736,7 +2736,7 @@ loc_03F3F0:
 	jsr	a:sub_03FBFB
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -2746,7 +2746,7 @@ loc_03F408:
 	; (not executed in the CDL traces)
 	sep	#$20
 	.a8
-	lda	#$07
+	lda	#^sprite_data_07
 	pha
 	plb
 	rep	#$20
@@ -2764,7 +2764,7 @@ loc_03F408:
 	jsr	a:sub_03FBFB
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -2773,7 +2773,7 @@ loc_03F408:
 loc_03F43A:
 	sep	#$20
 	.a8
-	lda	#$07
+	lda	#^sprite_data_07
 	pha
 	plb
 	rep	#$20
@@ -2794,7 +2794,7 @@ loc_03F456:
 	jsr	a:sub_03FBFB
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20

@@ -115,7 +115,7 @@ loc_00CFB9:
 	bne	loc_00CFB9
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -379,7 +379,7 @@ loc_00D19D:
 	jsl	f:end_vram_transfer
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -443,7 +443,7 @@ object_type_06_state_03:
 	sta	a:$0006,y
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -686,7 +686,7 @@ loc_00D401:
 	.a16
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -889,7 +889,7 @@ loc_00D5C0:
 	bne	loc_00D5C0
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20

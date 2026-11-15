@@ -153,7 +153,7 @@ loc_00E8E4:
 	bcc	loc_00E8E4
 	; (not executed in the CDL traces)
 	sep	#$20
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -170,7 +170,7 @@ loc_00E8FF:
 	sta	a:$0001,x
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -221,7 +221,7 @@ loc_00E93E:
 	bne	loc_00E93E
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20

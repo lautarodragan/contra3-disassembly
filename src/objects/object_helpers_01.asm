@@ -30,7 +30,7 @@ loc_019E61:
 	txy
 	iny
 	lda	#$003E
-	mvn	#$05, #$05
+	mvn	#^tables_05, #^tables_05
 	plx
 	rtl
 
@@ -1044,7 +1044,7 @@ loc_01A508:
 loc_01A50A:
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20

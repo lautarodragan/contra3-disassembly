@@ -979,7 +979,7 @@ td_get_walk_vectors:
 	tay
 	sep	#$20
 	.a8
-	lda	#$07
+	lda	#^sprite_data_07
 	pha
 	plb
 	rep	#$20
@@ -994,7 +994,7 @@ td_get_walk_vectors:
 	sta	zp_1C
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -2043,7 +2043,7 @@ sub_029C3C:
 	ldx	zp_00
 	ldy	zp_02
 	lda	zp_04
-	mvn	#$08, #$7E
+	mvn	#^gfx_08, #$7E
 	plb
 	plx
 	lda	$2E,x

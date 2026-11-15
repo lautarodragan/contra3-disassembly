@@ -213,7 +213,7 @@ loc_00EAB0:
 	txy
 	iny
 	lda	#$003E
-	mvn	#$05, #$05
+	mvn	#^tables_05, #^tables_05
 	plx
 	bra	loc_00EAF1
 loc_00EABE:

@@ -2108,7 +2108,7 @@ stage4_controller_state_16:
 	sta	a:bg2_x_sub
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20

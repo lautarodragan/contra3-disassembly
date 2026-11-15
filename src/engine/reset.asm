@@ -35,7 +35,7 @@ reset:
 	pld
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	lda	a:RDNMI
@@ -105,7 +105,7 @@ warm_boot:
 	pld
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	lda	a:RDNMI

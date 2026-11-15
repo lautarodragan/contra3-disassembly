@@ -1026,7 +1026,7 @@ draw_bg_row:
 	jsl	f:end_vram_transfer
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -1157,7 +1157,7 @@ draw_bg_column:
 	jsl	f:end_vram_transfer
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -1297,7 +1297,7 @@ update_bg_collision_map:
 @done:
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20

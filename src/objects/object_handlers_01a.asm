@@ -2595,7 +2595,7 @@ loc_01C515:
 	bcc	loc_01C515
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20

@@ -81,7 +81,7 @@ loc_00E21C:
 	txy
 	iny
 	lda	#$001E
-	mvn	#$05, #$05
+	mvn	#^tables_05, #^tables_05
 	plx
 	bra	loc_00E1BF
 loc_00E22A:

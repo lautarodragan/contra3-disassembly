@@ -380,7 +380,7 @@ build_split_line_table:
 split_entry_loop:
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -425,7 +425,7 @@ split_entry_loop:
 	iny
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -455,7 +455,7 @@ split_entry_loop:
 	sta	(zp_00)
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -557,7 +557,7 @@ init_line_hdma_table:
 	sta	a:$EA04
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -642,7 +642,7 @@ fill_line_hdma_table:
 	bpl	@loop
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20

@@ -4707,7 +4707,7 @@ spiked_climber_init_hdma:
 	stz	a:$382C,x
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20

@@ -4,6 +4,9 @@
 ; Read by draw_metasprite (metasprite drawing, with DB=$06); a few blocks are
 ; compressed graphics (read by decompress_chunk).
 
+; The bank of the metasprites (draw_metasprite sets DB to ^sprites_06).
+sprites_06:
+
 	; CDL: not accessed
 	.byte	$00, $00, $7F, $00, $C0, $00, $7F, $00, $80, $01, $7F, $00, $40, $02, $7F, $00
 	.byte	$00, $03, $7F, $00, $C0, $03, $7F, $00, $80, $04, $7F, $00, $40, $05, $7F, $00

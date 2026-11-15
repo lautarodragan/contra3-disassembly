@@ -7,6 +7,9 @@
 ; and the per-map tile attribute tables (tile_attrs_stage2 ...) used by
 ; build_tile_attr_rows.
 
+; The bank of the top-down sprite data (DB = ^sprite_data_07).
+sprite_data_07:
+
 	; CDL: read by sub_03EEAA
 	.byte	$D0, $FF, $50, $00, $D0, $00, $D0, $FF, $50, $00, $D0, $00, $D0, $FF, $50, $00
 data_078010:

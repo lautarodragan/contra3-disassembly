@@ -5,6 +5,12 @@
 ; handler pointers (tbl_object_types, tbl_shot_types), loader lists, sound block lists,
 ; per-stage tables, aim-direction tables, sine tables...
 
+; The bank of the tables. Code that sets DB to it says #^tables_05; the
+; loaders, which read lists with a 16-bit pointer in X, read
+; f:TABLES_05_BASE,x.
+tables_05:
+TABLES_05_BASE = ^tables_05 << 16
+
 data_058000:
 	; CDL: not accessed
 	.byte	$80, $00, $00, $00, $00, $01, $80, $00

@@ -24,7 +24,7 @@
 ; X = data list in bank $05; dispatches on its type byte (see above).
 load_data_list:
 	rep	#$20
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	inx
 	and	#$00FF
 	beq	load_vram_list
@@ -58,7 +58,7 @@ load_vram_list:
 	.a16
 	jsl	f:disable_display_and_nmi
 	ldx	LDR_LIST	; $1318 (D=$1300)
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	cmp	#$FFFF
 	beq	finish_list_enable_nmi
 	jsl	f:load_vram_stream
@@ -99,7 +99,7 @@ step_vram_loader_start:
 	lda	LDR_ACTIVE	; $1310 (D=$1300)
 	bne	@decompress
 	ldx	LDR_LIST	; $1318 (D=$1300)
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	cmp	#$FFFF
 	beq	finish_loader_list
 	sta	LDR_VRAM_DEST	; $1322 (D=$1300)
@@ -133,7 +133,7 @@ load_vram_stream:
 	rep	#$20
 	stz	LDR_ACTIVE	; $1310 (D=$1300)
 	ldx	LDR_LIST	; $1318 (D=$1300)
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	sta	LDR_VRAM_DEST	; $1322 (D=$1300)
 	inx
 	inx
@@ -206,7 +206,7 @@ load_vram_byte_list:
 	.a16
 	jsl	f:disable_display_and_nmi
 	ldx	LDR_LIST	; $1318 (D=$1300)
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	cmp	#$FFFF
 	bne	@next_high
 	brl	finish_list_enable_nmi
@@ -219,7 +219,7 @@ load_vram_byte_list:
 	.a16
 	jsl	f:disable_display_and_nmi
 	ldx	LDR_LIST	; $1318 (D=$1300)
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	cmp	#$FFFF
 	bne	@next_low
 	; (not executed in the CDL traces)
@@ -232,7 +232,7 @@ load_vram_stream_high:
 	rep	#$20
 	stz	LDR_ACTIVE	; $1310 (D=$1300)
 	ldx	LDR_LIST	; $1318 (D=$1300)
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	sta	LDR_VRAM_DEST	; $1322 (D=$1300)
 	inx
 	inx
@@ -248,7 +248,7 @@ load_vram_stream_low:
 	rep	#$20
 	stz	LDR_ACTIVE	; $1310 (D=$1300)
 	ldx	LDR_LIST	; $1318 (D=$1300)
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	sta	LDR_VRAM_DEST	; $1322 (D=$1300)
 	inx
 	inx
@@ -310,7 +310,7 @@ init_loader_context:
 	.a8
 	lda	#$7E
 	sta	LDR_RING+2	; $1305 (D=$1300) / $1345 (D=$1340) / $1F05 (D=$1F00)
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	sta	LDR_FLAGS	; $1316 (D=$1300) / $1356 (D=$1340) / $1F16 (D=$1F00)
 	inx
 	stx	LDR_LIST	; $1318 (D=$1300) / $1358 (D=$1340) / $1F18 (D=$1F00)
@@ -333,7 +333,7 @@ load_wram_list:
 	rep	#$20
 	.a16
 	ldx	LDR_LIST	; $1358 (D=$1340)
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	cmp	#$FFFF
 	bne	@next
 	brl	finish_loader_list
@@ -362,7 +362,7 @@ step_wram_loader_start:
 	lda	LDR_ACTIVE	; $1350 (D=$1340)
 	bne	@decompress
 	ldx	LDR_LIST	; $1358 (D=$1340)
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	cmp	#$FFFF
 	bne	@next_stream
 	brl	finish_loader_list
@@ -372,7 +372,7 @@ step_wram_loader_start:
 	inx
 	sep	#$20
 	.a8
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	sta	LDR_WRAM_DEST+2	; $1362 (D=$1340)
 	inx
 	stx	LDR_LIST	; $1358 (D=$1340)
@@ -389,13 +389,13 @@ load_wram_stream:
 	stz	LDR_ACTIVE	; $1350 (D=$1340)
 	stz	LDR_RING_LIMIT	; $135C (D=$1340)
 	ldx	LDR_LIST	; $1358 (D=$1340)
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	sta	LDR_WRAM_DEST	; $1360 (D=$1340)
 	inx
 	inx
 	sep	#$20
 	.a8
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	sta	LDR_WRAM_DEST+2	; $1362 (D=$1340)
 	inx
 	stx	LDR_LIST	; $1358 (D=$1340)

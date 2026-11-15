@@ -103,10 +103,10 @@ palette_task_animate:
 	ldx	a:$0002,y
 	lda	a:$0004,y
 	tay
-	lda	f:$080000,x
+	lda	f:GFX_08_BASE,x
 	inx
 	inx
-	mvn	#$08, #$7E
+	mvn	#^gfx_08, #$7E
 	plx
 	plb
 	lda	TASK_ENTRY,x
@@ -257,7 +257,7 @@ fade_palette_from_source:
 	tay
 	sep	#$20
 	.a8
-	lda	#$08
+	lda	#^gfx_08
 	pha
 	plb
 	rep	#$20
@@ -300,7 +300,7 @@ fade_palette_from_source:
 	bpl	@loop
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20

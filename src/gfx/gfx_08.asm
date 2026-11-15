@@ -7,6 +7,11 @@
 ;
 ; Data only (no labels, no code). Each block starts at a CDL comment.
 
+; The bank of the palettes: the palette tasks read f:GFX_08_BASE,x and copy
+; with mvn #^gfx_08.
+gfx_08:
+GFX_08_BASE = ^gfx_08 << 16
+
 	; CDL: read by palette_task_animate
 	.byte	$1F, $00, $20, $04, $01, $00, $01, $00, $01, $00, $01, $00, $08, $20, $4D, $2C
 	.byte	$B2, $38, $7C, $55, $DC, $59, $3C, $62, $BD, $6A, $9E, $7B, $01, $00, $01, $00

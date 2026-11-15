@@ -222,7 +222,7 @@ loc_04DB31:
 	bne	loc_04DB31
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -314,7 +314,7 @@ expand_m7_block:
 upload_m7_tilemap_rows:
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -502,7 +502,7 @@ loc_04DD8A:
 	beq	loc_04DD99
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -681,7 +681,7 @@ loc_04DDA3:
 	.a16
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20
@@ -855,7 +855,7 @@ loc_04DEF5:
 	.a16
 	sep	#$20
 	.a8
-	lda	#$05
+	lda	#^tables_05
 	pha
 	plb
 	rep	#$20

@@ -20,13 +20,13 @@
 unused_spc_stream_list:
 	; (not executed in the CDL traces)
 	.a16
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	and	#$00FF
 	beq	@no_stream
 	brl	unused_request_stream
 @no_stream:
 	jsl	f:stop_sound_now
-	lda	f:$050001,x
+	lda	f:TABLES_05_BASE+1,x
 	and	#$00FF
 	bne	@compressed_list
 	brl	unused_stream_raw_list
@@ -52,7 +52,7 @@ unused_spc_stream_list:
 	stx	LDR_LIST
 @loop:
 	ldx	LDR_LIST
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	cmp	#$FFFF
 	beq	@end
 	jsr	a:unused_stream_compressed_block
@@ -78,7 +78,7 @@ unused_stream_compressed_block:
 	lda	#$A0B0
 	jsr	a:write_apuio2_wait
 	ldx	LDR_LIST
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	sta	LDR_SPC_DEST
 	sep	#$20
 	.a8
@@ -151,7 +151,7 @@ unused_stream_raw_list:
 	stx	LDR_LIST
 @loop:
 	ldx	LDR_LIST
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	cmp	#$FFFF
 	beq	@end
 	jsr	a:unused_stream_raw_block
@@ -169,7 +169,7 @@ unused_stream_raw_block:
 	lda	#$A0B0
 	jsr	a:write_apuio2_wait
 	ldx	LDR_LIST
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	sta	LDR_SPC_DEST
 	sep	#$20
 	.a8
@@ -192,11 +192,11 @@ unused_stream_raw_block:
 	stx	LDR_LIST
 	sep	#$20
 	.a8
-	lda	f:$050002,x
+	lda	f:TABLES_05_BASE+2,x
 	sta	LDR_RING+2
 	rep	#$20
 	.a16
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	dec	a
 	dec	a
 	sta	LDR_RING
@@ -239,7 +239,7 @@ unused_stream_raw_bytes:
 unused_request_stream:
 	stx	a:pending_spc_list
 	stz	a:LOADER_SPC+LDR_SPC_STREAM_ON
-	lda	f:$050001,x
+	lda	f:TABLES_05_BASE+1,x
 	and	#$00FF
 	ora	#$C000
 	sta	a:LOADER_SPC+LDR_SPC_STREAM_STATUS
@@ -290,12 +290,12 @@ unused_service_stream:
 	ldx	LDR_LIST
 	sep	#$20
 	.a8
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	sta	LDR_SPC_STREAM_ID
 	inx
 	rep	#$20
 	.a16
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	sta	LDR_SPC_DEST
 	sep	#$20
 	.a8
@@ -435,7 +435,7 @@ upload_spc_list:
 	stz	sound_queue_write
 	stz	sound_stream_check_index
 	stz	sound_cmd_override
-	lda	f:$050000,x
+	lda	f:TABLES_05_BASE,x
 	inx
 	php
 	phd

@@ -797,7 +797,7 @@ loc_02EC71:
 ; MVN of A+1 bytes from $05:X to $7E:Y.
 copy_hdma_table:
 	phb
-	mvn	#$05, #$7E
+	mvn	#^tables_05, #$7E
 	plb
 	rts
 
@@ -1760,7 +1760,7 @@ sub_02F3C1:
 	ldx	zp_00
 	ldy	zp_02
 	lda	zp_04
-	mvn	#$08, #$7E
+	mvn	#^gfx_08, #$7E
 	plb
 	plx
 	rts
