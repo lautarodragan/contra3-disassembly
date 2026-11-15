@@ -1,5 +1,6 @@
 ; header.asm -- Internal header and vectors
-; Bank $00, $00:FFC0-$00:FFFF. Included by main.asm in segment BANK00.
+; Bank $00, $00:FFC0-$00:FFFF. Included by main.asm in segment HEADER,
+; which contra3.cfg places at $00:FFC0.
 ;
 ; The SNES internal header ($00:FFC0-$00:FFDF) and the interrupt vectors
 ; ($00:FFE0-$00:FFFF), one line per field. See the book, "The cartridge".

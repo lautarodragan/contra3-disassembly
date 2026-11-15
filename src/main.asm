@@ -40,6 +40,7 @@
 .include "game/opening.asm"
 .include "objects/object_handlers_00c.asm"
 .include "objects/object_helpers_00.asm"
+.segment "HEADER"		; at $00:FFC0 (contra3.cfg)
 .include "header.asm"
 
 ; ---- bank $01 ----

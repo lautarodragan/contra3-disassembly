@@ -335,5 +335,4 @@ loc_00FFA4:
 	bne	loc_00FF7F
 	lda	zp_16
 	rtl
-	; CDL: not accessed
-	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	; The rest of the bank is free: filled with $FF by the linker (contra3.cfg).

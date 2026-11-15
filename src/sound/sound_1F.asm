@@ -2053,9 +2053,4 @@
 	.byte	$3C, $03, $9E, $88, $0C, $78, $18, $70, $10, $71, $10, $20, $A0, $22, $04, $8F
 	.byte	$01, $08, $50, $20, $BF, $3D, $3E, $61, $7E, $C7, $F8, $8E, $F0, $9C, $60, $00
 	.byte	$5C, $03, $B9, $81, $40, $A3, $C0, $80, $00, $00, $00, $06, $17
-	; CDL: not accessed
-	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	; The rest of the bank is free: filled with $FF by the linker (contra3.cfg).
