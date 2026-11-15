@@ -473,11 +473,11 @@ data_058D52:
 ; quarter turn ($20 bytes) earlier.  Player shots (spawn_shot_default...)
 ; and some enemies.
 vel8_y:
-	; CDL: read by spawn_shot_default, spawn_shots_spread, sub_0489DC
+	; CDL: read by spawn_shot_default, spawn_shots_spread, stage3_boss_spawn_debris_sparks
 	.byte	$F8, $FF, $F8, $FF, $F8, $FF, $F8, $FF, $F9, $FF, $F9, $FF, $F9, $FF, $FA, $FF
 	.byte	$FA, $FF, $FB, $FF, $FB, $FF, $FC, $FF, $FD, $FF, $FD, $FF, $FE, $FF, $FF, $FF
 vel8_x:
-	; CDL: read by spawn_shot_default, spawn_shots_spread, sub_048589 (+1 more)
+	; CDL: read by spawn_shot_default, spawn_shots_spread, stage3_second_robot_spawn_debris (+1 more)
 	.byte	$00, $00, $00, $00, $01, $00, $02, $00, $02, $00, $03, $00, $04, $00, $04, $00
 	.byte	$05, $00, $05, $00, $06, $00, $06, $00, $06, $00, $07, $00, $07, $00, $07, $00
 	.byte	$07, $00, $07, $00, $07, $00, $07, $00, $06, $00, $06, $00, $06, $00, $05, $00
@@ -487,11 +487,11 @@ vel8_x:
 	.byte	$F8, $FF, $F8, $FF, $F8, $FF, $F8, $FF, $F9, $FF, $F9, $FF, $F9, $FF, $FA, $FF
 	.byte	$FA, $FF, $FB, $FF, $FB, $FF, $FC, $FF, $FD, $FF, $FD, $FF, $FE, $FF, $FF, $FF
 vel8_y_sub:
-	; CDL: read by spawn_shot_default, spawn_shots_spread, sub_0489DC
+	; CDL: read by spawn_shot_default, spawn_shots_spread, stage3_boss_spawn_debris_sparks
 	.byte	$9A, $99, $B9, $A2, $01, $BE, $2D, $EB, $CE, $29, $4A, $79, $DE, $D8, $9C, $47
 	.byte	$75, $C4, $35, $4E, $88, $E3, $FD, $82, $0C, $2B, $16, $DA, $6C, $8E, $51, $46
 vel8_x_sub:
-	; CDL: read by spawn_shot_default, spawn_shots_spread, sub_048589 (+1 more)
+	; CDL: read by spawn_shot_default, spawn_shots_spread, stage3_second_robot_spawn_debris (+1 more)
 	.byte	$00, $00, $AF, $B9, $94, $71, $EA, $25, $F4, $D4, $03, $7D, $78, $1C, $CB, $B1
 	.byte	$8B, $3B, $64, $B8, $22, $27, $B6, $86, $32, $D6, $D3, $14, $FF, $41, $47, $5D
 	.byte	$66, $66, $47, $5D, $FF, $41, $D3, $14, $32, $D6, $B6, $86, $22, $27, $64, $B8
@@ -3446,7 +3446,7 @@ data_05E85D:
 	; CDL: read by stage3_robot_state_02
 	.byte	$00, $00, $02, $00
 data_05E861:
-	; CDL: read by update_objects, sub_048589; partly not accessed
+	; CDL: read by update_objects, stage3_second_robot_spawn_debris; partly not accessed
 	.byte	$4B, $BD, $19, $C1, $00, $00, $DA, $BB, $28, $BF
 anim_05E86B:
 	.byte	$18, $00, $00, $BE, $AB, $C0
@@ -3457,10 +3457,10 @@ anim_05E88B:
 	.byte	$08, $00, $50, $BD, $1E, $C1
 	.byte	$08, $00, $AD, $BC, $FB, $BF, $8B, $E8
 data_05E899:
-	; CDL: read by sub_048589
+	; CDL: read by stage3_second_robot_spawn_debris
 	.byte	$20, $00, $50, $00
 data_05E89D:
-	; CDL: read by sub_048589; partly not accessed
+	; CDL: read by stage3_second_robot_spawn_debris; partly not accessed
 	.byte	$24, $00, $F0, $FF, $00, $02, $00, $04, $00, $08
 data_05E8A7:
 	; CDL: read by stage3_boss_state_06
@@ -3490,19 +3490,19 @@ data_05E8D7:
 	; CDL: read by skeleton_eye_fireball_state_01
 	.byte	$00, $00, $02, $00, $03, $00, $02, $00, $00, $00, $FE, $FF, $FD, $FF, $FE, $FF
 data_05E8E7:
-	; CDL: read by sub_04893E
+	; CDL: read by stage3_boss_break_wall
 	.byte	$04, $00, $10, $00
 data_05E8EB:
-	; CDL: read by sub_04893E
+	; CDL: read by stage3_boss_break_wall
 	.byte	$FF, $FF, $01, $00
 data_05E8EF:
-	; CDL: read by sub_04893E
+	; CDL: read by stage3_boss_break_wall
 	.byte	$01, $E9, $71, $E9, $01, $EA
 data_05E8F5:
-	; CDL: read by sub_04893E
+	; CDL: read by stage3_boss_break_wall
 	.byte	$0C, $41, $08, $41, $04, $41
 data_05E8FB:
-	; CDL: read by queue_vram_blocks_at_x, sub_04893E
+	; CDL: read by queue_vram_blocks_at_x, stage3_boss_break_wall
 	.byte	$10, $41, $14, $41, $18, $41, $60, $6F, $20, $60, $A0, $62, $E0, $72, $00, $70
 	.byte	$20, $61, $40, $75, $80, $71, $40, $76, $00, $77, $C0, $77, $80, $78, $60, $76
 	.byte	$20, $77, $E0, $77, $A0, $78, $40, $79, $00, $7A, $C0, $7A, $80, $7B, $60, $79
@@ -3530,10 +3530,10 @@ data_05E8FB:
 	.byte	$20, $82, $00, $7E, $20, $64, $60, $6F, $20, $60, $E0, $5D, $A0, $75, $00, $70
 	.byte	$40, $63, $40, $75, $C0, $75
 data_05EA91:
-	; CDL: read by sub_048A5C
+	; CDL: read by stage3_boss_queue_tiles
 	.byte	$D9, $EA, $F1, $EA, $09, $EB, $F1, $EA, $D9, $EA, $C1, $EA, $A9, $EA, $C1, $EA
 data_05EAA1:
-	; CDL: read by queue_vram_blocks_at_x, sub_0489DC
+	; CDL: read by queue_vram_blocks_at_x, stage3_boss_spawn_debris_sparks
 	.byte	$78, $7C, $80, $7C, $78, $74, $70, $74, $00, $BE, $20, $BE, $80, $BE, $A0, $BE
 	.byte	$00, $BF, $20, $BF, $80, $BF, $A0, $BF, $40, $BE, $60, $BE, $C0, $BE, $E0, $BE
 	.byte	$00, $BD, $20, $BD, $80, $BD, $A0, $BD, $40, $BC, $60, $BC, $C0, $BC, $E0, $BC
@@ -3544,7 +3544,7 @@ data_05EAA1:
 	.byte	$40, $C1, $60, $C1, $C0, $C1, $E0, $C1, $00, $C2, $20, $C2, $40, $C2, $60, $C2
 	.byte	$20, $60, $20, $61, $E0, $6F, $E0, $5C, $A0, $62, $40, $75, $A0, $5F, $00, $71
 data_05EB31:
-	; CDL: read by update_objects, sub_0489DC; partly not accessed
+	; CDL: read by update_objects, stage3_boss_spawn_debris_sparks; partly not accessed
 	.byte	$00, $40, $00, $74, $00, $C8
 anim_05EB37:
 	.byte	$02, $00, $CF, $AE, $CF, $AE, $02, $00, $11, $AF
@@ -3612,29 +3612,29 @@ data_05EC74:
 	.byte	$7A, $EC, $7E, $EC, $82, $EC, $40, $55, $60, $55, $80, $55, $A0, $55, $C0, $55
 	.byte	$E0, $55
 data_05EC86:
-	; CDL: read by sub_04988E
+	; CDL: read by rideable_missile_set_hdma
 	.byte	$06, $00, $0B, $00, $10, $00, $15, $00
 data_05EC8E:
-	; CDL: read by sub_049A30
+	; CDL: read by stage4_boss_init_part
 	.byte	$6A, $00, $53, $00
 data_05EC92:
-	; CDL: read by sub_049A30
+	; CDL: read by stage4_boss_init_part
 	.byte	$11, $40, $3D, $00
 data_05EC96:
-	; CDL: read by sub_049A30
+	; CDL: read by stage4_boss_init_part
 	.byte	$A2, $EC, $A8, $EC
 data_05EC9A:
-	; CDL: read by sub_049A30
+	; CDL: read by stage4_boss_init_part
 	.byte	$18, $00, $18, $00
 data_05EC9E:
-	; CDL: read by update_objects, sub_049A30; partly not accessed
+	; CDL: read by update_objects, stage4_boss_init_part; partly not accessed
 	.byte	$E8, $FF, $80, $FF, $00, $00, $81, $C7, $92, $C7, $01, $00, $A3, $C7, $00, $00
 	.byte	$01, $00, $C4, $C7, $00, $00, $A8, $EC
 data_05ECB6:
 	; CDL: read by rideable_missile_state_06
 	.byte	$F9, $FF, $FA, $FF, $FB, $FF, $FC, $FF
 data_05ECBE:
-	; CDL: read by queue_vram_blocks_at_x, sub_049AF5; partly not accessed
+	; CDL: read by queue_vram_blocks_at_x, stage4_spawn_hoverbike_rider; partly not accessed
 	.byte	$38, $00, $30, $00, $28, $00, $A0, $51, $80, $51, $E0, $5B, $E0, $5F, $E0, $5F
 	.byte	$00, $60
 data_05ECD0:
@@ -3657,7 +3657,7 @@ data_05ECF2:
 	; CDL: read by winged_alien_state_03; partly not accessed
 	.byte	$01, $00, $FF, $FF, $6D, $C4, $72, $C4, $80, $07
 data_05ECFC:
-	; CDL: read by sub_04A0A7; partly not accessed
+	; CDL: read by winged_alien_spawn_tail; partly not accessed
 	.byte	$40, $07, $00, $07, $C0, $06, $80, $06, $40, $06, $00, $06, $C0, $05, $80, $05
 	.byte	$40, $05, $00, $05, $C0, $04, $80, $04, $40, $04, $00, $04, $C0, $03, $80, $03
 	.byte	$40, $03, $00, $03
@@ -3668,7 +3668,7 @@ data_05ED24:
 	; CDL: read by winged_alien_tail_tip_state_00
 	.byte	$77, $C4, $7C, $C4, $81, $C4, $86, $C4, $8B, $C4, $90, $C4, $95, $C4, $9A, $C4
 data_05ED34:
-	; CDL: read by queue_vram_blocks_at_x, sub_04A298
+	; CDL: read by queue_vram_blocks_at_x, winged_alien_queue_tiles
 	.byte	$3A, $ED, $46, $ED, $52, $ED, $00, $B0, $00, $B0, $00, $B0, $C0, $BD, $E0, $BD
 	.byte	$00, $BE, $80, $BC, $A0, $BC, $C0, $BC, $E0, $BC, $00, $BD, $20, $BD, $00, $B0
 	.byte	$20, $BE, $40, $BE, $00, $B0, $60, $BE, $80, $BE
@@ -3692,10 +3692,10 @@ data_05ED86:
 	; CDL: read by sub_04A810; partly not accessed
 	.byte	$40, $00, $80, $00, $00, $01
 data_05ED8C:
-	; CDL: read by sub_04A90D
+	; CDL: read by face_boss_queue_tiles
 	.byte	$E0, $BF, $E0, $C1, $A0, $C1, $60, $C1
 data_05ED94:
-	; CDL: read by sub_04A90D
+	; CDL: read by face_boss_queue_tiles
 	.byte	$00, $C0, $00, $C2, $C0, $C1, $80, $C1
 data_05ED9C:
 	; CDL: read by queue_vram_blocks_at_x, sub_04A93B
@@ -3807,16 +3807,16 @@ data_05EF3C:
 	.byte	$40, $EF, $4C, $EF, $80, $B0, $A0, $B0, $C0, $B0, $00, $BA, $20, $BA, $40, $BA
 	.byte	$A0, $BA, $C0, $BA, $E0, $BA, $20, $BB, $40, $BB
 data_05EF56:
-	; CDL: read by queue_vram_blocks_at_x, sub_04B1C3
+	; CDL: read by queue_vram_blocks_at_x, spawn_heart_boss_bug
 	.byte	$60, $BB, $00, $01, $40, $01, $00, $01
 data_05EF5E:
-	; CDL: read by sub_04B1C3
+	; CDL: read by spawn_heart_boss_bug
 	.byte	$40, $01, $40, $00, $40, $00, $C0, $00
 data_05EF66:
-	; CDL: read by sub_04B1C3
+	; CDL: read by spawn_heart_boss_bug
 	.byte	$C0, $00, $02, $00, $02, $00, $00, $00
 data_05EF6E:
-	; CDL: read by sub_04B1C3
+	; CDL: read by spawn_heart_boss_bug
 	.byte	$00, $00, $90, $4C, $98, $4C, $90, $4E, $98, $4E
 ; OBJ_HP of heart_boss_bug by difficulty (easy, normal, hard)
 heart_boss_bug_hp:

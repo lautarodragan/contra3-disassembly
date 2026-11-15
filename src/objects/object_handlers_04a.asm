@@ -11,7 +11,7 @@
 ; Object type $41. Stage 3 boss room. States $00-$09: the first of the two
 ; humanoid robots lowered on cables (stage3_robot_cables), 320 HP; when both
 ; robots are beaten it becomes the giant skeleton robot that breaks through
-; the back wall (states $0A-$1A, 1024 HP set in sub_048605), which throws
+; the back wall (states $0A-$1A, 1024 HP set in stage3_boss_check_hp), which throws
 ; countdown_bomb and fires skeleton_eye_fireball. Seen in the emulator: slot
 ; $0900, stage 3 sections 12-13.
 update_stage3_boss:
@@ -37,7 +37,7 @@ loc_048023:
 	sta	a:bg2_y
 loc_04802A:
 	inc	a:boss_work_0
-	jsr	a:sub_048605
+	jsr	a:stage3_boss_check_hp
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -78,7 +78,7 @@ tbl_stage3_boss_states:
 ; Object type $45. Stage 3 boss room: the second humanoid robot (320 HP, slot
 ; $08C0); shares most states with stage3_boss's robot form.
 update_stage3_second_robot:
-	jsr	a:sub_048605
+	jsr	a:stage3_boss_check_hp
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -141,7 +141,7 @@ stage3_robot_state_02:
 	ldy	difficulty
 	lda	a:data_05E809,y
 	sta	OBJ_TIMER,x
-	jsr	a:sub_048545
+	jsr	a:stage3_robot_pick_direction
 	ldy	zp_00
 	lda	OBJ_Y,x
 	cmp	#$00CF
@@ -222,7 +222,7 @@ stage3_second_robot_state_02:
 	ldy	difficulty
 	lda	a:data_05E80F,y
 	sta	OBJ_TIMER,x
-	jsr	a:sub_048545
+	jsr	a:stage3_robot_pick_direction
 	lda	OBJ_Y,x
 	cmp	#$00CF
 	bcs	loc_0481A8
@@ -286,7 +286,7 @@ loc_048216:
 	sta	OBJ_STATE,x
 	rtl
 loc_04821C:
-	jsr	a:sub_048545
+	jsr	a:stage3_robot_pick_direction
 	lda	zp_00
 	sta	OBJ_FACING,x
 	rtl
@@ -304,7 +304,7 @@ loc_04822C:
 	stz	OBJ_ANIM_TIMER,x
 	rtl
 loc_048239:
-	jsr	a:sub_048589
+	jsr	a:stage3_second_robot_spawn_debris
 	rtl
 
 stage3_robot_state_03:
@@ -444,7 +444,7 @@ stage3_robot_state_07:
 	sta	OBJ_Y_VEL,x
 	rtl
 loc_04834A:
-	jsr	a:sub_048669
+	jsr	a:toggle_sprite_visible
 	jsl	f:queue_sound_30_throttled
 	lda	stage_frame_odd
 	bne	loc_048381
@@ -618,9 +618,9 @@ stage3_robot_cables_state_02:
 	sta	OBJ_ANIM,x
 	inc	OBJ_STATE,x
 	ldy	#$0200
-	jsr	a:sub_04852F
+	jsr	a:stage3_cables_crush_player
 	ldy	#$0240
-	jsr	a:sub_04852F
+	jsr	a:stage3_cables_crush_player
 	lda	#$0040
 	sta	zp_04
 	lda	#$2002
@@ -702,7 +702,7 @@ loc_048501:
 loc_04852E:
 	rtl
 
-sub_04852F:
+stage3_cables_crush_player:
 	lda	a:$0016,y
 	beq	loc_048544
 	bmi	loc_048544
@@ -714,7 +714,7 @@ sub_04852F:
 loc_048544:
 	rts
 
-sub_048545:
+stage3_robot_pick_direction:
 	lda	#$0400
 	jsl	f:pick_target_player
 	lda	a:boss_work_0
@@ -749,7 +749,7 @@ loc_048575:
 	sta	zp_00
 	rts
 
-sub_048589:
+stage3_second_robot_spawn_debris:
 	lda	stage_frame_mod4
 	bne	loc_048604
 	ldy	#$0800
@@ -805,7 +805,7 @@ loc_0485DC:
 loc_048604:
 	rts
 
-sub_048605:
+stage3_boss_check_hp:
 	lda	$38,x
 	bne	loc_048631
 	lda	OBJ_HP,x
@@ -857,7 +857,7 @@ loc_04864D:
 	jsl	f:make_players_invulnerable
 	rts
 
-sub_048669:
+toggle_sprite_visible:
 	lda	$30,x
 	beq	loc_048675
 	lda	$30,x
@@ -963,7 +963,7 @@ loc_04873C:
 	rtl
 
 stage3_boss_state_0D:
-	jsr	a:sub_04893E
+	jsr	a:stage3_boss_break_wall
 	dec	a:boss_work_4
 	bne	loc_048751
 	stz	$34,x
@@ -998,7 +998,7 @@ stage3_boss_state_17:
 
 stage3_boss_state_18:
 	stz	a:boss_work_2
-	jsr	a:sub_04893E
+	jsr	a:stage3_boss_break_wall
 	lda	a:boss_work_1
 	bne	loc_0487A1
 	lda	#$0083
@@ -1021,7 +1021,7 @@ stage3_boss_state_19:
 
 stage3_boss_state_1A:
 	stz	a:boss_work_2
-	jsr	a:sub_04893E
+	jsr	a:stage3_boss_break_wall
 	lda	OBJ_Y,x
 	bmi	loc_0487C2
 	cmp	#$00D8
@@ -1082,13 +1082,13 @@ loc_048821:
 loc_048830:
 	lda	#$0000
 loc_048833:
-	jsr	a:sub_048A5C
+	jsr	a:stage3_boss_queue_tiles
 	rtl
 
 stage3_boss_state_0F:
 	stz	$34,x
 	lda	#$0000
-	jsr	a:sub_048A5C
+	jsr	a:stage3_boss_queue_tiles
 	dec	$3E,x
 	bne	loc_048847
 	inc	OBJ_STATE,x
@@ -1098,14 +1098,14 @@ loc_048847:
 	cmp	#$0040
 	bne	loc_04885A
 	lda	#$006C
-	jsr	a:sub_048BBF
+	jsr	a:spawn_skeleton_eye_fireball
 	lda	#$0084
-	jsr	a:sub_048BBF
+	jsr	a:spawn_skeleton_eye_fireball
 loc_04885A:
 	rtl
 
 stage3_boss_state_11:
-	jsr	a:sub_0489CD
+	jsr	a:queue_sound_35_every_32
 	dec	$3E,x
 	bne	loc_04886C
 	inc	OBJ_STATE,x
@@ -1132,14 +1132,14 @@ loc_048892:
 	rtl
 
 stage3_boss_state_12:
-	jsr	a:sub_0489CD
-	jsr	a:sub_0489DC
+	jsr	a:queue_sound_35_every_32
+	jsr	a:stage3_boss_spawn_debris_sparks
 	lda	stage_frame_counter
 	and	#$0004
 	beq	loc_0488A3
 	lda	#$000C
 loc_0488A3:
-	jsr	a:sub_048A5C
+	jsr	a:stage3_boss_queue_tiles
 	lda	$32,x
 	cmp	#$0144
 	bcc	loc_0488B9
@@ -1158,7 +1158,7 @@ stage3_boss_state_14:
 	beq	loc_0488C6
 	lda	#$000C
 loc_0488C6:
-	jsr	a:sub_048A5C
+	jsr	a:stage3_boss_queue_tiles
 	dec	$3E,x
 	dec	$3E,x
 	bne	loc_048906
@@ -1178,7 +1178,7 @@ loc_0488C6:
 	sta	zp_FC
 loc_0488F2:
 	lda	zp_FC
-	jsr	a:sub_048A80
+	jsr	a:spawn_countdown_bomb
 	clc
 	lda	zp_FC
 	adc	#$0008
@@ -1202,7 +1202,7 @@ stage3_boss_state_15:
 	jml	f:queue_sound
 loc_048923:
 	stz	a:boss_work_2
-	jsr	a:sub_04893E
+	jsr	a:stage3_boss_break_wall
 loc_048929:
 	lda	a:boss_work_1
 	cmp	#$0004
@@ -1215,7 +1215,7 @@ loc_048929:
 loc_04893D:
 	rtl
 
-sub_04893E:
+stage3_boss_break_wall:
 	lda	#$0003
 	sta	a:shake_timer
 	phx
@@ -1288,7 +1288,7 @@ loc_0489CB:
 	plx
 	rts
 
-sub_0489CD:
+queue_sound_35_every_32:
 	lda	stage_frame_counter
 	bit	#$001F
 	bne	loc_0489DB
@@ -1297,7 +1297,7 @@ sub_0489CD:
 loc_0489DB:
 	rts
 
-sub_0489DC:
+stage3_boss_spawn_debris_sparks:
 	ldy	difficulty
 	clc
 	lda	$30,x
@@ -1356,7 +1356,7 @@ loc_048A5A:
 loc_048A5B:
 	rts
 
-sub_048A5C:
+stage3_boss_queue_tiles:
 	pha
 	lda	#$0002
 	sta	zp_02
@@ -1378,7 +1378,7 @@ sub_048A5C:
 	plx
 	rts
 
-sub_048A80:
+spawn_countdown_bomb:
 	phx
 	tax
 	ldy	#$0300
@@ -1521,7 +1521,7 @@ loc_048B4F:
 loc_048BBE:
 	rtl
 
-sub_048BBF:
+spawn_skeleton_eye_fireball:
 	sta	zp_FC
 	jsl	f:find_free_slot_y
 	bcs	loc_048BE9
@@ -1708,11 +1708,11 @@ loc_048CFB:
 	lda	#$0004
 	sta	a:$001A,y
 loc_048D29:
-	jsr	a:sub_0497E0
+	jsr	a:scroll_bg1_bg2_right_16
 	rtl
 
 stage4_controller_state_03:
-	jsr	a:sub_049BD5
+	jsr	a:stage4_spawn_weapon_capsule
 	jsr	a:sub_049B32
 
 stage4_controller_state_02:
@@ -1722,16 +1722,16 @@ stage4_controller_state_02:
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
 loc_048D3E:
-	jsr	a:sub_0497E0
+	jsr	a:scroll_bg1_bg2_right_16
 	rtl
 
 stage4_controller_state_04:
-	jsr	a:sub_049AF5
-	jsr	a:sub_0497E0
+	jsr	a:stage4_spawn_hoverbike_rider
+	jsr	a:scroll_bg1_bg2_right_16
 	rtl
 
 stage4_controller_state_05:
-	jsr	a:sub_0497E0
+	jsr	a:scroll_bg1_bg2_right_16
 	lda	a:bg1_x
 	and	#$00FF
 	cmp	#$0010
@@ -1959,7 +1959,7 @@ stage4_controller_state_0F:
 	lda	#$0004
 	sta	a:bg1_scroll_mode
 loc_048F35:
-	jsr	a:sub_049BD5
+	jsr	a:stage4_spawn_weapon_capsule
 	jml	f:loc_00D5ED
 
 stage4_controller_state_10:
@@ -2067,7 +2067,7 @@ stage4_controller_state_16:
 	beq	loc_049017
 	inc	OBJ_STATE,x
 	lda	#$4200
-	jsr	a:sub_049864
+	jsr	a:stage4_queue_tiles
 	lda	#$000B
 	sta	hdma_preset
 	sep	#$20
@@ -2228,7 +2228,7 @@ stage4_controller_state_1C:
 	lda	#$FFD8
 	sta	a:bg1_y
 	lda	#$4580
-	jsr	a:sub_049864
+	jsr	a:stage4_queue_tiles
 	lda	#$000C
 	sta	hdma_preset
 	lda	#$8000
@@ -2335,7 +2335,9 @@ rideable_missile_state_00:
 	inc	OBJ_STATE,x
 	bra	loc_049285
 
-sub_049277:
+; Turns the slot at X into a rideable missile (type $65, state 7, 120 pixels
+; wide platform).
+make_rideable_missile:
 	sty	$34,x
 	lda	#OBJT_RIDEABLE_MISSILE
 	sta	OBJ_TYPE,x
@@ -2380,8 +2382,8 @@ loc_0492BE:
 	lda	OBJ_X_VEL,x
 	adc	#$0000
 	sta	OBJ_X_VEL,x
-	jsr	a:sub_04988E
-	jsr	a:sub_04997F
+	jsr	a:rideable_missile_set_hdma
+	jsr	a:rideable_missile_exhaust
 	bra	rideable_missile_state_01
 
 rideable_missile_state_03:
@@ -2397,14 +2399,14 @@ rideable_missile_state_03:
 	inc	OBJ_STATE,x
 loc_0492EB:
 	jsr	a:sub_0499AB
-	jsr	a:sub_04988E
-	jsr	a:sub_04997F
+	jsr	a:rideable_missile_set_hdma
+	jsr	a:rideable_missile_exhaust
 	bra	rideable_missile_state_01
 
 rideable_missile_state_04:
 	jsr	a:sub_0499AB
-	jsr	a:sub_04988E
-	jsr	a:sub_04997F
+	jsr	a:rideable_missile_set_hdma
+	jsr	a:rideable_missile_exhaust
 
 rideable_missile_state_01:
 	lda	stage_frame_counter
@@ -2426,7 +2428,7 @@ loc_049322:
 loc_049325:
 	jsl	f:queue_sound
 loc_049329:
-	jsr	a:sub_0497EE
+	jsr	a:rideable_missile_carry_players
 	inc	$30,x
 	lda	$32,x
 	inc	a
@@ -2521,9 +2523,9 @@ rideable_missile_state_07:
 	rtl
 
 rideable_missile_state_05:
-	jsr	a:sub_0497EE
-	jsr	a:sub_04988E
-	jsr	a:sub_04997F
+	jsr	a:rideable_missile_carry_players
+	jsr	a:rideable_missile_set_hdma
+	jsr	a:rideable_missile_exhaust
 	lda	a:wram_0796
 	beq	loc_0493FD
 	clc
@@ -2649,7 +2651,7 @@ stage4_boss_state_00:
 	ldx	#$0700
 	ldy	#$0000
 	stz	$30,x
-	jsr	a:sub_049A30
+	jsr	a:stage4_boss_init_part
 	lda	#$0080
 	sta	$06,x
 	ldx	#$0740
@@ -2657,10 +2659,10 @@ stage4_boss_state_00:
 	lda	#$0002
 	sta	$30,x
 	sta	$04,x
-	jsr	a:sub_049A30
+	jsr	a:stage4_boss_init_part
 	ldx	#$0780
 	ldy	#$0002
-	jsr	a:sub_049A30
+	jsr	a:stage4_boss_init_part
 	plx
 	stz	a:boss_work_1
 	rtl
@@ -3028,7 +3030,7 @@ loc_0497C2:
 loc_0497DF:
 	rts
 
-sub_0497E0:
+scroll_bg1_bg2_right_16:
 	clc
 	lda	a:bg1_x
 	adc	#$0010
@@ -3036,14 +3038,16 @@ sub_0497E0:
 	sta	a:bg2_x
 	rts
 
-sub_0497EE:
+; Players standing on the missile (rideable_missile_carry_player) move with
+; it.
+rideable_missile_carry_players:
 	ldy	#$0200
-	jsr	a:sub_0497FB
+	jsr	a:rideable_missile_carry_player
 	ldy	#$0240
-	jsr	a:sub_0497FB
+	jsr	a:rideable_missile_carry_player
 	rts
 
-sub_0497FB:
+rideable_missile_carry_player:
 	lda	a:$0016,y
 	beq	loc_049863
 	bmi	loc_049863
@@ -3091,7 +3095,7 @@ sub_0497FB:
 loc_049863:
 	rts
 
-sub_049864:
+stage4_queue_tiles:
 	ldy	#$0007
 	sty	zp_02
 	ldy	#$0038
@@ -3112,7 +3116,7 @@ sub_049878:
 	sta	f:wram_7E3824
 	rts
 
-sub_04988E:
+rideable_missile_set_hdma:
 	phx
 	ldy	$34,x
 	sec
@@ -3237,7 +3241,7 @@ loc_04996B:
 	sta	a:wram_074E
 	rts
 
-sub_04997F:
+rideable_missile_exhaust:
 	lda	stage_frame_mod4
 	bne	loc_0499AA
 	ldy	#$0500
@@ -3285,14 +3289,14 @@ sub_0499AB:
 	phx
 	ldy	#$0000
 	ldx	#$07C0
-	jsl	f:sub_049277
+	jsl	f:make_rideable_missile
 	ldy	#$0004
 	ldx	#$0840
-	jsl	f:sub_049277
+	jsl	f:make_rideable_missile
 	iny
 	iny
 	ldx	#$0880
-	jsl	f:sub_049277
+	jsl	f:make_rideable_missile
 	plx
 	rts
 loc_049A05:
@@ -3313,7 +3317,7 @@ loc_049A05:
 	sta	a:wram_140E
 	rts
 
-sub_049A30:
+stage4_boss_init_part:
 	lda	a:data_05EC8E,y
 	sta	OBJ_TYPE,x
 	lda	a:data_05EC92,y
@@ -3406,7 +3410,7 @@ loc_049AE9:
 loc_049AF4:
 	rts
 
-sub_049AF5:
+stage4_spawn_hoverbike_rider:
 	dec	$32,x
 	bpl	loc_049B31
 	ldy	#$0400
@@ -3511,7 +3515,7 @@ loc_049BA4:
 loc_049BD4:
 	rtl
 
-sub_049BD5:
+stage4_spawn_weapon_capsule:
 	dec	$38,x
 	bpl	loc_049C0B
 	ldy	#$05C0
@@ -3589,7 +3593,7 @@ loc_049C61:
 	ldy	difficulty
 	lda	a:winged_alien_hp,y
 	sta	OBJ_HP,x
-	jsr	a:sub_04A0A7
+	jsr	a:winged_alien_spawn_tail
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
@@ -3622,7 +3626,7 @@ loc_049C95:
 	lsr	a
 	lsr	a
 	sta	$30,x
-	jsr	a:sub_04A298
+	jsr	a:winged_alien_queue_tiles
 loc_049CA7:
 	lsr	OBJ_Y_VEL,x
 	ror	OBJ_Y_VEL_SUB,x
@@ -3723,7 +3727,7 @@ loc_049D5E:
 	lsr	a
 loc_049D6B:
 	sta	$30,x
-	jsr	a:sub_04A298
+	jsr	a:winged_alien_queue_tiles
 loc_049D70:
 	inc	a:wram_07B8
 	inc	a:wram_07B8
@@ -3735,15 +3739,15 @@ winged_alien_state_04:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_049D89,x
+	lda	f:tbl_winged_alien_state_04_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_049D89:
-	.addr	sub_049D8D
-	.addr	sub_049DC4
+tbl_winged_alien_state_04_steps:
+	.addr	winged_alien_state_04_step_0
+	.addr	winged_alien_state_04_step_1
 
-sub_049D8D:
+winged_alien_state_04_step_0:
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
 	lda	#$FFFA
@@ -3768,7 +3772,7 @@ sub_049D8D:
 loc_049DC2:
 	inc	$3A,x
 
-sub_049DC4:
+winged_alien_state_04_step_1:
 	lda	OBJ_X,x
 	bmi	loc_049DDE
 	cmp	#$0048
@@ -3798,30 +3802,31 @@ loc_049DF8:
 	rtl
 
 winged_alien_state_05:
-	jsr	a:sub_049E03
+	jsr	a:winged_alien_run_step
 	jsr	a:sub_04A16E
 	rtl
 
-sub_049E03:
+; State 5: runs step field $3A of tbl_winged_alien_steps.
+winged_alien_run_step:
 	lda	$3A,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_049E12,x
+	lda	f:tbl_winged_alien_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_049E12:
-	.addr	sub_049E7A
-	.addr	sub_049E8F
-	.addr	sub_049ED6
-	.addr	sub_049F01
-	.addr	sub_049F1C
-	.addr	sub_049F21
-	.addr	sub_049F2F
-	.addr	sub_049F7B
-	.addr	sub_049F96
-	.addr	sub_049FC6
+tbl_winged_alien_steps:
+	.addr	winged_alien_step_0
+	.addr	winged_alien_step_1
+	.addr	winged_alien_step_2
+	.addr	winged_alien_step_3
+	.addr	winged_alien_step_4
+	.addr	winged_alien_step_5
+	.addr	winged_alien_step_6
+	.addr	winged_alien_step_7
+	.addr	winged_alien_step_8
+	.addr	winged_alien_step_9
 
 sub_049E26:
 	ldy	#$0000
@@ -3868,7 +3873,7 @@ loc_049E78:
 	sec
 	rts
 
-sub_049E7A:
+winged_alien_step_0:
 	jsr	a:sub_049E26
 	bcc	loc_049E8B
 	stz	OBJ_X_VEL,x
@@ -3881,7 +3886,7 @@ loc_049E8B:
 	jsr	a:sub_04A2B2
 	rts
 
-sub_049E8F:
+winged_alien_step_1:
 	lda	OBJ_X,x
 	bmi	loc_049EC9
 	cmp	#$0048
@@ -3920,7 +3925,7 @@ loc_049EC9:
 	inc	$3A,x
 	rts
 
-sub_049ED6:
+winged_alien_step_2:
 	lda	#$0000
 	sta	f:wram_7EE823
 	lda	#$0074
@@ -3934,10 +3939,10 @@ sub_049ED6:
 	stz	OBJ_TIMER,x
 	inc	$3A,x
 	lda	#$0001
-	jsr	a:sub_04A298
+	jsr	a:winged_alien_queue_tiles
 	rts
 
-sub_049F01:
+winged_alien_step_3:
 	jsr	a:sub_04A2D2
 	lda	f:wram_7EE823
 	cmp	#$0002
@@ -3951,12 +3956,12 @@ sub_049F01:
 loc_049F1B:
 	rts
 
-sub_049F1C:
+winged_alien_step_4:
 	stz	hdma_preset
 	inc	$3A,x
 	rts
 
-sub_049F21:
+winged_alien_step_5:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	cmp	#$0030
@@ -3966,7 +3971,7 @@ sub_049F21:
 loc_049F2E:
 	rts
 
-sub_049F2F:
+winged_alien_step_6:
 	lda	a:wram_0216
 	ora	a:wram_0256
 	and	#$0001
@@ -3999,7 +4004,7 @@ loc_049F4A:
 	sta	f:wram_7EE825
 	rts
 
-sub_049F7B:
+winged_alien_step_7:
 	jsr	a:sub_04A2E9
 	lda	f:wram_7EE823
 	cmp	#$0002
@@ -4013,7 +4018,7 @@ sub_049F7B:
 loc_049F95:
 	rts
 
-sub_049F96:
+winged_alien_step_8:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	cmp	#$0008
@@ -4037,7 +4042,7 @@ loc_049FC2:
 	jsr	a:sub_04A2C5
 	rts
 
-sub_049FC6:
+winged_alien_step_9:
 	lda	OBJ_X,x
 	bmi	loc_049FE2
 	cmp	#$0040
@@ -4088,14 +4093,14 @@ loc_049FFC:
 	lda	#$0001
 	sta	a:wram_0796
 	lda	#$0002
-	jsr	a:sub_04A298
+	jsr	a:winged_alien_queue_tiles
 	lda	#$FFFF
 	sta	OBJ_Y_VEL,x
 	stz	OBJ_X_VEL,x
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL_SUB,x
 	inc	OBJ_STATE,x
-	jsr	a:sub_04A1B9
+	jsr	a:winged_alien_set_bg2_scroll
 	rtl
 
 winged_alien_state_07:
@@ -4129,7 +4134,7 @@ loc_04A047:
 	lda	#$FFFD
 	sta	a:$001E,y
 loc_04A084:
-	jsr	a:sub_04A1B9
+	jsr	a:winged_alien_set_bg2_scroll
 	rtl
 loc_04A088:
 	lda	#$0002
@@ -4144,7 +4149,7 @@ loc_04A088:
 	sta	OBJ_FLAGS,x
 	rtl
 
-sub_04A0A7:
+winged_alien_spawn_tail:
 	lda	#$000D
 	sta	OBJ_FLAGS,x
 	lda	#$0080
@@ -4263,7 +4268,7 @@ sub_04A16E:
 	adc	#$0014
 	sta	a:wram_078E
 
-sub_04A1B9:
+winged_alien_set_bg2_scroll:
 	lda	#$00B8
 	sec
 	sbc	OBJ_X,x
@@ -4400,7 +4405,7 @@ winged_alien_tail_state_02:
 loc_04A297:
 	rtl
 
-sub_04A298:
+winged_alien_queue_tiles:
 	asl	a
 	tay
 	lda	a:data_05ED34,y
@@ -4425,7 +4430,7 @@ sub_04A2B2:
 	lsr	a
 loc_04A2BF:
 	sta	$30,x
-	jsr	a:sub_04A298
+	jsr	a:winged_alien_queue_tiles
 loc_04A2C4:
 	rts
 
@@ -4651,7 +4656,7 @@ loc_04A40A:
 ; difficulty: 128/256/384 (face_boss_hp).
 update_face_boss:
 	lda	#$0030
-	jsl	f:sub_04AA0D
+	jsl	f:boss_flash_palette
 	lda	OBJ_HP,x
 	bpl	loc_04A4AB
 	brl	loc_04A626
@@ -4686,7 +4691,7 @@ face_boss_state_00:
 	stz	$32,x
 	stz	$34,x
 	jsr	a:sub_04A810
-	jsr	a:sub_04A8AF
+	jsr	a:face_boss_place_parts
 	lda	#$0001
 	sta	OBJ_STATE,x
 
@@ -4720,7 +4725,7 @@ loc_04A518:
 	sta	OBJ_Y,x
 	cmp	#$0020
 	bpl	loc_04A537
-	jsr	a:sub_04A8AF
+	jsr	a:face_boss_place_parts
 loc_04A52A:
 	lda	#$0004
 	sta	a:shake_timer
@@ -4732,7 +4737,7 @@ loc_04A537:
 	sta	OBJ_FLAGS,x
 	lda	#$0024
 	sta	OBJ_Y,x
-	jsr	a:sub_04A8AF
+	jsr	a:face_boss_place_parts
 	lda	#$0200
 	sta	OBJ_TIMER,x
 	lda	#$0003
@@ -4812,7 +4817,7 @@ face_boss_state_04:
 	sta	OBJ_Y,x
 	cmp	#$FFF0
 	bmi	loc_04A5F4
-	jsr	a:sub_04A8AF
+	jsr	a:face_boss_place_parts
 loc_04A5E4:
 	lda	#$0004
 	sta	a:shake_timer
@@ -5060,7 +5065,7 @@ sub_04A7D1:
 	beq	loc_04A7E9
 	cmp	#$0020
 	bne	loc_04A7DD
-	jsr	a:sub_04A7EA
+	jsr	a:spawn_face_boss_larva
 loc_04A7DD:
 	ldy	#$8000
 	dec	$36,x
@@ -5071,7 +5076,7 @@ loc_04A7E7:
 loc_04A7E9:
 	rts
 
-sub_04A7EA:
+spawn_face_boss_larva:
 	jsl	f:find_free_slot_from_y
 	bcs	loc_04A80F
 	lda	#OBJT_FACE_BOSS_LARVA
@@ -5147,7 +5152,7 @@ sub_04A810:
 	sta	a:wram_0472
 	rts
 
-sub_04A8AF:
+face_boss_place_parts:
 	stz	a:bg2_x
 	lda	#$0124
 	sec
@@ -5189,10 +5194,10 @@ sub_04A8AF:
 	rts
 
 sub_04A907:
-	jsr	a:sub_04A90D
+	jsr	a:face_boss_queue_tiles
 	jmp	a:loc_04A924
 
-sub_04A90D:
+face_boss_queue_tiles:
 	lda	$30,x
 	bpl	loc_04A923
 	and	#$0006
@@ -5332,7 +5337,10 @@ sub_04A9E5:
 loc_04AA0C:
 	rts
 
-sub_04AA0D:
+; A = CGRAM address: while the hit flash runs (OBJ_SAVED_ATTR set), uploads
+; the flash palette ($05:912A) there (bosses drawn on BG2: face boss, heart
+; boss).
+boss_flash_palette:
 	ldy	OBJ_SAVED_ATTR,x
 	beq	loc_04AA18
 	sta	cgram_upload_addr
@@ -6193,7 +6201,7 @@ enemy_type_68_state_05:
 ; stage). HP by difficulty: 128/256/384 (heart_boss_hp).
 update_heart_boss:
 	lda	#$0060
-	jsl	f:sub_04AA0D
+	jsl	f:boss_flash_palette
 	lda	a:wram_16BA
 	beq	loc_04B014
 	dec	a:wram_16BA
@@ -6240,7 +6248,7 @@ heart_boss_state_00:
 	jsr	a:sub_04B17C
 	lda	#$0001
 	sta	a:stage_checkpoint
-	jsr	a:sub_04B1C3
+	jsr	a:spawn_heart_boss_bug
 	lda	#$0009
 	sta	a:bg2_scroll_mode
 	inc	OBJ_STATE,x
@@ -6415,7 +6423,7 @@ sub_04B17C:
 loc_04B1C2:
 	rts
 
-sub_04B1C3:
+spawn_heart_boss_bug:
 	phx
 	ldx	#$0008
 loc_04B1C7:
@@ -6660,10 +6668,10 @@ loc_04B369:
 	inc	OBJ_STATE,x
 
 wall_worm_state_02:
-	jsr	a:sub_04B4F3
+	jsr	a:wall_worm_flash_palette
 	jsr	a:sub_04B3EF
 	jsr	a:sub_04B434
-	jsr	a:sub_04B502
+	jsr	a:spawn_wall_worm_larva
 	jsr	a:sub_04B403
 	jsr	a:sub_04B447
 	rtl
@@ -6848,7 +6856,7 @@ sub_04B486:
 	clc
 	rts
 
-sub_04B4F3:
+wall_worm_flash_palette:
 	lda	OBJ_SAVED_ATTR,x
 	beq	loc_04B501
 	lda	#.loword(palette_05912A)
@@ -6858,7 +6866,7 @@ sub_04B4F3:
 loc_04B501:
 	rts
 
-sub_04B502:
+spawn_wall_worm_larva:
 	lda	$34,x
 	beq	loc_04B528
 	lda	stage_frame_counter
@@ -7047,7 +7055,7 @@ loc_04B674:
 	stz	zp_0C
 	jsl	f:sub_04BE03
 	plx
-	jsr	a:sub_04BBF5
+	jsr	a:cave_beast_set_bg2_scroll
 	rtl
 
 cave_beast_state_03:
@@ -7721,7 +7729,7 @@ sub_04BBBD:
 	sta	a:$000E,y
 	rts
 
-sub_04BBF5:
+cave_beast_set_bg2_scroll:
 	lda	OBJ_X,x
 	sec
 	sbc	#$00AD
@@ -10710,7 +10718,7 @@ helicopter_rope_state_02:
 	bcs	loc_04D389
 	cmp	#$0078
 	bcs	loc_04D3B3
-	jsl	f:sub_04D3B4
+	jsl	f:spawn_helicopter_rope
 	lda	#$0006
 	sta	OBJ_STATE,x
 	rtl
@@ -10734,7 +10742,7 @@ loc_04D389:
 loc_04D3B3:
 	rtl
 
-sub_04D3B4:
+spawn_helicopter_rope:
 	lda	#$0001
 	sta	zp_00
 	lda	#$0006

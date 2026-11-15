@@ -49,7 +49,7 @@ The big enemies live in slot `$0900`, and some of them change type in place
 when beaten:
 
 - stage 3: `update_stage3_boss` is first a robot, then (after both robots) the
-  skeleton robot, with new HP (1024, stored by `sub_048605`);
+  skeleton robot, with new HP (1024, stored by `stage3_boss_check_hp`);
 - stage 6: `update_face_boss` stores `OBJT_BRAIN_BOSS` into its own
   `OBJ_TYPE` (state 9), and when the brain is beaten `update_brain_boss`
   stores `OBJT_ENDING_SEQUENCE`: the ending is the last state machine of the
