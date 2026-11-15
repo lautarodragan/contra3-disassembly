@@ -7,7 +7,7 @@
 ; players and the top-down stages; load_stage_graphics.
 
 ; GAME_MODE_STAGE_CLEAR screen: loads the stage clear picture
-; (data_0587F1[stage_number]), loads the next stage's graphics, counts the
+; (ptrs_stage_clear_pictures[stage_number]), loads the next stage's graphics, counts the
 ; 10000-point stage_bonus into the scores (transfer_stage_bonus), waits a
 ; button or $100 frames; stage_number + 1, stage_checkpoint = 0.
 run_stage_clear:
@@ -46,7 +46,7 @@ stage_clear_init:
 	lda	stage_number
 	asl	a
 	tay
-	lda	a:data_0587F1,y
+	lda	a:ptrs_stage_clear_pictures,y
 	tax
 	jsl	f:load_data_list
 	ldy	#.loword(palette_task_058880)

@@ -479,11 +479,24 @@ palette_task_0587E1:
 palette_task_0587EA:
 	palette_animate	$00, $00
 	palette_copy	palette_088088, $2240
-data_0587F1:
+; Load lists of the stage clear pictures, by stage_number (1-5); entry 0 is
+; the end word of the palette task before.
+ptrs_stage_clear_pictures:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk (+3 more); partly not accessed
 	palette_copy_end
-	.byte	$08, $88, $20, $88, $38, $88, $50, $88, $68, $88, $22, $BE, $8D, $00
-	.byte	$A2, $08, $88, $22, $A8, $90, $00
+	.addr	load_list_058808
+	.addr	load_list_058820
+	.addr	load_list_058838
+	.addr	load_list_058850
+	.addr	load_list_058868
+	; Never executed: code bytes left in the data (jsl reset_video_state,
+	; ldx #load_list_058808, jsl load_data_list).
+	.byte	$22
+	.faraddr	reset_video_state
+	.byte	$A2
+	.addr	load_list_058808
+	.byte	$22
+	.faraddr	load_data_list
 load_list_058808:
 	load_list	$00, $00
 	load_vram	$2000, gfx_188000
