@@ -2,7 +2,7 @@
 # Builds a libretro SNES core from a pinned upstream commit.
 #
 #   cores/build.sh snes9x      -> build/cores/snes9x_libretro.so (with the CDL tracer)
-#   cores/build.sh bsnes       -> build/cores/bsnes_libretro.so  (unpatched, second opinion)
+#   cores/build.sh bsnes       -> build/cores/bsnes_libretro.so  (WRAM patch only, second opinion)
 #
 # Sources are cloned into build/src/<name> (gitignored), reset to the pinned
 # commit, patched with cores/patches/<name>-*.patch, and built. Re-running is
@@ -47,7 +47,7 @@ fi
 
 # Re-apply the patches only when they (or the commit) changed, so that an
 # unchanged tree keeps its object files and make stays incremental.
-STAMP=$(cat "$ROOT"/cores/patches/"$NAME"-*.patch 2>/dev/null | sha1sum | cut -c1-40)-$COMMIT
+STAMP=$( { cat "$ROOT"/cores/patches/"$NAME"-*.patch 2>/dev/null || true; } | sha1sum | cut -c1-40)-$COMMIT
 if [ "$(cat .contra3-stamp 2>/dev/null)" != "$STAMP" ]; then
   git checkout -q -f "$COMMIT"
   git clean -q -fdx

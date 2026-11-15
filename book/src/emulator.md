@@ -13,6 +13,7 @@ IRQ `$8BE2`.
 | Path | What |
 |------|------|
 | `cores/build.sh` | clones a libretro core at a pinned commit into `build/src/`, applies `cores/patches/<core>-*.patch`, builds into `build/cores/` |
+| `cores/patches/bsnes-wram.patch` | exposes WRAM through `retro_get_memory_data` in bsnes (from the-advocate) |
 | `cores/patches/snes9x-cdl.patch` | the CDL tracer and WRAM write watch for snes9x (`cdl.cpp`, `cdl.h` + hooks) |
 | `tools/c3emu/retro.py` | ctypes libretro driver: frame-exact run, input on 2 pads, screenshots, save states, WRAM, CDL, write watch |
 | `tools/c3emu/cdl.py` | CDL container: load/save/merge/report (`python3 -m tools.c3emu.cdl report cdl/contra3.cdl`) |
@@ -36,7 +37,7 @@ first core build.
 
 ```sh
 make cores     # snes9x with the CDL tracer -> build/cores/snes9x_libretro.so (~1 min)
-make bsnes     # optional: unpatched bsnes  -> build/cores/bsnes_libretro.so (second opinion)
+make bsnes     # optional: bsnes (+WRAM patch) -> build/cores/bsnes_libretro.so (second opinion)
 ```
 
 The upstream commits are pinned in `cores/build.sh`. To change the patch, edit
@@ -69,7 +70,11 @@ make goldens                       # rewrite tests/goldens/*.png from the curren
   `out/screens/`. A ROM rebuilt byte-exactly must pass unchanged.
 * `test_cdl.py`: sanity checks of the tracer (skipped on a core without it).
 
-The suite runs in about 45 s with snes9x.
+The suite runs in about 45 s with snes9x (2 min with bsnes). The goldens
+were taken with snes9x. bsnes matches them pixel for pixel except
+`demo_stage4` (frame 18300): by the third attract demo the two cores' timing
+has drifted enough that the recorded demo plays out differently (12437
+pixels). Every other frame, including all six stage starts, is identical.
 
 ## Run the tracer
 
