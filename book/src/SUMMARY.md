@@ -15,4 +15,5 @@
 - [The cartridge](cartridge.md)
 - [RAM map](ram-map.md)
 - [Routines](routines.md)
+- [Game flow](game-flow.md)
 - [Objects](objects.md)

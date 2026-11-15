@@ -96,3 +96,12 @@ also have fields at slot + `$1300` and a stat block at slot + `$1D80`, so
 When you name a variable, rename its placeholder everywhere (src/ and book/), add
 it to the table above with how you know, and update its comment in
 `src/ram.inc`.
+
+## Game flow variables
+
+The variables of the game modes (`mode_result`, the per-mode work area
+`mode_work` and its aliases), the options (`option_lives`, `option_level`,
+`option_sound`), scores (`p1_score`, `high_score`, `p1_next_extend`),
+`continues_left`, `stage_state`, `stage_layout`, `stage_checkpoint` and
+the opening's state are listed with their meaning in `src/ram.inc`; how
+they are used is in [Game flow](game-flow.md).

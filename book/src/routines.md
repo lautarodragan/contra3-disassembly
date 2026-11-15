@@ -21,3 +21,10 @@ jump tables found is in [Progress](progress.md).
 
 When you name a routine, add it here with what it does, its inputs and
 outputs (registers, M/X widths, RAM), and how you know.
+
+## Game flow
+
+The game mode handlers, the attract mode, the menus and screens and the
+side-view stage state machine (`src/game/`) are described in
+[Game flow](game-flow.md), starting from `run_game_mode`; each routine has a
+header comment in the source.
