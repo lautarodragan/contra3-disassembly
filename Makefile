@@ -14,6 +14,9 @@ LD65FLAGS := -C src/contra3.cfg
 # any file under src/ is a dependency.
 src_files := $(shell find src -name '*.asm' -o -name '*.inc' -o -name '*.bin')
 
+# A failed link must not leave a partial ROM behind that looks up to date.
+.DELETE_ON_ERROR:
+
 .PHONY: all compare clean disasm emu-test shift-build shift-test book book-check
 
 all: compare
