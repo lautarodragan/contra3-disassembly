@@ -1363,7 +1363,7 @@ loc_03EA3C:
 	clc
 	adc	zp_D4
 	clc
-	adc	#$8000
+	adc	#.loword(sine_products)
 	sta	zp_D4
 	lda	zp_16
 	and	#$003F
@@ -1375,11 +1375,11 @@ loc_03EA3C:
 	clc
 	adc	zp_D7
 	clc
-	adc	#$8000
+	adc	#.loword(sine_products)
 	sta	zp_D7
 	sep	#$20
 	.a8
-	lda	#$03
+	lda	#^sine_products
 	sta	zp_D6
 	sta	zp_D9
 	rep	#$20
@@ -2867,7 +2867,7 @@ loc_03F4D6:
 	clc
 	adc	zp_D4
 	clc
-	adc	#$8000
+	adc	#.loword(sine_products)
 	sta	zp_D4
 	lda	zp_16
 	and	#$003F
@@ -2879,11 +2879,11 @@ loc_03F4D6:
 	clc
 	adc	zp_D7
 	clc
-	adc	#$8000
+	adc	#.loword(sine_products)
 	sta	zp_D7
 	sep	#$20
 	.a8
-	lda	#$03
+	lda	#^sine_products
 	sta	zp_D6
 	sta	zp_D9
 	rep	#$20

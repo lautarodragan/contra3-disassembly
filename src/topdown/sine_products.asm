@@ -7,6 +7,7 @@
 ; view angle and zp_D7 at the table of 64 minus it (the cosine), and
 ; project_to_view rotates map offsets with them (no multiplications).
 
+sine_products:
 	; CDL: read by project_quadrant_0, project_quadrant_3
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
