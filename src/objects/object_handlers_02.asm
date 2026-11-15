@@ -1,14 +1,15 @@
 ; objects/object_handlers_02.asm -- Object handlers (bank $02)
 ; Bank $02, $02:FCCB-$02:FFFF. Included by main.asm in segment BANK02.
 ;
-; Handlers of the secondary object list (tbl_shot_types) and a routine called from
-; bank $1D.
+; The ending fireworks: handlers of secondary-list types $16-$1A
+; (tbl_shot_types), spawn_ending_firework (called by ending_sequence in bank
+; $1D) and find_free_secondary_slot.
 
-sub_02FCCB:
+spawn_ending_firework:
 	lda	stage_frame_counter
 	and	#$007F
 	bne	loc_02FD09
-	jsr	a:sub_02FD0E
+	jsr	a:find_free_secondary_slot
 	bcs	loc_02FD09
 	lda	stage_frame_counter
 	and	#$0180
@@ -34,12 +35,12 @@ loc_02FD09:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_02FD0A:
+find_free_secondary_slot_long:
 	; (not executed in the CDL traces)
-	jsr	a:sub_02FD0E
+	jsr	a:find_free_secondary_slot
 	rtl
 
-sub_02FD0E:
+find_free_secondary_slot:
 	phx
 	ldx	#$0000
 loc_02FD12:
@@ -62,20 +63,24 @@ loc_02FD27:
 	plx
 	rts
 
-sub_02FD2A:
+; Object type $16 (secondary list). Ending: a firework rocket; after 15 frames
+; it bursts into 15 sparks of type $17-$1A (chosen by +$14) and clears itself.
+; Spawned by spawn_ending_firework once the helicopter has left the screen
+; (seen at the end of stage 6).
+update_ending_firework:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02FD39,x
+	lda	f:tbl_ending_firework_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02FD39:
-	.addr	sub_02FD3D
-	.addr	sub_02FD56
+tbl_ending_firework_states:
+	.addr	ending_firework_state_00
+	.addr	ending_firework_state_01
 
-sub_02FD3D:
+ending_firework_state_00:
 	lda	#$3E4F
 	sta	$02,x
 	stz	$16,x
@@ -89,12 +94,12 @@ sub_02FD3D:
 	inc	$12,x
 	rtl
 
-sub_02FD56:
+ending_firework_state_01:
 	inc	$00,x
 	lda	$00,x
 	cmp	#$000F
 	bcc	loc_02FD73
-	jsr	a:sub_02FD74
+	jsr	a:spawn_firework_sparks
 	stx	zp_00
 	lda	#$0000
 	ldy	#$0000
@@ -107,10 +112,10 @@ loc_02FD6A:
 loc_02FD73:
 	rtl
 
-sub_02FD74:
+spawn_firework_sparks:
 	stz	zp_00
 loc_02FD76:
-	jsr	a:sub_02FD0E
+	jsr	a:find_free_secondary_slot
 	bcs	loc_02FDB5
 	sty	zp_02
 	lda	$14,x
@@ -147,7 +152,7 @@ loc_02FDB5:
 	bcs	loc_02FD76
 	rts
 
-sub_02FDC6:
+apply_spark_gravity:
 	lda	$1C,x
 	clc
 	adc	#$0400
@@ -157,25 +162,28 @@ sub_02FDC6:
 loc_02FDD2:
 	rts
 
-sub_02FDD3:
-	jsr	a:sub_02FDC6
+; Object type $17, $1A (secondary list). Ending firework spark with a random
+; velocity (random_spark_velocity), falling under gravity, blinking out after
+; 60 frames.
+update_spark_random:
+	jsr	a:apply_spark_gravity
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02FDE5,x
+	lda	f:tbl_spark_random_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02FDE5:
-	.addr	sub_02FDEB
-	.addr	sub_02FE0B
-	.addr	sub_02FE19
+tbl_spark_random_states:
+	.addr	spark_random_state_00
+	.addr	spark_random_state_01
+	.addr	spark_random_state_02
 
-sub_02FDEB:
+spark_random_state_00:
 	lda	#$3E4F
 	sta	$02,x
-	jsr	a:sub_02FF17
+	jsr	a:random_spark_velocity
 	lda	zp_08
 	sta	$18,x
 	lda	zp_00
@@ -190,7 +198,7 @@ sub_02FDEB:
 	inc	$12,x
 	rtl
 
-sub_02FE0B:
+spark_random_state_01:
 	inc	$00,x
 	lda	$00,x
 	cmp	#$001E
@@ -200,7 +208,7 @@ sub_02FE0B:
 loc_02FE18:
 	rtl
 
-sub_02FE19:
+spark_random_state_02:
 	lda	$00,x
 	bit	#$0002
 	bne	loc_02FE25
@@ -226,25 +234,28 @@ loc_02FE3B:
 loc_02FE44:
 	rtl
 
-sub_02FE45:
-	jsr	a:sub_02FDC6
+; Object type $18 (secondary list). Ending firework spark thrown in one of 16
+; directions (+$04, radial_spark_velocity), falling under gravity; cleared
+; after 70 frames.
+update_spark_radial:
+	jsr	a:apply_spark_gravity
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02FE57,x
+	lda	f:tbl_spark_radial_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02FE57:
-	.addr	sub_02FE5D
-	.addr	sub_02FE7D
-	.addr	sub_02FE8B
+tbl_spark_radial_states:
+	.addr	spark_radial_state_00
+	.addr	spark_radial_state_01
+	.addr	spark_radial_state_02
 
-sub_02FE5D:
+spark_radial_state_00:
 	lda	#$3E4F
 	sta	$02,x
-	jsr	a:sub_02FF27
+	jsr	a:radial_spark_velocity
 	lda	zp_08
 	sta	$18,x
 	lda	zp_00
@@ -259,7 +270,7 @@ sub_02FE5D:
 	inc	$12,x
 	rtl
 
-sub_02FE7D:
+spark_radial_state_01:
 	inc	$00,x
 	lda	$00,x
 	cmp	#$0032
@@ -269,7 +280,7 @@ sub_02FE7D:
 loc_02FE8A:
 	rtl
 
-sub_02FE8B:
+spark_radial_state_02:
 	lda	$00,x
 	bit	#$0002
 	bne	loc_02FE97
@@ -296,25 +307,27 @@ loc_02FEAD:
 loc_02FEB6:
 	rtl
 
-sub_02FEB7:
-	jsr	a:sub_02FDC6
+; Object type $19 (secondary list). As spark_radial at twice the speed, other
+; palette.
+update_spark_radial_fast:
+	jsr	a:apply_spark_gravity
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02FEC9,x
+	lda	f:tbl_spark_radial_fast_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02FEC9:
-	.addr	sub_02FECF
-	.addr	sub_02FEF7
-	.addr	sub_02FEFA
+tbl_spark_radial_fast_states:
+	.addr	spark_radial_fast_state_00
+	.addr	spark_radial_fast_state_01
+	.addr	spark_radial_fast_state_02
 
-sub_02FECF:
+spark_radial_fast_state_00:
 	lda	#$3E4F
 	sta	$02,x
-	jsr	a:sub_02FF27
+	jsr	a:radial_spark_velocity
 	asl	zp_08
 	rol	zp_00
 	asl	zp_0A
@@ -333,10 +346,10 @@ sub_02FECF:
 	inc	$12,x
 	rtl
 
-sub_02FEF7:
-	jmp	a:sub_02FE7D
+spark_radial_fast_state_01:
+	jmp	a:spark_radial_state_01
 
-sub_02FEFA:
+spark_radial_fast_state_02:
 	lda	$00,x
 	bit	#$0002
 	bne	loc_02FF06
@@ -352,7 +365,7 @@ loc_02FF09:
 	bcc	loc_02FEB6
 	jmp	a:loc_02FEA5
 
-sub_02FF17:
+random_spark_velocity:
 	lda	rng_lo
 	sta	zp_08
 	eor	#$EA9E
@@ -362,7 +375,7 @@ sub_02FF17:
 	sta	rng_lo
 	bra	loc_02FF4B
 
-sub_02FF27:
+radial_spark_velocity:
 	lda	$04,x
 	lsr	a
 	lsr	a

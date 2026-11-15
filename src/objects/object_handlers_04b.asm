@@ -1,10 +1,10 @@
 ; objects/object_handlers_04b.asm -- Object handlers (bank $04, part 2)
 ; Bank $04, $04:E21B-$04:FFFF. Included by main.asm in segment BANK04.
 ;
-; Object setup called from bank $1D (sub_04E21B) and handlers dispatched
-; through tbl_object_types.
+; The crowd of the ending: spawn_ending_crowd (called by ending_sequence in
+; bank $1D) and the handlers of object types $9A-$9F.
 
-sub_04E21B:
+spawn_ending_crowd:
 	lda	zp_00
 	pha
 	phx
@@ -43,7 +43,7 @@ loc_04E222:
 	stz	$0C,x
 	stz	$24,x
 	stz	$12,x
-	jsr	a:sub_04E37F
+	jsr	a:place_ending_crowd_member
 	inc	zp_00
 	lda	zp_00
 	ldy	difficulty
@@ -55,25 +55,28 @@ loc_04E222:
 	sta	zp_00
 	rtl
 
-sub_04E278:
-	jsr	a:sub_04E37F
+; Object type $9A-$9D. Ending: the crowd cheering under the helicopter (one
+; handler for four types); spawn_ending_crowd creates 6/7/8 of them on
+; easy/normal/hard.
+update_ending_crowd_member:
+	jsr	a:place_ending_crowd_member
 	rtl
 
-sub_04E27C:
+update_ending_crowd_walker_a:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04E28B,x
+	lda	f:tbl_ending_crowd_walker_a_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04E28B:
-	.addr	sub_04E291
-	.addr	sub_04E2D0
-	.addr	sub_04E2DB
+tbl_ending_crowd_walker_a_states:
+	.addr	ending_crowd_walker_a_state_00
+	.addr	ending_crowd_walker_a_state_01
+	.addr	ending_crowd_walker_a_state_02
 
-sub_04E291:
+ending_crowd_walker_a_state_00:
 	inc	$24,x
 	lda	$24,x
 	cmp	#$00B4
@@ -99,7 +102,7 @@ loc_04E2BC:
 	stz	$24,x
 	inc	$12,x
 loc_04E2C0:
-	jsr	a:sub_04E37F
+	jsr	a:place_ending_crowd_member
 	rtl
 loc_04E2C4:
 	lda	$04,x
@@ -108,14 +111,14 @@ loc_04E2C4:
 	sta	$04,x
 	bra	loc_04E2C0
 
-sub_04E2D0:
+ending_crowd_walker_a_state_01:
 	lda	$04,x
 	lda	#$F642
 	sta	$20,x
 	stz	$22,x
 	bra	loc_04E2BC
 
-sub_04E2DB:
+ending_crowd_walker_a_state_02:
 	inc	$24,x
 	lda	$24,x
 	cmp	#$00B4
@@ -127,23 +130,24 @@ sub_04E2DB:
 	stz	$12,x
 	bra	loc_04E2C0
 
-sub_04E2F1:
+; Object type $9F. Ending: another crowd member walking back and forth.
+update_ending_crowd_walker_b:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04E300,x
+	lda	f:tbl_ending_crowd_walker_b_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04E300:
-	.addr	sub_04E30A
-	.addr	sub_04E31B
-	.addr	sub_04E326
-	.addr	sub_04E331
-	.addr	sub_04E33C
+tbl_ending_crowd_walker_b_states:
+	.addr	ending_crowd_walker_b_state_00
+	.addr	ending_crowd_walker_b_state_01
+	.addr	ending_crowd_walker_b_state_02
+	.addr	ending_crowd_walker_b_state_03
+	.addr	ending_crowd_walker_b_state_04
 
-sub_04E30A:
+ending_crowd_walker_b_state_00:
 	inc	$24,x
 	lda	$24,x
 	cmp	#$00F0
@@ -152,31 +156,31 @@ loc_04E313:
 	stz	$24,x
 	inc	$12,x
 loc_04E317:
-	jsr	a:sub_04E37F
+	jsr	a:place_ending_crowd_member
 	rtl
 
-sub_04E31B:
+ending_crowd_walker_b_state_01:
 	lda	$04,x
 	lda	#$F678
 	sta	$20,x
 	stz	$22,x
 	bra	loc_04E313
 
-sub_04E326:
+ending_crowd_walker_b_state_02:
 	inc	$24,x
 	lda	$24,x
 	cmp	#$00B4
 	bcc	loc_04E317
 	bcs	loc_04E313
 
-sub_04E331:
+ending_crowd_walker_b_state_03:
 	lda	$04,x
 	lda	#$F680
 	sta	$20,x
 	stz	$22,x
 	bra	loc_04E313
 
-sub_04E33C:
+ending_crowd_walker_b_state_04:
 	inc	$24,x
 	lda	$24,x
 	cmp	#$00B4
@@ -213,7 +217,7 @@ loc_04E372:
 	stz	$12,x
 	bra	loc_04E317
 
-sub_04E37F:
+place_ending_crowd_member:
 	lda	#$0100
 	sec
 	sbc	a:wram_1398

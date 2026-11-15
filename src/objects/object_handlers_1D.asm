@@ -1,9 +1,16 @@
 ; objects/object_handlers_1D.asm -- Object handlers (bank $1D)
 ; Bank $1D, $1D:AF27-$1D:CCDF. Included by main.asm in segment BANK1D.
 ;
-; Handlers of object types dispatched through tbl_object_types and their helpers.
+; Handlers of object types dispatched through tbl_object_types and their
+; helpers: the final boss of stage 6 (brain_boss and its attacks) and the
+; ending (ending_sequence, ending_explosion).
 
-sub_1DAF27:
+; Object type $95. Ending after brain_boss: the helicopter arrives, the
+; players hang on the missile (rideable_missile in slot $0280), the lair
+; explodes; on HARD a last creature chases the helicopter (384 HP set in state
+; 8). Then spawns the crowd (spawn_ending_crowd) and the fireworks
+; (spawn_ending_firework).
+update_ending_sequence:
 	lda	$12,x
 	cmp	#$0009
 	bcs	loc_1DAF38
@@ -41,56 +48,56 @@ loc_1DAF72:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_1DAF81,x
+	lda	f:tbl_ending_sequence_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_1DAF81:
-	.addr	sub_1DAFD7
-	.addr	sub_1DAFFE
-	.addr	sub_1DB06B
-	.addr	sub_1DB087
-	.addr	sub_1DB0AC
-	.addr	sub_1DB0C2
-	.addr	sub_1DB0DD
-	.addr	sub_1DB0E9
-	.addr	sub_1DB113
-	.addr	sub_1DB175
-	.addr	sub_1DB19D
-	.addr	sub_1DB1C1
-	.addr	sub_1DB205
-	.addr	sub_1DB220
-	.addr	sub_1DB24A
-	.addr	sub_1DBCE3
-	.addr	sub_1DB2C5
-	.addr	sub_1DBD1C
-	.addr	sub_1DBD32
-	.addr	sub_1DBD32
-	.addr	sub_1DB269
-	.addr	sub_1DB306
-	.addr	sub_1DBA8C
-	.addr	sub_1DBAEA
-	.addr	sub_1DBB2E
-	.addr	sub_1DBB6B
-	.addr	sub_1DBB84
-	.addr	sub_1DBB90
-	.addr	sub_1DBBDA
-	.addr	sub_1DBB84
-	.addr	sub_1DBC16
-	.addr	sub_1DBC2A
-	.addr	sub_1DB338
-	.addr	sub_1DB377
-	.addr	sub_1DB3CB
-	.addr	sub_1DB3FD
-	.addr	sub_1DB409
-	.addr	sub_1DBC59
-	.addr	sub_1DBC97
-	.addr	sub_1DBCBF
-	.addr	sub_1DBCCD
-	.addr	sub_1DBDFB
-	.addr	sub_1DBE2C
+tbl_ending_sequence_states:
+	.addr	ending_sequence_state_00
+	.addr	ending_sequence_state_01
+	.addr	ending_sequence_state_02
+	.addr	ending_sequence_state_03
+	.addr	ending_sequence_state_04
+	.addr	ending_sequence_state_05
+	.addr	ending_sequence_state_06
+	.addr	ending_sequence_state_07
+	.addr	ending_sequence_state_08
+	.addr	ending_sequence_state_09
+	.addr	ending_sequence_state_0A
+	.addr	ending_sequence_state_0B
+	.addr	ending_sequence_state_0C
+	.addr	ending_sequence_state_0D
+	.addr	ending_sequence_state_0E
+	.addr	ending_sequence_state_0F
+	.addr	ending_sequence_state_10
+	.addr	ending_sequence_state_11
+	.addr	ending_sequence_state_12
+	.addr	ending_sequence_state_12
+	.addr	ending_sequence_state_14
+	.addr	ending_sequence_state_15
+	.addr	ending_sequence_state_16
+	.addr	ending_sequence_state_17
+	.addr	ending_sequence_state_18
+	.addr	ending_sequence_state_19
+	.addr	ending_sequence_state_1A
+	.addr	ending_sequence_state_1B
+	.addr	ending_sequence_state_1C
+	.addr	ending_sequence_state_1A
+	.addr	ending_sequence_state_1E
+	.addr	ending_sequence_state_1F
+	.addr	ending_sequence_state_20
+	.addr	ending_sequence_state_21
+	.addr	ending_sequence_state_22
+	.addr	ending_sequence_state_23
+	.addr	ending_sequence_state_24
+	.addr	ending_sequence_state_25
+	.addr	ending_sequence_state_26
+	.addr	ending_sequence_state_27
+	.addr	ending_sequence_state_28
+	.addr	ending_sequence_state_29
+	.addr	ending_sequence_state_2A
 
-sub_1DAFD7:
+ending_sequence_state_00:
 	inc	$12,x
 	lda	#$0002
 	sta	a:wram_16B6
@@ -106,7 +113,7 @@ sub_1DAFD7:
 	stz	a:wram_13F2
 	rtl
 
-sub_1DAFFE:
+ending_sequence_state_01:
 	lda	a:wram_13FE
 	beq	loc_1DB06A
 	inc	$12,x
@@ -145,7 +152,7 @@ sub_1DAFFE:
 loc_1DB06A:
 	rtl
 
-sub_1DB06B:
+ending_sequence_state_02:
 	jsr	a:sub_1DB41F
 	lda	a:wram_028E
 	bmi	loc_1DB086
@@ -159,7 +166,7 @@ sub_1DB06B:
 loc_1DB086:
 	rtl
 
-sub_1DB087:
+ending_sequence_state_03:
 	jsr	a:sub_1DB41F
 	lda	a:p1_lives
 	beq	loc_1DB097
@@ -180,7 +187,7 @@ loc_1DB0A4:
 loc_1DB0AB:
 	rtl
 
-sub_1DB0AC:
+ending_sequence_state_04:
 	jsr	a:sub_1DB41F
 	dec	$24,x
 	bpl	loc_1DB0C1
@@ -192,7 +199,7 @@ sub_1DB0AC:
 loc_1DB0C1:
 	rtl
 
-sub_1DB0C2:
+ending_sequence_state_05:
 	jsr	a:sub_1DB41F
 	lda	a:wram_028E
 	bpl	loc_1DB0DC
@@ -206,7 +213,7 @@ sub_1DB0C2:
 loc_1DB0DC:
 	rtl
 
-sub_1DB0DD:
+ending_sequence_state_06:
 	dec	$24,x
 	bpl	loc_1DB0E8
 	lda	#$0080
@@ -215,7 +222,7 @@ sub_1DB0DD:
 loc_1DB0E8:
 	rtl
 
-sub_1DB0E9:
+ending_sequence_state_07:
 	dec	$24,x
 	bpl	loc_1DB102
 	lda	difficulty
@@ -239,7 +246,7 @@ loc_1DB10F:
 	jsr	a:sub_1DCC1C
 	rtl
 
-sub_1DB113:
+ending_sequence_state_08:
 	lda	#$004A
 	jsl	f:queue_sound
 	stz	a:wram_1636
@@ -281,7 +288,7 @@ sub_1DB113:
 	plx
 	rtl
 
-sub_1DB175:
+ending_sequence_state_09:
 	stz	zp_00
 	lda	#$00FF
 	sta	zp_04
@@ -299,7 +306,7 @@ sub_1DB175:
 loc_1DB19C:
 	rtl
 
-sub_1DB19D:
+ending_sequence_state_0A:
 	lda	a:wram_1398
 	bit	#$00FF
 	beq	loc_1DB1D0
@@ -315,7 +322,7 @@ sub_1DB19D:
 	lda	#$0100
 	sta	$24,x
 
-sub_1DB1C1:
+ending_sequence_state_0B:
 	jsr	a:sub_1DB685
 	dec	$24,x
 	bpl	loc_1DB1D0
@@ -347,7 +354,7 @@ loc_1DB1F2:
 	jsr	a:sub_1DB5ED
 	rtl
 
-sub_1DB205:
+ending_sequence_state_0C:
 	lda	a:wram_028E
 	bmi	loc_1DB237
 	cmp	#$0040
@@ -359,7 +366,7 @@ sub_1DB205:
 	jsr	a:sub_1DB741
 	inc	$12,x
 
-sub_1DB220:
+ending_sequence_state_0D:
 	lda	stage_frame_counter
 	bit	#$01FF
 	bne	loc_1DB22E
@@ -379,7 +386,7 @@ loc_1DB237:
 	jsr	a:sub_1DB41F
 	rtl
 
-sub_1DB24A:
+ending_sequence_state_0E:
 	jsr	a:sub_1DB758
 	jsr	a:sub_1DB70F
 	jsr	a:sub_1DB685
@@ -394,7 +401,7 @@ sub_1DB24A:
 loc_1DB268:
 	rtl
 
-sub_1DB269:
+ending_sequence_state_14:
 	lda	a:wram_1398
 	and	#$01FF
 	cmp	#$0004
@@ -421,7 +428,7 @@ sub_1DB269:
 	sta	a:wram_1636
 	lda	#$FFFF
 	sta	a:wram_1638
-	jsl	f:sub_1DB306
+	jsl	f:ending_sequence_state_15
 	lda	a:wram_13D8
 	sta	a:wram_13E2
 	rtl
@@ -431,7 +438,7 @@ loc_1DB2BB:
 	jsr	a:sub_1DB41F
 	rtl
 
-sub_1DB2C5:
+ending_sequence_state_10:
 	jsr	a:sub_1DB44A
 	dec	$24,x
 	bpl	loc_1DB2F1
@@ -460,7 +467,7 @@ loc_1DB2F1:
 loc_1DB305:
 	rtl
 
-sub_1DB306:
+ending_sequence_state_15:
 	jsr	a:sub_1DB7DE
 	jsr	a:sub_1DB6B6
 	lda	#$0064
@@ -482,7 +489,7 @@ sub_1DB306:
 loc_1DB337:
 	rtl
 
-sub_1DB338:
+ending_sequence_state_20:
 	jsr	a:sub_1DB6F1
 	lda	a:wram_163E
 	bmi	loc_1DB360
@@ -496,7 +503,7 @@ sub_1DB338:
 	lda	#$0900
 	sta	a:wram_13BC
 	sta	a:wram_13B0
-	jsl	f:sub_04E21B
+	jsl	f:spawn_ending_crowd
 loc_1DB360:
 	jsr	a:sub_1DB7DE
 	jsr	a:sub_1DB98D
@@ -508,7 +515,7 @@ loc_1DB360:
 	jsr	a:sub_1DB43F
 	rtl
 
-sub_1DB377:
+ending_sequence_state_21:
 	jsr	a:sub_1DB6D3
 	jsr	a:sub_1DB668
 	jsr	a:sub_1DB98D
@@ -545,9 +552,9 @@ sub_1DB377:
 loc_1DB3CA:
 	rtl
 
-sub_1DB3CB:
+ending_sequence_state_22:
 	dec	$24,x
-	bpl	sub_1DB409
+	bpl	ending_sequence_state_24
 	inc	$12,x
 	lda	a:p1_lives
 	beq	loc_1DB3E2
@@ -567,19 +574,19 @@ loc_1DB3F3:
 	stz	a:player_autopilot_mode
 	lda	#$01F0
 	sta	$24,x
-	bra	sub_1DB409
+	bra	ending_sequence_state_24
 
-sub_1DB3FD:
+ending_sequence_state_23:
 	dec	$24,x
-	bpl	sub_1DB409
+	bpl	ending_sequence_state_24
 	lda	#$0100
 	sta	a:stage_exit_request
 	inc	$12,x
 
-sub_1DB409:
+ending_sequence_state_24:
 	lda	a:wram_028E
 	bpl	loc_1DB412
-	jsl	f:sub_02FCCB
+	jsl	f:spawn_ending_firework
 loc_1DB412:
 	jsr	a:sub_1DB6D3
 	jsr	a:sub_1DB7B9
@@ -1170,7 +1177,9 @@ loc_1DB88C:
 	stz	$36,x
 	rts
 
-sub_1DB8C0:
+; Object type $96. Ending on HARD: segments of the claws of the creature that
+; rises behind the brain (not identified exactly).
+update_enemy_type_96:
 	lda	a:wram_1688
 	beq	loc_1DB8CB
 	lda	#$8000
@@ -1250,7 +1259,8 @@ loc_1DB940:
 	sta	$00,x
 	bra	loc_1DB930
 
-sub_1DB952:
+; Object type $97. Not seen in the emulator.
+update_enemy_type_97:
 	stz	a:wram_1644
 	lda	#$FFFF
 	sta	a:wram_163E
@@ -1398,7 +1408,7 @@ sub_1DBA68:
 loc_1DBA8B:
 	rts
 
-sub_1DBA8C:
+ending_sequence_state_16:
 	jsr	a:sub_1DB6F1
 	jsr	a:sub_1DB7DE
 	lda	#$0030
@@ -1439,7 +1449,7 @@ loc_1DBAB4:
 loc_1DBAE9:
 	rtl
 
-sub_1DBAEA:
+ending_sequence_state_17:
 	dec	$24,x
 	bpl	loc_1DBB2D
 	lda	#$0080
@@ -1470,7 +1480,7 @@ loc_1DBB25:
 loc_1DBB2D:
 	rtl
 
-sub_1DBB2E:
+ending_sequence_state_18:
 	dec	$24,x
 	bpl	loc_1DBB6A
 	lda	#$0040
@@ -1499,7 +1509,7 @@ loc_1DBB47:
 loc_1DBB6A:
 	rtl
 
-sub_1DBB6B:
+ending_sequence_state_19:
 	dec	$24,x
 	bpl	loc_1DBB83
 	inc	$12,x
@@ -1514,7 +1524,7 @@ sub_1DBB6B:
 loc_1DBB83:
 	rtl
 
-sub_1DBB84:
+ending_sequence_state_1A:
 	dec	$24,x
 	bpl	loc_1DBB8F
 	lda	#$0004
@@ -1523,7 +1533,7 @@ sub_1DBB84:
 loc_1DBB8F:
 	rtl
 
-sub_1DBB90:
+ending_sequence_state_1B:
 	dec	$24,x
 	bpl	loc_1DBBA8
 	lda	#$00E0
@@ -1562,7 +1572,7 @@ loc_1DBBA8:
 loc_1DBBD9:
 	rtl
 
-sub_1DBBDA:
+ending_sequence_state_1C:
 	dec	$24,x
 	bpl	loc_1DBC15
 	lda	#$0014
@@ -1590,7 +1600,7 @@ sub_1DBBDA:
 loc_1DBC15:
 	rtl
 
-sub_1DBC16:
+ending_sequence_state_1E:
 	dec	$24,x
 	bmi	loc_1DBC1D
 	brl	loc_1DBBA8
@@ -1599,10 +1609,10 @@ loc_1DBC1D:
 	sta	$24,x
 	inc	$12,x
 	stz	hdma_preset
-	jsr	a:sub_1DB952
+	jsr	a:update_enemy_type_97
 	rtl
 
-sub_1DBC2A:
+ending_sequence_state_1F:
 	lda	stage_frame_odd
 	beq	loc_1DBC58
 	sec
@@ -1627,7 +1637,7 @@ loc_1DBC49:
 loc_1DBC58:
 	rtl
 
-sub_1DBC59:
+ending_sequence_state_25:
 	dec	$24,x
 	bpl	loc_1DBC89
 	lda	stage_frame_odd
@@ -1655,7 +1665,7 @@ loc_1DBC89:
 	jsr	a:sub_1DBA68
 	rtl
 
-sub_1DBC97:
+ending_sequence_state_26:
 	lda	a:wram_1398
 	bit	#$00FF
 	beq	loc_1DBCBB
@@ -1674,7 +1684,7 @@ loc_1DBCBB:
 	jsr	a:sub_1DB685
 	rtl
 
-sub_1DBCBF:
+ending_sequence_state_27:
 	dec	$24,x
 	bpl	loc_1DBCBB
 	inc	$12,x
@@ -1682,7 +1692,7 @@ sub_1DBCBF:
 	sta	a:wram_029C
 	bra	loc_1DBCBB
 
-sub_1DBCCD:
+ending_sequence_state_28:
 	lda	a:wram_028E
 	bmi	loc_1DBCBB
 	cmp	#$0010
@@ -1693,7 +1703,7 @@ sub_1DBCCD:
 	sta	$12,x
 	bra	loc_1DBCBB
 
-sub_1DBCE3:
+ending_sequence_state_0F:
 	lda	$0E,x
 	cmp	#$0108
 	bcc	loc_1DBCF5
@@ -1722,7 +1732,7 @@ loc_1DBD02:
 	jsr	a:sub_1DBDA0
 	rtl
 
-sub_1DBD1C:
+ending_sequence_state_11:
 	jsr	a:sub_1DB758
 	jsr	a:sub_1DB685
 	jsr	a:sub_1DB41F
@@ -1734,7 +1744,7 @@ sub_1DBD1C:
 loc_1DBD31:
 	rtl
 
-sub_1DBD32:
+ending_sequence_state_12:
 	jsr	a:sub_1DB758
 	jsr	a:sub_1DB685
 	jsr	a:sub_1DB41F
@@ -1745,7 +1755,8 @@ sub_1DBD32:
 	sta	a:stage_pause_disabled
 	rtl
 
-sub_1DBD4A:
+; Object type $98. Ending: explosions along the floor of the lair.
+update_ending_explosion:
 	ldy	$20,x
 	bne	loc_1DBD54
 	lda	#$8000
@@ -1763,7 +1774,8 @@ loc_1DBD54:
 	sta	$1E,x
 	rtl
 
-sub_1DBD69:
+; Object type $99. Not seen in the emulator.
+update_enemy_type_99:
 	; (not executed in the CDL traces)
 	rtl
 
@@ -1840,18 +1852,18 @@ loc_1DBDF6:
 	jsl	f:sub_00FD8D
 	rts
 
-sub_1DBDFB:
+ending_sequence_state_29:
 	lda	$24,x
 	bmi	loc_1DBE03
 	dec	$24,x
-	bpl	sub_1DBE2C
+	bpl	ending_sequence_state_2A
 loc_1DBE03:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#$1000
 	bne	loc_1DBE11
 	jsr	a:sub_1DBE61
-	bra	sub_1DBE2C
+	bra	ending_sequence_state_2A
 loc_1DBE11:
 	; (not executed in the CDL traces)
 	phx
@@ -1865,7 +1877,7 @@ loc_1DBE11:
 	jsl	f:queue_sound
 	inc	$12,x
 
-sub_1DBE2C:
+ending_sequence_state_2A:
 	jsr	a:sub_1DBE30
 	rtl
 
@@ -1906,7 +1918,11 @@ loc_1DBE6F:
 	plx
 	rts
 
-sub_1DBE78:
+; Object type $6F, $8A. Stage 6 final boss: the giant brain (type $8A, slot
+; $0900); its attacks are the brain_boss_* types. Type $6F uses the same
+; handler but was not seen in the emulator. Initial HP by difficulty:
+; $0401/$4256/$7532 (data_05FF9B), halved in state 6 when at least $100.
+update_brain_boss:
 	lda	a:wram_1644
 	bmi	loc_1DBE80
 	dec	a:wram_1644
@@ -1964,24 +1980,24 @@ loc_1DBEEE:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_1DBEFD,x
+	lda	f:tbl_brain_boss_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_1DBEFD:
-	.addr	sub_1DBF13
-	.addr	sub_1DBF5D
-	.addr	sub_1DBF76
-	.addr	sub_1DBF89
-	.addr	sub_1DBFA3
-	.addr	sub_1DC03B
-	.addr	sub_1DC05B
-	.addr	sub_1DC089
-	.addr	sub_1DC125
-	.addr	sub_1DC145
-	.addr	sub_1DC14C
+tbl_brain_boss_states:
+	.addr	brain_boss_state_00
+	.addr	brain_boss_state_01
+	.addr	brain_boss_state_02
+	.addr	brain_boss_state_03
+	.addr	brain_boss_state_04
+	.addr	brain_boss_state_05
+	.addr	brain_boss_state_06
+	.addr	brain_boss_state_07
+	.addr	brain_boss_state_08
+	.addr	brain_boss_state_09
+	.addr	brain_boss_state_0A
 
-sub_1DBF13:
+brain_boss_state_00:
 	inc	$12,x
 	ldy	difficulty
 	lda	#$0031
@@ -2013,7 +2029,7 @@ sub_1DBF13:
 	stz	a:wram_16BA
 	jml	f:loc_00E733
 
-sub_1DBF5D:
+brain_boss_state_01:
 	dec	$24,x
 	bpl	loc_1DBF72
 	lda	#$8000
@@ -2026,7 +2042,7 @@ sub_1DBF5D:
 loc_1DBF72:
 	jml	f:loc_00E733
 
-sub_1DBF76:
+brain_boss_state_02:
 	jsr	a:sub_1DCB48
 	lda	$0E,x
 	bmi	loc_1DBF88
@@ -2038,7 +2054,7 @@ sub_1DBF76:
 loc_1DBF88:
 	rtl
 
-sub_1DBF89:
+brain_boss_state_03:
 	jsr	a:sub_1DCC58
 	jsr	a:sub_1DCCC0
 	lda	rng_lo
@@ -2050,7 +2066,7 @@ sub_1DBF89:
 	inc	$12,x
 	rtl
 
-sub_1DBFA3:
+brain_boss_state_04:
 	lda	a:wram_163E
 	cmp	#$0001
 	bcs	loc_1DBFD4
@@ -2126,7 +2142,7 @@ tbl_1DC02B:
 	.addr	sub_1DC5A7
 	.addr	sub_1DC5FF
 
-sub_1DC03B:
+brain_boss_state_05:
 	lda	a:wram_1636
 	phx
 	asl	a
@@ -2145,7 +2161,7 @@ tbl_1DC04B:
 	.addr	sub_1DC35A
 	.addr	sub_1DC51B
 
-sub_1DC05B:
+brain_boss_state_06:
 	lda	$06,x
 	cmp	#$0100
 	bcc	loc_1DC065
@@ -2169,7 +2185,7 @@ loc_1DC065:
 	stz	a:wram_1642
 	rtl
 
-sub_1DC089:
+brain_boss_state_07:
 	lda	$36,x
 	ldy	$3A,x
 	bne	loc_1DC0E1
@@ -2240,7 +2256,7 @@ loc_1DC119:
 	sta	a:shake_continuous
 	rtl
 
-sub_1DC125:
+brain_boss_state_08:
 	lda	#$0004
 	sta	a:shake_timer
 	dec	$24,x
@@ -2255,12 +2271,12 @@ loc_1DC13D:
 	jsl	f:sub_00FD92
 	jml	f:loc_01D83E
 
-sub_1DC145:
+brain_boss_state_09:
 	lda	#$0200
 	sta	$24,x
 	inc	$12,x
 
-sub_1DC14C:
+brain_boss_state_0A:
 	lda	#$918A
 	sta	cgram_upload_src
 	lda	#$0030
@@ -2890,7 +2906,9 @@ sub_1DC5FF:
 loc_1DC60C:
 	rtl
 
-sub_1DC60D:
+; Object type $94. Stage 6, brain_boss: cluster of blue orbs gathering on the
+; brain.
+update_brain_boss_orb_cluster:
 	lda	a:wram_163E
 	cmp	#$0002
 	beq	loc_1DC62E
@@ -2926,7 +2944,9 @@ loc_1DC64B:
 	stz	$00,x
 	rtl
 
-sub_1DC64E:
+; Object type $8B. Stage 6, brain_boss (hard): a ring of 16 orbs that bursts
+; out of the brain.
+update_brain_boss_orb_ring:
 	lda	a:wram_1688
 	bne	loc_1DC65C
 	lda	a:wram_1644
@@ -2968,7 +2988,9 @@ loc_1DC687:
 	sta	$0E,x
 	rtl
 
-sub_1DC6A7:
+; Object type $8C. Stage 6, brain_boss: chain of red links swung from the
+; brain.
+update_brain_boss_chain:
 	lda	a:wram_1688
 	beq	loc_1DC6AF
 	brl	loc_1DC7C9
@@ -2977,17 +2999,17 @@ loc_1DC6AF:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_1DC6BE,x
+	lda	f:tbl_brain_boss_chain_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_1DC6BE:
-	.addr	sub_1DC6C6
-	.addr	sub_1DC73F
-	.addr	sub_1DC703
-	.addr	sub_1DC7C2
+tbl_brain_boss_chain_states:
+	.addr	brain_boss_chain_state_00
+	.addr	brain_boss_chain_state_01
+	.addr	brain_boss_chain_state_02
+	.addr	brain_boss_chain_state_03
 
-sub_1DC6C6:
+brain_boss_chain_state_00:
 	inc	$12,x
 	lda	#$0090
 	sta	$0E,x
@@ -3013,7 +3035,7 @@ sub_1DC6C6:
 	ldy	#$0340
 	jml	f:loc_01A41C
 
-sub_1DC703:
+brain_boss_chain_state_02:
 	clc
 	lda	a:wram_090A
 	adc	#$001C
@@ -3043,7 +3065,7 @@ loc_1DC72A:
 	sta	$0A,x
 	jml	f:sub_01A513
 
-sub_1DC73F:
+brain_boss_chain_state_01:
 	lda	a:wram_1642
 	cmp	#$0005
 	bne	loc_1DC749
@@ -3113,7 +3135,7 @@ loc_1DC79B:
 	sta	$0E,x
 	jml	f:sub_01A513
 
-sub_1DC7C2:
+brain_boss_chain_state_03:
 	dec	$24,x
 	bpl	loc_1DC7D2
 	inc	a:wram_0912
@@ -3124,7 +3146,9 @@ loc_1DC7C9:
 loc_1DC7D2:
 	jml	f:sub_01A513
 
-sub_1DC7D6:
+; Object type $8E. Stage 6, brain_boss (hard): spiked orbs around the brain
+; (not identified exactly).
+update_enemy_type_8E:
 	lda	$0E,x
 	cmp	#$00B4
 	bcc	loc_1DC7F1
@@ -3145,7 +3169,9 @@ loc_1DC7F1:
 	sta	$1E,x
 	rtl
 
-sub_1DC801:
+; Object type $8F. Stage 6, brain_boss: glowing orbs thrown by the brain (not
+; identified exactly).
+update_enemy_type_8F:
 	lda	a:wram_1688
 	bne	loc_1DC835
 	lda	a:wram_163C
@@ -3198,7 +3224,8 @@ loc_1DC855:
 	sta	$0E,x
 	rtl
 
-sub_1DC86D:
+; Object type $90. Stage 6, brain_boss: eyeballs (12 HP) thrown by the brain.
+update_brain_boss_eyeball:
 	lda	$06,x
 	bmi	loc_1DC87B
 	lda	a:wram_1688
@@ -3281,7 +3308,8 @@ loc_1DC902:
 	sta	$1E,x
 	rtl
 
-sub_1DC912:
+; Object type $91. Stage 6, brain_boss: eye pods rolling on the floor.
+update_brain_boss_rolling_eye:
 	lda	a:wram_1688
 	bne	loc_1DC91C
 	lda	a:wram_1644
@@ -3342,7 +3370,9 @@ loc_1DC960:
 	sta	$0E,x
 	rtl
 
-sub_1DC983:
+; Object type $92. Stage 6, brain_boss: arch of blue orbs forming arms around
+; the brain.
+update_brain_boss_orb_arch:
 	lda	a:wram_1688
 	bne	loc_1DC98D
 	lda	a:wram_1644
@@ -3405,7 +3435,8 @@ loc_1DC9DC:
 	sta	$0E,x
 	rtl
 
-sub_1DCA00:
+; Object type $93. Stage 6, brain_boss: blue orbs scattered around the room.
+update_brain_boss_orb:
 	lda	a:wram_1644
 	bmi	loc_1DCA0A
 	lda	a:wram_1688

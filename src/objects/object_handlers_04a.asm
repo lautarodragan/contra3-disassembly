@@ -1,9 +1,20 @@
 ; objects/object_handlers_04a.asm -- Object handlers (bank $04, part 1)
 ; Bank $04, $04:8000-$04:D877. Included by main.asm in segment BANK04.
 ;
-; Handlers of object types dispatched through tbl_object_types and their helpers.
+; Handlers of object types dispatched through tbl_object_types and their
+; helpers: the stage 3 boss room (robots, skeleton robot), stage 4
+; (controller, snake robot, airship parts, helicopter, missiles, boss) and
+; most of stage 6 (wall worm, floor mouths, heart, cave beast, winged alien,
+; face boss). Each handler dispatches OBJ_STATE (+$12) through a table of
+; state routines (tbl_<name>_states, <name>_state_NN).
 
-sub_048000:
+; Object type $41. Stage 3 boss room. States $00-$09: the first of the two
+; humanoid robots lowered on cables (stage3_robot_cables), 320 HP; when both
+; robots are beaten it becomes the giant skeleton robot that breaks through
+; the back wall (states $0A-$1A, 1024 HP set in sub_048605), which throws
+; countdown_bomb and fires skeleton_eye_fireball. Seen in the emulator: slot
+; $0900, stage 3 sections 12-13.
+update_stage3_boss:
 	.a16
 	.i16
 	lda	$12,x
@@ -31,63 +42,65 @@ loc_04802A:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04803F,x
+	lda	f:tbl_stage3_boss_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04803F:
-	.addr	sub_04809D
-	.addr	sub_0480CB
-	.addr	sub_0480E2
-	.addr	sub_04823D
-	.addr	sub_04824E
-	.addr	sub_048274
-	.addr	sub_0481E9
-	.addr	sub_04832A
-	.addr	sub_048382
-	.addr	sub_04842E
-	.addr	sub_04867C
-	.addr	sub_04869A
-	.addr	sub_0486F1
-	.addr	sub_04873D
-	.addr	sub_04880B
-	.addr	sub_048837
-	.addr	sub_04880B
-	.addr	sub_04885B
-	.addr	sub_048893
-	.addr	sub_04880B
-	.addr	sub_0488BA
-	.addr	sub_048907
-	.addr	sub_0487DB
-	.addr	sub_048766
-	.addr	sub_04877D
-	.addr	sub_0487A4
-	.addr	sub_0487AE
+tbl_stage3_boss_states:
+	.addr	stage3_robot_state_00
+	.addr	stage3_robot_state_01
+	.addr	stage3_robot_state_02
+	.addr	stage3_robot_state_03
+	.addr	stage3_robot_state_04
+	.addr	stage3_robot_state_05
+	.addr	stage3_boss_state_06
+	.addr	stage3_robot_state_07
+	.addr	stage3_robot_state_08
+	.addr	stage3_robot_state_09
+	.addr	stage3_boss_state_0A
+	.addr	stage3_boss_state_0B
+	.addr	stage3_boss_state_0C
+	.addr	stage3_boss_state_0D
+	.addr	stage3_boss_state_0E
+	.addr	stage3_boss_state_0F
+	.addr	stage3_boss_state_0E
+	.addr	stage3_boss_state_11
+	.addr	stage3_boss_state_12
+	.addr	stage3_boss_state_0E
+	.addr	stage3_boss_state_14
+	.addr	stage3_boss_state_15
+	.addr	stage3_boss_state_16
+	.addr	stage3_boss_state_17
+	.addr	stage3_boss_state_18
+	.addr	stage3_boss_state_19
+	.addr	stage3_boss_state_1A
 
-sub_048075:
+; Object type $45. Stage 3 boss room: the second humanoid robot (320 HP, slot
+; $08C0); shares most states with stage3_boss's robot form.
+update_stage3_second_robot:
 	jsr	a:sub_048605
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_048087,x
+	lda	f:tbl_stage3_second_robot_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_048087:
-	.addr	sub_04809D
-	.addr	sub_0480CB
-	.addr	sub_048186
-	.addr	sub_04823D
-	.addr	sub_04824E
-	.addr	sub_048274
-	.addr	sub_048224
-	.addr	sub_04832A
-	.addr	sub_048382
-	.addr	sub_04842E
-	.addr	sub_04843C
+tbl_stage3_second_robot_states:
+	.addr	stage3_robot_state_00
+	.addr	stage3_robot_state_01
+	.addr	stage3_second_robot_state_02
+	.addr	stage3_robot_state_03
+	.addr	stage3_robot_state_04
+	.addr	stage3_robot_state_05
+	.addr	stage3_second_robot_state_06
+	.addr	stage3_robot_state_07
+	.addr	stage3_robot_state_08
+	.addr	stage3_robot_state_09
+	.addr	stage3_second_robot_state_0A
 
-sub_04809D:
+stage3_robot_state_00:
 	inc	$12,x
 	ldy	$3A,x
 	lda	a:data_05E819,y
@@ -109,7 +122,7 @@ sub_04809D:
 	plx
 	rtl
 
-sub_0480CB:
+stage3_robot_state_01:
 	lda	a:wram_13BA
 	cmp	#$0004
 	bne	loc_0480E1
@@ -122,7 +135,7 @@ sub_0480CB:
 loc_0480E1:
 	rtl
 
-sub_0480E2:
+stage3_robot_state_02:
 	dec	$24,x
 	bpl	loc_0480E1
 	ldy	difficulty
@@ -203,7 +216,7 @@ loc_04816E:
 loc_048185:
 	rtl
 
-sub_048186:
+stage3_second_robot_state_02:
 	dec	$24,x
 	bpl	loc_048185
 	ldy	difficulty
@@ -250,7 +263,7 @@ loc_0481D2:
 	sta	$32,x
 	brl	loc_04813E
 
-sub_0481E9:
+stage3_boss_state_06:
 	lda	$06,x
 	bmi	loc_048216
 	dec	$3E,x
@@ -278,7 +291,7 @@ loc_04821C:
 	sta	$04,x
 	rtl
 
-sub_048224:
+stage3_second_robot_state_06:
 	lda	$06,x
 	bmi	loc_04822C
 	dec	$3E,x
@@ -294,7 +307,7 @@ loc_048239:
 	jsr	a:sub_048589
 	rtl
 
-sub_04823D:
+stage3_robot_state_03:
 	lda	$20,x
 	bne	loc_04824D
 	lda	$36,x
@@ -306,7 +319,7 @@ sub_04823D:
 loc_04824D:
 	rtl
 
-sub_04824E:
+stage3_robot_state_04:
 	lda	$0A,x
 	cmp	#$0030
 	bcc	loc_048265
@@ -327,7 +340,7 @@ loc_04826E:
 	stz	$1A,x
 	bra	loc_048299
 
-sub_048274:
+stage3_robot_state_05:
 	lda	$0A,x
 	cmp	#$0010
 	bcc	loc_048284
@@ -415,7 +428,7 @@ loc_04831A:
 	sta	$1E,x
 	rtl
 
-sub_04832A:
+stage3_robot_state_07:
 	dec	$24,x
 	bpl	loc_04834A
 	inc	$12,x
@@ -455,7 +468,7 @@ loc_04834A:
 loc_048381:
 	rtl
 
-sub_048382:
+stage3_robot_state_08:
 	lda	stage_frame_mod8
 	bne	loc_048396
 	lda	rng_hi
@@ -544,7 +557,7 @@ loc_048411:
 loc_04842D:
 	rtl
 
-sub_04842E:
+stage3_robot_state_09:
 	dec	$24,x
 	bpl	loc_048439
 	inc	$12,x
@@ -553,28 +566,30 @@ sub_04842E:
 loc_048439:
 	brl	loc_04834A
 
-sub_04843C:
+stage3_second_robot_state_0A:
 	lda	#$8000
 	sta	$16,x
 	rtl
 
-sub_048442:
+; Object type $44. Stage 3 boss room: the cables that lower the two robots
+; from the ceiling; waits until stage3_boss (slot $0900) reaches state 3.
+update_stage3_robot_cables:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_048451,x
+	lda	f:tbl_stage3_robot_cables_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_048451:
-	.addr	sub_04845B
-	.addr	sub_04846D
-	.addr	sub_048482
-	.addr	sub_0484E6
-	.addr	sub_0484F7
+tbl_stage3_robot_cables_states:
+	.addr	stage3_robot_cables_state_00
+	.addr	stage3_robot_cables_state_01
+	.addr	stage3_robot_cables_state_02
+	.addr	stage3_robot_cables_state_03
+	.addr	stage3_robot_cables_state_04
 
-sub_04845B:
+stage3_robot_cables_state_00:
 	inc	$12,x
 	lda	#$0001
 	sta	$16,x
@@ -584,7 +599,7 @@ sub_04845B:
 	sta	$00,x
 	rtl
 
-sub_04846D:
+stage3_robot_cables_state_01:
 	lda	a:wram_0912
 	cmp	#$0003
 	bcc	loc_048481
@@ -596,7 +611,7 @@ sub_04846D:
 loc_048481:
 	rtl
 
-sub_048482:
+stage3_robot_cables_state_02:
 	dec	$24,x
 	bpl	loc_0484B8
 	lda	#$E7EB
@@ -645,7 +660,7 @@ loc_0484B8:
 loc_0484E5:
 	rtl
 
-sub_0484E6:
+stage3_robot_cables_state_03:
 	lda	$00,x
 	bne	loc_0484F6
 	inc	$12,x
@@ -656,7 +671,7 @@ sub_0484E6:
 loc_0484F6:
 	rtl
 
-sub_0484F7:
+stage3_robot_cables_state_04:
 	dec	$24,x
 	bpl	loc_048501
 	lda	#$8000
@@ -856,7 +871,7 @@ loc_048675:
 loc_04867B:
 	rts
 
-sub_04867C:
+stage3_boss_state_0A:
 	lda	a:wram_08D0
 	bne	loc_048699
 	dec	$24,x
@@ -871,7 +886,7 @@ sub_04867C:
 loc_048699:
 	rtl
 
-sub_04869A:
+stage3_boss_state_0B:
 	lda	a:wram_1678
 	bne	loc_048699
 	lda	#$0068
@@ -906,7 +921,7 @@ sub_04869A:
 	jsl	f:start_palette_anim
 	rtl
 
-sub_0486F1:
+stage3_boss_state_0C:
 	dec	$30,x
 	bne	loc_04873C
 	dec	$32,x
@@ -947,7 +962,7 @@ loc_048704:
 loc_04873C:
 	rtl
 
-sub_04873D:
+stage3_boss_state_0D:
 	jsr	a:sub_04893E
 	dec	a:wram_163E
 	bne	loc_048751
@@ -969,7 +984,7 @@ loc_048751:
 loc_048765:
 	rtl
 
-sub_048766:
+stage3_boss_state_17:
 	lda	#$0070
 	sta	$0A,x
 	lda	#$0080
@@ -981,7 +996,7 @@ sub_048766:
 	inc	$12,x
 	rtl
 
-sub_04877D:
+stage3_boss_state_18:
 	stz	a:wram_163A
 	jsr	a:sub_04893E
 	lda	a:wram_1638
@@ -998,13 +1013,13 @@ sub_04877D:
 loc_0487A1:
 	brl	loc_048929
 
-sub_0487A4:
+stage3_boss_state_19:
 	lda	#$006D
 	jsl	f:queue_sound
 	inc	$12,x
 	rtl
 
-sub_0487AE:
+stage3_boss_state_1A:
 	stz	a:wram_163A
 	jsr	a:sub_04893E
 	lda	$0E,x
@@ -1025,7 +1040,7 @@ loc_0487C2:
 	sta	a:shake_continuous
 	jml	f:loc_01D83E
 
-sub_0487DB:
+stage3_boss_state_16:
 	jsl	f:sub_00FD8D
 	lda	#$0003
 	sta	a:shake_timer
@@ -1040,11 +1055,11 @@ sub_0487DB:
 	ldy	#$0280
 	lda	#$C516
 	jsl	f:sub_01CF3C
-	bcs	sub_04880B
+	bcs	stage3_boss_state_0E
 	lda	#$FFFD
 	sta	a:$001E,y
 
-sub_04880B:
+stage3_boss_state_0E:
 	ldy	$36,x
 	lda	$34,x
 	cmp	a:data_05EB4E,y
@@ -1070,7 +1085,7 @@ loc_048833:
 	jsr	a:sub_048A5C
 	rtl
 
-sub_048837:
+stage3_boss_state_0F:
 	stz	$34,x
 	lda	#$0000
 	jsr	a:sub_048A5C
@@ -1089,7 +1104,7 @@ loc_048847:
 loc_04885A:
 	rtl
 
-sub_04885B:
+stage3_boss_state_11:
 	jsr	a:sub_0489CD
 	dec	$3E,x
 	bne	loc_04886C
@@ -1116,7 +1131,7 @@ loc_04886C:
 loc_048892:
 	rtl
 
-sub_048893:
+stage3_boss_state_12:
 	jsr	a:sub_0489CD
 	jsr	a:sub_0489DC
 	lda	stage_frame_counter
@@ -1136,7 +1151,7 @@ loc_0488A3:
 loc_0488B9:
 	rtl
 
-sub_0488BA:
+stage3_boss_state_14:
 	stz	$34,x
 	lda	stage_frame_counter
 	and	#$0004
@@ -1174,7 +1189,7 @@ loc_0488F2:
 loc_048906:
 	rtl
 
-sub_048907:
+stage3_boss_state_15:
 	dec	$3E,x
 	bne	loc_048923
 	lda	#$00A2
@@ -1401,7 +1416,9 @@ loc_048ADB:
 	plx
 	rts
 
-sub_048ADD:
+; Object type $4C. Stage 3, skeleton robot: numbered bombs ("3", "2", "1")
+; that stick to the walls of the room and explode.
+update_countdown_bomb:
 	lda	$12,x
 	bne	loc_048B25
 	lda	#$FFE8
@@ -1525,21 +1542,22 @@ sub_048BBF:
 loc_048BE9:
 	rts
 
-sub_048BEA:
+; Object type $87. Stage 3, skeleton robot: fireballs from its eyes.
+update_skeleton_eye_fireball:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_048BF9,x
+	lda	f:tbl_skeleton_eye_fireball_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_048BF9:
-	.addr	sub_048BFF
-	.addr	sub_048C27
-	.addr	sub_048C5D
+tbl_skeleton_eye_fireball_states:
+	.addr	skeleton_eye_fireball_state_00
+	.addr	skeleton_eye_fireball_state_01
+	.addr	skeleton_eye_fireball_state_02
 
-sub_048BFF:
+skeleton_eye_fireball_state_00:
 	inc	$12,x
 	lda	#$C6BA
 	sta	$20,x
@@ -1558,7 +1576,7 @@ sub_048BFF:
 	sta	$24,x
 	rtl
 
-sub_048C27:
+skeleton_eye_fireball_state_01:
 	lda	$20,x
 	bne	loc_048C5B
 	inc	$12,x
@@ -1585,7 +1603,7 @@ sub_048C27:
 loc_048C5B:
 	bra	loc_048C79
 
-sub_048C5D:
+skeleton_eye_fireball_state_02:
 	dec	$24,x
 	bpl	loc_048C6A
 	lda	#$8000
@@ -1608,50 +1626,53 @@ loc_048C79:
 loc_048C84:
 	jml	f:sub_01A513
 
-sub_048C88:
+; Object type $64. Stage 4: invisible controller present for the whole stage
+; (position 0,0, 32 states): drives the hover-bike scenes, the airship, the
+; helicopter and the boss.
+update_stage4_controller:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_048C97,x
+	lda	f:tbl_stage4_controller_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_048C97:
-	.addr	sub_048CD7
-	.addr	sub_048CEC
-	.addr	sub_048D33
-	.addr	sub_048D2D
-	.addr	sub_048D42
-	.addr	sub_048D49
-	.addr	sub_048D97
-	.addr	sub_048DB9
-	.addr	sub_048DE4
-	.addr	sub_048E01
-	.addr	sub_048DF3
-	.addr	sub_048E14
-	.addr	sub_048E45
-	.addr	sub_048EEF
-	.addr	sub_048F05
-	.addr	sub_048F21
-	.addr	sub_048F3C
-	.addr	sub_048F72
-	.addr	sub_048F95
-	.addr	sub_048FCB
-	.addr	sub_048FD1
-	.addr	sub_049007
-	.addr	sub_049018
-	.addr	sub_0490B2
-	.addr	sub_0490E2
-	.addr	sub_0490ED
-	.addr	sub_04911F
-	.addr	sub_049123
-	.addr	sub_04915F
-	.addr	sub_0491E3
-	.addr	sub_049205
-	.addr	sub_049211
+tbl_stage4_controller_states:
+	.addr	stage4_controller_state_00
+	.addr	stage4_controller_state_01
+	.addr	stage4_controller_state_02
+	.addr	stage4_controller_state_03
+	.addr	stage4_controller_state_04
+	.addr	stage4_controller_state_05
+	.addr	stage4_controller_state_06
+	.addr	stage4_controller_state_07
+	.addr	stage4_controller_state_08
+	.addr	stage4_controller_state_09
+	.addr	stage4_controller_state_0A
+	.addr	stage4_controller_state_0B
+	.addr	stage4_controller_state_0C
+	.addr	stage4_controller_state_0D
+	.addr	stage4_controller_state_0E
+	.addr	stage4_controller_state_0F
+	.addr	stage4_controller_state_10
+	.addr	stage4_controller_state_11
+	.addr	stage4_controller_state_12
+	.addr	stage4_controller_state_13
+	.addr	stage4_controller_state_14
+	.addr	stage4_controller_state_15
+	.addr	stage4_controller_state_16
+	.addr	stage4_controller_state_17
+	.addr	stage4_controller_state_18
+	.addr	stage4_controller_state_19
+	.addr	stage4_controller_state_1A
+	.addr	stage4_controller_state_1B
+	.addr	stage4_controller_state_1C
+	.addr	stage4_controller_state_1D
+	.addr	stage4_controller_state_1E
+	.addr	stage4_controller_state_1F
 
-sub_048CD7:
+stage4_controller_state_00:
 	lda	#$0100
 	sta	$24,x
 	inc	$12,x
@@ -1662,7 +1683,7 @@ sub_048CD7:
 	sta	$38,x
 	rtl
 
-sub_048CEC:
+stage4_controller_state_01:
 	dec	$24,x
 	bpl	loc_048CFB
 	inc	$12,x
@@ -1690,11 +1711,11 @@ loc_048D29:
 	jsr	a:sub_0497E0
 	rtl
 
-sub_048D2D:
+stage4_controller_state_03:
 	jsr	a:sub_049BD5
 	jsr	a:sub_049B32
 
-sub_048D33:
+stage4_controller_state_02:
 	dec	$24,x
 	bpl	loc_048D3E
 	lda	#$00C0
@@ -1704,12 +1725,12 @@ loc_048D3E:
 	jsr	a:sub_0497E0
 	rtl
 
-sub_048D42:
+stage4_controller_state_04:
 	jsr	a:sub_049AF5
 	jsr	a:sub_0497E0
 	rtl
 
-sub_048D49:
+stage4_controller_state_05:
 	jsr	a:sub_0497E0
 	lda	a:wram_1380
 	and	#$00FF
@@ -1741,7 +1762,7 @@ sub_048D49:
 loc_048D96:
 	rtl
 
-sub_048D97:
+stage4_controller_state_06:
 	lda	a:wram_1380
 	clc
 	adc	#$0010
@@ -1757,7 +1778,7 @@ loc_048DB2:
 	sta	a:wram_1380
 	jml	f:loc_00D5ED
 
-sub_048DB9:
+stage4_controller_state_07:
 	lda	#$0008
 	sta	zp_02
 	lda	#$0040
@@ -1778,7 +1799,7 @@ sub_048DB9:
 loc_048DE0:
 	jml	f:loc_00D5ED
 
-sub_048DE4:
+stage4_controller_state_08:
 	dec	$24,x
 	bpl	loc_048DEF
 	lda	#$0140
@@ -1787,7 +1808,7 @@ sub_048DE4:
 loc_048DEF:
 	jml	f:loc_00D5ED
 
-sub_048DF3:
+stage4_controller_state_0A:
 	lda	a:wram_0910
 	bne	loc_048E0D
 	lda	#$0002
@@ -1795,7 +1816,7 @@ sub_048DF3:
 	inc	$12,x
 	rtl
 
-sub_048E01:
+stage4_controller_state_09:
 	dec	$24,x
 	bpl	loc_048E0D
 	inc	$12,x
@@ -1805,7 +1826,7 @@ loc_048E0D:
 	jsr	a:sub_049AC1
 	jml	f:loc_00D5ED
 
-sub_048E14:
+stage4_controller_state_0B:
 	phx
 	ldx	#.loword(data_05ECD9)
 	jsl	f:load_data_list
@@ -1825,7 +1846,7 @@ sub_048E14:
 	inc	$12,x
 	jml	f:loc_00D5ED
 
-sub_048E45:
+stage4_controller_state_0C:
 	ldy	$24,x
 	lda	a:wram_1380
 	cmp	#$01E0
@@ -1903,7 +1924,7 @@ loc_048EE7:
 	jsl	f:sub_00CF0C
 	jml	f:loc_00D5ED
 
-sub_048EEF:
+stage4_controller_state_0D:
 	dec	$24,x
 	bpl	loc_048F01
 	lda	#$0079
@@ -1914,7 +1935,7 @@ sub_048EEF:
 loc_048F01:
 	jml	f:loc_00D5ED
 
-sub_048F05:
+stage4_controller_state_0E:
 	lda	a:wram_0910
 	cmp	#$0079
 	beq	loc_048F1D
@@ -1928,7 +1949,7 @@ sub_048F05:
 loc_048F1D:
 	jml	f:loc_00D5ED
 
-sub_048F21:
+stage4_controller_state_0F:
 	dec	$24,x
 	bpl	loc_048F35
 	stz	$24,x
@@ -1941,7 +1962,7 @@ loc_048F35:
 	jsr	a:sub_049BD5
 	jml	f:loc_00D5ED
 
-sub_048F3C:
+stage4_controller_state_10:
 	inc	$12,x
 	ldy	#$0800
 	lda	#$0065
@@ -1961,7 +1982,7 @@ sub_048F3C:
 	stz	a:wram_1398
 	jml	f:sub_00D610
 
-sub_048F72:
+stage4_controller_state_11:
 	sec
 	lda	#$0140
 	sbc	a:wram_080A
@@ -1977,7 +1998,7 @@ sub_048F72:
 loc_048F91:
 	jml	f:loc_00D5ED
 
-sub_048F95:
+stage4_controller_state_12:
 	lda	a:p1_lives
 	beq	loc_048FA2
 	lda	a:player1_state
@@ -2002,11 +2023,11 @@ loc_048FB4:
 loc_048FC7:
 	jml	f:sub_00D610
 
-sub_048FCB:
+stage4_controller_state_13:
 	jsl	f:sub_00D610
 	bra	loc_048FE1
 
-sub_048FD1:
+stage4_controller_state_14:
 	lda	a:wram_13D8
 	cmp	#$FE00
 	bne	loc_048FE1
@@ -2031,7 +2052,7 @@ loc_049000:
 	stz	a:wram_081E
 	rtl
 
-sub_049007:
+stage4_controller_state_15:
 	lda	a:wram_0910
 	cmp	#$0084
 	beq	loc_049017
@@ -2041,7 +2062,7 @@ sub_049007:
 loc_049017:
 	rtl
 
-sub_049018:
+stage4_controller_state_16:
 	lda	stage_frame_odd
 	beq	loc_049017
 	inc	$12,x
@@ -2105,7 +2126,7 @@ sub_049018:
 	sta	a:wram_140E
 	rtl
 
-sub_0490B2:
+stage4_controller_state_17:
 	lda	a:wram_13FE
 	beq	loc_0490DE
 	inc	$12,x
@@ -2126,14 +2147,14 @@ loc_0490DE:
 	jsr	a:sub_049878
 	rtl
 
-sub_0490E2:
+stage4_controller_state_18:
 	lda	stage_frame_odd
 	beq	loc_04911E
 	inc	$12,x
 	lda	#$0040
 	sta	$24,x
 
-sub_0490ED:
+stage4_controller_state_19:
 	dec	$24,x
 	bne	loc_049105
 	inc	$12,x
@@ -2157,11 +2178,11 @@ loc_049105:
 loc_04911E:
 	rtl
 
-sub_04911F:
+stage4_controller_state_1A:
 	jsr	a:sub_049878
 	rtl
 
-sub_049123:
+stage4_controller_state_1B:
 	lda	#$0001
 	sta	a:p1_view_x
 	sta	a:p2_view_x
@@ -2184,7 +2205,7 @@ sub_049123:
 	jsr	a:sub_049878
 	rtl
 
-sub_04915F:
+stage4_controller_state_1C:
 	lda	#$00E0
 	cmp	a:p1_view_x
 	bcs	loc_0491DF
@@ -2234,7 +2255,7 @@ loc_0491DF:
 	jsr	a:sub_049878
 	rtl
 
-sub_0491E3:
+stage4_controller_state_1D:
 	dec	$24,x
 	bpl	loc_0491EE
 	inc	$12,x
@@ -2250,14 +2271,14 @@ loc_0491EE:
 	stz	a:wram_155A
 	bra	loc_049231
 
-sub_049205:
+stage4_controller_state_1E:
 	dec	$24,x
-	bpl	sub_049211
+	bpl	stage4_controller_state_1F
 	inc	$12,x
 	lda	#$0100
 	sta	a:stage_exit_request
 
-sub_049211:
+stage4_controller_state_1F:
 	sec
 	lda	a:p1_view_x
 	sbc	#$0004
@@ -2283,27 +2304,30 @@ loc_049231:
 	stz	a:wram_155A
 	rtl
 
-sub_049248:
+; Object type $65. Stage 4 (sky section) and the ending: the missiles the
+; players stand on and jump between; in the ending, the missile under the
+; helicopter (slot $0280).
+update_rideable_missile:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_049257,x
+	lda	f:tbl_rideable_missile_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_049257:
-	.addr	sub_049269
-	.addr	sub_0492FF
-	.addr	sub_0492A7
-	.addr	sub_0492D5
-	.addr	sub_0492F6
-	.addr	sub_0493E1
-	.addr	sub_04941B
-	.addr	sub_04939B
-	.addr	sub_049460
+tbl_rideable_missile_states:
+	.addr	rideable_missile_state_00
+	.addr	rideable_missile_state_01
+	.addr	rideable_missile_state_02
+	.addr	rideable_missile_state_03
+	.addr	rideable_missile_state_04
+	.addr	rideable_missile_state_05
+	.addr	rideable_missile_state_06
+	.addr	rideable_missile_state_07
+	.addr	rideable_missile_state_08
 
-sub_049269:
+rideable_missile_state_00:
 	lda	#$FF80
 	sta	$0A,x
 	lda	#$0078
@@ -2336,7 +2360,7 @@ loc_049285:
 	stz	$32,x
 	rtl
 
-sub_0492A7:
+rideable_missile_state_02:
 	sec
 	lda	$1C,x
 	sbc	#$0800
@@ -2358,9 +2382,9 @@ loc_0492BE:
 	sta	$1A,x
 	jsr	a:sub_04988E
 	jsr	a:sub_04997F
-	bra	sub_0492FF
+	bra	rideable_missile_state_01
 
-sub_0492D5:
+rideable_missile_state_03:
 	sec
 	lda	$18,x
 	sbc	#$0800
@@ -2375,14 +2399,14 @@ loc_0492EB:
 	jsr	a:sub_0499AB
 	jsr	a:sub_04988E
 	jsr	a:sub_04997F
-	bra	sub_0492FF
+	bra	rideable_missile_state_01
 
-sub_0492F6:
+rideable_missile_state_04:
 	jsr	a:sub_0499AB
 	jsr	a:sub_04988E
 	jsr	a:sub_04997F
 
-sub_0492FF:
+rideable_missile_state_01:
 	lda	stage_frame_counter
 	bit	#$003F
 	bne	loc_049329
@@ -2460,7 +2484,7 @@ loc_04938B:
 loc_04939A:
 	rtl
 
-sub_04939B:
+rideable_missile_state_07:
 	lda	$34,x
 	lsr	a
 	tay
@@ -2496,7 +2520,7 @@ sub_04939B:
 	inc	$30,x
 	rtl
 
-sub_0493E1:
+rideable_missile_state_05:
 	jsr	a:sub_0497EE
 	jsr	a:sub_04988E
 	jsr	a:sub_04997F
@@ -2525,7 +2549,7 @@ loc_0493FD:
 loc_04941A:
 	rtl
 
-sub_04941B:
+rideable_missile_state_06:
 	lda	$0A,x
 	adc	#$0080
 	sta	zp_00
@@ -2557,7 +2581,7 @@ loc_049456:
 	lda	#$0030
 	jml	f:queue_sound
 
-sub_049460:
+rideable_missile_state_08:
 	lda	$0A,x
 	adc	#$FFE8
 	sta	zp_00
@@ -2577,9 +2601,12 @@ sub_049460:
 	lda	#$0140
 	sbc	a:$000A,x
 	sta	a:wram_1380
-	brl	sub_0492FF
+	brl	rideable_missile_state_01
 
-sub_049495:
+; Object type $69. Stage 4 boss: the green armoured flying fortress with a red
+; eye at the end of the sky section (384 HP, slot $0900); fires
+; stage4_boss_shot and stage4_boss_fireball.
+update_stage4_boss:
 	lda	$16,x
 	bpl	loc_04949D
 	stz	a:wram_13C0
@@ -2589,18 +2616,18 @@ loc_04949D:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_0494AC,x
+	lda	f:tbl_stage4_boss_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_0494AC:
-	.addr	sub_0494B6
-	.addr	sub_04950E
-	.addr	sub_04951D
-	.addr	sub_0495C8
-	.addr	sub_0495D1
+tbl_stage4_boss_states:
+	.addr	stage4_boss_state_00
+	.addr	stage4_boss_state_01
+	.addr	stage4_boss_state_02
+	.addr	stage4_boss_state_03
+	.addr	stage4_boss_state_04
 
-sub_0494B6:
+stage4_boss_state_00:
 	lda	#$4001
 	sta	$16,x
 	lda	#$0180
@@ -2638,16 +2665,16 @@ sub_0494B6:
 	stz	a:wram_1638
 	rtl
 
-sub_04950E:
+stage4_boss_state_01:
 	lda	stage_frame_mod8
-	bne	sub_04951D
+	bne	stage4_boss_state_02
 	dec	$32,x
 	lda	$32,x
 	cmp	#$00E1
-	bcs	sub_04951D
+	bcs	stage4_boss_state_02
 	inc	$12,x
 
-sub_04951D:
+stage4_boss_state_02:
 	lda	$26,x
 	beq	loc_04952B
 	lda	#$912A
@@ -2722,13 +2749,13 @@ loc_0495A1:
 loc_0495C7:
 	rtl
 
-sub_0495C8:
+stage4_boss_state_03:
 	dec	$24,x
-	bne	sub_0495D1
+	bne	stage4_boss_state_04
 	inc	a:wram_0952
 	inc	$12,x
 
-sub_0495D1:
+stage4_boss_state_04:
 	jsl	f:sub_00FD8D
 	lda	$0A,x
 	sta	zp_00
@@ -2749,7 +2776,9 @@ loc_0495FC:
 	jsr	a:sub_0498AF
 	rtl
 
-sub_049600:
+; Object type $6A. Stage 4 boss: the upper and lower pods of stage4_boss (128
+; HP each).
+update_stage4_boss_pod:
 	lda	$06,x
 	bpl	loc_049633
 	phx
@@ -2779,7 +2808,8 @@ loc_049633:
 loc_04963D:
 	rtl
 
-sub_04963E:
+; Object type $82. Stage 4 boss: spread shots.
+update_stage4_boss_shot:
 	lda	$3C,x
 	bne	loc_049646
 	lda	$06,x
@@ -2845,7 +2875,9 @@ loc_0496B0:
 	sta	$1E,x
 	rtl
 
-sub_0496C0:
+; Object type $83. Stage 4 boss: fireballs from the red eye (16 HP: can be
+; shot down).
+update_stage4_boss_fireball:
 	lda	$06,x
 	bpl	loc_0496CC
 	txy
@@ -2856,16 +2888,16 @@ loc_0496CC:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_0496DB,x
+	lda	f:tbl_stage4_boss_fireball_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_0496DB:
-	.addr	sub_0496E1
-	.addr	sub_049707
-	.addr	sub_04971F
+tbl_stage4_boss_fireball_states:
+	.addr	stage4_boss_fireball_state_00
+	.addr	stage4_boss_fireball_state_01
+	.addr	stage4_boss_fireball_state_02
 
-sub_0496E1:
+stage4_boss_fireball_state_00:
 	inc	$12,x
 	lda	#$AF8C
 	sta	$00,x
@@ -2883,7 +2915,7 @@ sub_0496E1:
 	sta	$1A,x
 	rtl
 
-sub_049707:
+stage4_boss_fireball_state_01:
 	lda	rng_lo
 	and	#$00C0
 	clc
@@ -2896,7 +2928,7 @@ sub_049707:
 	sty	$30,x
 	bra	loc_04973E
 
-sub_04971F:
+stage4_boss_fireball_state_02:
 	ldy	$30,x
 	lda	a:$0012,y
 	cmp	#$0005
@@ -3430,7 +3462,7 @@ sub_049B36:
 loc_049B73:
 	rts
 
-sub_049B74:
+scroll_with_airship:
 	sec
 	lda	$0A,x
 	sbc	a:wram_1694
@@ -3446,7 +3478,7 @@ loc_049B86:
 	sta	$0E,x
 	rts
 
-sub_049B8F:
+airship_part_explode:
 	lda	#$0030
 	jsl	f:sub_00FD9A
 	lda	stage_frame_odd
@@ -3504,7 +3536,9 @@ sub_049BD5:
 loc_049C0B:
 	rts
 
-sub_049C0C:
+; Object type $5E. Stage 6, vertical section: the winged skeletal alien with a
+; segmented tail. HP by difficulty: 128/160/192 (data_05ECE2).
+update_winged_alien:
 	ldy	$26,x
 	beq	loc_049C1A
 	lda	#$0030
@@ -3524,21 +3558,21 @@ loc_049C2A:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_049C39,x
+	lda	f:tbl_winged_alien_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_049C39:
-	.addr	sub_049C49
-	.addr	sub_049C58
-	.addr	sub_049C76
-	.addr	sub_049CCA
-	.addr	sub_049D7A
-	.addr	sub_049DFC
-	.addr	sub_049FEE
-	.addr	sub_04A03E
+tbl_winged_alien_states:
+	.addr	winged_alien_state_00
+	.addr	winged_alien_state_01
+	.addr	winged_alien_state_02
+	.addr	winged_alien_state_03
+	.addr	winged_alien_state_04
+	.addr	winged_alien_state_05
+	.addr	winged_alien_state_06
+	.addr	winged_alien_state_07
 
-sub_049C49:
+winged_alien_state_00:
 	lda	#$004A
 	sta	a:bg2sc_shadow
 	stz	a:wram_13C0
@@ -3546,7 +3580,7 @@ sub_049C49:
 	inc	$12,x
 	rtl
 
-sub_049C58:
+winged_alien_state_01:
 	lda	a:wram_13BA
 	cmp	#$0004
 	beq	loc_049C61
@@ -3563,7 +3597,7 @@ loc_049C61:
 	inc	$12,x
 	rtl
 
-sub_049C76:
+winged_alien_state_02:
 	lda	#$0080
 	sta	$0A,x
 	lda	$0E,x
@@ -3608,7 +3642,7 @@ loc_049CB9:
 	jsr	a:sub_04A16E
 	rtl
 
-sub_049CCA:
+winged_alien_state_03:
 	lda	$06,x
 	ldy	difficulty
 	cmp	a:data_05ECE8,y
@@ -3696,7 +3730,7 @@ loc_049D70:
 	jsr	a:sub_04A16E
 	rtl
 
-sub_049D7A:
+winged_alien_state_04:
 	lda	$3A,x
 	phx
 	asl	a
@@ -3763,7 +3797,7 @@ loc_049DF8:
 	jsr	a:sub_04A16E
 	rtl
 
-sub_049DFC:
+winged_alien_state_05:
 	jsr	a:sub_049E03
 	jsr	a:sub_04A16E
 	rtl
@@ -4026,7 +4060,7 @@ loc_049FE2:
 	jsr	a:sub_04A2B2
 	rts
 
-sub_049FEE:
+winged_alien_state_06:
 	stz	hdma_preset
 	lda	#$8000
 	sta	a:wram_0356
@@ -4064,7 +4098,7 @@ loc_049FFC:
 	jsr	a:sub_04A1B9
 	rtl
 
-sub_04A03E:
+winged_alien_state_07:
 	lda	$0E,x
 	bmi	loc_04A047
 	cmp	#$0140
@@ -4242,35 +4276,38 @@ sub_04A1B9:
 	sta	a:wram_13D8
 	rts
 
-sub_04A1D2:
+; Object type $8D. Stage 6, winged_alien: the tip of the tail.
+update_winged_alien_tail_tip:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04A1E1,x
+	lda	f:tbl_winged_alien_tail_tip_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04A1E1:
-	.addr	sub_04A1FC
-	.addr	sub_04A250
-	.addr	sub_04A27A
+tbl_winged_alien_tail_tip_states:
+	.addr	winged_alien_tail_tip_state_00
+	.addr	winged_alien_tail_state_01
+	.addr	winged_alien_tail_state_02
 
-sub_04A1E7:
+; Object type $25. Stage 6: one of the 16 tail segments of winged_alien
+; (states shared with winged_alien_tail_tip).
+update_winged_alien_tail_segment:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04A1F6,x
+	lda	f:tbl_winged_alien_tail_segment_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04A1F6:
-	.addr	sub_04A211
-	.addr	sub_04A250
-	.addr	sub_04A27A
+tbl_winged_alien_tail_segment_states:
+	.addr	winged_alien_tail_segment_state_00
+	.addr	winged_alien_tail_state_01
+	.addr	winged_alien_tail_state_02
 
-sub_04A1FC:
+winged_alien_tail_tip_state_00:
 	lda	a:$0036,x
 	clc
 	adc	#$0010
@@ -4284,7 +4321,7 @@ sub_04A1FC:
 	lda	a:data_05ED24,y
 	sta	$00,x
 
-sub_04A211:
+winged_alien_tail_segment_state_00:
 	stx	zp_00
 	lda	$30,x
 	tay
@@ -4324,7 +4361,7 @@ loc_04A23E:
 	sta	$0E,x
 	rtl
 
-sub_04A250:
+winged_alien_tail_state_01:
 	lda	#$FFFE
 	sta	$1E,x
 	lda	rng_lo
@@ -4346,7 +4383,7 @@ sub_04A250:
 	inc	$12,x
 	rtl
 
-sub_04A27A:
+winged_alien_tail_state_02:
 	lda	$1C,x
 	clc
 	adc	#$1000
@@ -4609,7 +4646,10 @@ loc_04A40A:
 	sta	f:zp_12
 	rts
 
-sub_04A49D:
+; Object type $5F. Stage 6: the giant face with two side heads on necks
+; (face_boss_side_head, face_boss_neck); spits face_boss_larva. HP by
+; difficulty: 128/256/384 (data_05ED5E).
+update_face_boss:
 	lda	#$0030
 	jsl	f:sub_04AA0D
 	lda	$06,x
@@ -4620,23 +4660,23 @@ loc_04A4AB:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04A4BA,x
+	lda	f:tbl_face_boss_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04A4BA:
-	.addr	sub_04A4CE
-	.addr	sub_04A4EC
-	.addr	sub_04A50D
-	.addr	sub_04A54E
-	.addr	sub_04A5D2
-	.addr	sub_04A606
-	.addr	sub_04A58B
-	.addr	sub_04A64C
-	.addr	sub_04A694
-	.addr	sub_04A6A9
+tbl_face_boss_states:
+	.addr	face_boss_state_00
+	.addr	face_boss_state_01
+	.addr	face_boss_state_02
+	.addr	face_boss_state_03
+	.addr	face_boss_state_04
+	.addr	face_boss_state_05
+	.addr	face_boss_state_06
+	.addr	face_boss_state_07
+	.addr	face_boss_state_08
+	.addr	face_boss_state_09
 
-sub_04A4CE:
+face_boss_state_00:
 	ldy	difficulty
 	lda	a:data_05ED5E,y
 	sta	$06,x
@@ -4650,7 +4690,7 @@ sub_04A4CE:
 	lda	#$0001
 	sta	$12,x
 
-sub_04A4EC:
+face_boss_state_01:
 	lda	a:wram_13BA
 	cmp	#$0004
 	beq	loc_04A4F5
@@ -4666,7 +4706,7 @@ loc_04A4FC:
 	lda	#$0002
 	sta	$12,x
 
-sub_04A50D:
+face_boss_state_02:
 	dec	$24,x
 	bne	loc_04A518
 	lda	#$0044
@@ -4698,7 +4738,7 @@ loc_04A537:
 	lda	#$0003
 	sta	$12,x
 
-sub_04A54E:
+face_boss_state_03:
 	lda	a:wram_0410
 	cmp	#$0075
 	beq	loc_04A55E
@@ -4729,7 +4769,7 @@ loc_04A586:
 	lda	#$0006
 	sta	$12,x
 
-sub_04A58B:
+face_boss_state_06:
 	jsr	a:sub_04A74A
 	ldy	difficulty
 	lda	stage_frame_counter
@@ -4763,7 +4803,7 @@ loc_04A5CD:
 	lda	#$0004
 	sta	$12,x
 
-sub_04A5D2:
+face_boss_state_04:
 	lda	stage_frame_counter
 	lsr	a
 	bcs	loc_04A5E4
@@ -4789,7 +4829,7 @@ loc_04A5F4:
 	lda	#$0005
 	sta	$12,x
 
-sub_04A606:
+face_boss_state_05:
 	dec	$24,x
 	bpl	loc_04A60D
 	brl	loc_04A4FC
@@ -4819,7 +4859,7 @@ loc_04A626:
 	lda	#$0007
 	sta	$12,x
 
-sub_04A64C:
+face_boss_state_07:
 	dec	$24,x
 	bmi	loc_04A681
 	jsl	f:sub_00FD92
@@ -4850,7 +4890,7 @@ loc_04A681:
 	sta	$22,x
 	inc	$12,x
 
-sub_04A694:
+face_boss_state_08:
 	lda	$22,x
 	beq	loc_04A69D
 	jsr	a:sub_04A95D
@@ -4864,7 +4904,7 @@ loc_04A6A2:
 	sta	$22,x
 	inc	$12,x
 
-sub_04A6A9:
+face_boss_state_09:
 	jsr	a:sub_04A97A
 	dec	$22,x
 	bne	loc_04A6B7
@@ -5301,7 +5341,9 @@ sub_04AA0D:
 loc_04AA18:
 	rtl
 
-sub_04AA19:
+; Object type $61. Stage 6: toothed mouths in the floor that release
+; floor_mouth_bug. HP by difficulty: 32/40/48 (data_05EE14).
+update_floor_mouth:
 	lda	$06,x
 	bpl	loc_04AA24
 	stz	$06,x
@@ -5319,23 +5361,23 @@ loc_04AA32:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04AA41,x
+	lda	f:tbl_floor_mouth_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04AA41:
-	.addr	sub_04AA55
-	.addr	sub_04AA80
-	.addr	sub_04AA99
-	.addr	sub_04AA90
-	.addr	sub_04AAC0
-	.addr	sub_04AB0C
-	.addr	sub_04AB1A
-	.addr	sub_04AB23
-	.addr	sub_04AB29
-	.addr	sub_04AB5C
+tbl_floor_mouth_states:
+	.addr	floor_mouth_state_00
+	.addr	floor_mouth_state_01
+	.addr	floor_mouth_state_02
+	.addr	floor_mouth_state_03
+	.addr	floor_mouth_state_04
+	.addr	floor_mouth_state_05
+	.addr	floor_mouth_state_06
+	.addr	floor_mouth_state_07
+	.addr	floor_mouth_state_08
+	.addr	floor_mouth_state_09
 
-sub_04AA55:
+floor_mouth_state_00:
 	lda	#$001F
 	sta	$16,x
 	ldy	difficulty
@@ -5357,7 +5399,7 @@ sub_04AA55:
 	inc	$12,x
 	rtl
 
-sub_04AA80:
+floor_mouth_state_01:
 	inc	$24,x
 	lda	$24,x
 	ldy	difficulty
@@ -5368,13 +5410,13 @@ sub_04AA80:
 loc_04AA8F:
 	rtl
 
-sub_04AA90:
+floor_mouth_state_03:
 	lda	#$0000
 	jsr	a:sub_04ABA3
 	inc	$12,x
 	rtl
 
-sub_04AA99:
+floor_mouth_state_02:
 	lda	$24,x
 	and	#$0007
 	bne	loc_04AAB2
@@ -5397,7 +5439,7 @@ loc_04AAB2:
 loc_04AABF:
 	rtl
 
-sub_04AAC0:
+floor_mouth_state_04:
 	stz	$30,x
 loc_04AAC2:
 	jsl	f:sub_019EAB
@@ -5431,7 +5473,7 @@ loc_04AAC2:
 loc_04AB0B:
 	rtl
 
-sub_04AB0C:
+floor_mouth_state_05:
 	inc	$24,x
 	lda	$24,x
 	cmp	#$0078
@@ -5441,18 +5483,18 @@ sub_04AB0C:
 loc_04AB19:
 	rtl
 
-sub_04AB1A:
+floor_mouth_state_06:
 	lda	#$0001
 	jsr	a:sub_04ABA3
 	inc	$12,x
 	rtl
 
-sub_04AB23:
+floor_mouth_state_07:
 	lda	#$0001
 	sta	$12,x
 	rtl
 
-sub_04AB29:
+floor_mouth_state_08:
 	lda	#$0002
 	jsr	a:sub_04ABA3
 	lda	#$0030
@@ -5476,7 +5518,7 @@ sub_04AB29:
 	inc	$12,x
 	rtl
 
-sub_04AB5C:
+floor_mouth_state_09:
 	lda	$20,x
 	bne	loc_04AB69
 	lda	#$8000
@@ -5535,7 +5577,9 @@ sub_04ABA3:
 	plx
 	rts
 
-sub_04ABBD:
+; Object type $62. Stage 6: bug released by floor_mouth. HP by difficulty:
+; 1/1/2 (data_05EE30).
+update_floor_mouth_bug:
 	lda	$06,x
 	bpl	loc_04ABC6
 	lda	#$0007
@@ -5545,22 +5589,22 @@ loc_04ABC6:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04ABD5,x
+	lda	f:tbl_floor_mouth_bug_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04ABD5:
-	.addr	sub_04ABE7
-	.addr	sub_04AC30
-	.addr	sub_04AC3E
-	.addr	sub_04AC30
-	.addr	sub_04AC4F
-	.addr	sub_04AC92
-	.addr	sub_04ACAC
-	.addr	sub_04ACC0
-	.addr	sub_04ACDF
+tbl_floor_mouth_bug_states:
+	.addr	floor_mouth_bug_state_00
+	.addr	floor_mouth_bug_state_01
+	.addr	floor_mouth_bug_state_02
+	.addr	floor_mouth_bug_state_01
+	.addr	aim_velocity_at_player
+	.addr	floor_mouth_bug_state_05
+	.addr	floor_mouth_bug_state_06
+	.addr	floor_mouth_bug_state_07
+	.addr	floor_mouth_bug_state_08
 
-sub_04ABE7:
+floor_mouth_bug_state_00:
 	lda	#$001F
 	sta	$16,x
 	lda	#$3600
@@ -5595,7 +5639,7 @@ sub_04ABE7:
 	inc	$12,x
 	rtl
 
-sub_04AC30:
+floor_mouth_bug_state_01:
 	inc	$24,x
 	lda	$24,x
 	cmp	#$003C
@@ -5604,7 +5648,7 @@ sub_04AC30:
 	inc	$12,x
 	rtl
 
-sub_04AC3E:
+floor_mouth_bug_state_02:
 	stz	$18,x
 	stz	$1A,x
 	stz	$1C,x
@@ -5616,7 +5660,7 @@ sub_04AC3E:
 loc_04AC4E:
 	rtl
 
-sub_04AC4F:
+aim_velocity_at_player:
 	lda	$0A,x
 	sta	zp_00
 	lda	$0E,x
@@ -5649,7 +5693,7 @@ sub_04AC4F:
 	inc	$12,x
 	rtl
 
-sub_04AC92:
+floor_mouth_bug_state_05:
 	inc	$24,x
 	lda	$24,x
 	cmp	#$0040
@@ -5665,7 +5709,7 @@ sub_04AC92:
 loc_04ACAB:
 	rtl
 
-sub_04ACAC:
+floor_mouth_bug_state_06:
 	inc	$30,x
 	lda	$30,x
 	cmp	#$0004
@@ -5678,7 +5722,7 @@ loc_04ACBD:
 	sta	$12,x
 	rtl
 
-sub_04ACC0:
+floor_mouth_bug_state_07:
 	stz	$06,x
 	lda	#$000B
 	jsl	f:queue_sound
@@ -5693,7 +5737,7 @@ sub_04ACC0:
 	inc	$12,x
 	rtl
 
-sub_04ACDF:
+floor_mouth_bug_state_08:
 	lda	$20,x
 	bne	loc_04ACEC
 	lda	#$8000
@@ -5703,7 +5747,9 @@ sub_04ACDF:
 loc_04ACEC:
 	rtl
 
-sub_04ACED:
+; Object type $63. Stage 6: larva spat by wall_worm (states shared with
+; face_boss_larva). HP by difficulty: 4/8/16 (data_05EE5E).
+update_wall_worm_larva:
 	lda	a:wram_0912
 	cmp	#$0003
 	bcc	loc_04ACF8
@@ -5717,17 +5763,17 @@ loc_04ACFF:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04AD0E,x
+	lda	f:tbl_wall_worm_larva_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04AD0E:
-	.addr	sub_04AD16
-	.addr	sub_04AD51
-	.addr	sub_04AD61
-	.addr	sub_04AD83
+tbl_wall_worm_larva_states:
+	.addr	wall_worm_larva_state_00
+	.addr	wall_worm_larva_state_01
+	.addr	larva_state_02
+	.addr	larva_state_03
 
-sub_04AD16:
+wall_worm_larva_state_00:
 	lda	#$001F
 	sta	$16,x
 	lda	#$3400
@@ -5754,7 +5800,7 @@ sub_04AD16:
 	lda	#$0001
 	sta	$12,x
 
-sub_04AD51:
+wall_worm_larva_state_01:
 	dec	$24,x
 	bmi	loc_04AD5C
 	lda	#$0010
@@ -5763,7 +5809,7 @@ loc_04AD5C:
 	lda	#$0002
 	sta	$12,x
 
-sub_04AD61:
+larva_state_02:
 	jsr	a:sub_04AD84
 	lda	#$0010
 	jml	f:sub_1DAD8A
@@ -5778,7 +5824,7 @@ loc_04AD6B:
 	txy
 	jml	f:sub_01CF66
 
-sub_04AD83:
+larva_state_03:
 	; (not executed in the CDL traces)
 	rtl
 
@@ -5827,7 +5873,9 @@ loc_04ADBE:
 	beq	loc_04ADB1
 	bra	loc_04ADBA
 
-sub_04ADC6:
+; Object type $21. Stage 6: larva spat by face_boss's central mouth; crawls
+; toward a player. HP by difficulty: 2/4/8 (data_05EE9A).
+update_face_boss_larva:
 	lda	a:wram_0906
 	bpl	loc_04ADCE
 	brl	loc_04AD6B
@@ -5840,17 +5888,17 @@ loc_04ADD5:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04ADE4,x
+	lda	f:tbl_face_boss_larva_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04ADE4:
-	.addr	sub_04ADEC
-	.addr	sub_04AE1C
-	.addr	sub_04AE3E
-	.addr	sub_04AD83
+tbl_face_boss_larva_states:
+	.addr	face_boss_larva_state_00
+	.addr	face_boss_larva_state_01
+	.addr	face_boss_larva_state_02
+	.addr	larva_state_03
 
-sub_04ADEC:
+face_boss_larva_state_00:
 	lda	#$001F
 	sta	$16,x
 	lda	#$3400
@@ -5873,7 +5921,7 @@ loc_04AE0B:
 	lda	#$0001
 	sta	$12,x
 
-sub_04AE1C:
+face_boss_larva_state_01:
 	dec	$24,x
 	bmi	loc_04AE2A
 	jsr	a:sub_04AD84
@@ -5889,7 +5937,7 @@ loc_04AE2A:
 	lda	#$0002
 	sta	$12,x
 
-sub_04AE3E:
+face_boss_larva_state_02:
 	dec	$24,x
 	bmi	loc_04AE0B
 	lda	#$0010
@@ -5934,7 +5982,10 @@ loc_04AE7E:
 	.a16
 	rts
 
-sub_04AE88:
+; Object type $68. Stage 6, heart_boss: small creatures around the heart's
+; ceiling pods (not identified exactly). HP by difficulty: 0/2/4
+; (data_05EEA0).
+update_enemy_type_68:
 	lda	a:wram_0912
 	cmp	#$0003
 	bcc	loc_04AE93
@@ -5948,19 +5999,19 @@ loc_04AE9A:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04AEA9,x
+	lda	f:tbl_enemy_type_68_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04AEA9:
-	.addr	sub_04AEB5
-	.addr	sub_04AF05
-	.addr	sub_04AF4D
-	.addr	sub_04AFB1
-	.addr	sub_04AFDC
-	.addr	sub_04B004
+tbl_enemy_type_68_states:
+	.addr	enemy_type_68_state_00
+	.addr	enemy_type_68_state_01
+	.addr	enemy_type_68_state_02
+	.addr	enemy_type_68_state_03
+	.addr	enemy_type_68_state_04
+	.addr	enemy_type_68_state_05
 
-sub_04AEB5:
+enemy_type_68_state_00:
 	lda	#$001F
 	sta	$16,x
 	lda	#$3400
@@ -5997,7 +6048,7 @@ sub_04AEB5:
 	lda	#$0001
 	sta	$12,x
 
-sub_04AF05:
+enemy_type_68_state_01:
 	ldy	$30,x
 	jsr	a:sub_04AF1C
 	bcs	loc_04AF2A
@@ -6036,7 +6087,7 @@ loc_04AF2A:
 	lda	#$0002
 	sta	$12,x
 
-sub_04AF4D:
+enemy_type_68_state_02:
 	jsr	a:sub_04AF5C
 	bcc	loc_04AF5B
 	lda	$30,x
@@ -6092,7 +6143,7 @@ loc_04AF8F:
 	lda	#$0003
 	sta	$12,x
 
-sub_04AFB1:
+enemy_type_68_state_03:
 	lda	$0E,x
 	cmp	#$00B8
 	bcc	loc_04AFBB
@@ -6114,7 +6165,7 @@ loc_04AFBC:
 	lda	#$0004
 	sta	$12,x
 
-sub_04AFDC:
+enemy_type_68_state_04:
 	lda	#$0048
 	cmp	$0E,x
 	bcc	loc_04AFE6
@@ -6134,11 +6185,13 @@ loc_04AFE7:
 	txy
 	jml	f:sub_01CF66
 
-sub_04B004:
+enemy_type_68_state_05:
 	; (not executed in the CDL traces)
 	rtl
 
-sub_04B005:
+; Object type $58. Stage 6: the giant heart with tendrils (second boss of the
+; stage). HP by difficulty: 128/256/384 (data_05EEFA).
+update_heart_boss:
 	lda	#$0060
 	jsl	f:sub_04AA0D
 	lda	a:wram_16BA
@@ -6162,20 +6215,20 @@ loc_04B031:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04B040,x
+	lda	f:tbl_heart_boss_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04B040:
-	.addr	sub_04B04E
-	.addr	sub_04B078
-	.addr	sub_04B086
-	.addr	sub_04B0A7
-	.addr	sub_04B0DF
-	.addr	sub_04B0FE
-	.addr	sub_04B117
+tbl_heart_boss_states:
+	.addr	heart_boss_state_00
+	.addr	heart_boss_state_01
+	.addr	heart_boss_state_02
+	.addr	heart_boss_state_03
+	.addr	heart_boss_state_04
+	.addr	heart_boss_state_05
+	.addr	heart_boss_state_06
 
-sub_04B04E:
+heart_boss_state_00:
 	ldy	difficulty
 	lda	a:data_05EEFA,y
 	sta	$06,x
@@ -6192,7 +6245,7 @@ sub_04B04E:
 	sta	a:wram_13FA
 	inc	$12,x
 
-sub_04B078:
+heart_boss_state_01:
 	lda	a:wram_13BA
 	cmp	#$0004
 	beq	loc_04B084
@@ -6201,7 +6254,7 @@ sub_04B078:
 loc_04B084:
 	inc	$12,x
 
-sub_04B086:
+heart_boss_state_02:
 	jsr	a:sub_04B14B
 	rtl
 loc_04B08A:
@@ -6217,7 +6270,7 @@ loc_04B08A:
 	lda	#$0003
 	sta	$12,x
 
-sub_04B0A7:
+heart_boss_state_03:
 	dec	$24,x
 	bmi	loc_04B0D8
 	lda	#$0004
@@ -6243,7 +6296,7 @@ loc_04B0D8:
 	sta	$24,x
 	inc	$12,x
 
-sub_04B0DF:
+heart_boss_state_04:
 	jsr	a:sub_04B12E
 	dec	$24,x
 	beq	loc_04B0E7
@@ -6259,7 +6312,7 @@ loc_04B0E7:
 	sta	$24,x
 	inc	$12,x
 
-sub_04B0FE:
+heart_boss_state_05:
 	dec	$24,x
 	bmi	loc_04B10C
 	bne	loc_04B10B
@@ -6274,7 +6327,7 @@ loc_04B10C:
 	plx
 	inc	$12,x
 
-sub_04B117:
+heart_boss_state_06:
 	lda	apu_pending_cmd
 	cmp	#$00FF
 	beq	loc_04B12D
@@ -6386,7 +6439,9 @@ loc_04B1EE:
 	plx
 	rts
 
-sub_04B1F4:
+; Object type $67. Stage 6, heart_boss: crawling bugs. HP by difficulty:
+; 32/64/128 (data_05EF78).
+update_heart_boss_bug:
 	lda	a:wram_0912
 	cmp	#$0003
 	bcc	loc_04B1FF
@@ -6400,17 +6455,17 @@ loc_04B206:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04B215,x
+	lda	f:tbl_heart_boss_bug_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04B215:
-	.addr	sub_04B21D
-	.addr	sub_04B25B
-	.addr	sub_04B270
-	.addr	sub_04B28F
+tbl_heart_boss_bug_states:
+	.addr	heart_boss_bug_state_00
+	.addr	heart_boss_bug_state_01
+	.addr	heart_boss_bug_state_02
+	.addr	heart_boss_bug_state_03
 
-sub_04B21D:
+heart_boss_bug_state_00:
 	ldy	difficulty
 	lda	a:data_05EF78,y
 	sta	$06,x
@@ -6442,7 +6497,7 @@ loc_04B23D:
 	lda	#$0001
 	sta	$12,x
 
-sub_04B25B:
+heart_boss_bug_state_01:
 	dec	$24,x
 	bmi	loc_04B260
 	rtl
@@ -6455,7 +6510,7 @@ loc_04B260:
 	sta	$24,x
 	inc	$12,x
 
-sub_04B270:
+heart_boss_bug_state_02:
 	jsl	f:sub_04B2E7
 	dec	$24,x
 	bmi	loc_04B23D
@@ -6471,7 +6526,7 @@ loc_04B283:
 	lda	#$0003
 	sta	$12,x
 
-sub_04B28F:
+heart_boss_bug_state_03:
 	stz	$06,x
 	lda	#$0003
 	sta	$16,x
@@ -6563,7 +6618,9 @@ sub_04B32B:
 	lda	$32,x
 	jml	f:sub_00FE76
 
-sub_04B333:
+; Object type $5B. Stage 6: the giant worm that bursts out of the wall at the
+; start of the stage. HP by difficulty: 64/128/256 (data_05EFCE).
+update_wall_worm:
 	lda	$06,x
 	bpl	loc_04B33A
 	brl	loc_04B383
@@ -6572,18 +6629,18 @@ loc_04B33A:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04B349,x
+	lda	f:tbl_wall_worm_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04B349:
-	.addr	sub_04B353
-	.addr	sub_04B360
-	.addr	sub_04B370
-	.addr	sub_04B3A5
-	.addr	sub_04B3DF
+tbl_wall_worm_states:
+	.addr	wall_worm_state_00
+	.addr	wall_worm_state_01
+	.addr	wall_worm_state_02
+	.addr	wall_worm_state_03
+	.addr	wall_worm_state_04
 
-sub_04B353:
+wall_worm_state_00:
 	ldy	difficulty
 	lda	a:data_05EFCE,y
 	sta	$06,x
@@ -6591,7 +6648,7 @@ sub_04B353:
 	stz	$36,x
 	inc	$12,x
 
-sub_04B360:
+wall_worm_state_01:
 	lda	a:wram_13BA
 	cmp	#$0004
 	beq	loc_04B369
@@ -6602,7 +6659,7 @@ loc_04B369:
 	bcs	loc_04B368
 	inc	$12,x
 
-sub_04B370:
+wall_worm_state_02:
 	jsr	a:sub_04B4F3
 	jsr	a:sub_04B3EF
 	jsr	a:sub_04B434
@@ -6625,7 +6682,7 @@ loc_04B383:
 	lda	#$0003
 	sta	$12,x
 
-sub_04B3A5:
+wall_worm_state_03:
 	dec	$24,x
 	bmi	loc_04B3D5
 	lda	#$0004
@@ -6652,7 +6709,7 @@ loc_04B3D5:
 	lda	#$0004
 	sta	$12,x
 
-sub_04B3DF:
+wall_worm_state_04:
 	jsr	a:sub_04B469
 	dec	$24,x
 	bne	loc_04B368
@@ -6819,7 +6876,10 @@ sub_04B502:
 loc_04B528:
 	rts
 
-sub_04B529:
+; Object type $5D. Stage 6, dark cave: controller of the hunched beast section
+; (4095 HP, i.e. not killed by shots; slot $0900); spawns cave_rock,
+; cave_beast_target and its attacks.
+update_cave_beast:
 	jsr	a:sub_04BDC6
 	ldy	#$0840
 	lda	a:$0006,y
@@ -6841,56 +6901,59 @@ loc_04B552:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04B561,x
+	lda	f:tbl_cave_beast_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04B561:
-	.addr	sub_04B5B2
-	.addr	sub_04B5CE
-	.addr	sub_04B5D9
-	.addr	sub_04B69E
-	.addr	sub_04BB9D
-	.addr	sub_04BABC
-	.addr	sub_04B714
-	.addr	sub_04B7EF
-	.addr	sub_04B80B
-	.addr	sub_04B819
-	.addr	sub_04B843
-	.addr	sub_04B7EF
-	.addr	sub_04B80B
-	.addr	sub_04B824
-	.addr	sub_04B843
-	.addr	sub_04B7EF
-	.addr	sub_04B80B
-	.addr	sub_04B8F6
-	.addr	sub_04B8FD
-	.addr	sub_04B906
-	.addr	sub_04B937
-	.addr	sub_04B976
-	.addr	sub_04BB9D
-	.addr	sub_04B97F
-	.addr	sub_04B9AB
-	.addr	sub_04BA15
-	.addr	sub_04BB9D
-	.addr	sub_04BA46
-	.addr	sub_04BA61
-	.addr	sub_04BA75
-	.addr	sub_04BA98
-	.addr	sub_04B69E
-	.addr	sub_04BAD9
-	.addr	sub_04B714
-	.addr	sub_04B7EF
-	.addr	sub_04B80B
-	.addr	sub_04BAE6
-	.addr	sub_04B5B1
-	.addr	sub_04BAF2
-	.addr	sub_04BB2B
+tbl_cave_beast_states:
+	.addr	cave_beast_state_00
+	.addr	cave_beast_state_01
+	.addr	cave_beast_state_02
+	.addr	cave_beast_state_03
+	.addr	cave_beast_state_04
+	.addr	cave_beast_state_05
+	.addr	cave_beast_state_06
+	.addr	cave_beast_state_07
+	.addr	cave_beast_state_08
+	.addr	cave_beast_state_09
+	.addr	cave_beast_state_0A
+	.addr	cave_beast_state_07
+	.addr	cave_beast_state_08
+	.addr	cave_beast_state_0D
+	.addr	cave_beast_state_0A
+	.addr	cave_beast_state_07
+	.addr	cave_beast_state_08
+	.addr	cave_beast_state_11
+	.addr	cave_beast_state_12
+	.addr	cave_beast_state_13
+	.addr	cave_beast_state_14
+	.addr	cave_beast_state_15
+	.addr	cave_beast_state_04
+	.addr	cave_beast_state_17
+	.addr	cave_beast_state_18
+	.addr	cave_beast_state_19
+	.addr	cave_beast_state_04
+	.addr	cave_beast_state_1B
+	.addr	cave_beast_state_1C
+	.addr	cave_beast_state_1D
+	.addr	cave_beast_state_1E
+	.addr	cave_beast_state_03
+	.addr	cave_beast_state_20
+	.addr	cave_beast_state_06
+	.addr	cave_beast_state_07
+	.addr	cave_beast_state_08
+	.addr	cave_beast_state_24
+	.addr	update_cave_beast_target
+	.addr	cave_beast_state_26
+	.addr	cave_beast_state_27
 
-sub_04B5B1:
+; Object type $A0. Stage 6, dark cave: the part of the hunched beast that
+; takes damage (320 HP, slot $0840). The handler is a bare rtl: cave_beast
+; moves it and reads its HP; also cave_beast's state $25.
+update_cave_beast_target:
 	rtl
 
-sub_04B5B2:
+cave_beast_state_00:
 	lda	#$0006
 	jsl	f:start_palette_anim
 	lda	#$0008
@@ -6902,7 +6965,7 @@ sub_04B5B2:
 	inc	$12,x
 	rtl
 
-sub_04B5CE:
+cave_beast_state_01:
 	lda	a:wram_13BA
 	cmp	#$0004
 	bne	loc_04B5D8
@@ -6910,7 +6973,7 @@ sub_04B5CE:
 loc_04B5D8:
 	rtl
 
-sub_04B5D9:
+cave_beast_state_02:
 	lda	#$0079
 	sta	$16,x
 	lda	#$0FFF
@@ -6987,7 +7050,7 @@ loc_04B674:
 	jsr	a:sub_04BBF5
 	rtl
 
-sub_04B69E:
+cave_beast_state_03:
 	lda	$24,x
 	bit	#$003F
 	bne	loc_04B6AC
@@ -7042,7 +7105,7 @@ loc_04B710:
 	stz	$1A,x
 	bra	loc_04B6FB
 
-sub_04B714:
+cave_beast_state_06:
 	lda	$1E,x
 	bmi	loc_04B72F
 	lda	stage_frame_counter
@@ -7150,7 +7213,7 @@ loc_04B7DD:
 loc_04B7EC:
 	jmp	a:loc_04B674
 
-sub_04B7EF:
+cave_beast_state_07:
 	lda	#$0009
 	jsr	a:sub_04BC10
 	lda	#$0003
@@ -7162,7 +7225,7 @@ sub_04B7EF:
 	inc	$12,x
 	jmp	a:loc_04B7EC
 
-sub_04B80B:
+cave_beast_state_08:
 	lda	a:shake_timer
 	bne	loc_04B816
 	stz	$30,x
@@ -7171,13 +7234,13 @@ sub_04B80B:
 loc_04B816:
 	jmp	a:loc_04B7EC
 
-sub_04B819:
+cave_beast_state_09:
 	jsl	f:sub_01E860
 	lda	a:$000A,y
 	cmp	$0A,x
 	bcc	loc_04B839
 
-sub_04B824:
+cave_beast_state_0D:
 	stz	$3A,x
 	lda	#$4000
 loc_04B829:
@@ -7194,7 +7257,7 @@ loc_04B839:
 	lda	#$C000
 	bra	loc_04B829
 
-sub_04B843:
+cave_beast_state_0A:
 	lda	$3A,x
 	bmi	loc_04B855
 	lda	$0A,x
@@ -7280,18 +7343,18 @@ loc_04B8ED:
 	sta	a:shake_continuous
 	jmp	a:loc_04B674
 
-sub_04B8F6:
+cave_beast_state_11:
 	stz	$24,x
 	inc	$12,x
 	jmp	a:loc_04B674
 
-sub_04B8FD:
+cave_beast_state_12:
 	stz	$24,x
 	stz	$30,x
 	inc	$12,x
 	jmp	a:loc_04B674
 
-sub_04B906:
+cave_beast_state_13:
 	inc	$24,x
 	lda	$24,x
 	and	#$0007
@@ -7315,7 +7378,7 @@ sub_04B906:
 loc_04B934:
 	jmp	a:loc_04B674
 
-sub_04B937:
+cave_beast_state_14:
 	inc	$24,x
 	lda	$24,x
 	and	#$0007
@@ -7344,13 +7407,13 @@ loc_04B962:
 loc_04B973:
 	jmp	a:loc_04B674
 
-sub_04B976:
+cave_beast_state_15:
 	stz	$24,x
 	stz	$30,x
 	inc	$12,x
 	jmp	a:loc_04B674
 
-sub_04B97F:
+cave_beast_state_17:
 	inc	$24,x
 	lda	$24,x
 	and	#$0007
@@ -7372,7 +7435,7 @@ sub_04B97F:
 loc_04B9A8:
 	jmp	a:loc_04B674
 
-sub_04B9AB:
+cave_beast_state_18:
 	inc	$24,x
 	lda	$24,x
 	and	#$0001
@@ -7420,7 +7483,7 @@ loc_04BA0A:
 	inc	$12,x
 	jmp	a:loc_04B674
 
-sub_04BA15:
+cave_beast_state_19:
 	inc	$24,x
 	lda	$24,x
 	and	#$0007
@@ -7444,7 +7507,7 @@ sub_04BA15:
 loc_04BA43:
 	jmp	a:loc_04B674
 
-sub_04BA46:
+cave_beast_state_1B:
 	ldy	#$0840
 	lda	a:$0006,y
 	cmp	#$0080
@@ -7459,7 +7522,7 @@ loc_04BA5A:
 	stz	$30,x
 	jmp	a:loc_04B674
 
-sub_04BA61:
+cave_beast_state_1C:
 	stz	$1A,x
 	stz	$18,x
 	stz	$1C,x
@@ -7470,7 +7533,7 @@ sub_04BA61:
 	inc	$12,x
 	jmp	a:loc_04B674
 
-sub_04BA75:
+cave_beast_state_1D:
 	lda	$24,x
 	bit	#$003F
 	bne	loc_04BA83
@@ -7488,7 +7551,7 @@ loc_04BA83:
 loc_04BA95:
 	jmp	a:loc_04B6BC
 
-sub_04BA98:
+cave_beast_state_1E:
 	jsl	f:sub_01E860
 	lda	a:$000A,y
 	cmp	#$0040
@@ -7507,20 +7570,20 @@ loc_04BAB5:
 	inc	$12,x
 	jmp	a:loc_04B674
 
-sub_04BABC:
+cave_beast_state_05:
 	jsl	f:sub_01E860
 	lda	a:$000A,y
 	ldy	#$0800
 	sec
 	sbc	a:$000A,y
 	cmp	#$0080
-	bcc	sub_04BAD9
+	bcc	cave_beast_state_20
 	stz	$24,x
 	lda	#$0009
 	sta	$12,x
 	jmp	a:loc_04B674
 
-sub_04BAD9:
+cave_beast_state_20:
 	lda	$0A,x
 	cmp	#$0080
 	bcc	loc_04BAE3
@@ -7528,14 +7591,14 @@ sub_04BAD9:
 loc_04BAE3:
 	jmp	a:loc_04B710
 
-sub_04BAE6:
+cave_beast_state_24:
 	lda	#$0005
 	sta	$12,x
 	stz	$24,x
 	stz	$30,x
 	jmp	a:loc_04B674
 
-sub_04BAF2:
+cave_beast_state_26:
 	lda	#$0001
 	sta	$16,x
 	lda	#$0000
@@ -7560,7 +7623,7 @@ sub_04BAF2:
 	inc	$12,x
 	jmp	a:loc_04B674
 
-sub_04BB2B:
+cave_beast_state_27:
 	jsl	f:sub_00FD92
 	lda	$0A,x
 	adc	#$FFE0
@@ -7610,7 +7673,7 @@ loc_04BB78:
 	jsl	f:queue_sound
 	rtl
 
-sub_04BB9D:
+cave_beast_state_04:
 	inc	$24,x
 	lda	$24,x
 	cmp	#$003C
@@ -7702,7 +7765,9 @@ sub_04BC2E:
 	sec
 	rts
 
-sub_04BC30:
+; Object type $66. Stage 6, dark cave: the rocks that pile up on the floor (up
+; to 18).
+update_cave_rock:
 	lda	$12,x
 	bne	loc_04BC6F
 	lda	#$0003
@@ -7751,7 +7816,9 @@ loc_04BC7E:
 	sta	$1E,x
 	rtl
 
-sub_04BC8E:
+; Object type $70. Stage 6, cave_beast: small embers flying around the beast
+; (not identified exactly).
+update_enemy_type_70:
 	lda	$12,x
 	bne	loc_04BCD7
 	lda	#$000F
@@ -7825,7 +7892,9 @@ loc_04BD0D:
 loc_04BD16:
 	rtl
 
-sub_04BD17:
+; Object type $71. Stage 6, cave_beast: projectile aimed at a player
+; (aim_velocity_at_player, double speed), removed after 300 frames.
+update_cave_beast_fireball:
 	lda	$12,x
 	bne	loc_04BD59
 	lda	#$000F
@@ -7850,7 +7919,7 @@ sub_04BD17:
 	sta	$32,x
 	lda	$0E,x
 	sta	$34,x
-	jsl	f:sub_04AC4F
+	jsl	f:aim_velocity_at_player
 	asl	$18,x
 	rol	$1A,x
 	asl	$1C,x
@@ -7874,7 +7943,8 @@ loc_04BD68:
 	sta	$00,x
 	rtl
 
-sub_04BD75:
+; Object type $72. Stage 6, cave_beast: segments of the beast's beam.
+update_cave_beast_beam:
 	lda	$12,x
 	bne	loc_04BD59
 	lda	#$000F
@@ -7961,7 +8031,9 @@ loc_04BE13:
 loc_04BE23:
 	rtl
 
-sub_04BE24:
+; Object type $75. Stage 6, face_boss: the two side heads that reach out on
+; necks. HP by difficulty: 128/192/256 (data_05F0CE).
+update_face_boss_side_head:
 	lda	$06,x
 	bpl	loc_04BE2B
 	brl	loc_04BFA2
@@ -7975,19 +8047,19 @@ loc_04BE33:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04BE42,x
+	lda	f:tbl_face_boss_side_head_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04BE42:
-	.addr	sub_04BE4E
-	.addr	sub_04BE77
-	.addr	sub_04BE98
-	.addr	sub_04BF07
-	.addr	sub_04BF88
-	.addr	sub_04BFC0
+tbl_face_boss_side_head_states:
+	.addr	face_boss_side_head_state_00
+	.addr	face_boss_side_head_state_01
+	.addr	face_boss_side_head_state_02
+	.addr	face_boss_side_head_state_03
+	.addr	face_boss_side_head_state_04
+	.addr	face_boss_side_head_state_05
 
-sub_04BE4E:
+face_boss_side_head_state_00:
 	ldy	difficulty
 	lda	a:data_05F0CE,y
 	sta	$06,x
@@ -8006,7 +8078,7 @@ sub_04BE4E:
 	lda	#$0001
 	sta	$12,x
 
-sub_04BE77:
+face_boss_side_head_state_01:
 	lda	a:wram_0912
 	cmp	#$0002
 	bcs	loc_04BE80
@@ -8023,7 +8095,7 @@ loc_04BE80:
 	lda	#$0002
 	sta	$12,x
 
-sub_04BE98:
+face_boss_side_head_state_02:
 	ldy	$32,x
 	lda	a:wram_090A
 	clc
@@ -8078,7 +8150,7 @@ loc_04BED0:
 	lda	#$0003
 	sta	$12,x
 
-sub_04BF07:
+face_boss_side_head_state_03:
 	dec	$24,x
 	bmi	loc_04BF79
 	ldy	$36,x
@@ -8155,7 +8227,7 @@ loc_04BF79:
 	lda	#$0004
 	sta	$12,x
 
-sub_04BF88:
+face_boss_side_head_state_04:
 	dec	$24,x
 	bpl	loc_04BF8F
 	brl	loc_04BE80
@@ -8186,7 +8258,7 @@ loc_04BFA2:
 	lda	#$0005
 	sta	$12,x
 
-sub_04BFC0:
+face_boss_side_head_state_05:
 	rtl
 
 sub_04BFC1:
@@ -8458,7 +8530,8 @@ loc_04C1E6:
 loc_04C26D:
 	rts
 
-sub_04C26E:
+; Object type $77. Stage 6, face_boss: neck segments of the side heads.
+update_face_boss_neck:
 	lda	a:wram_0906
 	bpl	loc_04C276
 	; (not executed in the CDL traces)
@@ -8475,26 +8548,26 @@ loc_04C284:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04C293,x
+	lda	f:tbl_face_boss_neck_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04C293:
-	.addr	sub_04C2A3
-	.addr	sub_04C2AA
-	.addr	sub_04C2EC
-	.addr	sub_04C31A
-	.addr	sub_04C33F
-	.addr	sub_04C363
-	.addr	sub_04C3A1
-	.addr	sub_04C382
+tbl_face_boss_neck_states:
+	.addr	face_boss_neck_state_00
+	.addr	face_boss_neck_state_01
+	.addr	face_boss_neck_state_02
+	.addr	face_boss_neck_state_03
+	.addr	face_boss_neck_state_04
+	.addr	face_boss_neck_state_05
+	.addr	face_boss_neck_state_06
+	.addr	face_boss_neck_state_07
 
-sub_04C2A3:
+face_boss_neck_state_00:
 	stz	$06,x
 	lda	#$0001
 	sta	$12,x
 
-sub_04C2AA:
+face_boss_neck_state_01:
 	lda	$36,x
 	beq	loc_04C2B5
 	; (not executed in the CDL traces)
@@ -8530,7 +8603,7 @@ loc_04C2BA:
 	lda	#$0002
 	sta	$12,x
 
-sub_04C2EC:
+face_boss_neck_state_02:
 	lda	$36,x
 	beq	loc_04C2F7
 	dec	a
@@ -8559,7 +8632,7 @@ loc_04C309:
 	lda	#$0003
 	sta	$12,x
 
-sub_04C31A:
+face_boss_neck_state_03:
 	lda	$36,x
 	beq	loc_04C325
 	dec	a
@@ -8585,7 +8658,7 @@ loc_04C33A:
 	lda	#$0004
 	sta	$12,x
 
-sub_04C33F:
+face_boss_neck_state_04:
 	dec	$24,x
 	bpl	loc_04C346
 	brl	loc_04C359
@@ -8607,7 +8680,7 @@ loc_04C359:
 	lda	#$0005
 	sta	$12,x
 
-sub_04C363:
+face_boss_neck_state_05:
 	lda	$0E,x
 	dec	a
 	dec	a
@@ -8626,7 +8699,7 @@ loc_04C378:
 	lda	#$0007
 	sta	$12,x
 
-sub_04C382:
+face_boss_neck_state_07:
 	rtl
 loc_04C383:
 	lda	$0A,x
@@ -8643,7 +8716,7 @@ loc_04C383:
 	lda	#$0006
 	sta	$12,x
 
-sub_04C3A1:
+face_boss_neck_state_06:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
@@ -8654,7 +8727,10 @@ sub_04C3A2:
 	sta	a:$0006,y
 	rtl
 
-sub_04C3AC:
+; Object type $79. Stage 4, hover-bike section: body of the segmented snake-
+; like robot that rises from the road (4095 HP: not killed by shots; slot
+; $0900); snake_robot_head is the target.
+update_snake_robot:
 	ldy	#$0500
 	lda	a:$0006,y
 	bpl	loc_04C3C2
@@ -8668,35 +8744,35 @@ loc_04C3C2:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04C3D1,x
+	lda	f:tbl_snake_robot_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04C3D1:
-	.addr	sub_04C3F6
-	.addr	sub_04C4D9
-	.addr	sub_04C504
-	.addr	sub_04C55F
-	.addr	sub_04C5AE
-	.addr	sub_04C620
-	.addr	sub_04C6B3
-	.addr	sub_04C889
-	.addr	sub_04C905
-	.addr	sub_04C9F5
-	.addr	sub_04C3F5
-	.addr	sub_04C3F5
-	.addr	sub_04C3F5
-	.addr	sub_04C3F5
-	.addr	sub_04C3F5
-	.addr	sub_04C3F5
-	.addr	sub_04CA59
-	.addr	sub_04CAC3
+tbl_snake_robot_states:
+	.addr	snake_robot_state_00
+	.addr	snake_robot_state_01
+	.addr	snake_robot_state_02
+	.addr	snake_robot_state_03
+	.addr	snake_robot_state_04
+	.addr	snake_robot_state_05
+	.addr	snake_robot_state_06
+	.addr	snake_robot_state_07
+	.addr	snake_robot_state_08
+	.addr	snake_robot_state_09
+	.addr	snake_robot_state_0A
+	.addr	snake_robot_state_0A
+	.addr	snake_robot_state_0A
+	.addr	snake_robot_state_0A
+	.addr	snake_robot_state_0A
+	.addr	snake_robot_state_0A
+	.addr	snake_robot_state_10
+	.addr	snake_robot_state_11
 
-sub_04C3F5:
+snake_robot_state_0A:
 	; (not executed in the CDL traces)
 	rtl
 
-sub_04C3F6:
+snake_robot_state_00:
 	lda	#$0080
 	sta	$0A,x
 	lda	#$0010
@@ -8789,7 +8865,7 @@ loc_04C46F:
 	inc	$12,x
 	jmp	a:loc_04CD2B
 
-sub_04C4D9:
+snake_robot_state_01:
 	stz	zp_00
 loc_04C4DB:
 	lda	zp_00
@@ -8813,7 +8889,7 @@ loc_04C4DB:
 	jsr	a:sub_04CB63
 	jmp	a:loc_04CD2B
 
-sub_04C504:
+snake_robot_state_02:
 	ldy	#$0300
 	lda	a:$000E,y
 	bmi	loc_04C51D
@@ -8863,7 +8939,7 @@ loc_04C559:
 	jsr	a:sub_04CB63
 	jmp	a:loc_04CD2B
 
-sub_04C55F:
+snake_robot_state_03:
 	ldy	#$0700
 	lda	#$0000
 	sta	a:$001E,y
@@ -8896,7 +8972,7 @@ loc_04C59C:
 	jsr	a:sub_04CBE2
 	jmp	a:loc_04CD2B
 
-sub_04C5AE:
+snake_robot_state_04:
 	lda	$30,x
 	bne	loc_04C5D7
 	ldy	#$0300
@@ -8951,7 +9027,7 @@ loc_04C61A:
 	jsr	a:sub_04CBE2
 	jmp	a:loc_04CD2B
 
-sub_04C620:
+snake_robot_state_05:
 	ldy	#$0300
 	lda	a:$000E,y
 	sta	$34,x
@@ -9016,7 +9092,7 @@ loc_04C658:
 	jsr	a:sub_04CBE2
 	jmp	a:loc_04CD2B
 
-sub_04C6B3:
+snake_robot_state_06:
 	ldy	#$0500
 	lda	a:$003A,y
 	sec
@@ -9218,7 +9294,7 @@ loc_04C83E:
 	jsr	a:sub_04CBE2
 	jmp	a:loc_04CD2B
 
-sub_04C889:
+snake_robot_state_07:
 	stz	$38,x
 	lda	$0A,x
 	bmi	loc_04C894
@@ -9273,7 +9349,7 @@ loc_04C896:
 	jsl	f:sub_01A0E9
 	jmp	a:loc_04CD2B
 
-sub_04C905:
+snake_robot_state_08:
 	lda	$1C,x
 	clc
 	adc	#$0400
@@ -9385,7 +9461,7 @@ loc_04C9AD:
 	stz	$24,x
 	jmp	a:loc_04CD2B
 
-sub_04C9F5:
+snake_robot_state_09:
 	lda	$1E,x
 	bmi	loc_04CA15
 	ldy	#$0300
@@ -9438,7 +9514,7 @@ loc_04CA53:
 	jsr	a:sub_04CB63
 	jmp	a:loc_04CD2B
 
-sub_04CA59:
+snake_robot_state_10:
 	lda	#$0001
 	sta	$16,x
 	stz	$06,x
@@ -9484,7 +9560,7 @@ loc_04CA6E:
 	inc	$12,x
 	jmp	a:loc_04CD2B
 
-sub_04CAC3:
+snake_robot_state_11:
 	lda	$0A,x
 	adc	#$FFE0
 	sta	zp_00
@@ -9504,10 +9580,11 @@ sub_04CAC3:
 	lda	#$FFFA
 	sta	a:$001A,y
 loc_04CAF3:
-	jsl	f:sub_04CAFA
+	jsl	f:update_snake_robot_debris
 	jmp	a:loc_04CD2B
 
-sub_04CAFA:
+; Object type $88. Stage 4: the 16 pieces of snake_robot when it is destroyed.
+update_snake_robot_debris:
 	lda	a:$0024,x
 	inc	a
 	sta	a:$0024,x
@@ -9821,7 +9898,8 @@ loc_04CD2B:
 	sta	a:$000E,y
 	rtl
 
-sub_04CD39:
+; Object type $81. Stage 4: head of snake_robot (320 HP).
+update_snake_robot_head:
 	lda	a:data_05F154
 	tay
 	lda	a:$0010,y
@@ -9831,8 +9909,10 @@ sub_04CD39:
 loc_04CD47:
 	rtl
 
-sub_04CD48:
-	jsr	a:sub_049B74
+; Object type $7C. Stage 4, airship: small parts under the airship (20 HP; not
+; identified exactly).
+update_enemy_type_7C:
+	jsr	a:scroll_with_airship
 	lda	$06,x
 	bpl	loc_04CD65
 	lda	#$001C
@@ -9849,18 +9929,18 @@ loc_04CD65:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04CD74,x
+	lda	f:tbl_enemy_type_7C_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04CD74:
-	.addr	sub_04CD7E
-	.addr	sub_04CD9D
-	.addr	sub_04CDAB
-	.addr	sub_04CDCC
-	.addr	sub_049B8F
+tbl_enemy_type_7C_states:
+	.addr	enemy_type_7C_state_00
+	.addr	enemy_type_7C_state_01
+	.addr	enemy_type_7C_state_02
+	.addr	enemy_type_7C_state_03
+	.addr	airship_part_explode
 
-sub_04CD7E:
+enemy_type_7C_state_00:
 	inc	$12,x
 	stz	$16,x
 	lda	#$0020
@@ -9877,9 +9957,9 @@ sub_04CD7E:
 	sta	$06,x
 	rtl
 
-sub_04CD9D:
+enemy_type_7C_state_01:
 	cmp	#$0002
-	beq	sub_04CDCC
+	beq	enemy_type_7C_state_03
 	dec	$24,x
 	bne	loc_04CDAA
 	inc	$12,x
@@ -9887,7 +9967,7 @@ sub_04CD9D:
 loc_04CDAA:
 	rtl
 
-sub_04CDAB:
+enemy_type_7C_state_02:
 	inc	$24,x
 	lda	$24,x
 	bit	#$0007
@@ -9905,7 +9985,7 @@ sub_04CDAB:
 loc_04CDCB:
 	rtl
 
-sub_04CDCC:
+enemy_type_7C_state_03:
 	lda	#$0400
 	jsl	f:sub_01A15D
 	jsl	f:sub_01A0C8
@@ -9972,8 +10052,10 @@ sub_04CE28:
 	jsl	f:sub_00FE76
 	rts
 
-sub_04CE4C:
-	jsr	a:sub_049B74
+; Object type $7A. Stage 4, under the alien airship: hanging emitters that
+; drop lightning_bolt. HP by difficulty: 64/96/$7FFF (data_05F26C).
+update_lightning_pylon:
+	jsr	a:scroll_with_airship
 	lda	$06,x
 	bpl	loc_04CE80
 	; (not executed in the CDL traces)
@@ -10014,7 +10096,7 @@ loc_04CE9F:
 	cmp	#$0002
 	bne	loc_04CEA7
 	; (not executed in the CDL traces)
-	brl	sub_049B8F
+	brl	airship_part_explode
 loc_04CEA7:
 	dec	$24,x
 	bpl	loc_04CED7
@@ -10039,7 +10121,8 @@ loc_04CEA7:
 loc_04CED7:
 	rtl
 
-sub_04CED8:
+; Object type $7B. Stage 4, airship: the lightning bolts and their sparks.
+update_lightning_bolt:
 	ldy	$32,x
 	lda	a:$0010,y
 	cmp	#$007A
@@ -10052,22 +10135,22 @@ loc_04CEE7:
 	sta	$16,x
 	rtl
 loc_04CEED:
-	jsr	a:sub_049B74
+	jsr	a:scroll_with_airship
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04CEFF,x
+	lda	f:tbl_lightning_bolt_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04CEFF:
-	.addr	sub_04CF07
-	.addr	sub_04CF28
-	.addr	sub_04CF3B
-	.addr	sub_04CF51
+tbl_lightning_bolt_states:
+	.addr	lightning_bolt_state_00
+	.addr	lightning_bolt_state_01
+	.addr	lightning_bolt_state_02
+	.addr	lightning_bolt_state_03
 
-sub_04CF07:
+lightning_bolt_state_00:
 	inc	$12,x
 	lda	#$0018
 	sta	$24,x
@@ -10083,7 +10166,7 @@ sub_04CF07:
 	sta	$02,x
 	rtl
 
-sub_04CF28:
+lightning_bolt_state_01:
 	dec	$24,x
 	bpl	loc_04CF3A
 	inc	$12,x
@@ -10094,7 +10177,7 @@ sub_04CF28:
 loc_04CF3A:
 	rtl
 
-sub_04CF3B:
+lightning_bolt_state_02:
 	dec	$24,x
 	bpl	loc_04CF48
 	inc	$12,x
@@ -10108,7 +10191,7 @@ loc_04CF48:
 	sta	$0E,x
 	rtl
 
-sub_04CF51:
+lightning_bolt_state_03:
 	dec	$24,x
 	bpl	loc_04CF5B
 	lda	#$8000
@@ -10140,23 +10223,25 @@ loc_04CF5B:
 loc_04CF90:
 	rtl
 
-sub_04CF91:
+; Object type $7D. Stage 4, airship: clusters of spiked mines dropped by the
+; airship.
+update_spiked_mine:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04CFA0,x
+	lda	f:tbl_spiked_mine_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04CFA0:
-	.addr	sub_04CFAA
-	.addr	sub_04D029
-	.addr	sub_04D0B1
-	.addr	sub_04D0DC
-	.addr	sub_04D0E3
+tbl_spiked_mine_states:
+	.addr	spiked_mine_state_00
+	.addr	spiked_mine_state_01
+	.addr	spiked_mine_state_02
+	.addr	spiked_mine_state_03
+	.addr	spiked_mine_state_04
 
-sub_04CFAA:
+spiked_mine_state_00:
 	inc	$12,x
 	lda	#$C81D
 	sta	$00,x
@@ -10212,8 +10297,8 @@ loc_04D020:
 	sta	$36,x
 	rtl
 
-sub_04D029:
-	jsr	a:sub_049B74
+spiked_mine_state_01:
+	jsr	a:scroll_with_airship
 	lda	$3A,x
 	bne	loc_04D044
 	clc
@@ -10276,7 +10361,7 @@ loc_04D087:
 	sta	$32,x
 	rtl
 
-sub_04D0B1:
+spiked_mine_state_02:
 	lda	#$C81D
 	ldy	$34,x
 	beq	loc_04D0BB
@@ -10299,12 +10384,12 @@ loc_04D0BB:
 loc_04D0DB:
 	rtl
 
-sub_04D0DC:
+spiked_mine_state_03:
 	jsr	a:sub_04D0EA
 	jsr	a:sub_04D142
 	rtl
 
-sub_04D0E3:
+spiked_mine_state_04:
 	jsr	a:sub_04D0EA
 	jsr	a:sub_04D158
 	rtl
@@ -10370,8 +10455,9 @@ sub_04D158:
 	sta	$0A,x
 	rts
 
-sub_04D161:
-	jsr	a:sub_049B74
+; Object type $7F. Stage 4, airship: the hanging cannon arms (128 HP).
+update_airship_gun_arm:
+	jsr	a:scroll_with_airship
 	lda	$06,x
 	bpl	loc_04D1A6
 	; (not executed in the CDL traces)
@@ -10418,7 +10504,7 @@ loc_04D1C6:
 	cmp	#$0002
 	bne	loc_04D1CE
 	; (not executed in the CDL traces)
-	brl	sub_049B8F
+	brl	airship_part_explode
 loc_04D1CE:
 	lda	$24,x
 	beq	loc_04D207
@@ -10446,7 +10532,9 @@ loc_04D1E6:
 loc_04D207:
 	rtl
 
-sub_04D208:
+; Object type $80. Stage 4, airship: seen briefly at the end of the airship
+; (not identified exactly).
+update_enemy_type_80:
 	lda	$12,x
 	bne	loc_04D230
 	inc	$12,x
@@ -10518,7 +10606,10 @@ loc_04D2AC:
 	sta	$02,x
 	rtl
 
-sub_04D2B4:
+; Object type $84. Stage 4, helicopter: the rope hanging from the helicopter;
+; one handler for the anchor (state 4), the segments (state 5) and the enemy
+; at the end (states 2/3/8/9, with HP).
+update_helicopter_rope:
 	cpx	#$0900
 	bne	loc_04D2ED
 	lda	$06,x
@@ -10549,26 +10640,26 @@ loc_04D2ED:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04D2FC,x
+	lda	f:tbl_helicopter_rope_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04D2FC:
-	.addr	sub_04D316
-	.addr	sub_04D32F
-	.addr	sub_04D373
-	.addr	sub_04D451
-	.addr	sub_04D461
-	.addr	sub_04D42C
-	.addr	sub_04D500
-	.addr	sub_04D532
-	.addr	sub_04D56D
-	.addr	sub_04D57C
-	.addr	sub_04D5C3
-	.addr	sub_04D608
-	.addr	sub_04D622
+tbl_helicopter_rope_states:
+	.addr	helicopter_rope_state_00
+	.addr	helicopter_rope_state_01
+	.addr	helicopter_rope_state_02
+	.addr	helicopter_rope_state_03
+	.addr	helicopter_rope_state_04
+	.addr	helicopter_rope_state_05
+	.addr	helicopter_rope_state_06
+	.addr	helicopter_rope_state_07
+	.addr	helicopter_rope_state_08
+	.addr	helicopter_rope_state_09
+	.addr	helicopter_rope_state_0A
+	.addr	helicopter_rope_state_0B
+	.addr	helicopter_rope_state_0C
 
-sub_04D316:
+helicopter_rope_state_00:
 	lda	a:wram_13FA
 	cmp	#$000B
 	bne	loc_04D32E
@@ -10582,7 +10673,7 @@ sub_04D316:
 loc_04D32E:
 	rtl
 
-sub_04D32F:
+helicopter_rope_state_01:
 	dec	$24,x
 	bpl	loc_04D372
 	lda	#$0015
@@ -10613,7 +10704,7 @@ sub_04D32F:
 loc_04D372:
 	rtl
 
-sub_04D373:
+helicopter_rope_state_02:
 	lda	$0E,x
 	cmp	#$0060
 	bcs	loc_04D389
@@ -10695,7 +10786,7 @@ loc_04D421:
 	sta	a:wram_1640
 	rtl
 
-sub_04D42C:
+helicopter_rope_state_05:
 	lda	a:wram_0916
 	cmp	#$0001
 	bne	loc_04D43A
@@ -10714,7 +10805,7 @@ loc_04D445:
 	jsr	a:sub_04D701
 	rtl
 
-sub_04D451:
+helicopter_rope_state_03:
 	jsr	a:sub_04D70A
 	jsr	a:sub_04D7C7
 
@@ -10723,7 +10814,7 @@ sub_04D457:
 	jsr	a:sub_04D724
 	jml	f:sub_01A513
 
-sub_04D461:
+helicopter_rope_state_04:
 	lda	a:wram_0916
 	cmp	#$0001
 	bne	loc_04D46F
@@ -10795,7 +10886,7 @@ loc_04D4F6:
 	jsr	a:sub_04D737
 	rtl
 
-sub_04D500:
+helicopter_rope_state_06:
 	lda	#$0007
 	sta	$12,x
 	lda	$1A,x
@@ -10818,7 +10909,7 @@ loc_04D51E:
 	lda	#$0016
 	sta	a:wram_163E
 
-sub_04D532:
+helicopter_rope_state_07:
 	clc
 	lda	$1C,x
 	adc	#$2000
@@ -10846,9 +10937,9 @@ loc_04D563:
 loc_04D566:
 	jml	f:sub_01A513
 loc_04D56A:
-	brl	sub_04D451
+	brl	helicopter_rope_state_03
 
-sub_04D56D:
+helicopter_rope_state_08:
 	lda	a:wram_163C
 	cmp	#$00FD
 	bcc	loc_04D56A
@@ -10856,7 +10947,7 @@ sub_04D56D:
 	bcs	loc_04D56A
 	inc	$12,x
 
-sub_04D57C:
+helicopter_rope_state_09:
 	lda	stage_frame_mod4
 	bne	loc_04D5C0
 	inc	a:wram_1640
@@ -10887,7 +10978,7 @@ loc_04D5BB:
 loc_04D5C0:
 	brl	sub_04D457
 
-sub_04D5C3:
+helicopter_rope_state_0A:
 	dec	$24,x
 	bne	loc_04D5D0
 	inc	$12,x
@@ -10917,7 +11008,7 @@ loc_04D5FB:
 	sta	$0E,x
 	jml	f:sub_01A513
 
-sub_04D608:
+helicopter_rope_state_0B:
 	lda	stage_frame_mod4
 	bne	loc_04D61C
 	dec	a:wram_1640
@@ -10930,7 +11021,7 @@ loc_04D61C:
 	jsr	a:sub_04D70A
 	brl	sub_04D457
 
-sub_04D622:
+helicopter_rope_state_0C:
 	lda	$0E,x
 	cmp	#$0180
 	bcs	loc_04D632
@@ -11202,7 +11293,9 @@ loc_04D82A:
 	sta	a:wram_163C
 	rts
 
-sub_04D835:
+; Object type $85. Stage 4, helicopter scene: a spinning projectile thrown
+; upward that curves (probably by the enemy on helicopter_rope).
+update_enemy_type_85:
 	lda	$12,x
 	bne	loc_04D866
 	inc	$12,x
