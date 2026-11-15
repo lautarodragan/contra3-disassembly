@@ -19,8 +19,8 @@ it ever runs.  Insertion points:
     too.  SPEC: "default", "alt" (another assignment), a number for every
     bank, or "BB=N,BB=N" (others 0).  --banks limits shifting to some banks.
   * --labels P: also one byte before a fraction P of the data labels (a
-    label whose next statement is data), chosen with --seed, within each
-    bank's free space.  This moves data blocks relative to each other: it
+    label whose next statement is data, after a .byte line), chosen with
+    --seed, within each bank's free space.  This moves data blocks relative to each other: it
     catches tables indexed past their label into the next block.
 
 The space comes from the free space at the end of each bank, which the
@@ -177,20 +177,28 @@ def cmd_build(args):
                 continue
             cands = [(f, i) for f in files for i in data_labels(os.path.join(dst, f))]
             rng.shuffle(cands)
-            chosen = {}
+            # The filler byte is appended to the .byte line before the label,
+            # so that line numbers stay those of src/ (tools/shift_diag.py and
+            # `diff` match lines by number); labels after anything else are
+            # left alone.
+            texts = {f: open(os.path.join(dst, f)).read().split("\n") for f in files}
             for f, i in cands:
                 if budget <= 0:
                     break
-                if rng.random() < args.labels:
-                    chosen.setdefault(f, set()).add(i)
-                    budget -= 1
-            for f, idx in chosen.items():
-                p = os.path.join(dst, f)
-                lines = open(p).read().split("\n")
-                for i in sorted(idx, reverse=True):
-                    lines.insert(i, "\t.res\t1, $%02X\t; shift test" % FILLER)
-                    moved += 1
-                open(p, "w").write("\n".join(lines))
+                if rng.random() >= args.labels:
+                    continue
+                lines = texts[f]
+                j = i - 1
+                while j >= 0 and (not lines[j].strip() or lines[j].strip().startswith(";")):
+                    j -= 1
+                m = re.match(r"^(\s*\.byte\s+[^;]*?)(\s*;.*)?$", lines[j]) if j >= 0 else None
+                if not m:
+                    continue
+                lines[j] = m.group(1) + ", $%02X" % FILLER + (m.group(2) or "")
+                budget -= 1
+                moved += 1
+            for f in files:
+                open(os.path.join(dst, f), "w").write("\n".join(texts[f]))
     rom, _dbg = srcmap.assemble(dst, args.out)
     fix_checksum(rom)
     print("%s: banks shifted by %s; %d data labels moved by one byte"

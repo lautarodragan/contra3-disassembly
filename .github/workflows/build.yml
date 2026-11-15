@@ -24,6 +24,17 @@ jobs:
       - name: Build and compare
         run: make compare
 
+      - name: Shift check
+        # Milestone 3: no hardcoded ROM reference of the forms tools/shift.py
+        # scan knows, and a build with code and data moved (filler at the
+        # start of every bank and before a third of the data labels) still
+        # assembles and links. Running that ROM needs the emulator suite of
+        # the private repository (make shift-test).
+        run: |
+          python3 tools/shift.py scan
+          python3 tools/shift.py build --labels 0.3 --seed 1
+          python3 tools/shift.py diff
+
       - name: Check that the build left the tree clean
         run: |
           if [ -n "$(git status --porcelain)" ]; then
