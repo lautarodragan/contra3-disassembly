@@ -29,10 +29,20 @@ How it works
      hint gives it.
    * BRK/COP/WDM/STP are treated as "this is not code": decoding stops before
      them.  A hint can force them.
+   * lda table,x / sta ptr / jmp (ptr) and the long form ending in
+     jml [ptr] (3-byte entries) are recognised as jump tables too.
 3. Return-state inference: after a pass, routines whose every RTS/RTL leaves
    M/X different from the entry state are recorded and the analysis reruns,
    so callers resume with the right widths.
-4. Emission: every byte not decoded as an instruction is emitted as data.
+4. Unreferenced routines: code right after the end of a routine (RTS, RTL,
+   JMP, BRA...) that decodes into a plausible routine is decoded too and
+   marked with a comment.  With a CDL, executed code not reached statically
+   is seeded first.
+5. Pointer recovery (after decoding): lda #lo/sta p + lda #bank/sta p+2
+   pairs, ROM pointers passed in X to routines that read f:$BB0000,x, and
+   tables of 16-bit data pointers (read via (dp),y or passed to such
+   routines) become label expressions / .addr tables.
+6. Emission: every byte not decoded as an instruction is emitted as data.
    Operands that point into ROM become labels when the bank is certain (code
    targets, long addresses, absolute addresses with a known DB, jump tables);
    everything else stays a number.  Operand sizes are forced (a:, f:, z: is
@@ -1084,6 +1094,8 @@ class Emitter:
         # header vectors
         for off in self._vector_targets():
             labels.setdefault(off, 'sub')
+        for off in self.names:
+            labels.setdefault(off, 'data')
         self.label_kind = labels
         self.label_name = {}
         for off, kind in labels.items():

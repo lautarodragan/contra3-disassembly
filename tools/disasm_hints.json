@@ -1,4 +1,21 @@
 {
+  "_doc": [
+    "Hints for tools/disasm.py.  Addresses are 'BB:AAAA' CPU addresses.",
+    "fastrom: label banks $80-$9F instead of $00-$1F (the game runs in $00-$1F).",
+    "entry_points: [{addr, m: 8|16, x: 8|16, db?}] extra code entry points.",
+    "labels: {addr: name} names for labels (otherwise sub_/loc_/data_/tbl_/ptrs_ + address).",
+    "comments: {addr: text} comment lines emitted above the address.",
+    "data: [{start, end}] inclusive ranges that are never code.",
+    "not_code: [addr] addresses the 'unreferenced routine' heuristic must not decode.",
+    "force_code: [addr] decode even if the opcode looks suspicious (BRK/COP/WDM/STP) or the hint says data.",
+    "mx_overrides: {addr: {m?, x?, db?}} force M/X (and DB) when decoding reaches addr.",
+    "call_returns: {routine: {m?, x?}} M/X widths the routine returns with (default: unchanged / auto-inferred).",
+    "noreturn: [routine] calls to these routines do not return.",
+    "inline_tables: {routine: {entry: word|long, count?, m?, x?}} routine pops its return address and dispatches through a table placed right after the call.",
+    "jump_tables: [{addr, count}] fixes the length of a jump table (auto-detected tables stop at the first implausible entry).",
+    "no_auto_table: [addr] do not treat a table at addr as a jump table.",
+    "pointer_args: {routine: {reg: x|y, bank}} routine takes a ROM pointer in X/Y (immediates loaded at call sites become labels)."
+  ],
   "fastrom": false,
   "entry_points": [],
   "labels": {
@@ -14,5 +31,7 @@
   "inline_tables": {},
   "jump_tables": [],
   "no_auto_table": [],
-  "force_code": []
+  "force_code": [],
+  "not_code": [],
+  "pointer_args": {}
 }
