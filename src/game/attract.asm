@@ -580,6 +580,10 @@ title_menu_fade_in:
 
 ; mode_result = 1 when title_menu_timeout runs out (demo), 2 on Start.
 title_menu_input:
+.if CHEAT_BUTTON_CODES
+	jsr	a:check_30_lives_code
+	jsr	a:check_stage_select_code
+.endif
 	jsl	f:title_menu_update_cursor
 	bcs	@start_pressed
 	dec	a:title_menu_timeout

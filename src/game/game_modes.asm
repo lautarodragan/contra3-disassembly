@@ -397,7 +397,7 @@ game_mode_game_start:
 	dec	a
 	beq	@blink
 	bpl	@fade_out
-	lda	#$0001
+	lda	#CHEAT_START_STAGE	; 1 (cheats.inc)
 	sta	stage_number
 	stz	a:stage_checkpoint
 	ldx	#$0050
@@ -437,8 +437,10 @@ game_mode_game_start:
 	lda	a:title_menu_cursor
 	cmp	#TITLE_OPTION
 	bcs	@to_options
+.if !CHEAT_STAGE_SELECT
 	lda	a:stage_select_enabled
 	beq	@to_stage_card
+.endif
 	; (not executed in the CDL traces)
 	lda	#GAME_MODE_STAGE_SELECT
 	brl	set_game_mode
@@ -464,10 +466,22 @@ init_players:
 	stz	a:p2_weapon_slot
 	stz	a:p1_weapon_slot_other
 	stz	a:p2_weapon_slot_other
+.if CHEAT_START_WEAPON2
+	lda	#CHEAT_START_WEAPON2	; cheat: weapon of the other slot
+	sta	a:p1_weapon_1
+	sta	a:p2_weapon_1
+.else
 	stz	a:p1_weapon_1
 	stz	a:p2_weapon_1
+.endif
+.if CHEAT_START_WEAPON
+	lda	#CHEAT_START_WEAPON	; cheat: weapon of the active slot
+	sta	a:p1_weapon_2
+	sta	a:p2_weapon_2
+.else
 	stz	a:p1_weapon_2
 	stz	a:p2_weapon_2
+.endif
 	stz	a:p1_weapon_select
 	stz	a:p2_weapon_select
 	stz	a:p1_barrier_timer
@@ -487,11 +501,19 @@ init_players:
 	lda	#$0002
 	sta	a:p1_next_extend_hi
 	sta	a:p2_next_extend_hi
+.if CHEAT_START_LIVES
+	lda	#CHEAT_START_LIVES	; cheat
+.else
 	lda	a:option_lives
+.endif
 	sta	a:p1_lives
 	lda	a:title_menu_cursor
 	beq	@store_p2_lives
+.if CHEAT_START_LIVES
+	lda	#CHEAT_START_LIVES	; cheat
+.else
 	lda	a:option_lives
+.endif
 @store_p2_lives:
 	sta	a:p2_lives
 	lda	a:option_level
@@ -824,7 +846,11 @@ game_over_fade_in:
 	plp
 	lda	#$006B
 	jsl	f:queue_sound
+.if CHEAT_INFINITE_CONTINUES
+	lda	a:continues_left	; cheat: none spent (never negative)
+.else
 	dec	a:continues_left
+.endif
 	bmi	@no_continues
 	lda	#$0080
 	sta	mode_timer

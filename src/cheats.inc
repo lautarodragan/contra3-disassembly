@@ -62,7 +62,7 @@ CHEAT_START_WEAPON = WEAPON_DEFAULT
 CHEAT_START_WEAPON2 = WEAPON_DEFAULT
 .endif
 
-; n > 0: frames between two shots of every weapon (weapon_fire_delays;
+; 1-8: frames between two shots of every weapon (weapon_fire_delays;
 ; originally 3, 4, 5, 4, 1, 1).  0 keeps the original table.  Side view only.
 .ifndef CHEAT_FIRE_DELAY
 CHEAT_FIRE_DELAY = 0
@@ -133,7 +133,7 @@ CHEAT_BUTTON_CODES = 0
 
 .assert CHEAT_START_WEAPON >= 0 && CHEAT_START_WEAPON <= WEAPON_LASER, error, "CHEAT_START_WEAPON: 0-5"
 .assert CHEAT_START_WEAPON2 >= 0 && CHEAT_START_WEAPON2 <= WEAPON_LASER, error, "CHEAT_START_WEAPON2: 0-5"
-.assert CHEAT_FIRE_DELAY >= 0 && CHEAT_FIRE_DELAY < $100, error, "CHEAT_FIRE_DELAY: 0-255"
+.assert CHEAT_FIRE_DELAY >= 0 && CHEAT_FIRE_DELAY <= 8, error, "CHEAT_FIRE_DELAY: 0-8 (run_player_state zeroes delays above 8)"
 .assert CHEAT_DAMAGE_MULT >= 1 && CHEAT_DAMAGE_MULT <= 16, error, "CHEAT_DAMAGE_MULT: 1-16"
 .assert CHEAT_ENEMY_HP >= 0 && CHEAT_ENEMY_HP <= 100, error, "CHEAT_ENEMY_HP: 0-100 (percent)"
 .assert CHEAT_START_LIVES >= 0 && CHEAT_START_LIVES <= 99, error, "CHEAT_START_LIVES: 0-99"
@@ -141,7 +141,7 @@ CHEAT_BUTTON_CODES = 0
 .assert CHEAT_CONTINUES >= 0 && CHEAT_CONTINUES <= 99, error, "CHEAT_CONTINUES: 0-99"
 
 ; Any routine of objects/cheat_code.asm needed.
-CHEAT_CODE_NEEDED = (CHEAT_INVINCIBLE | CHEAT_NO_PIT_DEATH | (CHEAT_DAMAGE_MULT > 1) | (CHEAT_START_WEAPON <> 0) | (CHEAT_START_WEAPON2 <> 0))
+CHEAT_CODE_NEEDED = (CHEAT_INVINCIBLE | CHEAT_NO_PIT_DEATH | (CHEAT_DAMAGE_MULT > 1))
 
 ; --- helpers --------------------------------------------------------------
 

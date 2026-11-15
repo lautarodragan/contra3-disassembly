@@ -91,7 +91,11 @@ data_05822E:
 	.byte	$2B, $C0, $E3, $7F, $80, $00, $00, $00
 continues_per_difficulty:
 	; CDL: read by init_continues
+.if CHEAT_CONTINUES
+	.word	CHEAT_CONTINUES, CHEAT_CONTINUES, CHEAT_CONTINUES
+.else
 	.byte	$02, $00, $04, $00, $04, $00
+.endif
 data_0583FC:
 	; CDL: read by continue_draw_menu
 	.byte	$00, $24, $00, $20
@@ -1325,7 +1329,13 @@ hdma_list_059FED:
 	hdma_channels_end	$E0
 weapon_fire_delays:
 	; CDL: read by spin_fire_weapon_2, fire_weapon
+.if CHEAT_FIRE_DELAY
+	.repeat	6
+	.word	CHEAT_FIRE_DELAY
+	.endrepeat
+.else
 	.byte	$03, $00, $04, $00, $05, $00, $04, $00, $01, $00, $01, $00
+.endif
 data_05A014:
 	; CDL: read by spawn_shot_crush
 	.byte	$2E, $31, $40, $31, $2C, $31, $40, $B1, $2E, $B1, $40, $F1, $2C, $71, $40, $71
