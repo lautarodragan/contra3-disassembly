@@ -996,7 +996,7 @@ konami_logo_init:
 	jsl	f:disable_display_and_nmi
 	jsl	f:reset_sound_queue
 	jsl	f:reset_video_state
-	jsl	f:clear_ram_1c00_1cff
+	jsl	f:clear_mode_work
 	lda	#$0009
 	sta	a:bgmode_shadow
 	lda	#$0001

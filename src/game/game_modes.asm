@@ -106,7 +106,7 @@ tbl_opening_submodes:
 opening_init:
 	jsl	f:reset_sound_queue
 	jsl	f:reset_video_state
-	jsl	f:clear_ram_1c00_1cff
+	jsl	f:clear_mode_work
 	rep	#$30
 	phb
 	lda	#$0000
@@ -151,7 +151,7 @@ opening_run_cinematic:
 	rtl
 
 opening_load_title:
-	jsl	f:clear_ram_1c00_1cff
+	jsl	f:clear_mode_work
 	stz	a:title_menu_cursor
 	jsl	f:opening_load_title_screen
 	brl	next_submode
@@ -295,7 +295,7 @@ game_mode_title:
 	lda	#$00B0
 	sta	a:title_tm_x
 	stz	a:title_shake
-	jsl	f:clear_ram_1c00_1cff
+	jsl	f:clear_mode_work
 	stz	a:title_menu_cursor
 	jsl	f:load_title_screen
 	lda	#$0001
@@ -350,7 +350,7 @@ game_mode_demo:
 	stz	hdma_preset
 	lda	#$0001
 	sta	a:title_menu_cursor
-	jsl	f:clear_ram_1c00_1cff
+	jsl	f:clear_mode_work
 	brl	next_submode
 @running:
 	jsl	f:run_demo
@@ -376,7 +376,7 @@ game_mode_sound_check:
 	bne	@running
 	jsl	f:reset_sound_queue
 	jsl	f:reset_video_state
-	jsl	f:clear_ram_1c00_1cff
+	jsl	f:clear_mode_work
 	stz	a:inidisp_shadow
 	brl	next_submode
 @running:
@@ -617,7 +617,7 @@ game_mode_stage_card:
 @init:
 	jsl	f:reset_sound_queue
 	jsl	f:reset_video_state
-	jsl	f:clear_ram_1c00_1cff
+	jsl	f:clear_mode_work
 	lda	#$0080
 	sta	a:inidisp_shadow
 	sep	#$20
@@ -757,7 +757,7 @@ game_mode_stage_clear:
 	bne	@running
 	jsl	f:reset_sound_queue
 	jsl	f:reset_video_state
-	jsl	f:clear_ram_1c00_1cff
+	jsl	f:clear_mode_work
 	brl	next_submode
 @running:
 	jsl	f:run_stage_clear
@@ -1048,7 +1048,7 @@ game_mode_options:
 	bne	@running
 	jsl	f:reset_sound_queue
 	jsl	f:reset_video_state
-	jsl	f:clear_ram_1c00_1cff
+	jsl	f:clear_mode_work
 	bra	next_submode
 @running:
 	jsl	f:run_options
@@ -1066,7 +1066,7 @@ game_mode_final_score:
 	bne	@running
 	jsl	f:reset_sound_queue
 	jsl	f:reset_video_state
-	jsl	f:clear_ram_1c00_1cff
+	jsl	f:clear_mode_work
 	bra	next_submode
 @running:
 	jsl	f:run_final_score
@@ -1135,7 +1135,7 @@ unpause_and_reset_display:
 	jsl	f:disable_display_and_nmi
 	sep	#$20
 	.a8
-	jsl	f:clear_ram_1c00_1cff
+	jsl	f:clear_mode_work
 	jsl	f:start_display
 	rep	#$20
 	.a16

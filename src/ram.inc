@@ -930,7 +930,7 @@ wram_18D8           = $18D8
 wram_1900           = $1900
 wram_1902           = $1902
 wram_1B00           = $1B00
-mode_work           = $1C00	; start of the work area $1C00-$1CFF of the current game mode, cleared by clear_ram_1c00_1cff; see the aliases below
+mode_work           = $1C00	; start of the work area $1C00-$1CFF of the current game mode, cleared by clear_mode_work; see the aliases below
 mode_step           = $1C00	; step of the current game mode's handler (run_demo, run_title_menu, run_stage_clear, run_options, run_final_score, run_sound_check)
 continue_cursor     = $1C00	; continue menu cursor (game_mode_continue)
 demo_result         = $1C02	; attract demo: result passed to mode_result when it ends (1 = time out, 2 = Start pressed)

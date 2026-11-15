@@ -733,12 +733,12 @@ bg1_update_vertical:
 bg2_draw_column_at_8:
 	ldx	#$13C0
 	ldy	#$A000
-	bra	loc_00C8FE
+	bra	bg_draw_column_at_8
 
 bg1_draw_column_at_8:
 	ldx	#$1380
 	ldy	#$4000
-loc_00C8FE:
+bg_draw_column_at_8:
 	stx	zp_FC
 	sty	zp_FE
 	clc

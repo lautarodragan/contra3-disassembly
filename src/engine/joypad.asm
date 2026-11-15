@@ -5,7 +5,7 @@
 ; joy1_held.. ($20-$27) and newly pressed buttons at joy1_pressed.. ($28-$2F);
 ; on a pad enabled in soft_reset_pad_mask, pressing Select while holding
 ; L+R+Start+Select jumps to warm_boot (not while force_blank_frames is
-; counting). sub_008B64 (never run in the traces) is a pause/exit check.
+; counting). unused_check_start_skip (never run in the traces) is a pause/exit check.
 
 read_joypads:
 	rep	#$10
@@ -52,35 +52,39 @@ read_joypads:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_008B64:
+; (No caller.) Start or Select on pad 1 (not while force_blank_frames):
+; during the opening (GAME_MODE_OPENING) Start starts a game
+; (GAME_MODE_GAME_START); in any other mode both go back to the opening,
+; stopping the sound.
+unused_check_start_skip:
 	; (not executed in the CDL traces)
 	rep	#$10
 	rep	#$20
 	lda	force_blank_frames
-	bne	loc_008B90
+	bne	@done
 	lda	joy1_pressed
 	and	#JOY_SELECT|JOY_START
-	beq	loc_008B90
-	jsl	f:sub_008BA1
+	beq	@done
+	jsl	f:unused_set_wait_512
 	lda	game_mode
-	cmp	#$0002
-	bne	loc_008B91
+	cmp	#GAME_MODE_OPENING
+	bne	@to_opening
 	lda	joy1_pressed
 	and	#JOY_SELECT
-	bne	loc_008B90
-	lda	#$0006
+	bne	@done
+	lda	#GAME_MODE_GAME_START
 	jsl	f:set_game_mode
-	jml	f:clear_ram_1c00_1cff
-loc_008B90:
+	jml	f:clear_mode_work
+@done:
 	rtl
-loc_008B91:
+@to_opening:
 	lda	#$0004
 	sta	force_blank_frames
 	jsl	f:reset_sound_queue
-	lda	#$0002
+	lda	#GAME_MODE_OPENING
 	jml	f:set_game_mode
 
-sub_008BA1:
+unused_set_wait_512:
 	; (not executed in the CDL traces)
 	lda	#$0200
 	sta	wait_timer

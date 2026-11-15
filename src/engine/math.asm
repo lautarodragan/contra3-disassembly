@@ -71,18 +71,18 @@ sub_0089E4:
 	sta	zp_04
 	ldy	#$0008
 	lda	zp_02
-loc_0089F4:
+@find_top_bit:
 	asl	a
-	bcs	loc_0089FC
+	bcs	@scale_down
 	dey
-	bne	loc_0089F4
-	beq	loc_008A03
-loc_0089FC:
+	bne	@find_top_bit
+	beq	@divide1
+@scale_down:
 	lsr	zp_04
 	lsr	zp_02
 	dey
-	bne	loc_0089FC
-loc_008A03:
+	bne	@scale_down
+@divide1:
 	lda	zp_04
 	sta	a:WRDIVL
 	sep	#$20
@@ -90,9 +90,9 @@ loc_008A03:
 	lda	zp_02
 	sta	a:WRDIVB
 	lda	#$04
-loc_008A11:
+@wait1:
 	dec	a
-	bne	loc_008A11
+	bne	@wait1
 	rep	#$20
 	.a16
 	ldx	a:RDDIVL
@@ -100,26 +100,26 @@ loc_008A11:
 	lda	zp_00
 	cmp	#$FFFF
 	clc
-	bne	loc_008A27
+	bne	@halve
 	lda	#$0000
 	sec
-loc_008A27:
+@halve:
 	ror	a
 	sta	zp_00
 	ldy	#$0008
 	lda	zp_02
-loc_008A2F:
+@find_top_bit2:
 	asl	a
-	bcs	loc_008A37
+	bcs	@scale_down2
 	dey
-	bne	loc_008A2F
-	beq	loc_008A3E
-loc_008A37:
+	bne	@find_top_bit2
+	beq	@divide2
+@scale_down2:
 	lsr	zp_00
 	lsr	zp_02
 	dey
-	bne	loc_008A37
-loc_008A3E:
+	bne	@scale_down2
+@divide2:
 	lda	zp_00
 	sta	a:WRDIVL
 	sep	#$20
@@ -127,9 +127,9 @@ loc_008A3E:
 	lda	zp_02
 	sta	a:WRDIVB
 	lda	#$04
-loc_008A4C:
+@wait2:
 	dec	a
-	bne	loc_008A4C
+	bne	@wait2
 	rep	#$20
 	.a16
 	lda	a:RDDIVL

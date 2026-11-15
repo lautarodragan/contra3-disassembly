@@ -18,7 +18,7 @@ sub-mode 0), `next_game_mode` or `next_game_mode_keep_submode`. A handler
 that runs a bigger piece of code (a menu, a screen, a stage) waits for it
 to set `mode_result` (0 = still running, other values = how it ended).
 Each mode's private variables live in the work area `$1C00-$1CFF`
-(`mode_work`), cleared by `clear_ram_1c00_1cff` when the mode starts;
+(`mode_work`), cleared by `clear_mode_work` when the mode starts;
 `src/ram.inc` gives the same addresses a name per mode (`mode_step`,
 `demo_p1_ptr`, `options_cursor`, `stage_bonus`, ...).
 

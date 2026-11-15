@@ -190,7 +190,7 @@ clear_ram_0200_1bff:
 	plb
 	rtl
 
-clear_ram_1c00_1cff:
+clear_mode_work:
 	rep	#$30
 	phb
 	lda	#$0000
