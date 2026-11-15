@@ -1278,11 +1278,13 @@ data_059F08:
 data_059F0C:
 	; CDL: read by object_type_06_state_04, update_bomber_bomb, update_objects; partly not accessed
 	.byte	$88, $00, $FF, $FF, $00, $00
+; The bomber's bomb (update_bomber_bomb) keeps in the third word the script
+; of the fire effects it trails, not a metasprite.
 anim_059F12:
-	anim_frame	$0010, metasprite_06B5BB, metasprite_06C5B8
-	anim_frame	$0010, metasprite_06B5C0, metasprite_06C5B8
-	anim_frame	$6000, metasprite_06B5C5, metasprite_06C516
-	anim_end	metasprite_06B5C5, metasprite_06C516
+	anim_frame	$0010, metasprite_06B5BB, anim_05C5B8
+	anim_frame	$0010, metasprite_06B5C0, anim_05C5B8
+	anim_frame	$6000, metasprite_06B5C5, anim_05C516
+	anim_end	metasprite_06B5C5, anim_05C516
 data_059F2A:
 	; CDL: read by object_type_06_state_08; partly not accessed
 	.byte	$80, $08, $80, $08, $10, $01, $10, $01, $40, $04, $40, $04, $20, $02, $20, $02
