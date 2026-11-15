@@ -5069,8 +5069,13 @@ data_05EF7E:
 	.byte	$02, $00, $14, $00, $26, $00, $38, $00
 data_05EF96:
 	; CDL: read by heart_boss_bug_state_01, sub_04B2E7
-	.byte	$9A, $EF, $B0, $EF, $04, $00, $80, $B1, $04, $00, $A0, $B1, $18, $00, $40, $BC
-	.byte	$04, $00, $A0, $B1, $04, $00, $80, $B1, $00, $00, $04, $00, $00, $B1, $04, $00
+	.addr	tile_script_05EF9A
+	.addr	tile_script_05EFB0
+tile_script_05EF9A:
+	.byte	$04, $00, $80, $B1, $04, $00, $A0, $B1, $18, $00, $40, $BC
+	.byte	$04, $00, $A0, $B1, $04, $00, $80, $B1, $00, $00
+tile_script_05EFB0:
+	.byte	$04, $00, $00, $B1, $04, $00
 	.byte	$20, $B1, $18, $00, $00, $BC, $04, $00, $20, $B1, $04, $00, $00, $B1, $00, $00
 data_05EFC6:
 	; CDL: read by heart_boss_bug_state_03
