@@ -1967,333 +1967,310 @@ anim_05B284:
 ; and left (set_player_frame).
 player_frames:
 	; CDL: read by set_player_frame
-	.byte	$00, $00
-data_05B2A0:
+	player_frame	$0000, $0040, $0080, $00C0, $0100, $0140, metasprite_068510, metasprite_0698CA
+	player_frame	$0180, $01C0, $0400, $00C0, $0100, $0140, metasprite_068529, metasprite_0698E3
+	player_frame	$0000, $0440, $0080, $0480, $04C0, $0000, metasprite_068542, metasprite_0698FC
+	player_frame	$0000, $0440, $0080, $0480, $04C0, $0000, metasprite_068542, metasprite_0698FC
+	player_frame	$0500, $0540, $0580, $05C0, $0800, $0840, metasprite_068557, metasprite_069911
+	player_frame	$0500, $0540, $0580, $05C0, $0800, $0840, metasprite_068557, metasprite_069911
+	player_frame	$0880, $0540, $0580, $08C0, $0900, $0940, metasprite_068570, metasprite_06992A
+	player_frame	$0880, $0540, $0580, $08C0, $0900, $0940, metasprite_068570, metasprite_06992A
+	player_frame	$0000, $0440, $0080, $0980, $09C0, $0000, metasprite_068589, metasprite_069943
+	player_frame	$0000, $0440, $0080, $0980, $09C0, $0000, metasprite_068589, metasprite_069943
+	player_frame	$0C00, $0C40, $0C80, $0CC0, $0D00, $0D40, metasprite_06859E, metasprite_069958
+	player_frame	$0C00, $0C40, $0C80, $0CC0, $0D00, $0D40, metasprite_06859E, metasprite_069958
+	player_frame	$0D80, $0C40, $0C80, $0DC0, $1000, $1040, metasprite_0685B7, metasprite_069971
+	player_frame	$0D80, $0C40, $0C80, $0DC0, $1000, $1040, metasprite_0685B7, metasprite_069971
+	player_frame	$0000, $0040, $0080, $0480, $04C0, $0000, metasprite_068614, metasprite_0699CE
+	player_frame	$0180, $01C0, $0400, $0480, $04C0, $0000, metasprite_0686A2, metasprite_069A5C
+	player_frame	$0000, $0040, $0080, $05C0, $0800, $0840, metasprite_068629, metasprite_0699E3
+	player_frame	$0180, $01C0, $0400, $05C0, $0800, $0840, metasprite_0686B7, metasprite_069A71
+	player_frame	$0000, $0040, $0080, $08C0, $0900, $0940, metasprite_068642, metasprite_0699FC
+	player_frame	$0180, $01C0, $0400, $08C0, $0900, $0940, metasprite_0686D0, metasprite_069A8A
+	player_frame	$0000, $0040, $0080, $0980, $09C0, $0000, metasprite_06865B, metasprite_069A15
+	player_frame	$0180, $01C0, $0400, $0980, $09C0, $0000, metasprite_0686E9, metasprite_069AA3
+	player_frame	$0000, $0040, $0080, $0CC0, $0D00, $0D40, metasprite_068670, metasprite_069A2A
+	player_frame	$0180, $01C0, $0400, $0CC0, $0D00, $0D40, metasprite_0686FE, metasprite_069AB8
+	player_frame	$0000, $0040, $0080, $0DC0, $1000, $1040, metasprite_068689, metasprite_069A43
+	player_frame	$0180, $01C0, $0400, $0DC0, $1000, $1040, metasprite_068717, metasprite_069AD1
+	player_frame	$1800, $1840, $00C0, $0100, $0140, $0000, metasprite_06884C, metasprite_069C06
+	player_frame	$1800, $1880, $00C0, $0100, $0140, $1040, metasprite_068861, metasprite_069C1B
+	player_frame	$18C0, $1900, $1940, $00C0, $0100, $0140, metasprite_0688A8, metasprite_069C62
+	player_frame	$1980, $1900, $19C0, $00C0, $0100, $0140, metasprite_0688C1, metasprite_069C7B
 	; CDL: read by set_player_frame
-	.byte	$40, $00
-data_05B2A2:
-	; CDL: read by set_player_frame
-	.byte	$80, $00
-data_05B2A4:
-	; CDL: read by set_player_frame
-	.byte	$C0, $00
-data_05B2A6:
-	; CDL: read by set_player_frame
-	.byte	$00, $01
-data_05B2A8:
-	; CDL: read by set_player_frame
-	.byte	$40, $01
-data_05B2AA:
-	; CDL: read by set_player_frame
-	.byte	$10, $85
-data_05B2AC:
-	; CDL: read by set_player_frame; partly not accessed
-	.byte	$CA, $98, $80, $01, $C0, $01, $00, $04, $C0, $00, $00, $01, $40, $01, $29, $85
-	.byte	$E3, $98, $00, $00, $40, $04, $80, $00, $80, $04, $C0, $04, $00, $00, $42, $85
-	.byte	$FC, $98, $00, $00, $40, $04, $80, $00, $80, $04, $C0, $04, $00, $00, $42, $85
-	.byte	$FC, $98, $00, $05, $40, $05, $80, $05, $C0, $05, $00, $08, $40, $08, $57, $85
-	.byte	$11, $99, $00, $05, $40, $05, $80, $05, $C0, $05, $00, $08, $40, $08, $57, $85
-	.byte	$11, $99, $80, $08, $40, $05, $80, $05, $C0, $08, $00, $09, $40, $09, $70, $85
-	.byte	$2A, $99, $80, $08, $40, $05, $80, $05, $C0, $08, $00, $09, $40, $09, $70, $85
-	.byte	$2A, $99, $00, $00, $40, $04, $80, $00, $80, $09, $C0, $09, $00, $00, $89, $85
-	.byte	$43, $99, $00, $00, $40, $04, $80, $00, $80, $09, $C0, $09, $00, $00, $89, $85
-	.byte	$43, $99, $00, $0C, $40, $0C, $80, $0C, $C0, $0C, $00, $0D, $40, $0D, $9E, $85
-	.byte	$58, $99, $00, $0C, $40, $0C, $80, $0C, $C0, $0C, $00, $0D, $40, $0D, $9E, $85
-	.byte	$58, $99, $80, $0D, $40, $0C, $80, $0C, $C0, $0D, $00, $10, $40, $10, $B7, $85
-	.byte	$71, $99, $80, $0D, $40, $0C, $80, $0C, $C0, $0D, $00, $10, $40, $10, $B7, $85
-	.byte	$71, $99, $00, $00, $40, $00, $80, $00, $80, $04, $C0, $04, $00, $00, $14, $86
-	.byte	$CE, $99, $80, $01, $C0, $01, $00, $04, $80, $04, $C0, $04, $00, $00, $A2, $86
-	.byte	$5C, $9A, $00, $00, $40, $00, $80, $00, $C0, $05, $00, $08, $40, $08, $29, $86
-	.byte	$E3, $99, $80, $01, $C0, $01, $00, $04, $C0, $05, $00, $08, $40, $08, $B7, $86
-	.byte	$71, $9A, $00, $00, $40, $00, $80, $00, $C0, $08, $00, $09, $40, $09, $42, $86
-	.byte	$FC, $99, $80, $01, $C0, $01, $00, $04, $C0, $08, $00, $09, $40, $09, $D0, $86
-	.byte	$8A, $9A, $00, $00, $40, $00, $80, $00, $80, $09, $C0, $09, $00, $00, $5B, $86
-	.byte	$15, $9A, $80, $01, $C0, $01, $00, $04, $80, $09, $C0, $09, $00, $00, $E9, $86
-	.byte	$A3, $9A, $00, $00, $40, $00, $80, $00, $C0, $0C, $00, $0D, $40, $0D, $70, $86
-	.byte	$2A, $9A, $80, $01, $C0, $01, $00, $04, $C0, $0C, $00, $0D, $40, $0D, $FE, $86
-	.byte	$B8, $9A, $00, $00, $40, $00, $80, $00, $C0, $0D, $00, $10, $40, $10, $89, $86
-	.byte	$43, $9A, $80, $01, $C0, $01, $00, $04, $C0, $0D, $00, $10, $40, $10, $17, $87
-	.byte	$D1, $9A, $00, $18, $40, $18, $C0, $00, $00, $01, $40, $01, $00, $00, $4C, $88
-	.byte	$06, $9C, $00, $18, $80, $18, $C0, $00, $00, $01, $40, $01, $40, $10, $61, $88
-	.byte	$1B, $9C, $C0, $18, $00, $19, $40, $19, $C0, $00, $00, $01, $40, $01, $A8, $88
-	.byte	$62, $9C, $80, $19, $00, $19, $C0, $19, $C0, $00, $00, $01, $40, $01, $C1, $88
-	.byte	$7B, $9C
-	; CDL: read by set_player_frame
-	.byte	$C0, $18, $00, $19, $40, $19, $80, $04, $C0, $04, $00, $00, $DA, $88, $94, $9C
-	.byte	$80, $19, $00, $19, $C0, $19, $80, $04, $C0, $04, $00, $00, $68, $89, $22, $9D
-	.byte	$C0, $18, $00, $19, $40, $19, $C0, $05, $00, $08, $40, $08, $EF, $88, $A9, $9C
-	.byte	$80, $19, $00, $19, $C0, $19, $C0, $05, $00, $08, $40, $08, $7D, $89, $37, $9D
-	.byte	$C0, $18, $00, $19, $40, $19, $C0, $08, $00, $09, $40, $09, $08, $89, $C2, $9C
-	.byte	$80, $19, $00, $19, $C0, $19, $C0, $08, $00, $09, $40, $09, $96, $89, $50, $9D
-	.byte	$C0, $18, $00, $19, $40, $19, $80, $09, $C0, $09, $00, $00, $21, $89, $DB, $9C
-	.byte	$80, $19, $00, $19, $C0, $19, $80, $09, $C0, $09, $00, $00, $AF, $89, $69, $9D
-	.byte	$C0, $18, $00, $19, $40, $19, $C0, $0C, $00, $0D, $40, $0D, $36, $89, $F0, $9C
-	.byte	$80, $19, $00, $19, $C0, $19, $C0, $0C, $00, $0D, $40, $0D, $C4, $89, $7E, $9D
-	.byte	$C0, $18, $00, $19, $40, $19, $C0, $0D, $00, $10, $40, $10, $4F, $89, $09, $9D
-	.byte	$80, $19, $00, $19, $C0, $19, $C0, $0D, $00, $10, $40, $10, $DD, $89, $97, $9D
-	.byte	$00, $54, $40, $54, $80, $54, $00, $00, $00, $00, $00, $00, $94, $8D, $4E, $A1
-	.byte	$00, $54, $C0, $54, $80, $54, $00, $01, $40, $01, $40, $10, $A1, $8D, $5B, $A1
+	player_frame	$18C0, $1900, $1940, $0480, $04C0, $0000, metasprite_0688DA, metasprite_069C94
+	player_frame	$1980, $1900, $19C0, $0480, $04C0, $0000, metasprite_068968, metasprite_069D22
+	player_frame	$18C0, $1900, $1940, $05C0, $0800, $0840, metasprite_0688EF, metasprite_069CA9
+	player_frame	$1980, $1900, $19C0, $05C0, $0800, $0840, metasprite_06897D, metasprite_069D37
+	player_frame	$18C0, $1900, $1940, $08C0, $0900, $0940, metasprite_068908, metasprite_069CC2
+	player_frame	$1980, $1900, $19C0, $08C0, $0900, $0940, metasprite_068996, metasprite_069D50
+	player_frame	$18C0, $1900, $1940, $0980, $09C0, $0000, metasprite_068921, metasprite_069CDB
+	player_frame	$1980, $1900, $19C0, $0980, $09C0, $0000, metasprite_0689AF, metasprite_069D69
+	player_frame	$18C0, $1900, $1940, $0CC0, $0D00, $0D40, metasprite_068936, metasprite_069CF0
+	player_frame	$1980, $1900, $19C0, $0CC0, $0D00, $0D40, metasprite_0689C4, metasprite_069D7E
+	player_frame	$18C0, $1900, $1940, $0DC0, $1000, $1040, metasprite_06894F, metasprite_069D09
+	player_frame	$1980, $1900, $19C0, $0DC0, $1000, $1040, metasprite_0689DD, metasprite_069D97
+	player_frame	$5400, $5440, $5480, $0000, $0000, $0000, metasprite_068D94, metasprite_06A14E
+	player_frame	$5400, $54C0, $5480, $0100, $0140, $1040, metasprite_068DA1, metasprite_06A15B
 	; CDL: not accessed
-	.byte	$80, $14, $C0, $14, $00, $15, $C0, $00, $00, $01, $40, $01, $76, $88, $30, $9C
-	.byte	$40, $15, $80, $15, $C0, $15, $C0, $00, $00, $01, $40, $01, $8F, $88, $49, $9C
-	.byte	$80, $14, $C0, $14, $00, $15, $80, $04, $C0, $04, $00, $00, $30, $87, $EA, $9A
-	.byte	$40, $15, $80, $15, $C0, $15, $80, $04, $C0, $04, $00, $00, $BE, $87, $78, $9B
-	.byte	$80, $14, $C0, $14, $00, $15, $C0, $05, $00, $08, $40, $08, $45, $87, $FF, $9A
-	.byte	$40, $15, $80, $15, $C0, $15, $C0, $05, $00, $08, $40, $08, $D3, $87, $8D, $9B
-	.byte	$80, $14, $C0, $14, $00, $15, $C0, $08, $00, $09, $40, $09, $5E, $87, $18, $9B
-	.byte	$40, $15, $80, $15, $C0, $15, $C0, $08, $00, $09, $40, $09, $EC, $87, $A6, $9B
-	.byte	$80, $14, $C0, $14, $00, $15, $80, $09, $C0, $09, $00, $00, $77, $87, $31, $9B
-	.byte	$40, $15, $80, $15, $C0, $15, $80, $09, $C0, $09, $00, $00, $05, $88, $BF, $9B
-	.byte	$80, $14, $C0, $14, $00, $15, $C0, $0C, $00, $0D, $40, $0D, $8C, $87, $46, $9B
-	.byte	$40, $15, $80, $15, $C0, $15, $C0, $0C, $00, $0D, $40, $0D, $1A, $88, $D4, $9B
-	.byte	$80, $14, $C0, $14, $00, $15, $C0, $0D, $00, $10, $40, $10, $A5, $87, $5F, $9B
-	.byte	$40, $15, $80, $15, $C0, $15, $C0, $0D, $00, $10, $40, $10, $33, $88, $ED, $9B
-	.byte	$80, $10, $C0, $10, $00, $11, $40, $11, $00, $00, $00, $00, $D0, $85, $8A, $99
-	.byte	$80, $11, $C0, $11, $00, $14, $40, $14, $00, $00, $00, $00, $E1, $85, $9B, $99
-	.byte	$80, $10, $C0, $10, $00, $11, $40, $11, $00, $00, $00, $00, $F2, $85, $AC, $99
-	.byte	$80, $11, $C0, $11, $00, $14, $40, $14, $00, $00, $00, $00, $03, $86, $BD, $99
-	.byte	$C0, $28, $00, $29, $40, $29, $80, $29, $C0, $29, $00, $2C, $E8, $8A, $A2, $9E
-	.byte	$40, $2C, $80, $2C, $C0, $2C, $00, $2D, $00, $00, $00, $00, $01, $8B, $BB, $9E
-	.byte	$40, $2D, $80, $2D, $C0, $29, $00, $2C, $00, $00, $00, $00, $12, $8B, $CC, $9E
-	.byte	$40, $2C, $80, $2C, $C0, $2C, $00, $2D, $00, $00, $00, $00, $01, $8B, $BB, $9E
-	.byte	$C0, $2D, $00, $30, $40, $30, $80, $30, $C0, $29, $00, $2C, $23, $8B, $DD, $9E
-	.byte	$C0, $30, $00, $31, $C0, $2C, $00, $2D, $00, $00, $00, $00, $3C, $8B, $F6, $9E
-	.byte	$40, $31, $80, $31, $C0, $29, $00, $2C, $00, $00, $00, $00, $4D, $8B, $07, $9F
-	.byte	$C0, $30, $00, $31, $C0, $2C, $00, $2D, $00, $00, $00, $00, $3C, $8B, $F6, $9E
-	.byte	$C0, $31, $00, $34, $40, $34, $80, $34, $C0, $29, $00, $2C, $5E, $8B, $18, $9F
-	.byte	$C0, $34, $00, $35, $C0, $2C, $00, $2D, $00, $00, $00, $00, $77, $8B, $31, $9F
-	.byte	$40, $35, $80, $35, $C0, $29, $00, $2C, $00, $00, $00, $00, $88, $8B, $42, $9F
-	.byte	$C0, $34, $00, $35, $C0, $2C, $00, $2D, $00, $00, $00, $00, $77, $8B, $31, $9F
-	.byte	$00, $1C, $80, $1C, $C0, $1C, $40, $1C, $00, $1D, $40, $1D, $F6, $89, $B0, $9D
-	.byte	$00, $1C, $80, $1D, $C0, $1C, $40, $1C, $00, $1D, $40, $1D, $0F, $8A, $C9, $9D
-	.byte	$C0, $1D, $C0, $20, $00, $21, $40, $1C, $00, $1D, $40, $1D, $28, $8A, $E2, $9D
-	.byte	$C0, $1D, $C0, $20, $40, $21, $40, $1C, $00, $1D, $40, $1D, $41, $8A, $FB, $9D
-	.byte	$80, $21, $C0, $21, $00, $24, $40, $24, $80, $24, $00, $00, $8C, $8A, $46, $9E
-	.byte	$80, $21, $C0, $24, $00, $25, $40, $25, $80, $25, $00, $00, $A1, $8A, $5B, $9E
-	.byte	$80, $21, $C0, $25, $40, $1C, $00, $28, $40, $1D, $00, $20, $B6, $8A, $70, $9E
-	.byte	$80, $21, $40, $28, $40, $1C, $80, $28, $40, $1D, $00, $20, $CF, $8A, $89, $9E
-	.byte	$C0, $1D, $00, $20, $40, $20, $40, $1C, $00, $1D, $40, $1D, $5A, $8A, $14, $9E
-	.byte	$C0, $1D, $00, $20, $80, $20, $40, $1C, $00, $1D, $40, $1D, $73, $8A, $2D, $9E
-	.byte	$C0, $35, $00, $38, $40, $38, $00, $00, $00, $00, $00, $00, $99, $8B, $53, $9F
-	.byte	$80, $38, $C0, $38, $00, $39, $00, $00, $00, $00, $00, $00, $A6, $8B, $60, $9F
-	.byte	$40, $39, $80, $39, $C0, $39, $00, $00, $00, $00, $00, $00, $B3, $8B, $6D, $9F
-	.byte	$80, $38, $C0, $38, $00, $39, $00, $00, $00, $00, $00, $00, $A6, $8B, $60, $9F
+	player_frame	$1480, $14C0, $1500, $00C0, $0100, $0140, metasprite_068876, metasprite_069C30
+	player_frame	$1540, $1580, $15C0, $00C0, $0100, $0140, metasprite_06888F, metasprite_069C49
+	player_frame	$1480, $14C0, $1500, $0480, $04C0, $0000, metasprite_068730, metasprite_069AEA
+	player_frame	$1540, $1580, $15C0, $0480, $04C0, $0000, metasprite_0687BE, metasprite_069B78
+	player_frame	$1480, $14C0, $1500, $05C0, $0800, $0840, metasprite_068745, metasprite_069AFF
+	player_frame	$1540, $1580, $15C0, $05C0, $0800, $0840, metasprite_0687D3, metasprite_069B8D
+	player_frame	$1480, $14C0, $1500, $08C0, $0900, $0940, metasprite_06875E, metasprite_069B18
+	player_frame	$1540, $1580, $15C0, $08C0, $0900, $0940, metasprite_0687EC, metasprite_069BA6
+	player_frame	$1480, $14C0, $1500, $0980, $09C0, $0000, metasprite_068777, metasprite_069B31
+	player_frame	$1540, $1580, $15C0, $0980, $09C0, $0000, metasprite_068805, metasprite_069BBF
+	player_frame	$1480, $14C0, $1500, $0CC0, $0D00, $0D40, metasprite_06878C, metasprite_069B46
+	player_frame	$1540, $1580, $15C0, $0CC0, $0D00, $0D40, metasprite_06881A, metasprite_069BD4
+	player_frame	$1480, $14C0, $1500, $0DC0, $1000, $1040, metasprite_0687A5, metasprite_069B5F
+	player_frame	$1540, $1580, $15C0, $0DC0, $1000, $1040, metasprite_068833, metasprite_069BED
+	player_frame	$1080, $10C0, $1100, $1140, $0000, $0000, metasprite_0685D0, metasprite_06998A
+	player_frame	$1180, $11C0, $1400, $1440, $0000, $0000, metasprite_0685E1, metasprite_06999B
+	player_frame	$1080, $10C0, $1100, $1140, $0000, $0000, metasprite_0685F2, metasprite_0699AC
+	player_frame	$1180, $11C0, $1400, $1440, $0000, $0000, metasprite_068603, metasprite_0699BD
+	player_frame	$28C0, $2900, $2940, $2980, $29C0, $2C00, metasprite_068AE8, metasprite_069EA2
+	player_frame	$2C40, $2C80, $2CC0, $2D00, $0000, $0000, metasprite_068B01, metasprite_069EBB
+	player_frame	$2D40, $2D80, $29C0, $2C00, $0000, $0000, metasprite_068B12, metasprite_069ECC
+	player_frame	$2C40, $2C80, $2CC0, $2D00, $0000, $0000, metasprite_068B01, metasprite_069EBB
+	player_frame	$2DC0, $3000, $3040, $3080, $29C0, $2C00, metasprite_068B23, metasprite_069EDD
+	player_frame	$30C0, $3100, $2CC0, $2D00, $0000, $0000, metasprite_068B3C, metasprite_069EF6
+	player_frame	$3140, $3180, $29C0, $2C00, $0000, $0000, metasprite_068B4D, metasprite_069F07
+	player_frame	$30C0, $3100, $2CC0, $2D00, $0000, $0000, metasprite_068B3C, metasprite_069EF6
+	player_frame	$31C0, $3400, $3440, $3480, $29C0, $2C00, metasprite_068B5E, metasprite_069F18
+	player_frame	$34C0, $3500, $2CC0, $2D00, $0000, $0000, metasprite_068B77, metasprite_069F31
+	player_frame	$3540, $3580, $29C0, $2C00, $0000, $0000, metasprite_068B88, metasprite_069F42
+	player_frame	$34C0, $3500, $2CC0, $2D00, $0000, $0000, metasprite_068B77, metasprite_069F31
+	player_frame	$1C00, $1C80, $1CC0, $1C40, $1D00, $1D40, metasprite_0689F6, metasprite_069DB0
+	player_frame	$1C00, $1D80, $1CC0, $1C40, $1D00, $1D40, metasprite_068A0F, metasprite_069DC9
+	player_frame	$1DC0, $20C0, $2100, $1C40, $1D00, $1D40, metasprite_068A28, metasprite_069DE2
+	player_frame	$1DC0, $20C0, $2140, $1C40, $1D00, $1D40, metasprite_068A41, metasprite_069DFB
+	player_frame	$2180, $21C0, $2400, $2440, $2480, $0000, metasprite_068A8C, metasprite_069E46
+	player_frame	$2180, $24C0, $2500, $2540, $2580, $0000, metasprite_068AA1, metasprite_069E5B
+	player_frame	$2180, $25C0, $1C40, $2800, $1D40, $2000, metasprite_068AB6, metasprite_069E70
+	player_frame	$2180, $2840, $1C40, $2880, $1D40, $2000, metasprite_068ACF, metasprite_069E89
+	player_frame	$1DC0, $2000, $2040, $1C40, $1D00, $1D40, metasprite_068A5A, metasprite_069E14
+	player_frame	$1DC0, $2000, $2080, $1C40, $1D00, $1D40, metasprite_068A73, metasprite_069E2D
+	player_frame	$35C0, $3800, $3840, $0000, $0000, $0000, metasprite_068B99, metasprite_069F53
+	player_frame	$3880, $38C0, $3900, $0000, $0000, $0000, metasprite_068BA6, metasprite_069F60
+	player_frame	$3940, $3980, $39C0, $0000, $0000, $0000, metasprite_068BB3, metasprite_069F6D
+	player_frame	$3880, $38C0, $3900, $0000, $0000, $0000, metasprite_068BA6, metasprite_069F60
 	; CDL: read by set_player_frame
-	.byte	$00, $3C, $40, $3C, $80, $1C, $C0, $1C, $80, $3C, $C0, $3C, $C0, $8B, $7A, $9F
-	.byte	$00, $3C, $40, $3C, $80, $1D, $C0, $1C, $80, $3C, $C0, $3C, $D9, $8B, $93, $9F
-	.byte	$00, $3D, $40, $3D, $C0, $20, $00, $21, $80, $3C, $C0, $3C, $24, $8C, $DE, $9F
-	.byte	$00, $3D, $40, $3D, $C0, $20, $40, $21, $80, $3C, $C0, $3C, $3D, $8C, $F7, $9F
+	player_frame	$3C00, $3C40, $1C80, $1CC0, $3C80, $3CC0, metasprite_068BC0, metasprite_069F7A
+	player_frame	$3C00, $3C40, $1D80, $1CC0, $3C80, $3CC0, metasprite_068BD9, metasprite_069F93
+	player_frame	$3D00, $3D40, $20C0, $2100, $3C80, $3CC0, metasprite_068C24, metasprite_069FDE
+	player_frame	$3D00, $3D40, $20C0, $2140, $3C80, $3CC0, metasprite_068C3D, metasprite_069FF7
 	; CDL: not accessed
-	.byte	$40, $41, $80, $41, $C0, $41, $00, $44, $40, $44, $80, $44, $88, $8C, $42, $A0
-	.byte	$C0, $44, $80, $41, $00, $45, $40, $45, $80, $45, $C0, $45, $A1, $8C, $5B, $A0
+	player_frame	$4140, $4180, $41C0, $4400, $4440, $4480, metasprite_068C88, metasprite_06A042
+	player_frame	$44C0, $4180, $4500, $4540, $4580, $45C0, metasprite_068CA1, metasprite_06A05B
 	; CDL: read by set_player_frame
-	.byte	$00, $48, $40, $48, $C0, $1C, $80, $48, $C0, $48, $C0, $3C, $BA, $8C, $74, $A0
-	.byte	$00, $49, $40, $48, $C0, $1C, $40, $49, $C0, $48, $C0, $3C, $D3, $8C, $8D, $A0
-	.byte	$80, $49, $C0, $49, $00, $4C, $40, $4C, $C0, $48, $C0, $3C, $EC, $8C, $A6, $A0
-	.byte	$80, $49, $80, $4C, $00, $4C, $C0, $4C, $C0, $48, $C0, $3C, $05, $8D, $BF, $A0
+	player_frame	$4800, $4840, $1CC0, $4880, $48C0, $3CC0, metasprite_068CBA, metasprite_06A074
+	player_frame	$4900, $4840, $1CC0, $4940, $48C0, $3CC0, metasprite_068CD3, metasprite_06A08D
+	player_frame	$4980, $49C0, $4C00, $4C40, $48C0, $3CC0, metasprite_068CEC, metasprite_06A0A6
+	player_frame	$4980, $4C80, $4C00, $4CC0, $48C0, $3CC0, metasprite_068D05, metasprite_06A0BF
 	; CDL: not accessed
-	.byte	$00, $4D, $40, $4D, $80, $4D, $C0, $48, $C0, $4D, $C0, $3C, $1E, $8D, $D8, $A0
-	.byte	$00, $50, $40, $4D, $40, $50, $C0, $48, $C0, $4D, $C0, $3C, $37, $8D, $F1, $A0
+	player_frame	$4D00, $4D40, $4D80, $48C0, $4DC0, $3CC0, metasprite_068D1E, metasprite_06A0D8
+	player_frame	$5000, $4D40, $5040, $48C0, $4DC0, $3CC0, metasprite_068D37, metasprite_06A0F1
 	; CDL: read by set_player_frame; partly not accessed
-	.byte	$80, $3D, $C0, $3D, $00, $40, $40, $40, $80, $3C, $C0, $3C, $56, $8C, $10, $A0
-	.byte	$80, $40, $C0, $40, $00, $41, $40, $40, $80, $3C, $C0, $3C, $6F, $8C, $29, $A0
-	.byte	$00, $3D, $40, $3D, $00, $20, $40, $20, $80, $3C, $C0, $3C, $F2, $8B, $AC, $9F
-	.byte	$00, $3D, $40, $3D, $00, $20, $80, $20, $80, $3C, $C0, $3C, $0B, $8C, $C5, $9F
-	.byte	$80, $78, $C0, $78, $00, $79, $40, $79, $80, $79, $00, $00, $68, $8F, $22, $A3
-	.byte	$C0, $79, $00, $7C, $40, $7C, $40, $79, $80, $79, $00, $00, $F6, $8F, $B0, $A3
-	.byte	$80, $78, $C0, $78, $00, $79, $80, $7C, $C0, $7C, $00, $7D, $7D, $8F, $37, $A3
-	.byte	$C0, $79, $00, $7C, $40, $7C, $80, $7C, $C0, $7C, $00, $7D, $0B, $90, $C5, $A3
-	.byte	$80, $78, $C0, $78, $00, $79, $40, $7D, $80, $7D, $C0, $7D, $96, $8F, $50, $A3
-	.byte	$C0, $79, $00, $7C, $40, $7C, $40, $7D, $80, $7D, $C0, $7D, $24, $90, $DE, $A3
-	.byte	$80, $78, $C0, $78, $00, $79, $00, $80, $40, $80, $00, $00, $AF, $8F, $69, $A3
-	.byte	$C0, $79, $00, $7C, $40, $7C, $00, $80, $40, $80, $00, $00, $3D, $90, $F7, $A3
-	.byte	$80, $78, $C0, $78, $00, $79, $80, $80, $C0, $80, $00, $81, $C4, $8F, $7E, $A3
-	.byte	$C0, $79, $00, $7C, $40, $7C, $80, $80, $C0, $80, $00, $81, $52, $90, $0C, $A4
-	.byte	$80, $78, $C0, $78, $00, $79, $40, $81, $80, $81, $C0, $81, $DD, $8F, $97, $A3
-	.byte	$C0, $79, $00, $7C, $40, $7C, $40, $81, $80, $81, $C0, $81, $6B, $90, $25, $A4
-	.byte	$80, $78, $C0, $78, $00, $79, $80, $85, $C0, $85, $00, $88, $B0, $92, $6A, $A6
-	.byte	$C0, $79, $00, $7C, $40, $7C, $80, $85, $C0, $85, $00, $88, $42, $93, $FC, $A6
-	.byte	$80, $78, $C0, $78, $00, $79, $40, $88, $80, $88, $C0, $88, $C9, $92, $83, $A6
-	.byte	$C0, $79, $00, $7C, $40, $7C, $40, $88, $80, $88, $C0, $88, $5B, $93, $15, $A7
-	.byte	$80, $78, $C0, $78, $00, $79, $00, $89, $40, $89, $80, $89, $E2, $92, $9C, $A6
-	.byte	$C0, $79, $00, $7C, $40, $7C, $00, $89, $40, $89, $80, $89, $74, $93, $2E, $A7
-	.byte	$80, $78, $C0, $78, $00, $79, $C0, $89, $00, $8C, $00, $00, $FB, $92, $B5, $A6
-	.byte	$C0, $79, $00, $7C, $40, $7C, $C0, $89, $00, $8C, $00, $00, $8D, $93, $47, $A7
-	.byte	$80, $78, $C0, $78, $00, $79, $40, $8C, $80, $8C, $C0, $8C, $10, $93, $CA, $A6
-	.byte	$C0, $79, $00, $7C, $40, $7C, $40, $8C, $80, $8C, $C0, $8C, $A2, $93, $5C, $A7
-	.byte	$80, $78, $C0, $78, $00, $79, $00, $8D, $40, $8D, $80, $8D, $29, $93, $E3, $A6
-	.byte	$C0, $79, $00, $7C, $40, $7C, $00, $8D, $40, $8D, $80, $8D, $BB, $93, $75, $A7
-	.byte	$00, $84, $40, $84, $80, $84, $40, $79, $80, $79, $00, $00, $84, $90, $3E, $A4
-	.byte	$C0, $84, $00, $85, $40, $85, $40, $79, $80, $79, $00, $00, $12, $91, $CC, $A4
-	.byte	$00, $84, $40, $84, $80, $84, $80, $7C, $C0, $7C, $00, $7D, $99, $90, $53, $A4
-	.byte	$C0, $84, $00, $85, $40, $85, $80, $7C, $C0, $7C, $00, $7D, $27, $91, $E1, $A4
-	.byte	$00, $84, $40, $84, $80, $84, $40, $7D, $80, $7D, $C0, $7D, $B2, $90, $6C, $A4
-	.byte	$C0, $84, $00, $85, $40, $85, $40, $7D, $80, $7D, $C0, $7D, $40, $91, $FA, $A4
-	.byte	$00, $84, $40, $84, $80, $84, $00, $80, $40, $80, $00, $00, $CB, $90, $85, $A4
-	.byte	$C0, $84, $00, $85, $40, $85, $00, $80, $40, $80, $00, $00, $59, $91, $13, $A5
-	.byte	$00, $84, $40, $84, $80, $84, $80, $80, $C0, $80, $00, $81, $E0, $90, $9A, $A4
-	.byte	$C0, $84, $00, $85, $40, $85, $80, $80, $C0, $80, $00, $81, $6E, $91, $28, $A5
-	.byte	$00, $84, $40, $84, $80, $84, $40, $81, $80, $81, $C0, $81, $F9, $90, $B3, $A4
+	player_frame	$3D80, $3DC0, $4000, $4040, $3C80, $3CC0, metasprite_068C56, metasprite_06A010
+	player_frame	$4080, $40C0, $4100, $4040, $3C80, $3CC0, metasprite_068C6F, metasprite_06A029
+	player_frame	$3D00, $3D40, $2000, $2040, $3C80, $3CC0, metasprite_068BF2, metasprite_069FAC
+	player_frame	$3D00, $3D40, $2000, $2080, $3C80, $3CC0, metasprite_068C0B, metasprite_069FC5
+	player_frame	$7880, $78C0, $7900, $7940, $7980, $0000, metasprite_068F68, metasprite_06A322
+	player_frame	$79C0, $7C00, $7C40, $7940, $7980, $0000, metasprite_068FF6, metasprite_06A3B0
+	player_frame	$7880, $78C0, $7900, $7C80, $7CC0, $7D00, metasprite_068F7D, metasprite_06A337
+	player_frame	$79C0, $7C00, $7C40, $7C80, $7CC0, $7D00, metasprite_06900B, metasprite_06A3C5
+	player_frame	$7880, $78C0, $7900, $7D40, $7D80, $7DC0, metasprite_068F96, metasprite_06A350
+	player_frame	$79C0, $7C00, $7C40, $7D40, $7D80, $7DC0, metasprite_069024, metasprite_06A3DE
+	player_frame	$7880, $78C0, $7900, $8000, $8040, $0000, metasprite_068FAF, metasprite_06A369
+	player_frame	$79C0, $7C00, $7C40, $8000, $8040, $0000, metasprite_06903D, metasprite_06A3F7
+	player_frame	$7880, $78C0, $7900, $8080, $80C0, $8100, metasprite_068FC4, metasprite_06A37E
+	player_frame	$79C0, $7C00, $7C40, $8080, $80C0, $8100, metasprite_069052, metasprite_06A40C
+	player_frame	$7880, $78C0, $7900, $8140, $8180, $81C0, metasprite_068FDD, metasprite_06A397
+	player_frame	$79C0, $7C00, $7C40, $8140, $8180, $81C0, metasprite_06906B, metasprite_06A425
+	player_frame	$7880, $78C0, $7900, $8580, $85C0, $8800, metasprite_0692B0, metasprite_06A66A
+	player_frame	$79C0, $7C00, $7C40, $8580, $85C0, $8800, metasprite_069342, metasprite_06A6FC
+	player_frame	$7880, $78C0, $7900, $8840, $8880, $88C0, metasprite_0692C9, metasprite_06A683
+	player_frame	$79C0, $7C00, $7C40, $8840, $8880, $88C0, metasprite_06935B, metasprite_06A715
+	player_frame	$7880, $78C0, $7900, $8900, $8940, $8980, metasprite_0692E2, metasprite_06A69C
+	player_frame	$79C0, $7C00, $7C40, $8900, $8940, $8980, metasprite_069374, metasprite_06A72E
+	player_frame	$7880, $78C0, $7900, $89C0, $8C00, $0000, metasprite_0692FB, metasprite_06A6B5
+	player_frame	$79C0, $7C00, $7C40, $89C0, $8C00, $0000, metasprite_06938D, metasprite_06A747
+	player_frame	$7880, $78C0, $7900, $8C40, $8C80, $8CC0, metasprite_069310, metasprite_06A6CA
+	player_frame	$79C0, $7C00, $7C40, $8C40, $8C80, $8CC0, metasprite_0693A2, metasprite_06A75C
+	player_frame	$7880, $78C0, $7900, $8D00, $8D40, $8D80, metasprite_069329, metasprite_06A6E3
+	player_frame	$79C0, $7C00, $7C40, $8D00, $8D40, $8D80, metasprite_0693BB, metasprite_06A775
+	player_frame	$8400, $8440, $8480, $7940, $7980, $0000, metasprite_069084, metasprite_06A43E
+	player_frame	$84C0, $8500, $8540, $7940, $7980, $0000, metasprite_069112, metasprite_06A4CC
+	player_frame	$8400, $8440, $8480, $7C80, $7CC0, $7D00, metasprite_069099, metasprite_06A453
+	player_frame	$84C0, $8500, $8540, $7C80, $7CC0, $7D00, metasprite_069127, metasprite_06A4E1
+	player_frame	$8400, $8440, $8480, $7D40, $7D80, $7DC0, metasprite_0690B2, metasprite_06A46C
+	player_frame	$84C0, $8500, $8540, $7D40, $7D80, $7DC0, metasprite_069140, metasprite_06A4FA
+	player_frame	$8400, $8440, $8480, $8000, $8040, $0000, metasprite_0690CB, metasprite_06A485
+	player_frame	$84C0, $8500, $8540, $8000, $8040, $0000, metasprite_069159, metasprite_06A513
+	player_frame	$8400, $8440, $8480, $8080, $80C0, $8100, metasprite_0690E0, metasprite_06A49A
+	player_frame	$84C0, $8500, $8540, $8080, $80C0, $8100, metasprite_06916E, metasprite_06A528
+	player_frame	$8400, $8440, $8480, $8140, $8180, $81C0, metasprite_0690F9, metasprite_06A4B3
 	; CDL: read by set_player_frame
-	.byte	$C0, $84, $00, $85, $40, $85, $40, $81, $80, $81, $C0, $81, $87, $91, $41, $A5
-	.byte	$00, $84, $40, $84, $80, $84, $80, $85, $C0, $85, $00, $88, $D4, $93, $8E, $A7
-	.byte	$C0, $84, $00, $85, $40, $85, $80, $85, $C0, $85, $00, $88, $66, $94, $20, $A8
-	.byte	$00, $84, $40, $84, $80, $84, $40, $88, $80, $88, $C0, $88, $ED, $93, $A7, $A7
-	.byte	$C0, $84, $00, $85, $40, $85, $40, $88, $80, $88, $C0, $88, $7F, $94, $39, $A8
-	.byte	$00, $84, $40, $84, $80, $84, $00, $89, $40, $89, $80, $89, $06, $94, $C0, $A7
-	.byte	$C0, $84, $00, $85, $40, $85, $00, $89, $40, $89, $80, $89, $98, $94, $52, $A8
-	.byte	$00, $84, $40, $84, $80, $84, $C0, $89, $00, $8C, $00, $00, $1F, $94, $D9, $A7
-	.byte	$C0, $84, $00, $85, $40, $85, $C0, $89, $00, $8C, $00, $00, $B1, $94, $6B, $A8
-	.byte	$00, $84, $40, $84, $80, $84, $40, $8C, $80, $8C, $C0, $8C, $34, $94, $EE, $A7
-	.byte	$C0, $84, $00, $85, $40, $85, $40, $8C, $80, $8C, $C0, $8C, $C6, $94, $80, $A8
-	.byte	$00, $84, $40, $84, $80, $84, $00, $8D, $40, $8D, $80, $8D, $4D, $94, $07, $A8
-	.byte	$C0, $84, $00, $85, $40, $85, $00, $8D, $40, $8D, $80, $8D, $DF, $94, $99, $A8
+	player_frame	$84C0, $8500, $8540, $8140, $8180, $81C0, metasprite_069187, metasprite_06A541
+	player_frame	$8400, $8440, $8480, $8580, $85C0, $8800, metasprite_0693D4, metasprite_06A78E
+	player_frame	$84C0, $8500, $8540, $8580, $85C0, $8800, metasprite_069466, metasprite_06A820
+	player_frame	$8400, $8440, $8480, $8840, $8880, $88C0, metasprite_0693ED, metasprite_06A7A7
+	player_frame	$84C0, $8500, $8540, $8840, $8880, $88C0, metasprite_06947F, metasprite_06A839
+	player_frame	$8400, $8440, $8480, $8900, $8940, $8980, metasprite_069406, metasprite_06A7C0
+	player_frame	$84C0, $8500, $8540, $8900, $8940, $8980, metasprite_069498, metasprite_06A852
+	player_frame	$8400, $8440, $8480, $89C0, $8C00, $0000, metasprite_06941F, metasprite_06A7D9
+	player_frame	$84C0, $8500, $8540, $89C0, $8C00, $0000, metasprite_0694B1, metasprite_06A86B
+	player_frame	$8400, $8440, $8480, $8C40, $8C80, $8CC0, metasprite_069434, metasprite_06A7EE
+	player_frame	$84C0, $8500, $8540, $8C40, $8C80, $8CC0, metasprite_0694C6, metasprite_06A880
+	player_frame	$8400, $8440, $8480, $8D00, $8D40, $8D80, metasprite_06944D, metasprite_06A807
+	player_frame	$84C0, $8500, $8540, $8D00, $8D40, $8D80, metasprite_0694DF, metasprite_06A899
 	; CDL: not accessed
-	.byte	$C0, $8D, $00, $90, $40, $90, $80, $90, $C0, $90, $00, $00, $A0, $91, $5A, $A5
-	.byte	$00, $91, $40, $91, $80, $91, $C0, $91, $00, $94, $00, $00, $22, $92, $DC, $A5
-	.byte	$C0, $8D, $40, $94, $80, $94, $C0, $94, $00, $95, $00, $00, $B5, $91, $6F, $A5
-	.byte	$40, $95, $80, $95, $C0, $95, $00, $98, $40, $98, $80, $98, $37, $92, $F1, $A5
-	.byte	$C0, $8D, $C0, $98, $00, $99, $40, $99, $80, $99, $00, $00, $CA, $91, $84, $A5
-	.byte	$40, $95, $80, $95, $C0, $99, $00, $98, $00, $9C, $40, $9C, $50, $92, $0A, $A6
-	.byte	$C0, $8D, $80, $9C, $C0, $9C, $00, $9D, $40, $9D, $00, $00, $DF, $91, $99, $A5
-	.byte	$00, $91, $80, $9D, $80, $91, $C0, $9D, $00, $A0, $00, $00, $69, $92, $23, $A6
-	.byte	$C0, $8D, $40, $A0, $80, $A0, $C0, $80, $C0, $A0, $00, $00, $F4, $91, $AE, $A5
-	.byte	$40, $95, $80, $95, $00, $A1, $40, $A1, $80, $A1, $C0, $A1, $7E, $92, $38, $A6
-	.byte	$C0, $8D, $00, $A4, $40, $A4, $80, $A4, $C0, $A4, $00, $A5, $09, $92, $C3, $A5
-	.byte	$00, $91, $40, $A5, $80, $91, $80, $A5, $C0, $A5, $00, $A8, $97, $92, $51, $A6
-	.byte	$C0, $8D, $40, $A8, $80, $A8, $C0, $A8, $00, $A9, $00, $00, $F8, $94, $B2, $A8
-	.byte	$00, $91, $40, $A9, $80, $91, $80, $A9, $C0, $A9, $00, $00, $8A, $95, $44, $A9
-	.byte	$00, $AC, $40, $AC, $80, $AC, $C0, $AC, $80, $88, $00, $AD, $0D, $95, $C7, $A8
-	.byte	$40, $AD, $80, $AD, $C0, $AD, $00, $B0, $80, $88, $40, $B0, $9F, $95, $59, $A9
-	.byte	$00, $AC, $40, $AC, $80, $B0, $C0, $B0, $00, $B1, $40, $B1, $26, $95, $E0, $A8
-	.byte	$40, $AD, $80, $AD, $80, $B1, $C0, $B1, $00, $B4, $40, $B4, $B8, $95, $72, $A9
-	.byte	$C0, $8D, $80, $B4, $80, $A8, $C0, $B4, $00, $B5, $40, $B5, $3F, $95, $F9, $A8
-	.byte	$00, $91, $80, $B5, $80, $91, $C0, $B4, $C0, $B5, $00, $B8, $D1, $95, $8B, $A9
-	.byte	$00, $AC, $40, $AC, $40, $B8, $80, $B8, $C0, $B8, $00, $B9, $58, $95, $12, $A9
-	.byte	$40, $AD, $80, $AD, $40, $B9, $80, $B9, $C0, $B8, $C0, $B9, $EA, $95, $A4, $A9
-	.byte	$00, $AC, $40, $AC, $00, $BC, $40, $BC, $C0, $B0, $80, $BC, $71, $95, $2B, $A9
-	.byte	$40, $AD, $80, $AD, $C0, $BC, $00, $BD, $C0, $B1, $40, $BD, $03, $96, $BD, $A9
+	player_frame	$8DC0, $9000, $9040, $9080, $90C0, $0000, metasprite_0691A0, metasprite_06A55A
+	player_frame	$9100, $9140, $9180, $91C0, $9400, $0000, metasprite_069222, metasprite_06A5DC
+	player_frame	$8DC0, $9440, $9480, $94C0, $9500, $0000, metasprite_0691B5, metasprite_06A56F
+	player_frame	$9540, $9580, $95C0, $9800, $9840, $9880, metasprite_069237, metasprite_06A5F1
+	player_frame	$8DC0, $98C0, $9900, $9940, $9980, $0000, metasprite_0691CA, metasprite_06A584
+	player_frame	$9540, $9580, $99C0, $9800, $9C00, $9C40, metasprite_069250, metasprite_06A60A
+	player_frame	$8DC0, $9C80, $9CC0, $9D00, $9D40, $0000, metasprite_0691DF, metasprite_06A599
+	player_frame	$9100, $9D80, $9180, $9DC0, $A000, $0000, metasprite_069269, metasprite_06A623
+	player_frame	$8DC0, $A040, $A080, $80C0, $A0C0, $0000, metasprite_0691F4, metasprite_06A5AE
+	player_frame	$9540, $9580, $A100, $A140, $A180, $A1C0, metasprite_06927E, metasprite_06A638
+	player_frame	$8DC0, $A400, $A440, $A480, $A4C0, $A500, metasprite_069209, metasprite_06A5C3
+	player_frame	$9100, $A540, $9180, $A580, $A5C0, $A800, metasprite_069297, metasprite_06A651
+	player_frame	$8DC0, $A840, $A880, $A8C0, $A900, $0000, metasprite_0694F8, metasprite_06A8B2
+	player_frame	$9100, $A940, $9180, $A980, $A9C0, $0000, metasprite_06958A, metasprite_06A944
+	player_frame	$AC00, $AC40, $AC80, $ACC0, $8880, $AD00, metasprite_06950D, metasprite_06A8C7
+	player_frame	$AD40, $AD80, $ADC0, $B000, $8880, $B040, metasprite_06959F, metasprite_06A959
+	player_frame	$AC00, $AC40, $B080, $B0C0, $B100, $B140, metasprite_069526, metasprite_06A8E0
+	player_frame	$AD40, $AD80, $B180, $B1C0, $B400, $B440, metasprite_0695B8, metasprite_06A972
+	player_frame	$8DC0, $B480, $A880, $B4C0, $B500, $B540, metasprite_06953F, metasprite_06A8F9
+	player_frame	$9100, $B580, $9180, $B4C0, $B5C0, $B800, metasprite_0695D1, metasprite_06A98B
+	player_frame	$AC00, $AC40, $B840, $B880, $B8C0, $B900, metasprite_069558, metasprite_06A912
+	player_frame	$AD40, $AD80, $B940, $B980, $B8C0, $B9C0, metasprite_0695EA, metasprite_06A9A4
+	player_frame	$AC00, $AC40, $BC00, $BC40, $B0C0, $BC80, metasprite_069571, metasprite_06A92B
+	player_frame	$AD40, $AD80, $BCC0, $BD00, $B1C0, $BD40, metasprite_069603, metasprite_06A9BD
 	; CDL: read by set_player_frame; partly not accessed
-	.byte	$00, $00, $40, $00, $80, $00, $80, $50, $C0, $50, $00, $51, $AE, $8D, $68, $A1
-	.byte	$80, $01, $C0, $01, $00, $04, $80, $50, $C0, $50, $00, $51, $C7, $8D, $81, $A1
-	.byte	$00, $18, $40, $18, $80, $50, $C0, $50, $00, $51, $00, $00, $44, $8E, $FE, $A1
-	.byte	$00, $18, $80, $18, $80, $50, $C0, $50, $00, $51, $00, $00, $59, $8E, $13, $A2
-	.byte	$C0, $18, $00, $19, $40, $19, $80, $50, $C0, $50, $00, $51, $E0, $8D, $9A, $A1
-	.byte	$80, $19, $00, $19, $C0, $19, $80, $50, $C0, $50, $00, $51, $F9, $8D, $B3, $A1
+	player_frame	$0000, $0040, $0080, $5080, $50C0, $5100, metasprite_068DAE, metasprite_06A168
+	player_frame	$0180, $01C0, $0400, $5080, $50C0, $5100, metasprite_068DC7, metasprite_06A181
+	player_frame	$1800, $1840, $5080, $50C0, $5100, $0000, metasprite_068E44, metasprite_06A1FE
+	player_frame	$1800, $1880, $5080, $50C0, $5100, $0000, metasprite_068E59, metasprite_06A213
+	player_frame	$18C0, $1900, $1940, $5080, $50C0, $5100, metasprite_068DE0, metasprite_06A19A
+	player_frame	$1980, $1900, $19C0, $5080, $50C0, $5100, metasprite_068DF9, metasprite_06A1B3
 	; CDL: read by set_player_frame
-	.byte	$00, $55, $40, $55, $80, $55, $C0, $55, $00, $00, $00, $00, $50, $8D, $0A, $A1
-	.byte	$00, $58, $40, $58, $80, $58, $C0, $58, $00, $00, $00, $00, $61, $8D, $1B, $A1
+	player_frame	$5500, $5540, $5580, $55C0, $0000, $0000, metasprite_068D50, metasprite_06A10A
+	player_frame	$5800, $5840, $5880, $58C0, $0000, $0000, metasprite_068D61, metasprite_06A11B
 	; CDL: not accessed
-	.byte	$80, $14, $C0, $14, $00, $15, $80, $50, $C0, $50, $00, $51, $12, $8E, $CC, $A1
-	.byte	$40, $15, $80, $15, $C0, $15, $80, $50, $C0, $50, $00, $51, $2B, $8E, $E5, $A1
+	player_frame	$1480, $14C0, $1500, $5080, $50C0, $5100, metasprite_068E12, metasprite_06A1CC
+	player_frame	$1540, $1580, $15C0, $5080, $50C0, $5100, metasprite_068E2B, metasprite_06A1E5
 	; CDL: read by set_player_frame; partly not accessed
-	.byte	$00, $00, $40, $00, $80, $00, $40, $51, $80, $51, $C0, $51, $6E, $8E, $28, $A2
-	.byte	$80, $01, $C0, $01, $00, $04, $40, $51, $80, $51, $C0, $51, $87, $8E, $41, $A2
-	.byte	$00, $18, $40, $18, $40, $51, $80, $51, $C0, $51, $00, $00, $04, $8F, $BE, $A2
-	.byte	$00, $18, $80, $18, $40, $51, $80, $51, $C0, $51, $00, $00, $19, $8F, $D3, $A2
-	.byte	$C0, $18, $00, $19, $40, $19, $40, $51, $80, $51, $C0, $51, $A0, $8E, $5A, $A2
-	.byte	$80, $19, $00, $19, $C0, $19, $40, $51, $80, $51, $C0, $51, $B9, $8E, $73, $A2
+	player_frame	$0000, $0040, $0080, $5140, $5180, $51C0, metasprite_068E6E, metasprite_06A228
+	player_frame	$0180, $01C0, $0400, $5140, $5180, $51C0, metasprite_068E87, metasprite_06A241
+	player_frame	$1800, $1840, $5140, $5180, $51C0, $0000, metasprite_068F04, metasprite_06A2BE
+	player_frame	$1800, $1880, $5140, $5180, $51C0, $0000, metasprite_068F19, metasprite_06A2D3
+	player_frame	$18C0, $1900, $1940, $5140, $5180, $51C0, metasprite_068EA0, metasprite_06A25A
+	player_frame	$1980, $1900, $19C0, $5140, $5180, $51C0, metasprite_068EB9, metasprite_06A273
 	; CDL: read by set_player_frame
-	.byte	$00, $55, $40, $55, $00, $59, $40, $59, $00, $00, $00, $00, $72, $8D, $2C, $A1
-	.byte	$00, $58, $40, $58, $80, $59, $C0, $59, $00, $00, $00, $00, $83, $8D, $3D, $A1
+	player_frame	$5500, $5540, $5900, $5940, $0000, $0000, metasprite_068D72, metasprite_06A12C
+	player_frame	$5800, $5840, $5980, $59C0, $0000, $0000, metasprite_068D83, metasprite_06A13D
 	; CDL: not accessed
-	.byte	$80, $14, $C0, $14, $00, $15, $40, $51, $80, $51, $C0, $51, $D2, $8E, $8C, $A2
-	.byte	$40, $15, $80, $15, $C0, $15, $40, $51, $80, $51, $C0, $51, $EB, $8E, $A5, $A2
+	player_frame	$1480, $14C0, $1500, $5140, $5180, $51C0, metasprite_068ED2, metasprite_06A28C
+	player_frame	$1540, $1580, $15C0, $5140, $5180, $51C0, metasprite_068EEB, metasprite_06A2A5
 	; CDL: read by set_player_frame
-	.byte	$00, $5C, $40, $5C, $80, $5C, $C0, $5C, $00, $00, $00, $00, $2E, $8F, $E8, $A2
-	.byte	$00, $5C, $40, $5C, $00, $68, $40, $68, $80, $68, $C0, $68, $05, $A3, $4B, $8F
+	player_frame	$5C00, $5C40, $5C80, $5CC0, $0000, $0000, metasprite_068F2E, metasprite_06A2E8
+	player_frame	$5C00, $5C40, $6800, $6840, $6880, $68C0, metasprite_06A305, metasprite_068F4B
 	; CDL: read by set_player_frame; partly not accessed
-	.byte	$00, $61, $40, $61, $80, $61, $C0, $61, $C0, $5C, $00, $00, $00, $00, $00, $00
-	.byte	$00, $5D, $40, $5D, $80, $5D, $C0, $5D, $00, $60, $C0, $5C, $00, $00, $00, $00
-	.byte	$C0, $64, $00, $65, $40, $65, $C0, $5C, $80, $65, $C0, $65, $00, $00, $00, $00
-	.byte	$00, $64, $40, $64, $80, $64, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$00, $5C, $40, $5C, $00, $68, $40, $68, $80, $68, $C0, $68, $4B, $8F, $05, $A3
+	player_frame	$6100, $6140, $6180, $61C0, $5CC0, $0000, $0000, $0000
+	player_frame	$5D00, $5D40, $5D80, $5DC0, $6000, $5CC0, $0000, $0000
+	player_frame	$64C0, $6500, $6540, $5CC0, $6580, $65C0, $0000, $0000
+	player_frame	$6400, $6440, $6480, $0000, $0000, $0000, $0000, $0000
+	player_frame	$5C00, $5C40, $6800, $6840, $6880, $68C0, metasprite_068F4B, metasprite_06A305
 	; CDL: not accessed
-	.byte	$40, $60, $80, $60, $C0, $70, $00, $71, $80, $68, $C0, $68, $00, $00, $00, $00
-	.byte	$00, $6D, $40, $6D, $80, $6D, $C0, $6D, $80, $68, $C0, $68, $00, $00, $00, $00
-	.byte	$00, $69, $40, $69, $80, $69, $C0, $69, $00, $6C, $40, $6C, $00, $00, $00
-	.byte	$00
-	.byte	$40, $74, $80, $74, $C0, $74, $00, $75, $40, $75, $00, $00, $00, $00, $00, $00
-	.byte	$00, $64, $40, $71, $80, $71, $C0, $71, $00, $74, $00, $00, $00, $00, $00, $00
-	.byte	$C0, $64, $80, $75, $C0, $75, $00, $78, $40, $78, $C0, $68, $00, $00, $00, $00
-	.byte	$00, $69, $40, $69, $80, $69, $80, $6C, $C0, $6C, $00, $6C, $00, $00, $00, $00
-	.byte	$00, $6D, $40, $6D, $00, $70, $40, $70, $80, $70, $80, $68, $00, $00, $00, $00
+	player_frame	$6040, $6080, $70C0, $7100, $6880, $68C0, $0000, $0000
+	player_frame	$6D00, $6D40, $6D80, $6DC0, $6880, $68C0, $0000, $0000
+	player_frame	$6900, $6940, $6980, $69C0, $6C00, $6C40, $0000, $0000
+	player_frame	$7440, $7480, $74C0, $7500, $7540, $0000, $0000, $0000
+	player_frame	$6400, $7140, $7180, $71C0, $7400, $0000, $0000, $0000
+	player_frame	$64C0, $7580, $75C0, $7800, $7840, $68C0, $0000, $0000
+	player_frame	$6900, $6940, $6980, $6C80, $6CC0, $6C00, $0000, $0000
+	player_frame	$6D00, $6D40, $7000, $7040, $7080, $6880, $0000, $0000
 	; CDL: read by set_player_frame; partly not accessed
-	.byte	$80, $78, $C0, $78, $00, $79, $00, $C0, $40, $C0, $00, $00, $1C, $96, $D6, $A9
-	.byte	$C0, $79, $00, $7C, $40, $7C, $00, $C0, $40, $C0, $00, $00, $31, $96, $EB, $A9
-	.byte	$00, $84, $40, $84, $80, $84, $00, $C0, $40, $C0, $40, $C0, $68, $96, $22, $AA
-	.byte	$C0, $84, $00, $85, $40, $85, $00, $C0, $40, $C0, $40, $C0, $7D, $96, $37, $AA
-	.byte	$00, $18, $40, $18, $00, $C0, $40, $C0, $40, $C0, $00, $00, $46, $96, $00, $AA
-	.byte	$00, $18, $80, $18, $00, $C0, $40, $C0, $40, $C0, $00, $00, $57, $96, $11, $AA
-	.byte	$80, $C0, $C0, $C0, $00, $C1, $00, $C0, $40, $C0, $40, $C0, $92, $96, $4C, $AA
+	player_frame	$7880, $78C0, $7900, $C000, $C040, $0000, metasprite_06961C, metasprite_06A9D6
+	player_frame	$79C0, $7C00, $7C40, $C000, $C040, $0000, metasprite_069631, metasprite_06A9EB
+	player_frame	$8400, $8440, $8480, $C000, $C040, $C040, metasprite_069668, metasprite_06AA22
+	player_frame	$84C0, $8500, $8540, $C000, $C040, $C040, metasprite_06967D, metasprite_06AA37
+	player_frame	$1800, $1840, $C000, $C040, $C040, $0000, metasprite_069646, metasprite_06AA00
+	player_frame	$1800, $1880, $C000, $C040, $C040, $0000, metasprite_069657, metasprite_06AA11
+	player_frame	$C080, $C0C0, $C100, $C000, $C040, $C040, metasprite_069692, metasprite_06AA4C
 	; CDL: read by set_player_frame
-	.byte	$40, $C1, $80, $C1, $C0, $C1, $00, $C0, $40, $C0, $40, $C0, $A7, $96, $61, $AA
-	.byte	$00, $C4, $40, $C4, $80, $C4, $C0, $C4, $00, $C5, $40, $C5, $BC, $96, $76, $AA
-	.byte	$80, $C5, $40, $C4, $C0, $C5, $C0, $C4, $00, $C8, $40, $C5, $D5, $96, $8F, $AA
-	.byte	$00, $18, $40, $18, $80, $09, $C0, $09, $00, $00, $00, $00, $EE, $96, $A8, $AA
-	.byte	$00, $18, $80, $18, $80, $09, $C0, $09, $00, $00, $00, $00, $FF, $96, $B9, $AA
+	player_frame	$C140, $C180, $C1C0, $C000, $C040, $C040, metasprite_0696A7, metasprite_06AA61
+	player_frame	$C400, $C440, $C480, $C4C0, $C500, $C540, metasprite_0696BC, metasprite_06AA76
+	player_frame	$C580, $C440, $C5C0, $C4C0, $C800, $C540, metasprite_0696D5, metasprite_06AA8F
+	player_frame	$1800, $1840, $0980, $09C0, $0000, $0000, metasprite_0696EE, metasprite_06AAA8
+	player_frame	$1800, $1880, $0980, $09C0, $0000, $0000, metasprite_0696FF, metasprite_06AAB9
 	; CDL: read by set_player_frame; partly not accessed
-	.byte	$40, $C8, $80, $C8, $C0, $C8, $00, $C9, $40, $C9, $40, $01, $3A, $97, $F4, $AA
-	.byte	$80, $C9, $C0, $C9, $00, $CC, $40, $CC, $80, $CC, $40, $01, $53, $97, $0D, $AB
-	.byte	$40, $C8, $80, $C8, $C0, $D1, $00, $D4, $40, $D4, $00, $00, $10, $97, $CA, $AA
-	.byte	$80, $C9, $C0, $C9, $80, $D4, $C0, $D4, $00, $D5, $00, $00, $25, $97, $DF, $AA
-	.byte	$40, $C8, $80, $C8, $C0, $CC, $00, $CD, $40, $CD, $00, $51, $6C, $97, $26, $AB
-	.byte	$80, $C9, $C0, $C9, $80, $CD, $C0, $CD, $00, $D0, $00, $51, $85, $97, $3F, $AB
-	.byte	$40, $C8, $80, $C8, $40, $D0, $80, $D0, $C0, $D0, $C0, $51, $9E, $97, $58, $AB
-	.byte	$80, $C9, $C0, $C9, $00, $D1, $40, $D1, $80, $D1, $C0, $51, $B7, $97, $71, $AB
-	.byte	$40, $D5, $80, $D5, $00, $00, $00, $00, $00, $00, $00, $00, $84, $AC, $84, $AC
+	player_frame	$C840, $C880, $C8C0, $C900, $C940, $0140, metasprite_06973A, metasprite_06AAF4
+	player_frame	$C980, $C9C0, $CC00, $CC40, $CC80, $0140, metasprite_069753, metasprite_06AB0D
+	player_frame	$C840, $C880, $D1C0, $D400, $D440, $0000, metasprite_069710, metasprite_06AACA
+	player_frame	$C980, $C9C0, $D480, $D4C0, $D500, $0000, metasprite_069725, metasprite_06AADF
+	player_frame	$C840, $C880, $CCC0, $CD00, $CD40, $5100, metasprite_06976C, metasprite_06AB26
+	player_frame	$C980, $C9C0, $CD80, $CDC0, $D000, $5100, metasprite_069785, metasprite_06AB3F
+	player_frame	$C840, $C880, $D040, $D080, $D0C0, $51C0, metasprite_06979E, metasprite_06AB58
+	player_frame	$C980, $C9C0, $D100, $D140, $D180, $51C0, metasprite_0697B7, metasprite_06AB71
+	player_frame	$D540, $D580, $0000, $0000, $0000, $0000, metasprite_06AC84, metasprite_06AC84
 	; CDL: read by set_player_frame
-	.byte	$40, $E4, $80, $E4, $C0, $E4, $00, $E5, $40, $E5, $80, $E5, $8D, $AC, $F7, $AC
-	.byte	$C0, $E5, $00, $E8, $40, $E8, $80, $E8, $00, $00, $00, $00, $A6, $AC, $10, $AD
-	.byte	$C0, $E8, $00, $E9, $40, $E9, $80, $E9, $00, $00, $00, $00, $B7, $AC, $21, $AD
-	.byte	$C0, $E5, $00, $E8, $40, $E8, $80, $E8, $00, $00, $00, $00, $C8, $AC, $32, $AD
-	.byte	$C0, $E8, $00, $E9, $40, $E9, $80, $E9, $00, $00, $00, $00, $D9, $AC, $43, $AD
-	.byte	$C0, $E9, $00, $EC, $40, $EC, $00, $00, $00, $00, $00, $00, $EA, $AC, $54, $AD
-	.byte	$40, $D5, $80, $D5, $00, $00, $00, $00, $00, $00, $00, $00, $84, $AC, $84, $AC
-	.byte	$40, $D5, $80, $D5, $00, $00, $00, $00, $00, $00, $00, $00, $84, $AC, $84, $AC
-	.byte	$C0, $D5, $C0, $EC, $00, $00, $00, $00, $00, $00, $00, $00, $B0, $CB, $B0, $CB
-	.byte	$00, $D8, $40, $ED, $00, $00, $00, $00, $00, $00, $00, $00, $D9, $CB, $D9, $CB
-	.byte	$00, $ED, $C0, $EC, $00, $00, $00, $00, $00, $00, $00, $00, $B0, $CB, $B0, $CB
-	.byte	$80, $ED, $40, $ED, $00, $00, $00, $00, $00, $00, $00, $00, $D9, $CB, $D9, $CB
-	.byte	$00, $E0, $00, $E1, $C0, $E0, $C0, $1C, $00, $00, $00, $00, $9A, $CD, $9A, $CD
-	.byte	$80, $E0, $80, $EC, $C0, $E0, $C0, $1C, $00, $00, $00, $00, $CB, $CD, $CB, $CD
-	.byte	$00, $F0, $C0, $ED, $C0, $E0, $C0, $1C, $00, $00, $00, $00, $9A, $CD, $9A, $CD
-	.byte	$80, $F0, $40, $F0, $C0, $E0, $C0, $1C, $00, $00, $00, $00, $CB, $CD, $CB, $CD
-	.byte	$80, $D8, $40, $D8, $00, $21, $C0, $20, $00, $00, $00, $00, $02, $CC, $02, $CC
-	.byte	$80, $D8, $40, $D8, $40, $21, $C0, $20, $00, $00, $00, $00, $33, $CC, $33, $CC
-	.byte	$C0, $D8, $40, $D8, $00, $21, $C0, $20, $00, $00, $00, $00, $02, $CC, $02, $CC
-	.byte	$C0, $D8, $40, $D8, $40, $21, $C0, $20, $00, $00, $00, $00, $33, $CC, $33, $CC
-	.byte	$00, $DD, $40, $D8, $80, $DD, $80, $49, $00, $00, $00, $00, $FC, $CD, $FC, $CD
-	.byte	$00, $DD, $40, $D8, $C0, $DD, $80, $49, $00, $00, $00, $00, $2D, $CE, $2D, $CE
-	.byte	$40, $DD, $40, $D8, $80, $DD, $80, $49, $00, $00, $00, $00, $FC, $CD, $FC, $CD
-	.byte	$40, $DD, $40, $D8, $C0, $DD, $80, $49, $00, $00, $00, $00, $2D, $CE, $2D, $CE
-	.byte	$80, $D8, $40, $D8, $40, $20, $00, $20, $00, $00, $00, $00, $64, $CC, $64, $CC
-	.byte	$80, $D8, $40, $D8, $80, $20, $00, $20, $00, $00, $00, $00, $95, $CC, $95, $CC
-	.byte	$C0, $D8, $40, $D8, $40, $20, $00, $20, $00, $00, $00, $00, $64, $CC, $64, $CC
-	.byte	$C0, $D8, $40, $D8, $80, $20, $00, $20, $00, $00, $00, $00, $95, $CC, $95, $CC
-	.byte	$00, $D9, $40, $D8, $C0, $25, $80, $DC, $00, $20, $00, $00, $30, $CD, $30, $CD
-	.byte	$00, $D9, $40, $D8, $40, $28, $C0, $DC, $00, $20, $00, $00, $65, $CD, $65, $CD
-	.byte	$40, $D9, $40, $D8, $C0, $25, $80, $DC, $00, $20, $00, $00, $30, $CD, $30, $CD
-	.byte	$40, $D9, $40, $D8, $40, $28, $C0, $DC, $00, $20, $00, $00, $65, $CD, $65, $CD
-	.byte	$00, $D9, $40, $D8, $80, $D9, $C0, $D9, $00, $DC, $00, $00, $C6, $CC, $C6, $CC
-	.byte	$00, $D9, $40, $D8, $40, $DC, $C0, $D9, $00, $DC, $00, $00, $FB, $CC, $FB, $CC
-	.byte	$40, $D9, $40, $D8, $80, $D9, $C0, $D9, $00, $DC, $00, $00, $C6, $CC, $C6, $CC
-	.byte	$40, $D9, $40, $D8, $40, $DC, $C0, $D9, $00, $DC, $00, $00, $FB, $CC, $FB, $CC
-	.byte	$40, $E1, $40, $E0, $C0, $E0, $C0, $E1, $C0, $4D, $00, $00, $5E, $CE, $5E, $CE
-	.byte	$40, $E1, $40, $E0, $C0, $E0, $00, $E4, $C0, $4D, $00, $00, $93, $CE, $93, $CE
-	.byte	$80, $E1, $40, $E0, $C0, $E0, $C0, $E1, $C0, $4D, $00, $00, $5E, $CE, $5E, $CE
-	.byte	$80, $E1, $40, $E0, $C0, $E0, $00, $E4, $C0, $4D, $00, $00, $93, $CE, $93, $CE
-	.byte	$00, $5D, $40, $5D, $80, $5D, $C0, $5D, $00, $01, $40, $01, $D0, $97, $8A, $AB
-	.byte	$00, $60, $40, $5D, $80, $5D, $C0, $5D, $00, $01, $40, $01, $E9, $97, $A3, $AB
-	.byte	$40, $60, $40, $5D, $80, $5D, $C0, $5D, $00, $01, $40, $01, $02, $98, $BC, $AB
-	.byte	$80, $60, $C0, $60, $80, $49, $80, $DD, $00, $01, $40, $01, $1B, $98, $D5, $AB
-	.byte	$00, $61, $40, $61, $80, $49, $80, $DD, $00, $01, $40, $01, $34, $98, $EE, $AB
-	.byte	$80, $61, $C0, $61, $80, $49, $80, $DD, $00, $01, $40, $01, $4D, $98, $07, $AC
-	.byte	$80, $60, $C0, $60, $00, $64, $40, $64, $00, $01, $40, $01, $66, $98, $20, $AC
-	.byte	$00, $61, $40, $61, $00, $64, $40, $64, $00, $01, $40, $01, $7F, $98, $39, $AC
-	.byte	$80, $61
-	.byte	$C0, $61, $00, $64, $40, $64, $00, $01, $40, $01, $98, $98, $52, $AC
-	.byte	$80, $64, $C0, $64, $00, $65, $40, $65, $00, $01, $40, $01, $B1, $98, $6B, $AC
+	player_frame	$E440, $E480, $E4C0, $E500, $E540, $E580, metasprite_06AC8D, metasprite_06ACF7
+	player_frame	$E5C0, $E800, $E840, $E880, $0000, $0000, metasprite_06ACA6, metasprite_06AD10
+	player_frame	$E8C0, $E900, $E940, $E980, $0000, $0000, metasprite_06ACB7, metasprite_06AD21
+	player_frame	$E5C0, $E800, $E840, $E880, $0000, $0000, metasprite_06ACC8, metasprite_06AD32
+	player_frame	$E8C0, $E900, $E940, $E980, $0000, $0000, metasprite_06ACD9, metasprite_06AD43
+	player_frame	$E9C0, $EC00, $EC40, $0000, $0000, $0000, metasprite_06ACEA, metasprite_06AD54
+	player_frame	$D540, $D580, $0000, $0000, $0000, $0000, metasprite_06AC84, metasprite_06AC84
+	player_frame	$D540, $D580, $0000, $0000, $0000, $0000, metasprite_06AC84, metasprite_06AC84
+	player_frame	$D5C0, $ECC0, $0000, $0000, $0000, $0000, metasprite_06CBB0, metasprite_06CBB0
+	player_frame	$D800, $ED40, $0000, $0000, $0000, $0000, metasprite_06CBD9, metasprite_06CBD9
+	player_frame	$ED00, $ECC0, $0000, $0000, $0000, $0000, metasprite_06CBB0, metasprite_06CBB0
+	player_frame	$ED80, $ED40, $0000, $0000, $0000, $0000, metasprite_06CBD9, metasprite_06CBD9
+	player_frame	$E000, $E100, $E0C0, $1CC0, $0000, $0000, metasprite_06CD9A, metasprite_06CD9A
+	player_frame	$E080, $EC80, $E0C0, $1CC0, $0000, $0000, metasprite_06CDCB, metasprite_06CDCB
+	player_frame	$F000, $EDC0, $E0C0, $1CC0, $0000, $0000, metasprite_06CD9A, metasprite_06CD9A
+	player_frame	$F080, $F040, $E0C0, $1CC0, $0000, $0000, metasprite_06CDCB, metasprite_06CDCB
+	player_frame	$D880, $D840, $2100, $20C0, $0000, $0000, metasprite_06CC02, metasprite_06CC02
+	player_frame	$D880, $D840, $2140, $20C0, $0000, $0000, metasprite_06CC33, metasprite_06CC33
+	player_frame	$D8C0, $D840, $2100, $20C0, $0000, $0000, metasprite_06CC02, metasprite_06CC02
+	player_frame	$D8C0, $D840, $2140, $20C0, $0000, $0000, metasprite_06CC33, metasprite_06CC33
+	player_frame	$DD00, $D840, $DD80, $4980, $0000, $0000, metasprite_06CDFC, metasprite_06CDFC
+	player_frame	$DD00, $D840, $DDC0, $4980, $0000, $0000, metasprite_06CE2D, metasprite_06CE2D
+	player_frame	$DD40, $D840, $DD80, $4980, $0000, $0000, metasprite_06CDFC, metasprite_06CDFC
+	player_frame	$DD40, $D840, $DDC0, $4980, $0000, $0000, metasprite_06CE2D, metasprite_06CE2D
+	player_frame	$D880, $D840, $2040, $2000, $0000, $0000, metasprite_06CC64, metasprite_06CC64
+	player_frame	$D880, $D840, $2080, $2000, $0000, $0000, metasprite_06CC95, metasprite_06CC95
+	player_frame	$D8C0, $D840, $2040, $2000, $0000, $0000, metasprite_06CC64, metasprite_06CC64
+	player_frame	$D8C0, $D840, $2080, $2000, $0000, $0000, metasprite_06CC95, metasprite_06CC95
+	player_frame	$D900, $D840, $25C0, $DC80, $2000, $0000, metasprite_06CD30, metasprite_06CD30
+	player_frame	$D900, $D840, $2840, $DCC0, $2000, $0000, metasprite_06CD65, metasprite_06CD65
+	player_frame	$D940, $D840, $25C0, $DC80, $2000, $0000, metasprite_06CD30, metasprite_06CD30
+	player_frame	$D940, $D840, $2840, $DCC0, $2000, $0000, metasprite_06CD65, metasprite_06CD65
+	player_frame	$D900, $D840, $D980, $D9C0, $DC00, $0000, metasprite_06CCC6, metasprite_06CCC6
+	player_frame	$D900, $D840, $DC40, $D9C0, $DC00, $0000, metasprite_06CCFB, metasprite_06CCFB
+	player_frame	$D940, $D840, $D980, $D9C0, $DC00, $0000, metasprite_06CCC6, metasprite_06CCC6
+	player_frame	$D940, $D840, $DC40, $D9C0, $DC00, $0000, metasprite_06CCFB, metasprite_06CCFB
+	player_frame	$E140, $E040, $E0C0, $E1C0, $4DC0, $0000, metasprite_06CE5E, metasprite_06CE5E
+	player_frame	$E140, $E040, $E0C0, $E400, $4DC0, $0000, metasprite_06CE93, metasprite_06CE93
+	player_frame	$E180, $E040, $E0C0, $E1C0, $4DC0, $0000, metasprite_06CE5E, metasprite_06CE5E
+	player_frame	$E180, $E040, $E0C0, $E400, $4DC0, $0000, metasprite_06CE93, metasprite_06CE93
+	player_frame	$5D00, $5D40, $5D80, $5DC0, $0100, $0140, metasprite_0697D0, metasprite_06AB8A
+	player_frame	$6000, $5D40, $5D80, $5DC0, $0100, $0140, metasprite_0697E9, metasprite_06ABA3
+	player_frame	$6040, $5D40, $5D80, $5DC0, $0100, $0140, metasprite_069802, metasprite_06ABBC
+	player_frame	$6080, $60C0, $4980, $DD80, $0100, $0140, metasprite_06981B, metasprite_06ABD5
+	player_frame	$6100, $6140, $4980, $DD80, $0100, $0140, metasprite_069834, metasprite_06ABEE
+	player_frame	$6180, $61C0, $4980, $DD80, $0100, $0140, metasprite_06984D, metasprite_06AC07
+	player_frame	$6080, $60C0, $6400, $6440, $0100, $0140, metasprite_069866, metasprite_06AC20
+	player_frame	$6100, $6140, $6400, $6440, $0100, $0140, metasprite_06987F, metasprite_06AC39
+	player_frame	$6180, $61C0, $6400, $6440, $0100, $0140, metasprite_069898, metasprite_06AC52
+	player_frame	$6480, $64C0, $6500, $6540, $0100, $0140, metasprite_0698B1, metasprite_06AC6B
 ; OBJ_HP of update_window_sniper by difficulty (easy, normal, hard)
 window_sniper_hp:
 	; CDL: read by window_sniper_state_00

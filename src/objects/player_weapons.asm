@@ -92,27 +92,27 @@ set_player_frame:
 	clc
 	adc	#$0200
 	sta	a:wram_178C
-	lda	a:data_05B2A0,y
+	lda	a:player_frames+2,y
 	sta	a:wram_1782
 	clc
 	adc	#$0200
 	sta	a:wram_178E
-	lda	a:data_05B2A2,y
+	lda	a:player_frames+4,y
 	sta	a:wram_1784
 	clc
 	adc	#$0200
 	sta	a:wram_1790
-	lda	a:data_05B2A4,y
+	lda	a:player_frames+6,y
 	sta	a:wram_1786
 	clc
 	adc	#$0200
 	sta	a:wram_1792
-	lda	a:data_05B2A6,y
+	lda	a:player_frames+8,y
 	sta	a:wram_1788
 	clc
 	adc	#$0200
 	sta	a:wram_1794
-	lda	a:data_05B2A8,y
+	lda	a:player_frames+10,y
 	sta	a:wram_178A
 	clc
 	adc	#$0200
@@ -120,11 +120,11 @@ set_player_frame:
 	stz	$38,x
 	lda	OBJ_FACING,x
 	bne	loc_0180CB
-	lda	a:data_05B2AA,y
+	lda	a:player_frames+12,y
 	sta	OBJ_SPRITE,x
 	rtl
 loc_0180CB:
-	lda	a:data_05B2AC,y
+	lda	a:player_frames+14,y
 	sta	OBJ_SPRITE,x
 	rtl
 

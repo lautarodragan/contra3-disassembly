@@ -60,3 +60,14 @@
 .macro load_end
 	.word	$FFFF
 .endmacro
+
+; ---------------------------------------------------------------------------
+; Player frames (player_frames, 16 bytes per pose; set_player_frame): the
+; addresses in bank $7F of the six blocks of the player's tiles that the NMI
+; copies to VRAM, then the metasprite (bank $06) for OBJ_FACING 0 and the
+; one for the other facing.
+; ---------------------------------------------------------------------------
+.macro player_frame tiles0, tiles1, tiles2, tiles3, tiles4, tiles5, sprite, sprite_facing
+	.word	tiles0, tiles1, tiles2, tiles3, tiles4, tiles5
+	.addr	sprite, sprite_facing
+.endmacro
