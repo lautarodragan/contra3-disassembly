@@ -246,7 +246,7 @@ loc_00BF89:
 	bne	loc_00BF99
 	lda	a:p2_lives
 	bne	loc_00BF99
-	lda	#$0003
+	lda	#STAGE_STATE_EXIT
 	sta	a:stage_state
 loc_00BF99:
 	lda	a:wram_1688

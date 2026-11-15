@@ -71,6 +71,7 @@ minute.
 | `src/common.inc` | included first by `main.asm` (`.p816`, register names) |
 | `src/ram.inc` | RAM symbols (placeholders `zp_XX` / `wram_XXXX` until named) and structure offsets |
 | `src/snes_registers.inc` | SNES hardware register names (`INIDISP`, `NMITIMEN`, `DMAP0`, ...) |
+| `src/game/game.inc` | game flow constants: game modes (`GAME_MODE_*`), stage states, title menu entries, difficulty, joypad bits (`JOY_*`) |
 | `contra3.sha1` | SHA-1 of the original ROM |
 | `tools/disasm.py` | the disassembler that generated `src/` (reference only now) |
 | `tools/disasm_hints.json` | hand-written hints for the disassembler |
