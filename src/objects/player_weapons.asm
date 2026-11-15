@@ -44,7 +44,9 @@ check_bomb_button:
 	lda	a:PLAYER_BOMBS,x
 	beq	@return
 	inc	a:PLAYER_BOMB_RADIUS,x
+.if !CHEAT_INFINITE_BOMBS
 	dec	a:PLAYER_BOMBS,x
+.endif
 	stz	a:PLAYER_BOMB_SPEED_SUB,x
 	lda	#$0001
 	sta	a:PLAYER_BOMB_SPEED,x
@@ -3461,6 +3463,9 @@ climb_left_check_floor:
 ; back away from OBJ_FACING, loses the weapon of the active slot (both when
 ; dual-firing) and the barrier, PLAYERF_INTANGIBLE, state 7 (dying).
 kill_player:
+.if CHEAT_INVINCIBLE | CHEAT_NO_PIT_DEATH
+	jsr	a:cheat_filter_death	; returns only if the player dies
+.endif
 	lda	#$003F
 	ldy	OBJ_Y,x
 	cpy	#$00F8
@@ -3490,6 +3495,7 @@ loc_019AAB:
 	sta	OBJ_Y_VEL_SUB,x
 	lda	#$FFFB
 	sta	OBJ_Y_VEL,x
+.if !CHEAT_KEEP_WEAPONS
 	lda	a:PLAYER_WEAPON_SLOT,x
 	bne	loc_019ABF
 	stz	a:PLAYER_WEAPON_2,x
@@ -3501,6 +3507,9 @@ loc_019ABF:
 loc_019AC7:
 	stz	a:PLAYER_WEAPON_1,x
 loc_019ACA:
+.else
+loc_019ACA:	; cheat: the weapons are kept
+.endif
 	lda	#$0007
 	sta	OBJ_STATE,x
 	lda	#$00E8
@@ -3603,7 +3612,11 @@ player_state_dead:
 	lda	#$000E
 	sta	OBJ_STATE,x
 	lda	#$0000
+.if CHEAT_INFINITE_LIVES
+	ldy	a:PLAYER_LIVES,x	; cheat: the life is not taken (Z clear)
+.else
 	dec	a:PLAYER_LIVES,x
+.endif
 	beq	loc_019B99
 	lda	#$0001
 loc_019B99:

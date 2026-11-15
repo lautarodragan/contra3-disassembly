@@ -51,6 +51,7 @@
 .include "objects/object_handlers_01a.asm"
 .include "objects/object_handlers_01b.asm"
 .include "game/stage_palette_anim.asm"
+.include "objects/cheat_code.asm"
 
 ; ---- bank $02 ----
 .segment "BANK02"

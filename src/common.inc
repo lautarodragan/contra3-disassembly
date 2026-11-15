@@ -11,5 +11,6 @@ COMMON_INC = 1
 .include "object_types.inc"
 .include "game/game.inc"
 .include "data_macros.inc"
+.include "cheats.inc"
 
 .endif

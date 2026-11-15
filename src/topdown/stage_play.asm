@@ -48,8 +48,15 @@ loc_028E70:
 loc_028E77:
 	lda	$06,x
 	bpl	loc_028E7E
+.if CHEAT_INVINCIBLE
+	stz	$06,x	; cheat: the hit (td_p1_hp = $FFFF) is undone
+.else
 	brl	td_player_state_dying
+.endif
 loc_028E7E:
+.if CHEAT_DEBUG_KEYS
+	jsr	a:td_debug_cheat_buttons
+.endif
 	jsr	a:td_update_turn_speed
 	jsr	a:td_update_fire_timer
 	jsr	a:td_set_spin_direction
@@ -502,7 +509,9 @@ td_check_smart_bomb:
 	beq	@return
 	lda	#$005A
 	jsl	f:queue_sound
+.if !CHEAT_INFINITE_BOMBS
 	dec	a:$10CC,x
+.endif
 	lda	#$0001
 	sta	a:$0090,x
 	stz	a:$0092,x
@@ -1202,11 +1211,16 @@ topdown_lose_life:
 	beq	loc_0296B0
 	cmp	#$0009
 	beq	loc_0296B0
+.if CHEAT_INFINITE_LIVES
+	lda	a:$10CA,x	; cheat: the life is not taken
+.else
 	dec	a:$10CA,x
+.endif
 	bpl	loc_02969D
 	; (not executed in the CDL traces)
 	stz	a:$10CA,x
 loc_02969D:
+.if !CHEAT_KEEP_WEAPONS
 	lda	a:$10C2,x
 	beq	loc_0296A5
 	stz	a:$10C6,x
@@ -1215,6 +1229,7 @@ loc_0296A5:
 	beq	loc_0296AD
 	stz	a:$10C4,x
 loc_0296AD:
+.endif
 	stz	a:$10C8,x
 loc_0296B0:
 	rts

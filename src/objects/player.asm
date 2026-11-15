@@ -703,6 +703,9 @@ loc_01AA61:
 ; barrier (PLAYER_BARRIER), then runs the state handler (tbl_player_states,
 ; by OBJ_STATE; see PLAYER_STATE_* in ram.inc).  In: X = player.
 run_player_state:
+.if CHEAT_DEBUG_KEYS
+	jsr	a:debug_player_keys
+.endif
 	sec
 	lda	a:OBJ_X,x
 	sbc	a:bg1_x_delta
@@ -741,9 +744,9 @@ loc_01AAA4:
 loc_01AAB1:
 	sta	PLAYER_FIRE_DELAY_2,x
 	lda	a:PLAYER_BARRIER,x
-	beq	loc_01AABB
+	beq	run_player_state_dispatch
 	dec	a:PLAYER_BARRIER,x
-loc_01AABB:
+run_player_state_dispatch:
 	lda	OBJ_STATE,x
 	phx
 	asl	a

@@ -17,7 +17,7 @@ src_files := $(shell find src -name '*.asm' -o -name '*.inc' -o -name '*.bin')
 # A failed link must not leave a partial ROM behind that looks up to date.
 .DELETE_ON_ERROR:
 
-.PHONY: all compare clean disasm emu-test shift-build shift-test book book-check
+.PHONY: all compare clean disasm emu-test shift-build shift-test book book-check cheats ips
 
 all: compare
 
@@ -40,7 +40,8 @@ compare: $(rom)
 
 clean:
 	rm -f build/main.o build/contra3.sfc build/contra3.map build/contra3.lbl
-	rm -rf build/shift build/dbg
+	rm -rf build/shift build/dbg build/cheats build/patches
+	rm -f build/contra3-*.sfc
 
 # Run the generator (tools/disasm.py, a reference/research tool since src/ is
 # the source of truth) into build/disasm/: src/ is never overwritten.  Compare
@@ -90,3 +91,22 @@ book-check:
 
 book: book-check
 	$(MDBOOK) build book
+
+# Cheats (milestone 4): optional changes chosen at build time, defined in
+# src/cheats.inc (`python3 tools/cheats.py list`).  The default build above
+# never has any.  A word sets an option to 1, word=n to n; the ROM goes to
+# build/contra3-<options>.sfc (or build/contra3-<preset>.sfc) with its header
+# checksum recomputed.
+#   make cheats CHEATS="infinite_lives invincible damage_mult=2"
+#   make cheats PRESET=god-mode
+# ips: IPS patches of every preset (tools/cheats.py PRESETS) against the
+# default build, which `compare` proves to be the original ROM, into
+# build/patches/.  See the README ("Cheats") and the book's Cheats page.
+CHEATS ?=
+PRESET ?=
+
+cheats:
+	$(PYTHON) tools/cheats.py build $(if $(PRESET),--preset $(PRESET)) $(CHEATS)
+
+ips: compare
+	$(PYTHON) tools/cheats.py ips
