@@ -102,6 +102,14 @@ CHEAT_START_STAGE = 1
 CHEAT_STAGE_SELECT = 0
 .endif
 
+; 1: OPTION's PLAYER setting also offers 30 lives, the fourth entry of
+; lives_options, which the game only reaches with the unused button code
+; (options_change_lives cycles through OPTION_LIVES_LAST + 1 entries).
+.ifndef CHEAT_OPTION_30_LIVES
+CHEAT_OPTION_30_LIVES = 0
+.endif
+OPTION_LIVES_LAST = 2 + CHEAT_OPTION_30_LIVES
+
 ; n > 0: continues on every difficulty (continues_per_difficulty: 2, 4, 4).
 .ifndef CHEAT_CONTINUES
 CHEAT_CONTINUES = 0

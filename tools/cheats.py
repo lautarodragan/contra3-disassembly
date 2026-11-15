@@ -54,7 +54,7 @@ PRESETS = {
     "half-enemy-hp": ["enemy_hp=50"],
     "one-hit-kills": ["enemy_hp=0"],
     "stage-select": ["stage_select"],
-    "30-lives": ["start_lives=30", "infinite_continues"],
+    "30-lives": ["start_lives=30", "option_30_lives", "infinite_continues"],
     "debug-keys": ["debug_keys", "button_codes"],
 }
 

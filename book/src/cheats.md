@@ -60,6 +60,7 @@ cheat that no longer fits fails at link time (ld65 reports the overflow).
 | `no_pit_death` | 0 | side view: falling off the bottom of the screen respawns the player without losing a life |
 | `keep_weapons` | 0 | dying does not take the weapons away |
 | `start_lives` | 0 | n > 0: lives at the start of a game, instead of the OPTION setting |
+| `option_30_lives` | 0 | OPTION's PLAYER setting offers 30 after 3, 5, 7 |
 
 **Infinite lives.** Side view: `player_state_dead` takes the life with
 `dec a:PLAYER_LIVES,x`; the cheat replaces it with a load of the same
@@ -103,6 +104,12 @@ those instructions out.
 cheat loads the constant `CHEAT_START_LIVES` instead (an immediate load of the same size).
 Up to 30 is what the game handles itself (the extra-life cap; the unused
 button code gives 30); the REST counter shows two digits.
+
+**30 lives in OPTION.** `lives_options` has a fourth entry, 30, that
+`options_change_lives` never reaches (it cycles through three entries);
+`options_get_lives_index` and `options_draw_lives` already handle it. The
+cheat makes the cycle four entries long (`OPTION_LIVES_LAST`, 2 by
+default, is the last index).
 
 ### Weapons and damage
 
@@ -267,7 +274,7 @@ base and compared with the cheat ROM before it is written.
 | `half-enemy-hp` | `enemy_hp=50` |
 | `one-hit-kills` | `enemy_hp=0` |
 | `stage-select` | `stage_select` |
-| `30-lives` | `start_lives=30 infinite_continues` |
+| `30-lives` | `start_lives=30 option_30_lives infinite_continues` |
 | `debug-keys` | `debug_keys button_codes` |
 
 The patches apply to the original ROM (SHA-1
@@ -286,7 +293,7 @@ it builds cheat ROMs from this repository (`C3_DISASM`, by default
 RAM reads: lives that do not go down after deaths (side view and
 top-down), no death while walking into stage 1, bombs that stay, the
 weapons at the start, the stage select screen, scaled HP tables, doubled
-damage, the button codes. `make cheat-test` runs it:
+damage, the button codes, the debug keys, the 30 lives in OPTION. `make cheat-test` runs it (about 3 minutes):
 
 ```sh
 make cheat-test PRIVATE=../contra3-disassembly-private

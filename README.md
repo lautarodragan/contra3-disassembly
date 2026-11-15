@@ -80,6 +80,7 @@ make cheat-test [PRIVATE=../contra3-disassembly-private]       # emulator tests 
 | `infinite_bombs` | smart bombs are not used up |
 | `start_weapon=n`, `start_weapon2=n` | weapons in slots I (active) and II at the start (0 default, 1 S, 2 C, 3 H, 4 F, 5 L) |
 | `start_lives=n` | lives at the start of a game (1-99) |
+| `option_30_lives` | OPTION's PLAYER setting offers 30 after 3, 5, 7 |
 | `fire_delay=n` | frames between shots, all weapons (1-8; side view) |
 | `damage_mult=n` | the players' shots do n times their damage |
 | `enemy_hp=p` | enemies and bosses start with p% of their HP (0: one hit kills) |
@@ -116,7 +117,7 @@ SHA-1 `265886e3f665adf2507e7b2f08b6b2ed9d0018b2`, with any IPS patcher
 | `contra3-half-enemy-hp.ips` | `enemy_hp=50` |
 | `contra3-one-hit-kills.ips` | `enemy_hp=0` |
 | `contra3-stage-select.ips` | `stage_select` |
-| `contra3-30-lives.ips` | `start_lives=30 infinite_continues` |
+| `contra3-30-lives.ips` | `start_lives=30 option_30_lives infinite_continues` |
 | `contra3-debug-keys.ips` | `debug_keys button_codes` |
 
 Pre-built patches are published on the [Releases](../../releases) page:

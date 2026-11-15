@@ -634,14 +634,14 @@ options_change_lives:
 	lda	a:options_lives_index
 	dec	a
 	bpl	@store
-	lda	#$0002
+	lda	#OPTION_LIVES_LAST	; 2; 3 with CHEAT_OPTION_30_LIVES
 @store:
 	sta	a:options_lives_index
 	rts
 @next_option:
 	lda	a:options_lives_index
 	inc	a
-	cmp	#$0003
+	cmp	#OPTION_LIVES_LAST+1
 	bcc	@store2
 	lda	#$0000
 @store2:
