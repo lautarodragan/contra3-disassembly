@@ -118,7 +118,7 @@ ending_sequence_state_01:
 	beq	loc_1DB06A
 	inc	OBJ_STATE,x
 	stz	a:wram_13FA
-	lda	#$0065
+	lda	#OBJT_RIDEABLE_MISSILE
 	sta	a:wram_0290
 	lda	#$0001
 	sta	a:wram_0296
@@ -1829,7 +1829,7 @@ loc_1DBDB3:
 	lda	#$C558
 	jsl	f:sub_01CF3C
 	bcs	loc_1DBDF6
-	lda	#$0098
+	lda	#OBJT_ENDING_EXPLOSION
 	sta	a:$0010,y
 	lda	#$FFFE
 	sta	a:$001E,y
@@ -2283,7 +2283,7 @@ brain_boss_state_0A:
 	sta	cgram_upload_addr
 	dec	OBJ_TIMER,x
 	bpl	loc_1DC175
-	lda	#$0095
+	lda	#OBJT_ENDING_SEQUENCE
 	sta	OBJ_TYPE,x
 	stz	OBJ_STATE,x
 	clc
@@ -3795,7 +3795,7 @@ loc_1DCC65:
 loc_1DCC6D:
 	sta	zp_00
 loc_1DCC6F:
-	lda	#$0094
+	lda	#OBJT_BRAIN_BOSS_ORB_CLUSTER
 	sta	$10,x
 	lda	#$4031
 	sta	$16,x

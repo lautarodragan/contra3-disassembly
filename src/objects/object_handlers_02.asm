@@ -18,7 +18,7 @@ spawn_ending_firework:
 	xba
 	and	#$0003
 	sta	a:$0014,y
-	lda	#$0016
+	lda	#SHOTT_ENDING_FIREWORK
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y

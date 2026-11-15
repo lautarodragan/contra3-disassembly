@@ -1406,7 +1406,7 @@ sub_048A80:
 	sta	a:$0034,y
 	lda	#$3800
 	sta	a:$0002,y
-	lda	#$004C
+	lda	#OBJT_COUNTDOWN_BOMB
 	sta	a:$0010,y
 	lda	#$0001
 	sta	a:$0016,y
@@ -1525,7 +1525,7 @@ sub_048BBF:
 	sta	zp_FC
 	jsl	f:find_free_slot_y
 	bcs	loc_048BE9
-	lda	#$0087
+	lda	#OBJT_SKELETON_EYE_FIREBALL
 	sta	a:$0010,y
 	lda	zp_FC
 	sta	a:$000A,y
@@ -1965,7 +1965,7 @@ loc_048F35:
 stage4_controller_state_10:
 	inc	OBJ_STATE,x
 	ldy	#$0800
-	lda	#$0065
+	lda	#OBJT_RIDEABLE_MISSILE
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -2337,7 +2337,7 @@ rideable_missile_state_00:
 
 sub_049277:
 	sty	$34,x
-	lda	#$0065
+	lda	#OBJT_RIDEABLE_MISSILE
 	sta	OBJ_TYPE,x
 	lda	#$0007
 	sta	OBJ_STATE,x
@@ -2709,7 +2709,7 @@ loc_049564:
 	ldy	#$05C0
 	jsl	f:find_free_slot_y_down
 	bcc	loc_0495A0
-	lda	#$0082
+	lda	#OBJT_STAGE4_BOSS_SHOT
 	sta	a:$0010,y
 	lda	rng_hi
 	and	#$0003
@@ -2738,7 +2738,7 @@ loc_0495A1:
 	ldy	#$05C0
 	jsl	f:find_free_slot_y_down
 	bcc	loc_0495C7
-	lda	#$0083
+	lda	#OBJT_STAGE4_BOSS_FIREBALL
 	sta	a:$0010,y
 	lda	OBJ_X,x
 	adc	#$0020
@@ -4191,7 +4191,7 @@ sub_04A0A7:
 loc_04A11F:
 	lda	a:data_05ECFC,y
 	tax
-	lda	#$0025
+	lda	#OBJT_WINGED_ALIEN_TAIL_SEGMENT
 	sta	$10,x
 	lda	#$003C
 	sta	$16,x
@@ -4908,7 +4908,7 @@ face_boss_state_09:
 	jsr	a:sub_04A97A
 	dec	OBJ_ANIM_TIMER,x
 	bne	loc_04A6B7
-	lda	#$008A
+	lda	#OBJT_BRAIN_BOSS
 	sta	OBJ_TYPE,x
 	stz	OBJ_STATE,x
 loc_04A6B7:
@@ -5074,7 +5074,7 @@ loc_04A7E9:
 sub_04A7EA:
 	jsl	f:find_free_slot_from_y
 	bcs	loc_04A80F
-	lda	#$0021
+	lda	#OBJT_FACE_BOSS_LARVA
 	sta	a:$0010,y
 	lda	rng_lo
 	and	#$0080
@@ -5444,7 +5444,7 @@ floor_mouth_state_04:
 loc_04AAC2:
 	jsl	f:find_free_slot_y
 	bcs	loc_04AB0B
-	lda	#$0062
+	lda	#OBJT_FLOOR_MOUTH_BUG
 	sta	a:$0010,y
 	lda	OBJ_X,x
 	clc
@@ -6422,7 +6422,7 @@ loc_04B1C7:
 	ldy	#$03C0
 	jsl	f:find_free_slot_from_y
 	bcs	loc_04B1EE
-	lda	#$0067
+	lda	#OBJT_HEART_BOSS_BUG
 	sta	a:$0010,y
 	lda	a:data_05EF56,x
 	sta	a:$000A,y
@@ -6867,7 +6867,7 @@ sub_04B502:
 	ldy	#$03C0
 	jsl	f:find_free_slot_from_y
 	bcs	loc_04B528
-	lda	#$0063
+	lda	#OBJT_WALL_WORM_LARVA
 	sta	a:$0010,y
 	lda	#$0090
 	sta	a:$000A,y
@@ -6997,7 +6997,7 @@ cave_beast_state_02:
 	lda	a:data_05F024,y
 	sta	zp_00
 	ldy	#$0840
-	lda	#$00A0
+	lda	#OBJT_CAVE_BEAST_TARGET
 	sta	a:$0010,y
 	lda	#$0078
 	sta	a:$0016,y
@@ -7069,7 +7069,7 @@ loc_04B6BC:
 	sta	a:shake_timer
 	jsl	f:find_free_slot_y
 	bcs	loc_04B6F1
-	lda	#$0066
+	lda	#OBJT_CAVE_ROCK
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -7310,7 +7310,7 @@ loc_04B89A:
 loc_04B8A7:
 	jsl	f:find_free_slot_y
 	bcs	loc_04B8D6
-	lda	#$0066
+	lda	#OBJT_CAVE_ROCK
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -7444,7 +7444,7 @@ cave_beast_state_18:
 	bne	loc_04B9E7
 	jsl	f:find_free_slot_y
 	bcs	loc_04BA0A
-	lda	#$0071
+	lda	#OBJT_CAVE_BEAST_FIREBALL
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -7467,7 +7467,7 @@ loc_04B9E7:
 	bcs	loc_04BA0A
 	lda	$32,x
 	sta	a:$0030,y
-	lda	#$0072
+	lda	#OBJT_CAVE_BEAST_BEAM
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -8786,7 +8786,7 @@ snake_robot_state_00:
 	lda	#$FFFF
 	sta	OBJ_HITBOX_H,x
 	ldy	#$0500
-	lda	#$0081
+	lda	#OBJT_SNAKE_ROBOT_HEAD
 	sta	a:$0010,y
 	lda	#$3E00
 	sta	a:$0002,y
@@ -9530,7 +9530,7 @@ loc_04CA6E:
 	tay
 	lda	a:data_05F156,y
 	tay
-	lda	#$0088
+	lda	#OBJT_SNAKE_ROBOT_DEBRIS
 	sta	a:$0010,y
 	lda	#$0001
 	sta	a:$0016,y
@@ -10106,7 +10106,7 @@ loc_04CEA7:
 	ldy	#$0580
 	jsl	f:find_free_slot_y_down
 	bcc	loc_04CED7
-	lda	#$007B
+	lda	#OBJT_LIGHTNING_BOLT
 	sta	a:$0010,y
 	clc
 	lda	OBJ_X,x
@@ -10262,7 +10262,7 @@ loc_04CFCC:
 	bcc	loc_04D020
 	jsl	f:find_free_slot_x_down
 	bcc	loc_04CFCC
-	lda	#$007D
+	lda	#OBJT_SPIKED_MINE
 	sta	$10,x
 	lda	#$0002
 	sta	$12,x
@@ -10752,7 +10752,7 @@ sub_04D3B4:
 loc_04D3D8:
 	jsl	f:find_free_slot_x_down
 	bcc	loc_04D421
-	lda	#$0084
+	lda	#OBJT_HELICOPTER_ROPE
 	sta	$10,x
 	lda	#$0005
 	sta	$12,x
