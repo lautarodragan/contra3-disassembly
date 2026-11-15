@@ -500,7 +500,7 @@ loc_00D29A:
 loc_00D2B7:
 	lda	#OBJT_BOMBER_BOMB
 	sta	a:$0010,y
-	lda	#$9F12
+	lda	#.loword(anim_059F12)
 	sta	a:$0020,y
 	lda	#$3E00
 	sta	a:$0002,y
@@ -622,7 +622,7 @@ loc_00D3C0:
 	lda	#$0007
 	sta	zp_06
 	ldy	#$0300
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_00D3E6
 	lda	#$FFFC

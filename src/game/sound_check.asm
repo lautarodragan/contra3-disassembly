@@ -28,7 +28,7 @@ sound_check_init:
 	; (not executed in the CDL traces)
 	ldx	#.loword(data_05CF41)
 	jsl	f:load_data_list
-	ldy	#$8412
+	ldy	#.loword(palette_058412)
 	jsl	f:start_palette_task
 	inc	a:mode_step
 
@@ -58,10 +58,10 @@ sound_check_input:
 	bne	@start_pressed
 	bit	#JOY_B
 	bne	@b_pressed
-	ldx	#$F347
+	ldx	#.loword(text_05F347)
 	lda	#$2400
 	jsl	f:draw_text_attr
-	ldx	#$F35A
+	ldx	#.loword(text_05F35A)
 	jsl	f:draw_text
 	jsr	a:sound_check_change_id
 	jsr	a:sound_check_play

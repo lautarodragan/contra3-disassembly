@@ -1510,7 +1510,7 @@ reset_m7_block_patches:
 load_stage2_assets:
 	ldx	#.loword(data_05CF2A)
 	jsl	f:load_data_list
-	ldy	#$CFB2
+	ldy	#.loword(palette_05CFB2)
 	jsl	f:start_palette_task
 	jsl	f:build_m7_tilemap
 	rts
@@ -1519,33 +1519,33 @@ load_stage2_assets:
 load_stage5_assets:
 	ldx	#.loword(data_05D01F)
 	jsl	f:load_data_list
-	ldy	#$D056
+	ldy	#.loword(palette_05D056)
 	jsl	f:start_palette_task
 	jsl	f:build_m7_tilemap
 	rts
 
 ; Loads the stage 2 boss graphics and palettes.
 load_stage2_boss_assets:
-	ldx	#$F46B
+	ldx	#.loword(song_set_05F46B)
 	jsl	f:load_song_set
 	ldx	#.loword(data_05CFCF)
 	jsl	f:load_data_list
 	ldx	#.loword(data_05CFD8)
 	jsl	f:load_data_list
-	ldy	#$D006
+	ldy	#.loword(palette_05D006)
 	jsl	f:start_palette_task
 	jsl	f:build_m7_tilemap
 	rts
 
 ; Loads the stage 5 boss graphics and palettes.
 load_stage5_boss_assets:
-	ldx	#$F46B
+	ldx	#.loword(song_set_05F46B)
 	jsl	f:load_song_set
 	ldx	#.loword(data_05D073)
 	jsl	f:load_data_list
 	ldx	#.loword(data_05D07C)
 	jsl	f:load_data_list
-	ldy	#$D0AA
+	ldy	#.loword(palette_05D0AA)
 	jsl	f:start_palette_task
 	jsl	f:build_m7_tilemap
 	rts

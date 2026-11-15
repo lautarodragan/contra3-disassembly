@@ -14,14 +14,14 @@ update_ending_sequence:
 	lda	OBJ_STATE,x
 	cmp	#$0009
 	bcs	loc_1DAF38
-	lda	#$918A
+	lda	#.loword(palette_05918A)
 	sta	cgram_upload_src
 	lda	#$0030
 	sta	cgram_upload_addr
 loc_1DAF38:
 	lda	OBJ_SAVED_ATTR,x
 	beq	loc_1DAF46
-	lda	#$912A
+	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$B030
 	sta	cgram_upload_addr
@@ -446,7 +446,7 @@ ending_sequence_state_10:
 	phx
 	ldx	#.loword(data_05F8C3)
 	jsl	f:load_data_list
-	ldy	#$F8DA
+	ldy	#.loword(palette_05F8DA)
 	jsl	f:start_palette_task
 	plx
 	stz	OBJ_X,x
@@ -1131,7 +1131,7 @@ loc_1DB863:
 	sta	OBJ_TYPE,x
 	lda	zp_04
 	sta	OBJ_FLAGS,x
-	lda	#$C503
+	lda	#.loword(metasprite_06C503)
 	sta	OBJ_SPRITE,x
 	lda	#$0600
 	sta	OBJ_ATTR,x
@@ -1275,7 +1275,7 @@ update_enemy_type_97:
 	lda	#$0001
 	sta	a:bgmode_shadow
 	phx
-	ldy	#$F8E3
+	ldy	#.loword(palette_05F8E3)
 	jsl	f:start_palette_task
 	plx
 	phx
@@ -1400,7 +1400,7 @@ sub_1DBA68:
 	lda	#$00C0
 	sta	zp_02
 	ldy	#$0700
-	lda	#$C69C
+	lda	#.loword(anim_05C69C)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_1DBA8B
 	lda	#$FFFC
@@ -1437,10 +1437,10 @@ loc_1DBAB4:
 	lda	#$0024
 	sta	OBJ_TIMER,x
 	phx
-	ldy	#$FECD
+	ldy	#.loword(palette_05FECD)
 	jsl	f:start_palette_task
 	ldx	#$1210
-	ldy	#$FED9
+	ldy	#.loword(palette_05FED9)
 	jsl	f:start_palette_task_at
 	plx
 	stz	a:wram_163E
@@ -1458,7 +1458,7 @@ ending_sequence_state_17:
 	ldy	difficulty
 	ldx	a:data_05FD9B,y
 	jsl	f:load_data_list
-	ldy	#$FEE8
+	ldy	#.loword(palette_05FEE8)
 	jsl	f:start_palette_task
 	plx
 	inc	OBJ_STATE,x
@@ -1495,11 +1495,11 @@ loc_1DBB45:
 	inc	OBJ_STATE,x
 loc_1DBB47:
 	phx
-	ldx	#$F4C3
+	ldx	#.loword(song_set_05F4C3)
 	jsl	f:load_song_set
 	lda	#$0071
 	jsl	f:queue_sound
-	ldy	#$FEC7
+	ldy	#.loword(palette_05FEC7)
 	jsl	f:start_palette_task
 	ldx	#.loword(data_05FEDF)
 	jsl	f:load_data_list
@@ -1541,7 +1541,7 @@ ending_sequence_state_1B:
 	inc	OBJ_STATE,x
 	phx
 	ldx	#$1210
-	ldy	#$FED3
+	ldy	#.loword(palette_05FED3)
 	jsl	f:start_palette_task_at
 	plx
 	rtl
@@ -1581,7 +1581,7 @@ ending_sequence_state_1C:
 	sta	OBJ_STATE,x
 	phx
 	ldx	#$1210
-	ldy	#$FED9
+	ldy	#.loword(palette_05FED9)
 	jsl	f:start_palette_task_at
 	plx
 	inc	a:wram_163E
@@ -1594,7 +1594,7 @@ ending_sequence_state_1C:
 	lda	#$001D
 	sta	OBJ_STATE,x
 	phx
-	ldy	#$FECD
+	ldy	#.loword(palette_05FECD)
 	jsl	f:start_palette_task
 	plx
 loc_1DBC15:
@@ -1788,7 +1788,7 @@ sub_1DBD6A:
 	lda	rng_lo
 	and	#$0003
 	bne	loc_1DBD88
-	lda	#$912A
+	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$3040
 	sta	cgram_upload_addr
@@ -1826,7 +1826,7 @@ loc_1DBDB3:
 	adc	frame_counter
 	adc	rng_hi
 	sta	rng_hi
-	lda	#$C558
+	lda	#.loword(anim_05C558)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_1DBDF6
 	lda	#OBJT_ENDING_EXPLOSION
@@ -1867,7 +1867,7 @@ loc_1DBE03:
 loc_1DBE11:
 	; (not executed in the CDL traces)
 	phx
-	ldx	#$FF0A
+	ldx	#.loword(text_05FF0A)
 	lda	#$0400
 	jsl	f:draw_text_attr
 	plx
@@ -1929,7 +1929,7 @@ update_brain_boss:
 loc_1DBE80:
 	lda	OBJ_SAVED_ATTR,x
 	beq	loc_1DBEA5
-	lda	#$912A
+	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$0030
 	sta	cgram_upload_addr
@@ -2197,7 +2197,7 @@ brain_boss_state_07:
 loc_1DC09B:
 	jsl	f:find_free_slot_y
 	bcs	loc_1DC0C6
-	lda	#$C6DE
+	lda	#.loword(anim_05C6DE)
 	jsl	f:make_effect_object
 	lda	OBJ_Y,x
 	adc	#$FFE4
@@ -2277,7 +2277,7 @@ brain_boss_state_09:
 	inc	OBJ_STATE,x
 
 brain_boss_state_0A:
-	lda	#$918A
+	lda	#.loword(palette_05918A)
 	sta	cgram_upload_src
 	lda	#$0030
 	sta	cgram_upload_addr
@@ -3157,7 +3157,7 @@ update_enemy_type_8E:
 	lda	#$FFFC
 	sta	OBJ_Y_VEL,x
 	txy
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jml	f:make_effect_object
 loc_1DC7F1:
 	clc
@@ -3236,7 +3236,7 @@ loc_1DC87B:
 	lda	#$0030
 	jsl	f:queue_sound
 	txy
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jml	f:make_effect_object
 loc_1DC88A:
 	lda	OBJ_STATE,x
@@ -3316,7 +3316,7 @@ update_brain_boss_rolling_eye:
 	bpl	loc_1DC924
 loc_1DC91C:
 	txy
-	lda	#$C672
+	lda	#.loword(anim_05C672)
 	jml	f:make_effect_object
 loc_1DC924:
 	lda	$3A,x
@@ -3379,7 +3379,7 @@ update_brain_boss_orb_arch:
 	bpl	loc_1DC995
 loc_1DC98D:
 	txy
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jml	f:make_effect_object
 loc_1DC995:
 	lda	a:wram_163A
@@ -3445,7 +3445,7 @@ loc_1DCA0A:
 	lda	#$0030
 	jsl	f:queue_sound
 	txy
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jml	f:make_effect_object
 loc_1DCA19:
 	lda	OBJ_Y,x

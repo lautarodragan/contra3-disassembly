@@ -42,7 +42,7 @@ flash_palette_on_hit:
 	lda	OBJ_HIT,x
 	beq	loc_019E7F
 	inc	OBJ_SAVED_ATTR,x
-	lda	#$912A
+	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	sty	cgram_upload_addr
 loc_019E7F:
@@ -673,7 +673,7 @@ update_destructible_part:
 	lda	$06,x
 	bpl	loc_01A282
 	txy
-	lda	#$C59A
+	lda	#.loword(anim_05C59A)
 	jml	f:make_effect_object
 loc_01A282:
 	ldy	$20,x
@@ -688,7 +688,7 @@ update_destructible_part_2:
 	lda	$06,x
 	bpl	loc_01A282
 	txy
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jml	f:make_effect_object
 
 ; Kills (PCONTACT_KILLED) each player outside the limits zp_00 (bottom),
@@ -777,7 +777,7 @@ update_homing_missile:
 	bne	loc_01A332
 
 init_homing_missile:
-	lda	#$AE9B
+	lda	#.loword(metasprite_06AE9B)
 	sta	$00,x
 	lda	#$3E00
 	sta	$02,x
@@ -804,7 +804,7 @@ loc_01A33E:
 	jsl	f:queue_sound
 	stz	$04,x
 	txy
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jml	f:make_effect_object
 loc_01A34F:
 	lda	#$0400
@@ -843,7 +843,7 @@ loc_01A395:
 	ldy	#$0740
 	jsl	f:find_free_slot_y_down
 	bcc	loc_01A3BF
-	lda	#$C606
+	lda	#.loword(anim_05C606)
 	jsl	f:make_effect_object
 	lda	zp_06
 	sta	a:$001A,y

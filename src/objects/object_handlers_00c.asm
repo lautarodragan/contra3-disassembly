@@ -81,7 +81,7 @@ stage1_boss_controller_state_01:
 	stx	zp_FC
 	ldx	#.loword(data_05AA1F)
 	jsl	f:load_data_list
-	ldy	#$AA28
+	ldy	#.loword(palette_05AA28)
 	jsl	f:start_palette_task
 	ldx	zp_FC
 	jsl	f:sub_00FF30
@@ -279,7 +279,7 @@ stage1_boss_death_explosions:
 	lda	#$007F
 	sta	zp_06
 	ldy	#$0280
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_00F4B6
 	lda	#$FFFD
@@ -1009,7 +1009,7 @@ stage1_boss_fire_tracking_shot:
 	sta	a:$0016,y
 	lda	#$2800
 	sta	a:$0002,y
-	lda	#$AB14
+	lda	#.loword(anim_05AB14)
 	sta	a:$0020,y
 	lda	a:wram_048E
 	adc	#$FFE8
@@ -1043,7 +1043,7 @@ stage1_boss_fire_falling_shot:
 	sta	a:$0016,y
 	lda	#$2800
 	sta	a:$0002,y
-	lda	#$AAFA
+	lda	#.loword(anim_05AAFA)
 	sta	a:$0020,y
 	lda	#$0001
 	sta	a:$0004,y
@@ -1080,7 +1080,7 @@ update_stage1_boss_tracking_shot:
 	lda	#$000C
 	jsl	f:queue_sound
 	txy
-	lda	#$C59A
+	lda	#.loword(anim_05C59A)
 	jml	f:make_effect_object
 loc_00FAD3:
 	lda	rng_temp
@@ -1128,7 +1128,7 @@ update_stage1_boss_falling_shot:
 	jsl	f:queue_sound
 	stz	$04,x
 	txy
-	lda	#$C59A
+	lda	#.loword(anim_05C59A)
 	jml	f:make_effect_object
 loc_00FB2A:
 	lda	$12,x
@@ -1171,7 +1171,7 @@ stage1_boss_spawn_fire:
 	lda	$3A,x
 	bne	loc_00FBAA
 	inc	$3A,x
-	lda	#$AB14
+	lda	#.loword(anim_05AB14)
 	ldy	#$0500
 	jsl	f:spawn_effect
 	bcs	loc_00FBAA
@@ -1192,7 +1192,7 @@ loc_00FBAA:
 	rts
 
 stage1_boss_spawn_fire_stream_shot:
-	lda	#$AB22
+	lda	#.loword(anim_05AB22)
 	ldy	#$0500
 	jsl	f:spawn_effect
 	bcs	loc_00FBE1
@@ -1272,7 +1272,7 @@ update_stage1_boss:
 loc_00FC43:
 	lda	$26,x
 	beq	loc_00FC58
-	lda	#$912A
+	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$0060
 	sta	cgram_upload_addr
@@ -1347,7 +1347,7 @@ loc_00FCD2:
 	ldy	#$0500
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_00FD11
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	sta	a:$0020,y
 	phx
 	lda	rng_lo
@@ -1404,7 +1404,7 @@ update_falling_debris:
 	lda	#$FFFC
 	sta	$1E,x
 	txy
-	lda	#$C69C
+	lda	#.loword(anim_05C69C)
 	jml	f:make_effect_object
 loc_00FD5A:
 	clc

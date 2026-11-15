@@ -446,10 +446,10 @@ load_title_screen:
 	rtl
 
 load_title_graphics:
-	ldy	#$8558
+	ldy	#.loword(palette_058558)
 	ldx	#$1210
 	jsl	f:start_palette_task_at
-	ldy	#$854B
+	ldy	#.loword(palette_05854B)
 	jsl	f:start_palette_task
 	ldx	#.loword(data_058527)
 	jsl	f:load_data_list
@@ -480,15 +480,15 @@ init_title_logo:
 	rts
 
 draw_title_texts:
-	ldx	#$8561
+	ldx	#.loword(text_058561)
 	jsl	f:draw_text
-	ldx	#$8599
+	ldx	#.loword(text_058599)
 	jsl	f:draw_text
-	ldx	#$85A6
+	ldx	#.loword(text_0585A6)
 	jsl	f:draw_text
-	ldx	#$85B4
+	ldx	#.loword(text_0585B4)
 	jsl	f:draw_text
-	ldx	#$85C2
+	ldx	#.loword(text_0585C2)
 	jsl	f:draw_text
 	jsl	f:draw_title_menu_cursor
 	rts
@@ -652,25 +652,25 @@ draw_title_menu_cursor:
 	asl	a
 	tay
 	lda	a:data_05851F,y
-	ldx	#$8599
+	ldx	#.loword(text_058599)
 	jsl	f:draw_text_attr
 	lda	a:title_menu_cursor
 	asl	a
 	tay
 	lda	a:data_05851D,y
-	ldx	#$85A6
+	ldx	#.loword(text_0585A6)
 	jsl	f:draw_text_attr
 	lda	a:title_menu_cursor
 	asl	a
 	tay
 	lda	a:data_05851B,y
-	ldx	#$85B4
+	ldx	#.loword(text_0585B4)
 	jsl	f:draw_text_attr
 	lda	a:title_menu_cursor
 	asl	a
 	tay
 	lda	a:data_058519,y
-	ldx	#$85C2
+	ldx	#.loword(text_0585C2)
 	jsl	f:draw_text_attr
 	clc
 	rtl
@@ -1002,7 +1002,7 @@ konami_logo_init:
 	lda	#$0001
 	ldx	#.loword(data_0587AB)
 	jsl	f:load_data_list
-	ldy	#$87C3
+	ldy	#.loword(palette_0587C3)
 	jsl	f:start_palette_task
 	lda	#$0400
 	sta	a:bg1_y
@@ -1071,7 +1071,7 @@ konami_logo_start_shine:
 	sta	a:konami_logo_count1
 	sta	a:konami_logo_count2
 	sta	a:konami_logo_count3
-	ldy	#$87E1
+	ldy	#.loword(palette_0587E1)
 	jsl	f:start_palette_task
 	lda	#$0072
 	jsl	f:queue_sound
@@ -1084,7 +1084,7 @@ konami_logo_shine:
 	beq	@check_count2
 	cmp	#$000A
 	bne	@rotate_row1
-	ldy	#$87EA
+	ldy	#.loword(palette_0587EA)
 	jsl	f:start_palette_task
 @rotate_row1:
 	dec	a:konami_logo_count1
@@ -1104,7 +1104,7 @@ konami_logo_shine:
 	beq	@check_count3
 	dec	a:konami_logo_timer
 	bne	@return
-	ldy	#$87D8
+	ldy	#.loword(palette_0587D8)
 	jmp	a:start_palette_task
 @check_count3:
 	lda	a:konami_logo_count3

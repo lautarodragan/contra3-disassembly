@@ -54,7 +54,7 @@ stage_init:
 	adc	#$000A
 	sta	a:stage_layout
 @no_checkpoint:
-	ldy	#$8AC7
+	ldy	#.loword(palette_058AC7)
 	jsl	f:start_palette_task
 	ldy	a:stage_layout
 	lda	a:data_0589D3,y

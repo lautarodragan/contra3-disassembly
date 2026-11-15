@@ -750,45 +750,45 @@ init_topdown_hdma:
 	dec	a
 	beq	loc_02EC71
 loc_02EC34:
-	ldx	#$E496
+	ldx	#.loword(hdma_table_05E496)
 	ldy	#$38E0
 	lda	#$001F
 	jsr	a:copy_hdma_table
-	ldx	#$E49F
+	ldx	#.loword(hdma_table_05E49F)
 	ldy	#$38C0
 	lda	#$001F
 	jsr	a:copy_hdma_table
-	ldx	#$E4A8
+	ldx	#.loword(hdma_table_05E4A8)
 	ldy	#$38A0
 	lda	#$001F
 	jsr	a:copy_hdma_table
-	ldx	#$E4B1
+	ldx	#.loword(hdma_table_05E4B1)
 	ldy	#$3880
 	lda	#$001F
 	jsr	a:copy_hdma_table
-	ldx	#$E4BA
+	ldx	#.loword(hdma_table_05E4BA)
 	ldy	#$3860
 	lda	#$001F
 	jsr	a:copy_hdma_table
 	rtl
 loc_02EC71:
-	ldx	#$E4C3
+	ldx	#.loword(hdma_table_05E4C3)
 	ldy	#$38E0
 	lda	#$001F
 	jsr	a:copy_hdma_table
-	ldx	#$E4CC
+	ldx	#.loword(hdma_table_05E4CC)
 	ldy	#$38C0
 	lda	#$001F
 	jsr	a:copy_hdma_table
-	ldx	#$E4D5
+	ldx	#.loword(hdma_table_05E4D5)
 	ldy	#$38A0
 	lda	#$001F
 	jsr	a:copy_hdma_table
-	ldx	#$E4DE
+	ldx	#.loword(hdma_table_05E4DE)
 	ldy	#$3880
 	lda	#$001F
 	jsr	a:copy_hdma_table
-	ldx	#$E4E7
+	ldx	#.loword(hdma_table_05E4E7)
 	ldy	#$3860
 	lda	#$001F
 	jsr	a:copy_hdma_table

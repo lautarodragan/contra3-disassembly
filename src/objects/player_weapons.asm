@@ -347,7 +347,7 @@ loc_01824D:
 	beq	loc_018272
 	bmi	loc_018272
 	inc	OBJ_STATE,x
-	lda	#$CB8B
+	lda	#.loword(metasprite_06CB8B)
 	sta	OBJ_SPRITE,x
 loc_018272:
 	rtl

@@ -113,7 +113,7 @@ loc_04E2C4:
 
 ending_crowd_walker_a_state_01:
 	lda	OBJ_FACING,x
-	lda	#$F642
+	lda	#.loword(anim_05F642)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	bra	loc_04E2BC
@@ -123,7 +123,7 @@ ending_crowd_walker_a_state_02:
 	lda	OBJ_TIMER,x
 	cmp	#$00B4
 	bcc	loc_04E2C0
-	lda	#$F650
+	lda	#.loword(anim_05F650)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	stz	OBJ_TIMER,x
@@ -161,7 +161,7 @@ loc_04E317:
 
 ending_crowd_walker_b_state_01:
 	lda	OBJ_FACING,x
-	lda	#$F678
+	lda	#.loword(anim_05F678)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	bra	loc_04E313
@@ -175,7 +175,7 @@ ending_crowd_walker_b_state_02:
 
 ending_crowd_walker_b_state_03:
 	lda	OBJ_FACING,x
-	lda	#$F680
+	lda	#.loword(anim_05F680)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	bra	loc_04E313
@@ -210,7 +210,7 @@ loc_04E366:
 	sta	OBJ_FACING,x
 	bra	loc_04E317
 loc_04E372:
-	lda	#$F66A
+	lda	#.loword(anim_05F66A)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	stz	OBJ_TIMER,x

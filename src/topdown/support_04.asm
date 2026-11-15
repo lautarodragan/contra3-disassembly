@@ -42,12 +42,12 @@ loc_04DA35:
 start_stage2_palette_tasks:
 	lda	a:td_palette_anim_timer
 	bne	loc_04DA42
-	ldy	#$F576
+	ldy	#.loword(palette_05F576)
 	jml	f:start_palette_task
 loc_04DA42:
 	cmp	#$0020
 	bne	loc_04DA4E
-	ldy	#$F57C
+	ldy	#.loword(palette_05F57C)
 	jml	f:start_palette_task
 loc_04DA4E:
 	rtl
@@ -56,12 +56,12 @@ loc_04DA4E:
 start_stage5_palette_tasks:
 	lda	a:td_palette_anim_timer
 	bne	loc_04DA5B
-	ldy	#$F582
+	ldy	#.loword(palette_05F582)
 	jml	f:start_palette_task
 loc_04DA5B:
 	cmp	#$0020
 	bne	loc_04DA67
-	ldy	#$F588
+	ldy	#.loword(palette_05F588)
 	jml	f:start_palette_task
 loc_04DA67:
 	rtl

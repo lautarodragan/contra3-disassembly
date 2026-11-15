@@ -48,7 +48,7 @@ tbl_game_modes:
 game_mode_konami_logo:
 	lda	game_submode
 	bne	@running
-	ldx	#$F537
+	ldx	#.loword(song_set_05F537)
 	jsl	f:load_song_set
 	stz	a:konami_logo_step
 	stz	a:konami_logo_done
@@ -526,9 +526,9 @@ game_mode_stage_select:
 	.a16
 	ldx	#.loword(data_05CF41)
 	jsl	f:load_data_list
-	ldy	#$8412
+	ldy	#.loword(palette_058412)
 	jsl	f:start_palette_task
-	ldx	#$841B
+	ldx	#.loword(text_05841B)
 	lda	#$2400
 	jsl	f:draw_text_attr
 	lda	#$0100
@@ -627,7 +627,7 @@ game_mode_stage_card:
 	.a16
 	ldx	#.loword(data_05CF41)
 	jsl	f:load_data_list
-	ldy	#$8412
+	ldy	#.loword(palette_058412)
 	jsl	f:start_palette_task
 	jsl	f:draw_score_board
 	lda	stage_number
@@ -797,13 +797,13 @@ game_over_init:
 	.a16
 	ldx	#.loword(data_05CF41)
 	jsl	f:load_data_list
-	ldy	#$8412
+	ldy	#.loword(palette_058412)
 	jsl	f:start_palette_task
 	jsl	f:draw_score_board
-	ldx	#$8472
+	ldx	#.loword(text_058472)
 	lda	#$2400
 	jsl	f:draw_text_attr
-	ldx	#$F513
+	ldx	#.loword(song_set_05F513)
 	jsl	f:load_song_set
 	brl	next_submode
 
@@ -909,7 +909,7 @@ continue_menu:
 	sta	a:continue_cursor
 	lda	#$0003
 	sta	a:continue_option_count
-	ldx	#$8490
+	ldx	#.loword(text_058490)
 	jsl	f:draw_text
 	brl	next_submode
 @return:
@@ -1004,7 +1004,7 @@ continue_draw_menu:
 	asl	a
 	tay
 	lda	a:data_0583FC,y
-	ldx	#$848A
+	ldx	#.loword(text_05848A)
 	jsl	f:draw_text_attr
 	rts
 
@@ -1026,19 +1026,19 @@ continue_draw_player_menu:
 	asl	a
 	tay
 	lda	a:data_058404,y
-	ldx	#$8599
+	ldx	#.loword(text_058599)
 	jsl	f:draw_text_attr
 	lda	a:continue_cursor
 	asl	a
 	tay
 	lda	a:data_058402,y
-	ldx	#$85A6
+	ldx	#.loword(text_0585A6)
 	jsl	f:draw_text_attr
 	lda	a:continue_cursor
 	asl	a
 	tay
 	lda	a:data_058400,y
-	ldx	#$85B4
+	ldx	#.loword(text_0585B4)
 	jsl	f:draw_text_attr
 	rts
 

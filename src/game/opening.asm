@@ -48,7 +48,7 @@ opening_cinematic_init:
 	jsl	f:queue_sound
 	ldx	#.loword(data_05A84B)
 	jsl	f:load_data_list
-	ldy	#$A815
+	ldy	#.loword(palette_05A815)
 	jsl	f:start_palette_task
 	stz	a:opening_frame_counter
 	lda	#$0020
@@ -243,7 +243,7 @@ opening_city_init:
 	stz	a:bg2_y_sub
 	stz	a:bg2_y
 	jsr	a:opening_set_layers_flash
-	ldy	#$A830
+	ldy	#.loword(palette_05A830)
 	jsl	f:start_palette_task
 	ldx	#$0300
 	lda	#$0053
@@ -254,7 +254,7 @@ opening_city_init:
 	sta	$0E,x
 	lda	#$3C00
 	sta	$02,x
-	lda	#$D12A
+	lda	#.loword(metasprite_06D12A)
 	sta	$00,x
 	inc	a:opening_step
 	jsr	a:opening_update_parallax
@@ -263,7 +263,7 @@ opening_city_init:
 opening_city_wait:
 	jsr	a:opening_is_scene_ending
 	bcc	opening_city_idle
-	ldy	#$A836
+	ldy	#.loword(palette_05A836)
 	jsl	f:start_palette_task
 	inc	a:opening_step
 
@@ -336,7 +336,7 @@ opening_vortex_spawn_objects:
 	iny
 	cpy	#$0020
 	bcc	@loop
-	ldy	#$A845
+	ldy	#.loword(palette_05A845)
 	jsl	f:start_palette_task
 	inc	a:opening_step
 
@@ -373,7 +373,7 @@ opening_beam_init:
 	sta	$02,x
 	lda	#$0000
 	sta	$04,x
-	lda	#$A95F
+	lda	#.loword(anim_05A95F)
 	sta	$20,x
 	stz	$22,x
 	inc	a:opening_step
@@ -517,9 +517,9 @@ opening_ruins_spawn_alien:
 	sta	$0E,x
 	lda	#$3800
 	sta	$02,x
-	lda	#$CEC8
+	lda	#.loword(metasprite_06CEC8)
 	sta	$00,x
-	ldy	#$A82A
+	ldy	#.loword(palette_05A82A)
 	jsl	f:start_palette_task
 	stz	a:opening_step_timer
 	inc	a:opening_step
@@ -532,7 +532,7 @@ opening_ruins_alien_wait:
 	cmp	#$003C
 	bcc	@return
 	ldx	#$0300
-	lda	#$CFF9
+	lda	#.loword(metasprite_06CFF9)
 	sta	$00,x
 	stz	a:opening_step_timer
 	inc	a:opening_step
@@ -597,7 +597,7 @@ opening_scene_hero_face:
 	lda	a:opening_caption_index
 	cmp	#$0001
 	bne	opening_caption_next
-	ldy	#$A83C
+	ldy	#.loword(palette_05A83C)
 	jsl	f:start_palette_task
 	ldx	#$0300
 	lda	#$0053
@@ -609,7 +609,7 @@ opening_scene_hero_face:
 	sta	$0E,x
 	lda	#$3A00
 	sta	$02,x
-	lda	#$D16F
+	lda	#.loword(metasprite_06D16F)
 	sta	$00,x
 opening_caption_next:
 	stz	a:opening_caption_timer
@@ -668,7 +668,7 @@ opening_scene_heroes:
 	sta	$0E,x
 	lda	#$3C00
 	sta	$02,x
-	lda	#$D190
+	lda	#.loword(metasprite_06D190)
 	sta	$00,x
 	stz	a:opening_caption_timer
 @check_end:

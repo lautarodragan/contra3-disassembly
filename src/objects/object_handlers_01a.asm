@@ -40,7 +40,7 @@ update_object_type_02:
 loc_01B1E0:
 	lda	$26,x
 	beq	loc_01B1EE
-	lda	#$912A
+	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$0050
 	sta	cgram_upload_addr
@@ -116,7 +116,7 @@ object_type_02_state_01:
 	lda	#$000F
 	sta	zp_06
 	ldy	#$0300
-	lda	#$C69C
+	lda	#.loword(anim_05C69C)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_01B293
 	lda	#$FFFC
@@ -433,7 +433,7 @@ loc_01B4FB:
 	lda	#$000F
 	sta	zp_06
 	ldy	#$0300
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_01B520
 	lda	#$FFFC
@@ -467,7 +467,7 @@ loc_01B549:
 	beq	loc_01B555
 loc_01B54D:
 	txy
-	lda	#$C59A
+	lda	#.loword(anim_05C59A)
 	jml	f:make_effect_object
 loc_01B555:
 	lda	$1E,x
@@ -575,7 +575,7 @@ stage4_tank_state_02:
 loc_01B60F:
 	lda	$26,x
 	beq	loc_01B61D
-	lda	#$912A
+	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$6050
 	sta	cgram_upload_addr
@@ -728,7 +728,7 @@ loc_01B723:
 	lda	#$001F
 	sta	zp_06
 	ldy	#$0300
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_01B74B
 	lda	#$FFFE
@@ -946,7 +946,7 @@ loc_01B8D5:
 	lda	#$001F
 	sta	zp_06
 	ldy	#$0280
-	lda	#$C5DC
+	lda	#.loword(anim_05C5DC)
 	jsl	f:spawn_effect_random_offset
 loc_01B8FA:
 	jsr	a:player_tank_push_objects
@@ -1306,7 +1306,7 @@ loc_01BB7E:
 	lda	#$FFE0
 	sta	$2A,x
 	inc	$12,x
-	lda	#$AF9C
+	lda	#.loword(anim_05AF9C)
 	sta	$20,x
 	lda	#$0003
 	sta	$30,x
@@ -1374,7 +1374,7 @@ loc_01BC0F:
 	bne	loc_01BC46
 	lda	#$0001
 	sta	$12,x
-	lda	#$AF9C
+	lda	#.loword(anim_05AF9C)
 	sta	$20,x
 	lda	#$7000
 	sta	$24,x
@@ -1464,7 +1464,7 @@ object_type_35_state_02:
 	sta	$16,x
 	lda	#$FFFD
 	sta	$1E,x
-	lda	#$B1C1
+	lda	#.loword(metasprite_06B1C1)
 	sta	$00,x
 	lda	#$3600
 	sta	$02,x
@@ -1509,7 +1509,7 @@ loc_01BCED:
 	sta	a:$0002,y
 	lda	#$FFFE
 	sta	a:$0030,y
-	lda	#$B1EB
+	lda	#.loword(metasprite_06B1EB)
 	sta	a:$0000,y
 	sta	a:$0032,y
 	bra	loc_01BCD8
@@ -1575,7 +1575,7 @@ foot_soldier_state_05:
 	sta	$0E,x
 	lda	#$0001
 	sta	$12,x
-	lda	#$AF9C
+	lda	#.loword(anim_05AF9C)
 	sta	$20,x
 	stz	$1E,x
 	stz	$1C,x
@@ -1727,7 +1727,7 @@ tbl_object_type_73_states:
 
 object_type_73_state_00:
 	inc	$12,x
-	lda	#$C5CF
+	lda	#.loword(metasprite_06C5CF)
 	sta	$00,x
 	lda	#$3600
 	cpy	difficulty
@@ -1770,7 +1770,7 @@ object_type_73_state_01:
 	inc	$12,x
 	lda	#$0013
 	sta	$16,x
-	lda	#$B002
+	lda	#.loword(anim_05B002)
 	sta	$20,x
 	stz	$22,x
 loc_01BF16:
@@ -1786,7 +1786,7 @@ loc_01BF16:
 	ldy	#$0700
 	jsl	f:find_free_slot_y_down
 	bcc	loc_01BF52
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jsl	f:make_effect_object
 	lda	$0E,x
 	adc	#$FFEC
@@ -1858,7 +1858,7 @@ loc_01BFA6:
 	sta	zp_02
 	lda	rng_lo
 	sta	$18,x
-	lda	#$AFFC
+	lda	#.loword(anim_05AFFC)
 	sta	$20,x
 	stz	$22,x
 	lda	#$0003
@@ -1870,7 +1870,7 @@ loc_01BFCD:
 	ldy	#$0500
 	jsl	f:find_free_slot_y_down
 	bcc	loc_01BFFF
-	lda	#$C61E
+	lda	#.loword(anim_05C61E)
 	jsl	f:make_effect_object
 	lda	zp_02
 	sta	a:$001A,y
@@ -1981,7 +1981,7 @@ object_type_7E_state_02:
 	sta	$1E,x
 	stz	$20,x
 	stz	$22,x
-	lda	#$C697
+	lda	#.loword(metasprite_06C697)
 	sta	$00,x
 loc_01C0BF:
 	lda	$30,x
@@ -2076,7 +2076,7 @@ object_type_7E_state_03:
 object_type_7E_reset_sprite:
 	lda	#$0001
 	sta	$16,x
-	lda	#$C697
+	lda	#.loword(metasprite_06C697)
 	sta	$00,x
 	lda	#$0800
 	sta	$02,x
@@ -2106,7 +2106,7 @@ object_type_7E_state_04:
 	lda	$02,x
 	ora	#$3000
 	sta	$02,x
-	lda	#$B01A
+	lda	#.loword(anim_05B01A)
 	sta	$20,x
 	inc	$12,x
 	stz	$1C,x
@@ -2136,7 +2136,7 @@ loc_01C1D9:
 	inc	$12,x
 	stz	$20,x
 	stz	$22,x
-	lda	#$C697
+	lda	#.loword(metasprite_06C697)
 	sta	$00,x
 loc_01C1E9:
 	sty	$1A,x
@@ -2156,7 +2156,7 @@ object_type_7E_state_06:
 	lda	#$0003
 	sta	$16,x
 	inc	$12,x
-	lda	#$B01A
+	lda	#.loword(anim_05B01A)
 	sta	$20,x
 	lda	#$0002
 	sta	$04,x
@@ -2326,7 +2326,7 @@ loc_01C32E:
 	lda	stage_frame_mod8
 	bne	loc_01C354
 	ldy	#$0300
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jsl	f:spawn_effect
 	bcs	loc_01C354
 	lda	rng_hi
@@ -2349,7 +2349,7 @@ update_wall_hatch:
 	jsl	f:queue_sound
 	stz	$04,x
 	txy
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:make_effect_object
 	lda	$0A,x
 	adc	#$0008
@@ -2725,7 +2725,7 @@ object_type_04_state_05:
 	lda	#$0007
 	sta	zp_06
 	ldy	#$0300
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_01C66B
 	lda	#$FFFD
@@ -2805,7 +2805,7 @@ object_type_04_collapse_wait:
 update_object_type_14:
 	lda	$26,x
 	beq	loc_01C6FA
-	lda	#$914A
+	lda	#.loword(palette_05914A)
 	sta	cgram_upload_src
 	lda	#$0050
 	sta	cgram_upload_addr
@@ -2828,7 +2828,7 @@ update_object_type_15:
 	lda	#$000F
 	sta	zp_06
 	ldy	#$0300
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_01C730
 	lda	#$FFFF
@@ -2870,7 +2870,7 @@ loc_01C756:
 	sta	$10,x
 	lda	#$3E00
 	sta	$02,x
-	lda	#$B40D
+	lda	#.loword(metasprite_06B40D)
 	sta	$00,x
 	lda	#$180F
 	sta	$16,x
@@ -2921,7 +2921,7 @@ loc_01C7CF:
 	stz	$18,x
 	stz	$1A,x
 	txy
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jml	f:make_effect_object
 loc_01C7E0:
 	rtl
@@ -2959,7 +2959,7 @@ weapon_capsule_state_00:
 loc_01C813:
 	lda	#$0012
 	sta	$16,x
-	lda	#$B172
+	lda	#.loword(anim_05B172)
 	sta	$20,x
 	lda	#$FFFE
 	sta	$1E,x
@@ -3083,7 +3083,7 @@ loc_01C903:
 	lda	#$FFFE
 	sta	$1E,x
 	txy
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jml	f:make_effect_object
 loc_01C910:
 	dec	$36,x
@@ -3228,7 +3228,7 @@ tbl_object_type_11_states:
 	.addr	object_type_11_state_02
 
 object_type_11_state_00:
-	lda	#$B374
+	lda	#.loword(metasprite_06B374)
 	sta	$00,x
 	lda	#$4013
 	sta	$16,x
@@ -3259,7 +3259,7 @@ object_type_11_state_01:
 	inc	$12,x
 	lda	#$0003
 	sta	$16,x
-	lda	#$B3C1
+	lda	#.loword(metasprite_06B3C1)
 	sta	$00,x
 	sta	$32,x
 	lda	#$FFFB
@@ -3330,7 +3330,7 @@ object_type_11_state_02:
 	lda	#$001F
 	sta	zp_06
 	ldy	#$0300
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	update_bouncing_debris
 	lda	#$FFFF
@@ -3360,7 +3360,7 @@ loc_01CAF1:
 	sta	a:$0002,y
 	lda	#$FFFC
 	sta	a:$0030,y
-	lda	#$B1EB
+	lda	#.loword(metasprite_06B1EB)
 	sta	a:$0000,y
 	sta	a:$0032,y
 	lda	#$8000
@@ -3477,7 +3477,7 @@ loc_01CBBD:
 loc_01CC13:
 	lda	$26,x
 	beq	loc_01CC21
-	lda	#$912A
+	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$0030
 	sta	cgram_upload_addr
@@ -3679,7 +3679,7 @@ update_grenade:
 	sta	$28,x
 	lda	#$FFF8
 	sta	$2A,x
-	lda	#$B284
+	lda	#.loword(anim_05B284)
 	sta	$20,x
 	stz	$22,x
 	inc	$12,x
@@ -3960,7 +3960,7 @@ make_effect_object:
 	sta	a:$0016,y
 	lda	#OBJT_EFFECT
 	sta	a:$0010,y
-	lda	#$AEA0
+	lda	#.loword(metasprite_06AEA0)
 	sta	a:$0000,y
 	lda	#$3200
 	sta	a:$0002,y

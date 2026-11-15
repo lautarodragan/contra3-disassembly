@@ -117,7 +117,7 @@ stage3_robot_state_00:
 	sta	OBJ_HP,x
 	stz	$38,x
 	phx
-	ldy	#$E7E2
+	ldy	#.loword(palette_05E7E2)
 	jsl	f:start_palette_task
 	plx
 	rtl
@@ -162,7 +162,7 @@ loc_04810C:
 loc_048113:
 	lda	#$0004
 	sta	OBJ_STATE,x
-	lda	#$E83B
+	lda	#.loword(anim_05E83B)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	rtl
@@ -183,7 +183,7 @@ loc_048120:
 loc_04813E:
 	lda	#$0003
 	sta	OBJ_STATE,x
-	lda	#$E81D
+	lda	#.loword(anim_05E81D)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	rtl
@@ -228,7 +228,7 @@ stage3_second_robot_state_02:
 	bcs	loc_0481A8
 	lda	#$0004
 	sta	OBJ_STATE,x
-	lda	#$E83B
+	lda	#.loword(anim_05E83B)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	rtl
@@ -240,7 +240,7 @@ loc_0481A8:
 	sta	OBJ_FACING,x
 	lda	#$0006
 	sta	OBJ_STATE,x
-	lda	#$E847
+	lda	#.loword(anim_05E847)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	lda	#$00C0
@@ -299,7 +299,7 @@ stage3_second_robot_state_06:
 loc_04822C:
 	lda	#$0002
 	sta	OBJ_STATE,x
-	lda	#$E829
+	lda	#.loword(anim_05E829)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	rtl
@@ -355,7 +355,7 @@ loc_048284:
 loc_048289:
 	lda	#$0033
 	jsl	f:queue_sound
-	lda	#$E841
+	lda	#.loword(anim_05E841)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	bra	loc_048306
@@ -369,14 +369,14 @@ loc_048299:
 	jsl	f:queue_sound
 	lda	#$0090
 	sta	OBJ_Y,x
-	lda	#$E835
+	lda	#.loword(anim_05E835)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	lda	#$0006
 	sta	OBJ_STATE,x
 	lda	#$0080
 	sta	$3E,x
-	lda	#$E88B
+	lda	#.loword(anim_05E88B)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	bra	loc_04830B
@@ -388,7 +388,7 @@ loc_0482CA:
 	jsl	f:queue_sound
 	lda	#$00D0
 	sta	OBJ_Y,x
-	lda	#$E829
+	lda	#.loword(anim_05E829)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	sec
@@ -434,7 +434,7 @@ stage3_robot_state_07:
 	inc	OBJ_STATE,x
 	lda	#$0C00
 	sta	OBJ_TIMER,x
-	lda	#$E871
+	lda	#.loword(anim_05E871)
 	sta	OBJ_ANIM,x
 	lda	#$001D
 	sta	OBJ_FLAGS,x
@@ -458,7 +458,7 @@ loc_04834A:
 	lda	#$003F
 	sta	zp_06
 	ldy	#$0300
-	lda	#$C5B8
+	lda	#.loword(anim_05C5B8)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_048381
 	lda	rng_lo
@@ -547,7 +547,7 @@ loc_048411:
 	adc	OBJ_X,x
 	and	#$000F
 	bne	loc_04842D
-	lda	#$E86B
+	lda	#.loword(anim_05E86B)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	lda	#$FFF9
@@ -595,7 +595,7 @@ stage3_robot_cables_state_00:
 	sta	OBJ_FLAGS,x
 	lda	#$3400
 	sta	OBJ_ATTR,x
-	lda	#$BE1D
+	lda	#.loword(metasprite_06BE1D)
 	sta	OBJ_SPRITE,x
 	rtl
 
@@ -614,7 +614,7 @@ loc_048481:
 stage3_robot_cables_state_02:
 	dec	OBJ_TIMER,x
 	bpl	loc_0484B8
-	lda	#$E7EB
+	lda	#.loword(anim_05E7EB)
 	sta	OBJ_ANIM,x
 	inc	OBJ_STATE,x
 	ldy	#$0200
@@ -977,7 +977,7 @@ loc_048751:
 	cmp	#$0040
 	bcc	loc_048765
 	phx
-	ldy	#$CD35
+	ldy	#.loword(palette_05CD35)
 	ldx	#$1210
 	jsl	f:start_palette_task_at
 	plx
@@ -991,7 +991,7 @@ stage3_boss_state_17:
 	sta	OBJ_Y,x
 	lda	#$3400
 	sta	OBJ_ATTR,x
-	lda	#$C257
+	lda	#.loword(metasprite_06C257)
 	sta	OBJ_SPRITE,x
 	inc	OBJ_STATE,x
 	rtl
@@ -1053,7 +1053,7 @@ stage3_boss_state_16:
 	lda	#$003F
 	sta	zp_06
 	ldy	#$0280
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	stage3_boss_state_0E
 	lda	#$FFFD
@@ -1123,7 +1123,7 @@ loc_04886C:
 	lda	#$0000
 	sta	zp_06
 	ldy	#$0300
-	lda	#$C5B8
+	lda	#.loword(anim_05C5B8)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_048892
 	lda	#$0002
@@ -1208,7 +1208,7 @@ loc_048929:
 	cmp	#$0004
 	bne	loc_04893D
 	phx
-	ldy	#$CD3B
+	ldy	#.loword(palette_05CD3B)
 	ldx	#$1210
 	jsl	f:start_palette_task_at
 	plx
@@ -1320,7 +1320,7 @@ sub_0489DC:
 	ldy	#$08C0
 	jsl	f:find_free_slot_y_down
 	bcc	loc_048A5A
-	lda	#$EB37
+	lda	#.loword(anim_05EB37)
 	sta	a:$0020,y
 	lda	#$3E00
 	sta	a:$0002,y
@@ -1401,7 +1401,7 @@ sub_048A80:
 	sta	a:$000A,y
 	lda	#$0090
 	sta	a:$000E,y
-	lda	#$C218
+	lda	#.loword(metasprite_06C218)
 	sta	a:$0000,y
 	sta	a:$0034,y
 	lda	#$3800
@@ -1410,7 +1410,7 @@ sub_048A80:
 	sta	a:$0010,y
 	lda	#$0001
 	sta	a:$0016,y
-	lda	#$EB5A
+	lda	#.loword(anim_05EB5A)
 	sta	a:$0020,y
 loc_048ADB:
 	plx
@@ -1482,7 +1482,7 @@ loc_048B4F:
 	ldy	#$0280
 	jsl	f:find_free_slot_y_to_end
 	bcs	loc_048BBE
-	lda	#$C51C
+	lda	#.loword(anim_05C51C)
 	sta	a:$0020,y
 	lda	#$001D
 	sta	a:$0010,y
@@ -1559,7 +1559,7 @@ tbl_skeleton_eye_fireball_states:
 
 skeleton_eye_fireball_state_00:
 	inc	OBJ_STATE,x
-	lda	#$C6BA
+	lda	#.loword(anim_05C6BA)
 	sta	OBJ_ANIM,x
 	lda	#$000D
 	sta	OBJ_FLAGS,x
@@ -1615,7 +1615,7 @@ loc_048C6A:
 	dec	OBJ_STATE,x
 	stz	OBJ_X_VEL,x
 	stz	OBJ_Y_VEL,x
-	lda	#$C636
+	lda	#.loword(anim_05C636)
 	sta	OBJ_ANIM,x
 loc_048C79:
 	lda	stage_frame_bit1
@@ -1703,7 +1703,7 @@ loc_048CFB:
 	sta	a:$0010,y
 	lda	#$0005
 	sta	a:$0012,y
-	lda	#$C6EB
+	lda	#.loword(metasprite_06C6EB)
 	sta	a:$0000,y
 	lda	#$0004
 	sta	a:$001A,y
@@ -1971,7 +1971,7 @@ stage4_controller_state_10:
 	sta	a:$0012,y
 	lda	#$0002
 	sta	a:$0034,y
-	lda	#$EBB8
+	lda	#.loword(anim_05EBB8)
 	sta	a:$0020,y
 	lda	#$3E00
 	sta	a:$0002,y
@@ -2562,7 +2562,7 @@ rideable_missile_state_06:
 loc_049430:
 	jsl	f:find_free_slot_y_down
 	bcc	loc_049456
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jsl	f:make_effect_object
 	lda	zp_00
 	sta	a:$000A,y
@@ -2593,7 +2593,7 @@ rideable_missile_state_08:
 	lda	#$003F
 	sta	zp_04
 	ldy	#$0300
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jsl	f:spawn_effect_random_offset
 	lda	#$FFFE
 	sta	a:$001A,y
@@ -2677,7 +2677,7 @@ stage4_boss_state_01:
 stage4_boss_state_02:
 	lda	OBJ_SAVED_ATTR,x
 	beq	loc_04952B
-	lda	#$912A
+	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$6050
 	sta	cgram_upload_addr
@@ -2765,7 +2765,7 @@ stage4_boss_state_04:
 	sta	zp_06
 	stz	zp_04
 	ldy	#$0280
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_0495FC
 	lda	rng_lo
@@ -2798,7 +2798,7 @@ update_stage4_boss_pod:
 	lda	#$FFFC
 	sta	OBJ_X_VEL,x
 	txy
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jml	f:make_effect_object
 loc_049633:
 	lda	a:wram_163A
@@ -2820,13 +2820,13 @@ loc_049646:
 	lda	#$FFF8
 	sta	OBJ_X_VEL,x
 	txy
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jml	f:make_effect_object
 loc_04965A:
 	lda	OBJ_STATE,x
 	bne	loc_049690
 	inc	OBJ_STATE,x
-	lda	#$C83F
+	lda	#.loword(metasprite_06C83F)
 	sta	OBJ_SPRITE,x
 	lda	#$3E00
 	sta	OBJ_ATTR,x
@@ -2881,7 +2881,7 @@ update_stage4_boss_fireball:
 	lda	OBJ_HP,x
 	bpl	loc_0496CC
 	txy
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jml	f:make_effect_object
 loc_0496CC:
 	lda	OBJ_STATE,x
@@ -2899,7 +2899,7 @@ tbl_stage4_boss_fireball_states:
 
 stage4_boss_fireball_state_00:
 	inc	OBJ_STATE,x
-	lda	#$AF8C
+	lda	#.loword(metasprite_06AF8C)
 	sta	OBJ_SPRITE,x
 	lda	#$3200
 	sta	OBJ_ATTR,x
@@ -2958,7 +2958,7 @@ loc_04973E:
 	ldy	#$05C0
 	jsl	f:find_free_slot_y_down
 	bcc	loc_04976E
-	lda	#$C558
+	lda	#.loword(anim_05C558)
 	jsl	f:make_effect_object
 	lda	OBJ_X,x
 	adc	#$0004
@@ -3445,7 +3445,7 @@ sub_049B36:
 	sta	a:$0010,y
 	lda	#$0003
 	sta	a:$0016,y
-	lda	#$C6EB
+	lda	#.loword(metasprite_06C6EB)
 	sta	a:$0000,y
 	lda	#$3800
 	sta	a:$0002,y
@@ -3492,7 +3492,7 @@ loc_049BA4:
 	ldy	#$0580
 	jsl	f:find_free_slot_y_down
 	bcc	loc_049BD4
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jsl	f:make_effect_object
 	lda	rng_lo
 	and	#$001F
@@ -3543,7 +3543,7 @@ update_winged_alien:
 	beq	loc_049C1A
 	lda	#$0030
 	sta	cgram_upload_addr
-	lda	#$912A
+	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 loc_049C1A:
 	lda	OBJ_HP,x
@@ -3760,7 +3760,7 @@ sub_049D8D:
 	lda	#$003F
 	sta	zp_06
 	ldy	#$0280
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_049DC2
 	lda	#$FFFD
@@ -4123,7 +4123,7 @@ loc_04A047:
 	lda	#$003F
 	sta	zp_06
 	ldy	#$0280
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_04A084
 	lda	#$FFFD
@@ -4874,7 +4874,7 @@ face_boss_state_07:
 	lda	#$003F
 	sta	zp_06
 	ldy	#$0300
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_04A680
 	lda	#$FFFC
@@ -5051,7 +5051,7 @@ loc_04A7B3:
 	lda	#$0000
 	sta	a:$0018,y
 	sta	a:$001A,y
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jsl	f:make_effect_object
 	rts
 
@@ -5336,7 +5336,7 @@ sub_04AA0D:
 	ldy	OBJ_SAVED_ATTR,x
 	beq	loc_04AA18
 	sta	cgram_upload_addr
-	lda	#$912A
+	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 loc_04AA18:
 	rtl
@@ -5352,7 +5352,7 @@ update_floor_mouth:
 loc_04AA24:
 	lda	OBJ_SAVED_ATTR,x
 	beq	loc_04AA32
-	lda	#$912A
+	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$0050
 	sta	cgram_upload_addr
@@ -5503,7 +5503,7 @@ floor_mouth_state_08:
 	sta	OBJ_FLAGS,x
 	lda	#$3E00
 	sta	OBJ_ATTR,x
-	lda	#$C558
+	lda	#.loword(anim_05C558)
 	sta	OBJ_ANIM,x
 	stz	OBJ_FACING,x
 	stz	OBJ_ANIM_TIMER,x
@@ -5632,7 +5632,7 @@ floor_mouth_bug_state_00:
 	stz	$30,x
 	stz	$32,x
 	stz	OBJ_TIMER,x
-	lda	#$EE50
+	lda	#.loword(anim_05EE50)
 	sta	OBJ_ANIM,x
 	stz	OBJ_FACING,x
 	stz	OBJ_ANIM_TIMER,x
@@ -5730,7 +5730,7 @@ floor_mouth_bug_state_07:
 	sta	OBJ_FLAGS,x
 	lda	#$3000
 	sta	OBJ_ATTR,x
-	lda	#$C59A
+	lda	#.loword(anim_05C59A)
 	sta	OBJ_ANIM,x
 	stz	OBJ_FACING,x
 	stz	OBJ_ANIM_TIMER,x
@@ -5792,7 +5792,7 @@ wall_worm_larva_state_00:
 	sta	OBJ_FACING,x
 	stz	OBJ_X_SUB,x
 	stz	OBJ_Y_SUB,x
-	lda	#$EE68
+	lda	#.loword(anim_05EE68)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	lda	#$0040
@@ -5913,7 +5913,7 @@ face_boss_larva_state_00:
 	stz	OBJ_X_SUB,x
 	stz	OBJ_Y_SUB,x
 loc_04AE0B:
-	lda	#$EE68
+	lda	#.loword(anim_05EE68)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	lda	#$0100
@@ -6129,7 +6129,7 @@ loc_04AF86:
 	rts
 loc_04AF8F:
 	stz	$30,x
-	lda	#$C307
+	lda	#.loword(metasprite_06C307)
 	sta	OBJ_SPRITE,x
 	stz	OBJ_ANIM,x
 	lda	#$FFFF
@@ -6284,7 +6284,7 @@ heart_boss_state_03:
 	lda	#$003F
 	sta	zp_06
 	ldy	#$0300
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_04B0D7
 	lda	#$FFFC
@@ -6546,7 +6546,7 @@ heart_boss_bug_state_03:
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	txy
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jsl	f:make_effect_object
 	rtl
 
@@ -6696,7 +6696,7 @@ wall_worm_state_03:
 	lda	#$007F
 	sta	zp_06
 	ldy	#$0300
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_04B3D4
 	lda	#$FFFC
@@ -6851,7 +6851,7 @@ sub_04B486:
 sub_04B4F3:
 	lda	OBJ_SAVED_ATTR,x
 	beq	loc_04B501
-	lda	#$912A
+	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$0020
 	sta	cgram_upload_addr
@@ -6890,7 +6890,7 @@ loc_04B539:
 	ldy	#$0840
 	lda	a:$0026,y
 	beq	loc_04B552
-	lda	#$912A
+	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$0020
 	sta	cgram_upload_addr
@@ -7636,7 +7636,7 @@ cave_beast_state_27:
 	lda	#$003F
 	sta	zp_06
 	ldy	#$0280
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_04BB59
 	lda	#$FFFD
@@ -7790,7 +7790,7 @@ update_cave_rock:
 	stz	$30,x
 	stz	$32,x
 	stz	OBJ_TIMER,x
-	lda	#$AEB6
+	lda	#.loword(metasprite_06AEB6)
 	sta	OBJ_SPRITE,x
 	stz	OBJ_ANIM,x
 	stz	OBJ_FACING,x
@@ -7845,7 +7845,7 @@ update_enemy_type_70:
 	stz	$30,x
 	stz	$32,x
 	stz	OBJ_TIMER,x
-	lda	#$C376
+	lda	#.loword(metasprite_06C376)
 	sta	OBJ_SPRITE,x
 	stz	OBJ_ANIM,x
 	stz	OBJ_FACING,x
@@ -7910,7 +7910,7 @@ update_cave_beast_fireball:
 	stz	OBJ_Y_SUB,x
 	stz	$36,x
 	stz	OBJ_TIMER,x
-	lda	#$AF82
+	lda	#.loword(metasprite_06AF82)
 	sta	OBJ_SPRITE,x
 	stz	OBJ_ANIM,x
 	stz	OBJ_FACING,x
@@ -7958,7 +7958,7 @@ update_cave_beast_beam:
 	sta	OBJ_HITBOX_H,x
 	stz	$36,x
 	stz	OBJ_TIMER,x
-	lda	#$AF82
+	lda	#.loword(metasprite_06AF82)
 	sta	OBJ_SPRITE,x
 	stz	OBJ_ANIM,x
 	stz	OBJ_FACING,x
@@ -8064,7 +8064,7 @@ face_boss_side_head_state_00:
 	lda	a:face_boss_side_head_hp,y
 	sta	OBJ_HP,x
 	stz	OBJ_FLAGS,x
-	lda	#$C49F
+	lda	#.loword(metasprite_06C49F)
 	sta	OBJ_SPRITE,x
 	lda	#$2600
 	sta	OBJ_ATTR,x
@@ -8087,7 +8087,7 @@ loc_04BE80:
 	lda	#$4019
 	sta	OBJ_FLAGS,x
 	stz	$30,x
-	lda	#$C49F
+	lda	#.loword(metasprite_06C49F)
 	sta	OBJ_SPRITE,x
 	lda	#$2600
 	sta	OBJ_ATTR,x
@@ -8127,7 +8127,7 @@ loc_04BECF:
 loc_04BED0:
 	lda	#$401D
 	sta	OBJ_FLAGS,x
-	lda	#$C4BC
+	lda	#.loword(metasprite_06C4BC)
 	sta	OBJ_SPRITE,x
 	lda	#$3600
 	sta	OBJ_ATTR,x
@@ -8253,7 +8253,7 @@ loc_04BFA2:
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	txy
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jsl	f:make_effect_object
 	lda	#$0005
 	sta	OBJ_STATE,x
@@ -8583,7 +8583,7 @@ loc_04C2B5:
 loc_04C2BA:
 	lda	#$003D
 	sta	OBJ_FLAGS,x
-	lda	#$C4D9
+	lda	#.loword(metasprite_06C4D9)
 	sta	OBJ_SPRITE,x
 	lda	#$2600
 	sta	OBJ_ATTR,x
@@ -8711,7 +8711,7 @@ loc_04C383:
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	txy
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jsl	f:make_effect_object
 	lda	#$0006
 	sta	OBJ_STATE,x
@@ -8790,7 +8790,7 @@ snake_robot_state_00:
 	sta	a:$0010,y
 	lda	#$3E00
 	sta	a:$0002,y
-	lda	#$C65B
+	lda	#.loword(metasprite_06C65B)
 	sta	a:$0000,y
 	lda	#$401C
 	sta	a:$0016,y
@@ -8813,7 +8813,7 @@ loc_04C44A:
 	tay
 	lda	#$0053
 	sta	a:$0010,y
-	lda	#$C670
+	lda	#.loword(metasprite_06C670)
 	sta	a:$0000,y
 	lda	#$3E00
 	sta	a:$0002,y
@@ -8840,7 +8840,7 @@ loc_04C46F:
 	sta	a:$0028,y
 	lda	#$FFF0
 	sta	a:$002A,y
-	lda	#$C7E5
+	lda	#.loword(metasprite_06C7E5)
 	sta	a:$0000,y
 	lda	#$0080
 	sta	a:$000A,y
@@ -9259,7 +9259,7 @@ loc_04C80E:
 	lda	#$001F
 	sta	zp_06
 	ldy	#$0280
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_04C83E
 	lda	#$FFFD
@@ -9572,7 +9572,7 @@ snake_robot_state_11:
 	lda	#$001F
 	sta	zp_06
 	ldy	#$0280
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_04CAF3
 	lda	#$FFFD
@@ -10156,7 +10156,7 @@ lightning_bolt_state_00:
 	sta	OBJ_TIMER,x
 	lda	#$000C
 	sta	OBJ_FLAGS,x
-	lda	#$F246
+	lda	#.loword(anim_05F246)
 	sta	OBJ_ANIM,x
 	lda	#$0008
 	sta	OBJ_HITBOX_W,x
@@ -10203,7 +10203,7 @@ loc_04CF5B:
 	ldy	#$0580
 	jsl	f:find_free_slot_y_down
 	bcc	loc_04CF90
-	lda	#$C672
+	lda	#.loword(anim_05C672)
 	jsl	f:make_effect_object
 	lda	OBJ_X,x
 	sta	a:$000A,y
@@ -10243,7 +10243,7 @@ tbl_spiked_mine_states:
 
 spiked_mine_state_00:
 	inc	OBJ_STATE,x
-	lda	#$C81D
+	lda	#.loword(metasprite_06C81D)
 	sta	OBJ_SPRITE,x
 	lda	#$3E00
 	sta	OBJ_ATTR,x
@@ -10404,7 +10404,7 @@ sub_04D0EA:
 	lda	#$0001
 	sta	OBJ_FLAGS,x
 	txy
-	lda	#$C516
+	lda	#.loword(anim_05C516)
 	jsl	f:make_effect_object
 loc_04D106:
 	phx
@@ -10547,7 +10547,7 @@ update_enemy_type_80:
 	sta	OBJ_HITBOX_W,x
 	lda	#$FFF8
 	sta	OBJ_HITBOX_H,x
-	lda	#$F278
+	lda	#.loword(anim_05F278)
 	sta	OBJ_ANIM,x
 	lda	#$0015
 	jml	f:queue_sound
@@ -10566,7 +10566,7 @@ loc_04D247:
 	ldy	#$05C0
 	jsl	f:find_free_slot_y_down
 	bcc	loc_04D2AC
-	lda	#$C672
+	lda	#.loword(anim_05C672)
 	jsl	f:make_effect_object
 	lda	#$FFFA
 	sta	a:$001A,y
@@ -10587,7 +10587,7 @@ loc_04D26C:
 	lda	#$00B0
 	sta	zp_02
 	ldy	#$0300
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_04D2AC
 	lda	rng_hi
@@ -10623,7 +10623,7 @@ loc_04D2C6:
 	jsl	f:delete_trail_chain
 	stz	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
-	lda	#$CB30
+	lda	#.loword(metasprite_06CB30)
 	sta	OBJ_SPRITE,x
 	lda	#$0002
 	sta	OBJ_X_VEL,x
@@ -10678,7 +10678,7 @@ helicopter_rope_state_01:
 	bpl	loc_04D372
 	lda	#$0015
 	jsl	f:queue_sound
-	lda	#$C859
+	lda	#.loword(metasprite_06C859)
 	sta	OBJ_SPRITE,x
 	lda	#$3400
 	sta	OBJ_ATTR,x
@@ -10724,7 +10724,7 @@ loc_04D389:
 	lda	OBJ_Y,x
 	sta	zp_02
 	ldy	#$0700
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jsl	f:spawn_effect_random_offset
 	bcs	loc_04D3B3
 	lda	#$FFFC
@@ -10837,7 +10837,7 @@ loc_04D488:
 	sta	OBJ_SPRITE,x
 	lda	a:stage1_boss_head_pos
 	beq	loc_04D4F6
-	lda	#$CB72
+	lda	#.loword(metasprite_06CB72)
 	sta	OBJ_SPRITE,x
 	lda	OBJ_X,x
 	sta	zp_00
@@ -10904,7 +10904,7 @@ loc_04D51E:
 	sta	a:stage1_boss_height
 	stz	a:wram_1642
 	stz	a:wram_1644
-	lda	#$F2F3
+	lda	#.loword(anim_05F2F3)
 	sta	OBJ_ANIM,x
 	lda	#$0016
 	sta	a:wram_163E
@@ -10961,7 +10961,7 @@ helicopter_rope_state_09:
 	stz	a:wram_1642
 	stz	a:wram_1644
 	inc	OBJ_STATE,x
-	lda	#$F30B
+	lda	#.loword(anim_05F30B)
 	sta	OBJ_ANIM,x
 	lda	#$0040
 	sta	OBJ_TIMER,x
@@ -11053,7 +11053,7 @@ loc_04D638:
 	ldy	#$0700
 	jsl	f:find_free_slot_y_down
 	bcc	loc_04D685
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	jsl	f:make_effect_object
 	lda	OBJ_X,x
 	adc	#$0000
@@ -11207,7 +11207,7 @@ loc_04D73D:
 	bcc	loc_04D78B
 	lda	#$0033
 	jsl	f:queue_sound
-	lda	#$C6BA
+	lda	#.loword(anim_05C6BA)
 	jsl	f:make_effect_object
 	lda	#$FFFC
 	sta	a:$001A,y
@@ -11299,7 +11299,7 @@ update_enemy_type_85:
 	lda	OBJ_STATE,x
 	bne	loc_04D866
 	inc	OBJ_STATE,x
-	lda	#$F32D
+	lda	#.loword(anim_05F32D)
 	sta	OBJ_ANIM,x
 	lda	#$000F
 	sta	OBJ_FLAGS,x
