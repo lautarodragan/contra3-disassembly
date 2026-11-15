@@ -7104,7 +7104,7 @@ loc_02C007:
 	sta	a:$002E,y
 	lda	a:$0006,y
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:$0006,y
 	bpl	loc_02C02C
 	jsl	f:td_score_shot_kill
@@ -8675,7 +8675,7 @@ td_bomb_hits_map_object_tile:
 	sta	a:$002E,y
 	lda	a:$0006,y
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:$0006,y
 	bpl	loc_02CB57
 	phx
@@ -8926,7 +8926,7 @@ loc_02CCAF:
 	sta	a:$002E,y
 	lda	a:$0006,y
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:$0006,y
 	bpl	@next
 	jsl	f:td_score_shot_kill
@@ -8964,7 +8964,7 @@ loc_02CCAF:
 	sta	a:$002E,y
 	lda	a:$0006,y
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:$0006,y
 @next2:
 	txa
@@ -9192,7 +9192,7 @@ loc_02CEBF:
 	sta	a:wram_0B6E
 	lda	a:td_boss_core_hp
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:td_boss_core_hp
 	bpl	loc_02CF09
 	; (not executed in the CDL traces)
@@ -9242,7 +9242,7 @@ loc_02CF3B:
 	sta	a:wram_0BAE
 	lda	a:wram_0B86
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:wram_0B86
 	bpl	loc_02CF78
 	; (not executed in the CDL traces)
@@ -9279,7 +9279,7 @@ loc_02CF78:
 	sta	a:$002E,y
 	lda	a:$0006,y
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:$0006,y
 	bpl	@next
 	; (not executed in the CDL traces)
@@ -9727,7 +9727,7 @@ loc_02D2F9:
 	sta	a:wram_0AEE
 	lda	a:td_boss_hp
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:td_boss_hp
 	bpl	loc_02D343
 	; (not executed in the CDL traces)
@@ -9764,7 +9764,7 @@ loc_02D343:
 	sta	a:$002E,y
 	lda	a:$0006,y
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:$0006,y
 	bpl	@next
 	jsl	f:td_score_shot_kill_enemy
@@ -9940,7 +9940,7 @@ loc_02D4A1:
 	sta	a:$002E,y
 	lda	a:$0006,y
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:$0006,y
 	bpl	@next
 	jsl	f:td_score_shot_kill
@@ -9979,7 +9979,7 @@ loc_02D4A1:
 	sta	a:$002E,y
 	lda	a:$0006,y
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:$0006,y
 @next2:
 	txa
@@ -10203,7 +10203,7 @@ loc_02D6B1:
 	sta	a:wram_0B6E
 	lda	a:td_boss_core_hp
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:td_boss_core_hp
 	bpl	loc_02D6FB
 	ldy	#$0B40
@@ -10252,7 +10252,7 @@ loc_02D72D:
 	sta	a:wram_0BAE
 	lda	a:wram_0B86
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:wram_0B86
 	bpl	loc_02D76A
 	ldy	#$0B80
@@ -10288,7 +10288,7 @@ loc_02D76A:
 	sta	a:$002E,y
 	lda	a:$0006,y
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:$0006,y
 	bpl	@next
 	jsl	f:td_score_shot_kill
@@ -10735,7 +10735,7 @@ loc_02DAEB:
 	sta	a:wram_0AEE
 	lda	a:td_boss_hp
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:td_boss_hp
 	bpl	loc_02DB35
 	ldy	#$0AC0
@@ -10771,7 +10771,7 @@ loc_02DB35:
 	sta	a:$002E,y
 	lda	a:$0006,y
 	sec
-	sbc	$06,x
+	sbc_player_damage_x
 	sta	a:$0006,y
 	bpl	@next
 	jsl	f:td_score_shot_kill_enemy

@@ -46,4 +46,28 @@ cheat_filter_death:
 .endif
 .endif
 
+.if CHEAT_DAMAGE_MULT > 1
+; Called (JSL) by update_shots instead of `sec / lda OBJ_HP,x / sbc
+; SHOT_DAMAGE,y` (X = target, Y = shot): A = OBJ_HP - CHEAT_DAMAGE_MULT *
+; SHOT_DAMAGE, N set when negative (RTL keeps the flags).
+cheat_shot_damage:
+	lda	OBJ_HP,x
+	.repeat	CHEAT_DAMAGE_MULT
+	sec
+	sbc	a:SHOT_DAMAGE,y
+	.endrepeat
+	rtl
+
+; Called (JSL) through sbc_player_damage_x instead of `sbc $06,x` (A = a
+; top-down target's HP, carry set, X = player shot or bomb): subtracts its
+; damage CHEAT_DAMAGE_MULT times.
+cheat_sbc_damage_x:
+	sbc	$06,x
+	.repeat	CHEAT_DAMAGE_MULT - 1
+	sec
+	sbc	$06,x
+	.endrepeat
+	rtl
+.endif
+
 .endif

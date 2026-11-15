@@ -135,9 +135,13 @@ loc_00E251:
 	beq	loc_00E2B3
 	bit	#OBJF_INVULNERABLE
 	bne	loc_00E2B3
+.if CHEAT_DAMAGE_MULT > 1
+	jsl	f:cheat_shot_damage	; cheat: A = OBJ_HP - n * SHOT_DAMAGE
+.else
 	sec
 	lda	OBJ_HP,x
 	sbc	a:SHOT_DAMAGE,y
+.endif
 	sta	OBJ_HP,x
 	bpl	loc_00E2B3
 	sta	a:SHOT_HIT,y

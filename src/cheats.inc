@@ -69,7 +69,7 @@ CHEAT_FIRE_DELAY = 0
 .endif
 
 ; n >= 1: the players' shots do n times their damage (update_shots, and the
-; top-down shot collisions through sbc_shot_damage_x).
+; top-down shot and bomb collisions through sbc_player_damage_x).
 .ifndef CHEAT_DAMAGE_MULT
 CHEAT_DAMAGE_MULT = 1
 .endif
@@ -154,11 +154,12 @@ CHEAT_CODE_NEEDED = (CHEAT_INVINCIBLE | CHEAT_NO_PIT_DEATH | (CHEAT_DAMAGE_MULT 
 	.word	ENEMY_HP(easy), ENEMY_HP(normal), ENEMY_HP(hard)
 .endmacro
 
-; `sbc $06,x` where A = a target's HP and X = a top-down player shot (+$06 =
-; its damage): with CHEAT_DAMAGE_MULT, subtracts it that many times.
-.macro sbc_shot_damage_x
+; `sbc $06,x` where A = a target's HP and X = a top-down player shot or
+; smart bomb (+$06 = its damage): with CHEAT_DAMAGE_MULT, subtracts it that
+; many times (cheat_sbc_damage_x).
+.macro sbc_player_damage_x
 .if CHEAT_DAMAGE_MULT > 1
-	jsl	f:cheat_sbc_shot_damage_x
+	jsl	f:cheat_sbc_damage_x
 .else
 	sbc	$06,x
 .endif
