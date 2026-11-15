@@ -1059,7 +1059,7 @@ update_stage1_boss_tracking_shot:
 	lda	#$C59A
 	jml	f:make_effect_object
 loc_00FAD3:
-	lda	zp_E6
+	lda	rng_temp
 	cmp	#$0002
 	bcc	loc_00FADE
 	inc	$0E,x

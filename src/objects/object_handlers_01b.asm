@@ -3056,7 +3056,7 @@ stage3_winged_bug_state_04:
 	lda	#$FFFC
 	sta	a:$001E,y
 loc_01E629:
-	lda	zp_E6
+	lda	rng_temp
 	lsr	a
 	sta	$04,x
 	clc

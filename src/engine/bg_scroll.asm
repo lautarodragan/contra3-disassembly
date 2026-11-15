@@ -507,7 +507,7 @@ bg1_scroll_horizontal:
 	ldx	#$00A0
 @check_p1:
 	stx	scroll_threshold
-	lda	a:wram_020A
+	lda	a:player1_obj+OBJ_X
 	cmp	scroll_threshold
 	bcc	@check_p2
 	ldx	#$0200
@@ -519,7 +519,7 @@ bg1_scroll_horizontal:
 @check_p2:
 	lda	a:p2_lives
 	beq	@no_scroll
-	lda	a:wram_024A
+	lda	a:player2_obj+OBJ_X
 	cmp	scroll_threshold
 	bcc	@no_scroll
 	ldx	#$0240
@@ -636,7 +636,7 @@ bg1_scroll_vertical:
 	bne	@autoscroll
 	lda	a:p1_lives
 	beq	@check_p2
-	lda	a:wram_020E
+	lda	a:player1_obj+OBJ_Y
 	bmi	@p1_high
 	cmp	scroll_threshold
 	bcs	@check_p2
@@ -649,7 +649,7 @@ bg1_scroll_vertical:
 	lda	a:p2_lives
 	beq	bg1_no_vertical_scroll
 	; (not executed in the CDL traces)
-	lda	a:wram_024E
+	lda	a:player2_obj+OBJ_Y
 	bmi	@p2_high
 	cmp	scroll_threshold
 	bcs	bg1_no_vertical_scroll

@@ -3,7 +3,7 @@
 ;
 ; next_random: 32-bit shift-register generator in rng_lo/rng_hi, seeded from
 ; frame_counter while 0. Called once per frame by the NMI frame handlers.
-; Returns the new rng_lo in A (16-bit); uses zp_E6.
+; Returns the new rng_lo in A (16-bit); uses rng_temp.
 
 next_random:
 	rep	#$30
@@ -16,12 +16,12 @@ next_random:
 	sta	rng_lo
 @seeded:
 	eor	#$FFFF
-	sta	zp_E6
+	sta	rng_temp
 	lda	rng_hi
-	eor	zp_E6
+	eor	rng_temp
 	asl	rng_lo
 	rol	rng_hi
-	asl	zp_E6
+	asl	rng_temp
 	bcc	@done
 	lda	rng_lo
 	eor	#$2125

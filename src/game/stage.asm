@@ -218,7 +218,7 @@ update_stage_frame_counters:
 	sta	stage_frame_bit1
 	lda	stage_frame_counter
 	and	#$0004
-	sta	zp_E6
+	sta	rng_temp
 	rts
 
 ; STAGE_STATE_EXIT: keeps the stage running while fading out (every 8th

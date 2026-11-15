@@ -1677,7 +1677,7 @@ loc_01B162:
 	sta	zp_12
 	lda	a:data_05AC13,y
 	sta	PLAYER_POSE,x
-	lda	zp_E6
+	lda	rng_temp
 	lsr	a
 	sta	a:PLAYER_POSE_ADD,x
 	lda	a:data_05AC2D,y

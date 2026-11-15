@@ -43,7 +43,7 @@ demo_init:
 	dec	a
 	sta	stage_index
 	jsr	a:demo_init_input
-	stz	zp_E6
+	stz	rng_temp
 	stz	rng_lo
 	stz	rng_hi
 	stz	frame_counter

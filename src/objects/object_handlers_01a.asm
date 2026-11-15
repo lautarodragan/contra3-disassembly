@@ -399,7 +399,7 @@ loc_01B459:
 	lda	#$001A
 	jsl	f:queue_sound
 loc_01B4CC:
-	lda	zp_E6
+	lda	rng_temp
 	bne	loc_01B4D5
 loc_01B4D0:
 	lda	#$B5A0
@@ -880,7 +880,7 @@ loc_01B861:
 	bra	loc_01B895
 loc_01B87F:
 	ldy	$3A,x
-	lda	zp_E6
+	lda	rng_temp
 	bne	loc_01B88D
 	clc
 	lda	a:$003A,x
