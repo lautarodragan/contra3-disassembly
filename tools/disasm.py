@@ -3,17 +3,21 @@
 
 Usage:
     python3 tools/disasm.py ROM.sfc [--hints tools/disasm_hints.json]
-                            [--cdl PATH] [--out src] [--report report.md]
+                            [--cdl PATH] [--out build/disasm/src]
+                            [--report build/disasm/disasm_report.md]
 
-The output (src/bank_XX.asm, src/contra3.cfg, ...) is meant to be committed and
-then edited by hand; this tool only (re)generates a starting point.  All of its
-knowledge that was not derived automatically lives in the hints file, so a rerun
-(e.g. when a CDL becomes available) reproduces and improves the same output.
+Status: reference / research tool.  It generated the committed src/ (last
+time with the emulator's CDL), but since then src/ is the source of truth and
+is edited by hand.  The generator writes into build/disasm/ by default and
+never over src/; improvements it finds are ported to src/ by hand or by a
+script.  All of its knowledge that was not derived automatically lives in the
+hints file, so a rerun on the original ROM (with the same CDL) reproduces the
+output exactly.
 
 How it works
 ------------
-1. Seeds: the reset/NMI/IRQ vectors, the hints' entry points, and (optionally)
-   every instruction start found in a CDL.
+1. Seeds: the reset/NMI/IRQ vectors and the hints' entry points (with a CDL,
+   executed code the descent doesn't reach is seeded later, see 4).
 2. Recursive descent with a worklist.  Each path carries a CPU state:
    M/X widths, the data bank (DB, when known), a model of the bytes pushed
    since the routine entry (to understand PHP/PLP, PHK/PLB, LDA #n/PHA/PLB,
@@ -42,7 +46,16 @@ How it works
    pairs, ROM pointers passed in X to routines that read f:$BB0000,x, and
    tables of 16-bit data pointers (read via (dp),y or passed to such
    routines) become label expressions / .addr tables.
-6. Emission: every byte not decoded as an instruction is emitted as data.
+6. With a CDL (tools/cdl.py): executed opcodes give M/X (when unique) and
+   the DB/D they really ran with; DB overrides the static tracking (so
+   absolute operands get the right bank, and WRAM vs. register vs. ROM is
+   known); bytes only read as data are never code; immediates/pointer
+   arguments/data-pointer tables whose code ran but whose target was never
+   read are rejected; the source gets comments: "; (not executed in the CDL
+   traces)" where unexecuted code starts, "; $1F8A (D=$1F00)" on direct-page
+   operands run with D != 0, and "; CDL: read by sub_X / DMA / not accessed"
+   above data, naming the routine that read it first.
+7. Emission: every byte not decoded as an instruction is emitted as data.
    Operands that point into ROM become labels when the bank is certain (code
    targets, long addresses, absolute addresses with a known DB, jump tables);
    everything else stays a number.  Operand sizes are forced (a:, f:, z: is
@@ -51,6 +64,7 @@ How it works
 """
 
 import argparse
+import bisect
 import collections
 import hashlib
 import json
@@ -153,15 +167,19 @@ class Disassembler:
         self.cdl = cdl
         self.warnings = []
 
-        # ROM offsets the hints say are data
-        self.data_mask = bytearray(ROM_SIZE)
+        # ROM offsets the hints say are data (these also end jump tables)
+        self.hint_data = bytearray(ROM_SIZE)
         for r in hints.get('data', []):
             s = rom_offset(parse_addr(r['start']))
             e = rom_offset(parse_addr(r['end']))
             for i in range(s, e + 1):
-                self.data_mask[i] = 1
+                self.hint_data[i] = 1
+        # ROM offsets that are never code: the hints' data plus, with a CDL,
+        # every byte read as data and never executed.  Jump tables are read
+        # as data too, so only hint_data ends a table scan.
+        self.data_mask = bytearray(self.hint_data)
         if cdl:
-            for off in cdl.data_offsets:
+            for off in cdl.data_only:
                 self.data_mask[off] = 1
 
         self.mx_override = {}
@@ -244,8 +262,11 @@ class Disassembler:
         (also with ldx/stx, ldy/sty, in either order, within a few
         instructions of straight-line code).  When the pair forms a ROM
         address, both immediates become label expressions
-        (#.loword(label) / #^label)."""
+        (#.loword(label) / #^label).  With a CDL, a pair whose code ran but
+        whose target was never read is rejected (it is two numbers, e.g. a
+        16-bit value and its sign extension, not a pointer)."""
         self.imm_ptrs = {}
+        self.rejected_ptrs = []   # (instr off, target off, reason)
         loads = {'sta': 'lda', 'stx': 'ldx', 'sty': 'ldy'}
         stores = []   # (off, addr, value, width8, load instr)
         for off in sorted(self.instrs):
@@ -282,10 +303,39 @@ class Disassembler:
                     continue
                 if ld.off in self.imm_ptrs or ld2.off in self.imm_ptrs:
                     continue
+                if not self._straight_line(min(ld.off, ld2.off), max(off, off2)):
+                    continue
+                if self._cdl_refutes(ld.off, tgt):
+                    continue
                 self.imm_ptrs[ld.off] = ('lo', tgt)
                 self.imm_ptrs[ld2.off] = ('bank', tgt)
                 self.labels.setdefault(tgt, 'data')
                 break
+
+    def _straight_line(self, a, b):
+        """True if the instructions from offset a to offset b run in
+        sequence, with no jump, return or routine entry in between."""
+        cur = a
+        while cur < b:
+            ins = self.instrs.get(cur)
+            if ins is None or ins.mn in ('rts', 'rtl', 'rti', 'jmp', 'jml', 'bra', 'brl'):
+                return False
+            if cur != a and cur in self.routines:
+                return False
+            cur += ins.length
+        return cur == b
+
+    def _cdl_refutes(self, ins_off, tgt):
+        """With a CDL: the instruction at ins_off ran, but the ROM bytes it
+        supposedly points to were never read as data nor entered as code."""
+        c = self.cdl
+        if c is None or ins_off not in c.mx:
+            return False
+        if c.accessed[tgt] or tgt in c.entries:
+            # read as data, or a code entry point (e.g. a JML [ptr] target)
+            return False
+        self.rejected_ptrs.append((ins_off, tgt))
+        return True
 
     def find_data_pointer_tables(self):
         """Tables of 16-bit data pointers:
@@ -330,6 +380,8 @@ class Disassembler:
             start = rom_offset((ld.db << 16) | ld.operand)
             if start is None or start in self.data_tables or start in self.tables:
                 continue
+            if self._cdl_refutes(ld.off, start):
+                continue
             self._add_data_ptr_table(start, use.db, 1 if ld.mode == 'abs' else 256)
 
     def _add_data_ptr_table(self, start, bank, maxn=256):
@@ -351,6 +403,10 @@ class Disassembler:
                 break
             targets.append(t)
             o += 2
+        # entries that point into the table itself mean it ended before them
+        inside = [t for t in targets if start <= t < start + 2 * len(targets)]
+        if inside:
+            targets = targets[:(min(inside) - start) // 2]
         if not targets:
             return
         self.data_tables[start] = (targets, 2)
@@ -420,7 +476,8 @@ class Disassembler:
                     break
                 if prev.mn == 'ld' + reg and prev.mode == 'immx' and prev.length == 3:
                     tgt = rom_offset((bank << 16) | prev.operand)
-                    if tgt is not None and prev.off not in self.imm_ptrs:
+                    if (tgt is not None and prev.off not in self.imm_ptrs
+                            and not self._cdl_refutes(prev.off, tgt)):
                         self.imm_ptrs[prev.off] = ('lo', tgt)
                         self.labels.setdefault(tgt, 'data')
                     break
@@ -437,10 +494,10 @@ class Disassembler:
     def _cdl_unreached(self):
         """First opcode of every run of CDL-executed code not decoded yet."""
         out = {}
-        for off, mx in self.cdl.code_starts.items():
+        for off, (m8, x8) in self.cdl.mx.items():
             if off in self.owner or off in self.speculative:
                 continue
-            out[off] = mx
+            out[off] = (True if m8 is None else m8, True if x8 is None else x8)
         # keep only run heads
         heads = {}
         for off in sorted(out):
@@ -566,12 +623,12 @@ class Disassembler:
             off = rom_offset(parse_addr(e['addr']))
             seeds.append((off, e.get('m', 8) == 8, e.get('x', 8) == 8,
                           parse_addr(e['db']) if 'db' in e else None))
+        # (with a CDL, executed code that the descent doesn't reach is seeded
+        # through _cdl_unreached / self.speculative, not here: seeding every
+        # executed jump target as a routine would reset the stack model and
+        # the DB tracking in the middle of routines)
         for off, (m8, x8) in sorted(getattr(self, 'speculative', {}).items()):
             seeds.append((off, m8, x8, None))
-        if self.cdl:
-            for off in sorted(self.cdl.extra_entries):
-                m8, x8 = self.cdl.code_starts.get(off, (True, True))
-                seeds.append((off, m8, x8, None))
         return seeds
 
     def _pass(self):
@@ -587,6 +644,7 @@ class Disassembler:
         self.table_bytes = set()  # ROM offsets claimed by jump tables
         self.direct_targets = set()  # targets of jsr/jsl/jmp/branches
         self.cdl_corrections = set()  # offsets where the CDL fixed M/X
+        self.cdl_db_corrections = set()  # offsets where the CDL fixed a static DB
         self.warnings = []
         self.work = collections.deque()
 
@@ -595,7 +653,6 @@ class Disassembler:
         while self.work:
             off, st = self.work.popleft()
             self._trace(off, st)
-        self._assign_cdl_tables()
         return self._infer_returns()
 
     def _queue(self, off, st, kind, direct=True):
@@ -626,11 +683,22 @@ class Disassembler:
                 self.conflicts.append((off, 'jump into the middle of instruction at %s'
                                        % fmt_addr(self.cfg.canon(self.owner[off]))))
                 return
-            if self.cdl and off in self.cdl.code_starts:
-                cm8, cx8 = self.cdl.code_starts[off]
+            if self.cdl and off in self.cdl.mx:
+                # the CDL knows the M/X (when it ran with one width only) and
+                # the DB this instruction really ran with
+                cm8, cx8 = self.cdl.mx[off]
+                cm8 = st.m8 if cm8 is None else cm8
+                cx8 = st.x8 if cx8 is None else cx8
                 if (cm8, cx8) != (st.m8, st.x8):
                     self.cdl_corrections.add(off)
                     st = st._replace(m8=cm8, x8=cx8)
+                dbs = self.cdl.db.get(off)
+                if dbs:
+                    cdb = next(iter(dbs)) if len(dbs) == 1 else None
+                    if cdb != st.db:
+                        if st.db is not None:
+                            self.cdl_db_corrections.add(off)
+                        st = st._replace(db=cdb)
             vis = self.visited.get(off)
             key = (st.m8, st.x8)
             if vis is not None and key in vis:
@@ -845,11 +913,8 @@ class Disassembler:
         if mode in ('long', 'longx'):
             tgt = rom_offset(opd)
         elif mode in ('abs', 'absx', 'absy') and opd >= 0x8000:
-            edb = db
-            if edb is None and self.cdl:
-                edb = self.cdl.db.get(ins.off)
-            if edb is not None:
-                tgt = rom_offset((edb << 16) | opd)
+            if db is not None:
+                tgt = rom_offset((db << 16) | opd)
         if tgt is not None:
             self.data_refs[ins.off] = tgt
             self.labels.setdefault(tgt, 'data')
@@ -885,7 +950,7 @@ class Disassembler:
                     break
                 if any(t is not None and start <= t < off + entry_size for t in targets):
                     break
-                if any(self.data_mask[i] for i in range(off, off + entry_size)):
+                if any(self.hint_data[i] for i in range(off, off + entry_size)):
                     break
                 if any(i in self.owner or i in self.table_bytes
                        for i in range(off, off + entry_size)):
@@ -1010,12 +1075,6 @@ class Disassembler:
             if t is not None:
                 self._queue(t, st._replace(stack=(), a_imm=None), 'sub', direct=False)
 
-    def _assign_cdl_tables(self):
-        if not self.cdl:
-            return
-        # indirect jump targets observed at runtime become routine entries
-        # (already seeded); nothing else to do here.
-
     # -- return-state inference ------------------------------------------
 
     def _infer_returns(self):
@@ -1080,7 +1139,12 @@ class Emitter:
             self.comments[rom_offset(parse_addr(k))] = v
         self.stats = collections.Counter()
         self.rom_numbers = []     # (instr offset, reason) of ROM-range numbers
+        self.wram_numbers = []    # (instr offset, reason): $8000+ operands with DB=$7E/$7F
+        self.dp_notes = 0         # direct-page operands annotated with D != 0
         self._build_labels()
+        # routine starts, to name the routine that owns a CDL reader
+        self.routine_starts = sorted(set(d.routines) | {
+            t for _, ts, _ in d.tables.values() for t in ts if t is not None})
 
     def _build_labels(self):
         d = self.d
@@ -1097,6 +1161,20 @@ class Emitter:
             labels.setdefault(off, 'sub')
         for off in self.names:
             labels.setdefault(off, 'data')
+        # data references into the middle of a table (e.g. `lda tbl+2,y` for
+        # the bank bytes of a table of long pointers) become `tbl+n` instead
+        # of a label of their own, which would split the table's entries
+        spans = sorted([(st_, size * len(ts)) for st_, (_, ts, size) in d.tables.items()]
+                       + [(st_, size * len(ts)) for st_, (ts, size) in d.data_tables.items()])
+        starts = [x[0] for x in spans]
+        self.alias = {}
+        for off, kind in list(labels.items()):
+            if kind != 'data' or off in self.names:
+                continue
+            i = bisect.bisect_right(starts, off) - 1
+            if i >= 0 and spans[i][0] < off < spans[i][0] + spans[i][1]:
+                self.alias[off] = (spans[i][0], off - spans[i][0])
+                del labels[off]
         self.label_kind = labels
         self.label_name = {}
         for off, kind in labels.items():
@@ -1126,6 +1204,9 @@ class Emitter:
 
     def ref(self, off):
         """Label expression for ROM offset `off`."""
+        if off in self.alias:
+            base, n = self.alias[off]
+            return '%s+%d' % (self.label_name[base], n)
         return self.label_name[off]
 
     def same(self, off, value, bits):
@@ -1134,9 +1215,17 @@ class Emitter:
         return (self.cfg.canon(off) & ((1 << bits) - 1)) == value
 
     def has_label(self, off):
-        return off is not None and off in self.label_name
+        return off is not None and (off in self.label_name or off in self.alias)
 
     # -- operand formatting ---------------------------------------------
+
+    def db_set(self, ins):
+        """The data banks `ins` runs with: every DB the CDL saw there, else
+        the statically tracked one; None when unknown."""
+        c = self.d.cdl
+        if c is not None and ins.off in c.db:
+            return c.db[ins.off]
+        return None if ins.db is None else frozenset([ins.db])
 
     def fmt_operand(self, ins):
         mode, v = ins.mode, ins.operand
@@ -1150,13 +1239,27 @@ class Emitter:
             if data_tgt is not None and self.has_label(data_tgt) and self.same(data_tgt, val, 16):
                 st['operand_label'] += 1
                 return prefix + self.ref(data_tgt)
+            dbs = self.db_set(ins)
+            wram = {0x7E, 0x7F}
             if val >= 0x8000:
-                st['operand_rom_number'] += 1
-                self.rom_numbers.append((ins.off, 'DB unknown' if ins.db is None else
-                                         'DB=$%02X' % ins.db))
+                if dbs and dbs <= wram:
+                    # $7E:8000+ / $7F:8000+ is WRAM, not ROM
+                    st['operand_ram_number'] += 1
+                    self.wram_numbers.append((ins.off, 'DB=$%02X' % min(dbs)))
+                else:
+                    st['operand_rom_number'] += 1
+                    if not dbs:
+                        why = 'DB unknown'
+                        if d.cdl is not None and ins.off not in d.cdl.mx:
+                            why += ' (not executed in the CDL)'
+                    elif len(dbs) > 1:
+                        why = 'DB varies: ' + '/'.join('$%02X' % b for b in sorted(dbs))
+                    else:
+                        why = 'DB=$%02X' % min(dbs)
+                    self.rom_numbers.append((ins.off, why))
             else:
                 reg = snes_regs.NAMES.get(val)
-                if reg and ins.db not in (0x7E, 0x7F):
+                if reg and not (dbs and dbs & wram):
                     st['operand_register'] += 1
                     return prefix + reg
                 st['operand_ram_number'] += 1
@@ -1171,7 +1274,8 @@ class Emitter:
             st['immediate_label'] += 1
             if kind == 'lo':
                 return '#.loword(%s)' % self.ref(tgt)
-            return '#^%s' % self.ref(tgt)
+            r = self.ref(tgt)
+            return ('#^(%s)' if '+' in r else '#^%s') % r
         if mode in ('imm8', 'immm', 'immx'):
             st['immediate'] += 1
             return '#' + num(v, ins.length - 1)
@@ -1275,7 +1379,9 @@ class Emitter:
         for tstart, (targets, size) in d.data_tables.items():
             for i, t in enumerate(targets):
                 table_entry[tstart + i * size] = (t, size)
-        hdr = 0x7FB0 if bank == 0 else None
+        hdr = self._header_start() if bank == 0 else None
+        cdl = d.cdl
+        prev_ran = None       # None: last thing emitted was not an instruction
         off = start
         pending_data = []
         data_start = None
@@ -1295,12 +1401,12 @@ class Emitter:
                 break
             if off in self.label_name or off in self.comments:
                 flush()
-                if off in self.comments:
-                    for line in self.comments[off].splitlines():
-                        w('; ' + line)
                 kind = self.label_kind.get(off)
                 if kind == 'sub' and off in self.label_name and off in d.instrs:
                     w('')
+                if off in self.comments:
+                    for line in self.comments[off].splitlines():
+                        w('; ' + line)
                 src = d.spec_source.get(off)
                 if src == 'heuristic':
                     w('; (no caller found; decoded because it follows the end of a routine)')
@@ -1321,11 +1427,20 @@ class Emitter:
                     self.stats['table_entries'] += 1
                     self.stats['data_bytes'] += size
                     self.stats['table_bytes'] += size
+                    prev_ran = None
                     off += size
                     continue
             ins = d.instrs.get(off)
             if ins is not None:
                 flush()
+                if cdl is not None:
+                    # mark where a stretch of code the CDL never saw run
+                    # starts (after executed code, data, or at a routine)
+                    ran = off in cdl.mx
+                    if not ran and (prev_ran is not False or self.label_kind.get(off) == 'sub'):
+                        w('\t; (not executed in the CDL traces)')
+                        self.stats['unexecuted_runs'] += 1
+                    prev_ran = ran
                 if asm_m8 != ins.m8:
                     w('\t.a8' if ins.m8 else '\t.a16')
                     asm_m8 = ins.m8
@@ -1336,13 +1451,16 @@ class Emitter:
                     w('\t.byte\t$%02X, $%02X\t; %s' % (ins.op, ins.operand, ins.mn))
                 else:
                     opnd = self.fmt_operand(ins)
-                    w('\t%s%s' % (ins.mn, ('\t' + opnd) if opnd else ''))
+                    note = self._dp_note(ins)
+                    w('\t%s%s%s' % (ins.mn, ('\t' + opnd) if opnd else '',
+                                     ('\t; ' + note) if note else ''))
                 for inner in sorted(self.inner.get(off, [])):
                     w('%s = %s + %d' % (self.label_name[inner], self._host_name(off), inner - off))
                 self.stats['code_bytes'] += ins.length
                 self.stats['instructions'] += 1
                 off += ins.length
                 continue
+            prev_ran = None
             if data_start is None:
                 data_start = off
             pending_data.append(self.rom[off])
@@ -1361,46 +1479,220 @@ class Emitter:
         self.label_kind[off] = 'loc'
         raise RuntimeError('host without label (should have been pre-created): ' + name)
 
+    DP_MODES = ('dp', 'dpx', 'dpy', 'dpi', 'dpix', 'dpiy', 'dpil', 'dpily')
+
+    def _dp_note(self, ins):
+        """End-of-line comment for a direct-page operand when the CDL saw the
+        instruction run with D != 0: the address it really accesses."""
+        c = self.d.cdl
+        if c is None or ins.mode not in self.DP_MODES:
+            return None
+        ds = c.d.get(ins.off)
+        if not ds or ds == {0}:
+            return None
+        self.dp_notes += 1
+        return ' / '.join('$%04X (D=$%04X)' % ((dv + ins.operand) & 0xFFFF, dv)
+                          for dv in sorted(ds))
+
+    # -- data, with the CDL's view of who reads it ---------------------------
+
+    MIN_RUN = 32     # CDL runs shorter than this are merged into a neighbour
+
+    def _routine_of(self, cpu):
+        """Name of the routine that contains the instruction at CPU address
+        `cpu` (a CDL reader), or the bare address."""
+        o = rom_offset(cpu)
+        if o is not None:
+            i = bisect.bisect_right(self.routine_starts, o) - 1
+            if i >= 0 and self.routine_starts[i] // BANK_SIZE == o // BANK_SIZE:
+                r = self.routine_starts[i]
+                if r in self.label_name:
+                    return self.label_name[r]
+        return '$' + fmt_addr(cpu)
+
+    def _cdl_runs(self, start, n):
+        """Split the data bytes [start, start+n) into runs by how the CDL saw
+        them: (start, end, read-by set, dma-by set, unused flag)."""
+        c = self.d.cdl
+        runs = []
+        for k in range(start, start + n):
+            acc = c.accessed[k]
+            if not acc:
+                key = ('u', None)
+            else:
+                r = c.reader(k)
+                who = self._routine_of(r) if r is not None else None
+                key = ('d' if acc & 0x08 and not acc & 0x84 else 'r', who)
+            if runs and runs[-1][3] == key:
+                runs[-1][1] = k + 1
+            else:
+                runs.append([k, k + 1, None, key])
+        out = []    # [start, end, reads, dmas, unused]
+        for rs, re_, _, (kind, who) in runs:
+            item = [rs, re_, set(), set(), False]
+            if kind == 'u':
+                item[4] = True
+            elif kind == 'r':
+                item[2].add(who)
+            else:
+                item[3].add(who)
+            if out and (re_ - rs < self.MIN_RUN or out[-1][1] - out[-1][0] < self.MIN_RUN
+                        or out[-1][2:] == item[2:]):
+                prev = out[-1]
+                prev[1] = re_
+                prev[2] |= item[2]
+                prev[3] |= item[3]
+                prev[4] = prev[4] or item[4]
+            else:
+                out.append(item)
+        return out
+
+    @staticmethod
+    def _who(names):
+        known = sorted(x for x in names if x is not None)
+        txt = ', '.join(known[:3])
+        if len(known) > 3:
+            txt += ' (+%d more)' % (len(known) - 3)
+        if None in names:
+            txt = (txt + ', ' if txt else '') + 'unknown reader'
+        return txt
+
+    def _cdl_text(self, reads, dmas, unused):
+        parts = []
+        if reads:
+            parts.append('read by ' + self._who(reads))
+        if dmas:
+            parts.append('DMA' + (' (started in ' + self._who(dmas - {None}) + ')'
+                                  if dmas - {None} else ' / HDMA'))
+        if unused:
+            parts.append('not accessed' if not parts else 'partly not accessed')
+        return '; CDL: ' + '; '.join(parts)
+
     def _emit_data(self, w, start, data):
-        for i in range(0, len(data), 16):
-            chunk = data[i:i + 16]
-            w('\t.byte\t' + ', '.join('$%02X' % b for b in chunk))
+        if self.d.cdl is None:
+            chunks = [(0, len(data), None)]
+        else:
+            chunks = []
+            last = None
+            for rs, re_, reads, dmas, unused in self._cdl_runs(start, len(data)):
+                txt = self._cdl_text(reads, dmas, unused)
+                if txt == last and chunks:
+                    chunks[-1] = (chunks[-1][0], re_ - start, None)
+                    continue
+                chunks.append((rs - start, re_ - start, txt))
+                last = txt
+        for a, b, txt in chunks:
+            if txt:
+                w('\t' + txt)
+                self.stats['cdl_data_comments'] += 1
+            for i in range(a, b, 16):
+                chunk = data[i:min(i + 16, b)]
+                w('\t.byte\t' + ', '.join('$%02X' % x for x in chunk))
+
+    # -- internal header and vectors -------------------------------------------
+
+    def _header_start(self):
+        """ROM offset where the header is emitted: $FFB0 when the developer
+        ID at $FFDA is $33 (extended header), else $FFC0."""
+        return 0x7FB0 if self.rom[0x7FDA] == 0x33 else 0x7FC0
+
+    def _header_fields(self):
+        r = self.rom
+        b = lambda o: r[o]
+        fields = []          # (offset, size, text of the directive, comment)
+
+        def byte(o, comment):
+            fields.append((o, 1, '.byte\t$%02X' % b(o), comment))
+
+        if self._header_start() == 0x7FB0:
+            fields.append((0x7FB0, 2, '.byte\t' + ', '.join('$%02X' % x for x in r[0x7FB0:0x7FB2]),
+                           '$FFB0 maker code'))
+            fields.append((0x7FB2, 4, '.byte\t' + ', '.join('$%02X' % x for x in r[0x7FB2:0x7FB6]),
+                           '$FFB2 game code'))
+            fields.append((0x7FB6, 7, '.byte\t' + ', '.join('$%02X' % x for x in r[0x7FB6:0x7FBD]),
+                           '$FFB6 reserved'))
+            byte(0x7FBD, '$FFBD expansion RAM size')
+            byte(0x7FBE, '$FFBE special version')
+            byte(0x7FBF, '$FFBF cartridge subtype')
+        title = bytes(r[0x7FC0:0x7FD5])
+        if all(0x20 <= x < 0x7F and x != 0x22 for x in title):
+            fields.append((0x7FC0, 21, '.byte\t"%s"' % title.decode('ascii'),
+                           '$FFC0 title (21 bytes, $FFC0-$FFD4)'))
+        else:
+            fields.append((0x7FC0, 21, '.byte\t' + ', '.join('$%02X' % x for x in title),
+                           '$FFC0 title (21 bytes)'))
+        mm = b(0x7FD5)
+        if mm & 0xE0 == 0x20:
+            byte(0x7FD5, '$FFD5 map mode: %s, %s' % (
+                {0: 'LoROM', 1: 'HiROM', 2: 'LoROM + S-DD1', 3: 'LoROM + SA-1',
+                 5: 'ExHiROM'}.get(mm & 0x0F, 'mode %X' % (mm & 0x0F)),
+                'FastROM' if mm & 0x10 else 'SlowROM'))
+        else:
+            if 0x20 <= mm < 0x7F:
+                byte(0x7FD5, '$FFD5 map mode: invalid. "%s" is the 22nd character of the '
+                             'title, which overflows the field (LoROM SlowROM would be $20)'
+                             % chr(mm))
+            else:
+                byte(0x7FD5, '$FFD5 map mode: invalid value')
+        ct = b(0x7FD6)
+        byte(0x7FD6, '$FFD6 cartridge type: %s' % {
+            0x00: 'ROM only', 0x01: 'ROM + RAM', 0x02: 'ROM + RAM + battery'}.get(ct, 'coprocessor/other'))
+        byte(0x7FD7, '$FFD7 ROM size: 2^%d KiB = %d KiB' % (b(0x7FD7), 1 << b(0x7FD7)))
+        byte(0x7FD8, '$FFD8 SRAM size: %s' % ('none' if b(0x7FD8) == 0 else
+                                              '%d KiB' % (1 << b(0x7FD8))))
+        byte(0x7FD9, '$FFD9 region: %s' % {
+            0x00: 'Japan', 0x01: 'North America', 0x02: 'Europe'}.get(b(0x7FD9), 'other'))
+        byte(0x7FDA, '$FFDA developer (licensee) ID%s' % {
+            0x33: ': extended header at $FFB0', 0xA4: ': Konami'}.get(b(0x7FDA), ''))
+        byte(0x7FDB, '$FFDB version: 1.%d' % b(0x7FDB))
+        cmpl = r[0x7FDC] | r[0x7FDD] << 8
+        csum = r[0x7FDE] | r[0x7FDF] << 8
+        fields.append((0x7FDC, 2, '.word\t$%04X' % cmpl, '$FFDC checksum complement (checksum ^ $FFFF)'))
+        fields.append((0x7FDE, 2, '.word\t$%04X' % csum,
+                       '$FFDE checksum: 16-bit sum of every ROM byte (%s)' % (
+                           'matches' if sum(r) & 0xFFFF == csum else 'does not match')))
+        names = ['$FFE0 native: reserved', '$FFE2 native: reserved', '$FFE4 native COP',
+                 '$FFE6 native BRK', '$FFE8 native ABORT', '$FFEA native NMI',
+                 '$FFEC native: unused', '$FFEE native IRQ',
+                 '$FFF0 emulation: reserved', '$FFF2 emulation: reserved', '$FFF4 emulation COP',
+                 '$FFF6 emulation: unused', '$FFF8 emulation ABORT', '$FFFA emulation NMI',
+                 '$FFFC emulation RESET', '$FFFE emulation IRQ/BRK']
+        for i in range(16):
+            o = 0x7FE0 + 2 * i
+            v = r[o] | (r[o + 1] << 8)
+            t = rom_offset(v)
+            if t is not None and t in self.label_name and v != 0xFFFF:
+                txt = '.addr\t' + self.label_name[t]
+            else:
+                txt = '.word\t$%04X' % v
+            fields.append((o, 2, txt, names[i]))
+        return fields
 
     def _emit_header(self, w):
-        r = self.rom
-        b = r[0x7FB0:0x8000]
+        hs = self._header_start()
+        fields = self._header_fields()
         w('')
         w('; ---------------------------------------------------------------------------')
-        w('; Internal ROM header ($00:FFB0-$00:FFFF)')
-        w('; The title is 22 characters long and overflows into $FFD5 (normally the')
-        w('; map mode byte); it is reproduced exactly as in the original ROM.')
+        w('; Internal ROM header ($00:%04X-$00:FFDF) and interrupt vectors' % (0x8000 + hs))
+        w('; ($00:FFE0-$00:FFFF).  Reproduced exactly as in the original ROM.')
+        if hs == 0x7FC0:
+            w('; The developer ID at $FFDA is not $33, so there is no extended header:')
+            w('; $FFB0-$FFBF above are ordinary ROM bytes (code ends at $FFB1).')
         w('; ---------------------------------------------------------------------------')
         w('rom_header:')
-        w('\t.byte\t' + ', '.join('$%02X' % x for x in b[0:0x10]) + '\t; maker code, game code, reserved, expansion')
-        w('\t.byte\t"%s"\t; title (22 chars, $FFC0-$FFD5)' % b[0x10:0x26].decode('ascii'))
-        w('\t.byte\t$%02X\t; $FFD6 cartridge type' % b[0x26])
-        w('\t.byte\t$%02X\t; $FFD7 ROM size' % b[0x27])
-        w('\t.byte\t$%02X\t; $FFD8 SRAM size' % b[0x28])
-        w('\t.byte\t$%02X\t; $FFD9 region' % b[0x29])
-        w('\t.byte\t$%02X\t; $FFDA developer ID' % b[0x2A])
-        w('\t.byte\t$%02X\t; $FFDB version' % b[0x2B])
-        w('\t.word\t$%04X\t; $FFDC checksum complement' % (b[0x2C] | b[0x2D] << 8))
-        w('\t.word\t$%04X\t; $FFDE checksum' % (b[0x2E] | b[0x2F] << 8))
-        names = ['native: reserved', 'native: reserved', 'native COP', 'native BRK',
-                 'native ABORT', 'native NMI', 'native (unused)', 'native IRQ',
-                 'emulation: reserved', 'emulation: reserved', 'emulation COP',
-                 'emulation (unused)', 'emulation ABORT', 'emulation NMI',
-                 'emulation RESET', 'emulation IRQ/BRK']
-        w('vectors:')
-        for i in range(16):
-            v = b[0x30 + 2 * i] | (b[0x31 + 2 * i] << 8)
-            o = rom_offset(v)
-            if o is not None and o in self.label_name and v != 0xFFFF:
-                w('\t.addr\t%s\t; %s' % (self.label_name[o], names[i]))
-            else:
-                w('\t.word\t$%04X\t; %s' % (v, names[i]))
-        self.stats['data_bytes'] += 0x50
-
+        later = []
+        for o, size, txt, comment in fields:
+            if o == 0x7FE0:
+                w('vectors:')
+            if o in self.label_name:
+                w('%s:' % self.label_name[o])
+            for k in range(o + 1, o + size):
+                if k in self.label_name:
+                    later.append('%s = rom_header + $%02X' % (self.label_name[k], k - hs))
+            w('\t%s\t; %s' % (txt, comment))
+        for line in later:
+            w(line)
+        self.stats['data_bytes'] += 0x8000 - hs
 
 # ---------------------------------------------------------------------------
 # output files
@@ -1445,7 +1737,7 @@ def make_report(d, em, cfg, path):
     total = ROM_SIZE
     lines = ['# Disassembly quality report', '',
              'Generated by `tools/disasm.py` (static recursive descent%s).' %
-             (' + CDL' if d.cdl else ''), '',
+             (' + CDL `%s`, SHA-1 `%s`' % (d.cdl.name, d.cdl.sha1) if d.cdl else ''), '',
              '| metric | value |', '|---|---|',
              '| ROM size | %d bytes |' % total,
              '| code bytes (decoded instructions) | %d (%.1f%%) |' % (st['code_bytes'], 100.0 * st['code_bytes'] / total),
@@ -1487,17 +1779,24 @@ def make_report(d, em, cfg, path):
             lines.append('- ... %d more' % (len(items) - 400))
         lines.append('')
 
+    if d.cdl:
+        lines += cdl_report(d, em, cfg)
     section('M/X conflicts and overlaps', d.conflicts)
     section('Decoding stops', d.stops)
     section('Warnings', d.warnings)
-    section('Absolute operands >= $8000 left as numbers (bank unknown; may be ROM or, with DB=$7E/$7F, WRAM)',
-            em.rom_numbers)
+    section('Absolute operands >= $8000 left as numbers (bank unknown or ambiguous: '
+            'may be ROM, or WRAM with DB=$7E/$7F)', em.rom_numbers)
     heur = sorted(o for o, k in d.spec_source.items() if k == 'heuristic' and o in d.instrs)
     lines.append('## Routines without a known caller, decoded heuristically (%d)' % len(heur))
     lines.append('')
     lines.append('Code right after the end of a routine that decodes as a plausible routine.')
     lines.append('These are either dead code or reached through pointers not identified yet;')
     lines.append('a CDL will confirm or refute them (add refuted ones to "not_code" in the hints).')
+    if d.cdl:
+        ran_h = sum(1 for o in heur if o in d.cdl.mx)
+        lines.append('With the CDL: %d of them ran; the CDL never read any of their bytes as data.'
+                     % ran_h if not any(d.cdl.accessed[o] for o in heur) else
+                     'With the CDL: %d of them ran.' % ran_h)
     lines.append('')
     for o in heur:
         lines.append('- `%s`' % fmt_addr(cfg.canon(o)))
@@ -1505,8 +1804,19 @@ def make_report(d, em, cfg, path):
     if d.cdl:
         lines.append('## M/X corrected by the CDL (%d)' % len(d.cdl_corrections))
         lines.append('')
+        lines.append('Instructions the static analysis reached with other widths than the')
+        lines.append('ones they ran with (only the `.a8`/`.a16`/`.i8`/`.i16` directives change).')
+        lines.append('')
         for o in sorted(d.cdl_corrections)[:400]:
             lines.append('- `%s`' % fmt_addr(cfg.canon(o)))
+        lines.append('')
+        lines.append('## Immediates rejected as pointers by the CDL (%d)' % len(set(d.rejected_ptrs)))
+        lines.append('')
+        lines.append('`lda #lo`/`lda #bank` pairs (or pointer arguments, or data-pointer')
+        lines.append('tables) whose code ran but whose supposed target was never read: numbers.')
+        lines.append('')
+        for o, t in sorted(set(d.rejected_ptrs)):
+            lines.append('- `%s` (would point to `%s`)' % (fmt_addr(cfg.canon(o)), fmt_addr(cfg.canon(t))))
         lines.append('')
     lines.append('## Auto-inferred call return states (%d)' % len(d.auto_call_returns))
     lines.append('')
@@ -1518,14 +1828,105 @@ def make_report(d, em, cfg, path):
         f.write('\n'.join(lines))
 
 
+def cdl_report(d, em, cfg):
+    """Report lines comparing the disassembly with the CDL."""
+    c = d.cdl
+    dec = bytearray(ROM_SIZE)
+    for o, ins in d.instrs.items():
+        dec[o:o + ins.length] = b'\x01' * ins.length
+    confirmed = static_only = missed = clash = 0
+    rd = dma = ptr = unused = 0
+    for k in range(ROM_SIZE):
+        ex = c.executed[k]
+        if dec[k]:
+            if ex:
+                confirmed += 1
+            else:
+                static_only += 1
+            if k in c.data_only:
+                clash += 1
+        else:
+            if ex:
+                missed += 1
+            acc = c.accessed[k]
+            if not acc:
+                unused += 1
+            elif acc & 0x80:
+                ptr += 1
+            elif acc & 0x04:
+                rd += 1
+            else:
+                dma += 1
+    n_ins = len(d.instrs)
+    ran = sum(1 for o in d.instrs if o in c.mx)
+    routines = [r for r in d.routines if r in d.instrs]
+    r_ran = sum(1 for r in routines if r in c.mx)
+    ent = ent_read = 0
+    for start, (kind, targets, size) in d.tables.items():
+        for i in range(len(targets)):
+            ent += 1
+            if c.accessed[start + i * size]:
+                ent_read += 1
+    absops = [ins for ins in d.instrs.values()
+              if ins.mode in ('abs', 'absx', 'absy') and ins.mn not in ('jmp', 'jsr')]
+    db_uni = sum(1 for i in absops if len(c.db.get(i.off, ())) == 1)
+    db_multi = sum(1 for i in absops if len(c.db.get(i.off, ())) > 1)
+    db_static = sum(1 for i in absops if i.off not in c.db and i.db is not None)
+    db_unk = len(absops) - db_uni - db_multi - db_static
+    dp_d = collections.Counter()
+    for ins in d.instrs.values():
+        if ins.mode in Emitter.DP_MODES:
+            ds = c.d.get(ins.off)
+            if ds and ds != {0}:
+                dp_d['/'.join('$%04X' % x for x in sorted(ds))] += 1
+    pct = lambda a, b: '%.1f%%' % (100.0 * a / b) if b else '-'
+    L = ['## Comparison with the CDL', '',
+         'The emulator\'s code/data log (see the book, "The disassembler") records which',
+         'bytes ran as code and which were read as data while the game was played.', '',
+         '| metric | value |', '|---|---|',
+         '| decoded code bytes executed in the CDL (confirmed) | %d (%s of decoded code) |'
+         % (confirmed, pct(confirmed, confirmed + static_only)),
+         '| decoded code bytes never executed (static analysis only) | %d |' % static_only,
+         '| executed bytes not decoded as code | %d |' % missed,
+         '| decoded code bytes the CDL only saw read as data (conflicts) | %d |' % clash,
+         '| instructions executed / decoded | %d / %d (%s) |' % (ran, n_ins, pct(ran, n_ins)),
+         '| routines executed / decoded | %d / %d |' % (r_ran, len(routines)),
+         '| heuristic routines executed | %d of %d |' % (
+             sum(1 for o, k in d.spec_source.items() if k == 'heuristic' and o in c.mx),
+             sum(1 for o, k in d.spec_source.items() if k == 'heuristic' and o in d.instrs)),
+         '| jump-table entries read at run time / emitted | %d / %d |' % (ent_read, ent),
+         '| dynamic jumps (flows) whose target is a decoded table entry | %d / %d |' % (
+             sum(1 for f in c.flows if f.get('dst_offset') in em.label_name), len(c.flows)),
+         '| data bytes read by the CPU | %d |' % rd,
+         '| data bytes only read by DMA/HDMA | %d |' % dma,
+         '| data bytes read as jump-table pointers | %d |' % ptr,
+         '| data bytes never accessed (unknown) | %d |' % unused,
+         '| opcodes seen with both M or both X widths | %d |' % c.mx_both,
+         '| M/X corrected by the CDL | %d |' % len(d.cdl_corrections),
+         '| statically tracked DB corrected by the CDL | %d |' % len(d.cdl_db_corrections),
+         '| absolute operands: DB from the CDL (one value) | %d |' % db_uni,
+         '| absolute operands: several DBs at run time | %d |' % db_multi,
+         '| absolute operands: DB from static tracking only | %d |' % db_static,
+         '| absolute operands: DB unknown | %d |' % db_unk,
+         '| absolute $8000+ operands with DB=$7E/$7F (WRAM, numbers) | %d |' % len(em.wram_numbers),
+         '| direct-page operands run with D != 0 (annotated) | %d |' % sum(dp_d.values()),
+         '| immediates rejected as pointers | %d |' % len(set(d.rejected_ptrs)),
+         '']
+    L += ['Direct page values other than 0, by instruction count: ' +
+          ', '.join('D=%s: %d' % (k, v) for k, v in sorted(dp_d.items())) + '.', '']
+    return L
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     ap.add_argument('rom')
     here = os.path.dirname(os.path.abspath(__file__))
     ap.add_argument('--hints', default=os.path.join(here, 'disasm_hints.json'))
     ap.add_argument('--cdl', help='code/data log produced by the emulator (see tools/cdl.py)')
-    ap.add_argument('--out', default=os.path.join(here, '..', 'src'))
-    ap.add_argument('--report', default=os.path.join(here, '..', 'docs', 'disasm_report.md'))
+    # src/ is the source of truth (edited by hand): by default the generator
+    # writes next to it, into build/disasm/, never over it
+    ap.add_argument('--out', default=os.path.join(here, '..', 'build', 'disasm', 'src'))
+    ap.add_argument('--report', default=os.path.join(here, '..', 'build', 'disasm', 'disasm_report.md'))
     args = ap.parse_args()
 
     rom = open(args.rom, 'rb').read()
@@ -1554,7 +1955,7 @@ def main():
     write_main(os.path.join(args.out, 'main.asm'))
     write_common(os.path.join(args.out, 'common.inc'))
     snes_regs.write_inc(os.path.join(args.out, 'snes_registers.inc'))
-    os.makedirs(os.path.dirname(args.report), exist_ok=True)
+    os.makedirs(os.path.dirname(os.path.abspath(args.report)), exist_ok=True)
     make_report(d, em, cfg, args.report)
     st = em.stats
     print('code %d bytes, data %d bytes, %d instructions, %d labels, %d conflicts, %d stops'

@@ -23,9 +23,17 @@
     "00:819B": "nmi",
     "00:8BE2": "irq"
   },
-  "comments": {},
+  "comments": {
+    "00:B2F3": "sub_00B2F3, sub_00B346, sub_00B39F: never executed in the CDL traces (found\nby the unreferenced-routine heuristic).  Each compares the d-pad bits of the\njoypads ($20/$22 & $0F00) with a 3-entry sequence and then checks a button:\nprobably button-code checks.  DB is assumed to be $05, the game's usual data\nbank (hint): the sequences are then d-pad masks at $05:86D3/86D9/86DF.",
+    "00:FE24": "Never executed in the CDL traces (found by the unreferenced-routine heuristic).\nDB is assumed to be $05, the game's usual data bank (hint)."
+  },
   "data": [],
-  "mx_overrides": {},
+  "mx_overrides": {
+    "00:B2F3": {"db": "05"},
+    "00:B346": {"db": "05"},
+    "00:B39F": {"db": "05"},
+    "00:FE24": {"db": "05"}
+  },
   "call_returns": {},
   "noreturn": [],
   "inline_tables": {},
