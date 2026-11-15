@@ -159,6 +159,7 @@ class Cdl:
             f.write(self.a)
             f.write(self.b)
             f.write(self.wram)
+            f.write(struct.pack("<%dI" % self.rom_size, *self.readers))
         os.replace(path + ".tmp", path)
         with open(path + ".json.tmp", "w") as f:
             f.write(self._json())
@@ -176,16 +177,6 @@ class Cdl:
                 "ptr": fmt(ptr) if ptr is not None else None,
                 "ptr_offset": lorom_offset(ptr) if ptr is not None else None,
                 "count": count})
-        readers = []
-        start = None
-        for i in range(self.rom_size + 1):
-            v = self.readers[i] if i < self.rom_size else None
-            if start is not None and v != cur:
-                if cur:
-                    readers.append([start, i, cur - 1])
-                start = None
-            if start is None and i < self.rom_size:
-                start, cur = i, v
         wram = []
         start = None
         for i in range(WRAM_SIZE + 1):
@@ -213,7 +204,6 @@ class Cdl:
             out.append("  ]" + ("" if last else ","))
         block("flows", flows)
         block("wram_code", wram)
-        block("readers", readers)
         block("regs", regs, last=True)
         out.append("}")
         return "\n".join(out) + "\n"
@@ -229,7 +219,8 @@ class Cdl:
         p = hsize
         cdl.a[:] = raw[p:p + size]; p += size
         cdl.b[:] = raw[p:p + size]; p += size
-        cdl.wram[:] = raw[p:p + wsize]
+        cdl.wram[:] = raw[p:p + wsize]; p += wsize
+        cdl.readers = list(struct.unpack_from("<%dI" % size, raw, p))
         side = path + ".json"
         if os.path.exists(side):
             with open(side) as f:
@@ -240,9 +231,6 @@ class Cdl:
                 dst = int(fl["dst"].replace(":", ""), 16)
                 ptr = int(fl["ptr"].replace(":", ""), 16) if fl["ptr"] else None
                 cdl.add_flow(fl["opcode"], src, dst, ptr, fl["count"])
-            for start, end, pc in j["readers"]:
-                for i in range(start, end):
-                    cdl.readers[i] = pc + 1
             for off, db, d, c in j["regs"]:
                 cdl.add_regs(off, db, d, c)
         return cdl

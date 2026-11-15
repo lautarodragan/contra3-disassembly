@@ -15,6 +15,8 @@ STAGE = 0x0086         # current stage, 1-6. Writing it right after Start is
 DEMO_STAGE = 0x0070    # 0-based stage of the attract-mode demo (0, 1, 3 seen)
 LIVES_P1 = 0x1F8A      # "REST" on the stage card; DEC $1D8A,X (X=$200) at $01:9B91
 LIVES_P2 = 0x1FCA      # player 2 (player blocks are $40 apart)
+BARRIER_P1 = 0x1F88    # barrier (invincibility power-up) timer; poking $80
+BARRIER_P2 = 0x1FC8    # every few frames keeps the player invincible
 DEMO_INDEX = 0x1E48    # attract demo counter (0, 1, 2 for stages 1, 2, 4)
 
 # --- timeline from power-on, no input --------------------------------------

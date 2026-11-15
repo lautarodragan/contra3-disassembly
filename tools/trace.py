@@ -26,6 +26,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "cdl", "contra3.cdl")
 
 SIDE_MOVES = [("right",), ("right", "y"), ("right", "y"), ("right", "b"),
+              ("right", "jump", "y"), ("right", "jump", "y"), ("jump", "y"),
+              ("up", "jump", "y"), ("right", "up", "jump"), ("left", "jump"),
               ("right", "b", "y"), ("y",), ("up", "y"), ("down", "y"),
               ("right", "up", "y"), ("down", "b"), ("left", "y"), ("left",),
               ("x",), ("a",), ("l", "y"), ("r", "y"), ("l", "r", "y")]
@@ -39,24 +41,43 @@ class Player:
     """Random inputs with a seeded generator, re-chosen every few frames,
     with optional infinite lives (poking the lives counter)."""
 
-    def __init__(self, c, seed, moves=SIDE_MOVES, lives=True, ports=(0,)):
+    def __init__(self, c, seed, moves=SIDE_MOVES, lives=True, ports=(0,), barrier=False):
         self.c = c
+        self.barrier = barrier
         self.rng = random.Random(seed)
         self.moves = moves
         self.lives = lives
         self.ports = ports
 
     def play(self, frames, hold=(4, 40)):
+        """Random moves for `frames` frames. A move containing "jump" holds
+        its other buttons and taps B every 6 frames (holding B jumps once)."""
         c = self.c
         left = frames
         while left > 0:
             n = min(left, self.rng.randint(*hold))
-            for port in self.ports:
-                c.hold(*self.rng.choice(self.moves), port=port)
+            chosen = {port: self.rng.choice(self.moves) for port in self.ports}
             if self.lives:
+                # Only for players in the game: poking player 2's lives in a
+                # 1P game spawns a second soldier that blocks scrolling.
                 c.write_ram(game.LIVES_P1, 5)
-                c.write_ram(game.LIVES_P2, 5)
-            c.run(n)
+                if len(self.ports) > 1:
+                    c.write_ram(game.LIVES_P2, 5)
+            if self.barrier:
+                c.write_ram(game.BARRIER_P1, 0x80)
+                if len(self.ports) > 1:
+                    c.write_ram(game.BARRIER_P2, 0x80)
+            done = 0
+            while done < n:
+                step = min(6, n - done)
+                phase = (done // 6) % 2 == 0
+                for port, mv in chosen.items():
+                    btns = [b for b in mv if b != "jump"]
+                    if "jump" in mv and phase:
+                        btns.append("b")
+                    c.hold(*btns, port=port)
+                c.run(step)
+                done += step
             left -= n
         for port in self.ports:
             c.hold(port=port)
@@ -90,13 +111,22 @@ def sc_title_menu(c):
     c.run(3000)
 
 
-def _stage(stage, seed, frames=30000, moves=None, ports=(0,), menu=0):
+def _stage(stage, seed, frames=80000, moves=None, ports=(0,), menu=0, barrier=False):
     def run(c):
         game.start_game(c, stage=stage, menu_downs=menu)
         c.run(300)
-        mv = moves or (TOP_MOVES if stage in (2, 5) else SIDE_MOVES)
-        Player(c, seed, mv, lives=True, ports=ports).play(frames)
-    run.__doc__ = "Stage %d, random play, infinite lives, ports %s" % (stage, ports)
+        p = Player(c, seed, lives=True, ports=ports, barrier=barrier)
+        left = frames
+        seen = []
+        while left > 0:
+            cur = c.peek(game.STAGE)
+            if not seen or seen[-1] != cur:
+                seen.append(cur)
+            p.moves = moves or (TOP_MOVES if cur in (2, 5) else SIDE_MOVES)
+            p.play(min(left, 1000))
+            left -= 1000
+        return "stages seen %s" % seen
+    run.__doc__ = "Stage %d onwards, random play, infinite lives, ports %s" % (stage, ports)
     return run
 
 
@@ -137,8 +167,9 @@ SCENARIOS = {"attract": sc_attract, "title_menu": sc_title_menu,
              "gameover": sc_gameover, "pause": sc_pause}
 for _s in range(1, 7):
     SCENARIOS["stage%d" % _s] = _stage(_s, 100 + _s)
-    SCENARIOS["stage%d_2p" % _s] = _stage(_s, 200 + _s, frames=15000, ports=(0, 1), menu=1)
-SCENARIOS["stage1_2pb"] = _stage(1, 301, frames=15000, ports=(0, 1), menu=2)
+    SCENARIOS["stage%d_2p" % _s] = _stage(_s, 200 + _s, frames=20000, ports=(0, 1), menu=1)
+SCENARIOS["stage1_2pb"] = _stage(1, 301, frames=20000, ports=(0, 1), menu=2)
+SCENARIOS["stage3_2pb"] = _stage(3, 303, frames=20000, ports=(0, 1), menu=2)
 
 
 def run_scenario(name, rom=None):
@@ -146,18 +177,16 @@ def run_scenario(name, rom=None):
     c = retro.Console(rom or rom_path())
     c.cdl_enable()
     c.cdl_clear()
-    SCENARIOS[name](c)
+    info = SCENARIOS[name](c) or ""
     snap = c.cdl_snapshot()
     frames = c.frame_count
     c.close()
-    return name, snap, frames, time.time() - t
+    return name, snap, frames, time.time() - t, info
 
 
 def _worker(args):
     name, rom = args
-    name, snap, frames, dt = run_scenario(name, rom)
-    # Ship the plain fields back (the Cdl object pickles fine, but keep it explicit).
-    return name, snap, frames, dt
+    return run_scenario(name, rom)
 
 
 def main(argv):
@@ -183,14 +212,14 @@ def main(argv):
     if not args.fresh and os.path.exists(args.out):
         merged = C.Cdl.load(args.out)
     with multiprocessing.get_context("spawn").Pool(max(1, args.jobs)) as pool:
-        for name, snap, frames, dt in pool.imap_unordered(_worker, [(n, rom) for n in names]):
+        for name, snap, frames, dt, info in pool.imap_unordered(_worker, [(n, rom) for n in names]):
             before = merged.coverage()[0] if merged else None
             merged = snap if merged is None else merged.merge(snap)
             after = merged.coverage()[0]
             gain = "" if before is None else " (+%d code, +%d data bytes)" % (
                 after["code"] + after["both"] - before["code"] - before["both"],
                 after["data"] + after["both"] - before["data"] - before["both"])
-            print("%-12s %7d frames %6.1fs%s" % (name, frames, dt, gain), flush=True)
+            print("%-12s %7d frames %6.1fs%s %s" % (name, frames, dt, gain, info), flush=True)
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     merged.save(args.out)
     print(merged.report())
