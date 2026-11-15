@@ -2,7 +2,7 @@
 ; Bank $02, $02:E65F-$02:FCCA. Included by main.asm in segment BANK02.
 ;
 ; More code of the top-down stages (reached from the state handlers), and
-; sub_02ED77, run by their NMI frame handler.
+; compute_m7_matrix, run by their NMI frame handler.
 
 sub_02E65F:
 	ldx	#$0F40
@@ -66,12 +66,12 @@ loc_02E6B7:
 	sta	$14,x
 	rts
 
-sub_02E6C6:
-	lda	#$0100
-	sta	a:wram_1F94
-	sta	a:wram_1FD4
-	sta	a:wram_1F96
-	sta	a:wram_1FD6
+init_topdown_views:
+	lda	#M7_SCALE_1X
+	sta	a:p1_m7_scale_x
+	sta	a:p2_m7_scale_x
+	sta	a:p1_m7_scale_y
+	sta	a:p2_m7_scale_y
 	lda	a:title_menu_cursor
 	beq	loc_02E723
 	dec	a
@@ -79,24 +79,24 @@ sub_02E6C6:
 	brl	loc_02E751
 loc_02E6E0:
 	; (not executed in the CDL traces)
-	lda	a:wram_1510
+	lda	a:p1_view_x
 	sta	a:wram_0ECA
 	stz	a:wram_0EC8
-	lda	a:wram_1512
+	lda	a:p1_view_y
 	sta	a:wram_0ECE
 	stz	a:wram_0ECC
-	lda	a:wram_1550
+	lda	a:p2_view_x
 	sta	a:wram_0F0A
 	stz	a:wram_0F08
-	lda	a:wram_1552
+	lda	a:p2_view_y
 	sta	a:wram_0F0E
 	stz	a:wram_0F0C
 	stz	a:wram_150A
 	stz	a:wram_154A
 	stz	a:wram_1518
 	stz	a:wram_1558
-	stz	a:wram_1514
-	stz	a:wram_1554
+	stz	a:p1_view_angle
+	stz	a:p2_view_angle
 	stz	a:wram_0ED2
 	stz	a:wram_0F12
 	stz	a:wram_0EC4
@@ -104,45 +104,45 @@ loc_02E6E0:
 	rtl
 loc_02E723:
 	lda	#$0080
-	sta	a:wram_150C
+	sta	a:p1_view_anchor_x
 	lda	#$00A0
-	sta	a:wram_150E
-	lda	a:wram_1510
+	sta	a:p1_view_anchor_y
+	lda	a:p1_view_x
 	sta	a:wram_0ECA
 	stz	a:wram_0EC8
-	lda	a:wram_1512
+	lda	a:p1_view_y
 	sta	a:wram_0ECE
 	stz	a:wram_0ECC
 	stz	a:wram_150A
-	stz	a:wram_1514
+	stz	a:p1_view_angle
 	stz	a:wram_1518
 	stz	a:wram_0ED2
 	stz	a:wram_0EC4
 	rtl
 loc_02E751:
 	lda	#$0060
-	sta	a:wram_150C
-	sta	a:wram_154C
+	sta	a:p1_view_anchor_x
+	sta	a:p2_view_anchor_x
 	lda	#$0034
-	sta	a:wram_150E
+	sta	a:p1_view_anchor_y
 	lda	#$00AC
-	sta	a:wram_154E
-	lda	a:wram_1510
+	sta	a:p2_view_anchor_y
+	lda	a:p1_view_x
 	sta	a:wram_0ECA
 	stz	a:wram_0EC8
-	lda	a:wram_1512
+	lda	a:p1_view_y
 	sta	a:wram_0ECE
 	stz	a:wram_0ECC
-	lda	a:wram_1550
+	lda	a:p2_view_x
 	sta	a:wram_0F0A
 	stz	a:wram_0F08
-	lda	a:wram_1552
+	lda	a:p2_view_y
 	sta	a:wram_0F0E
 	stz	a:wram_0F0C
 	stz	a:wram_150A
 	stz	a:wram_154A
-	stz	a:wram_1514
-	stz	a:wram_1554
+	stz	a:p1_view_angle
+	stz	a:p2_view_angle
 	lda	#$0040
 	sta	a:wram_1518
 	sta	a:wram_1558
@@ -153,10 +153,10 @@ loc_02E751:
 	sta	a:wram_0F04
 	rtl
 
-sub_02E7AF:
+update_topdown_views:
 	rep	#$30
-	lda	a:wram_1590
-	ora	a:wram_158E
+	lda	a:map_view_active
+	ora	a:intro_phase
 	beq	loc_02E7BA
 	; (not executed in the CDL traces)
 	rtl
@@ -175,69 +175,69 @@ loc_02E7C8:
 	brl	loc_02E809
 loc_02E7D0:
 	lda	a:wram_0ECA
-	sta	a:wram_1510
-	sta	a:wram_1F90
+	sta	a:p1_view_x
+	sta	a:p1_m7_center_x
 	sec
-	sbc	a:wram_150C
-	sta	a:wram_1F9A
+	sbc	a:p1_view_anchor_x
+	sta	a:p1_m7_hofs
 	lda	a:wram_0ECE
-	sta	a:wram_1512
-	sta	a:wram_1F92
+	sta	a:p1_view_y
+	sta	a:p1_m7_center_y
 	sec
-	sbc	a:wram_150E
-	sta	a:wram_1F9C
+	sbc	a:p1_view_anchor_y
+	sta	a:p1_m7_vofs
 	lda	a:wram_150A
 	bne	loc_02E7FB
 	lda	a:wram_0EC4
-	sta	a:wram_1514
+	sta	a:p1_view_angle
 loc_02E7FB:
-	lda	a:wram_1514
+	lda	a:p1_view_angle
 	eor	#$00FF
 	inc	a
 	and	#$00FF
-	sta	a:wram_1F98
+	sta	a:p1_m7_angle
 	rtl
 loc_02E809:
 	lda	a:wram_0ECA
-	sta	a:wram_1510
+	sta	a:p1_view_x
 	lda	a:wram_0ECE
-	sta	a:wram_1512
+	sta	a:p1_view_y
 	lda	a:wram_150A
 	bne	loc_02E820
 	lda	a:wram_0EC4
-	sta	a:wram_1514
+	sta	a:p1_view_angle
 loc_02E820:
-	lda	a:wram_1510
+	lda	a:p1_view_x
 	sta	zp_18
-	lda	a:wram_1512
+	lda	a:p1_view_y
 	sta	zp_1A
-	lda	a:wram_1514
+	lda	a:p1_view_angle
 	sta	zp_16
-	lda	a:wram_150C
+	lda	a:p1_view_anchor_x
 	sta	zp_1C
-	lda	a:wram_150E
+	lda	a:p1_view_anchor_y
 	sta	zp_1E
 	jsl	f:sub_02B2AE
 	bcc	loc_02E84D
 	lda	#$0200
-	sta	a:wram_1F9A
-	sta	a:wram_1F9C
-	stz	a:wram_1F98
+	sta	a:p1_m7_hofs
+	sta	a:p1_m7_vofs
+	stz	a:p1_m7_angle
 	bra	loc_02E86C
 loc_02E84D:
 	lda	#$00F0
 	sec
 	sbc	zp_00
-	sta	a:wram_1F9A
+	sta	a:p1_m7_hofs
 	lda	#$0110
 	sec
 	sbc	zp_02
-	sta	a:wram_1F9C
+	sta	a:p1_m7_vofs
 	lda	a:wram_0AC4
 	sec
-	sbc	a:wram_1514
+	sbc	a:p1_view_angle
 	eor	#$0080
-	sta	a:wram_1F98
+	sta	a:p1_m7_angle
 loc_02E86C:
 	rtl
 loc_02E86D:
@@ -247,145 +247,145 @@ loc_02E86D:
 	brl	loc_02E8F4
 loc_02E875:
 	lda	a:wram_0ECA
-	sta	a:wram_1510
-	sta	a:wram_1F90
+	sta	a:p1_view_x
+	sta	a:p1_m7_center_x
 	sec
-	sbc	a:wram_150C
-	sta	a:wram_1F9A
+	sbc	a:p1_view_anchor_x
+	sta	a:p1_m7_hofs
 	lda	a:wram_0ECE
-	sta	a:wram_1512
-	sta	a:wram_1F92
+	sta	a:p1_view_y
+	sta	a:p1_m7_center_y
 	sec
-	sbc	a:wram_150E
-	sta	a:wram_1F9C
+	sbc	a:p1_view_anchor_y
+	sta	a:p1_m7_vofs
 	lda	a:wram_150A
 	bne	loc_02E8A7
 	lda	a:wram_0EC4
 	sec
 	sbc	a:wram_1518
 	and	#$00FF
-	sta	a:wram_1514
+	sta	a:p1_view_angle
 loc_02E8A7:
-	lda	a:wram_1514
+	lda	a:p1_view_angle
 	eor	#$00FF
 	inc	a
 	and	#$00FF
-	sta	a:wram_1F98
+	sta	a:p1_m7_angle
 	lda	a:wram_0F0A
-	sta	a:wram_1550
-	sta	a:wram_1FD0
+	sta	a:p2_view_x
+	sta	a:p2_m7_center_x
 	sec
-	sbc	a:wram_154C
-	sta	a:wram_1FDA
+	sbc	a:p2_view_anchor_x
+	sta	a:p2_m7_hofs
 	lda	a:wram_0F0E
-	sta	a:wram_1552
-	sta	a:wram_1FD2
+	sta	a:p2_view_y
+	sta	a:p2_m7_center_y
 	sec
-	sbc	a:wram_154E
-	sta	a:wram_1FDC
+	sbc	a:p2_view_anchor_y
+	sta	a:p2_m7_vofs
 	lda	a:wram_154A
 	bne	loc_02E8E6
 	lda	a:wram_0F04
 	sec
 	sbc	a:wram_1558
 	and	#$00FF
-	sta	a:wram_1554
+	sta	a:p2_view_angle
 loc_02E8E6:
-	lda	a:wram_1554
+	lda	a:p2_view_angle
 	eor	#$00FF
 	inc	a
 	and	#$00FF
-	sta	a:wram_1FD8
+	sta	a:p2_m7_angle
 	rtl
 loc_02E8F4:
 	; (not executed in the CDL traces)
 	lda	a:wram_0ECA
-	sta	a:wram_1510
+	sta	a:p1_view_x
 	lda	a:wram_0ECE
-	sta	a:wram_1512
+	sta	a:p1_view_y
 	lda	a:wram_150A
 	bne	loc_02E912
 	lda	a:wram_0EC4
 	sec
 	sbc	a:wram_1518
 	and	#$00FF
-	sta	a:wram_1514
+	sta	a:p1_view_angle
 loc_02E912:
-	lda	a:wram_1510
+	lda	a:p1_view_x
 	sta	zp_18
-	lda	a:wram_1512
+	lda	a:p1_view_y
 	sta	zp_1A
-	lda	a:wram_1514
+	lda	a:p1_view_angle
 	sta	zp_16
-	lda	a:wram_150C
+	lda	a:p1_view_anchor_x
 	sta	zp_1C
-	lda	a:wram_150E
+	lda	a:p1_view_anchor_y
 	sta	zp_1E
 	jsl	f:sub_02B2AE
 	bcc	loc_02E93F
 	lda	#$0200
-	sta	a:wram_1F9A
-	sta	a:wram_1F9C
-	stz	a:wram_1F98
+	sta	a:p1_m7_hofs
+	sta	a:p1_m7_vofs
+	stz	a:p1_m7_angle
 	bra	loc_02E95E
 loc_02E93F:
 	lda	#$00F0
 	sec
 	sbc	zp_00
-	sta	a:wram_1F9A
+	sta	a:p1_m7_hofs
 	lda	#$0110
 	sec
 	sbc	zp_02
-	sta	a:wram_1F9C
+	sta	a:p1_m7_vofs
 	lda	a:wram_0AC4
 	sec
-	sbc	a:wram_1514
+	sbc	a:p1_view_angle
 	eor	#$0080
-	sta	a:wram_1F98
+	sta	a:p1_m7_angle
 loc_02E95E:
 	lda	a:wram_0F0A
-	sta	a:wram_1550
+	sta	a:p2_view_x
 	lda	a:wram_0F0E
-	sta	a:wram_1552
+	sta	a:p2_view_y
 	lda	a:wram_154A
 	bne	loc_02E97C
 	lda	a:wram_0F04
 	sec
 	sbc	a:wram_1558
 	and	#$00FF
-	sta	a:wram_1554
+	sta	a:p2_view_angle
 loc_02E97C:
-	lda	a:wram_1550
+	lda	a:p2_view_x
 	sta	zp_18
-	lda	a:wram_1552
+	lda	a:p2_view_y
 	sta	zp_1A
-	lda	a:wram_1554
+	lda	a:p2_view_angle
 	sta	zp_16
-	lda	a:wram_154C
+	lda	a:p2_view_anchor_x
 	sta	zp_1C
-	lda	a:wram_154E
+	lda	a:p2_view_anchor_y
 	sta	zp_1E
 	jsl	f:sub_02B2AE
 	bcc	loc_02E9A9
 	lda	#$0200
-	sta	a:wram_1FDA
-	sta	a:wram_1FDC
-	stz	a:wram_1FD8
+	sta	a:p2_m7_hofs
+	sta	a:p2_m7_vofs
+	stz	a:p2_m7_angle
 	bra	loc_02E9C8
 loc_02E9A9:
 	lda	#$00F0
 	sec
 	sbc	zp_00
-	sta	a:wram_1FDA
+	sta	a:p2_m7_hofs
 	lda	#$0110
 	sec
 	sbc	zp_02
-	sta	a:wram_1FDC
+	sta	a:p2_m7_vofs
 	lda	a:wram_0AC4
 	sec
-	sbc	a:wram_1554
+	sbc	a:p2_view_angle
 	eor	#$0080
-	sta	a:wram_1FD8
+	sta	a:p2_m7_angle
 loc_02E9C8:
 	rtl
 loc_02E9C9:
@@ -394,23 +394,23 @@ loc_02E9C9:
 	brl	loc_02EA1D
 loc_02E9D1:
 	jsr	a:sub_02EAA4
-	lda	a:wram_1510
-	sta	a:wram_1F90
+	lda	a:p1_view_x
+	sta	a:p1_m7_center_x
 	sec
 	sbc	#$0080
-	sta	a:wram_1F9A
+	sta	a:p1_m7_hofs
 	lda	#$0080
-	sta	a:wram_150C
-	sta	a:wram_154C
+	sta	a:p1_view_anchor_x
+	sta	a:p2_view_anchor_x
 	jsr	a:sub_02EAFD
-	lda	a:wram_1512
-	sta	a:wram_1F92
+	lda	a:p1_view_y
+	sta	a:p1_m7_center_y
 	sec
 	sbc	#$007C
-	sta	a:wram_1F9C
+	sta	a:p1_m7_vofs
 	lda	#$007C
-	sta	a:wram_150E
-	sta	a:wram_154E
+	sta	a:p1_view_anchor_y
+	sta	a:p2_view_anchor_y
 	lda	a:wram_150A
 	bne	loc_02EA0E
 	lda	a:wram_0EC4
@@ -421,17 +421,17 @@ loc_02EA0E:
 	lda	a:wram_0F04
 	sta	a:wram_1558
 loc_02EA19:
-	stz	a:wram_1F98
+	stz	a:p1_m7_angle
 	rtl
 loc_02EA1D:
 	jsr	a:sub_02EAA4
 	lda	#$0080
-	sta	a:wram_150C
-	sta	a:wram_154C
+	sta	a:p1_view_anchor_x
+	sta	a:p2_view_anchor_x
 	jsr	a:sub_02EAFD
 	lda	#$007C
-	sta	a:wram_150E
-	sta	a:wram_154E
+	sta	a:p1_view_anchor_y
+	sta	a:p2_view_anchor_y
 	lda	a:wram_150A
 	bne	loc_02EA40
 	lda	a:wram_0EC4
@@ -442,41 +442,41 @@ loc_02EA40:
 	lda	a:wram_0F04
 	sta	a:wram_1558
 loc_02EA4B:
-	lda	a:wram_1510
+	lda	a:p1_view_x
 	sta	zp_18
-	lda	a:wram_1512
+	lda	a:p1_view_y
 	sta	zp_1A
-	lda	a:wram_1514
+	lda	a:p1_view_angle
 	sta	zp_16
-	lda	a:wram_150C
+	lda	a:p1_view_anchor_x
 	sta	zp_1C
-	lda	a:wram_150E
+	lda	a:p1_view_anchor_y
 	sta	zp_1E
 	jsl	f:sub_02B2AE
 	bcc	loc_02EA7E
 	lda	#$0200
-	sta	a:wram_1F9A
-	sta	a:wram_1F9C
-	sta	a:wram_1F90
-	sta	a:wram_1F92
-	stz	a:wram_1F98
+	sta	a:p1_m7_hofs
+	sta	a:p1_m7_vofs
+	sta	a:p1_m7_center_x
+	sta	a:p1_m7_center_y
+	stz	a:p1_m7_angle
 	bra	loc_02EAA3
 loc_02EA7E:
 	lda	#$00F0
-	sta	a:wram_1F90
+	sta	a:p1_m7_center_x
 	sec
 	sbc	zp_00
-	sta	a:wram_1F9A
+	sta	a:p1_m7_hofs
 	lda	#$0110
-	sta	a:wram_1F92
+	sta	a:p1_m7_center_y
 	sec
 	sbc	zp_02
-	sta	a:wram_1F9C
+	sta	a:p1_m7_vofs
 	lda	a:wram_0AC4
 	sec
-	sbc	a:wram_1514
+	sbc	a:p1_view_angle
 	eor	#$0080
-	sta	a:wram_1F98
+	sta	a:p1_m7_angle
 loc_02EAA3:
 	rtl
 
@@ -517,22 +517,22 @@ loc_02EAD3:
 loc_02EAD4:
 	sec
 	sbc	#$0048
-	sta	a:wram_1510
-	sta	a:wram_1550
+	sta	a:p1_view_x
+	sta	a:p2_view_x
 	bra	sub_02EAEA
 loc_02EAE0:
 	clc
 	adc	#$0048
-	sta	a:wram_1510
-	sta	a:wram_1550
+	sta	a:p1_view_x
+	sta	a:p2_view_x
 
 sub_02EAEA:
 	; (not executed in the CDL traces)
-	lda	a:wram_1510
+	lda	a:p1_view_x
 	clc
 	adc	#$0048
 	sta	zp_18
-	lda	a:wram_1510
+	lda	a:p1_view_x
 	sec
 	sbc	#$0048
 	sta	zp_1A
@@ -575,22 +575,22 @@ loc_02EB2C:
 loc_02EB2D:
 	sec
 	sbc	#$002C
-	sta	a:wram_1512
-	sta	a:wram_1552
+	sta	a:p1_view_y
+	sta	a:p2_view_y
 	bra	sub_02EB43
 loc_02EB39:
 	clc
 	adc	#$002C
-	sta	a:wram_1512
-	sta	a:wram_1552
+	sta	a:p1_view_y
+	sta	a:p2_view_y
 
 sub_02EB43:
 	; (not executed in the CDL traces)
-	lda	a:wram_1512
+	lda	a:p1_view_y
 	clc
 	adc	#$002C
 	sta	zp_18
-	lda	a:wram_1512
+	lda	a:p1_view_y
 	sec
 	sbc	#$002C
 	sta	zp_1A
@@ -854,7 +854,7 @@ sub_02ECB4:
 	.a16
 	rts
 
-sub_02ED3B:
+init_topdown_irq:
 	lda	a:title_menu_cursor
 	beq	loc_02ED43
 	dec	a
@@ -868,7 +868,7 @@ loc_02ED43:
 	sta	a:nmitimen_shadow
 	lda	#$0002
 	sta	irq_mode
-	stz	zp_40
+	stz	m7_split_screen
 	rtl
 loc_02ED5D:
 	lda	#$0000
@@ -879,203 +879,203 @@ loc_02ED5D:
 	sta	a:nmitimen_shadow
 	lda	#$0002
 	sta	irq_mode
-	sta	zp_40
+	sta	m7_split_screen
 	rtl
 
-sub_02ED77:
+compute_m7_matrix:
 	rep	#$30
 	lda	a:title_menu_cursor
 	beq	loc_02ED85
 	dec	a
 	bne	loc_02ED85
-	jsl	f:sub_02EE3E
+	jsl	f:compute_p2_m7_matrix
 loc_02ED85:
-	lda	a:wram_1F98
+	lda	a:p1_m7_angle
 	clc
 	adc	#$0040
 	xba
 	pha
-	lda	a:wram_1F98
+	lda	a:p1_m7_angle
 	and	#$007F
 	asl	a
 	tay
-	lda	a:data_05E570,y
+	lda	a:cosine_table,y
 	sta	zp_0A
-	lda	a:wram_1F94
+	lda	a:p1_m7_scale_x
 	sta	zp_08
-	jsr	a:sub_02EEF7
+	jsr	a:multiply_sine_scale
 	asl	a
 	ply
 	bpl	loc_02EDAB
 	eor	#$FFFF
 	inc	a
 loc_02EDAB:
-	sta	a:wram_1FA4
-	lda	a:wram_1F98
+	sta	a:p1_m7a
+	lda	a:p1_m7_angle
 	xba
 	pha
-	lda	a:wram_1F98
+	lda	a:p1_m7_angle
 	and	#$007F
 	asl	a
 	tay
-	lda	a:data_05E4F0,y
+	lda	a:sine_table,y
 	sta	zp_0A
-	lda	a:wram_1F94
+	lda	a:p1_m7_scale_x
 	sta	zp_08
-	jsr	a:sub_02EEF7
+	jsr	a:multiply_sine_scale
 	asl	a
 	ply
 	bpl	loc_02EDD0
 	eor	#$FFFF
 	inc	a
 loc_02EDD0:
-	sta	a:wram_1FA6
-	lda	a:wram_1F98
+	sta	a:p1_m7b
+	lda	a:p1_m7_angle
 	xba
 	pha
-	lda	a:wram_1F98
+	lda	a:p1_m7_angle
 	and	#$007F
 	asl	a
 	tay
-	lda	a:data_05E4F0,y
+	lda	a:sine_table,y
 	sta	zp_0A
-	lda	a:wram_1F96
+	lda	a:p1_m7_scale_y
 	sta	zp_08
-	jsr	a:sub_02EEF7
+	jsr	a:multiply_sine_scale
 	asl	a
 	ply
 	bmi	loc_02EDF5
 	eor	#$FFFF
 	inc	a
 loc_02EDF5:
-	sta	a:wram_1FA8
-	lda	a:wram_1F98
+	sta	a:p1_m7c
+	lda	a:p1_m7_angle
 	clc
 	adc	#$0040
 	xba
 	pha
-	lda	a:wram_1F98
+	lda	a:p1_m7_angle
 	and	#$007F
 	asl	a
 	tay
-	lda	a:data_05E570,y
+	lda	a:cosine_table,y
 	sta	zp_0A
-	lda	a:wram_1F96
+	lda	a:p1_m7_scale_y
 	sta	zp_08
-	jsr	a:sub_02EEF7
+	jsr	a:multiply_sine_scale
 	asl	a
 	ply
 	bpl	loc_02EE1E
 	eor	#$FFFF
 	inc	a
 loc_02EE1E:
-	sta	a:wram_1FAA
-	lda	a:wram_1F90
-	sta	a:wram_1FAC
-	lda	a:wram_1F92
-	sta	a:wram_1FAE
-	lda	a:wram_1F9A
-	sta	a:wram_1FB0
-	lda	a:wram_1F9C
+	sta	a:p1_m7d
+	lda	a:p1_m7_center_x
+	sta	a:p1_m7x
+	lda	a:p1_m7_center_y
+	sta	a:p1_m7y
+	lda	a:p1_m7_hofs
+	sta	a:p1_bg1hofs
+	lda	a:p1_m7_vofs
 	sec
-	sbc	a:wram_15A2
-	sta	a:wram_1FB2
+	sbc	a:screen_shake_offset
+	sta	a:p1_bg1vofs
 	rtl
 
-sub_02EE3E:
-	lda	a:wram_1FD8
+compute_p2_m7_matrix:
+	lda	a:p2_m7_angle
 	clc
 	adc	#$0040
 	xba
 	pha
-	lda	a:wram_1FD8
+	lda	a:p2_m7_angle
 	and	#$007F
 	asl	a
 	tay
-	lda	a:data_05E570,y
+	lda	a:cosine_table,y
 	sta	zp_0A
-	lda	a:wram_1FD4
+	lda	a:p2_m7_scale_x
 	sta	zp_08
-	jsr	a:sub_02EEF7
+	jsr	a:multiply_sine_scale
 	asl	a
 	ply
 	bpl	loc_02EE64
 	eor	#$FFFF
 	inc	a
 loc_02EE64:
-	sta	a:wram_1FE4
-	lda	a:wram_1FD8
+	sta	a:p2_m7a
+	lda	a:p2_m7_angle
 	xba
 	pha
-	lda	a:wram_1FD8
+	lda	a:p2_m7_angle
 	and	#$007F
 	asl	a
 	tay
-	lda	a:data_05E4F0,y
+	lda	a:sine_table,y
 	sta	zp_0A
-	lda	a:wram_1FD4
+	lda	a:p2_m7_scale_x
 	sta	zp_08
-	jsr	a:sub_02EEF7
+	jsr	a:multiply_sine_scale
 	asl	a
 	ply
 	bpl	loc_02EE89
 	eor	#$FFFF
 	inc	a
 loc_02EE89:
-	sta	a:wram_1FE6
-	lda	a:wram_1FD8
+	sta	a:p2_m7b
+	lda	a:p2_m7_angle
 	xba
 	pha
-	lda	a:wram_1FD8
+	lda	a:p2_m7_angle
 	and	#$007F
 	asl	a
 	tay
-	lda	a:data_05E4F0,y
+	lda	a:sine_table,y
 	sta	zp_0A
-	lda	a:wram_1FD6
+	lda	a:p2_m7_scale_y
 	sta	zp_08
-	jsr	a:sub_02EEF7
+	jsr	a:multiply_sine_scale
 	asl	a
 	ply
 	bmi	loc_02EEAE
 	eor	#$FFFF
 	inc	a
 loc_02EEAE:
-	sta	a:wram_1FE8
-	lda	a:wram_1FD8
+	sta	a:p2_m7c
+	lda	a:p2_m7_angle
 	clc
 	adc	#$0040
 	xba
 	pha
-	lda	a:wram_1FD8
+	lda	a:p2_m7_angle
 	and	#$007F
 	asl	a
 	tay
-	lda	a:data_05E570,y
+	lda	a:cosine_table,y
 	sta	zp_0A
-	lda	a:wram_1FD6
+	lda	a:p2_m7_scale_y
 	sta	zp_08
-	jsr	a:sub_02EEF7
+	jsr	a:multiply_sine_scale
 	asl	a
 	ply
 	bpl	loc_02EED7
 	eor	#$FFFF
 	inc	a
 loc_02EED7:
-	sta	a:wram_1FEA
-	lda	a:wram_1FD0
-	sta	a:wram_1FEC
-	lda	a:wram_1FD2
-	sta	a:wram_1FEE
-	lda	a:wram_1FDA
-	sta	a:wram_1FF0
-	lda	a:wram_1FDC
+	sta	a:p2_m7d
+	lda	a:p2_m7_center_x
+	sta	a:p2_m7x
+	lda	a:p2_m7_center_y
+	sta	a:p2_m7y
+	lda	a:p2_m7_hofs
+	sta	a:p2_bg1hofs
+	lda	a:p2_m7_vofs
 	sec
-	sbc	a:wram_15A2
-	sta	a:wram_1FF2
+	sbc	a:screen_shake_offset
+	sta	a:p2_bg1vofs
 	rtl
 
-sub_02EEF7:
+multiply_sine_scale:
 	sep	#$20
 	.a8
 	lda	zp_0A
@@ -1135,34 +1135,34 @@ loc_02EF3F:
 	; CDL: not accessed
 	.byte	$C2, $30
 
-sub_02EF54:
-	lda	a:wram_15A4
+update_screen_shake:
+	lda	a:screen_shake_timer
 	beq	loc_02EF6E
-	dec	a:wram_15A4
+	dec	a:screen_shake_timer
 loc_02EF5C:
 	lda	zp_78
 	and	#$0001
 	bne	loc_02EF6D
-	lda	a:wram_15A2
+	lda	a:screen_shake_offset
 	eor	#$FFFF
 	inc	a
-	sta	a:wram_15A2
+	sta	a:screen_shake_offset
 loc_02EF6D:
 	rtl
 loc_02EF6E:
-	lda	a:wram_15A2
+	lda	a:screen_shake_offset
 	beq	loc_02EF6D
 	bmi	loc_02EF81
 	lda	zp_78
 	bit	#$0003
 	bne	loc_02EF5C
-	dec	a:wram_15A2
+	dec	a:screen_shake_offset
 	bra	loc_02EF5C
 loc_02EF81:
 	lda	zp_78
 	bit	#$0003
 	bne	loc_02EF5C
-	inc	a:wram_15A2
+	inc	a:screen_shake_offset
 	bra	loc_02EF5C
 
 sub_02EF8D:
@@ -1322,9 +1322,9 @@ loc_02F09A:
 	stz	$16,x
 	lda	#$0200
 	sta	$24,x
-	sta	a:wram_15A4
+	sta	a:screen_shake_timer
 	lda	#$0002
-	sta	a:wram_15A2
+	sta	a:screen_shake_offset
 
 sub_02F0B3:
 	jsl	f:sub_02B7C9

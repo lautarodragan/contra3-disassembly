@@ -284,7 +284,7 @@ loc_00AF8B:
 	stz	a:wram_1F8E
 	stz	a:wram_1FCE
 	stz	a:wram_1600
-	stz	a:wram_1E42
+	stz	a:topdown_state
 	lda	#$0020
 	sta	zp_94
 	lda	#$0010
@@ -362,29 +362,29 @@ loc_00B055:
 	sta	a:inidisp_shadow
 	beq	loc_00B083
 	dec	a:inidisp_shadow
-	lda	a:wram_1FB4
+	lda	a:p1_view_brightness
 	and	#$000F
 	dec	a
 	bpl	loc_00B06F
 	; (not executed in the CDL traces)
 	lda	#$0080
 loc_00B06F:
-	sta	a:wram_1FB4
-	lda	a:wram_1FF4
+	sta	a:p1_view_brightness
+	lda	a:p2_view_brightness
 	and	#$000F
 	dec	a
 	bpl	loc_00B07E
 	; (not executed in the CDL traces)
 	lda	#$0080
 loc_00B07E:
-	sta	a:wram_1FF4
+	sta	a:p2_view_brightness
 	sec
 	rtl
 loc_00B083:
 	lda	#$0080
 	sta	a:inidisp_shadow
-	sta	a:wram_1FB4
-	sta	a:wram_1FF4
+	sta	a:p1_view_brightness
+	sta	a:p2_view_brightness
 	clc
 	rtl
 

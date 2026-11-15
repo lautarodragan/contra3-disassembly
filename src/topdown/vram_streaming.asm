@@ -6,9 +6,9 @@
 ; sub_00A257 transfers the buffers at $1800-$1827.
 
 sub_009C18:
-	lda	a:wram_158E
+	lda	a:intro_phase
 	bne	loc_009C22
-	lda	a:wram_1590
+	lda	a:map_view_active
 	beq	loc_009C23
 loc_009C22:
 	rtl
@@ -22,12 +22,12 @@ loc_009C23:
 	bcc	loc_009C33
 	brl	loc_009F45
 loc_009C33:
-	lda	a:wram_1594
-	cmp	#$0002
+	lda	a:topdown_map
+	cmp	#TD_MAP_STAGE2_BOSS
 	bne	loc_009C3E
 	brl	loc_009D81
 loc_009C3E:
-	cmp	#$0006
+	cmp	#TD_MAP_STAGE5_BOSS
 	bne	loc_009C46
 	brl	loc_009E77
 loc_009C46:
@@ -303,8 +303,8 @@ loc_009E77:
 	.i16
 	rtl
 loc_009F45:
-	lda	a:wram_1594
-	cmp	#$0002
+	lda	a:topdown_map
+	cmp	#TD_MAP_STAGE2_BOSS
 	bne	loc_009F50
 	; (not executed in the CDL traces)
 	brl	loc_00A093

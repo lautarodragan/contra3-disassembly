@@ -4,20 +4,20 @@
 ; Players, objects and map handling of the top-down stages, reached from the
 ; state handlers in topdown/stage_states.asm.
 
-sub_028E33:
+update_topdown_players:
 	lda	joy1_held
-	sta	a:wram_152C
+	sta	a:p1_td_joy_held
 	lda	joy1_pressed
-	sta	a:wram_152E
+	sta	a:p1_td_joy_pressed
 	ldx	#$0EC0
-	jsl	f:sub_028E51
+	jsl	f:update_topdown_player
 	lda	joy2_held
-	sta	a:wram_156C
+	sta	a:p2_td_joy_held
 	lda	joy2_pressed
-	sta	a:wram_156E
+	sta	a:p2_td_joy_pressed
 	ldx	#$0F00
 
-sub_028E51:
+update_topdown_player:
 	lda	$12,x
 	bne	loc_028E58
 	brl	sub_028EF2
@@ -78,11 +78,11 @@ loc_028EC0:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_028ECF,x
+	lda	f:tbl_topdown_player_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_028ECF:
+tbl_topdown_player_states:
 	.addr	sub_028EF2
 	.addr	sub_029233
 	.addr	sub_029265
@@ -214,7 +214,7 @@ sub_028FC8:
 loc_028FD0:
 	lda	$2C,x
 	beq	sub_028FED
-	lda	a:wram_1594
+	lda	a:topdown_map
 	lsr	a
 	phx
 	asl	a
@@ -282,9 +282,9 @@ sub_029037:
 	ora	zp_FA
 	asl	a
 	tay
-	lda	a:data_05D0DE,y
+	lda	a:start_points_x,y
 	sta	$0A,x
-	lda	a:data_05D11E,y
+	lda	a:start_points_y,y
 	sta	$0E,x
 	stz	$08,x
 	stz	$0C,x
@@ -330,9 +330,9 @@ sub_029080:
 	ora	zp_FA
 	asl	a
 	tay
-	lda	a:data_05D0FE,y
+	lda	a:start_points_x_stage5,y
 	sta	$0A,x
-	lda	a:data_05D13E,y
+	lda	a:start_points_y_stage5,y
 	sta	$0E,x
 	stz	$08,x
 	stz	$0C,x
@@ -4378,11 +4378,11 @@ sub_02AD60:
 	sta	a:wram_0ACA
 	sta	a:wram_0ACE
 	lda	#$00F0
-	sta	a:wram_1F90
-	sta	a:wram_1FD0
+	sta	a:p1_m7_center_x
+	sta	a:p2_m7_center_x
 	lda	#$0110
-	sta	a:wram_1F92
-	sta	a:wram_1FD2
+	sta	a:p1_m7_center_y
+	sta	a:p2_m7_center_y
 	stz	$2E,x
 	stz	$16,x
 	lda	#$0040
@@ -4398,15 +4398,15 @@ loc_02AD8B:
 	jsl	f:queue_sound
 	stz	$20,x
 	stz	$28,x
-	lda	a:wram_1510
+	lda	a:p1_view_x
 	sta	a:wram_0ACA
-	lda	a:wram_1512
+	lda	a:p1_view_y
 	sta	a:wram_0ACE
 	lda	#$0000
-	sta	a:wram_1F94
-	sta	a:wram_1FD4
-	sta	a:wram_1F96
-	sta	a:wram_1FD6
+	sta	a:p1_m7_scale_x
+	sta	a:p2_m7_scale_x
+	sta	a:p1_m7_scale_y
+	sta	a:p2_m7_scale_y
 	lda	#$0080
 	sta	a:wram_0AC4
 	jsr	a:sub_02B169
@@ -4418,16 +4418,16 @@ sub_02ADBC:
 	inc	a
 	and	#$00FF
 	sta	a:wram_0AC4
-	inc	a:wram_1F94
-	inc	a:wram_1FD4
-	inc	a:wram_1F96
-	inc	a:wram_1FD6
-	inc	a:wram_1F94
-	inc	a:wram_1FD4
-	inc	a:wram_1F96
-	inc	a:wram_1FD6
-	lda	a:wram_1FD6
-	cmp	#$0100
+	inc	a:p1_m7_scale_x
+	inc	a:p2_m7_scale_x
+	inc	a:p1_m7_scale_y
+	inc	a:p2_m7_scale_y
+	inc	a:p1_m7_scale_x
+	inc	a:p2_m7_scale_x
+	inc	a:p1_m7_scale_y
+	inc	a:p2_m7_scale_y
+	lda	a:p2_m7_scale_y
+	cmp	#M7_SCALE_1X
 	beq	loc_02ADE8
 	rtl
 loc_02ADE8:
@@ -4437,9 +4437,9 @@ loc_02ADE8:
 	lda	#$A000
 	sta	$16,x
 	lda	#$0010
-	sta	a:wram_15A4
+	sta	a:screen_shake_timer
 	lda	#$0004
-	sta	a:wram_15A2
+	sta	a:screen_shake_offset
 	lda	#$0020
 	sta	$24,x
 	inc	$12,x
@@ -4567,22 +4567,22 @@ sub_02AEE2:
 	inc	a
 	and	#$00FF
 	sta	a:wram_0AC4
-	dec	a:wram_1F94
-	dec	a:wram_1FD4
-	dec	a:wram_1F96
-	dec	a:wram_1FD6
-	dec	a:wram_1F94
-	dec	a:wram_1FD4
-	dec	a:wram_1F96
-	dec	a:wram_1FD6
+	dec	a:p1_m7_scale_x
+	dec	a:p2_m7_scale_x
+	dec	a:p1_m7_scale_y
+	dec	a:p2_m7_scale_y
+	dec	a:p1_m7_scale_x
+	dec	a:p2_m7_scale_x
+	dec	a:p1_m7_scale_y
+	dec	a:p2_m7_scale_y
 	beq	loc_02AF08
 	rtl
 loc_02AF08:
-	lda	#$0100
-	sta	a:wram_1F94
-	sta	a:wram_1FD4
-	sta	a:wram_1F96
-	sta	a:wram_1FD6
+	lda	#M7_SCALE_1X
+	sta	a:p1_m7_scale_x
+	sta	a:p2_m7_scale_x
+	sta	a:p1_m7_scale_y
+	sta	a:p2_m7_scale_y
 	lda	#$8000
 	sta	a:wram_0ACA
 	sta	a:wram_0ACE
@@ -4597,10 +4597,10 @@ sub_02AF27:
 loc_02AF2C:
 	lda	#$002F
 	jsl	f:queue_sound
-	stz	a:wram_1F94
-	stz	a:wram_1FD4
-	stz	a:wram_1F96
-	stz	a:wram_1FD6
+	stz	a:p1_m7_scale_x
+	stz	a:p2_m7_scale_x
+	stz	a:p1_m7_scale_y
+	stz	a:p2_m7_scale_y
 	ldy	a:wram_159E
 	lda	a:$0ECA,y
 	sta	a:wram_0ACA
@@ -4619,40 +4619,40 @@ sub_02AF5E:
 	adc	a:wram_0AFC
 	and	#$00FF
 	sta	a:wram_0AC4
-	lda	a:wram_1F94
+	lda	a:p1_m7_scale_x
 	clc
 	adc	a:wram_0AFA
-	sta	a:wram_1F94
-	lda	a:wram_1FD4
+	sta	a:p1_m7_scale_x
+	lda	a:p2_m7_scale_x
 	clc
 	adc	a:wram_0AFA
-	sta	a:wram_1FD4
-	lda	a:wram_1F96
+	sta	a:p2_m7_scale_x
+	lda	a:p1_m7_scale_y
 	clc
 	adc	a:wram_0AFA
-	sta	a:wram_1F96
-	lda	a:wram_1FD6
+	sta	a:p1_m7_scale_y
+	lda	a:p2_m7_scale_y
 	clc
 	adc	a:wram_0AFA
-	sta	a:wram_1FD6
-	cmp	#$0100
+	sta	a:p2_m7_scale_y
+	cmp	#M7_SCALE_1X
 	bcs	loc_02AF99
 	rtl
 loc_02AF99:
 	lda	#$0056
 	jsl	f:queue_sound
-	lda	#$0100
-	sta	a:wram_1F94
-	sta	a:wram_1FD4
-	sta	a:wram_1F96
-	sta	a:wram_1FD6
+	lda	#M7_SCALE_1X
+	sta	a:p1_m7_scale_x
+	sta	a:p2_m7_scale_x
+	sta	a:p1_m7_scale_y
+	sta	a:p2_m7_scale_y
 	jsr	a:sub_02B146
 	lda	#$A000
 	sta	$16,x
 	lda	#$0010
-	sta	a:wram_15A4
+	sta	a:screen_shake_timer
 	lda	#$0004
-	sta	a:wram_15A2
+	sta	a:screen_shake_offset
 	lda	#$0020
 	sta	$24,x
 	inc	$12,x
@@ -4742,9 +4742,9 @@ loc_02B04C:
 	stz	$16,x
 	lda	#$0200
 	sta	$24,x
-	sta	a:wram_15A4
+	sta	a:screen_shake_timer
 	lda	#$0001
-	sta	a:wram_15A2
+	sta	a:screen_shake_offset
 	lda	#$0011
 	sta	$12,x
 
@@ -6807,8 +6807,8 @@ loc_02BF77:
 	rts
 
 sub_02BF89:
-	lda	a:wram_1594
-	cmp	#$0002
+	lda	a:topdown_map
+	cmp	#TD_MAP_STAGE2_BOSS
 	bne	loc_02BF93
 	clc
 	rtl
@@ -6867,8 +6867,8 @@ loc_02BFE4:
 	plx
 	cmp	#$00FC
 	bne	loc_02BFE2
-	lda	a:wram_1594
-	cmp	#$0006
+	lda	a:topdown_map
+	cmp	#TD_MAP_STAGE5_BOSS
 	bne	loc_02C007
 	ldy	#$0EC0
 	cpx	#$0700
@@ -7297,7 +7297,7 @@ loc_02C2DF:
 	and	#$00FF
 	plx
 	sta	zp_04
-	lda	a:wram_1594
+	lda	a:topdown_map
 	bne	loc_02C325
 	lda	$0E,x
 	cmp	#$0100
@@ -7410,8 +7410,8 @@ sub_02C3B7:
 	cmp	#$0002
 	bne	loc_02C3D0
 	; (not executed in the CDL traces)
-	lda	a:wram_1594
-	cmp	#$0006
+	lda	a:topdown_map
+	cmp	#TD_MAP_STAGE5_BOSS
 	beq	loc_02C3DD
 	jsr	a:sub_02CB27
 	clc
@@ -8332,9 +8332,9 @@ loc_02CA2A:
 	lda	#$0020
 	sta	a:$18AC,y
 	lda	#$0001
-	sta	a:wram_15A2
+	sta	a:screen_shake_offset
 	lda	#$0030
-	sta	a:wram_15A4
+	sta	a:screen_shake_timer
 	lda	#$0011
 	jsl	f:queue_sound
 loc_02CA48:
@@ -8360,8 +8360,8 @@ loc_02CA64:
 	rts
 loc_02CA6A:
 	lda	#$0001
-	sta	a:wram_15A2
-	sta	a:wram_15A4
+	sta	a:screen_shake_offset
+	sta	a:screen_shake_timer
 	lda	#$0001
 	sta	a:wram_18CC
 	lda	#$0008
@@ -8387,8 +8387,8 @@ loc_02CAA5:
 	rts
 loc_02CAAB:
 	lda	#$0001
-	sta	a:wram_15A2
-	sta	a:wram_15A4
+	sta	a:screen_shake_offset
+	sta	a:screen_shake_timer
 	lda	#$0001
 	sta	a:wram_18BE
 	lda	#$0008
@@ -8414,8 +8414,8 @@ loc_02CAE6:
 	rts
 loc_02CAEC:
 	lda	#$0001
-	sta	a:wram_15A2
-	sta	a:wram_15A4
+	sta	a:screen_shake_offset
+	sta	a:screen_shake_timer
 	lda	#$0001
 	sta	a:wram_18B0
 	lda	#$0008
@@ -8478,9 +8478,9 @@ sub_02CB59:
 	ora	zp_FA
 	asl	a
 	tay
-	lda	a:wram_1594
+	lda	a:topdown_map
 	beq	loc_02CB7B
-	cmp	#$0004
+	cmp	#TD_MAP_STAGE5
 	beq	loc_02CB80
 	ldy	#$0AC0
 	rts
@@ -8611,10 +8611,10 @@ loc_02CC32:
 	rts
 loc_02CC57:
 	rep	#$30
-	lda	a:wram_1594
-	cmp	#$0002
+	lda	a:topdown_map
+	cmp	#TD_MAP_STAGE2_BOSS
 	beq	loc_02CC79
-	cmp	#$0006
+	cmp	#TD_MAP_STAGE5_BOSS
 	beq	loc_02CC89
 	jsr	a:sub_02D18D
 	jsr	a:sub_02CC99
@@ -9318,11 +9318,11 @@ sub_02D1DD:
 	beq	loc_02D205
 	lda	$0A,x
 	sec
-	sbc	a:wram_1510
+	sbc	a:p1_view_x
 	sta	zp_08
 	lda	$0E,x
 	sec
-	sbc	a:wram_1512
+	sbc	a:p1_view_y
 	sta	zp_0A
 	jsl	f:sub_1DAD3C
 	cmp	zp_18
@@ -9342,7 +9342,7 @@ loc_02D206:
 	sta	zp_0A
 	jsl	f:sub_1DABA0
 	sec
-	sbc	a:wram_1514
+	sbc	a:p1_view_angle
 	clc
 	adc	#$0010
 	lsr	a
@@ -9408,7 +9408,7 @@ loc_02D293:
 	rts
 loc_02D29A:
 	lda	#$FFFF
-	sta	a:wram_159A
+	sta	a:targets_left_flag
 	lda	zp_78
 	asl	a
 	and	#$000E
@@ -9436,11 +9436,11 @@ loc_02D2C8:
 loc_02D2D2:
 	lda	$0A,x
 	sec
-	sbc	a:wram_1510
+	sbc	a:p1_view_x
 	sta	zp_1C
 	lda	$0E,x
 	sec
-	sbc	a:wram_1512
+	sbc	a:p1_view_y
 	sta	zp_1E
 	jmp	a:loc_02D206
 
@@ -9616,10 +9616,10 @@ loc_02D43B:
 	jmp	a:loc_02CDD1
 loc_02D449:
 	rep	#$30
-	lda	a:wram_1594
-	cmp	#$0002
+	lda	a:topdown_map
+	cmp	#TD_MAP_STAGE2_BOSS
 	beq	loc_02D46B
-	cmp	#$0006
+	cmp	#TD_MAP_STAGE5_BOSS
 	beq	loc_02D47B
 	jsr	a:sub_02D97F
 	jsr	a:sub_02D48B
@@ -10321,11 +10321,11 @@ sub_02D9CF:
 	beq	loc_02D9F7
 	lda	$0A,x
 	sec
-	sbc	a:wram_1550
+	sbc	a:p2_view_x
 	sta	zp_08
 	lda	$0E,x
 	sec
-	sbc	a:wram_1552
+	sbc	a:p2_view_y
 	sta	zp_0A
 	jsl	f:sub_1DAD3C
 	cmp	zp_18
@@ -10345,7 +10345,7 @@ loc_02D9F8:
 	sta	zp_0A
 	jsl	f:sub_1DABA0
 	sec
-	sbc	a:wram_1554
+	sbc	a:p2_view_angle
 	clc
 	adc	#$0010
 	lsr	a
@@ -10413,7 +10413,7 @@ loc_02DA85:
 loc_02DA8C:
 	; (not executed in the CDL traces)
 	lda	#$FFFF
-	sta	a:wram_159A
+	sta	a:targets_left_flag
 	lda	zp_78
 	asl	a
 	and	#$000E
@@ -10442,11 +10442,11 @@ loc_02DABA:
 loc_02DAC4:
 	lda	$0A,x
 	sec
-	sbc	a:wram_1550
+	sbc	a:p2_view_x
 	sta	zp_1C
 	lda	$0E,x
 	sec
-	sbc	a:wram_1552
+	sbc	a:p2_view_y
 	sta	zp_1E
 	jmp	a:loc_02D9F8
 
@@ -10738,7 +10738,7 @@ loc_02DD23:
 
 sub_02DD2F:
 	lda	#$0001
-	sta	a:wram_15A4
+	sta	a:screen_shake_timer
 	jsr	a:sub_02DD8E
 	lda	$04,x
 	inc	$04,x

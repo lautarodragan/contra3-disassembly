@@ -21,7 +21,7 @@ loc_02DDDB:
 	rtl
 
 sub_02DDDC:
-	lda	a:wram_1586
+	lda	a:topdown_window_update_on
 	beq	loc_02DDDB
 	lda	frame_counter
 	lsr	a

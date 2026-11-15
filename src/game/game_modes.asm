@@ -103,7 +103,7 @@ sub_00A404:
 	mvn	#$00, #$00
 	plb
 	stz	a:wram_1600
-	stz	a:wram_1E42
+	stz	a:topdown_state
 	stz	a:title_menu_cursor
 	stz	stage_number
 	brl	loc_00AB9B
@@ -425,7 +425,7 @@ sub_00A6C0:
 
 sub_00A6C3:
 	stz	a:wram_1600
-	stz	a:wram_1E42
+	stz	a:topdown_state
 	stz	a:wram_1E5E
 	stz	a:p1_weapon_slot
 	stz	a:p2_weapon_slot
@@ -597,7 +597,7 @@ loc_00A80B:
 	lda	#$2400
 	jsl	f:sub_009015
 	stz	a:wram_1600
-	stz	a:wram_1E42
+	stz	a:topdown_state
 	stz	a:wram_1E5E
 	lda	#$0020
 	sta	zp_94
@@ -1134,7 +1134,7 @@ sub_00AC3F:
 	lda	#$0004
 	sta	nmi_mode
 	inc	zp_78
-	jml	f:loc_028000
+	jml	f:run_topdown_stage
 
 sub_00AC4A:
 	jsr	a:sub_00AC7E
@@ -1188,9 +1188,9 @@ sub_00ACAF:
 	beq	loc_00ACCF
 	lda	a:inidisp_shadow
 	sta	a:wram_1E4E
-	lda	a:wram_1FB4
+	lda	a:p1_view_brightness
 	sta	a:wram_1E50
-	lda	a:wram_1FF4
+	lda	a:p2_view_brightness
 	sta	a:wram_1E52
 	jsr	a:sub_00ACE2
 	jsr	a:sub_00ACFA
@@ -1200,9 +1200,9 @@ loc_00ACCF:
 	lda	a:wram_1E4E
 	sta	a:inidisp_shadow
 	lda	a:wram_1E50
-	sta	a:wram_1FB4
+	sta	a:p1_view_brightness
 	lda	a:wram_1E52
-	sta	a:wram_1FF4
+	sta	a:p2_view_brightness
 	rts
 
 sub_00ACE2:
@@ -1221,7 +1221,7 @@ loc_00ACF9:
 	rts
 
 sub_00ACFA:
-	lda	a:wram_1FB4
+	lda	a:p1_view_brightness
 	bit	#$0080
 	bne	loc_00AD11
 	and	#$000F
@@ -1230,12 +1230,12 @@ sub_00ACFA:
 	bpl	loc_00AD0E
 	lda	#$0000
 loc_00AD0E:
-	sta	a:wram_1FB4
+	sta	a:p1_view_brightness
 loc_00AD11:
 	rts
 
 sub_00AD12:
-	lda	a:wram_1FF4
+	lda	a:p2_view_brightness
 	bit	#$0080
 	bne	loc_00AD29
 	and	#$000F
@@ -1244,7 +1244,7 @@ sub_00AD12:
 	bpl	loc_00AD26
 	lda	#$0000
 loc_00AD26:
-	sta	a:wram_1FF4
+	sta	a:p2_view_brightness
 loc_00AD29:
 	rts
 

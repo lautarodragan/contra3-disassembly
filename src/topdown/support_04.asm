@@ -5,7 +5,7 @@
 ; buffers at $1800).
 
 sub_04DA07:
-	ldx	a:wram_1594
+	ldx	a:topdown_map
 	jmp	(.loword(tbl_04DA0D),x)
 tbl_04DA0D:
 	.addr	sub_04DA15
@@ -330,7 +330,7 @@ sub_04DC6C:
 	rtl
 
 sub_04DC6D:
-	ldx	a:wram_1594
+	ldx	a:topdown_map
 	jmp	(.loword(tbl_04DC73),x)
 tbl_04DC73:
 	.addr	sub_04DC7B

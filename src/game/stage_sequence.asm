@@ -69,8 +69,8 @@ sub_00EBFB:
 	stz	a:p1_lives
 	stz	a:p2_lives
 	stz	zp_B8
-	stz	a:wram_1510
-	stz	a:wram_1550
+	stz	a:p1_view_x
+	stz	a:p2_view_x
 	stz	a:wram_1C84
 	inc	a:wram_1C80
 	rtl
@@ -383,7 +383,7 @@ loc_00EEC5:
 
 sub_00EEC9:
 	stz	a:title_menu_cursor
-	stz	a:wram_1510
+	stz	a:p1_view_x
 	stz	a:wram_1C8A
 	stz	a:wram_1C8C
 	stz	a:wram_1C8E
@@ -402,7 +402,7 @@ sub_00EEC9:
 	rts
 
 sub_00EEFE:
-	lda	a:wram_1510
+	lda	a:p1_view_x
 	cmp	#$00FE
 	bcs	loc_00EF33
 	lda	a:wram_1C8C
@@ -416,14 +416,14 @@ loc_00EF15:
 	clc
 	adc	a:wram_1C8C
 	sta	a:wram_1C8A
-	lda	a:wram_1510
+	lda	a:p1_view_x
 	adc	a:wram_1C8E
 	cmp	#$00FE
 	bcc	loc_00EF2D
 	lda	#$00FE
 loc_00EF2D:
-	sta	a:wram_1510
-	sta	a:wram_1550
+	sta	a:p1_view_x
+	sta	a:p2_view_x
 loc_00EF33:
 	jsr	a:sub_00F149
 	rts
@@ -482,8 +482,8 @@ sub_00EF90:
 	tay
 	lda	a:data_05A8B1,y
 	and	#$00FF
-	sta	a:wram_1510
-	sta	a:wram_1550
+	sta	a:p1_view_x
+	sta	a:p2_view_x
 	beq	loc_00EFAF
 	rts
 loc_00EFAF:

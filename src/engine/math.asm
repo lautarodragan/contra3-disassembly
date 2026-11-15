@@ -18,12 +18,12 @@ unused_calc_mode7_matrix:
 	lsr	a
 	and	#$0002
 	tay
-	lda	a:wram_1F98
+	lda	a:p1_m7_angle
 	clc
 	adc	f:data_058000,x
 	and	#$01FF
 	pha
-	lda	a:wram_1F98
+	lda	a:p1_m7_angle
 	and	#$00FF
 	asl	a
 	clc
@@ -49,9 +49,9 @@ unused_calc_mode7_matrix:
 	sta	a:$1E9E,x
 	dey
 	bpl	@loop
-	lda	a:wram_1F90
+	lda	a:p1_m7_center_x
 	sta	a:m7x_shadow
-	lda	a:wram_1F92
+	lda	a:p1_m7_center_y
 	sta	a:m7y_shadow
 	rtl
 

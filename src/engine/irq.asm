@@ -91,39 +91,39 @@ irq_none:
 irq_mode7_top_view:
 	sep	#$20
 	.a8
-	lda	a:wram_1FA4
+	lda	a:p1_m7a
 	sta	a:M7A
-	lda	a:wram_1FA5
+	lda	a:p1_m7a_hi
 	sta	a:M7A
-	lda	a:wram_1FA6
+	lda	a:p1_m7b
 	sta	a:M7B
-	lda	a:wram_1FA7
+	lda	a:p1_m7b_hi
 	sta	a:M7B
-	lda	a:wram_1FA8
+	lda	a:p1_m7c
 	sta	a:M7C
-	lda	a:wram_1FA9
+	lda	a:p1_m7c_hi
 	sta	a:M7C
-	lda	a:wram_1FAA
+	lda	a:p1_m7d
 	sta	a:M7D
-	lda	a:wram_1FAB
+	lda	a:p1_m7d_hi
 	sta	a:M7D
-	lda	a:wram_1FAC
+	lda	a:p1_m7x
 	sta	a:M7X
-	lda	a:wram_1FAD
+	lda	a:p1_m7x_hi
 	sta	a:M7X
-	lda	a:wram_1FAE
+	lda	a:p1_m7y
 	sta	a:M7Y
-	lda	a:wram_1FAF
+	lda	a:p1_m7y_hi
 	sta	a:M7Y
-	lda	a:wram_1FB0
+	lda	a:p1_bg1hofs
 	sta	a:BG1HOFS
-	lda	a:wram_1FB1
+	lda	a:p1_bg1hofs_hi
 	sta	a:BG1HOFS
-	lda	a:wram_1FB2
+	lda	a:p1_bg1vofs
 	sta	a:BG1VOFS
-	lda	a:wram_1FB3
+	lda	a:p1_bg1vofs_hi
 	sta	a:BG1VOFS
-	ldx	zp_40
+	ldx	m7_split_screen
 	beq	@done
 	ldx	#$0070
 	stx	a:VTIMEL
@@ -138,37 +138,37 @@ irq_mode7_bottom_view:
 	.a16
 	sep	#$20
 	.a8
-	lda	a:wram_1FE4
+	lda	a:p2_m7a
 	sta	a:M7A
-	lda	a:wram_1FE5
+	lda	a:p2_m7a_hi
 	sta	a:M7A
-	lda	a:wram_1FE6
+	lda	a:p2_m7b
 	sta	a:M7B
-	lda	a:wram_1FE7
+	lda	a:p2_m7b_hi
 	sta	a:M7B
-	lda	a:wram_1FE8
+	lda	a:p2_m7c
 	sta	a:M7C
-	lda	a:wram_1FE9
+	lda	a:p2_m7c_hi
 	sta	a:M7C
-	lda	a:wram_1FEA
+	lda	a:p2_m7d
 	sta	a:M7D
-	lda	a:wram_1FEB
+	lda	a:p2_m7d_hi
 	sta	a:M7D
-	lda	a:wram_1FEC
+	lda	a:p2_m7x
 	sta	a:M7X
-	lda	a:wram_1FED
+	lda	a:p2_m7x_hi
 	sta	a:M7X
-	lda	a:wram_1FEE
+	lda	a:p2_m7y
 	sta	a:M7Y
-	lda	a:wram_1FEF
+	lda	a:p2_m7y_hi
 	sta	a:M7Y
-	lda	a:wram_1FF0
+	lda	a:p2_bg1hofs
 	sta	a:BG1HOFS
-	lda	a:wram_1FF1
+	lda	a:p2_bg1hofs_hi
 	sta	a:BG1HOFS
-	lda	a:wram_1FF2
+	lda	a:p2_bg1vofs
 	sta	a:BG1VOFS
-	lda	a:wram_1FF3
+	lda	a:p2_bg1vofs_hi
 	sta	a:BG1VOFS
 	ldx	#$0002
 	stx	irq_mode

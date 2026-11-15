@@ -109,8 +109,8 @@ loc_00BD90:
 	stz	a:wram_1EB2
 	lda	#$0030
 	sta	a:wobjsel_shadow
-	stz	a:wram_1510
-	stz	a:wram_1550
+	stz	a:p1_view_x
+	stz	a:p2_view_x
 	lda	#$0280
 	sta	a:wram_1646
 	stz	a:wram_16B2

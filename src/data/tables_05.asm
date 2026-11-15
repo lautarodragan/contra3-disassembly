@@ -2233,14 +2233,14 @@ data_05CD21:
 	.byte	$03, $10, $4E, $F0, $C2, $22, $04, $10, $4E, $F0, $C2, $22, $03, $10, $6E, $F0
 	.byte	$C4, $22, $04, $10, $6E, $F0, $C4, $22, $70, $43, $01, $28, $63, $CD, $05, $FF
 	.byte	$FF, $80, $18, $01, $00, $01, $18, $E8, $00
-data_05CD6A:
-	; CDL: read by sub_028626
+topdown_stage_songs:
+	; CDL: read by intro_play_music
 	.byte	$63, $00, $66, $00
 data_05CD6E:
-	; CDL: read by sub_028AC8
+	; CDL: read by set_status_bar_scroll
 	.byte	$00
 data_05CD6F:
-	; CDL: read by sub_028AC8
+	; CDL: read by set_status_bar_scroll
 	.byte	$00, $9F, $FF
 data_05CD72:
 	.byte	$00, $00, $10, $00, $50, $00, $01, $00, $01, $00, $01, $00, $01, $00, $01, $00
@@ -2254,59 +2254,59 @@ data_05CD72:
 	.byte	$00, $00, $00, $00, $00, $00, $0D, $00, $0E, $00, $01, $00, $07, $00, $0C, $00
 	.byte	$00, $00, $00, $00, $00, $00
 data_05CE08:
-	; CDL: read by sub_028D78
+	; CDL: read by spawn_stage2_targets
 	.byte	$90, $00, $70, $03, $70, $01, $90, $02, $70, $00
 data_05CE12:
-	; CDL: read by sub_028D78
+	; CDL: read by spawn_stage2_targets
 	.byte	$70, $00, $50, $00, $90, $02, $90, $02, $90, $03
 data_05CE1C:
-	; CDL: read by sub_028D78
+	; CDL: read by spawn_stage2_targets
 	.byte	$10, $06, $6C, $04, $2C, $28, $50, $28, $0C, $38
 data_05CE26:
-	; CDL: read by sub_028D78
+	; CDL: read by spawn_stage2_targets
 	.byte	$00, $00, $00, $00, $04, $00, $00, $00, $02, $00
 data_05CE30:
-	; CDL: read by sub_028DB9
+	; CDL: read by spawn_stage2_boss
 	.byte	$03, $00, $00, $00, $04, $00, $05, $00, $06, $00, $06, $00, $06, $00, $06, $00
 	.byte	$06, $00, $06, $00
 data_05CE44:
-	; CDL: read by sub_028DB9
+	; CDL: read by spawn_stage2_boss
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $02, $00, $04, $00, $06, $00
 	.byte	$08, $00, $0A, $00
 data_05CE58:
-	; CDL: read by sub_028DB9, sub_028DDE; partly not accessed
+	; CDL: read by spawn_stage2_boss, spawn_stage5_targets; partly not accessed
 	.byte	$00, $00, $00, $00, $1C, $0E, $1C, $14, $16, $0D, $22, $0D, $14, $10, $24, $10
 	.byte	$16, $13, $22, $13, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
 	.byte	$02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
 	.byte	$02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
 	.byte	$02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
 	.byte	$02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
-	; CDL: read by sub_028DDE; partly not accessed
+	; CDL: read by spawn_stage5_targets; partly not accessed
 	.byte	$02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
 	.byte	$02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
 	.byte	$02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
 	.byte	$02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
 	.byte	$02, $00, $02, $00, $02, $00
 data_05CEFC:
-	; CDL: read by sub_028DDE
+	; CDL: read by spawn_stage5_targets
 	.byte	$00, $00, $00, $00, $02, $00, $00, $00, $02, $00
 data_05CF06:
-	; CDL: read by sub_028DDE
+	; CDL: read by spawn_stage5_targets
 	.byte	$B0, $00, $70, $02, $90, $03, $50, $03, $F0, $00
 data_05CF10:
-	; CDL: read by sub_028DDE
+	; CDL: read by spawn_stage5_targets
 	.byte	$90, $00, $70, $01, $10, $01, $F0, $02, $30, $03
 data_05CF1A:
-	; CDL: read by sub_028DDE
+	; CDL: read by spawn_stage5_targets
 	.byte	$14, $08, $4C, $16, $70, $10, $68, $2E, $1C, $32
 data_05CF24:
-	; CDL: read by sub_028E1B
+	; CDL: read by spawn_stage5_boss
 	.byte	$08, $00
 data_05CF26:
-	; CDL: read by sub_028E1B
+	; CDL: read by spawn_stage5_boss
 	.byte	$00, $00
 data_05CF28:
-	; CDL: read by sub_028E1B
+	; CDL: read by spawn_stage5_boss
 	.byte	$00, $00
 data_05CF2A:
 	; CDL: read by sub_0090A8, sub_009172, sub_0094A9
@@ -2363,20 +2363,20 @@ data_05D07C:
 	.byte	$23, $E0, $8C, $80, $23, $00, $00, $00, $01, $00, $30, $7B, $97, $1C, $FF, $FF
 	.byte	$00, $01, $00, $30, $CC, $A9, $1A, $FF, $FF, $00, $01, $00, $30, $A6, $BC, $1A
 	.byte	$FF, $FF
-data_05D0DE:
-	; CDL: read by sub_028887, sub_029037; partly not accessed
+start_points_x:
+	; CDL: read by set_start_points, sub_029037; partly not accessed
 	.byte	$80, $00, $80, $01, $80, $02, $80, $03, $80, $00, $80, $01, $80, $02, $80, $03
 	.byte	$80, $00, $80, $01, $80, $02, $80, $03, $80, $00, $80, $01, $80, $02, $80, $03
-data_05D0FE:
-	; CDL: read by sub_028887, sub_029080
+start_points_x_stage5:
+	; CDL: read by set_start_points, sub_029080
 	.byte	$F0, $00, $80, $01, $60, $02, $A0, $03, $A8, $00, $80, $01, $A0, $02, $80, $03
 	.byte	$A0, $00, $40, $01, $A0, $02, $40, $03, $70, $00, $70, $01, $C0, $02, $80, $03
-data_05D11E:
-	; CDL: read by sub_028887, sub_029037; partly not accessed
+start_points_y:
+	; CDL: read by set_start_points, sub_029037; partly not accessed
 	.byte	$C0, $00, $80, $00, $80, $00, $A0, $00, $80, $01, $80, $01, $80, $01, $60, $01
 	.byte	$60, $02, $40, $02, $40, $02, $80, $02, $50, $03, $40, $03, $80, $03, $80, $03
-data_05D13E:
-	; CDL: read by sub_028887, sub_029080
+start_points_y_stage5:
+	; CDL: read by set_start_points, sub_029080
 	.byte	$A0, $00, $C0, $00, $60, $00, $60, $00, $60, $01, $80, $01, $A0, $01, $70, $01
 	.byte	$90, $02, $C0, $02, $80, $02, $80, $02, $70, $03, $90, $03, $90, $03, $80, $03
 data_05D15E:
@@ -3045,8 +3045,8 @@ data_05E46E:
 	.byte	$07, $10, $09, $01, $07, $00, $04, $00, $64, $40, $10, $00, $01, $40, $00, $04
 	.byte	$0F, $64, $00, $10, $0F, $01, $00, $00, $06, $00, $62, $13, $10, $04, $01, $13
 	.byte	$00, $04, $00, $64, $13, $10, $00, $01, $13, $00
-data_05E4F0:
-	; CDL: read by sub_02ECAE, sub_02ED77, sub_02EE3E
+sine_table:
+	; CDL: read by sub_02ECAE, compute_m7_matrix, compute_p2_m7_matrix
 	.byte	$00, $00, $24, $03, $47, $06, $6A, $09, $8B, $0C, $AB, $0F, $C8, $12, $E2, $15
 	.byte	$F8, $18, $0B, $1C, $19, $1F, $23, $22, $28, $25, $26, $28, $1F, $2B, $11, $2E
 	.byte	$FB, $30, $DE, $33, $BA, $36, $8C, $39, $56, $3C, $17, $3F, $CE, $41, $7A, $44
@@ -3055,8 +3055,8 @@ data_05E4F0:
 	.byte	$6D, $6A, $24, $6C, $CA, $6D, $5F, $6F, $E2, $70, $55, $72, $B5, $73, $04, $75
 	.byte	$41, $76, $6C, $77, $84, $78, $8A, $79, $7D, $7A, $5D, $7B, $29, $7C, $E3, $7C
 	.byte	$8A, $7D, $1D, $7E, $9D, $7E, $09, $7F, $62, $7F, $A7, $7F, $D8, $7F, $F6, $7F
-data_05E570:
-	; CDL: read by sub_02ED77, sub_02EE3E
+cosine_table:
+	; CDL: read by compute_m7_matrix, compute_p2_m7_matrix
 	.byte	$00, $80, $F6, $7F, $D8, $7F, $A7, $7F, $62, $7F, $09, $7F, $9D, $7E, $1D, $7E
 	.byte	$8A, $7D, $E3, $7C, $29, $7C, $5D, $7B, $7D, $7A, $8A, $79, $84, $78, $6C, $77
 	.byte	$41, $76, $04, $75, $B5, $73, $55, $72, $E2, $70, $5F, $6F, $CA, $6D, $24, $6C

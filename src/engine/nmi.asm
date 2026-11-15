@@ -297,9 +297,9 @@ nmi_frame_top_down:
 @inidisp_global:
 	sep	#$20
 	.a8
-	lda	a:wram_1FB4
+	lda	a:p1_view_brightness
 	sta	f:wram_7E38A3
-	lda	a:wram_1FF4
+	lda	a:p2_view_brightness
 	sta	f:wram_7E38A7
 	lda	a:inidisp_shadow
 	sta	f:wram_7E38A1
@@ -311,12 +311,12 @@ nmi_frame_top_down:
 @inidisp_p1:
 	sep	#$20
 	.a8
-	lda	a:wram_1FF4
+	lda	a:p2_view_brightness
 	sta	f:wram_7E38A7
 	lda	a:inidisp_shadow
 	sta	f:wram_7E38A1
 	sta	f:wram_7E38A5
-	lda	a:wram_1FB4
+	lda	a:p1_view_brightness
 	sta	f:wram_7E38A3
 	sta	a:INIDISP
 	rep	#$20
@@ -328,7 +328,7 @@ nmi_frame_top_down:
 	jsl	f:sub_00A377
 	jsl	f:next_random
 	jsl	f:sub_00E3CD
-	jsl	f:sub_02ED77
+	jsl	f:compute_m7_matrix
 	jsl	f:sub_03E180
 	jsl	f:sub_009995
 	jsl	f:sub_0090C7

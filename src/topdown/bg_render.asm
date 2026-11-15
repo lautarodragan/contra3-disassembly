@@ -813,7 +813,7 @@ loc_03E682:
 	sta	a:wram_11C4
 	lda	#$0002
 	sta	a:wram_11C6
-	lda	a:wram_158E
+	lda	a:intro_phase
 	dec	a
 	beq	loc_03E6A6
 	brl	loc_03E6B2
@@ -841,12 +841,12 @@ sub_03E6C2:
 	brl	loc_03E79A
 loc_03E6CA:
 	phy
-	lda	a:wram_1526
+	lda	a:p1_start_x
 	asl	a
 	tay
 	lda	a:data_05E788,y
 	sta	zp_00
-	lda	a:wram_1528
+	lda	a:p1_start_y
 	asl	a
 	tay
 	lda	a:data_05E790,y
@@ -854,7 +854,7 @@ loc_03E6CA:
 	ply
 	lda	#$3900
 	sta	zp_06
-	lda	a:wram_152A
+	lda	a:p1_start_chosen
 	beq	loc_03E6F4
 	lda	zp_78
 	bit	#$0004
@@ -968,12 +968,12 @@ loc_03E7A3:
 	brl	loc_03E87B
 loc_03E7AB:
 	phy
-	lda	a:wram_1566
+	lda	a:p2_start_x
 	asl	a
 	tay
 	lda	a:data_05E788,y
 	sta	zp_00
-	lda	a:wram_1568
+	lda	a:p2_start_y
 	asl	a
 	tay
 	lda	a:data_05E790,y
@@ -981,7 +981,7 @@ loc_03E7AB:
 	ply
 	lda	#$3B00
 	sta	zp_06
-	lda	a:wram_156A
+	lda	a:p2_start_chosen
 	beq	loc_03E7D5
 	lda	zp_78
 	bit	#$0004
@@ -1177,18 +1177,18 @@ loc_03E90F:
 	rts
 loc_03E918:
 	rep	#$30
-	lda	a:wram_1594
-	cmp	#$0002
+	lda	a:topdown_map
+	cmp	#TD_MAP_STAGE2_BOSS
 	beq	loc_03E96E
-	cmp	#$0006
+	cmp	#TD_MAP_STAGE5_BOSS
 	bne	loc_03E92A
 	brl	loc_03E9A0
 loc_03E92A:
-	lda	a:wram_158E
+	lda	a:intro_phase
 	beq	loc_03E932
 	brl	loc_03E682
 loc_03E932:
-	lda	a:wram_1590
+	lda	a:map_view_active
 	beq	loc_03E93A
 	; (not executed in the CDL traces)
 	brl	loc_03E4A5
@@ -1303,15 +1303,15 @@ loc_03E9F0:
 	sta	a:zp_0C
 	lda	#$00E0
 	sta	a:zp_0E
-	lda	a:wram_150C
+	lda	a:p1_view_anchor_x
 	sta	zp_1C
-	lda	a:wram_150E
+	lda	a:p1_view_anchor_y
 	sta	zp_1E
-	lda	a:wram_1510
+	lda	a:p1_view_x
 	sta	zp_18
-	lda	a:wram_1512
+	lda	a:p1_view_y
 	sta	zp_1A
-	lda	a:wram_1514
+	lda	a:p1_view_angle
 	sta	zp_16
 	bra	loc_03EA3C
 loc_03EA17:
@@ -1319,15 +1319,15 @@ loc_03EA17:
 	sta	a:zp_0C
 	lda	#$0068
 	sta	a:zp_0E
-	lda	a:wram_150C
+	lda	a:p1_view_anchor_x
 	sta	zp_1C
-	lda	a:wram_150E
+	lda	a:p1_view_anchor_y
 	sta	zp_1E
-	lda	a:wram_1510
+	lda	a:p1_view_x
 	sta	zp_18
-	lda	a:wram_1512
+	lda	a:p1_view_y
 	sta	zp_1A
-	lda	a:wram_1514
+	lda	a:p1_view_angle
 	sta	zp_16
 loc_03EA3C:
 	asl	a
@@ -1406,7 +1406,7 @@ loc_03EAC2:
 	lda	$04,x
 	bmi	loc_03EADA
 	sec
-	sbc	a:wram_1514
+	sbc	a:p1_view_angle
 	and	#$00FF
 	ora	$00,x
 	asl	a
@@ -2057,7 +2057,7 @@ loc_03EF73:
 	sec
 	lda	zp_02
 	clc
-	adc	a:wram_15A2
+	adc	a:screen_shake_offset
 	sbc	#$0008
 	cmp	zp_0C
 	bmi	loc_03EFD5
@@ -2125,7 +2125,7 @@ sub_03EFF9:
 	stz	zp_D0
 	lda	zp_02
 	clc
-	adc	a:wram_15A2
+	adc	a:screen_shake_offset
 	sta	zp_02
 	lda	a:$0000,y
 	and	#$00FF
@@ -2199,7 +2199,7 @@ loc_03F06C:
 sub_03F077:
 	lda	zp_02
 	clc
-	adc	a:wram_15A2
+	adc	a:screen_shake_offset
 	sta	zp_02
 	lda	a:$0000,y
 	and	#$00FF
@@ -2664,19 +2664,19 @@ loc_03F3B1:
 	rts
 loc_03F3B2:
 	rep	#$30
-	lda	a:wram_1594
-	cmp	#$0002
+	lda	a:topdown_map
+	cmp	#TD_MAP_STAGE2_BOSS
 	beq	loc_03F408
-	cmp	#$0006
+	cmp	#TD_MAP_STAGE5_BOSS
 	bne	loc_03F3C4
 	; (not executed in the CDL traces)
 	brl	loc_03F43A
 loc_03F3C4:
-	lda	a:wram_158E
+	lda	a:intro_phase
 	beq	loc_03F3CC
 	brl	loc_03E682
 loc_03F3CC:
-	lda	a:wram_1590
+	lda	a:map_view_active
 	beq	loc_03F3D4
 	; (not executed in the CDL traces)
 	brl	loc_03E4A5
@@ -2793,15 +2793,15 @@ loc_03F48A:
 	sta	a:zp_0C
 	lda	#$00E0
 	sta	a:zp_0E
-	lda	a:wram_154C
+	lda	a:p2_view_anchor_x
 	sta	zp_1C
-	lda	a:wram_154E
+	lda	a:p2_view_anchor_y
 	sta	zp_1E
-	lda	a:wram_1550
+	lda	a:p2_view_x
 	sta	zp_18
-	lda	a:wram_1552
+	lda	a:p2_view_y
 	sta	zp_1A
-	lda	a:wram_1554
+	lda	a:p2_view_angle
 	sta	zp_16
 	bra	loc_03F4D6
 loc_03F4B1:
@@ -2809,15 +2809,15 @@ loc_03F4B1:
 	sta	a:zp_0C
 	lda	#$00E0
 	sta	a:zp_0E
-	lda	a:wram_154C
+	lda	a:p2_view_anchor_x
 	sta	zp_1C
-	lda	a:wram_154E
+	lda	a:p2_view_anchor_y
 	sta	zp_1E
-	lda	a:wram_1550
+	lda	a:p2_view_x
 	sta	zp_18
-	lda	a:wram_1552
+	lda	a:p2_view_y
 	sta	zp_1A
-	lda	a:wram_1554
+	lda	a:p2_view_angle
 	sta	zp_16
 loc_03F4D6:
 	asl	a
@@ -2896,7 +2896,7 @@ loc_03F55C:
 	lda	$04,x
 	bmi	loc_03F574
 	sec
-	sbc	a:wram_1554
+	sbc	a:p2_view_angle
 	and	#$00FF
 	ora	$00,x
 	asl	a
@@ -3547,7 +3547,7 @@ loc_03FA0D:
 	sec
 	lda	zp_02
 	clc
-	adc	a:wram_15A2
+	adc	a:screen_shake_offset
 	sbc	#$0008
 	cmp	zp_0C
 	bmi	loc_03FA6F
@@ -3615,7 +3615,7 @@ sub_03FA93:
 	stz	zp_D0
 	lda	zp_02
 	clc
-	adc	a:wram_15A2
+	adc	a:screen_shake_offset
 	sta	zp_02
 	lda	a:$0000,y
 	and	#$00FF
@@ -3689,7 +3689,7 @@ loc_03FB06:
 sub_03FB11:
 	lda	zp_02
 	clc
-	adc	a:wram_15A2
+	adc	a:screen_shake_offset
 	sta	zp_02
 	lda	a:$0000,y
 	and	#$00FF

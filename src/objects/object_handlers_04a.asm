@@ -2163,8 +2163,8 @@ sub_04911F:
 
 sub_049123:
 	lda	#$0001
-	sta	a:wram_1510
-	sta	a:wram_1550
+	sta	a:p1_view_x
+	sta	a:p2_view_x
 	stz	a:wram_1518
 	stz	a:wram_1558
 	lda	#$000C
@@ -2186,11 +2186,11 @@ sub_049123:
 
 sub_04915F:
 	lda	#$00E0
-	cmp	a:wram_1510
+	cmp	a:p1_view_x
 	bcs	loc_0491DF
 	lda	#$00FE
-	sta	a:wram_1510
-	sta	a:wram_1550
+	sta	a:p1_view_x
+	sta	a:p2_view_x
 	stz	a:wram_1518
 	stz	a:wram_1558
 	stz	a:wram_151A
@@ -2242,8 +2242,8 @@ sub_0491E3:
 	sta	$24,x
 loc_0491EE:
 	lda	#$00FE
-	sta	a:wram_1510
-	sta	a:wram_1550
+	sta	a:p1_view_x
+	sta	a:p2_view_x
 	stz	a:wram_1518
 	stz	a:wram_1558
 	stz	a:wram_151A
@@ -2259,13 +2259,13 @@ sub_049205:
 
 sub_049211:
 	sec
-	lda	a:wram_1510
+	lda	a:p1_view_x
 	sbc	#$0004
 	bpl	loc_04921D
 	lda	#$0000
 loc_04921D:
-	sta	a:wram_1510
-	sta	a:wram_1550
+	sta	a:p1_view_x
+	sta	a:p2_view_x
 	lda	zp_BC
 	bne	loc_049231
 	lda	a:wram_151E
@@ -6050,7 +6050,7 @@ loc_04AF5B:
 sub_04AF5C:
 	lda	a:p1_lives
 	beq	loc_04AF70
-	lda	a:wram_1512
+	lda	a:p1_view_y
 	clc
 	adc	#$0020
 	sec
@@ -6060,7 +6060,7 @@ sub_04AF5C:
 loc_04AF70:
 	lda	a:p2_lives
 	beq	loc_04AF84
-	lda	a:wram_1552
+	lda	a:p2_view_y
 	clc
 	adc	#$0020
 	sec
