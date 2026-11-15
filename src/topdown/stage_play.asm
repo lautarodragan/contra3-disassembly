@@ -2,7 +2,11 @@
 ; Bank $02, $02:8E33-$02:DDC5. Included by main.asm in segment BANK02.
 ;
 ; Players, objects and map handling of the top-down stages, reached from the
-; state handlers in topdown/stage_states.asm.
+; state handlers in topdown/stage_states.asm: the players and their weapons,
+; the enemy generators and enemies (tbl_td_enemy_types, TDT_*), items
+; (tbl_td_item_types, TDI_*), map objects and the stage 2 boss
+; (tbl_map_object_types, TDMT_*), shots (tbl_topdown_shot_types, TDS_*),
+; the tile attribute map (TDA_*), the collisions and the map events.
 
 ; Copies each joypad into its player's block (p1_td_joy_held ...) and
 ; runs update_topdown_player for $0EC0 and $0F00.

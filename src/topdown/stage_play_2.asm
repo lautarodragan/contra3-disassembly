@@ -1,8 +1,10 @@
 ; topdown/stage_play_2.asm -- Top-down stages: gameplay (part 2)
 ; Bank $02, $02:E65F-$02:FCCA. Included by main.asm in segment BANK02.
 ;
-; More code of the top-down stages (reached from the state handlers), and
-; compute_m7_matrix, run by their NMI frame handler.
+; More code of the top-down stages (reached from the state handlers): bombs,
+; views, scoring, HDMA/IRQ setup, compute_m7_matrix (run by their NMI frame
+; handler), the stage 5 boss and its arm, the stage 5 nests and the stage 2
+; gun hatches (map objects).
 
 ; Runs the two smart bomb objects ($0F40 player 1, $0F80 player 2).
 td_update_bombs:
