@@ -24,6 +24,12 @@ jobs:
       - name: Build and compare
         run: make compare
 
+      - name: Cheat builds
+        # Milestone 4: every preset of tools/cheats.py still assembles and
+        # links (cheats that no longer fit their bank fail here), and its IPS
+        # patch against the default build reproduces it.
+        run: make ips
+
       - name: Shift check
         # Milestone 3: no hardcoded ROM reference of the forms tools/shift.py
         # scan knows, and a build with code and data moved (filler at the
