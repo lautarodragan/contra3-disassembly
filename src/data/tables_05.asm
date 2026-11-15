@@ -3354,7 +3354,8 @@ anim_05CD0B:
 data_05CD1B:
 	; CDL: read by update_palette_anim; partly not accessed
 	.addr	metasprite_06C6C6
-	.byte	$29, $CD, $41, $CD
+	.addr	palette_task_05CD29
+	.addr	palette_task_05CD41
 data_05CD21:
 	; CDL: read by start_palette_task_at, palette_task_fade_out, palette_task_fade_in (+2 more); DMA / HDMA
 	.addr	palette_task_05CD4D
@@ -5815,17 +5816,34 @@ data_05FDF7:
 	.byte	$08, $4C, $08, $4D
 data_05FDFB:
 	; CDL: read by start_palette_task_at, palette_task_fade_out, palette_task_fade_in (+2 more)
-	.byte	$07, $FE, $27, $FE, $47, $FE, $67, $FE, $87, $FE, $A7, $FE, $80, $C4, $A0, $C4
+	.addr	vram_blocks_05FE07
+	.addr	vram_blocks_05FE27
+	.addr	vram_blocks_05FE47
+	.addr	vram_blocks_05FE67
+	.addr	vram_blocks_05FE87
+	.addr	vram_blocks_05FEA7
+vram_blocks_05FE07:
+	.byte	$80, $C4, $A0, $C4
 	.byte	$C0, $C4, $E0, $C4, $00, $C5, $20, $C5, $40, $C5, $60, $C5, $80, $C5, $A0, $C5
-	.byte	$C0, $C5, $E0, $C5, $00, $C6, $20, $C6, $40, $C6, $60, $C6, $80, $C6, $A0, $C6
+	.byte	$C0, $C5, $E0, $C5, $00, $C6, $20, $C6, $40, $C6, $60, $C6
+vram_blocks_05FE27:
+	.byte	$80, $C6, $A0, $C6
 	.byte	$C0, $C6, $E0, $C6, $00, $C7, $20, $C7, $40, $C7, $60, $C7, $80, $C7, $A0, $C7
-	.byte	$C0, $C7, $E0, $C7, $00, $C8, $20, $C8, $40, $C8, $60, $C8, $80, $C8, $A0, $C8
+	.byte	$C0, $C7, $E0, $C7, $00, $C8, $20, $C8, $40, $C8, $60, $C8
+vram_blocks_05FE47:
+	.byte	$80, $C8, $A0, $C8
 	.byte	$C0, $C8, $E0, $C8, $00, $C9, $20, $C9, $40, $C9, $60, $C9, $80, $C9, $A0, $C9
-	.byte	$C0, $C9, $E0, $C9, $00, $CA, $20, $CA, $40, $CA, $60, $CA, $80, $CA, $A0, $CA
+	.byte	$C0, $C9, $E0, $C9, $00, $CA, $20, $CA, $40, $CA, $60, $CA
+vram_blocks_05FE67:
+	.byte	$80, $CA, $A0, $CA
 	.byte	$C0, $CA, $E0, $CA, $00, $CB, $20, $CB, $40, $CB, $60, $CB, $80, $CB, $A0, $CB
-	.byte	$C0, $CB, $E0, $CB, $00, $CC, $20, $CC, $40, $CC, $60, $CC, $80, $CC, $A0, $CC
+	.byte	$C0, $CB, $E0, $CB, $00, $CC, $20, $CC, $40, $CC, $60, $CC
+vram_blocks_05FE87:
+	.byte	$80, $CC, $A0, $CC
 	.byte	$C0, $CC, $E0, $CC, $00, $CD, $20, $CD, $40, $CD, $60, $CD, $80, $CD, $A0, $CD
-	.byte	$C0, $CD, $E0, $CD, $00, $CE, $20, $CE, $40, $CE, $60, $CE, $00, $B0, $00, $B0
+	.byte	$C0, $CD, $E0, $CD, $00, $CE, $20, $CE, $40, $CE, $60, $CE
+vram_blocks_05FEA7:
+	.byte	$00, $B0, $00, $B0
 	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0
 	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0
 palette_task_05FEC7:

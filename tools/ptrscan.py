@@ -21,7 +21,8 @@ Only a hint: "num" does not prove a table holds no pointers (the value
 may be used after the window, or stored in RAM and used elsewhere), and
 "ptr" names the table, not which of its words.  The tables flagged ptr
 are listed (-v: all) only when still written as .byte with a word >= $8000
-in their first four: the worklist.  The CDL readers and the book say what
+in their first four words (or with some .byte line before the next
+label): the worklist.  The CDL readers and the book say what
 they are.
 """
 import argparse
@@ -186,11 +187,18 @@ def main(argv):
         if addr is not None:
             r = smap.line_at(addr)
             if r:
-                text = open(r[0]).read().split("\n")[r[1] - 1].strip()
-                form = text.split()[0] if text else ""
+                # the block: from the label's line to the next label
+                lines = open(r[0]).read().split("\n")
+                k = r[1] - 1
+                block = []
+                while k < len(lines) and (k == r[1] - 1 or not re.match(r"^[A-Za-z_]\w*:", lines[k])):
+                    block.append(lines[k].strip())
+                    k += 1
+                form = ".byte" if any(b.startswith(".byte") for b in block) else \
+                    (block[0].split()[0] if block and block[0] else "")
             o = lorom_offset(addr)
             words = " ".join("%04X" % (rom[o + 2 * k] | rom[o + 2 * k + 1] << 8) for k in range(4))
-        if ptr and form == ".byte" and any(int(w, 16) >= 0x8000 for w in words.split()):
+        if ptr and form == ".byte":
             nptr += 1
         elif not args.verbose:
             continue
