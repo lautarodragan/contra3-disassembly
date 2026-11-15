@@ -31,6 +31,7 @@ import srcmap  # noqa: E402
 
 BYTE_RE = re.compile(r"^(\s*)\.byte\s+((?:\$[0-9A-Fa-f]{2}\s*,\s*)*\$[0-9A-Fa-f]{2})\s*(;.*)?$")
 LABEL_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*):\s*(;.*)?$")
+ITEM_SIZE = {".byte": 1, ".word": 2, ".addr": 2, ".faraddr": 3, ".dbyt": 2}
 PLACEHOLDER_RE = re.compile(r"^(sub|loc|tbl|ptrs|data)_[0-9A-F]{6}$")
 
 
@@ -97,8 +98,17 @@ class Editor:
         self.ptrs[addr] = (size, expr)
         self.files.add(self.where(addr)[0])
 
-    def row(self, addr, directive, count):
-        self.rows[addr] = (directive, count)
+    def row(self, addr, directive, count, itemsize=None, bare=False):
+        """count items of itemsize bytes (default: the directive's) on one line.
+        directive may be a macro taking that many operands."""
+        if itemsize is None:
+            itemsize = ITEM_SIZE[directive]
+        if isinstance(itemsize, (list, tuple)):
+            count = len(itemsize)
+        self.rows[addr] = (directive, count, itemsize, bare)
+        self.bare = getattr(self, "bare", set())
+        if bare:            # a macro without operands (the ROM check verifies the bytes)
+            self.bare.add(addr)
         self.files.add(self.where(addr)[0])
 
     def operand(self, addr, old, new):
@@ -201,8 +211,11 @@ class Editor:
         def flush():
             nonlocal cur
             if cur:
-                d, items, _rem, com = cur
-                out.append("%s%s\t%s%s" % (indent, d, ", ".join(items), ("\t" + com) if com else ""))
+                d, items, _rem, com = cur[:4]
+                if cur[5]:
+                    out.append("%s%s%s" % (indent, d, ("\t" + com) if com else ""))
+                else:
+                    out.append("%s%s\t%s%s" % (indent, d, ", ".join(items), ("\t" + com) if com else ""))
             cur = None
 
         k = 0
@@ -215,11 +228,11 @@ class Editor:
                 for name in self.labels.get(a, []):
                     out.append("%s:" % name)
                 if keep:            # a label between the items of a row
-                    cur = [keep[0], [], keep[2], None]
+                    cur = [keep[0], [], keep[2], None, keep[4], keep[5]]
             if a in self.rows:
                 flush()
-                d, cnt = self.rows[a]
-                cur = [d, [], cnt, comments.get(a)]
+                d, cnt, isz, bare = self.rows[a]
+                cur = [d, [], cnt, comments.get(a), isz, bare]
             elif a in starts and (cur is None or cur[2] is None):
                 flush()
             if a in self.ptrs:
@@ -227,8 +240,17 @@ class Editor:
             else:
                 size, expr = None, None
             if cur is not None and cur[2] is not None:
-                d = cur[0]
-                isz = {".byte": 1, ".word": 2, ".addr": 2, ".faraddr": 3, ".dbyt": 2}[d]
+                d, isz = cur[0], cur[4]
+                if isinstance(isz, (list, tuple)):      # sizes per operand
+                    isz = isz[len(cur[4]) - cur[2]]
+                    if isz < 0:         # bytes the macro emits itself
+                        if size is not None:
+                            raise EditError("%s: $%06X pointer in a hidden operand" % (path, a))
+                        cur[2] -= 1
+                        k += -isz
+                        if cur[2] == 0:
+                            flush()
+                        continue
                 if size is not None and size != isz:
                     raise EditError("%s: $%06X pointer of %d bytes in a %s row" % (path, a, size, d))
                 item = expr
@@ -255,7 +277,7 @@ class Editor:
                 k += size
                 continue
             if cur is None:
-                cur = [".byte", [], None, comments.get(a)]
+                cur = [".byte", [], None, comments.get(a), 1, False]
             cur[1].append("$%02X" % vals[a])
             k += 1
         flush()

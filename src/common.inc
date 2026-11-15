@@ -10,5 +10,6 @@ COMMON_INC = 1
 .include "ram.inc"
 .include "object_types.inc"
 .include "game/game.inc"
+.include "data_macros.inc"
 
 .endif
