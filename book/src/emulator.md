@@ -81,7 +81,11 @@ make goldens                       # rewrite tests/goldens/*.png from the curren
   of audio is taken (within 8%: the exact samples move by a few when the
   CPU's timing changes by some cycles, as in a ROM with another layout),
   and compared with `tests/goldens/play/<play>.json` (taken from the
-  original ROM). On a mismatch the first differing
+  original ROM). A checkpoint matches if any frame within 2 of it does
+  (a busy moment can lag a frame earlier or later when the CPU's timing
+  moves), and a lone checkpoint differing in at most 64 pixels from the
+  original's frame between two matching ones is reported as tolerated
+  (an IRQ landing elsewhere in the top-down split screen). On a mismatch the first differing
   checkpoint is reported and the actual frame, the original ROM's frame and
   a diff go to `out/play/`. The plays run in parallel (`C3_JOBS`, default
   the CPU count); about 330,000 frames, 100 s on 4 cores.
