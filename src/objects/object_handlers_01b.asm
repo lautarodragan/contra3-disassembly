@@ -55,7 +55,7 @@ make_debris_effect:
 	sta	rng_lo
 	and	#$003E
 	tay
-	lda	a:data_0593CA,y
+	lda	a:enemy_bullet_speeds_hard,y
 	sta	$1E,x
 	lda	a:data_0593DA,y
 	sta	$1A,x
@@ -94,7 +94,7 @@ loc_01D015:
 	bcc	loc_01D044
 	lda	#.loword(anim_05C558)
 	jsl	f:make_effect_object
-	lda	a:data_0593CA,x
+	lda	a:enemy_bullet_speeds_hard,x
 	sta	a:$001E,y
 	lda	a:data_0593DA,x
 	sta	a:$001A,y

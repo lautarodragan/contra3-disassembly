@@ -951,6 +951,7 @@ data_05921A:
 	.byte	$ED, $2B, $84, $42, $66, $5D, $50, $7C, $F5, $9E, $01, $C5, $15, $EE, $CD, $19
 	.byte	$BC, $47, $72, $77, $78, $A8, $56, $DA, $00, $ED, $00, $ED, $00, $EB, $00, $E8
 	.byte	$00, $E4, $00, $DF, $00, $D9, $00, $D2, $00, $CA, $00, $B1, $00, $A1, $00, $89
+enemy_bullet_speeds_normal:
 	.byte	$FE, $FF
 	; CDL: read by spawn_enemy_bullet
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FF, $FF, $FF, $FF, $00, $00
@@ -974,7 +975,7 @@ data_05921A:
 	.byte	$CC, $CC, $06, $BF, $3C, $96, $FF, $53, $DA, $FA, $3B, $8E, $4E, $12, $D7, $8B
 	.byte	$00, $00, $29, $74, $B2, $ED, $C5, $71, $26, $05, $01, $AC, $C4, $69, $FA, $40
 	.byte	$34, $33, $FA, $40, $C4, $69, $01, $AC, $26, $05, $C5, $71, $B2, $ED, $29, $74
-data_0593CA:
+enemy_bullet_speeds_hard:
 	; CDL: read by make_debris_effect
 	.byte	$FD, $FF, $FD, $FF, $FD, $FF, $FD, $FF, $FD, $FF, $FE, $FF, $FE, $FF, $FF, $FF
 data_0593DA:
@@ -2147,7 +2148,9 @@ respawn_y_vels:
 ; share $05:928A; hard $05:93CA, faster), read by spawn_enemy_bullet.
 ptrs_enemy_bullet_speeds:
 	; CDL: read by spawn_enemy_bullet
-	.byte	$8A, $92, $8A, $92, $CA, $93
+	.addr	enemy_bullet_speeds_normal
+	.addr	enemy_bullet_speeds_normal
+	.addr	enemy_bullet_speeds_hard
 data_05ABAB:
 	; CDL: read by init_homing_missile
 	.byte	$00, $14

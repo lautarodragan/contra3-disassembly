@@ -3134,7 +3134,7 @@ loc_1DC79B:
 	lda	a:data_05941A,y
 	asl	a
 	sta	zp_00
-	lda	a:data_0593CA,y
+	lda	a:enemy_bullet_speeds_hard,y
 	rol	a
 	sta	zp_02
 	clc
