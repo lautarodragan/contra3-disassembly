@@ -34,9 +34,8 @@ source each.
 
     python3 tools/shift.py scan [--cdl PATH]
 
-lists references that are still hardcoded numbers in the source (see
-SCAN_DOC below); exit status 1 if there are any that are known pointer
-forms.
+lists references that are still hardcoded numbers in the source, in the
+forms SCAN_DOC (below) names; exit status 1 if there are any.
 """
 import argparse
 import os
@@ -228,6 +227,76 @@ def cmd_diff(args):
     return 0
 
 
+# -- scan: hardcoded references left in the source ---------------------------
+SCAN_DOC = """Forms that must not come back (exit status 1): a 16-bit immediate >= $8000
+loaded and then handed to a routine or field that takes a ROM pointer
+(OBJ_ANIM, OBJ_SPRITE, make_effect_object, start_palette_task, draw_text,
+load_data_list, ...); a literal bank $05-$1C pushed and pulled into DB; a
+long operand into a ROM bank.  Also counted, for information: the other
+16-bit immediates >= $8000 that are loaded (mostly negative numbers, some
+pointers not found yet)."""
+
+POINTER_CONSUMERS = re.compile(
+    r"^(sta|stx|sty)\t(OBJ_ANIM,[xy]|OBJ_SPRITE,[xy]|a:\$0020,y|a:\$0000,y|cgram_upload_src)$"
+    r"|^j[sm][lr]\t[fa]:(make_effect_object|spawn_effect\w*|start_palette_task\w*|draw_text\w*"
+    r"|load_data_list|load_song_set|copy_hdma_table)$")
+
+
+def scan_source(srcdir="src"):
+    errors, info = [], 0
+    for root, _dirs, files in os.walk(srcdir):
+        for f in sorted(files):
+            if not f.endswith(".asm"):
+                continue
+            path = os.path.join(root, f)
+            lines = open(path).read().split("\n")
+            for i, line in enumerate(lines):
+                code = line.split(";")[0].rstrip()
+                m = re.match(r"^\t(lda|ldx|ldy)\t#\$([0-9A-F]{4})$", code)
+                if m and int(m.group(2), 16) >= 0x8000:
+                    hit = False
+                    reg = m.group(1)[2]
+                    for nxt in lines[i + 1:i + 6]:
+                        n = nxt.split(";")[0].strip()
+                        if not n:
+                            continue
+                        if n.endswith(":"):
+                            break
+                        op = n.split()[0]
+                        if op in ("txy", "tyx", "phx", "phy", "plx", "ply", "phb", "plb", "clc", "sec", "pha", "pla") \
+                                and reg not in op[1:]:
+                            continue
+                        hit = bool(POINTER_CONSUMERS.match(n.replace(" ", "\t", 1))) and \
+                            (op.startswith("j") or op[2] == reg)
+                        break
+                    if hit:
+                        errors.append("%s:%d: pointer immediate: %s" % (path, i + 1, code.strip()))
+                    else:
+                        info += 1
+                    continue
+                m = re.match(r"^\t(lda|ldx|ldy)\t#\$(0[5-9A-F]|1[0-9A-C])$", code)
+                if m:
+                    nxt = [x.split(";")[0].strip() for x in lines[i + 1:i + 4]]
+                    if nxt and nxt[0] in ("pha", "phx", "phy") and "plb" in nxt:
+                        errors.append("%s:%d: literal data bank: %s" % (path, i + 1, code.strip()))
+                    continue
+                m = re.search(r"\bf:\$([0-9A-F]{2})([0-9A-F]{4})\b", code)
+                if m:
+                    bank, addr = int(m.group(1), 16), int(m.group(2), 16)
+                    if 0x01 <= bank <= 0x3F or (bank == 0 and addr >= 0x8000):
+                        errors.append("%s:%d: long operand into ROM: %s" % (path, i + 1, code.strip()))
+    return errors, info
+
+
+def cmd_scan(args):
+    errors, info = scan_source()
+    for e in errors:
+        print(e)
+    print("%d hardcoded ROM references of the checked forms; %d other 16-bit "
+          "immediates >= $8000 loaded (not checked)" % (len(errors), info))
+    return 1 if errors else 0
+
+
 def main(argv):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -240,8 +309,9 @@ def main(argv):
     p = sub.add_parser("diff")
     p.add_argument("--out", default="build/shift")
     p.add_argument("-v", "--verbose", action="store_true")
+    sub.add_parser("scan", help=SCAN_DOC.split("\n")[0])
     args = ap.parse_args(argv[1:])
-    return {"build": cmd_build, "diff": cmd_diff}[args.cmd](args)
+    return {"build": cmd_build, "diff": cmd_diff, "scan": cmd_scan}[args.cmd](args)
 
 
 if __name__ == "__main__":

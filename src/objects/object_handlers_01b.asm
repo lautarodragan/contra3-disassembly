@@ -5187,6 +5187,6 @@ loc_01F692:
 	stz	$1A,x
 	lda	#$FFFC
 	sta	$1E,x
-	lda	#$C59A
+	lda	#.loword(anim_05C59A)
 	txy
 	jml	f:make_effect_object

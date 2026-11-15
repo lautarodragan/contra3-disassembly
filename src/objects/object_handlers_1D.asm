@@ -2970,7 +2970,7 @@ loc_1DC65C:
 	jsr	a:brain_orb_set_velocity
 	lda	#$0030
 	jsl	f:queue_sound
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	txy
 	jml	f:make_effect_object
 loc_1DC674:
@@ -3213,7 +3213,7 @@ loc_1DC835:
 	jsr	a:brain_orb_set_velocity
 	lda	#$0030
 	jsl	f:queue_sound
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	txy
 	jml	f:make_effect_object
 loc_1DC847:

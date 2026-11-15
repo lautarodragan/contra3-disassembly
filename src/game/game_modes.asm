@@ -992,7 +992,7 @@ continue_draw_menu:
 	asl	a
 	tay
 	lda	a:data_0583FC,y
-	ldx	#$847E
+	ldx	#.loword(text_continue)
 	pha
 	jsl	f:draw_text_attr
 	pla

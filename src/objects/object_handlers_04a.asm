@@ -5828,7 +5828,7 @@ loc_04AD6B:
 	sta	OBJ_Y_VEL,x
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	txy
 	jml	f:make_effect_object
 
@@ -6195,7 +6195,7 @@ loc_04AFE7:
 	sta	OBJ_Y_VEL,x
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
-	lda	#$C4CE
+	lda	#.loword(anim_05C4CE)
 	txy
 	jml	f:make_effect_object
 

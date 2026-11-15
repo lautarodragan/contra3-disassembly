@@ -134,7 +134,9 @@ text_stage_6:
 	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00, $07, $FF
 text_game_over:
 	.byte	$2C, $5A, $42, $3C, $48, $40
-	.byte	$00, $4A, $50, $40, $4C, $FF, $2C, $5A, $3E, $4A, $49, $4E, $44, $49, $4F, $40
+	.byte	$00, $4A, $50, $40, $4C, $FF
+text_continue:
+	.byte	$2C, $5A, $3E, $4A, $49, $4E, $44, $49, $4F, $40
 	.byte	$00, $FF
 text_end:
 	.byte	$8C, $5A, $40, $49, $3F, $FF
