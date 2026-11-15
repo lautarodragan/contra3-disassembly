@@ -466,16 +466,16 @@ init_players:
 	stz	a:p2_weapon_slot
 	stz	a:p1_weapon_slot_other
 	stz	a:p2_weapon_slot_other
-.if CHEAT_START_WEAPON2
-	lda	#CHEAT_START_WEAPON2	; cheat: weapon of the other slot
+.if CHEAT_START_WEAPON
+	lda	#CHEAT_START_WEAPON	; cheat: weapon of slot I (active at the start)
 	sta	a:p1_weapon_1
 	sta	a:p2_weapon_1
 .else
 	stz	a:p1_weapon_1
 	stz	a:p2_weapon_1
 .endif
-.if CHEAT_START_WEAPON
-	lda	#CHEAT_START_WEAPON	; cheat: weapon of the active slot
+.if CHEAT_START_WEAPON2
+	lda	#CHEAT_START_WEAPON2	; cheat: weapon of slot II
 	sta	a:p1_weapon_2
 	sta	a:p2_weapon_2
 .else

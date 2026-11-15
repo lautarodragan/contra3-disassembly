@@ -50,14 +50,15 @@ CHEAT_KEEP_WEAPONS = 0
 .endif
 
 ; WEAPON_* (0-5) given by init_players at the start of a game and after a
-; continue, in the active slot (p1_weapon_2 / p2_weapon_2).  0
-; (WEAPON_DEFAULT) is the original.
+; continue in slot I (p1_weapon_1 / p2_weapon_1), the one that fires at the
+; start (update_weapon_swap keeps PLAYER_WEAPON_SLOT at 2 until X is
+; pressed).  0 (WEAPON_DEFAULT) is the original.
 .ifndef CHEAT_START_WEAPON
 CHEAT_START_WEAPON = WEAPON_DEFAULT
 .endif
 
-; WEAPON_* (0-5) given by init_players in the other slot (p1_weapon_1 /
-; p2_weapon_1, X swaps to it).
+; WEAPON_* (0-5) given by init_players in slot II (p1_weapon_2 /
+; p2_weapon_2; X swaps to it).
 .ifndef CHEAT_START_WEAPON2
 CHEAT_START_WEAPON2 = WEAPON_DEFAULT
 .endif
