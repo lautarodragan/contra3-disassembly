@@ -2,7 +2,7 @@
 ; Bank $08, $08:8000-$08:FFFF. Included by main.asm in segment BANK08.
 ;
 ; Palettes copied to the WRAM palette buffer by the palette tasks (palette_task_animate,
-; palette_task_fade_in; see engine/palette_tasks.asm) and by sub_02F3C1, then graphics
+; palette_task_fade_in; see engine/palette_tasks.asm) and by stage5_boss_restore_palette, then graphics
 ; compressed for decompress_chunk.
 ;
 ; Data only (no labels, no code). Each block starts at a CDL comment.
@@ -255,7 +255,7 @@ GFX_08_BASE = ^gfx_08 << 16
 	.byte	$00, $00, $00, $00, $1F, $00, $00, $00, $46, $04, $8A, $10, $CE, $1C, $72, $31
 	.byte	$F6, $49, $5B, $52, $FD, $6E, $64, $18, $A5, $20, $09, $2D, $6B, $41, $AF, $49
 	.byte	$53, $62, $F8, $6E, $3B, $73, $5F, $00
-	; CDL: read by sub_02F3C1
+	; CDL: read by stage5_boss_restore_palette
 	.byte	$64, $18, $A5, $20, $09, $2D, $6B, $41, $AF, $49, $53, $62, $F8, $6E, $3B, $73
 	.byte	$66, $0C, $AB, $18, $0D, $29, $70, $31, $B4, $35, $59, $4E, $FF, $66, $3F, $73
 	.byte	$64, $18, $A4, $1C, $E8, $28, $4A, $3D, $8E, $45, $32, $5E, $D7, $6A, $1A, $6F

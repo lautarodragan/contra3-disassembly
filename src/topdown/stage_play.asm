@@ -62,7 +62,7 @@ loc_028E9A:
 	lda	a:$066C,x
 	bit	zp_92
 	beq	loc_028EA7
-	brl	sub_0291CB
+	brl	td_player_state_jump
 loc_028EA7:
 	bit	#$0F00
 	beq	loc_028EAF
@@ -92,7 +92,7 @@ tbl_topdown_player_states:
 	.addr	td_player_state_stand_fire
 	.addr	td_player_state_walk
 	.addr	td_player_state_walk_fire
-	.addr	sub_0291CB
+	.addr	td_player_state_jump
 	.addr	td_player_state_turn_buttons
 	.addr	td_player_state_spin_fire
 	.addr	td_player_state_dying
@@ -220,7 +220,7 @@ td_set_respawn_position:
 	bpl	loc_028FF3
 loc_028FD0:
 	lda	$2C,x
-	beq	sub_028FED
+	beq	td_respawn_none
 	lda	a:topdown_map
 	lsr	a
 	phx
@@ -232,11 +232,11 @@ loc_028FD0:
 	jmp	(zp_00)
 tbl_respawn_by_map:
 	.addr	respawn_at_start_point_stage2
-	.addr	sub_028FED
+	.addr	td_respawn_none
 	.addr	respawn_at_start_point_stage5
-	.addr	sub_028FED
+	.addr	td_respawn_none
 
-sub_028FED:
+td_respawn_none:
 	rts
 loc_028FEE:
 	lda	$2C,x
@@ -431,7 +431,7 @@ loc_02912F:
 	rts
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_029130:
+td_debug_cheat_buttons:
 	; (not executed in the CDL traces)
 	lda	a:$066C,x
 	bit	#$0040
@@ -501,7 +501,7 @@ td_check_smart_bomb:
 loc_0291CA:
 	rts
 
-sub_0291CB:
+td_player_state_jump:
 	lda	#$0005
 	cmp	$12,x
 	beq	loc_0291DA
@@ -517,7 +517,7 @@ loc_0291DA:
 	beq	loc_0291F5
 	bit	#$4000
 	beq	loc_029202
-	jsl	f:sub_0296D8
+	jsl	f:td_fire_jump_shot
 	bra	loc_029202
 loc_0291F5:
 	dec	a:$0640,x
@@ -526,12 +526,12 @@ loc_0291F5:
 	lda	#$0003
 	sta	$12,x
 loc_029202:
-	jsl	f:sub_02920E
-	jsl	f:sub_02C334
+	jsl	f:td_set_jump_anim
+	jsl	f:td_player_tile_collision
 	jsr	a:td_keep_players_together
 	rtl
 
-sub_02920E:
+td_set_jump_anim:
 	lda	$22,x
 	bne	loc_029215
 	inc	$22,x
@@ -564,7 +564,7 @@ td_player_state_stand:
 	sta	$12,x
 loc_029243:
 	jsl	f:td_set_stand_anim
-	jsl	f:sub_02C334
+	jsl	f:td_player_tile_collision
 	jsr	a:td_keep_players_together
 	rtl
 
@@ -592,7 +592,7 @@ td_player_state_stand_fire:
 	stz	$24,x
 loc_029270:
 	jsl	f:td_set_stand_fire_anim
-	jsl	f:sub_02C334
+	jsl	f:td_player_tile_collision
 	jsr	a:td_keep_players_together
 	jml	f:td_fire_forward
 
@@ -644,7 +644,7 @@ loc_0292CC:
 	bne	td_player_state_spin_fire
 loc_0292D3:
 	jsl	f:td_set_turn_buttons_anim
-	jsl	f:sub_02C334
+	jsl	f:td_player_tile_collision
 	jsr	a:td_keep_players_together
 	rtl
 
@@ -694,7 +694,7 @@ loc_02931C:
 	brl	td_player_state_turn_buttons
 loc_029332:
 	jsr	a:td_set_spin_fire_anim
-	jsl	f:sub_02C334
+	jsl	f:td_player_tile_collision
 	jsr	a:td_keep_players_together
 	jsr	a:td_spin_player
 	jmp	a:td_fire_spin_shots
@@ -724,7 +724,7 @@ td_player_state_walk:
 	sta	$12,x
 loc_029365:
 	jsr	a:td_turn_player
-	jsl	f:sub_02C334
+	jsl	f:td_player_tile_collision
 	jsr	a:td_walk_by_dpad
 	jsr	a:td_keep_players_together
 	jsr	a:td_set_walk_anim
@@ -738,7 +738,7 @@ td_player_state_walk_fire:
 	sta	$12,x
 loc_02937F:
 	jsr	a:td_turn_player
-	jsl	f:sub_02C334
+	jsl	f:td_player_tile_collision
 	jsr	a:td_walk_by_dpad
 	jsr	a:td_keep_players_together
 	jsr	a:td_set_walk_anim
@@ -774,7 +774,7 @@ loc_0293C8:
 loc_0293D0:
 	inc	$24,x
 	jsl	f:td_spin_dying_player
-	jsl	f:sub_02C334
+	jsl	f:td_player_tile_collision
 	jsl	f:move_topdown_object
 	jsr	a:td_keep_players_together
 	lda	$22,x
@@ -878,7 +878,7 @@ loc_029477:
 loc_029486:
 	inc	$24,x
 	jsr	a:td_spin_falling_player
-	jsl	f:sub_02C334
+	jsl	f:td_player_tile_collision
 	jsl	f:move_topdown_object
 	jsr	a:td_keep_players_together
 	jsr	a:zoom_in_falling_view
@@ -984,13 +984,13 @@ td_get_walk_vectors:
 	plb
 	rep	#$20
 	.a16
-	lda	a:data_079198,y
+	lda	a:td_walk_x_int,y
 	sta	zp_1A
-	lda	a:data_079418,y
+	lda	a:td_walk_x_frac,y
 	sta	zp_18
-	lda	a:data_079118,y
+	lda	a:td_walk_y_int,y
 	sta	zp_1E
-	lda	a:data_079398,y
+	lda	a:td_walk_y_frac,y
 	sta	zp_1C
 	sep	#$20
 	.a8
@@ -1225,7 +1225,7 @@ td_fire_spin_shots:
 	ldy	#$001E
 	bra	fire_topdown_weapon
 
-sub_0296D8:
+td_fire_jump_shot:
 	stz	zp_12
 	ldy	a:$10DE,x
 	sty	zp_14
@@ -1700,7 +1700,7 @@ td_place_enemy_near_player:
 	sta	$0E,x
 	lda	#$2000
 	sta	$02,x
-	jsl	f:sub_02C086
+	jsl	f:td_enemy_tile_collision
 loc_029A48:
 	rts
 
@@ -1755,7 +1755,7 @@ loc_029A8A:
 	clc
 	rts
 
-sub_029A96:
+td_get_nearest_player:
 	lda	a:title_menu_cursor
 	bne	loc_029AA2
 	lda	a:p1_lives
@@ -1820,8 +1820,8 @@ loc_029AFF:
 	sec
 	rtl
 
-sub_029B06:
-	jsl	f:sub_029A96
+td_angle_to_nearest_player:
+	jsl	f:td_get_nearest_player
 	bcc	loc_029B0D
 	; (not executed in the CDL traces)
 	rtl
@@ -1855,7 +1855,7 @@ clear_topdown_slot:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_029B37:
+clear_topdown_slot_y:
 	; (not executed in the CDL traces)
 	phx
 	phy
@@ -1872,7 +1872,7 @@ sub_029B37:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_029B4D:
+td_fill_trail_buffer:
 	; (not executed in the CDL traces)
 	phx
 	phb
@@ -1888,7 +1888,7 @@ sub_029B4D:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_029B62:
+td_find_free_enemy_slot_any:
 	; (not executed in the CDL traces)
 	ldx	#$0D40
 loc_029B65:
@@ -1905,7 +1905,7 @@ loc_029B6B:
 	bcc	loc_029B65
 	rtl
 
-sub_029B77:
+td_get_hatch_enemy_slot:
 	lda	$2E,x
 	bit	#$0010
 	bne	loc_029B88
@@ -1962,7 +1962,7 @@ loc_029BB4:
 	clc
 	rtl
 
-sub_029BC2:
+td_find_free_enemy_shot_slot:
 	ldy	#$0300
 loc_029BC5:
 	lda	a:$0010,y
@@ -1978,7 +1978,7 @@ loc_029BCC:
 	bcc	loc_029BC5
 	rtl
 
-sub_029BD8:
+td_find_free_item_slot:
 	ldy	#$0980
 loc_029BDB:
 	lda	a:$0010,y
@@ -1994,12 +1994,12 @@ loc_029BE2:
 	bcc	loc_029BDB
 	rtl
 
-sub_029BEE:
+td_flash_boss_palette_on_hit:
 	lda	$2A,x
 	beq	loc_029C04
 	cmp	#$0004
 	bne	loc_029BFA
-	jsr	a:sub_029C3C
+	jsr	a:td_restore_boss_palette
 loc_029BFA:
 	dec	$2A,x
 	lda	$2E,x
@@ -2037,7 +2037,7 @@ loc_029C04:
 	sta	$2E,x
 	rtl
 
-sub_029C3C:
+td_restore_boss_palette:
 	phx
 	phb
 	ldx	zp_00
@@ -2051,9 +2051,9 @@ sub_029C3C:
 	sta	$2E,x
 	rts
 
-sub_029C51:
+td_turn_towards_nearest_player:
 	pha
-	jsl	f:sub_029B06
+	jsl	f:td_angle_to_nearest_player
 	ply
 	sty	zp_FA
 	bcs	loc_029C7E
@@ -2082,7 +2082,7 @@ loc_029C7D:
 loc_029C7E:
 	rtl
 
-sub_029C7F:
+td_move_at_angle:
 	jsl	f:set_velocity_from_angle
 
 ; Adds the velocity (+$18/+$1A, +$1C/+$1E) to the position (+$08/+$0A, +$0C/+$0E).
@@ -2103,7 +2103,7 @@ move_topdown_object:
 	sta	$0E,x
 	rtl
 
-sub_029C9E:
+update_stage5_boss_arm:
 	ldx	#$0B40
 	bra	loc_029CA6
 
@@ -2124,7 +2124,7 @@ loc_029CB6:
 	cpx	#$0EC0
 	bcc	loc_029CA6
 
-sub_029CC1:
+td_enemy_type_none:
 	rtl
 
 td_run_enemy_handler:
@@ -2137,41 +2137,41 @@ td_run_enemy_handler:
 	sta	zp_00
 	jmp	(zp_00)
 tbl_td_enemy_types:
-	.addr	sub_029CC1
-	.addr	sub_029F48
-	.addr	sub_029EA4
-	.addr	sub_02A27E
-	.addr	sub_02A3B6
-	.addr	sub_02A876
-	.addr	sub_02A7A5
-	.addr	sub_029CC1
-	.addr	sub_029CF9
-	.addr	sub_02A0E5
-	.addr	sub_02F4B8
-	.addr	sub_02F67C
-	.addr	sub_02A44C
-	.addr	sub_02A55B
-	.addr	sub_02A5AF
-	.addr	sub_02A682
-	.addr	sub_02A01C
-	.addr	sub_02A167
-	.addr	sub_02A8E5
-	.addr	sub_02F5D8
+	.addr	td_enemy_type_none
+	.addr	update_td_gunner
+	.addr	update_td_runner
+	.addr	update_td_centipede_unused
+	.addr	update_td_centipede_segment
+	.addr	update_td_crawler
+	.addr	update_td_nest_crawler
+	.addr	td_enemy_type_none
+	.addr	update_td_explosion
+	.addr	update_hatch_turret_spin
+	.addr	update_stage5_boss_claw
+	.addr	update_stage5_boss_arm_segment
+	.addr	update_td_bug_centipede
+	.addr	update_td_bug_centipede_segment
+	.addr	update_td_centipede_bug
+	.addr	update_td_centipede
+	.addr	update_hatch_turret_aim
+	.addr	update_hatch_turret_sweep
+	.addr	update_td_spitter
+	.addr	update_stage5_boss_arm_base
 
-sub_029CF9:
+update_td_explosion:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_029D08,x
+	lda	f:tbl_td_explosion_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_029D08:
-	.addr	sub_029D0C
-	.addr	sub_029D31
+tbl_td_explosion_states:
+	.addr	td_start_explosion
+	.addr	td_explosion_state_1
 
-sub_029D0C:
+td_start_explosion:
 	lda	#$0008
 	sta	$10,x
 	lda	#$0009
@@ -2190,7 +2190,7 @@ sub_029D0C:
 	sta	$12,x
 	rtl
 
-sub_029D31:
+td_explosion_state_1:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_029D3B
@@ -2270,7 +2270,7 @@ loc_029DAC:
 	sta	$2E,x
 	rtl
 
-sub_029DBA:
+td_play_hit_sound:
 	lda	$2A,x
 	bne	loc_029DCC
 	lda	$2E,x
@@ -2281,16 +2281,16 @@ sub_029DBA:
 loc_029DCC:
 	rtl
 
-sub_029DCD:
-	jsr	a:sub_029DD9
+td_walk_towards_nearest_player:
+	jsr	a:td_get_angle_to_nearest_player
 	bcs	loc_029DD5
-	jsr	a:sub_029DF6
+	jsr	a:td_turn_one_step
 loc_029DD5:
-	jsr	a:sub_029E1F
+	jsr	a:td_enemy_step_forward
 	rtl
 
-sub_029DD9:
-	jsl	f:sub_029A96
+td_get_angle_to_nearest_player:
+	jsl	f:td_get_nearest_player
 	bcc	loc_029DE0
 	; (not executed in the CDL traces)
 	rts
@@ -2308,7 +2308,7 @@ loc_029DE0:
 	clc
 	rts
 
-sub_029DF6:
+td_turn_one_step:
 	lda	zp_10
 	sec
 	sbc	$04,x
@@ -2335,15 +2335,15 @@ loc_029E16:
 	sta	$04,x
 	rts
 
-sub_029E1F:
+td_enemy_step_forward:
 	lda	#$000C
 	jsl	f:set_velocity_from_angle
 	jsl	f:move_topdown_object
-	jsl	f:sub_02C086
+	jsl	f:td_enemy_tile_collision
 	rts
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_029E2F:
+td_turn_by_direction_unused:
 	; (not executed in the CDL traces)
 	lda	$3C,x
 	bne	loc_029E3C
@@ -2359,12 +2359,12 @@ loc_029E3C:
 	sta	$04,x
 	rts
 
-sub_029E45:
+td_fire_enemy_bullet:
 	lda	$2E,x
 	bit	#$0003
 	beq	loc_029EA3
 	phy
-	jsl	f:sub_029BC2
+	jsl	f:td_find_free_enemy_shot_slot
 	pla
 	bcs	loc_029EA3
 	pha
@@ -2406,23 +2406,23 @@ sub_029E45:
 loc_029EA3:
 	rtl
 
-sub_029EA4:
+update_td_runner:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_029EB3,x
+	lda	f:tbl_td_runner_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_029EB3:
-	.addr	sub_029EBD
-	.addr	sub_029EDE
-	.addr	sub_029EEB
-	.addr	sub_029F24
-	.addr	sub_029F45
+tbl_td_runner_states:
+	.addr	td_enemy_state_spawn
+	.addr	td_enemy_state_appear
+	.addr	td_runner_state_2
+	.addr	td_runner_state_3
+	.addr	td_runner_state_4
 
-sub_029EBD:
+td_enemy_state_spawn:
 	lda	$2E,x
 	bit	#$0003
 	beq	loc_029EC7
@@ -2441,7 +2441,7 @@ loc_029EC7:
 	inc	$12,x
 	rtl
 
-sub_029EDE:
+td_enemy_state_appear:
 	lda	$2E,x
 	bit	#$0003
 	beq	loc_029EE8
@@ -2450,7 +2450,7 @@ loc_029EE8:
 	inc	$12,x
 	rtl
 
-sub_029EEB:
+td_runner_state_2:
 	lda	$00,x
 	bne	loc_029F0A
 	ldy	difficulty
@@ -2472,14 +2472,14 @@ loc_029F11:
 	lda	$2E,x
 	bit	#$0003
 	bne	loc_029F1D
-	jsl	f:sub_029DCD
+	jsl	f:td_walk_towards_nearest_player
 	rtl
 loc_029F1D:
 	lda	#$A000
 	sta	$16,x
 	inc	$12,x
 
-sub_029F24:
+td_runner_state_3:
 	lda	$06,x
 	bmi	loc_029F37
 	lda	$2E,x
@@ -2487,7 +2487,7 @@ sub_029F24:
 	bne	loc_029F32
 	brl	clear_topdown_slot
 loc_029F32:
-	jsl	f:sub_029DCD
+	jsl	f:td_walk_towards_nearest_player
 	rtl
 loc_029F37:
 	stz	$06,x
@@ -2496,26 +2496,26 @@ loc_029F37:
 	lda	#$0004
 	sta	$12,x
 
-sub_029F45:
-	brl	sub_029D0C
+td_runner_state_4:
+	brl	td_start_explosion
 
-sub_029F48:
+update_td_gunner:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_029F57,x
+	lda	f:tbl_td_gunner_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_029F57:
-	.addr	sub_029EBD
-	.addr	sub_029EDE
-	.addr	sub_029F61
-	.addr	sub_029FA7
-	.addr	sub_029FD8
+tbl_td_gunner_states:
+	.addr	td_enemy_state_spawn
+	.addr	td_enemy_state_appear
+	.addr	td_gunner_state_2
+	.addr	td_gunner_state_3
+	.addr	td_gunner_state_4
 
-sub_029F61:
+td_gunner_state_2:
 	lda	$00,x
 	bne	loc_029F80
 	ldy	difficulty
@@ -2537,7 +2537,7 @@ loc_029F87:
 	lda	$2E,x
 	bit	#$0003
 	bne	loc_029F93
-	jsl	f:sub_029DCD
+	jsl	f:td_walk_towards_nearest_player
 	rtl
 loc_029F93:
 	lda	#$A000
@@ -2549,7 +2549,7 @@ loc_029F93:
 	lda	#$0003
 	sta	$12,x
 
-sub_029FA7:
+td_gunner_state_3:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_029FB1
@@ -2560,11 +2560,11 @@ loc_029FB1:
 	dec	$24,x
 	bpl	loc_029FC3
 	inc	$24,x
-	jsl	f:sub_029B06
+	jsl	f:td_angle_to_nearest_player
 	cmp	$04,x
 	beq	loc_029FC8
 loc_029FC3:
-	jsl	f:sub_029DCD
+	jsl	f:td_walk_towards_nearest_player
 	rtl
 loc_029FC8:
 	lda	#$0001
@@ -2575,7 +2575,7 @@ loc_029FC8:
 	sta	$24,x
 	inc	$12,x
 
-sub_029FD8:
+td_gunner_state_4:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_029FE2
@@ -2586,7 +2586,7 @@ loc_029FE2:
 	dec	$24,x
 	bpl	loc_029FFB
 	inc	$24,x
-	jsl	f:sub_029B06
+	jsl	f:td_angle_to_nearest_player
 	cmp	$04,x
 	bne	loc_029F93
 	ldy	difficulty
@@ -2598,7 +2598,7 @@ loc_029FFB:
 	lsr	a
 	cmp	$24,x
 	bne	loc_02A011
-	jsl	f:sub_02A21A
+	jsl	f:td_fire_gun_bullet
 	lda	#$D4CE
 	sta	$28,x
 	stz	$22,x
@@ -2608,9 +2608,9 @@ loc_02A011:
 loc_02A012:
 	lda	#$000B
 	jsl	f:queue_sound
-	jmp	a:sub_029D0C
+	jmp	a:td_start_explosion
 
-sub_02A01C:
+update_hatch_turret_aim:
 	lda	$06,x
 	bpl	loc_02A023
 	brl	loc_02A0D4
@@ -2637,18 +2637,18 @@ loc_02A048:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02A057,x
+	lda	f:tbl_hatch_turret_aim_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02A057:
-	.addr	sub_02A061
-	.addr	sub_02A076
-	.addr	sub_02A099
-	.addr	sub_02A0D3
-	.addr	sub_02A0E2
+tbl_hatch_turret_aim_states:
+	.addr	hatch_turret_state_0
+	.addr	hatch_turret_state_1
+	.addr	hatch_turret_aim_state_2
+	.addr	hatch_turret_state_3
+	.addr	hatch_turret_state_4
 
-sub_02A061:
+hatch_turret_state_0:
 	stz	$06,x
 	stz	$16,x
 	lda	#$0006
@@ -2660,12 +2660,12 @@ sub_02A061:
 	inc	$12,x
 	rtl
 
-sub_02A076:
+hatch_turret_state_1:
 	rtl
 loc_02A077:
 	lda	$12,x
 	cmp	#$0002
-	beq	sub_02A099
+	beq	hatch_turret_aim_state_2
 	ldy	difficulty
 	lda	a:data_05D4DA,y
 	sta	$06,x
@@ -2678,8 +2678,8 @@ loc_02A077:
 	lda	#$0002
 	sta	$12,x
 
-sub_02A099:
-	jsl	f:sub_029B06
+hatch_turret_aim_state_2:
+	jsl	f:td_angle_to_nearest_player
 	ldy	difficulty
 	clc
 	adc	a:data_05D500,y
@@ -2689,14 +2689,14 @@ sub_02A099:
 	bcc	loc_02A0B5
 	ldy	difficulty
 	lda	a:data_05D4FA,y
-	jsl	f:sub_029C51
+	jsl	f:td_turn_towards_nearest_player
 	rtl
 loc_02A0B5:
 	ldy	difficulty
 	lda	stage_frame_counter
 	and	a:data_05D506,y
 	bne	loc_02A0C2
-	jsl	f:sub_02A21A
+	jsl	f:td_fire_gun_bullet
 loc_02A0C2:
 	rtl
 loc_02A0C3:
@@ -2708,7 +2708,7 @@ loc_02A0C3:
 	lda	#$0003
 	sta	$12,x
 
-sub_02A0D3:
+hatch_turret_state_3:
 	rtl
 loc_02A0D4:
 	stz	$06,x
@@ -2717,10 +2717,10 @@ loc_02A0D4:
 	lda	#$0004
 	sta	$12,x
 
-sub_02A0E2:
-	brl	sub_029D0C
+hatch_turret_state_4:
+	brl	td_start_explosion
 
-sub_02A0E5:
+update_hatch_turret_spin:
 	lda	$06,x
 	bpl	loc_02A0EC
 	brl	loc_02A0D4
@@ -2748,20 +2748,20 @@ loc_02A111:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02A120,x
+	lda	f:tbl_hatch_turret_spin_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02A120:
-	.addr	sub_02A061
-	.addr	sub_02A076
-	.addr	sub_02A14C
-	.addr	sub_02A0D3
-	.addr	sub_02A0E2
+tbl_hatch_turret_spin_states:
+	.addr	hatch_turret_state_0
+	.addr	hatch_turret_state_1
+	.addr	hatch_turret_spin_state_2
+	.addr	hatch_turret_state_3
+	.addr	hatch_turret_state_4
 loc_02A12A:
 	lda	$12,x
 	cmp	#$0002
-	beq	sub_02A14C
+	beq	hatch_turret_spin_state_2
 	ldy	difficulty
 	lda	a:data_05D4DA,y
 	sta	$06,x
@@ -2774,7 +2774,7 @@ loc_02A12A:
 	lda	#$0002
 	sta	$12,x
 
-sub_02A14C:
+hatch_turret_spin_state_2:
 	ldy	difficulty
 	lda	$04,x
 	clc
@@ -2785,11 +2785,11 @@ sub_02A14C:
 	lda	stage_frame_counter
 	and	a:data_05D512,y
 	bne	loc_02A166
-	jsl	f:sub_02A21A
+	jsl	f:td_fire_gun_bullet
 loc_02A166:
 	rtl
 
-sub_02A167:
+update_hatch_turret_sweep:
 	lda	$06,x
 	bpl	loc_02A16E
 	brl	loc_02A0D4
@@ -2816,20 +2816,20 @@ loc_02A193:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02A1A2,x
+	lda	f:tbl_hatch_turret_sweep_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02A1A2:
-	.addr	sub_02A061
-	.addr	sub_02A076
-	.addr	sub_02A1D0
-	.addr	sub_02A0D3
-	.addr	sub_02A0E2
+tbl_hatch_turret_sweep_states:
+	.addr	hatch_turret_state_0
+	.addr	hatch_turret_state_1
+	.addr	hatch_turret_sweep_state_2
+	.addr	hatch_turret_state_3
+	.addr	hatch_turret_state_4
 loc_02A1AC:
 	lda	$12,x
 	cmp	#$0002
-	beq	sub_02A1D0
+	beq	hatch_turret_sweep_state_2
 	ldy	difficulty
 	lda	a:data_05D4DA,y
 	sta	$06,x
@@ -2843,7 +2843,7 @@ loc_02A1AC:
 	lda	#$0002
 	sta	$12,x
 
-sub_02A1D0:
+hatch_turret_sweep_state_2:
 	ldy	difficulty
 	lda	$24,x
 	clc
@@ -2854,12 +2854,12 @@ sub_02A1D0:
 	lda	stage_frame_counter
 	and	a:data_05D524,y
 	bne	loc_02A1EA
-	jsl	f:sub_02A21A
+	jsl	f:td_fire_gun_bullet
 loc_02A1EA:
-	jsr	a:sub_02A1EE
+	jsr	a:hatch_turret_sweep_turn
 	rtl
 
-sub_02A1EE:
+hatch_turret_sweep_turn:
 	ldy	difficulty
 	lda	$24,x
 	clc
@@ -2883,11 +2883,11 @@ loc_02A20E:
 	sta	$04,x
 	rts
 
-sub_02A21A:
+td_fire_gun_bullet:
 	lda	$2E,x
 	bit	#$0003
 	beq	loc_02A27D
-	jsl	f:sub_029BC2
+	jsl	f:td_find_free_enemy_shot_slot
 	bcs	loc_02A27D
 	lda	#$0004
 	sta	a:$0010,y
@@ -2927,24 +2927,24 @@ sub_02A21A:
 loc_02A27D:
 	rtl
 
-sub_02A27E:
+update_td_centipede_unused:
 	; (not executed in the CDL traces)
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02A28D,x
+	lda	f:tbl_td_centipede_unused_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02A28D:
-	.addr	sub_029EBD
-	.addr	sub_029EDE
-	.addr	sub_02A297
-	.addr	sub_02A2FA
-	.addr	sub_02A31E
+tbl_td_centipede_unused_states:
+	.addr	td_enemy_state_spawn
+	.addr	td_enemy_state_appear
+	.addr	td_centipede_unused_state_2
+	.addr	td_centipede_unused_state_3
+	.addr	td_centipede_unused_state_4
 
-sub_02A297:
+td_centipede_unused_state_2:
 	; (not executed in the CDL traces)
 	lda	$00,x
 	bne	loc_02A2BB
@@ -2959,7 +2959,7 @@ sub_02A297:
 	sta	$02,x
 	lda	#$D530
 	sta	$28,x
-	jsr	a:sub_02A2D1
+	jsr	a:td_centipede_init_trail
 loc_02A2BB:
 	dec	$24,x
 	bpl	loc_02A2C2
@@ -2968,11 +2968,11 @@ loc_02A2C2:
 	lda	$2E,x
 	bit	#$0003
 	bne	loc_02A2F3
-	jsl	f:sub_029DCD
-	jsr	a:sub_02A339
+	jsl	f:td_walk_towards_nearest_player
+	jsr	a:td_centipede_record_trail
 	rtl
 
-sub_02A2D1:
+td_centipede_init_trail:
 	; (not executed in the CDL traces)
 	lda	#$0007
 	sta	$00,x
@@ -2992,18 +2992,18 @@ loc_02A2F3:
 	sta	$16,x
 	inc	$12,x
 
-sub_02A2FA:
+td_centipede_unused_state_3:
 	; (not executed in the CDL traces)
-	jsr	a:sub_02A377
+	jsr	a:td_centipede_check_out_of_range
 	bcc	loc_02A302
 	brl	loc_02A39A
 loc_02A302:
-	jsr	a:sub_02A35F
+	jsr	a:td_centipede_check_killed
 	bcc	loc_02A30A
 	brl	loc_02A312
 loc_02A30A:
-	jsl	f:sub_029DCD
-	jsr	a:sub_02A339
+	jsl	f:td_walk_towards_nearest_player
+	jsr	a:td_centipede_record_trail
 	rtl
 loc_02A312:
 	lda	#$0030
@@ -3011,29 +3011,29 @@ loc_02A312:
 	lda	#$0004
 	sta	$12,x
 
-sub_02A31E:
+td_centipede_unused_state_4:
 	phx
 	ldx	#$0E00
-	jsl	f:sub_029D0C
+	jsl	f:td_start_explosion
 	ldx	#$0E40
-	jsl	f:sub_029D0C
+	jsl	f:td_start_explosion
 	ldx	#$0E80
-	jsl	f:sub_029D0C
+	jsl	f:td_start_explosion
 	plx
-	jml	f:sub_029D0C
+	jml	f:td_start_explosion
 
-sub_02A339:
+td_centipede_record_trail:
 	ldy	$2C,x
 	lda	$04,x
-	jsr	a:sub_02A34D
+	jsr	a:td_write_trail_word
 	lda	$0A,x
-	jsr	a:sub_02A34D
+	jsr	a:td_write_trail_word
 	lda	$0E,x
-	jsr	a:sub_02A34D
+	jsr	a:td_write_trail_word
 	sty	$2C,x
 	rts
 
-sub_02A34D:
+td_write_trail_word:
 	phx
 	tyx
 	sta	f:$7E0000,x
@@ -3046,8 +3046,8 @@ loc_02A35D:
 	plx
 	rts
 
-sub_02A35F:
-	jsl	f:sub_029DBA
+td_centipede_check_killed:
+	jsl	f:td_play_hit_sound
 	lda	$06,x
 	clc
 	adc	a:wram_0E06
@@ -3062,7 +3062,7 @@ loc_02A375:
 	clc
 	rts
 
-sub_02A377:
+td_centipede_check_out_of_range:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_02A398
@@ -3092,20 +3092,20 @@ loc_02A39A:
 	jsl	f:clear_topdown_slot
 	rtl
 
-sub_02A3B6:
+update_td_centipede_segment:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02A3C5,x
+	lda	f:tbl_td_centipede_segment_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02A3C5:
-	.addr	sub_02A3C9
-	.addr	sub_02A3FB
+tbl_td_centipede_segment_states:
+	.addr	td_centipede_segment_state_0
+	.addr	td_centipede_segment_state_1
 
-sub_02A3C9:
+td_centipede_segment_state_0:
 	lda	#$0007
 	sta	$00,x
 	lda	#$2400
@@ -3129,14 +3129,14 @@ sub_02A3C9:
 	stz	$1C,x
 	inc	$12,x
 
-sub_02A3FB:
-	jsl	f:sub_029DBA
-	jsr	a:sub_02A40A
-	jsr	a:sub_02A41A
-	jsl	f:sub_02C086
+td_centipede_segment_state_1:
+	jsl	f:td_play_hit_sound
+	jsr	a:td_segment_set_hittable
+	jsr	a:td_segment_follow_trail
+	jsl	f:td_enemy_tile_collision
 	rtl
 
-sub_02A40A:
+td_segment_set_hittable:
 	lda	$2E,x
 	bit	#$0003
 	beq	loc_02A417
@@ -3147,7 +3147,7 @@ loc_02A417:
 	stz	$16,x
 	rts
 
-sub_02A41A:
+td_segment_follow_trail:
 	ldy	$2C,x
 	cpy	#$1900
 	bcs	loc_02A428
@@ -3156,16 +3156,16 @@ sub_02A41A:
 	sta	$2C,x
 	rts
 loc_02A428:
-	jsr	a:sub_02A43A
+	jsr	a:td_read_trail_word
 	sta	$04,x
-	jsr	a:sub_02A43A
+	jsr	a:td_read_trail_word
 	sta	$0A,x
-	jsr	a:sub_02A43A
+	jsr	a:td_read_trail_word
 	sta	$0E,x
 	sty	$2C,x
 	rts
 
-sub_02A43A:
+td_read_trail_word:
 	phx
 	tyx
 	lda	f:$7E0000,x
@@ -3178,22 +3178,22 @@ loc_02A44A:
 	plx
 	rts
 
-sub_02A44C:
+update_td_bug_centipede:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02A45B,x
+	lda	f:tbl_td_bug_centipede_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02A45B:
-	.addr	sub_029EBD
-	.addr	sub_029EDE
-	.addr	sub_02A463
-	.addr	sub_02A4D0
+tbl_td_bug_centipede_states:
+	.addr	td_enemy_state_spawn
+	.addr	td_enemy_state_appear
+	.addr	td_bug_centipede_state_2
+	.addr	td_bug_centipede_state_3
 
-sub_02A463:
+td_bug_centipede_state_2:
 	lda	$00,x
 	bne	loc_02A4AB
 	ldy	difficulty
@@ -3203,7 +3203,7 @@ sub_02A463:
 	sta	a:wram_0E10
 	sta	a:wram_0E50
 	sta	a:wram_0E90
-	jsl	f:sub_029B06
+	jsl	f:td_angle_to_nearest_player
 	sta	$04,x
 	lda	#$2E00
 	sta	$02,x
@@ -3229,8 +3229,8 @@ loc_02A4B2:
 	lda	$2E,x
 	bit	#$0003
 	bne	loc_02A4C1
-	jsl	f:sub_029DCD
-	jsr	a:sub_02A339
+	jsl	f:td_walk_towards_nearest_player
+	jsr	a:td_centipede_record_trail
 	rtl
 loc_02A4C1:
 	lda	#$A000
@@ -3240,12 +3240,12 @@ loc_02A4C1:
 	lda	#$0003
 	sta	$12,x
 
-sub_02A4D0:
-	jsr	a:sub_02A377
+td_bug_centipede_state_3:
+	jsr	a:td_centipede_check_out_of_range
 	bcc	loc_02A4D8
 	brl	loc_02A39A
 loc_02A4D8:
-	jsr	a:sub_02A35F
+	jsr	a:td_centipede_check_killed
 	bcc	loc_02A4E0
 	brl	loc_02A505
 loc_02A4E0:
@@ -3262,9 +3262,9 @@ loc_02A4EE:
 	sta	$24,x
 loc_02A4F7:
 	lda	#$0002
-	jsl	f:sub_029C51
-	jsr	a:sub_02A78E
-	jsr	a:sub_02A339
+	jsl	f:td_turn_towards_nearest_player
+	jsr	a:td_centipede_wiggle
+	jsr	a:td_centipede_record_trail
 	rtl
 loc_02A505:
 	lda	#$0030
@@ -3284,37 +3284,37 @@ loc_02A505:
 	stz	a:wram_0E86
 	lda	rng_lo
 	ldy	#$0DC0
-	jsr	a:sub_02A554
+	jsr	a:td_set_bug_direction
 	lda	zp_E9
 	ldy	#$0E00
-	jsr	a:sub_02A554
+	jsr	a:td_set_bug_direction
 	lda	rng_hi
 	ldy	#$0E40
-	jsr	a:sub_02A554
+	jsr	a:td_set_bug_direction
 	lda	zp_EB
 	ldy	#$0E80
-	jsr	a:sub_02A554
+	jsr	a:td_set_bug_direction
 	rtl
 
-sub_02A554:
+td_set_bug_direction:
 	and	#$00FF
 	sta	a:$0038,y
 	rts
 
-sub_02A55B:
+update_td_bug_centipede_segment:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02A56A,x
+	lda	f:tbl_td_bug_centipede_segment_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02A56A:
-	.addr	sub_02A56E
-	.addr	sub_02A5A0
+tbl_td_bug_centipede_segment_states:
+	.addr	td_bug_centipede_segment_state_0
+	.addr	td_bug_centipede_segment_state_1
 
-sub_02A56E:
+td_bug_centipede_segment_state_0:
 	lda	#$0007
 	sta	$00,x
 	lda	#$2E00
@@ -3338,14 +3338,14 @@ sub_02A56E:
 	stz	$1C,x
 	inc	$12,x
 
-sub_02A5A0:
-	jsl	f:sub_029DBA
-	jsr	a:sub_02A40A
-	jsr	a:sub_02A41A
-	jsl	f:sub_02C086
+td_bug_centipede_segment_state_1:
+	jsl	f:td_play_hit_sound
+	jsr	a:td_segment_set_hittable
+	jsr	a:td_segment_follow_trail
+	jsl	f:td_enemy_tile_collision
 	rtl
 
-sub_02A5AF:
+update_td_centipede_bug:
 	lda	$06,x
 	bpl	loc_02A5B6
 	brl	loc_02A678
@@ -3354,17 +3354,17 @@ loc_02A5B6:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02A5C5,x
+	lda	f:tbl_td_centipede_bug_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02A5C5:
-	.addr	sub_02A5CD
-	.addr	sub_02A5FB
-	.addr	sub_02A625
-	.addr	sub_02A665
+tbl_td_centipede_bug_states:
+	.addr	td_centipede_bug_state_0
+	.addr	td_centipede_bug_state_1
+	.addr	td_centipede_bug_state_2
+	.addr	td_centipede_bug_state_3
 
-sub_02A5CD:
+td_centipede_bug_state_0:
 	ldy	difficulty
 	lda	a:data_05D552,y
 	sta	$06,x
@@ -3386,7 +3386,7 @@ sub_02A5CD:
 	sta	$24,x
 	inc	$12,x
 
-sub_02A5FB:
+td_centipede_bug_state_1:
 	dec	$24,x
 	bmi	loc_02A61B
 	lda	$04,x
@@ -3408,7 +3408,7 @@ loc_02A61B:
 	lda	#$0002
 	sta	$12,x
 
-sub_02A625:
+td_centipede_bug_state_2:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_02A62F
@@ -3421,11 +3421,11 @@ loc_02A62F:
 	lda	$24,x
 	cmp	#$0010
 	bne	loc_02A642
-	jsl	f:sub_02A9A6
+	jsl	f:td_fire_enemy_orb
 loc_02A642:
 	lda	#$0002
 	sta	$22,x
-	jsl	f:sub_02C086
+	jsl	f:td_enemy_tile_collision
 	rtl
 loc_02A64C:
 	lda	#$A000
@@ -3442,7 +3442,7 @@ loc_02A64C:
 	lda	#$0003
 	sta	$12,x
 
-sub_02A665:
+td_centipede_bug_state_3:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_02A66F
@@ -3450,31 +3450,31 @@ sub_02A665:
 loc_02A66F:
 	dec	$24,x
 	bmi	loc_02A61B
-	jsl	f:sub_029DCD
+	jsl	f:td_walk_towards_nearest_player
 	rtl
 loc_02A678:
 	lda	#$0030
 	jsl	f:queue_sound
-	jmp	a:sub_029D0C
+	jmp	a:td_start_explosion
 
-sub_02A682:
+update_td_centipede:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02A691,x
+	lda	f:tbl_td_centipede_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02A691:
-	.addr	sub_029EBD
-	.addr	sub_029EDE
-	.addr	sub_02A69D
-	.addr	sub_02A70A
-	.addr	sub_02A72C
-	.addr	sub_02A773
+tbl_td_centipede_states:
+	.addr	td_enemy_state_spawn
+	.addr	td_enemy_state_appear
+	.addr	td_centipede_state_2
+	.addr	td_centipede_state_3
+	.addr	td_centipede_state_4
+	.addr	td_centipede_state_5
 
-sub_02A69D:
+td_centipede_state_2:
 	lda	$00,x
 	bne	loc_02A6E5
 	ldy	difficulty
@@ -3484,7 +3484,7 @@ sub_02A69D:
 	sta	a:wram_0E10
 	sta	a:wram_0E50
 	sta	a:wram_0E90
-	jsl	f:sub_029B06
+	jsl	f:td_angle_to_nearest_player
 	sta	$04,x
 	lda	#$2400
 	sta	$02,x
@@ -3510,8 +3510,8 @@ loc_02A6EC:
 	lda	$2E,x
 	bit	#$0003
 	bne	loc_02A6FB
-	jsl	f:sub_029DCD
-	jsr	a:sub_02A339
+	jsl	f:td_walk_towards_nearest_player
+	jsr	a:td_centipede_record_trail
 	rtl
 loc_02A6FB:
 	lda	#$A000
@@ -3521,37 +3521,37 @@ loc_02A6FB:
 	lda	#$0003
 	sta	$12,x
 
-sub_02A70A:
-	jsr	a:sub_02A377
+td_centipede_state_3:
+	jsr	a:td_centipede_check_out_of_range
 	bcc	loc_02A712
 	brl	loc_02A39A
 loc_02A712:
-	jsr	a:sub_02A35F
+	jsr	a:td_centipede_check_killed
 	bcc	loc_02A71A
 	brl	loc_02A312
 loc_02A71A:
 	dec	$24,x
 	bmi	loc_02A725
-	jsr	a:sub_02A78E
-	jsr	a:sub_02A339
+	jsr	a:td_centipede_wiggle
+	jsr	a:td_centipede_record_trail
 	rtl
 loc_02A725:
 	lda	#$A000
 	sta	$16,x
 	inc	$12,x
 
-sub_02A72C:
-	jsr	a:sub_02A377
+td_centipede_state_4:
+	jsr	a:td_centipede_check_out_of_range
 	bcc	loc_02A734
 	brl	loc_02A39A
 loc_02A734:
-	jsr	a:sub_02A35F
+	jsr	a:td_centipede_check_killed
 	bcc	loc_02A73C
 	brl	loc_02A312
 loc_02A73C:
 	lda	#$0004
-	jsl	f:sub_029C51
-	jsl	f:sub_029B06
+	jsl	f:td_turn_towards_nearest_player
+	jsl	f:td_angle_to_nearest_player
 	clc
 	adc	#$0002
 	sec
@@ -3563,32 +3563,32 @@ loc_02A73C:
 	and	a:data_05D564,y
 	bne	loc_02A763
 	ldy	#$0010
-	jsl	f:sub_029E45
+	jsl	f:td_fire_enemy_bullet
 loc_02A763:
-	jsr	a:sub_02A339
+	jsr	a:td_centipede_record_trail
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_02A767:
+td_centipede_start_death_unused:
 	; (not executed in the CDL traces)
 	lda	#$0030
 	jsl	f:queue_sound
 	lda	#$0005
 	sta	$12,x
 
-sub_02A773:
+td_centipede_state_5:
 	; (not executed in the CDL traces)
 	phx
 	ldx	#$0E00
-	jsl	f:sub_029D0C
+	jsl	f:td_start_explosion
 	ldx	#$0E40
-	jsl	f:sub_029D0C
+	jsl	f:td_start_explosion
 	ldx	#$0E80
-	jsl	f:sub_029D0C
+	jsl	f:td_start_explosion
 	plx
-	jml	f:sub_029D0C
+	jml	f:td_start_explosion
 
-sub_02A78E:
+td_centipede_wiggle:
 	lda	$24,x
 	and	#$007F
 	cmp	#$0040
@@ -3596,11 +3596,11 @@ sub_02A78E:
 	eor	#$007F
 loc_02A79B:
 	lsr	a
-	jsl	f:sub_029C7F
-	jsl	f:sub_02C086
+	jsl	f:td_move_at_angle
+	jsl	f:td_enemy_tile_collision
 	rts
 
-sub_02A7A5:
+update_td_nest_crawler:
 	lda	$06,x
 	bpl	loc_02A7AC
 	brl	loc_02A86C
@@ -3615,18 +3615,18 @@ loc_02A7B9:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02A7C8,x
+	lda	f:tbl_td_nest_crawler_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02A7C8:
-	.addr	sub_02A7D2
-	.addr	sub_02A7F8
-	.addr	sub_02A813
-	.addr	sub_02A82F
-	.addr	sub_02A849
+tbl_td_nest_crawler_states:
+	.addr	td_nest_crawler_state_0
+	.addr	td_nest_crawler_state_1
+	.addr	td_nest_crawler_state_2
+	.addr	td_nest_crawler_state_3
+	.addr	td_nest_crawler_state_4
 
-sub_02A7D2:
+td_nest_crawler_state_0:
 	ldy	difficulty
 	lda	a:data_05D56A,y
 	sta	$06,x
@@ -3644,12 +3644,12 @@ sub_02A7D2:
 	lda	#$0001
 	sta	$12,x
 
-sub_02A7F8:
+td_nest_crawler_state_1:
 	ldy	$3A,x
 	lda	a:$0012,y
 	cmp	#$0003
 	beq	loc_02A809
-	jsl	f:sub_029B06
+	jsl	f:td_angle_to_nearest_player
 	sta	$04,x
 	rtl
 loc_02A809:
@@ -3658,10 +3658,10 @@ loc_02A809:
 	lda	#$0002
 	sta	$12,x
 
-sub_02A813:
+td_nest_crawler_state_2:
 	dec	$24,x
 	bmi	loc_02A81E
-	jsl	f:sub_029B06
+	jsl	f:td_angle_to_nearest_player
 	sta	$04,x
 	rtl
 loc_02A81E:
@@ -3673,7 +3673,7 @@ loc_02A81E:
 	lda	#$0003
 	sta	$12,x
 
-sub_02A82F:
+td_nest_crawler_state_3:
 	dec	$24,x
 	bmi	loc_02A842
 	lda	$2E,x
@@ -3681,14 +3681,14 @@ sub_02A82F:
 	bne	loc_02A83D
 	brl	clear_topdown_slot
 loc_02A83D:
-	jsl	f:sub_029DCD
+	jsl	f:td_walk_towards_nearest_player
 	rtl
 loc_02A842:
 	lda	#$0040
 	sta	$24,x
 	inc	$12,x
 
-sub_02A849:
+td_nest_crawler_state_4:
 	dec	$24,x
 	bmi	loc_02A81E
 	lda	$2E,x
@@ -3699,33 +3699,33 @@ loc_02A857:
 	lda	$24,x
 	cmp	#$0020
 	bne	loc_02A862
-	jsl	f:sub_02A9A6
+	jsl	f:td_fire_enemy_orb
 loc_02A862:
 	lda	#$0002
 	sta	$22,x
-	jsl	f:sub_02C086
+	jsl	f:td_enemy_tile_collision
 	rtl
 loc_02A86C:
 	lda	#$000B
 	jsl	f:queue_sound
-	jmp	a:sub_029D0C
+	jmp	a:td_start_explosion
 
-sub_02A876:
+update_td_crawler:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02A885,x
+	lda	f:tbl_td_crawler_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02A885:
-	.addr	sub_029EBD
-	.addr	sub_029EDE
-	.addr	sub_02A88D
-	.addr	sub_02A8C6
+tbl_td_crawler_states:
+	.addr	td_enemy_state_spawn
+	.addr	td_enemy_state_appear
+	.addr	td_crawler_state_2
+	.addr	td_crawler_state_3
 
-sub_02A88D:
+td_crawler_state_2:
 	lda	$00,x
 	bne	loc_02A8AC
 	ldy	difficulty
@@ -3747,14 +3747,14 @@ loc_02A8B3:
 	lda	$2E,x
 	bit	#$0003
 	bne	loc_02A8BF
-	jsl	f:sub_029DCD
+	jsl	f:td_walk_towards_nearest_player
 	rtl
 loc_02A8BF:
 	lda	#$A000
 	sta	$16,x
 	inc	$12,x
 
-sub_02A8C6:
+td_crawler_state_3:
 	lda	$06,x
 	bmi	loc_02A8D9
 	lda	$2E,x
@@ -3762,31 +3762,31 @@ sub_02A8C6:
 	bne	loc_02A8D4
 	brl	clear_topdown_slot
 loc_02A8D4:
-	jsl	f:sub_029DCD
+	jsl	f:td_walk_towards_nearest_player
 	rtl
 loc_02A8D9:
 	stz	$06,x
 	lda	#$000B
 	jsl	f:queue_sound
-	jmp	a:sub_029D0C
+	jmp	a:td_start_explosion
 
-sub_02A8E5:
+update_td_spitter:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02A8F4,x
+	lda	f:tbl_td_spitter_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02A8F4:
-	.addr	sub_029EBD
-	.addr	sub_029EDE
-	.addr	sub_02A8FE
-	.addr	sub_02A93F
-	.addr	sub_02A96C
+tbl_td_spitter_states:
+	.addr	td_enemy_state_spawn
+	.addr	td_enemy_state_appear
+	.addr	td_spitter_state_2
+	.addr	td_spitter_state_3
+	.addr	td_spitter_state_4
 
-sub_02A8FE:
+td_spitter_state_2:
 	lda	$00,x
 	bne	loc_02A91D
 	ldy	difficulty
@@ -3808,7 +3808,7 @@ loc_02A924:
 	lda	$2E,x
 	bit	#$0003
 	bne	loc_02A930
-	jsl	f:sub_029DCD
+	jsl	f:td_walk_towards_nearest_player
 	rtl
 loc_02A930:
 	lda	#$A000
@@ -3818,7 +3818,7 @@ loc_02A930:
 	lda	#$0003
 	sta	$12,x
 
-sub_02A93F:
+td_spitter_state_3:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_02A949
@@ -3831,11 +3831,11 @@ loc_02A950:
 	dec	$24,x
 	bpl	loc_02A95E
 	inc	$24,x
-	jsl	f:sub_029B06
+	jsl	f:td_angle_to_nearest_player
 	cmp	$04,x
 	beq	loc_02A963
 loc_02A95E:
-	jsl	f:sub_029DCD
+	jsl	f:td_walk_towards_nearest_player
 	rtl
 loc_02A963:
 	ldy	difficulty
@@ -3843,7 +3843,7 @@ loc_02A963:
 	sta	$24,x
 	inc	$12,x
 
-sub_02A96C:
+td_spitter_state_4:
 	lda	$2E,x
 	bit	#$000C
 	bne	loc_02A976
@@ -3856,7 +3856,7 @@ loc_02A97D:
 	dec	$24,x
 	bpl	loc_02A992
 	inc	$24,x
-	jsl	f:sub_029B06
+	jsl	f:td_angle_to_nearest_player
 	cmp	$04,x
 	bne	loc_02A930
 	ldy	difficulty
@@ -3868,17 +3868,17 @@ loc_02A992:
 	lsr	a
 	cmp	$24,x
 	bne	loc_02A9A5
-	jsl	f:sub_02A9A6
+	jsl	f:td_fire_enemy_orb
 	lda	#$0002
 	sta	$22,x
 loc_02A9A5:
 	rtl
 
-sub_02A9A6:
+td_fire_enemy_orb:
 	lda	$2E,x
 	bit	#$0003
 	beq	loc_02A9F7
-	jsl	f:sub_029BC2
+	jsl	f:td_find_free_enemy_shot_slot
 	bcs	loc_02A9F7
 	lda	#$000D
 	sta	a:$0010,y
@@ -3910,13 +3910,13 @@ sub_02A9A6:
 loc_02A9F7:
 	rtl
 
-sub_02A9F8:
+update_td_items:
 	ldx	#$0980
 loc_02A9FB:
 	lda	$10,x
 	beq	loc_02AA07
-	jsl	f:sub_02AA13
-	jsl	f:sub_02ABCF
+	jsl	f:run_td_item_handler
+	jsl	f:animate_td_item
 loc_02AA07:
 	txa
 	clc
@@ -3926,40 +3926,40 @@ loc_02AA07:
 	bcc	loc_02A9FB
 	rtl
 
-sub_02AA13:
+run_td_item_handler:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02AA20,x
+	lda	f:tbl_td_item_types,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02AA20:
-	.addr	sub_02AA72
-	.addr	sub_02AA34
-	.addr	sub_02AA73
-	.addr	sub_02AABA
-	.addr	sub_02AAFD
-	.addr	sub_02AB20
-	.addr	sub_02AB43
-	.addr	sub_02AB66
-	.addr	sub_02AB89
-	.addr	sub_02ABAC
+tbl_td_item_types:
+	.addr	td_item_none
+	.addr	update_td_blast
+	.addr	update_td_explosion_effect
+	.addr	update_td_item_spread
+	.addr	update_td_item_crush
+	.addr	update_td_item_homing
+	.addr	update_td_item_flame
+	.addr	update_td_item_laser
+	.addr	update_td_item_barrier
+	.addr	update_td_item_bomb
 
-sub_02AA34:
+update_td_blast:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02AA43,x
+	lda	f:tbl_td_blast_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02AA43:
-	.addr	sub_02AA47
-	.addr	sub_02AA6B
+tbl_td_blast_states:
+	.addr	td_blast_state_0
+	.addr	td_blast_state_1
 
-sub_02AA47:
+td_blast_state_0:
 	lda	#$D5BC
 	sta	$20,x
 	stz	$22,x
@@ -3977,28 +3977,28 @@ sub_02AA47:
 	lda	#$0001
 	sta	$12,x
 
-sub_02AA6B:
+td_blast_state_1:
 	lda	$20,x
-	bne	sub_02AA72
+	bne	td_item_none
 	brl	clear_topdown_slot
 
-sub_02AA72:
+td_item_none:
 	rtl
 
-sub_02AA73:
+update_td_explosion_effect:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02AA82,x
+	lda	f:tbl_td_explosion_effect_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02AA82:
-	.addr	sub_02AA86
-	.addr	sub_02AAB2
+tbl_td_explosion_effect_states:
+	.addr	td_explosion_effect_state_0
+	.addr	td_explosion_effect_state_1
 
-sub_02AA86:
+td_explosion_effect_state_0:
 	lda	#$D610
 	sta	$20,x
 	stz	$22,x
@@ -4021,27 +4021,27 @@ sub_02AA86:
 	lda	#$0001
 	sta	$12,x
 
-sub_02AAB2:
+td_explosion_effect_state_1:
 	lda	$20,x
 	bne	loc_02AAB9
 	brl	clear_topdown_slot
 loc_02AAB9:
 	rtl
 
-sub_02AABA:
+update_td_item_spread:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02AAC9,x
+	lda	f:tbl_td_item_spread_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02AAC9:
-	.addr	sub_02AACD
-	.addr	sub_02AAF5
+tbl_td_item_spread_states:
+	.addr	td_item_spread_state_0
+	.addr	td_item_state_1
 
-sub_02AACD:
+td_item_spread_state_0:
 	ldy	a:boss_centered_view
 	lda	a:data_05D664,y
 	sta	$20,x
@@ -4061,27 +4061,27 @@ loc_02AADA:
 	lda	#$0001
 	sta	$12,x
 
-sub_02AAF5:
+td_item_state_1:
 	dec	$24,x
 	bpl	loc_02AAFC
 	brl	clear_topdown_slot
 loc_02AAFC:
 	rtl
 
-sub_02AAFD:
+update_td_item_crush:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02AB0C,x
+	lda	f:tbl_td_item_crush_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02AB0C:
-	.addr	sub_02AB10
-	.addr	sub_02AAF5
+tbl_td_item_crush_states:
+	.addr	td_item_crush_state_0
+	.addr	td_item_state_1
 
-sub_02AB10:
+td_item_crush_state_0:
 	ldy	a:boss_centered_view
 	lda	a:data_05D668,y
 	sta	$20,x
@@ -4089,20 +4089,20 @@ sub_02AB10:
 	sta	$14,x
 	jmp	a:loc_02AADA
 
-sub_02AB20:
+update_td_item_homing:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02AB2F,x
+	lda	f:tbl_td_item_homing_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02AB2F:
-	.addr	sub_02AB33
-	.addr	sub_02AAF5
+tbl_td_item_homing_states:
+	.addr	td_item_homing_state_0
+	.addr	td_item_state_1
 
-sub_02AB33:
+td_item_homing_state_0:
 	ldy	a:boss_centered_view
 	lda	a:data_05D66C,y
 	sta	$20,x
@@ -4110,20 +4110,20 @@ sub_02AB33:
 	sta	$14,x
 	jmp	a:loc_02AADA
 
-sub_02AB43:
+update_td_item_flame:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02AB52,x
+	lda	f:tbl_td_item_flame_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02AB52:
-	.addr	sub_02AB56
-	.addr	sub_02AAF5
+tbl_td_item_flame_states:
+	.addr	td_item_flame_state_0
+	.addr	td_item_state_1
 
-sub_02AB56:
+td_item_flame_state_0:
 	ldy	a:boss_centered_view
 	lda	a:data_05D670,y
 	sta	$20,x
@@ -4131,20 +4131,20 @@ sub_02AB56:
 	sta	$14,x
 	jmp	a:loc_02AADA
 
-sub_02AB66:
+update_td_item_laser:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02AB75,x
+	lda	f:tbl_td_item_laser_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02AB75:
-	.addr	sub_02AB79
-	.addr	sub_02AAF5
+tbl_td_item_laser_states:
+	.addr	td_item_laser_state_0
+	.addr	td_item_state_1
 
-sub_02AB79:
+td_item_laser_state_0:
 	ldy	a:boss_centered_view
 	lda	a:data_05D674,y
 	sta	$20,x
@@ -4152,20 +4152,20 @@ sub_02AB79:
 	sta	$14,x
 	jmp	a:loc_02AADA
 
-sub_02AB89:
+update_td_item_barrier:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02AB98,x
+	lda	f:tbl_td_item_barrier_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02AB98:
-	.addr	sub_02AB9C
-	.addr	sub_02AAF5
+tbl_td_item_barrier_states:
+	.addr	td_item_barrier_state_0
+	.addr	td_item_state_1
 
-sub_02AB9C:
+td_item_barrier_state_0:
 	ldy	a:boss_centered_view
 	lda	a:data_05D678,y
 	sta	$20,x
@@ -4173,20 +4173,20 @@ sub_02AB9C:
 	sta	$14,x
 	jmp	a:loc_02AADA
 
-sub_02ABAC:
+update_td_item_bomb:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02ABBB,x
+	lda	f:tbl_td_item_bomb_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02ABBB:
-	.addr	sub_02ABBF
-	.addr	sub_02AAF5
+tbl_td_item_bomb_states:
+	.addr	td_item_bomb_state_0
+	.addr	td_item_state_1
 
-sub_02ABBF:
+td_item_bomb_state_0:
 	ldy	a:boss_centered_view
 	lda	a:data_05D67C,y
 	sta	$20,x
@@ -4194,7 +4194,7 @@ sub_02ABBF:
 	sta	$14,x
 	jmp	a:loc_02AADA
 
-sub_02ABCF:
+animate_td_item:
 	ldy	$20,x
 	beq	loc_02ABF4
 	dec	$22,x
@@ -4229,7 +4229,7 @@ loc_02ABFA:
 	sta	$02,x
 	rtl
 
-sub_02AC09:
+update_stage5_boss_objects:
 	ldx	#$0AC0
 loc_02AC0C:
 	lda	$10,x
@@ -4262,7 +4262,7 @@ loc_02AC31:
 	cpx	#$0D40
 	bcc	loc_02AC26
 
-sub_02AC3C:
+td_map_object_none:
 	rtl
 
 run_map_object_handler:
@@ -4274,29 +4274,29 @@ run_map_object_handler:
 	sta	zp_00
 	jmp	(zp_00)
 tbl_map_object_types:
-	.addr	sub_02AC3C
-	.addr	sub_02F9F6
-	.addr	sub_02F8D4
-	.addr	sub_02ACE2
-	.addr	sub_02B35B
-	.addr	sub_02B5B2
-	.addr	sub_02B416
-	.addr	sub_02FADD
-	.addr	sub_02EF8D
-	.addr	sub_02AC3C
-	.addr	sub_02AC3C
-	.addr	sub_02AC3C
-	.addr	sub_02FB33
-	.addr	sub_02FB80
-	.addr	sub_02FBF4
-	.addr	sub_02AC3C
-	.addr	sub_02AC3C
-	.addr	sub_02AC3C
-	.addr	sub_02AC3C
-	.addr	sub_02AC3C
+	.addr	td_map_object_none
+	.addr	update_gun_hatch_aim
+	.addr	update_td_nest
+	.addr	update_stage2_boss
+	.addr	update_stage2_boss_core
+	.addr	update_stage2_boss_cannon
+	.addr	update_stage2_boss_pod
+	.addr	update_gun_hatch_spin
+	.addr	update_stage5_boss
+	.addr	td_map_object_none
+	.addr	td_map_object_none
+	.addr	td_map_object_none
+	.addr	update_gun_hatch_sweep
+	.addr	update_gun_hatch_no_fire
+	.addr	update_gun_hatch_behind
+	.addr	td_map_object_none
+	.addr	td_map_object_none
+	.addr	td_map_object_none
+	.addr	td_map_object_none
+	.addr	td_map_object_none
 
-sub_02AC72:
-	jsl	f:sub_029BD8
+td_spawn_explosion_effect:
+	jsl	f:td_find_free_item_slot
 	bcs	loc_02AC8E
 	lda	#$0002
 	sta	a:$0010,y
@@ -4309,8 +4309,8 @@ sub_02AC72:
 loc_02AC8E:
 	rtl
 
-sub_02AC8F:
-	jsl	f:sub_029BD8
+td_spawn_item_drop:
+	jsl	f:td_find_free_item_slot
 	bcs	loc_02ACCB
 	lda	$14,x
 	asl	a
@@ -4360,15 +4360,15 @@ update_map_object_block:
 loc_02ACE1:
 	rts
 
-sub_02ACE2:
+update_stage2_boss:
 	lda	$12,x
 	cmp	#$0011
 	beq	loc_02ACEC
-	jsr	a:sub_02B18C
+	jsr	a:stage2_boss_next_frame
 loc_02ACEC:
-	jsr	a:sub_02B1A7
-	jsl	f:sub_02AD04
-	jsl	f:sub_02B77D
+	jsr	a:td_select_target_player
+	jsl	f:stage2_boss_run_state
+	jsl	f:stage2_boss_stream_chr
 	lda	$04,x
 	clc
 	adc	#$0002
@@ -4377,7 +4377,7 @@ loc_02ACEC:
 	sta	$3E,x
 	rtl
 
-sub_02AD04:
+stage2_boss_run_state:
 	lda	a:wram_0B46
 	bpl	loc_02AD0C
 	brl	loc_02B04C
@@ -4401,32 +4401,32 @@ loc_02AD2B:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02AD3A,x
+	lda	f:tbl_stage2_boss_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02AD3A:
-	.addr	sub_02AD60
-	.addr	sub_02AD86
-	.addr	sub_02ADBC
-	.addr	sub_02AE0A
-	.addr	sub_02AE1C
-	.addr	sub_02AE30
-	.addr	sub_02AE7C
-	.addr	sub_02AE9F
-	.addr	sub_02AEC4
-	.addr	sub_02AEE2
-	.addr	sub_02AF27
-	.addr	sub_02AF5E
-	.addr	sub_02AFCA
-	.addr	sub_02AFE1
-	.addr	sub_02B005
-	.addr	sub_02B01B
-	.addr	sub_02B041
-	.addr	sub_02B063
-	.addr	sub_02B0B2
+tbl_stage2_boss_states:
+	.addr	stage2_boss_state_00
+	.addr	stage2_boss_state_01
+	.addr	stage2_boss_state_02
+	.addr	stage2_boss_state_03
+	.addr	stage2_boss_state_04
+	.addr	stage2_boss_state_05
+	.addr	stage2_boss_state_06
+	.addr	stage2_boss_state_07
+	.addr	stage2_boss_state_08
+	.addr	stage2_boss_state_09
+	.addr	stage2_boss_state_0A
+	.addr	stage2_boss_state_0B
+	.addr	stage2_boss_state_0C
+	.addr	stage2_boss_state_0D
+	.addr	stage2_boss_state_0E
+	.addr	stage2_boss_state_0F
+	.addr	stage2_boss_state_10
+	.addr	stage2_boss_state_11
+	.addr	stage2_boss_state_12
 
-sub_02AD60:
+stage2_boss_state_00:
 	lda	#$8000
 	sta	a:wram_0ACA
 	sta	a:wram_0ACE
@@ -4442,7 +4442,7 @@ sub_02AD60:
 	sta	$24,x
 	inc	$12,x
 
-sub_02AD86:
+stage2_boss_state_01:
 	dec	$24,x
 	bmi	loc_02AD8B
 	rtl
@@ -4462,10 +4462,10 @@ loc_02AD8B:
 	sta	a:p2_m7_scale_y
 	lda	#$0080
 	sta	a:wram_0AC4
-	jsr	a:sub_02B169
+	jsr	a:td_set_players_priority_1
 	inc	$12,x
 
-sub_02ADBC:
+stage2_boss_state_02:
 	lda	a:wram_0AC4
 	inc	a
 	inc	a
@@ -4486,7 +4486,7 @@ sub_02ADBC:
 loc_02ADE8:
 	lda	#$0056
 	jsl	f:queue_sound
-	jsr	a:sub_02B146
+	jsr	a:td_set_players_priority_2
 	lda	#$A000
 	sta	$16,x
 	lda	#$0010
@@ -4497,7 +4497,7 @@ loc_02ADE8:
 	sta	$24,x
 	inc	$12,x
 
-sub_02AE0A:
+stage2_boss_state_03:
 	dec	$24,x
 	bmi	loc_02AE0F
 	rtl
@@ -4509,8 +4509,8 @@ loc_02AE0F:
 	lda	#$0004
 	sta	$12,x
 
-sub_02AE1C:
-	jsr	a:sub_02B210
+stage2_boss_state_04:
+	jsr	a:stage2_boss_turn_to_player
 	bcs	loc_02AE22
 	rtl
 loc_02AE22:
@@ -4520,11 +4520,11 @@ loc_02AE22:
 	sta	$24,x
 	inc	$12,x
 
-sub_02AE30:
+stage2_boss_state_05:
 	dec	$24,x
 	bmi	loc_02AE3B
-	jsr	a:sub_02B24B
-	jsr	a:sub_02B293
+	jsr	a:stage2_boss_check_facing_player
+	jsr	a:stage2_boss_move
 	rtl
 loc_02AE3B:
 	lda	a:wram_15A0
@@ -4555,14 +4555,14 @@ loc_02AE46:
 	bit	#$0080
 	bne	loc_02AE77
 	stz	$26,x
-	bra	sub_02AE7C
+	bra	stage2_boss_state_06
 loc_02AE77:
 	lda	#$0002
 	sta	$26,x
 
-sub_02AE7C:
+stage2_boss_state_06:
 	lda	#$0002
-	jsr	a:sub_02B79B
+	jsr	a:td_play_turn_sound
 	ldy	$26,x
 	lda	$04,x
 	clc
@@ -4573,13 +4573,13 @@ sub_02AE7C:
 	bne	loc_02AE96
 	brl	loc_02AE0F
 loc_02AE96:
-	jsr	a:sub_02B129
+	jsr	a:stage2_boss_wake_pods
 	rtl
 loc_02AE9A:
 	lda	#$0007
 	sta	$12,x
 
-sub_02AE9F:
+stage2_boss_state_07:
 	ldy	difficulty
 	lda	a:data_05D7CE,y
 	lsr	a
@@ -4598,7 +4598,7 @@ loc_02AEB5:
 	stz	$1C,x
 	inc	$12,x
 
-sub_02AEC4:
+stage2_boss_state_08:
 	dec	$24,x
 	bmi	loc_02AED4
 	lda	a:wram_0AC4
@@ -4611,10 +4611,10 @@ loc_02AED4:
 	lda	#$002E
 	jsl	f:queue_sound
 	stz	$16,x
-	jsr	a:sub_02B169
+	jsr	a:td_set_players_priority_1
 	inc	$12,x
 
-sub_02AEE2:
+stage2_boss_state_09:
 	lda	a:wram_0AC4
 	inc	a
 	inc	a
@@ -4643,7 +4643,7 @@ loc_02AF08:
 	sta	$24,x
 	inc	$12,x
 
-sub_02AF27:
+stage2_boss_state_0A:
 	dec	$24,x
 	bmi	loc_02AF2C
 	rtl
@@ -4666,7 +4666,7 @@ loc_02AF2C:
 	sta	a:wram_0AFA
 	inc	$12,x
 
-sub_02AF5E:
+stage2_boss_state_0B:
 	lda	a:wram_0AC4
 	clc
 	adc	a:wram_0AFC
@@ -4699,7 +4699,7 @@ loc_02AF99:
 	sta	a:p2_m7_scale_x
 	sta	a:p1_m7_scale_y
 	sta	a:p2_m7_scale_y
-	jsr	a:sub_02B146
+	jsr	a:td_set_players_priority_2
 	lda	#$A000
 	sta	$16,x
 	lda	#$0010
@@ -4710,7 +4710,7 @@ loc_02AF99:
 	sta	$24,x
 	inc	$12,x
 
-sub_02AFCA:
+stage2_boss_state_0C:
 	dec	$24,x
 	bpl	loc_02AFD1
 	brl	loc_02B02D
@@ -4720,11 +4720,11 @@ loc_02AFD2:
 	lda	#$0080
 	sta	$24,x
 	stz	$26,x
-	jsr	a:sub_02B26A
+	jsr	a:stage2_boss_aim_jump
 	lda	#$000D
 	sta	$12,x
 
-sub_02AFE1:
+stage2_boss_state_0D:
 	dec	$24,x
 	bmi	loc_02AFFE
 	lda	$2C,x
@@ -4732,12 +4732,12 @@ sub_02AFE1:
 	adc	#$0010
 	sta	$2C,x
 
-sub_02AFED:
+stage2_boss_spin:
 	lda	$2C,x
 	xba
 	and	#$00FF
 	pha
-	jsr	a:sub_02B79B
+	jsr	a:td_play_turn_sound
 	pla
 	clc
 	adc	$04,x
@@ -4748,11 +4748,11 @@ loc_02AFFE:
 	sta	$24,x
 	inc	$12,x
 
-sub_02B005:
+stage2_boss_state_0E:
 	dec	$24,x
 	bmi	loc_02B011
-	jsr	a:sub_02B293
-	jsl	f:sub_02AFED
+	jsr	a:stage2_boss_move
+	jsl	f:stage2_boss_spin
 	rtl
 loc_02B011:
 	stz	$1A,x
@@ -4761,7 +4761,7 @@ loc_02B011:
 	stz	$1C,x
 	inc	$12,x
 
-sub_02B01B:
+stage2_boss_state_0F:
 	lda	$2C,x
 	sec
 	sbc	#$0010
@@ -4771,7 +4771,7 @@ sub_02B01B:
 loc_02B026:
 	sta	$2C,x
 	beq	loc_02B02D
-	jmp	a:sub_02AFED
+	jmp	a:stage2_boss_spin
 loc_02B02D:
 	stz	$1A,x
 	stz	$18,x
@@ -4783,12 +4783,12 @@ loc_02B02D:
 	lda	#$0010
 	sta	$12,x
 
-sub_02B041:
+stage2_boss_state_10:
 	dec	$24,x
 	bpl	loc_02B048
 	brl	loc_02AE9A
 loc_02B048:
-	jsr	a:sub_02B129
+	jsr	a:stage2_boss_wake_pods
 	rtl
 loc_02B04C:
 	stz	$06,x
@@ -4801,11 +4801,11 @@ loc_02B04C:
 	lda	#$0011
 	sta	$12,x
 
-sub_02B063:
-	jsl	f:sub_02B7C9
-	jsr	a:sub_02B0B3
-	jsr	a:sub_02B293
-	jsl	f:sub_02AFED
+stage2_boss_state_11:
+	jsl	f:td_play_rumble_sound
+	jsr	a:stage2_boss_slow_down
+	jsr	a:stage2_boss_move
+	jsl	f:stage2_boss_spin
 	lda	$24,x
 	beq	loc_02B0A9
 	cmp	#$000C
@@ -4828,7 +4828,7 @@ sub_02B063:
 	sta	a:wram_0B0E
 	phx
 	ldx	#$0B00
-	jsl	f:sub_02AC72
+	jsl	f:td_spawn_explosion_effect
 	plx
 loc_02B0A6:
 	dec	$24,x
@@ -4839,10 +4839,10 @@ loc_02B0A9:
 	sta	$0E,x
 	inc	$12,x
 
-sub_02B0B2:
+stage2_boss_state_12:
 	rtl
 
-sub_02B0B3:
+stage2_boss_slow_down:
 	lda	$2C,x
 	beq	loc_02B0C2
 	; (not executed in the CDL traces)
@@ -4853,7 +4853,7 @@ sub_02B0B3:
 loc_02B0C0:
 	sta	$2C,x
 loc_02B0C2:
-	jsr	a:sub_02B0F7
+	jsr	a:stage2_boss_slow_down_y
 	lda	$1A,x
 	ora	$18,x
 	beq	loc_02B0F6
@@ -4884,7 +4884,7 @@ loc_02B0E5:
 loc_02B0F6:
 	rts
 
-sub_02B0F7:
+stage2_boss_slow_down_y:
 	lda	$1E,x
 	ora	$1C,x
 	beq	loc_02B128
@@ -4915,7 +4915,7 @@ loc_02B117:
 loc_02B128:
 	rts
 
-sub_02B129:
+stage2_boss_wake_pods:
 	ldy	#$0BC0
 loc_02B12C:
 	lda	a:$0012,y
@@ -4932,7 +4932,7 @@ loc_02B13A:
 	bcc	loc_02B12C
 	rts
 
-sub_02B146:
+td_set_players_priority_2:
 	lda	a:p1_lives
 	beq	loc_02B157
 	lda	a:wram_0EC2
@@ -4950,7 +4950,7 @@ loc_02B157:
 loc_02B168:
 	rts
 
-sub_02B169:
+td_set_players_priority_1:
 	lda	a:p1_lives
 	beq	loc_02B17A
 	lda	a:wram_0EC2
@@ -4968,7 +4968,7 @@ loc_02B17A:
 loc_02B18B:
 	rts
 
-sub_02B18C:
+stage2_boss_next_frame:
 	lda	stage_frame_counter
 	and	#$0003
 	bne	loc_02B1A2
@@ -4982,11 +4982,11 @@ loc_02B19F:
 loc_02B1A2:
 	rts
 
-sub_02B1A3:
-	jsr	a:sub_02B1A7
+td_select_target_player_long:
+	jsr	a:td_select_target_player
 	rtl
 
-sub_02B1A7:
+td_select_target_player:
 	lda	a:p1_lives
 	ora	a:p2_lives
 	bne	loc_02B1B0
@@ -5045,7 +5045,7 @@ loc_02B204:
 	sta	a:wram_15A0
 	rts
 
-sub_02B210:
+stage2_boss_turn_to_player:
 	ldy	a:wram_159E
 	lda	a:$0ECA,y
 	sec
@@ -5072,14 +5072,14 @@ loc_02B23C:
 	and	#$00FF
 	sta	$04,x
 	lda	#$0001
-	jsr	a:sub_02B79B
+	jsr	a:td_play_turn_sound
 	clc
 	rts
 loc_02B249:
 	sec
 	rts
 
-sub_02B24B:
+stage2_boss_check_facing_player:
 	ldy	a:wram_159E
 	lda	a:$0ECA,y
 	sec
@@ -5098,7 +5098,7 @@ loc_02B268:
 	sec
 	rts
 
-sub_02B26A:
+stage2_boss_aim_jump:
 	lda	$04,x
 	pha
 	ldy	a:wram_159E
@@ -5119,7 +5119,7 @@ sub_02B26A:
 	sta	$04,x
 	rts
 
-sub_02B293:
+stage2_boss_move:
 	clc
 	lda	$08,x
 	adc	$18,x
@@ -5136,7 +5136,7 @@ sub_02B293:
 	sta	$0E,x
 	rts
 
-sub_02B2AE:
+project_around_stage2_boss:
 	lda	a:wram_0ACE
 	sec
 	sbc	zp_1A
@@ -5231,15 +5231,15 @@ loc_02B350:
 	clc
 	rtl
 
-sub_02B35B:
-	jsr	a:sub_02B3F8
+update_stage2_boss_core:
+	jsr	a:stage2_boss_core_position
 	lda	#$8C60
 	sta	zp_00
 	lda	#$2260
 	sta	zp_02
 	lda	#$0070
 	sta	zp_04
-	jsl	f:sub_029BEE
+	jsl	f:td_flash_boss_palette_on_hit
 	lda	$06,x
 	bmi	loc_02B3C6
 	lda	a:wram_0AD2
@@ -5253,18 +5253,18 @@ sub_02B35B:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02B396,x
+	lda	f:tbl_stage2_boss_core_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02B396:
-	.addr	sub_02B3A0
-	.addr	sub_02B3B2
-	.addr	sub_02B3BB
-	.addr	sub_02B3C5
-	.addr	sub_02B3DB
+tbl_stage2_boss_core_states:
+	.addr	stage2_boss_core_state_0
+	.addr	stage2_boss_core_state_1
+	.addr	stage2_boss_core_state_2
+	.addr	stage2_boss_core_state_3
+	.addr	stage2_boss_core_state_4
 
-sub_02B3A0:
+stage2_boss_core_state_0:
 	ldy	difficulty
 	lda	a:data_05D7CE,y
 	sta	$06,x
@@ -5275,21 +5275,21 @@ loc_02B3AD:
 	lda	#$0001
 	sta	$12,x
 
-sub_02B3B2:
+stage2_boss_core_state_1:
 	stz	$16,x
 	bra	loc_02B3C0
 loc_02B3B6:
 	lda	#$0002
 	sta	$12,x
 
-sub_02B3BB:
+stage2_boss_core_state_2:
 	lda	#$A000
 	sta	$16,x
 loc_02B3C0:
 	lda	#$0003
 	sta	$12,x
 
-sub_02B3C5:
+stage2_boss_core_state_3:
 	rtl
 loc_02B3C6:
 	stz	$06,x
@@ -5301,13 +5301,13 @@ loc_02B3C6:
 	lda	#$0004
 	sta	$12,x
 
-sub_02B3DB:
+stage2_boss_core_state_4:
 	dec	$24,x
 	bmi	loc_02B3EB
 	lda	$24,x
 	bit	#$0003
 	bne	loc_02B3EA
-	jsl	f:sub_02AC72
+	jsl	f:td_spawn_explosion_effect
 loc_02B3EA:
 	rtl
 loc_02B3EB:
@@ -5319,7 +5319,7 @@ loc_02B3EB:
 loc_02B3F7:
 	rtl
 
-sub_02B3F8:
+stage2_boss_core_position:
 	lda	a:wram_0AFE
 	clc
 	adc	#$0040
@@ -5335,9 +5335,9 @@ sub_02B3F8:
 	sta	$0E,x
 	rts
 
-sub_02B416:
-	jsr	a:sub_02B584
-	jsl	f:sub_02B44E
+update_stage2_boss_pod:
+	jsr	a:stage2_boss_pod_position
+	jsl	f:stage2_boss_pod_run_state
 	lda	$2A,x
 	bne	loc_02B442
 	lda	$2E,x
@@ -5363,7 +5363,7 @@ loc_02B442:
 loc_02B44D:
 	rtl
 
-sub_02B44E:
+stage2_boss_pod_run_state:
 	lda	$06,x
 	bpl	loc_02B455
 	brl	loc_02B502
@@ -5384,21 +5384,21 @@ loc_02B460:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02B47E,x
+	lda	f:tbl_stage2_boss_pod_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02B47E:
-	.addr	sub_02B48E
-	.addr	sub_02B4A3
-	.addr	sub_02B4AB
-	.addr	sub_02B4B8
-	.addr	sub_02B4CE
-	.addr	sub_02B4E0
-	.addr	sub_02B4FD
-	.addr	sub_02B519
+tbl_stage2_boss_pod_states:
+	.addr	stage2_boss_pod_state_0
+	.addr	stage2_boss_pod_state_1
+	.addr	stage2_boss_pod_state_2
+	.addr	stage2_boss_pod_state_3
+	.addr	stage2_boss_pod_state_4
+	.addr	stage2_boss_pod_state_5
+	.addr	stage2_boss_pod_state_6
+	.addr	stage2_boss_pod_state_7
 
-sub_02B48E:
+stage2_boss_pod_state_0:
 	ldy	difficulty
 	lda	a:data_05D7D4,y
 	sta	$06,x
@@ -5410,14 +5410,14 @@ loc_02B49E:
 	lda	#$0001
 	sta	$12,x
 
-sub_02B4A3:
+stage2_boss_pod_state_1:
 	stz	$16,x
 	rtl
 loc_02B4A6:
 	lda	#$0002
 	sta	$12,x
 
-sub_02B4AB:
+stage2_boss_pod_state_2:
 	ldy	$14,x
 	lda	a:data_05D968,y
 	sta	$20,x
@@ -5425,7 +5425,7 @@ sub_02B4AB:
 	sta	$16,x
 	rtl
 
-sub_02B4B8:
+stage2_boss_pod_state_3:
 	ldy	$14,x
 	lda	a:data_05D974,y
 	sta	$20,x
@@ -5436,7 +5436,7 @@ sub_02B4B8:
 	lda	#$0004
 	sta	$12,x
 
-sub_02B4CE:
+stage2_boss_pod_state_4:
 	dec	$24,x
 	bne	loc_02B501
 	ldy	$14,x
@@ -5446,13 +5446,13 @@ sub_02B4CE:
 	sta	$24,x
 	inc	$12,x
 
-sub_02B4E0:
+stage2_boss_pod_state_5:
 	dec	$24,x
 	bmi	loc_02B4EF
 	lda	$24,x
 	and	#$000F
 	bne	loc_02B4EE
-	jsr	a:sub_02B5A4
+	jsr	a:stage2_boss_pod_fire
 loc_02B4EE:
 	rtl
 loc_02B4EF:
@@ -5463,7 +5463,7 @@ loc_02B4EF:
 	sta	$24,x
 	inc	$12,x
 
-sub_02B4FD:
+stage2_boss_pod_state_6:
 	dec	$24,x
 	beq	loc_02B4A6
 loc_02B501:
@@ -5471,7 +5471,7 @@ loc_02B501:
 loc_02B502:
 	lda	#$0007
 	cmp	$12,x
-	beq	sub_02B519
+	beq	stage2_boss_pod_state_7
 	sta	$12,x
 	stz	$16,x
 	lda	#$0041
@@ -5479,13 +5479,13 @@ loc_02B502:
 	lda	#$0040
 	sta	$24,x
 
-sub_02B519:
+stage2_boss_pod_state_7:
 	dec	$24,x
 	bmi	loc_02B529
 	lda	$24,x
 	bit	#$0003
 	bne	loc_02B528
-	jsl	f:sub_02AC72
+	jsl	f:td_spawn_explosion_effect
 loc_02B528:
 	rtl
 loc_02B529:
@@ -5497,14 +5497,14 @@ loc_02B529:
 	lda	a:wram_0AD2
 	cmp	#$0011
 	beq	loc_02B528
-	jsr	a:sub_02B545
+	jsr	a:stage2_boss_pod_drop_item
 	bcs	loc_02B544
 	brl	clear_topdown_slot
 loc_02B544:
 	rtl
 
-sub_02B545:
-	jsl	f:sub_029BD8
+stage2_boss_pod_drop_item:
+	jsl	f:td_find_free_item_slot
 	bcs	loc_02B583
 	lda	rng_hi
 	and	#$0004
@@ -5537,7 +5537,7 @@ loc_02B582:
 loc_02B583:
 	rts
 
-sub_02B584:
+stage2_boss_pod_position:
 	ldy	$14,x
 	lda	a:wram_0AFE
 	clc
@@ -5554,20 +5554,20 @@ sub_02B584:
 	sta	$0E,x
 	rts
 
-sub_02B5A4:
-	jsl	f:sub_029B06
+stage2_boss_pod_fire:
+	jsl	f:td_angle_to_nearest_player
 	sta	$04,x
 	ldy	#$0000
-	jsl	f:sub_029E45
+	jsl	f:td_fire_enemy_bullet
 	rts
 
-sub_02B5B2:
-	jsl	f:sub_02B5BA
+update_stage2_boss_cannon:
+	jsl	f:stage2_boss_cannon_run_state
 	jml	f:td_flash_enemy_on_hit
 
-sub_02B5BA:
-	jsl	f:sub_029DBA
-	jsr	a:sub_02B6E5
+stage2_boss_cannon_run_state:
+	jsl	f:td_play_hit_sound
+	jsr	a:stage2_boss_cannon_position
 	lda	$06,x
 	bpl	loc_02B5C8
 	brl	loc_02B66E
@@ -5594,73 +5594,73 @@ loc_02B5D3:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02B600,x
+	lda	f:tbl_stage2_boss_cannon_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02B600:
-	.addr	sub_02B60A
-	.addr	sub_02B62C
-	.addr	sub_02B642
-	.addr	sub_02B659
-	.addr	sub_02B68A
+tbl_stage2_boss_cannon_states:
+	.addr	stage2_boss_cannon_state_0
+	.addr	stage2_boss_cannon_state_1
+	.addr	stage2_boss_cannon_state_2
+	.addr	stage2_boss_cannon_state_3
+	.addr	stage2_boss_cannon_state_4
 
-sub_02B60A:
+stage2_boss_cannon_state_0:
 	ldy	difficulty
 	lda	a:data_05D818,y
 	sta	$06,x
-	jsr	a:sub_02B6C3
+	jsr	a:stage2_boss_cannon_close
 	stz	$2E,x
 	lda	a:wram_0AC4
 	sta	$04,x
 loc_02B61B:
 	lda	#$0001
 	cmp	$12,x
-	beq	sub_02B62C
+	beq	stage2_boss_cannon_state_1
 	sta	$12,x
-	jsr	a:sub_02B6D2
+	jsr	a:stage2_boss_cannon_open
 	lda	#$A000
 	sta	$16,x
 
-sub_02B62C:
+stage2_boss_cannon_state_1:
 	lda	a:wram_0AC4
-	jsr	a:sub_02B700
-	jsr	a:sub_02B6AE
+	jsr	a:td_turn_towards_angle
+	jsr	a:stage2_boss_cannon_end_anim
 	rtl
 loc_02B636:
 	lda	#$0002
 	cmp	$12,x
-	beq	sub_02B642
+	beq	stage2_boss_cannon_state_2
 	sta	$12,x
-	jsr	a:sub_02B6C3
+	jsr	a:stage2_boss_cannon_close
 
-sub_02B642:
+stage2_boss_cannon_state_2:
 	lda	a:wram_0AC4
 	sta	$04,x
 	rtl
 loc_02B648:
 	lda	#$0003
 	cmp	$12,x
-	beq	sub_02B659
+	beq	stage2_boss_cannon_state_3
 	sta	$12,x
-	jsr	a:sub_02B6D2
+	jsr	a:stage2_boss_cannon_open
 	lda	#$A000
 	sta	$16,x
 
-sub_02B659:
-	jsr	a:sub_02B6AE
+stage2_boss_cannon_state_3:
+	jsr	a:stage2_boss_cannon_end_anim
 	ldy	a:wram_0AE6
 	lda	$04,x
 	clc
 	adc	a:data_05D81E,y
 	and	#$00FF
 	sta	$04,x
-	jsr	a:sub_02B71E
+	jsr	a:stage2_boss_cannon_fire
 	rtl
 loc_02B66E:
 	lda	#$0004
 	cmp	$12,x
-	beq	sub_02B68A
+	beq	stage2_boss_cannon_state_4
 	sta	$12,x
 	stz	$16,x
 	lda	#$0041
@@ -5670,13 +5670,13 @@ loc_02B66E:
 	lda	#$0004
 	sta	$12,x
 
-sub_02B68A:
+stage2_boss_cannon_state_4:
 	dec	$24,x
 	bmi	loc_02B69A
 	lda	$24,x
 	bit	#$0003
 	bne	loc_02B699
-	jsl	f:sub_02AC72
+	jsl	f:td_spawn_explosion_effect
 loc_02B699:
 	rtl
 loc_02B69A:
@@ -5691,7 +5691,7 @@ loc_02B69A:
 loc_02B6AD:
 	rtl
 
-sub_02B6AE:
+stage2_boss_cannon_end_anim:
 	lda	$28,x
 	cmp	$20,x
 	bne	loc_02B6C2
@@ -5704,7 +5704,7 @@ sub_02B6AE:
 loc_02B6C2:
 	rts
 
-sub_02B6C3:
+stage2_boss_cannon_close:
 	lda	#$0036
 	sta	$20,x
 	lda	#$149C
@@ -5713,7 +5713,7 @@ sub_02B6C3:
 	stz	$02,x
 	rts
 
-sub_02B6D2:
+stage2_boss_cannon_open:
 	lda	$00,x
 	bne	loc_02B6E4
 	lda	#$0037
@@ -5725,7 +5725,7 @@ sub_02B6D2:
 loc_02B6E4:
 	rts
 
-sub_02B6E5:
+stage2_boss_cannon_position:
 	lda	a:wram_0AC4
 	ldy	#$003A
 	jsl	f:polar_to_xy
@@ -5739,7 +5739,7 @@ sub_02B6E5:
 	sta	$0E,x
 	rts
 
-sub_02B700:
+td_turn_towards_angle:
 	sec
 	sbc	$04,x
 	and	#$00FF
@@ -5761,7 +5761,7 @@ loc_02B71C:
 	sec
 	rts
 
-sub_02B71E:
+stage2_boss_cannon_fire:
 	ldy	difficulty
 	cpy	#$0004
 	bcs	loc_02B734
@@ -5769,12 +5769,12 @@ sub_02B71E:
 	and	a:data_05D822,y
 	bne	loc_02B733
 	ldy	#$001C
-	jsl	f:sub_029E45
+	jsl	f:td_fire_enemy_bullet
 loc_02B733:
 	rts
 loc_02B734:
 	; (not executed in the CDL traces)
-	jsl	f:sub_029BC2
+	jsl	f:td_find_free_enemy_shot_slot
 	bcs	loc_02B77C
 	lda	stage_frame_counter
 	and	#$000F
@@ -5810,7 +5810,7 @@ loc_02B748:
 loc_02B77C:
 	rts
 
-sub_02B77D:
+stage2_boss_stream_chr:
 	lda	#$0040
 	sta	a:boss_chr_stream_vram
 	lda	#$007E
@@ -5824,7 +5824,7 @@ sub_02B77D:
 	sta	a:boss_chr_stream_src
 	rtl
 
-sub_02B79B:
+td_play_turn_sound:
 	cmp	#$0000
 	beq	loc_02B7C8
 	bpl	loc_02B7A6
@@ -5851,7 +5851,7 @@ loc_02B7AF:
 loc_02B7C8:
 	rts
 
-sub_02B7C9:
+td_play_rumble_sound:
 	lda	#$006E
 	ldy	a:wram_15D0
 	bpl	loc_02B7E2
@@ -5930,31 +5930,31 @@ run_topdown_shot_handler:
 	sta	zp_00
 	jmp	(zp_00)
 tbl_topdown_shot_types:
-	.addr	sub_02B914
-	.addr	sub_02B914
-	.addr	sub_02B914
-	.addr	sub_02B914
-	.addr	sub_02B914
-	.addr	sub_02B914
-	.addr	sub_02B8C9
-	.addr	sub_02B914
-	.addr	sub_02B8D1
-	.addr	sub_02B91C
-	.addr	sub_02B91C
-	.addr	sub_02B977
-	.addr	sub_02B884
-	.addr	sub_02B9C9
-	.addr	sub_02BAEC
-	.addr	sub_02BB99
-	.addr	sub_02BC42
-	.addr	sub_02BC93
-	.addr	sub_02BD21
-	.addr	sub_02BDFD
-	.addr	sub_02BD9B
-	.addr	sub_02BE6F
-	.addr	sub_02BEBA
+	.addr	td_shot_hidden
+	.addr	td_shot_hidden
+	.addr	td_shot_hidden
+	.addr	td_shot_hidden
+	.addr	td_shot_hidden
+	.addr	td_shot_hidden
+	.addr	update_td_shot_impact
+	.addr	td_shot_hidden
+	.addr	td_shot_type_none
+	.addr	update_td_default_shot
+	.addr	update_td_default_shot
+	.addr	update_td_spread_shot
+	.addr	update_td_enemy_bullet
+	.addr	update_td_homing_shot
+	.addr	update_td_laser_shot
+	.addr	update_td_flame_shot
+	.addr	update_td_crush_missile
+	.addr	update_td_crush_blast
+	.addr	update_td_crush_blast_part
+	.addr	update_td_boss_spit
+	.addr	update_td_cannon_flame
+	.addr	update_td_enemy_orb
+	.addr	update_td_homing_orb
 
-sub_02B884:
+update_td_enemy_bullet:
 	lda	$12,x
 	bne	loc_02B8AA
 	lda	#$0040
@@ -5973,10 +5973,10 @@ sub_02B884:
 	bra	loc_02B8B8
 loc_02B8AA:
 	dec	$12,x
-	beq	sub_02B8D2
-	jsl	f:sub_02C02E
-	bcs	sub_02B8D2
-	jsl	f:sub_02B95C
+	beq	td_end_shot
+	jsl	f:td_check_enemy_shot_tile
+	bcs	td_end_shot
+	jsl	f:move_td_shot
 loc_02B8B8:
 	lda	$12,x
 	and	#$0006
@@ -5987,17 +5987,17 @@ loc_02B8B8:
 	sta	$02,x
 	rtl
 
-sub_02B8C9:
+update_td_shot_impact:
 	dec	$12,x
-	bne	sub_02B8D1
+	bne	td_shot_type_none
 loc_02B8CD:
 	stz	$10,x
 	stz	$00,x
 
-sub_02B8D1:
+td_shot_type_none:
 	rtl
 
-sub_02B8D2:
+td_end_shot:
 	lda	$10,x
 	cmp	#$0007
 	beq	loc_02B913
@@ -6028,13 +6028,13 @@ loc_02B8E1:
 loc_02B913:
 	rtl
 
-sub_02B914:
+td_shot_hidden:
 	stz	$00,x
 	lda	#$FFFF
 	sta	$04,x
 	rtl
 
-sub_02B91C:
+update_td_default_shot:
 	lda	$12,x
 	bne	loc_02B94C
 	lda	#$0010
@@ -6058,13 +6058,13 @@ sub_02B91C:
 loc_02B94C:
 	dec	$12,x
 	bne	loc_02B953
-	brl	sub_02B8D2
+	brl	td_end_shot
 loc_02B953:
-	jsl	f:sub_02BF89
-	bcc	sub_02B95C
-	brl	sub_02B8D2
+	jsl	f:td_check_shot_tile
+	bcc	move_td_shot
+	brl	td_end_shot
 
-sub_02B95C:
+move_td_shot:
 	clc
 	lda	$08,x
 	adc	$18,x
@@ -6081,7 +6081,7 @@ sub_02B95C:
 	sta	$0E,x
 	rtl
 
-sub_02B977:
+update_td_spread_shot:
 	lda	$12,x
 	bne	loc_02B9A7
 	lda	#$0010
@@ -6112,15 +6112,15 @@ loc_02B9A7:
 loc_02B9B6:
 	dec	$12,x
 	bne	loc_02B9BD
-	brl	sub_02B8D2
+	brl	td_end_shot
 loc_02B9BD:
-	jsl	f:sub_02BF89
+	jsl	f:td_check_shot_tile
 	bcc	loc_02B9C6
-	brl	sub_02B8D2
+	brl	td_end_shot
 loc_02B9C6:
-	jmp	a:sub_02B95C
+	jmp	a:move_td_shot
 
-sub_02B9C9:
+update_td_homing_shot:
 	lda	$12,x
 	beq	loc_02B9D0
 	brl	loc_02BA83
@@ -6215,21 +6215,21 @@ loc_02BA7A:
 loc_02BA83:
 	dec	$12,x
 	bne	loc_02BA8A
-	brl	sub_02B8D2
+	brl	td_end_shot
 loc_02BA8A:
-	jsl	f:sub_02BF89
+	jsl	f:td_check_shot_tile
 	bcc	loc_02BA93
-	brl	sub_02B8D2
+	brl	td_end_shot
 loc_02BA93:
 	lda	$12,x
 	cmp	#$000A
 	bcc	loc_02BAA2
-	jsl	f:sub_02BAA5
-	jsl	f:sub_02BAE4
+	jsl	f:td_homing_shot_turn
+	jsl	f:td_homing_shot_set_velocity
 loc_02BAA2:
-	jmp	a:sub_02B95C
+	jmp	a:move_td_shot
 
-sub_02BAA5:
+td_homing_shot_turn:
 	ldy	$14,x
 	beq	loc_02BAE3
 	lda	a:$0010,y
@@ -6263,12 +6263,12 @@ loc_02BAD8:
 loc_02BAE3:
 	rtl
 
-sub_02BAE4:
+td_homing_shot_set_velocity:
 	lda	#$0080
 	jsl	f:set_velocity_from_angle
 	rtl
 
-sub_02BAEC:
+update_td_laser_shot:
 	lda	$12,x
 	bne	loc_02BB08
 	lda	#$0007
@@ -6287,7 +6287,7 @@ loc_02BB08:
 	clc
 	adc	$1A,x
 	pha
-	jsr	a:sub_02BB80
+	jsr	a:td_get_laser_muzzle_distance
 	pla
 	jsl	f:polar_to_xy
 	lda	zp_08
@@ -6324,13 +6324,13 @@ loc_02BB08:
 	sta	$0E,x
 	dec	$12,x
 	bne	loc_02BB5F
-	brl	sub_02B8D2
+	brl	td_end_shot
 loc_02BB5F:
-	jsl	f:sub_02BF89
-	bcc	sub_02BB68
-	brl	sub_02B8D2
+	jsl	f:td_check_shot_tile
+	bcc	td_flicker_shot
+	brl	td_end_shot
 
-sub_02BB68:
+td_flicker_shot:
 	ldy	#$0000
 	lda	stage_frame_counter
 	bit	#$0002
@@ -6343,7 +6343,7 @@ loc_02BB75:
 	sta	$02,x
 	rtl
 
-sub_02BB80:
+td_get_laser_muzzle_distance:
 	ldy	zp_18
 	lda	a:$0012,y
 	ldy	#$0022
@@ -6356,7 +6356,7 @@ sub_02BB80:
 loc_02BB98:
 	rts
 
-sub_02BB99:
+update_td_flame_shot:
 	lda	$12,x
 	bne	loc_02BBCC
 	lda	#$000E
@@ -6370,7 +6370,7 @@ sub_02BB99:
 	sta	$02,x
 	lda	#$0008
 	sta	$16,x
-	jsr	a:sub_02BC1B
+	jsr	a:td_flame_shot_frame
 	lda	$14,x
 	sta	$18,x
 	lda	$08,x
@@ -6385,8 +6385,8 @@ loc_02BBCC:
 	bne	loc_02BBD3
 	brl	loc_02B8CD
 loc_02BBD3:
-	jsl	f:sub_02BF89
-	jsr	a:sub_02BC1B
+	jsl	f:td_check_shot_tile
+	jsr	a:td_flame_shot_frame
 	lda	$18,x
 	sta	zp_10
 	lda	$1A,x
@@ -6421,7 +6421,7 @@ loc_02BBD3:
 	sta	$0C,x
 	rtl
 
-sub_02BC1B:
+td_flame_shot_frame:
 	lda	$12,x
 	ldy	#$0000
 	cmp	#$000A
@@ -6442,7 +6442,7 @@ loc_02BC30:
 	sta	$00,x
 	rts
 
-sub_02BC42:
+update_td_crush_missile:
 	lda	$12,x
 	bne	loc_02BC66
 	lda	#$0010
@@ -6464,7 +6464,7 @@ loc_02BC66:
 	bne	loc_02BC6D
 	brl	loc_02BCDE
 loc_02BC6D:
-	jsl	f:sub_02BF89
+	jsl	f:td_check_shot_tile
 	bcs	loc_02BC8B
 	lda	$1A,x
 	pha
@@ -6472,7 +6472,7 @@ loc_02BC6D:
 	pha
 	lda	#$0080
 	jsl	f:set_velocity_from_angle
-	jsl	f:sub_02B95C
+	jsl	f:move_td_shot
 	pla
 	sta	$1E,x
 	pla
@@ -6484,7 +6484,7 @@ loc_02BC8B:
 	sta	$10,x
 	rtl
 
-sub_02BC93:
+update_td_crush_blast:
 	lda	$12,x
 	bne	loc_02BCDA
 	lda	#$0040
@@ -6493,7 +6493,7 @@ sub_02BC93:
 	sta	$06,x
 	lda	#$FFFF
 	sta	$04,x
-	jsl	f:sub_02BD7B
+	jsl	f:td_crush_blast_frame
 	lda	$0A,x
 	sta	$18,x
 	lda	$0E,x
@@ -6517,7 +6517,7 @@ loc_02BCB2:
 	clc
 	adc	zp_02
 	sta	$0E,x
-	jml	f:sub_02BF89
+	jml	f:td_check_shot_tile
 loc_02BCDA:
 	dec	$12,x
 	bne	loc_02BCF4
@@ -6531,8 +6531,8 @@ loc_02BCDE:
 	sta	a:$0012,y
 	jmp	a:loc_02B8CD
 loc_02BCF4:
-	jsl	f:sub_02BF89
-	jsl	f:sub_02BD7B
+	jsl	f:td_check_shot_tile
+	jsl	f:td_crush_blast_frame
 	lda	$12,x
 	and	#$0007
 	beq	loc_02BCB2
@@ -6551,7 +6551,7 @@ loc_02BD12:
 	stx	$1A,y
 	rtl
 
-sub_02BD21:
+update_td_crush_blast_part:
 	lda	$12,x
 	bne	loc_02BD6D
 	lda	#$0008
@@ -6563,7 +6563,7 @@ sub_02BD21:
 	ldy	a:$001A,x
 	lda	a:$0002,y
 	sta	$02,x
-	jsl	f:sub_02BD7B
+	jsl	f:td_crush_blast_frame
 	lda	rng_lo
 	and	#$001F
 	sec
@@ -6583,7 +6583,7 @@ sub_02BD21:
 	clc
 	adc	zp_02
 	sta	$0E,x
-	jml	f:sub_02BF89
+	jml	f:td_check_shot_tile
 loc_02BD6D:
 	dec	$12,x
 	bne	loc_02BD77
@@ -6592,9 +6592,9 @@ loc_02BD6D:
 	sta	$10,x
 	rtl
 loc_02BD77:
-	jsl	f:sub_02BF89
+	jsl	f:td_check_shot_tile
 
-sub_02BD7B:
+td_crush_blast_frame:
 	lda	#$0008
 	sec
 	sbc	$12,x
@@ -6611,7 +6611,7 @@ sub_02BD7B:
 	sta	$16,x
 	rtl
 
-sub_02BD9B:
+update_td_cannon_flame:
 	; (not executed in the CDL traces)
 	lda	$12,x
 	bne	loc_02BDC1
@@ -6625,8 +6625,8 @@ sub_02BD9B:
 	sta	$16,x
 	lda	#$2C00
 	sta	$02,x
-	jsl	f:sub_02C02E
-	jsl	f:sub_02BB68
+	jsl	f:td_check_enemy_shot_tile
+	jsl	f:td_flicker_shot
 	rtl
 loc_02BDC1:
 	lda	#$0007
@@ -6651,30 +6651,30 @@ loc_02BDC1:
 	sta	$0E,x
 	dec	$12,x
 	bne	loc_02BDF1
-	brl	sub_02B8D2
+	brl	td_end_shot
 loc_02BDF1:
-	jsl	f:sub_02BF89
+	jsl	f:td_check_shot_tile
 	bcc	loc_02BDFA
-	brl	sub_02B8D2
+	brl	td_end_shot
 loc_02BDFA:
-	jmp	a:sub_02BB68
+	jmp	a:td_flicker_shot
 
-sub_02BDFD:
+update_td_boss_spit:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02BE0C,x
+	lda	f:tbl_td_boss_spit_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02BE0C:
-	.addr	sub_02BE14
-	.addr	sub_02BE2F
-	.addr	sub_02BE3B
-	.addr	sub_02BE56
+tbl_td_boss_spit_states:
+	.addr	td_boss_spit_state_0
+	.addr	td_boss_spit_state_1
+	.addr	td_boss_spit_state_2
+	.addr	td_boss_spit_state_3
 
-sub_02BE14:
+td_boss_spit_state_0:
 	lda	#$0001
 	sta	$06,x
 	lda	#$FFFF
@@ -6687,15 +6687,15 @@ sub_02BE14:
 	sta	$02,x
 	inc	$12,x
 
-sub_02BE2F:
-	jsr	a:sub_02BE62
+td_boss_spit_state_1:
+	jsr	a:td_boss_spit_frame
 	lda	$14,x
 	beq	loc_02BE3A
-	jsl	f:sub_02B95C
+	jsl	f:move_td_shot
 loc_02BE3A:
 	rtl
 
-sub_02BE3B:
+td_boss_spit_state_2:
 	lda	#$0004
 	sta	$14,x
 	lda	#$018E
@@ -6708,15 +6708,15 @@ sub_02BE3B:
 	lda	#$0003
 	sta	$12,x
 
-sub_02BE56:
+td_boss_spit_state_3:
 	dec	$14,x
 	bpl	loc_02BE5D
 	brl	loc_02B8CD
 loc_02BE5D:
-	jsl	f:sub_02B95C
+	jsl	f:move_td_shot
 	rtl
 
-sub_02BE62:
+td_boss_spit_frame:
 	lda	stage_frame_counter
 	asl	a
 	and	#$000E
@@ -6725,7 +6725,7 @@ sub_02BE62:
 	sta	$00,x
 	rts
 
-sub_02BE6F:
+update_td_enemy_orb:
 	lda	$12,x
 	bne	loc_02BE8F
 	lda	#$0040
@@ -6738,13 +6738,13 @@ sub_02BE6F:
 	sta	$02,x
 	lda	#$0008
 	sta	$16,x
-	jsr	a:sub_02BF3B
+	jsr	a:td_enemy_orb_frame
 loc_02BE8F:
 	dec	$12,x
 	bne	loc_02BE96
 	brl	loc_02B8CD
 loc_02BE96:
-	jsr	a:sub_02BF3B
+	jsr	a:td_enemy_orb_frame
 	lda	$04,x
 	and	#$00FF
 	sta	$04,x
@@ -6756,10 +6756,10 @@ loc_02BE96:
 	lda	$04,x
 	ora	#$FF00
 	sta	$04,x
-	jsl	f:sub_02B95C
+	jsl	f:move_td_shot
 	rtl
 
-sub_02BEBA:
+update_td_homing_orb:
 	lda	$12,x
 	bne	loc_02BEDA
 	lda	#$0080
@@ -6772,26 +6772,26 @@ sub_02BEBA:
 	sta	$02,x
 	lda	#$0008
 	sta	$16,x
-	jsr	a:sub_02BF5A
+	jsr	a:td_homing_orb_frame
 loc_02BEDA:
 	dec	$12,x
 	bne	loc_02BEE1
 	brl	loc_02B8CD
 loc_02BEE1:
-	jsr	a:sub_02BF5A
+	jsr	a:td_homing_orb_frame
 	lda	$04,x
 	and	#$00FF
 	sta	$04,x
-	jsr	a:sub_02BF01
+	jsr	a:td_homing_orb_steer
 	lda	#$0020
 	jsl	f:set_velocity_from_angle
 	lda	$04,x
 	ora	#$FF00
 	sta	$04,x
-	jsl	f:sub_02B95C
+	jsl	f:move_td_shot
 	rtl
 
-sub_02BF01:
+td_homing_orb_steer:
 	ldy	$14,x
 	lda	a:$000A,y
 	sec
@@ -6822,7 +6822,7 @@ loc_02BF2D:
 	sta	$04,x
 	rts
 
-sub_02BF3B:
+td_enemy_orb_frame:
 	lda	$12,x
 	ldy	#$0000
 	cmp	#$0038
@@ -6837,7 +6837,7 @@ sub_02BF3B:
 loc_02BF58:
 	bra	loc_02BF77
 
-sub_02BF5A:
+td_homing_orb_frame:
 	lda	$12,x
 	ldy	#$0000
 	cmp	#$0078
@@ -6861,18 +6861,18 @@ loc_02BF77:
 	sta	$00,x
 	rts
 
-sub_02BF89:
+td_check_shot_tile:
 	lda	a:topdown_map
 	cmp	#TD_MAP_STAGE2_BOSS
 	bne	loc_02BF93
 	clc
 	rtl
 loc_02BF93:
-	jsr	a:sub_02BF9A
-	jsr	a:sub_02C9E3
+	jsr	a:td_shot_tile_effect
+	jsr	a:td_check_lower_level_x
 	rtl
 
-sub_02BF9A:
+td_shot_tile_effect:
 	lda	$0E,x
 	asl	a
 	asl	a
@@ -6936,7 +6936,7 @@ loc_02BFFD:
 	beq	loc_02BFDF
 	bra	loc_02BFE2
 loc_02C007:
-	jsr	a:sub_02CB59
+	jsr	a:td_get_map_object_at
 	lda	a:$0016,y
 	bpl	loc_02C02C
 	bit	#$1000
@@ -6954,17 +6954,17 @@ loc_02C02C:
 	sec
 	rts
 
-sub_02C02E:
+td_check_enemy_shot_tile:
 	lda	a:boss_centered_view
 	beq	loc_02C035
 	clc
 	rtl
 loc_02C035:
-	jsr	a:sub_02C03C
-	jsr	a:sub_02C9E3
+	jsr	a:td_enemy_shot_tile_effect
+	jsr	a:td_check_lower_level_x
 	rtl
 
-sub_02C03C:
+td_enemy_shot_tile_effect:
 	lda	$0E,x
 	asl	a
 	asl	a
@@ -7011,19 +7011,19 @@ loc_02C07F:
 	sec
 	rts
 
-sub_02C086:
+td_enemy_tile_collision:
 	lda	a:boss_centered_view
 	beq	loc_02C08D
 	; (not executed in the CDL traces)
 	clc
 	rtl
 loc_02C08D:
-	jsr	a:sub_02C123
-	jsr	a:sub_02C71F
-	jsr	a:sub_02C097
+	jsr	a:td_read_enemy_corner_tiles
+	jsr	a:td_push_out_of_walls
+	jsr	a:td_enemy_tile_effect
 	rtl
 
-sub_02C097:
+td_enemy_tile_effect:
 	lda	$0E,x
 	bpl	loc_02C09D
 loc_02C09B:
@@ -7033,46 +7033,46 @@ loc_02C09D:
 	lda	$0A,x
 	bmi	loc_02C09B
 	lda	zp_04
-	beq	sub_02C121
+	beq	td_tile_no_effect
 	bit	#$0080
 	beq	loc_02C105
 	eor	#$00FF
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02C0BA,x
+	lda	f:tbl_td_enemy_special_tiles,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02C0BA:
-	.addr	sub_02C0E0
-	.addr	sub_02C121
-	.addr	sub_02C121
-	.addr	sub_02C121
-	.addr	sub_02C121
-	.addr	sub_02C0E7
-	.addr	sub_02C121
-	.addr	sub_02C4B1
-	.addr	sub_02C4C2
-	.addr	sub_02C4A0
-	.addr	sub_02C48F
-	.addr	sub_02C0E0
-	.addr	sub_02C0E0
-	.addr	sub_02C0E0
-	.addr	sub_02C0E0
-	.addr	sub_02C0E0
-	.addr	sub_02C0E0
-	.addr	sub_02C0E0
-	.addr	sub_02C0E0
+tbl_td_enemy_special_tiles:
+	.addr	td_tile_kill_enemy
+	.addr	td_tile_no_effect
+	.addr	td_tile_no_effect
+	.addr	td_tile_no_effect
+	.addr	td_tile_no_effect
+	.addr	td_tile_whirl_enemy
+	.addr	td_tile_no_effect
+	.addr	td_tile_push_down
+	.addr	td_tile_push_up
+	.addr	td_tile_push_left
+	.addr	td_tile_push_right
+	.addr	td_tile_kill_enemy
+	.addr	td_tile_kill_enemy
+	.addr	td_tile_kill_enemy
+	.addr	td_tile_kill_enemy
+	.addr	td_tile_kill_enemy
+	.addr	td_tile_kill_enemy
+	.addr	td_tile_kill_enemy
+	.addr	td_tile_kill_enemy
 
-sub_02C0E0:
+td_tile_kill_enemy:
 	lda	#$FFFF
 	sta	$06,x
 	sec
 	rts
 
-sub_02C0E7:
-	jsr	a:sub_02CB85
+td_tile_whirl_enemy:
+	jsr	a:td_whirl_around_cell
 	bcc	loc_02C104
 	lda	$04,x
 	clc
@@ -7105,11 +7105,11 @@ loc_02C11F:
 	sec
 	rts
 
-sub_02C121:
+td_tile_no_effect:
 	clc
 	rts
 
-sub_02C123:
+td_read_enemy_corner_tiles:
 	lda	$02,x
 	bit	#$2000
 	bne	loc_02C12D
@@ -7152,7 +7152,7 @@ loc_02C14C:
 	lda	f:$7E4000,x
 	and	#$00FF
 	sta	zp_04
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_08
 	beq	loc_02C17B
 	lda	#$0001
@@ -7160,7 +7160,7 @@ loc_02C14C:
 loc_02C17B:
 	lda	f:$7E4001,x
 	and	#$00FF
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_0A
 	beq	loc_02C18E
 	lda	#$0002
@@ -7168,7 +7168,7 @@ loc_02C17B:
 loc_02C18E:
 	lda	f:$7E4080,x
 	and	#$00FF
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_0C
 	beq	loc_02C1A1
 	lda	#$0004
@@ -7176,7 +7176,7 @@ loc_02C18E:
 loc_02C1A1:
 	lda	f:$7E4081,x
 	and	#$00FF
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_0E
 	beq	loc_02C1B4
 	lda	#$0008
@@ -7196,7 +7196,7 @@ loc_02C1B6:
 	lda	f:$7E4000,x
 	and	#$00FF
 	sta	zp_04
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_0A
 	beq	loc_02C1D5
 	lda	#$0002
@@ -7204,7 +7204,7 @@ loc_02C1B6:
 loc_02C1D5:
 	lda	f:$7E3FFF,x
 	and	#$00FF
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_08
 	beq	loc_02C1E8
 	lda	#$0001
@@ -7212,7 +7212,7 @@ loc_02C1D5:
 loc_02C1E8:
 	lda	f:$7E407F,x
 	and	#$00FF
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_0C
 	beq	loc_02C1FB
 	lda	#$0004
@@ -7220,7 +7220,7 @@ loc_02C1E8:
 loc_02C1FB:
 	lda	f:$7E4080,x
 	and	#$00FF
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_0E
 	beq	loc_02C20E
 	lda	#$0008
@@ -7240,7 +7240,7 @@ loc_02C210:
 	lda	f:$7E4000,x
 	and	#$00FF
 	sta	zp_04
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_0C
 	beq	loc_02C22F
 	lda	#$0004
@@ -7248,7 +7248,7 @@ loc_02C210:
 loc_02C22F:
 	lda	f:$7E3F80,x
 	and	#$00FF
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_08
 	beq	loc_02C242
 	lda	#$0001
@@ -7256,7 +7256,7 @@ loc_02C22F:
 loc_02C242:
 	lda	f:$7E3F81,x
 	and	#$00FF
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_0A
 	beq	loc_02C255
 	lda	#$0002
@@ -7264,7 +7264,7 @@ loc_02C242:
 loc_02C255:
 	lda	f:$7E4001,x
 	and	#$00FF
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_0E
 	beq	loc_02C268
 	lda	#$0008
@@ -7284,7 +7284,7 @@ loc_02C26A:
 	lda	f:$7E4000,x
 	and	#$00FF
 	sta	zp_04
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_0E
 	beq	loc_02C289
 	lda	#$0008
@@ -7292,7 +7292,7 @@ loc_02C26A:
 loc_02C289:
 	lda	f:$7E3F7F,x
 	and	#$00FF
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_08
 	beq	loc_02C29C
 	lda	#$0001
@@ -7300,7 +7300,7 @@ loc_02C289:
 loc_02C29C:
 	lda	f:$7E3F80,x
 	and	#$00FF
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_0A
 	beq	loc_02C2AF
 	lda	#$0002
@@ -7308,7 +7308,7 @@ loc_02C29C:
 loc_02C2AF:
 	lda	f:$7E3FFF,x
 	and	#$00FF
-	jsr	a:sub_02C2C4
+	jsr	a:td_enemy_tile_wall_shape
 	sta	zp_0C
 	beq	loc_02C2C2
 	lda	#$0004
@@ -7317,7 +7317,7 @@ loc_02C2C2:
 	plx
 	rts
 
-sub_02C2C4:
+td_enemy_tile_wall_shape:
 	bit	#$0080
 	bne	loc_02C2CD
 	and	#$0007
@@ -7380,18 +7380,18 @@ loc_02C32E:
 	sta	zp_06
 	rts
 
-sub_02C334:
+td_player_tile_collision:
 	lda	a:boss_centered_view
 	beq	loc_02C33B
 	clc
 	rtl
 loc_02C33B:
-	jsr	a:sub_02C571
-	jsr	a:sub_02C71F
-	jsr	a:sub_02C345
+	jsr	a:td_read_player_corner_tiles
+	jsr	a:td_push_out_of_walls
+	jsr	a:td_player_tile_effect
 	rtl
 
-sub_02C345:
+td_player_tile_effect:
 	lda	zp_04
 	beq	loc_02C372
 	cmp	#$00F9
@@ -7423,42 +7423,42 @@ loc_02C377:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02C387,x
+	lda	f:tbl_td_player_special_tiles,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02C387:
-	.addr	sub_02C56A
-	.addr	sub_02C3AD
-	.addr	sub_02C3B2
-	.addr	sub_02C3B7
-	.addr	sub_02C3DF
-	.addr	sub_02C3E4
-	.addr	sub_02C42D
-	.addr	sub_02C4B1
-	.addr	sub_02C4C2
-	.addr	sub_02C4A0
-	.addr	sub_02C48F
-	.addr	sub_02C4D3
-	.addr	sub_02C4E4
-	.addr	sub_02C4F4
-	.addr	sub_02C504
-	.addr	sub_02C514
-	.addr	sub_02C52A
-	.addr	sub_02C540
-	.addr	sub_02C556
+tbl_td_player_special_tiles:
+	.addr	td_tile_hole
+	.addr	td_tile_block_anim_trigger
+	.addr	td_tile_trap
+	.addr	td_tile_map_object
+	.addr	td_tile_switch
+	.addr	td_tile_whirl_player
+	.addr	td_tile_sand_pit
+	.addr	td_tile_push_down
+	.addr	td_tile_push_up
+	.addr	td_tile_push_left
+	.addr	td_tile_push_right
+	.addr	td_tile_fall_left
+	.addr	td_tile_fall_right
+	.addr	td_tile_fall_down
+	.addr	td_tile_fall_up
+	.addr	td_tile_fall_up_left
+	.addr	td_tile_fall_up_right
+	.addr	td_tile_fall_down_left
+	.addr	td_tile_fall_down_right
 
-sub_02C3AD:
-	jsr	a:sub_02CA1D
+td_tile_block_anim_trigger:
+	jsr	a:td_trigger_block_anim
 	clc
 	rts
 
-sub_02C3B2:
-	jsr	a:sub_02C9F8
+td_tile_trap:
+	jsr	a:td_trigger_trap
 	clc
 	rts
 
-sub_02C3B7:
+td_tile_map_object:
 	lda	$16,x
 	bpl	loc_02C3DD
 	lda	a:$0090,x
@@ -7468,11 +7468,11 @@ sub_02C3B7:
 	lda	a:topdown_map
 	cmp	#TD_MAP_STAGE5_BOSS
 	beq	loc_02C3DD
-	jsr	a:sub_02CB27
+	jsr	a:td_bomb_hits_map_object_tile
 	clc
 	rts
 loc_02C3D0:
-	jsr	a:sub_02CB59
+	jsr	a:td_get_map_object_at
 	lda	a:$0016,y
 	bpl	loc_02C3DD
 	lda	#$FFFF
@@ -7481,18 +7481,18 @@ loc_02C3DD:
 	clc
 	rts
 
-sub_02C3DF:
-	jsr	a:sub_02CA49
+td_tile_switch:
+	jsr	a:td_trigger_switch_event
 	clc
 	rts
 
-sub_02C3E4:
+td_tile_whirl_player:
 	lda	a:title_menu_cursor
 	dec	a
 	dec	a
 	bne	loc_02C40C
 	; (not executed in the CDL traces)
-	jsr	a:sub_02CB85
+	jsr	a:td_whirl_around_cell
 	bcc	loc_02C40B
 	ldy	difficulty
 	lda	$04,x
@@ -7509,7 +7509,7 @@ sub_02C3E4:
 loc_02C40B:
 	rts
 loc_02C40C:
-	jsr	a:sub_02CB85
+	jsr	a:td_whirl_around_cell
 	bcc	loc_02C42C
 	ldy	difficulty
 	lda	$04,x
@@ -7526,7 +7526,7 @@ loc_02C40C:
 loc_02C42C:
 	rts
 
-sub_02C42D:
+td_tile_sand_pit:
 	lda	a:wram_0AD2
 	cmp	#$0008
 	bcs	loc_02C440
@@ -7548,7 +7548,7 @@ loc_02C445:
 	dec	a
 	bne	loc_02C470
 	; (not executed in the CDL traces)
-	jsr	a:sub_02CC00
+	jsr	a:td_spiral_into_sand_pit
 	ldy	difficulty
 	lda	$04,x
 	clc
@@ -7563,7 +7563,7 @@ loc_02C445:
 	clc
 	rts
 loc_02C470:
-	jsr	a:sub_02CC00
+	jsr	a:td_spiral_into_sand_pit
 	ldy	difficulty
 	lda	$04,x
 	clc
@@ -7578,7 +7578,7 @@ loc_02C470:
 	clc
 	rts
 
-sub_02C48F:
+td_tile_push_right:
 	clc
 	lda	$08,x
 	adc	a:wram_15B2
@@ -7589,7 +7589,7 @@ sub_02C48F:
 	clc
 	rts
 
-sub_02C4A0:
+td_tile_push_left:
 	sec
 	lda	$08,x
 	sbc	a:wram_15B2
@@ -7600,7 +7600,7 @@ sub_02C4A0:
 	clc
 	rts
 
-sub_02C4B1:
+td_tile_push_down:
 	clc
 	lda	$0C,x
 	adc	a:wram_15B2
@@ -7611,7 +7611,7 @@ sub_02C4B1:
 	clc
 	rts
 
-sub_02C4C2:
+td_tile_push_up:
 	sec
 	lda	$0C,x
 	sbc	a:wram_15B2
@@ -7622,43 +7622,43 @@ sub_02C4C2:
 	clc
 	rts
 
-sub_02C4D3:
+td_tile_fall_left:
 	lda	#$8000
 	sta	$18,x
 	lda	#$FFFF
 	sta	$1A,x
 	stz	$1C,x
 	stz	$1E,x
-	brl	sub_02C56A
+	brl	td_tile_hole
 
-sub_02C4E4:
+td_tile_fall_right:
 	lda	#$8000
 	sta	$18,x
 	lda	#$0000
 	sta	$1A,x
 	stz	$1C,x
 	stz	$1E,x
-	bra	sub_02C56A
+	bra	td_tile_hole
 
-sub_02C4F4:
+td_tile_fall_down:
 	stz	$18,x
 	stz	$1A,x
 	lda	#$8000
 	sta	$1C,x
 	lda	#$0000
 	sta	$1E,x
-	bra	sub_02C56A
+	bra	td_tile_hole
 
-sub_02C504:
+td_tile_fall_up:
 	stz	$18,x
 	stz	$1A,x
 	lda	#$8000
 	sta	$1C,x
 	lda	#$FFFF
 	sta	$1E,x
-	bra	sub_02C56A
+	bra	td_tile_hole
 
-sub_02C514:
+td_tile_fall_up_left:
 	lda	#$A57E
 	sta	$18,x
 	lda	#$FFFF
@@ -7667,9 +7667,9 @@ sub_02C514:
 	sta	$1C,x
 	lda	#$FFFF
 	sta	$1E,x
-	bra	sub_02C56A
+	bra	td_tile_hole
 
-sub_02C52A:
+td_tile_fall_up_right:
 	lda	#$5A82
 	sta	$18,x
 	lda	#$0000
@@ -7678,9 +7678,9 @@ sub_02C52A:
 	sta	$1C,x
 	lda	#$FFFF
 	sta	$1E,x
-	bra	sub_02C56A
+	bra	td_tile_hole
 
-sub_02C540:
+td_tile_fall_down_left:
 	lda	#$A57E
 	sta	$18,x
 	lda	#$FFFF
@@ -7689,9 +7689,9 @@ sub_02C540:
 	sta	$1C,x
 	lda	#$0000
 	sta	$1E,x
-	bra	sub_02C56A
+	bra	td_tile_hole
 
-sub_02C556:
+td_tile_fall_down_right:
 	lda	#$5A82
 	sta	$18,x
 	lda	#$0000
@@ -7701,13 +7701,13 @@ sub_02C556:
 	lda	#$0000
 	sta	$1E,x
 
-sub_02C56A:
+td_tile_hole:
 	lda	#$0002
 	sta	$2C,x
 	clc
 	rts
 
-sub_02C571:
+td_read_player_corner_tiles:
 	lda	$02,x
 	bit	#$2000
 	bne	loc_02C57B
@@ -7750,7 +7750,7 @@ loc_02C59A:
 	lda	f:$7E4000,x
 	and	#$00FF
 	sta	zp_04
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_08
 	beq	loc_02C5C9
 	lda	#$0001
@@ -7758,7 +7758,7 @@ loc_02C59A:
 loc_02C5C9:
 	lda	f:$7E4001,x
 	and	#$00FF
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_0A
 	beq	loc_02C5DC
 	lda	#$0002
@@ -7766,7 +7766,7 @@ loc_02C5C9:
 loc_02C5DC:
 	lda	f:$7E4080,x
 	and	#$00FF
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_0C
 	beq	loc_02C5EF
 	lda	#$0004
@@ -7774,7 +7774,7 @@ loc_02C5DC:
 loc_02C5EF:
 	lda	f:$7E4081,x
 	and	#$00FF
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_0E
 	beq	loc_02C602
 	lda	#$0008
@@ -7794,7 +7794,7 @@ loc_02C604:
 	lda	f:$7E4000,x
 	and	#$00FF
 	sta	zp_04
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_0A
 	beq	loc_02C623
 	lda	#$0002
@@ -7802,7 +7802,7 @@ loc_02C604:
 loc_02C623:
 	lda	f:$7E3FFF,x
 	and	#$00FF
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_08
 	beq	loc_02C636
 	lda	#$0001
@@ -7810,7 +7810,7 @@ loc_02C623:
 loc_02C636:
 	lda	f:$7E407F,x
 	and	#$00FF
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_0C
 	beq	loc_02C649
 	lda	#$0004
@@ -7818,7 +7818,7 @@ loc_02C636:
 loc_02C649:
 	lda	f:$7E4080,x
 	and	#$00FF
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_0E
 	beq	loc_02C65C
 	lda	#$0008
@@ -7838,7 +7838,7 @@ loc_02C65E:
 	lda	f:$7E4000,x
 	and	#$00FF
 	sta	zp_04
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_0C
 	beq	loc_02C67D
 	lda	#$0004
@@ -7846,7 +7846,7 @@ loc_02C65E:
 loc_02C67D:
 	lda	f:$7E3F80,x
 	and	#$00FF
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_08
 	beq	loc_02C690
 	lda	#$0001
@@ -7854,7 +7854,7 @@ loc_02C67D:
 loc_02C690:
 	lda	f:$7E3F81,x
 	and	#$00FF
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_0A
 	beq	loc_02C6A3
 	lda	#$0002
@@ -7862,7 +7862,7 @@ loc_02C690:
 loc_02C6A3:
 	lda	f:$7E4001,x
 	and	#$00FF
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_0E
 	beq	loc_02C6B6
 	lda	#$0008
@@ -7882,7 +7882,7 @@ loc_02C6B8:
 	lda	f:$7E4000,x
 	and	#$00FF
 	sta	zp_04
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_0E
 	beq	loc_02C6D7
 	lda	#$0008
@@ -7890,7 +7890,7 @@ loc_02C6B8:
 loc_02C6D7:
 	lda	f:$7E3F7F,x
 	and	#$00FF
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_08
 	beq	loc_02C6EA
 	lda	#$0001
@@ -7898,7 +7898,7 @@ loc_02C6D7:
 loc_02C6EA:
 	lda	f:$7E3F80,x
 	and	#$00FF
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_0A
 	beq	loc_02C6FD
 	lda	#$0002
@@ -7906,7 +7906,7 @@ loc_02C6EA:
 loc_02C6FD:
 	lda	f:$7E3FFF,x
 	and	#$00FF
-	jsr	a:sub_02C712
+	jsr	a:td_player_tile_wall_shape
 	sta	zp_0C
 	beq	loc_02C710
 	lda	#$0004
@@ -7915,7 +7915,7 @@ loc_02C710:
 	plx
 	rts
 
-sub_02C712:
+td_player_tile_wall_shape:
 	bit	#$0080
 	bne	loc_02C71B
 	and	#$0007
@@ -7924,35 +7924,35 @@ loc_02C71B:
 	lda	#$0000
 	rts
 
-sub_02C71F:
+td_push_out_of_walls:
 	lda	zp_06
 	asl	a
 	phx
 	tax
-	jmp	(.loword(tbl_02C727),x)
-tbl_02C727:
-	.addr	sub_02C747
-	.addr	sub_02C896
-	.addr	sub_02C7F1
-	.addr	sub_02C7A0
-	.addr	sub_02C85D
-	.addr	sub_02C781
-	.addr	sub_02C747
-	.addr	sub_02C7E1
-	.addr	sub_02C82A
-	.addr	sub_02C747
-	.addr	sub_02C773
-	.addr	sub_02C7B1
-	.addr	sub_02C792
-	.addr	sub_02C7D1
-	.addr	sub_02C7C1
-	.addr	sub_02C749
+	jmp	(.loword(tbl_td_wall_push_cases),x)
+tbl_td_wall_push_cases:
+	.addr	td_wall_push_none
+	.addr	td_wall_push_top_left
+	.addr	td_wall_push_top_right
+	.addr	td_wall_push_top
+	.addr	td_wall_push_bottom_left
+	.addr	td_wall_push_left
+	.addr	td_wall_push_none
+	.addr	td_wall_push_not_bottom_right
+	.addr	td_wall_push_bottom_right
+	.addr	td_wall_push_none
+	.addr	td_wall_push_right
+	.addr	td_wall_push_not_bottom_left
+	.addr	td_wall_push_bottom
+	.addr	td_wall_push_not_top_right
+	.addr	td_wall_push_not_top_left
+	.addr	td_wall_push_all
 
-sub_02C747:
+td_wall_push_none:
 	plx
 	rts
 
-sub_02C749:
+td_wall_push_all:
 	plx
 	lda	zp_0C
 	cmp	#$0005
@@ -7976,10 +7976,10 @@ loc_02C768:
 loc_02C772:
 	rts
 
-sub_02C773:
+td_wall_push_right:
 	plx
 
-sub_02C774:
+td_wall_snap_left:
 	lda	$0A,x
 	and	#$FFF8
 	ora	#$0003
@@ -7987,10 +7987,10 @@ sub_02C774:
 	stz	$08,x
 	rts
 
-sub_02C781:
+td_wall_push_left:
 	plx
 
-sub_02C782:
+td_wall_snap_right:
 	lda	$0A,x
 	and	#$FFF8
 	ora	#$0004
@@ -7999,7 +7999,7 @@ sub_02C782:
 	sta	$08,x
 	rts
 
-sub_02C792:
+td_wall_push_bottom:
 	plx
 loc_02C793:
 	lda	$0E,x
@@ -8009,7 +8009,7 @@ loc_02C793:
 	stz	$0C,x
 	rts
 
-sub_02C7A0:
+td_wall_push_top:
 	plx
 loc_02C7A1:
 	lda	$0E,x
@@ -8020,47 +8020,47 @@ loc_02C7A1:
 	sta	$0C,x
 	rts
 
-sub_02C7B1:
+td_wall_push_not_bottom_left:
 	plx
 	lda	zp_0A
 	cmp	#$0004
 	bcc	loc_02C7BC
 	brl	loc_02C8D2
 loc_02C7BC:
-	jsr	a:sub_02C774
+	jsr	a:td_wall_snap_left
 	bra	loc_02C7A1
 
-sub_02C7C1:
+td_wall_push_not_top_left:
 	plx
 	lda	zp_0E
 	cmp	#$0004
 	bcc	loc_02C7CC
 	brl	loc_02C917
 loc_02C7CC:
-	jsr	a:sub_02C774
+	jsr	a:td_wall_snap_left
 	bra	loc_02C793
 
-sub_02C7D1:
+td_wall_push_not_top_right:
 	plx
 	lda	zp_0C
 	cmp	#$0004
 	bcc	loc_02C7DC
 	brl	loc_02C950
 loc_02C7DC:
-	jsr	a:sub_02C782
+	jsr	a:td_wall_snap_right
 	bra	loc_02C793
 
-sub_02C7E1:
+td_wall_push_not_bottom_right:
 	plx
 	lda	zp_08
 	cmp	#$0004
 	bcc	loc_02C7EC
 	brl	loc_02C995
 loc_02C7EC:
-	jsr	a:sub_02C782
+	jsr	a:td_wall_snap_right
 	bra	loc_02C7A1
 
-sub_02C7F1:
+td_wall_push_top_right:
 	plx
 	lda	zp_0A
 	cmp	#$0004
@@ -8092,7 +8092,7 @@ loc_02C7FC:
 	sta	$0C,x
 	rts
 
-sub_02C82A:
+td_wall_push_bottom_right:
 	plx
 	lda	zp_0E
 	cmp	#$0004
@@ -8122,7 +8122,7 @@ loc_02C835:
 	stz	$0C,x
 	rts
 
-sub_02C85D:
+td_wall_push_bottom_left:
 	plx
 	lda	zp_0C
 	cmp	#$0004
@@ -8154,7 +8154,7 @@ loc_02C868:
 	stz	$0C,x
 	rts
 
-sub_02C896:
+td_wall_push_top_left:
 	plx
 	lda	zp_08
 	cmp	#$0004
@@ -8338,7 +8338,7 @@ loc_02C9C7:
 	sta	$0C,x
 	rts
 
-sub_02C9E3:
+td_check_lower_level_x:
 	lda	$02,x
 	bit	#$2000
 	beq	loc_02C9EB
@@ -8353,7 +8353,7 @@ loc_02C9F6:
 	sec
 	rts
 
-sub_02C9F8:
+td_trigger_trap:
 	lda	$0A,x
 	and	#$FFE0
 	lsr	a
@@ -8375,7 +8375,7 @@ sub_02C9F8:
 loc_02CA1C:
 	rts
 
-sub_02CA1D:
+td_trigger_block_anim:
 	ldy	#$0000
 	lda	$0A,x
 	cmp	#$0200
@@ -8395,7 +8395,7 @@ loc_02CA2A:
 loc_02CA48:
 	rts
 
-sub_02CA49:
+td_trigger_switch_event:
 	lda	a:$066C,x
 	bit	#$4080
 	bne	loc_02CA52
@@ -8491,9 +8491,9 @@ loc_02CB11:
 	sta	a:wram_18BA
 	rts
 
-sub_02CB27:
+td_bomb_hits_map_object_tile:
 	; (not executed in the CDL traces)
-	jsr	a:sub_02CB59
+	jsr	a:td_get_map_object_at
 	lda	a:$0016,y
 	bpl	loc_02CB57
 	bit	#$1000
@@ -8520,7 +8520,7 @@ loc_02CB57:
 	sec
 	rts
 
-sub_02CB59:
+td_get_map_object_at:
 	lda	$0A,x
 	xba
 	and	#$0003
@@ -8548,7 +8548,7 @@ loc_02CB80:
 	tay
 	rts
 
-sub_02CB85:
+td_whirl_around_cell:
 	lda	$0A,x
 	and	#$001F
 	bne	loc_02CB91
@@ -8619,7 +8619,7 @@ loc_02CBD7:
 	sec
 	rts
 
-sub_02CC00:
+td_spiral_into_sand_pit:
 	lda	$0A,x
 	sec
 	sbc	#$0200
@@ -8683,17 +8683,17 @@ td_run_p1_collisions:
 loc_02CC78:
 	rtl
 loc_02CC79:
-	jsr	a:sub_02D2AA
-	jsr	a:sub_02CEB4
+	jsr	a:td_aim_p1_arrow_stage2_boss
+	jsr	a:td_p1_vs_stage2_boss
 	lda	a:wram_0F50
 	dec	a
 	bne	loc_02CC88
-	jsr	a:sub_02D0FF
+	jsr	a:td_p1_bomb_vs_stage2_boss
 loc_02CC88:
 	rtl
 loc_02CC89:
-	jsr	a:sub_02D1A7
-	jsr	a:sub_02D2E5
+	jsr	a:td_aim_p1_arrow_stage5_boss
+	jsr	a:td_p1_vs_stage5_boss
 	lda	a:wram_0F50
 	dec	a
 	bne	loc_02CC98
@@ -8741,7 +8741,7 @@ loc_02CCC4:
 	sbc	$0E,x
 	cmp	#$0010
 	bcs	loc_02CD03
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 	lda	a:$002E,y
 	ora	#$0040
 	sta	a:$002E,y
@@ -8807,7 +8807,7 @@ loc_02CD66:
 
 ; Player 1's body against the enemies.
 td_p1_vs_enemies:
-	jsr	a:sub_02CE2C
+	jsr	a:td_p1_vs_items
 	lda	a:wram_0ED6
 	bmi	loc_02CD70
 	rts
@@ -8890,7 +8890,7 @@ loc_02CDEE:
 	sbc	$0E,x
 	cmp	#$0010
 	bcs	loc_02CE20
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 	lda	a:p1_barrier_timer
 	bne	loc_02CE20
 	lda	#$FFFF
@@ -8905,7 +8905,7 @@ loc_02CE20:
 loc_02CE2B:
 	rts
 
-sub_02CE2C:
+td_p1_vs_items:
 	lda	#$000C
 	clc
 	adc	a:wram_0ECA
@@ -8977,7 +8977,7 @@ loc_02CEA8:
 	bcc	loc_02CE41
 	rts
 
-sub_02CEB4:
+td_p1_vs_stage2_boss:
 	ldx	#$0480
 loc_02CEB7:
 	lda	$10,x
@@ -9004,7 +9004,7 @@ loc_02CEBF:
 	sbc	$0E,x
 	cmp	#$001C
 	bcs	loc_02CF09
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 	lda	a:wram_0B6E
 	ora	#$0040
 	sta	a:wram_0B6E
@@ -9031,7 +9031,7 @@ loc_02CF09:
 	sbc	$0E,x
 	cmp	#$002C
 	bcs	loc_02CF2B
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 loc_02CF2B:
 	lda	a:wram_0B96
 	bpl	loc_02CF78
@@ -9054,7 +9054,7 @@ loc_02CF3B:
 	sbc	$0E,x
 	cmp	#$0014
 	bcs	loc_02CF78
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 	lda	a:wram_0BAE
 	ora	#$0040
 	sta	a:wram_0BAE
@@ -9088,7 +9088,7 @@ loc_02CF7B:
 	sbc	$0E,x
 	cmp	#$001C
 	bcs	loc_02CFCA
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 	lda	a:$0016,y
 	bit	#$1000
 	beq	loc_02CFCA
@@ -9118,7 +9118,7 @@ loc_02CFD5:
 	bcs	loc_02CFE3
 	brl	loc_02CEB7
 loc_02CFE3:
-	jsr	a:sub_02CE2C
+	jsr	a:td_p1_vs_items
 	lda	a:wram_0ED6
 	bmi	loc_02CFEC
 	rts
@@ -9248,7 +9248,7 @@ loc_02D0CC:
 loc_02D0FC:
 	jmp	a:loc_02CDD1
 
-sub_02D0FF:
+td_p1_bomb_vs_stage2_boss:
 	lda	#$0DC0
 	sta	zp_1E
 	bra	loc_02D10B
@@ -9318,7 +9318,7 @@ loc_02D166:
 	sbc	$0E,x
 	cmp	zp_1C
 	bcs	loc_02D181
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 loc_02D181:
 	txa
 	clc
@@ -9345,7 +9345,7 @@ loc_02D197:
 	bcc	loc_02D197
 	bra	loc_02D1BD
 
-sub_02D1A7:
+td_aim_p1_arrow_stage5_boss:
 	lda	#$FFFF
 	sta	zp_18
 	stz	zp_1A
@@ -9478,7 +9478,7 @@ loc_02D29A:
 	tay
 	jmp	a:loc_02D222
 
-sub_02D2AA:
+td_aim_p1_arrow_stage2_boss:
 	ldx	#$0AC0
 	lda	$12,x
 	cmp	#$0003
@@ -9507,12 +9507,12 @@ loc_02D2D2:
 	sta	zp_1E
 	jmp	a:loc_02D206
 
-sub_02D2E5:
-	jsr	a:sub_02D2EE
-	jsr	a:sub_02CE2C
+td_p1_vs_stage5_boss:
+	jsr	a:td_p1_shots_vs_stage5_boss
+	jsr	a:td_p1_vs_items
 	jmp	a:loc_02D3AF
 
-sub_02D2EE:
+td_p1_shots_vs_stage5_boss:
 	ldx	#$0480
 loc_02D2F1:
 	lda	$10,x
@@ -9539,7 +9539,7 @@ loc_02D2F9:
 	sbc	$0E,x
 	cmp	#$001C
 	bcs	loc_02D343
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 	lda	a:wram_0AEE
 	ora	#$0040
 	sta	a:wram_0AEE
@@ -9573,7 +9573,7 @@ loc_02D346:
 	sbc	$0E,x
 	cmp	#$000C
 	bcs	loc_02D395
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 	lda	a:$0016,y
 	bit	#$1000
 	beq	loc_02D395
@@ -9664,7 +9664,7 @@ loc_02D3FA:
 	dec	$06,x
 	bpl	loc_02D43B
 	ldy	#$1F80
-	jsl	f:sub_02EBCE
+	jsl	f:td_score_enemy_kill
 	bra	loc_02D43B
 loc_02D435:
 	lda	#$FFFF
@@ -9684,36 +9684,36 @@ td_run_p2_collisions:
 	beq	loc_02D46B
 	cmp	#TD_MAP_STAGE5_BOSS
 	beq	loc_02D47B
-	jsr	a:sub_02D97F
-	jsr	a:sub_02D48B
-	jsr	a:sub_02D559
+	jsr	a:td_aim_p2_target_arrow
+	jsr	a:td_p2_shots_vs_enemies
+	jsr	a:td_p2_vs_enemies
 	lda	a:wram_0F90
 	dec	a
 	bne	loc_02D46A
-	jsr	a:sub_02D8F8
+	jsr	a:td_p2_bomb_vs_map_objects
 loc_02D46A:
 	rtl
 loc_02D46B:
 	; (not executed in the CDL traces)
-	jsr	a:sub_02DA9C
-	jsr	a:sub_02D6A6
+	jsr	a:td_aim_p2_arrow_stage2_boss
+	jsr	a:td_p2_vs_stage2_boss
 	lda	a:wram_0F90
 	dec	a
 	bne	loc_02D47A
-	jsr	a:sub_02D8F1
+	jsr	a:td_p2_bomb_vs_stage2_boss
 loc_02D47A:
 	rtl
 loc_02D47B:
-	jsr	a:sub_02D999
-	jsr	a:sub_02DAD7
+	jsr	a:td_aim_p2_arrow_stage5_boss
+	jsr	a:td_p2_vs_stage5_boss
 	lda	a:wram_0F90
 	dec	a
 	bne	loc_02D48A
-	jsr	a:sub_02D8F8
+	jsr	a:td_p2_bomb_vs_map_objects
 loc_02D48A:
 	rtl
 
-sub_02D48B:
+td_p2_shots_vs_enemies:
 	ldy	#$0D40
 loc_02D48E:
 	lda	a:$0016,y
@@ -9752,7 +9752,7 @@ loc_02D4B6:
 	sbc	$0E,x
 	cmp	#$0010
 	bcs	loc_02D4F5
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 	lda	a:$002E,y
 	ora	#$0040
 	sta	a:$002E,y
@@ -9817,8 +9817,8 @@ loc_02D54A:
 loc_02D558:
 	rts
 
-sub_02D559:
-	jsr	a:sub_02D61E
+td_p2_vs_enemies:
+	jsr	a:td_p2_vs_items
 	lda	a:wram_0F16
 	bmi	loc_02D562
 	rts
@@ -9901,7 +9901,7 @@ loc_02D5E0:
 	sbc	$0E,x
 	cmp	#$0010
 	bcs	loc_02D612
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 	lda	a:p2_barrier_timer
 	bne	loc_02D612
 	lda	#$FFFF
@@ -9916,7 +9916,7 @@ loc_02D612:
 loc_02D61D:
 	rts
 
-sub_02D61E:
+td_p2_vs_items:
 	lda	#$000C
 	clc
 	adc	a:wram_0F0A
@@ -9987,7 +9987,7 @@ loc_02D69A:
 	bcc	loc_02D633
 	rts
 
-sub_02D6A6:
+td_p2_vs_stage2_boss:
 	; (not executed in the CDL traces)
 	ldx	#$0700
 loc_02D6A9:
@@ -10015,7 +10015,7 @@ loc_02D6B1:
 	sbc	$0E,x
 	cmp	#$001C
 	bcs	loc_02D6FB
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 	lda	a:wram_0B6E
 	ora	#$0040
 	sta	a:wram_0B6E
@@ -10041,7 +10041,7 @@ loc_02D6FB:
 	sbc	$0E,x
 	cmp	#$002C
 	bcs	loc_02D71D
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 loc_02D71D:
 	lda	a:wram_0B96
 	bpl	loc_02D76A
@@ -10064,7 +10064,7 @@ loc_02D72D:
 	sbc	$0E,x
 	cmp	#$0014
 	bcs	loc_02D76A
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 	lda	a:wram_0BAE
 	ora	#$0040
 	sta	a:wram_0BAE
@@ -10097,7 +10097,7 @@ loc_02D76D:
 	sbc	$0E,x
 	cmp	#$001C
 	bcs	loc_02D7BC
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 	lda	a:$0016,y
 	bit	#$1000
 	beq	loc_02D7BC
@@ -10126,7 +10126,7 @@ loc_02D7C7:
 	bcs	loc_02D7D5
 	brl	loc_02D6A9
 loc_02D7D5:
-	jsr	a:sub_02D61E
+	jsr	a:td_p2_vs_items
 	lda	a:wram_0F16
 	bmi	loc_02D7DE
 	rts
@@ -10253,13 +10253,13 @@ loc_02D8BE:
 loc_02D8EE:
 	jmp	a:loc_02D5C3
 
-sub_02D8F1:
+td_p2_bomb_vs_stage2_boss:
 	; (not executed in the CDL traces)
 	lda	#$0DC0
 	sta	zp_1E
 	bra	loc_02D8FD
 
-sub_02D8F8:
+td_p2_bomb_vs_map_objects:
 	lda	#$0EC0
 	sta	zp_1E
 loc_02D8FD:
@@ -10323,7 +10323,7 @@ loc_02D958:
 	sbc	$0E,x
 	cmp	zp_1C
 	bcs	loc_02D973
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 loc_02D973:
 	txa
 	clc
@@ -10333,13 +10333,13 @@ loc_02D973:
 	bcc	loc_02D958
 	rts
 
-sub_02D97F:
+td_aim_p2_target_arrow:
 	lda	#$FFFF
 	sta	zp_18
 	stz	zp_1A
 	ldx	#$0AC0
 loc_02D989:
-	jsr	a:sub_02D9CF
+	jsr	a:td_check_nearest_target_p2
 	txa
 	clc
 	adc	#$0040
@@ -10348,13 +10348,13 @@ loc_02D989:
 	bcc	loc_02D989
 	bra	loc_02D9AF
 
-sub_02D999:
+td_aim_p2_arrow_stage5_boss:
 	; (not executed in the CDL traces)
 	lda	#$FFFF
 	sta	zp_18
 	stz	zp_1A
 	ldx	#$0AC0
-	jsr	a:sub_02D9CF
+	jsr	a:td_check_nearest_target_p2
 	ldx	zp_1A
 	bne	loc_02D9AD
 	brl	loc_02DABA
@@ -10379,7 +10379,7 @@ loc_02D9C6:
 	sta	$2E,x
 	bra	loc_02D9F8
 
-sub_02D9CF:
+td_check_nearest_target_p2:
 	lda	$10,x
 	beq	loc_02D9F7
 	lda	$0A,x
@@ -10483,7 +10483,7 @@ loc_02DA8C:
 	tay
 	jmp	a:loc_02DA14
 
-sub_02DA9C:
+td_aim_p2_arrow_stage2_boss:
 	; (not executed in the CDL traces)
 	ldx	#$0AC0
 	lda	$12,x
@@ -10513,13 +10513,13 @@ loc_02DAC4:
 	sta	zp_1E
 	jmp	a:loc_02D9F8
 
-sub_02DAD7:
+td_p2_vs_stage5_boss:
 	; (not executed in the CDL traces)
-	jsr	a:sub_02DAE0
-	jsr	a:sub_02D61E
+	jsr	a:td_p2_shots_vs_stage5_boss
+	jsr	a:td_p2_vs_items
 	jmp	a:loc_02DBA1
 
-sub_02DAE0:
+td_p2_shots_vs_stage5_boss:
 	; (not executed in the CDL traces)
 	ldx	#$0700
 loc_02DAE3:
@@ -10547,7 +10547,7 @@ loc_02DAEB:
 	sbc	$0E,x
 	cmp	#$001C
 	bcs	loc_02DB35
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 	lda	a:wram_0AEE
 	ora	#$0040
 	sta	a:wram_0AEE
@@ -10580,7 +10580,7 @@ loc_02DB38:
 	sbc	$0E,x
 	cmp	#$000C
 	bcs	loc_02DB87
-	jsl	f:sub_02B8D2
+	jsl	f:td_end_shot
 	lda	a:$0016,y
 	bit	#$1000
 	beq	loc_02DB87
@@ -10669,7 +10669,7 @@ loc_02DBEC:
 	dec	$06,x
 	bpl	loc_02DC2D
 	ldy	#$1FC0
-	jsl	f:sub_02EBCE
+	jsl	f:td_score_enemy_kill
 	bra	loc_02DC2D
 loc_02DC27:
 	lda	#$FFFF
@@ -10759,7 +10759,7 @@ loc_02DCCB:
 	lda	#$0030
 	jsl	f:queue_sound
 	pla
-	jsl	f:sub_029BD8
+	jsl	f:td_find_free_item_slot
 	bcs	loc_02DD01
 	lda	#$0001
 	sta	a:$0010,y
@@ -10786,12 +10786,12 @@ loc_02DD14:
 	bne	loc_02DCCB
 	rtl
 
-sub_02DD19:
+td_update_switch_events:
 	ldx	#$18B0
 loc_02DD1C:
 	lda	$00,x
 	beq	loc_02DD23
-	jsr	a:sub_02DD2F
+	jsr	a:td_step_switch_event
 loc_02DD23:
 	txa
 	clc
@@ -10801,10 +10801,10 @@ loc_02DD23:
 	bcc	loc_02DD1C
 	rtl
 
-sub_02DD2F:
+td_step_switch_event:
 	lda	#$0001
 	sta	a:screen_shake_timer
-	jsr	a:sub_02DD8E
+	jsr	a:td_switch_event_explosion
 	lda	$04,x
 	inc	$04,x
 	ldy	difficulty
@@ -10812,7 +10812,7 @@ sub_02DD2F:
 	bcs	loc_02DD44
 	rts
 loc_02DD44:
-	jsr	a:sub_02DD78
+	jsr	a:td_patch_switch_event_block
 	bcs	loc_02DD68
 	lda	#$0030
 	jsl	f:queue_sound
@@ -10840,7 +10840,7 @@ loc_02DD69:
 	stz	$0C,x
 	rts
 
-sub_02DD78:
+td_patch_switch_event_block:
 	lda	$06,x
 	asl	a
 	asl	a
@@ -10856,11 +10856,11 @@ sub_02DD78:
 	plx
 	rts
 
-sub_02DD8E:
+td_switch_event_explosion:
 	lda	$04,x
 	bit	#$0007
 	bne	loc_02DDC5
-	jsl	f:sub_029BD8
+	jsl	f:td_find_free_item_slot
 	bcs	loc_02DDC5
 	lda	#$0002
 	sta	a:$0010,y

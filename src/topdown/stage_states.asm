@@ -106,7 +106,7 @@ loc_02809D:
 	jsl	f:update_map_objects
 	jsl	f:td_update_enemies
 	jsl	f:spawn_stage2_enemies
-	jsl	f:sub_02A9F8
+	jsl	f:update_td_items
 	jsl	f:update_topdown_shots
 	jsl	f:td_update_stage2_map_events
 	jsl	f:update_screen_shake
@@ -179,7 +179,7 @@ loc_02813C:
 ; the boss map graphics, spawns the boss, starts the boss music ($68).
 stage2_state_boss_setup:
 	jsr	a:init_stage2_boss_vars
-	jsl	f:sub_02B77D
+	jsl	f:stage2_boss_stream_chr
 	jsl	f:init_topdown_views
 	jsl	f:spawn_stage2_boss
 	jsr	a:reset_m7_block_patches
@@ -202,7 +202,7 @@ stage2_state_boss:
 	jsl	f:update_topdown_players
 	jsl	f:td_update_bombs
 	jsl	f:update_map_objects
-	jsl	f:sub_02A9F8
+	jsl	f:update_td_items
 	jsl	f:update_topdown_shots
 	jsl	f:update_screen_shake
 	jsl	f:animate_topdown_palettes
@@ -302,9 +302,9 @@ loc_028235:
 	jsl	f:update_map_objects
 	jsl	f:td_update_enemies
 	jsl	f:spawn_stage5_enemies
-	jsl	f:sub_02A9F8
+	jsl	f:update_td_items
 	jsl	f:update_topdown_shots
-	jsl	f:sub_02DD19
+	jsl	f:td_update_switch_events
 	jsl	f:update_screen_shake
 	jsl	f:animate_topdown_palettes
 	jsl	f:update_topdown_views
@@ -319,7 +319,7 @@ loc_028270:
 ; State 4 of stage 5 (see stage2_state_boss_setup).
 stage5_state_boss_setup:
 	jsr	a:init_stage5_boss_vars
-	jsl	f:sub_02F18F
+	jsl	f:stage5_boss_stream_chr
 	jsl	f:init_topdown_views
 	jsl	f:spawn_stage5_boss
 	jsr	a:reset_m7_block_patches
@@ -341,9 +341,9 @@ stage5_state_boss:
 	bcs	loc_0282D1
 	jsl	f:update_topdown_players
 	jsl	f:td_update_bombs
-	jsl	f:sub_02AC09
-	jsl	f:sub_029C9E
-	jsl	f:sub_02A9F8
+	jsl	f:update_stage5_boss_objects
+	jsl	f:update_stage5_boss_arm
+	jsl	f:update_td_items
 	jsl	f:update_topdown_shots
 	jsl	f:update_screen_shake
 	jsl	f:animate_topdown_palettes

@@ -340,7 +340,7 @@ upload_m7_tilemap_rows:
 	plb
 	rep	#$20
 
-sub_04DC6C:
+build_tile_attr_rows_none:
 	.a16
 	rtl
 
@@ -351,7 +351,7 @@ build_tile_attr_rows:
 	jmp	(.loword(tbl_tile_attr_builders),x)
 tbl_tile_attr_builders:
 	.addr	build_tile_attr_rows_stage2
-	.addr	sub_04DC6C
+	.addr	build_tile_attr_rows_none
 	.addr	build_tile_attr_rows_stage5
 	.addr	build_tile_attr_rows_stage5_boss
 

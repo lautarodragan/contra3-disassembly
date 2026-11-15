@@ -547,20 +547,20 @@ draw_map_view_sprites:
 	brl	loc_03E4C8
 loc_03E4BC:
 	ldx	#$0EC0
-	jsr	a:sub_03E4EF
-	jsr	a:sub_03E549
-	jsr	a:sub_03E589
+	jsr	a:map_view_player_position
+	jsr	a:map_view_p1_marker
+	jsr	a:write_map_view_p1_marker
 loc_03E4C8:
 	lda	a:p2_lives
 	bne	loc_03E4D0
 	brl	loc_03E4D9
 loc_03E4D0:
 	ldx	#$0F00
-	jsr	a:sub_03E4EF
-	jsr	a:sub_03E569
+	jsr	a:map_view_player_position
+	jsr	a:map_view_p2_marker
 loc_03E4D9:
-	jsr	a:sub_03E5CB
-	jsr	a:sub_03E60D
+	jsr	a:write_map_view_p2_marker
+	jsr	a:draw_map_view_targets
 	lda	#$F000
 loc_03E4E2:
 	sta	a:$0000,y
@@ -572,7 +572,7 @@ loc_03E4E2:
 	bcc	loc_03E4E2
 	rtl
 
-sub_03E4EF:
+map_view_player_position:
 	; (not executed in the CDL traces)
 	phy
 	lda	$0A,x
@@ -625,7 +625,7 @@ sub_03E4EF:
 	ply
 	rts
 
-sub_03E549:
+map_view_p1_marker:
 	; (not executed in the CDL traces)
 	lda	$0E,x
 	and	#$03FF
@@ -643,7 +643,7 @@ loc_03E55E:
 	sta	zp_0A
 	rts
 
-sub_03E569:
+map_view_p2_marker:
 	; (not executed in the CDL traces)
 	lda	$0E,x
 	and	#$03FF
@@ -661,7 +661,7 @@ loc_03E57E:
 	sta	zp_0A
 	rts
 
-sub_03E589:
+write_map_view_p1_marker:
 	; (not executed in the CDL traces)
 	lda	zp_02
 	sec
@@ -703,7 +703,7 @@ sub_03E589:
 	iny
 	rts
 
-sub_03E5CB:
+write_map_view_p2_marker:
 	; (not executed in the CDL traces)
 	lda	zp_02
 	sec
@@ -745,9 +745,9 @@ sub_03E5CB:
 	iny
 	rts
 
-sub_03E60D:
+draw_map_view_targets:
 	; (not executed in the CDL traces)
-	jsr	a:sub_03E8F3
+	jsr	a:get_target_marker_attr
 	ldx	#$0AC0
 loc_03E613:
 	lda	$10,x
@@ -786,7 +786,7 @@ loc_03E613:
 	clc
 	adc	a:RDDIVL
 	sta	zp_02
-	jsr	a:sub_03E662
+	jsr	a:write_target_marker
 loc_03E656:
 	txa
 	clc
@@ -796,7 +796,7 @@ loc_03E656:
 	bcc	loc_03E613
 	rts
 
-sub_03E662:
+write_target_marker:
 	lda	zp_02
 	sec
 	sbc	#$0008
@@ -832,10 +832,10 @@ draw_intro_sprites:
 	beq	loc_03E6A6
 	brl	loc_03E6B2
 loc_03E6A6:
-	jsr	a:sub_03E87C
+	jsr	a:draw_intro_banner_sprites
 	jsr	a:draw_p1_start_cursor
 	jsr	a:draw_p2_start_cursor
-	jsr	a:sub_03E89E
+	jsr	a:draw_intro_target_markers
 loc_03E6B2:
 	lda	#$F000
 loc_03E6B5:
@@ -1100,7 +1100,7 @@ loc_03E7D5:
 loc_03E87B:
 	rts
 
-sub_03E87C:
+draw_intro_banner_sprites:
 	ldx	#$0014
 loc_03E87F:
 	lda	#$0008
@@ -1122,8 +1122,8 @@ loc_03E87F:
 	bne	loc_03E87F
 	rts
 
-sub_03E89E:
-	jsr	a:sub_03E8F3
+draw_intro_target_markers:
+	jsr	a:get_target_marker_attr
 	ldx	#$0AC0
 loc_03E8A4:
 	lda	$10,x
@@ -1162,7 +1162,7 @@ loc_03E8A4:
 	clc
 	adc	a:RDDIVL
 	sta	zp_02
-	jsr	a:sub_03E662
+	jsr	a:write_target_marker
 loc_03E8E7:
 	txa
 	clc
@@ -1172,7 +1172,7 @@ loc_03E8E7:
 	bcc	loc_03E8A4
 	rts
 
-sub_03E8F3:
+get_target_marker_attr:
 	ldx	#$0000
 	lda	stage_frame_counter
 	bit	#$0003
@@ -1220,10 +1220,10 @@ loc_03E93A:
 	jsr	a:setup_p1_view_projection
 	jsr	a:draw_target_arrows
 	jsr	a:start_oam_list
-	jsr	a:sub_03E9D7
+	jsr	a:is_p1_view_falling
 	bcs	loc_03E956
 	jsr	a:draw_small_objects
-	jsr	a:sub_03EB48
+	jsr	a:draw_td_items
 loc_03E956:
 	jsr	a:end_small_sprites
 	jsr	a:draw_enemies
@@ -1250,11 +1250,11 @@ loc_03E96E:
 	jsr	a:draw_target_arrows
 	jsr	a:start_oam_list
 	jsr	a:draw_small_objects
-	jsr	a:sub_03EB48
+	jsr	a:draw_td_items
 	jsr	a:end_small_sprites
-	jsr	a:sub_03ED33
-	jsr	a:sub_03EDF6
-	jsr	a:sub_03EEAA
+	jsr	a:draw_stage2_boss_cannon
+	jsr	a:draw_players_stage2_boss
+	jsr	a:draw_stage2_boss_arena
 	jsr	a:project_map_objects
 	jsr	a:project_td_bombs
 	sep	#$20
@@ -1276,15 +1276,15 @@ loc_03E9A0:
 	jsr	a:setup_p1_view_projection
 	jsr	a:draw_target_arrows
 	jsr	a:start_oam_list
-	jsr	a:sub_03E9D7
+	jsr	a:is_p1_view_falling
 	bcs	loc_03E9BC
 	jsr	a:draw_small_objects
-	jsr	a:sub_03EB48
+	jsr	a:draw_td_items
 loc_03E9BC:
 	jsr	a:end_small_sprites
-	jsr	a:sub_03F1B0
-	jsr	a:sub_03F202
-	jsr	a:sub_03F2E3
+	jsr	a:project_stage5_boss_objects
+	jsr	a:draw_stage5_boss_claw_section
+	jsr	a:draw_stage5_boss_arm
 	jsr	a:draw_topdown_players
 	jsr	a:project_td_bombs
 	sep	#$20
@@ -1296,7 +1296,7 @@ loc_03E9BC:
 	.a16
 	rtl
 
-sub_03E9D7:
+is_p1_view_falling:
 	lda	a:title_menu_cursor
 	beq	loc_03E9DF
 	dec	a
@@ -1420,7 +1420,7 @@ start_oam_list:
 	rts
 
 ; One sprite per object of the $20-byte slots $0300-$097F (shots), its tile
-; picked by its angle relative to the view (data_0780C8).
+; picked by its angle relative to the view (td_small_object_tiles).
 draw_small_objects:
 	ldx	#$0300
 loc_03EAC2:
@@ -1434,7 +1434,7 @@ loc_03EAC2:
 	ora	$00,x
 	asl	a
 	tay
-	lda	a:data_0780C8,y
+	lda	a:td_small_object_tiles,y
 	bra	loc_03EADE
 loc_03EADA:
 	lda	$00,x
@@ -1498,7 +1498,7 @@ loc_03EB39:
 loc_03EB47:
 	rts
 
-sub_03EB48:
+draw_td_items:
 	ldx	#$0980
 loc_03EB4B:
 	lda	$00,x
@@ -1512,7 +1512,7 @@ loc_03EB4B:
 	sta	zp_06
 	ldy	$00,x
 	phx
-	jsr	a:sub_03F077
+	jsr	a:draw_td_item_metasprite
 	plx
 loc_03EB66:
 	txa
@@ -1570,9 +1570,9 @@ loc_03EBB3:
 	beq	loc_03EC34
 	asl	a
 	tay
-	lda	a:data_078806,y
+	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:data_078828,y
+	lda	a:ptrs_td_stream_sets,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
@@ -1605,12 +1605,12 @@ loc_03EBD6:
 	lda	$02,x
 	phx
 	ldx	zp_08
-	ora	a:data_0780AC,x
+	ora	a:td_enemy_sprite_attrs,x
 	sta	zp_06
 	lda	(zp_C4),y
 	pha
 	lda	(zp_C6),y
-	ldy	a:data_07808C,x
+	ldy	a:td_enemy_stream_slots,x
 	tax
 	lda	a:$0000,x
 	sta	a:$1780,y
@@ -1692,9 +1692,9 @@ loc_03EC93:
 	beq	loc_03ED04
 	asl	a
 	tay
-	lda	a:data_078806,y
+	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:data_078828,y
+	lda	a:ptrs_td_stream_sets,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
@@ -1728,12 +1728,12 @@ loc_03ECB7:
 	lda	$02,x
 	phx
 	ldx	zp_08
-	ora	a:data_0780A8,x
+	ora	a:td_player_sprite_attrs,x
 	sta	zp_06
 	lda	(zp_C4),y
 	pha
 	lda	(zp_C6),y
-	ldy	a:data_078088,x
+	ldy	a:td_player_stream_slots,x
 	tax
 	lda	a:$0000,x
 	sta	a:$1780,y
@@ -1775,7 +1775,7 @@ loc_03ED27:
 loc_03ED32:
 	rts
 
-sub_03ED33:
+draw_stage2_boss_cannon:
 	ldx	#$10C0
 	stx	zp_10
 	ldx	#$11D0
@@ -1809,9 +1809,9 @@ loc_03ED6D:
 	ora	#$0004
 	sta	$2E,x
 	ldy	#$0004
-	lda	a:data_078806,y
+	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:data_078828,y
+	lda	a:ptrs_td_stream_sets,y
 	sta	zp_C6
 	lda	$20,x
 	xba
@@ -1831,12 +1831,12 @@ loc_03ED6D:
 	tay
 	lda	$02,x
 	phx
-	ora	a:data_0780AC
+	ora	a:td_enemy_sprite_attrs
 	sta	zp_06
 	lda	(zp_C4),y
 	pha
 	lda	(zp_C6),y
-	ldy	a:data_07808C
+	ldy	a:td_enemy_stream_slots
 	tax
 	lda	a:$0000,x
 	sta	a:$1780,y
@@ -1879,7 +1879,7 @@ loc_03EDEA:
 loc_03EDF5:
 	rts
 
-sub_03EDF6:
+draw_players_stage2_boss:
 	ldx	#$10E0
 	stx	zp_10
 	ldx	#$11D2
@@ -1893,9 +1893,9 @@ loc_03EE0A:
 	beq	loc_03EE7B
 	asl	a
 	tay
-	lda	a:data_078806,y
+	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:data_078828,y
+	lda	a:ptrs_td_stream_sets,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
@@ -1930,12 +1930,12 @@ loc_03EE2E:
 	lda	$02,x
 	phx
 	ldx	zp_08
-	ora	a:data_0780A8,x
+	ora	a:td_player_sprite_attrs,x
 	sta	zp_06
 	lda	(zp_C4),y
 	pha
 	lda	(zp_C6),y
-	ldy	a:data_078088,x
+	ldy	a:td_player_stream_slots,x
 	tax
 	lda	a:$0000,x
 	sta	a:$1780,y
@@ -1977,7 +1977,7 @@ loc_03EE9E:
 loc_03EEA9:
 	rts
 
-sub_03EEAA:
+draw_stage2_boss_arena:
 	ldx	#$1120
 	stx	zp_10
 	ldx	#$11D6
@@ -2006,9 +2006,9 @@ loc_03EECB:
 	lsr	a
 	and	#$003E
 	tay
-	lda	a:data_079BCE,y
+	lda	a:stage2_arena_rubble_metasprites,y
 	sta	zp_CA
-	lda	a:data_079C0E,y
+	lda	a:stage2_arena_rubble_streams,y
 	ldy	#$0020
 	tax
 	lda	a:$0000,x
@@ -2033,7 +2033,7 @@ loc_03EF11:
 	tay
 	lda	zp_C6
 	clc
-	adc	a:data_078010,x
+	adc	a:stage2_arena_rubble_y,x
 	jsr	a:project_to_view
 	bcs	loc_03EF2A
 	ldy	zp_CA
@@ -2055,7 +2055,7 @@ loc_03EF2A:
 loc_03EF46:
 	sty	zp_06
 	tay
-	lda	a:data_079C84,y
+	lda	a:stage2_arena_debris_streams,y
 	ldy	#$0018
 	tax
 	lda	a:$0000,x
@@ -2074,11 +2074,11 @@ loc_03EF46:
 loc_03EF73:
 	lda	zp_C4
 	clc
-	adc	a:data_078022,x
+	adc	a:stage2_arena_debris_x,x
 	tay
 	lda	zp_C6
 	clc
-	adc	a:data_078054,x
+	adc	a:stage2_arena_debris_y,x
 	jsr	a:project_to_view
 	bcs	loc_03EFD5
 	sec
@@ -2225,7 +2225,7 @@ loc_03F06C:
 	stx	zp_10
 	rts
 
-sub_03F077:
+draw_td_item_metasprite:
 	lda	zp_02
 	clc
 	adc	a:screen_shake_offset
@@ -2404,7 +2404,7 @@ loc_03F1A7:
 loc_03F1AF:
 	rts
 
-sub_03F1B0:
+project_stage5_boss_objects:
 	ldx	#$0AC0
 loc_03F1B3:
 	lda	$10,x
@@ -2448,16 +2448,16 @@ loc_03F1F6:
 	bcc	loc_03F1B3
 	rts
 
-sub_03F202:
+draw_stage5_boss_claw_section:
 	ldx	#$10C0
 	stx	zp_10
 	ldx	#$11D0
 	stx	zp_12
 	lda	#$8000
 	sta	zp_14
-	jsr	a:sub_03F2CF
+	jsr	a:is_p1_view_falling_2
 	bcs	loc_03F219
-	jsr	a:sub_03F236
+	jsr	a:draw_stage5_boss_claw
 loc_03F219:
 	lda	zp_14
 loc_03F21B:
@@ -2479,7 +2479,7 @@ loc_03F22A:
 loc_03F235:
 	rts
 
-sub_03F236:
+draw_stage5_boss_claw:
 	stz	zp_08
 	ldx	#$0B40
 loc_03F23B:
@@ -2487,9 +2487,9 @@ loc_03F23B:
 	beq	loc_03F2BC
 	asl	a
 	tay
-	lda	a:data_078806,y
+	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:data_078828,y
+	lda	a:ptrs_td_stream_sets,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
@@ -2522,12 +2522,12 @@ loc_03F25E:
 	lda	$02,x
 	phx
 	ldx	zp_08
-	ora	a:data_0780AC,x
+	ora	a:td_enemy_sprite_attrs,x
 	sta	zp_06
 	lda	(zp_C4),y
 	pha
 	lda	(zp_C6),y
-	ldy	a:data_07808C,x
+	ldy	a:td_enemy_stream_slots,x
 	tax
 	lda	a:$0000,x
 	sta	a:$1780,y
@@ -2561,7 +2561,7 @@ loc_03F2BC:
 loc_03F2CE:
 	rts
 
-sub_03F2CF:
+is_p1_view_falling_2:
 	lda	a:title_menu_cursor
 	beq	loc_03F2D7
 	; (not executed in the CDL traces)
@@ -2580,7 +2580,7 @@ loc_03F2E1:
 	sec
 	rts
 
-sub_03F2E3:
+draw_stage5_boss_arm:
 	ldx	#$1100
 	stx	zp_10
 	ldx	#$11D4
@@ -2721,19 +2721,19 @@ loc_03F3D4:
 	plb
 	rep	#$20
 	.a16
-	jsr	a:sub_03F482
-	jsr	a:sub_03F512
-	jsr	a:sub_03F543
-	jsr	a:sub_03F471
+	jsr	a:setup_p2_view_projection
+	jsr	a:draw_target_arrows_p2
+	jsr	a:start_oam_list_p2
+	jsr	a:is_p2_view_falling
 	bcs	loc_03F3F0
-	jsr	a:sub_03F559
-	jsr	a:sub_03F5E2
+	jsr	a:draw_small_objects_p2
+	jsr	a:draw_td_items_p2
 loc_03F3F0:
-	jsr	a:sub_03F60C
-	jsr	a:sub_03F629
-	jsr	a:sub_03F6FD
-	jsr	a:sub_03FB91
-	jsr	a:sub_03FBFB
+	jsr	a:end_small_sprites_p2
+	jsr	a:draw_enemies_p2
+	jsr	a:draw_topdown_players_p2
+	jsr	a:project_map_objects_p2
+	jsr	a:project_td_bombs_p2
 	sep	#$20
 	.a8
 	lda	#^tables_05
@@ -2751,17 +2751,17 @@ loc_03F408:
 	plb
 	rep	#$20
 	.a16
-	jsr	a:sub_03F482
-	jsr	a:sub_03F512
-	jsr	a:sub_03F543
-	jsr	a:sub_03F559
-	jsr	a:sub_03F5E2
-	jsr	a:sub_03F60C
-	jsr	a:sub_03F7CD
-	jsr	a:sub_03F890
-	jsr	a:sub_03F944
-	jsr	a:sub_03FB91
-	jsr	a:sub_03FBFB
+	jsr	a:setup_p2_view_projection
+	jsr	a:draw_target_arrows_p2
+	jsr	a:start_oam_list_p2
+	jsr	a:draw_small_objects_p2
+	jsr	a:draw_td_items_p2
+	jsr	a:end_small_sprites_p2
+	jsr	a:draw_stage2_boss_cannon_p2
+	jsr	a:draw_players_stage2_boss_p2
+	jsr	a:draw_stage2_boss_arena_p2
+	jsr	a:project_map_objects_p2
+	jsr	a:project_td_bombs_p2
 	sep	#$20
 	.a8
 	lda	#^tables_05
@@ -2778,20 +2778,20 @@ loc_03F43A:
 	plb
 	rep	#$20
 	.a16
-	jsr	a:sub_03F482
-	jsr	a:sub_03F512
-	jsr	a:sub_03F543
-	jsr	a:sub_03F471
+	jsr	a:setup_p2_view_projection
+	jsr	a:draw_target_arrows_p2
+	jsr	a:start_oam_list_p2
+	jsr	a:is_p2_view_falling
 	bcs	loc_03F456
-	jsr	a:sub_03F559
-	jsr	a:sub_03F5E2
+	jsr	a:draw_small_objects_p2
+	jsr	a:draw_td_items_p2
 loc_03F456:
-	jsr	a:sub_03F60C
-	jsr	a:sub_03FC4A
-	jsr	a:sub_03FC9C
-	jsr	a:sub_03FD7D
-	jsr	a:sub_03F6FD
-	jsr	a:sub_03FBFB
+	jsr	a:end_small_sprites_p2
+	jsr	a:project_stage5_boss_objects_p2
+	jsr	a:draw_stage5_boss_claw_section_p2
+	jsr	a:draw_stage5_boss_arm_p2
+	jsr	a:draw_topdown_players_p2
+	jsr	a:project_td_bombs_p2
 	sep	#$20
 	.a8
 	lda	#^tables_05
@@ -2801,7 +2801,7 @@ loc_03F456:
 	.a16
 	rtl
 
-sub_03F471:
+is_p2_view_falling:
 	lda	a:title_menu_cursor
 	beq	loc_03F479
 	dec	a
@@ -2815,7 +2815,7 @@ loc_03F480:
 	clc
 	rts
 
-sub_03F482:
+setup_p2_view_projection:
 	lda	a:title_menu_cursor
 	beq	loc_03F48A
 	dec	a
@@ -2890,7 +2890,7 @@ loc_03F4D6:
 	.a16
 	rts
 
-sub_03F512:
+draw_target_arrows_p2:
 	lda	a:wram_028A
 	sta	a:wram_0FC8
 	lda	a:wram_028E
@@ -2909,7 +2909,7 @@ sub_03F512:
 	sta	a:wram_11C0
 	rts
 
-sub_03F543:
+start_oam_list_p2:
 	ldx	#$0FD0
 	stx	zp_10
 	ldx	#$11C0
@@ -2921,7 +2921,7 @@ sub_03F543:
 	sta	zp_14
 	rts
 
-sub_03F559:
+draw_small_objects_p2:
 	ldx	#$0300
 loc_03F55C:
 	lda	$10,x
@@ -2934,7 +2934,7 @@ loc_03F55C:
 	ora	$00,x
 	asl	a
 	tay
-	lda	a:data_0780C8,y
+	lda	a:td_small_object_tiles,y
 	bra	loc_03F578
 loc_03F574:
 	lda	$00,x
@@ -2998,7 +2998,7 @@ loc_03F5D3:
 loc_03F5E1:
 	rts
 
-sub_03F5E2:
+draw_td_items_p2:
 	ldx	#$0980
 loc_03F5E5:
 	lda	$00,x
@@ -3012,7 +3012,7 @@ loc_03F5E5:
 	sta	zp_06
 	ldy	$00,x
 	phx
-	jsr	a:sub_03FB11
+	jsr	a:draw_td_item_metasprite_p2
 	plx
 loc_03F600:
 	txa
@@ -3023,7 +3023,7 @@ loc_03F600:
 	bcc	loc_03F5E5
 	rts
 
-sub_03F60C:
+end_small_sprites_p2:
 	lda	zp_14
 loc_03F60E:
 	lsr	a
@@ -3044,7 +3044,7 @@ loc_03F61D:
 loc_03F628:
 	rts
 
-sub_03F629:
+draw_enemies_p2:
 	ldx	#$1120
 	stx	zp_10
 	ldx	#$11D6
@@ -3067,9 +3067,9 @@ loc_03F64D:
 	beq	loc_03F6CE
 	asl	a
 	tay
-	lda	a:data_078806,y
+	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:data_078828,y
+	lda	a:ptrs_td_stream_sets,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
@@ -3102,12 +3102,12 @@ loc_03F670:
 	lda	$02,x
 	phx
 	ldx	zp_08
-	ora	a:data_0780BC,x
+	ora	a:td_enemy_sprite_attrs_p2_view,x
 	sta	zp_06
 	lda	(zp_C4),y
 	pha
 	lda	(zp_C6),y
-	ldy	a:data_07809C,x
+	ldy	a:td_enemy_stream_slots_p2_view,x
 	tax
 	lda	a:$0000,x
 	sta	a:$1780,y
@@ -3116,7 +3116,7 @@ loc_03F670:
 	lda	a:$0004,x
 	sta	a:$1784,y
 	ply
-	jsr	a:sub_03FA93
+	jsr	a:draw_topdown_metasprite_p2
 	plx
 	lda	zp_D0
 	bne	loc_03F6C7
@@ -3159,7 +3159,7 @@ loc_03F6F1:
 loc_03F6FC:
 	rts
 
-sub_03F6FD:
+draw_topdown_players_p2:
 	ldx	#$11A0
 	stx	zp_10
 	ldx	#$11DE
@@ -3188,9 +3188,9 @@ loc_03F72D:
 	beq	loc_03F79E
 	asl	a
 	tay
-	lda	a:data_078806,y
+	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:data_078828,y
+	lda	a:ptrs_td_stream_sets,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
@@ -3224,12 +3224,12 @@ loc_03F751:
 	lda	$02,x
 	phx
 	ldx	zp_08
-	ora	a:data_0780B8,x
+	ora	a:td_player_sprite_attrs_p2_view,x
 	sta	zp_06
 	lda	(zp_C4),y
 	pha
 	lda	(zp_C6),y
-	ldy	a:data_078098,x
+	ldy	a:td_player_stream_slots_p2_view,x
 	tax
 	lda	a:$0000,x
 	sta	a:$1780,y
@@ -3238,7 +3238,7 @@ loc_03F751:
 	lda	a:$0004,x
 	sta	a:$1784,y
 	ply
-	jsr	a:sub_03FA93
+	jsr	a:draw_topdown_metasprite_p2
 	plx
 loc_03F79E:
 	inc	zp_08
@@ -3271,7 +3271,7 @@ loc_03F7C1:
 loc_03F7CC:
 	rts
 
-sub_03F7CD:
+draw_stage2_boss_cannon_p2:
 	; (not executed in the CDL traces)
 	ldx	#$10D0
 	stx	zp_10
@@ -3305,9 +3305,9 @@ loc_03F807:
 	ora	#$0008
 	sta	$2E,x
 	ldy	#$0004
-	lda	a:data_078806,y
+	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:data_078828,y
+	lda	a:ptrs_td_stream_sets,y
 	sta	zp_C6
 	lda	$20,x
 	xba
@@ -3327,12 +3327,12 @@ loc_03F807:
 	tay
 	lda	$02,x
 	phx
-	ora	a:data_0780BC
+	ora	a:td_enemy_sprite_attrs_p2_view
 	sta	zp_06
 	lda	(zp_C4),y
 	pha
 	lda	(zp_C6),y
-	ldy	a:data_07809C
+	ldy	a:td_enemy_stream_slots_p2_view
 	tax
 	lda	a:$0000,x
 	sta	a:$1780,y
@@ -3341,7 +3341,7 @@ loc_03F807:
 	lda	a:$0004,x
 	sta	a:$1784,y
 	ply
-	jsr	a:sub_03FA93
+	jsr	a:draw_topdown_metasprite_p2
 	plx
 	lda	zp_D0
 	bne	loc_03F869
@@ -3375,7 +3375,7 @@ loc_03F884:
 loc_03F88F:
 	rts
 
-sub_03F890:
+draw_players_stage2_boss_p2:
 	; (not executed in the CDL traces)
 	ldx	#$1100
 	stx	zp_10
@@ -3390,9 +3390,9 @@ loc_03F8A4:
 	beq	loc_03F915
 	asl	a
 	tay
-	lda	a:data_078806,y
+	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:data_078828,y
+	lda	a:ptrs_td_stream_sets,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
@@ -3426,12 +3426,12 @@ loc_03F8C8:
 	lda	$02,x
 	phx
 	ldx	zp_08
-	ora	a:data_0780B8,x
+	ora	a:td_player_sprite_attrs_p2_view,x
 	sta	zp_06
 	lda	(zp_C4),y
 	pha
 	lda	(zp_C6),y
-	ldy	a:data_078098,x
+	ldy	a:td_player_stream_slots_p2_view,x
 	tax
 	lda	a:$0000,x
 	sta	a:$1780,y
@@ -3440,7 +3440,7 @@ loc_03F8C8:
 	lda	a:$0004,x
 	sta	a:$1784,y
 	ply
-	jsr	a:sub_03FA93
+	jsr	a:draw_topdown_metasprite_p2
 	plx
 loc_03F915:
 	inc	zp_08
@@ -3473,7 +3473,7 @@ loc_03F938:
 loc_03F943:
 	rts
 
-sub_03F944:
+draw_stage2_boss_arena_p2:
 	; (not executed in the CDL traces)
 	ldx	#$1170
 	stx	zp_10
@@ -3502,9 +3502,9 @@ loc_03F965:
 	lsr	a
 	and	#$003E
 	tay
-	lda	a:data_079BCE,y
+	lda	a:stage2_arena_rubble_metasprites,y
 	sta	zp_CA
-	lda	a:data_079C0E,y
+	lda	a:stage2_arena_rubble_streams,y
 	ldy	#$0060
 	tax
 	lda	a:$0000,x
@@ -3529,11 +3529,11 @@ loc_03F9AB:
 	tay
 	lda	zp_C6
 	clc
-	adc	a:data_078010,x
+	adc	a:stage2_arena_rubble_y,x
 	jsr	a:project_to_view
 	bcs	loc_03F9C4
 	ldy	zp_CA
-	jsr	a:sub_03FA93
+	jsr	a:draw_topdown_metasprite_p2
 loc_03F9C4:
 	dec	zp_08
 	dec	zp_08
@@ -3551,7 +3551,7 @@ loc_03F9C4:
 loc_03F9E0:
 	sty	zp_06
 	tay
-	lda	a:data_079C84,y
+	lda	a:stage2_arena_debris_streams,y
 	ldy	#$0058
 	tax
 	lda	a:$0000,x
@@ -3570,11 +3570,11 @@ loc_03F9E0:
 loc_03FA0D:
 	lda	zp_C4
 	clc
-	adc	a:data_078022,x
+	adc	a:stage2_arena_debris_x,x
 	tay
 	lda	zp_C6
 	clc
-	adc	a:data_078054,x
+	adc	a:stage2_arena_debris_y,x
 	jsr	a:project_to_view
 	bcs	loc_03FA6F
 	sec
@@ -3644,7 +3644,7 @@ loc_03FA87:
 loc_03FA92:
 	rts
 
-sub_03FA93:
+draw_topdown_metasprite_p2:
 	stz	zp_D0
 	lda	zp_02
 	clc
@@ -3719,7 +3719,7 @@ loc_03FB06:
 	stx	zp_10
 	rts
 
-sub_03FB11:
+draw_td_item_metasprite_p2:
 	lda	zp_02
 	clc
 	adc	a:screen_shake_offset
@@ -3794,7 +3794,7 @@ loc_03FB86:
 	stx	zp_10
 	rts
 
-sub_03FB91:
+project_map_objects_p2:
 	ldx	#$0AC0
 loc_03FB94:
 	lda	$10,x
@@ -3851,7 +3851,7 @@ loc_03FBEF:
 	bcc	loc_03FB94
 	rts
 
-sub_03FBFB:
+project_td_bombs_p2:
 	lda	a:wram_0F2C
 	bne	loc_03FC22
 	ldx	#$0F40
@@ -3896,7 +3896,7 @@ loc_03FC41:
 loc_03FC49:
 	rts
 
-sub_03FC4A:
+project_stage5_boss_objects_p2:
 	; (not executed in the CDL traces)
 	ldx	#$0AC0
 loc_03FC4D:
@@ -3941,7 +3941,7 @@ loc_03FC90:
 	bcc	loc_03FC4D
 	rts
 
-sub_03FC9C:
+draw_stage5_boss_claw_section_p2:
 	; (not executed in the CDL traces)
 	ldx	#$10E0
 	stx	zp_10
@@ -3949,9 +3949,9 @@ sub_03FC9C:
 	stx	zp_12
 	lda	#$8000
 	sta	zp_14
-	jsr	a:sub_03FD69
+	jsr	a:is_p2_view_falling_2
 	bcs	loc_03FCB3
-	jsr	a:sub_03FCD0
+	jsr	a:draw_stage5_boss_claw_p2
 loc_03FCB3:
 	lda	zp_14
 loc_03FCB5:
@@ -3973,7 +3973,7 @@ loc_03FCC4:
 loc_03FCCF:
 	rts
 
-sub_03FCD0:
+draw_stage5_boss_claw_p2:
 	; (not executed in the CDL traces)
 	stz	zp_08
 	ldx	#$0B40
@@ -3982,9 +3982,9 @@ loc_03FCD5:
 	beq	loc_03FD56
 	asl	a
 	tay
-	lda	a:data_078806,y
+	lda	a:ptrs_td_metasprite_sets,y
 	sta	zp_C4
-	lda	a:data_078828,y
+	lda	a:ptrs_td_stream_sets,y
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
@@ -4017,12 +4017,12 @@ loc_03FCF8:
 	lda	$02,x
 	phx
 	ldx	zp_08
-	ora	a:data_0780BC,x
+	ora	a:td_enemy_sprite_attrs_p2_view,x
 	sta	zp_06
 	lda	(zp_C4),y
 	pha
 	lda	(zp_C6),y
-	ldy	a:data_07809C,x
+	ldy	a:td_enemy_stream_slots_p2_view,x
 	tax
 	lda	a:$0000,x
 	sta	a:$1780,y
@@ -4031,7 +4031,7 @@ loc_03FCF8:
 	lda	a:$0004,x
 	sta	a:$1784,y
 	ply
-	jsr	a:sub_03FA93
+	jsr	a:draw_topdown_metasprite_p2
 	plx
 	lda	zp_D0
 	bne	loc_03FD4F
@@ -4056,7 +4056,7 @@ loc_03FD56:
 loc_03FD68:
 	rts
 
-sub_03FD69:
+is_p2_view_falling_2:
 	; (not executed in the CDL traces)
 	lda	a:title_menu_cursor
 	beq	loc_03FD71
@@ -4073,7 +4073,7 @@ loc_03FD7B:
 	sec
 	rts
 
-sub_03FD7D:
+draw_stage5_boss_arm_p2:
 	; (not executed in the CDL traces)
 	ldx	#$1130
 	stx	zp_10

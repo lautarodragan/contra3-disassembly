@@ -10,50 +10,50 @@
 ; The bank of the top-down sprite data (DB = ^sprite_data_07).
 sprite_data_07:
 
-	; CDL: read by sub_03EEAA
+	; CDL: read by draw_stage2_boss_arena
 	.byte	$D0, $FF, $50, $00, $D0, $00, $D0, $FF, $50, $00, $D0, $00, $D0, $FF, $50, $00
-data_078010:
-	; CDL: read by sub_03EEAA
+stage2_arena_rubble_y:
+	; CDL: read by draw_stage2_boss_arena
 	.byte	$D0, $00, $D0, $FF, $D0, $FF, $D0, $FF, $50, $00, $50, $00, $50, $00, $D0, $00
 	.byte	$D0, $00
-data_078022:
-	; CDL: read by sub_03EEAA
+stage2_arena_debris_x:
+	; CDL: read by draw_stage2_boss_arena
 	.byte	$D0, $00, $80, $FF, $00, $00, $80, $00, $00, $01, $80, $FF, $B0, $FF, $00, $00
 	.byte	$30, $00, $80, $00, $B0, $00, $00, $01, $80, $FF, $B0, $FF, $00, $00, $30, $00
 	.byte	$80, $00, $B0, $00, $00, $01, $80, $FF, $B0, $FF, $00, $00, $30, $00, $80, $00
 	.byte	$B0, $00
-data_078054:
-	; CDL: read by sub_03EEAA
+stage2_arena_debris_y:
+	; CDL: read by draw_stage2_boss_arena
 	.byte	$00, $01, $88, $FF, $88, $FF, $88, $FF, $88, $FF, $08, $00, $B0, $FF, $08, $00
 	.byte	$B0, $FF, $08, $00, $B0, $FF, $08, $00, $88, $00, $30, $00, $88, $00, $30, $00
 	.byte	$88, $00, $30, $00, $88, $00, $08, $01, $B0, $00, $08, $01, $B0, $00, $08, $01
 	.byte	$B0, $00, $08, $01
-data_078088:
+td_player_stream_slots:
 	; CDL: read by draw_topdown_players
 	.byte	$00, $00, $08, $00
-data_07808C:
+td_enemy_stream_slots:
 	; CDL: read by draw_enemies
 	.byte	$10, $00, $18, $00, $20, $00, $28, $00, $30, $00, $38, $00
-data_078098:
-	; CDL: read by sub_03F6FD
+td_player_stream_slots_p2_view:
+	; CDL: read by draw_topdown_players_p2
 	.byte	$40, $00, $48, $00
-data_07809C:
-	; CDL: read by sub_03F629
+td_enemy_stream_slots_p2_view:
+	; CDL: read by draw_enemies_p2
 	.byte	$50, $00, $58, $00, $60, $00, $68, $00, $70, $00, $78, $00
-data_0780A8:
+td_player_sprite_attrs:
 	; CDL: read by draw_topdown_players
 	.byte	$00, $00, $08, $00
-data_0780AC:
+td_enemy_sprite_attrs:
 	; CDL: read by draw_enemies
 	.byte	$20, $00, $28, $00, $40, $00, $48, $00, $60, $00, $68, $00
-data_0780B8:
-	; CDL: read by sub_03F6FD
+td_player_sprite_attrs_p2_view:
+	; CDL: read by draw_topdown_players_p2
 	.byte	$80, $00, $88, $00
-data_0780BC:
-	; CDL: read by sub_03F629
+td_enemy_sprite_attrs_p2_view:
+	; CDL: read by draw_enemies_p2
 	.byte	$A0, $00, $A8, $00, $C0, $00, $C8, $00, $E0, $00, $E8, $00
-data_0780C8:
-	; CDL: read by draw_small_objects, sub_03F559; partly not accessed
+td_small_object_tiles:
+	; CDL: read by draw_small_objects, draw_small_objects_p2; partly not accessed
 	.byte	$04, $01, $04, $01, $04, $01, $04, $01, $06, $01, $06, $01, $06, $01, $06, $01
 	.byte	$06, $01, $06, $01, $06, $01, $06, $01, $08, $01, $08, $01, $08, $01, $08, $01
 	.byte	$08, $01, $08, $01, $08, $01, $08, $01, $0A, $01, $0A, $01, $0A, $01, $0A, $01
@@ -173,13 +173,13 @@ data_0780C8:
 	.byte	$61, $67, $6D, $73, $78, $7E, $83, $88, $8E, $93, $98, $9D, $A2, $A7, $AB, $B0
 	.byte	$B5, $B9, $BD, $C1, $C5, $C9, $CD, $D1, $D4, $D8, $DB, $DE, $E1, $E4, $E7, $EA
 	.byte	$EC, $EE, $F1, $F3, $F4, $F6, $F8, $F9, $FB, $FC, $FD, $FE, $FE, $FF
-data_078806:
-	; CDL: read by draw_enemies, draw_topdown_players, sub_03ED33 (+1 more); partly not accessed
+ptrs_td_metasprite_sets:
+	; CDL: read by draw_enemies, draw_topdown_players, draw_stage2_boss_cannon (+1 more); partly not accessed
 	.byte	$FF, $FF, $18, $96, $18, $9B, $CE, $9B, $CE, $9B, $24, $9D, $E4, $9F, $84, $A2
 	.byte	$08, $88, $F0, $A3, $08, $88, $08, $88, $08, $88, $08, $88, $08, $88, $08, $88
 	.byte	$08, $88
-data_078828:
-	; CDL: read by draw_enemies, draw_topdown_players, sub_03ED33 (+3 more); partly not accessed
+ptrs_td_stream_sets:
+	; CDL: read by draw_enemies, draw_topdown_players, draw_stage2_boss_cannon (+3 more); partly not accessed
 	.byte	$38, $AA, $4C, $88, $58, $9B, $0E, $9C, $84, $9C, $24, $9E, $A4, $A0, $04, $A3
 	.byte	$08, $88, $F0, $A6, $08, $88, $08, $88, $08, $88, $08, $88, $08, $88, $08, $88
 	.byte	$08, $88, $78, $AA, $4C, $8D, $52, $8D, $58, $8D, $5E, $8D, $64, $8D, $6A, $8D
@@ -204,7 +204,7 @@ data_078828:
 	.byte	$F0, $8E, $F6, $8E, $FC, $8E, $02, $8F, $08, $8F, $0E, $8F, $14, $8F, $1A, $8F
 	.byte	$20, $8F, $26, $8F, $2C, $8F, $32, $8F, $38, $8F, $3E, $8F, $44, $8F, $4A, $8F
 	.byte	$50, $8F, $56, $8F, $5C, $8F
-	; CDL: read by draw_topdown_players, sub_03F6FD; partly not accessed
+	; CDL: read by draw_topdown_players, draw_topdown_players_p2; partly not accessed
 	.byte	$56, $8F, $50, $8F, $4A, $8F, $44, $8F, $3E, $8F, $38, $8F, $32, $8F, $2C, $8F
 	.byte	$32, $8F, $38, $8F, $3E, $8F, $44, $8F, $4A, $8F, $50, $8F, $56, $8F, $5C, $8F
 	.byte	$56, $8F, $50, $8F, $4A, $8F, $44, $8F, $3E, $8F, $38, $8F, $32, $8F, $62, $8F
@@ -270,7 +270,7 @@ data_078828:
 	.byte	$7F, $00, $C0, $0C, $80, $0D, $7F, $00, $40, $0E, $00, $0F, $7F, $00, $C0, $0F
 	.byte	$80, $10, $7F, $00, $40, $11, $00, $12, $7F, $00, $C0, $12, $80, $13, $7F, $00
 	.byte	$40, $14
-	; CDL: read by draw_topdown_players, sub_03F6FD
+	; CDL: read by draw_topdown_players, draw_topdown_players_p2
 	.byte	$00, $15, $7F, $00, $C0, $15, $80, $16, $7F, $00, $40, $17, $00, $18, $7F, $00
 	.byte	$C0, $18, $80, $19, $7F, $00, $40, $1A, $00, $1B, $7F, $00, $C0, $1B, $80, $1C
 	.byte	$7F, $00, $40, $1D, $00, $1E, $7F, $00, $C0, $1E, $80, $1F, $7F, $00, $40, $20
@@ -309,21 +309,21 @@ data_078828:
 	.byte	$7F, $00, $40, $A1, $00, $A2, $7F, $00, $C0, $A2, $80, $A3, $7F, $00, $40, $A4
 	.byte	$00, $A5, $7F, $00, $C0, $A5, $80, $A6, $7F, $00, $40, $A7, $00, $A8, $7F, $00
 	.byte	$C0, $A8, $80, $A9, $7F, $00, $40, $AA, $00, $AB, $7F, $00, $C0, $AB
-	; CDL: read by sub_03F6FD; partly not accessed
+	; CDL: read by draw_topdown_players_p2; partly not accessed
 	.byte	$80, $AC, $7F, $00, $80, $AD, $80, $AE, $7F, $00, $80, $AF, $80, $B0, $7F, $00
 	.byte	$80, $B1, $80, $B2, $7F, $00, $80, $B3, $80, $B4, $7F, $00, $80, $B5, $80, $B6
 	.byte	$7F, $00, $80, $B7, $80, $B8, $7F, $00, $80, $B9, $80, $BA, $7F, $00, $40, $BB
 	.byte	$00, $BC, $7F, $00, $00, $BD, $00, $BE, $7F, $00, $00, $BF, $00, $C0, $7F, $00
 	.byte	$00, $C1, $00, $C2, $7F, $00, $00, $C3, $00, $C4, $7F, $00, $00, $C5, $00, $C6
 	.byte	$7F, $00, $00, $C7
-	; CDL: read by draw_topdown_players, sub_03F6FD
+	; CDL: read by draw_topdown_players, draw_topdown_players_p2
 	.byte	$00, $C8, $7F, $00, $00, $C9, $00, $CA, $7F, $00, $00, $CB, $00, $CC, $7F, $00
 	.byte	$00, $CD, $00, $CE, $7F, $00, $00, $CF, $00, $D0, $7F, $00, $00, $D1, $00, $D2
 	.byte	$7F, $00, $00, $D3, $00, $D4, $7F, $00, $00, $D5, $00, $D6, $7F, $00, $00, $D7
 	.byte	$00, $D8, $7F, $00, $00, $D9, $00, $DA, $7F, $00, $00, $DB, $00, $DC, $7F, $00
 	.byte	$00, $DD, $00, $DE, $7F, $00, $00, $DF, $00, $E0, $7F, $00, $00, $E1, $00, $E2
 	.byte	$7F, $00, $00, $E3
-	; CDL: read by sub_03F6FD
+	; CDL: read by draw_topdown_players_p2
 	.byte	$00, $E4, $7F, $00, $00, $E5, $00, $E6, $7F, $00, $00, $E7, $00, $E8, $7F, $00
 	.byte	$00, $E9, $00, $EA, $7F, $00, $00, $EB, $00, $EC, $7F, $00, $00, $ED, $00, $EE
 	.byte	$7F, $00, $00, $EF, $00, $F0, $7F, $00, $00, $F1, $00, $F2, $7F, $00, $00, $F3
@@ -332,7 +332,7 @@ data_078828:
 	.byte	$7F, $00, $00, $FF, $02, $AC, $13, $00, $02, $AD, $02, $AE, $13, $00, $02, $AF
 	.byte	$02, $B0, $13, $00, $02, $B1, $02, $B2, $13, $00, $02, $B3, $02, $B4, $13, $00
 	.byte	$02, $B5
-data_079118:
+td_walk_y_int:
 	; CDL: read by td_get_walk_vectors
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF
@@ -342,7 +342,7 @@ data_079118:
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-data_079198:
+td_walk_x_int:
 	; CDL: read by td_get_walk_vectors
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
@@ -376,7 +376,7 @@ data_079198:
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-data_079398:
+td_walk_y_frac:
 	; CDL: read by td_get_walk_vectors
 	.byte	$00, $00, $28, $00, $9E, $00, $64, $01, $78, $02, $DA, $03, $8B, $05, $8A, $07
 	.byte	$D7, $09, $71, $0C, $59, $0F, $8C, $12, $0C, $16, $D8, $19, $EE, $1D, $4F, $22
@@ -386,8 +386,8 @@ data_079398:
 	.byte	$8D, $E3, $15, $EE, $C8, $F8, $A3, $03, $A6, $0E, $CD, $19, $18, $25, $85, $30
 	.byte	$11, $3C, $BC, $47, $84, $53, $66, $5F, $60, $6B, $72, $77, $99, $83, $D2, $8F
 	.byte	$1E, $9C, $78, $A8, $E0, $B4, $54, $C1, $D1, $CD, $56, $DA, $E1, $E6, $70, $F3
-data_079418:
-	; CDL: read by td_get_walk_vectors, draw_topdown_players, sub_03F6FD; partly not accessed
+td_walk_x_frac:
+	; CDL: read by td_get_walk_vectors, draw_topdown_players, draw_topdown_players_p2; partly not accessed
 	.byte	$00, $00, $90, $0C, $1F, $19, $AA, $25, $2F, $32, $AC, $3E, $20, $4B, $88, $57
 	.byte	$E2, $63, $2E, $70, $67, $7C, $8E, $88, $A0, $94, $9A, $A0, $7C, $AC, $44, $B8
 	.byte	$EF, $C3, $7B, $CF, $E8, $DA, $33, $E6, $5A, $F1, $5D, $FC, $38, $07, $EB, $11
@@ -442,7 +442,7 @@ data_079418:
 	.byte	$A6, $B2, $B3, $B2, $C0, $B2, $CD, $B2, $DA, $B2, $E7, $B2, $F4, $B2, $01, $B3
 	.byte	$0E, $B3, $1B, $B3, $28, $B3, $35, $B3, $42, $B3, $4F, $B3, $5C, $B3, $69, $B3
 	.byte	$76, $B3
-	; CDL: read by draw_topdown_players, sub_03F6FD; partly not accessed
+	; CDL: read by draw_topdown_players, draw_topdown_players_p2; partly not accessed
 	.byte	$83, $B3, $90, $B3, $9D, $B3, $AA, $B3, $B7, $B3, $C4, $B3, $D1, $B3, $DE, $B3
 	.byte	$EB, $B3, $F8, $B3, $05, $B4, $12, $B4, $1F, $B4, $2C, $B4, $39, $B4, $46, $B4
 	.byte	$53, $B4, $60, $B4, $6D, $B4, $7A, $B4, $87, $B4, $94, $B4, $A1, $B4, $AE, $B4
@@ -502,7 +502,7 @@ data_079418:
 	.byte	$B5, $CD, $A4, $CD, $93, $CD, $82, $CD, $71, $CD, $60, $CD, $4F, $CD, $3E, $CD
 	.byte	$2D, $CD, $1C, $CD, $0B, $CD, $FA, $CC, $E9, $CC, $D8, $CC, $C7, $CC, $B6, $CC
 	.byte	$A5, $CC, $94, $CC, $83, $CC, $72, $CC, $61, $CC, $50, $CC, $3F, $CC
-	; CDL: read by sub_03ED33
+	; CDL: read by draw_stage2_boss_cannon
 	.byte	$DE, $CE, $E7, $CE, $F0, $CE, $F9, $CE, $02, $CF, $0B, $CF, $14, $CF, $1D, $CF
 	.byte	$26, $CF, $2F, $CF, $38, $CF, $41, $CF, $4A, $CF, $53, $CF, $5C, $CF, $65, $CF
 	.byte	$4E, $CE, $57, $CE, $60, $CE, $69, $CE, $72, $CE, $7B, $CE, $84, $CE, $8D, $CE
@@ -515,14 +515,14 @@ data_079418:
 	.byte	$80, $A2, $00, $A3, $7E, $00, $80, $A3, $00, $A4, $7E, $00, $80, $A4, $00, $A5
 	.byte	$7E, $00, $80, $A5, $00, $A6, $7E, $00, $80, $A6, $00, $A7, $7E, $00, $80, $A7
 	.byte	$00, $A8, $7E, $00, $80, $A8
-data_079BCE:
-	; CDL: read by sub_03EEAA
+stage2_arena_rubble_metasprites:
+	; CDL: read by draw_stage2_boss_arena
 	.byte	$6E, $CF, $77, $CF, $80, $CF, $89, $CF, $92, $CF, $9B, $CF, $A4, $CF, $AD, $CF
 	.byte	$B6, $CF, $BF, $CF, $C8, $CF, $D1, $CF, $DA, $CF, $E3, $CF, $EC, $CF, $F5, $CF
 	.byte	$6E, $CF, $77, $CF, $80, $CF, $89, $CF, $92, $CF, $9B, $CF, $A4, $CF, $AD, $CF
 	.byte	$B6, $CF, $BF, $CF, $C8, $CF, $D1, $CF, $DA, $CF, $E3, $CF, $EC, $CF, $F5, $CF
-data_079C0E:
-	; CDL: read by sub_03EEAA
+stage2_arena_rubble_streams:
+	; CDL: read by draw_stage2_boss_arena
 	.byte	$4E, $9C, $54, $9C, $5A, $9C, $60, $9C, $66, $9C, $6C, $9C, $72, $9C, $78, $9C
 	.byte	$7E, $9C, $78, $9C, $72, $9C, $6C, $9C, $66, $9C, $60, $9C, $5A, $9C, $54, $9C
 	.byte	$4E, $9C, $54, $9C, $5A, $9C, $60, $9C, $66, $9C, $6C, $9C, $72, $9C, $78, $9C
@@ -531,8 +531,8 @@ data_079C0E:
 	.byte	$40, $AA, $80, $AA, $7E, $00, $C0, $AA, $00, $AB, $7E, $00, $40, $AB, $80, $AB
 	.byte	$7E, $00, $C0, $AB, $00, $AC, $7E, $00, $40, $AC, $80, $AC, $7E, $00, $C0, $AC
 	.byte	$00, $AD, $7E, $00, $40, $AD
-data_079C84:
-	; CDL: read by sub_03EEAA
+stage2_arena_debris_streams:
+	; CDL: read by draw_stage2_boss_arena
 	.byte	$C4, $9C, $CA, $9C, $D0, $9C, $D6, $9C, $DC, $9C, $E2, $9C, $E8, $9C, $EE, $9C
 	.byte	$F4, $9C, $FA, $9C, $00, $9D, $06, $9D, $0C, $9D, $12, $9D, $18, $9D, $1E, $9D
 	.byte	$C4, $9C, $CA, $9C, $D0, $9C, $D6, $9C, $DC, $9C, $E2, $9C, $E8, $9C, $EE, $9C
@@ -543,7 +543,7 @@ data_079C84:
 	.byte	$80, $B1, $7E, $00, $C0, $B1, $00, $B2, $7E, $00, $40, $B2, $80, $B2, $7E, $00
 	.byte	$C0, $B2, $00, $B3, $7E, $00, $40, $B3, $80, $B3, $7E, $00, $C0, $B3, $00, $B4
 	.byte	$7E, $00, $40, $B4, $80, $B4, $7E, $00, $C0, $B4, $00, $B5, $7E, $00, $40, $B5
-	; CDL: read by draw_enemies, sub_03F629
+	; CDL: read by draw_enemies, draw_enemies_p2
 	.byte	$8E, $D1, $9F, $D1, $B0, $D1, $C1, $D1, $D2, $D1, $E3, $D1, $F4, $D1, $05, $D2
 	.byte	$16, $D2, $27, $D2, $38, $D2, $49, $D2, $5A, $D2, $6B, $D2, $7C, $D2, $8D, $D2
 	.byte	$9E, $D2, $AF, $D2, $C0, $D2, $D1, $D2, $E2, $D2, $F3, $D2, $04, $D3, $15, $D3
@@ -561,7 +561,7 @@ data_079C84:
 	.byte	$76, $D8, $87, $D8, $98, $D8, $A9, $D8, $BA, $D8, $CB, $D8, $DC, $D8, $ED, $D8
 	.byte	$FE, $D8, $0F, $D9, $20, $D9, $31, $D9, $42, $D9, $53, $D9, $64, $D9, $75, $D9
 	.byte	$86, $D9, $97, $D9, $A8, $D9, $B9, $D9, $CA, $D9, $DB, $D9, $EC, $D9, $FD, $D9
-	; CDL: read by draw_enemies, sub_03F629
+	; CDL: read by draw_enemies, draw_enemies_p2
 	.byte	$24, $9F, $2A, $9F, $30, $9F, $36, $9F, $3C, $9F, $42, $9F, $48, $9F, $4E, $9F
 	.byte	$54, $9F, $7E, $9F, $78, $9F, $72, $9F, $6C, $9F, $66, $9F, $60, $9F, $5A, $9F
 	.byte	$24, $9F, $2A, $9F, $30, $9F, $36, $9F, $3C, $9F, $42, $9F, $48, $9F, $4E, $9F
@@ -574,7 +574,7 @@ data_079C84:
 	.byte	$54, $9F, $4E, $9F, $48, $9F, $42, $9F, $3C, $9F, $36, $9F, $30, $9F, $2A, $9F
 	.byte	$24, $9F, $5A, $9F, $60, $9F, $66, $9F, $6C, $9F, $72, $9F, $78, $9F, $7E, $9F
 	.byte	$54, $9F, $4E, $9F, $48, $9F, $42, $9F, $3C, $9F, $36, $9F, $30, $9F, $2A, $9F
-	; CDL: read by draw_enemies, sub_03F629; partly not accessed
+	; CDL: read by draw_enemies, draw_enemies_p2; partly not accessed
 	.byte	$84, $9F, $BA, $9F, $C0, $9F, $C6, $9F, $CC, $9F, $D2, $9F, $D8, $9F, $DE, $9F
 	.byte	$B4, $9F, $AE, $9F, $A8, $9F, $A2, $9F, $9C, $9F, $96, $9F, $90, $9F, $8A, $9F
 	.byte	$84, $9F, $BA, $9F, $C0, $9F, $C6, $9F, $CC, $9F, $D2, $9F, $D8, $9F, $DE, $9F
@@ -700,7 +700,7 @@ data_079C84:
 	.byte	$9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8
 	.byte	$9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8
 	.byte	$9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8
-	; CDL: read by draw_enemies, sub_03F629; partly not accessed
+	; CDL: read by draw_enemies, draw_enemies_p2; partly not accessed
 	.byte	$9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8
 	.byte	$9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8
 	.byte	$9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8, $9C, $E8
@@ -760,7 +760,7 @@ data_079C84:
 	.byte	$16, $00, $52, $D2, $52, $D3, $16, $00, $52, $D4, $52, $D5, $16, $00, $52, $D6
 	.byte	$52, $D7, $16, $00, $52, $D8, $52, $D9, $16, $00, $52, $DA, $52, $DB, $16, $00
 	.byte	$52, $DC, $52, $DD, $16, $00, $52, $DE
-	; CDL: read by draw_topdown_metasprite, sub_03F236, sub_03FA93; partly not accessed
+	; CDL: read by draw_topdown_metasprite, draw_stage5_boss_claw, draw_topdown_metasprite_p2; partly not accessed
 	.byte	$FE, $CF, $07, $D0, $14, $D0, $21, $D0, $2E, $D0, $3B, $D0, $48, $D0, $55, $D0
 	.byte	$62, $D0, $6B, $D0, $78, $D0, $85, $D0, $92, $D0, $9F, $D0, $AC, $D0, $B9, $D0
 	.byte	$C6, $D0, $CF, $D0, $DC, $D0, $E9, $D0, $F6, $D0, $03, $D1, $10, $D1, $1D, $D1
@@ -851,7 +851,7 @@ data_079C84:
 	.byte	$00, $F8, $00, $C0, $03, $F8, $E8, $04, $C0, $F0, $F8, $02, $C0, $00, $F8, $00
 	.byte	$C0, $03, $F8, $E8, $04, $C0, $F0, $F8, $02, $C0, $00, $F8, $00, $C0, $03, $00
 	.byte	$E8, $04, $C0, $F0, $F8, $02
-	; CDL: read by draw_topdown_metasprite, sub_03FA93
+	; CDL: read by draw_topdown_metasprite, draw_topdown_metasprite_p2
 	.byte	$C0, $00, $F8, $00, $C0, $03, $00, $F8, $04, $00, $F0, $F8, $02, $00, $00, $E8
 	.byte	$00, $00, $03, $00, $F8, $04, $00, $F0, $F8, $02, $00, $00, $E8, $00, $00, $03
 	.byte	$00, $F8, $04, $00, $F0, $F8, $02, $00, $00, $E8, $00, $00
@@ -908,7 +908,7 @@ data_079C84:
 	.byte	$F9, $02, $C0, $00, $F9, $00, $C0, $03, $F8, $E8, $04, $C0, $F0, $F8, $02, $C0
 	.byte	$00, $F8, $00, $C0, $03, $00, $E8, $04, $C0, $F0, $F8, $02, $C0, $00, $F8, $00
 	.byte	$C0, $03, $F8, $06, $04, $00, $00, $F6, $02, $00, $F0, $F6, $00, $00
-	; CDL: read by sub_03FA93; partly not accessed
+	; CDL: read by draw_topdown_metasprite_p2; partly not accessed
 	.byte	$03, $08, $F8, $04, $00, $F8, $F9, $02, $00, $E8, $F4, $00, $00, $03, $02, $F8
 	.byte	$04, $00, $F2, $00, $02, $00, $F2, $F0, $00, $00, $03, $04, $F8, $04, $00, $F4
 	.byte	$F8, $02, $00, $F4, $E8, $00, $00, $03, $04, $F9, $04, $00, $F4, $F9, $02, $00
@@ -984,7 +984,7 @@ data_079C84:
 	.byte	$10, $F8, $04, $80, $00, $F8, $02, $80, $F0, $F8, $00, $80, $03, $10, $F8, $04
 	.byte	$80, $00, $F6, $02, $80, $F0, $F9, $00, $80, $03, $06, $F0, $04, $80, $00, $F5
 	.byte	$02, $80, $F1, $FB, $00, $80
-	; CDL: read by draw_topdown_metasprite, sub_03FA93; partly not accessed
+	; CDL: read by draw_topdown_metasprite, draw_topdown_metasprite_p2; partly not accessed
 	.byte	$03, $04, $F2, $04, $80, $F8, $F3, $02, $80, $F3, $FB, $00, $80, $03, $02, $F1
 	.byte	$04, $80, $FB, $F3, $02, $80, $F3, $FD, $00, $80, $03, $00, $EF, $04, $80, $F0
 	.byte	$F2, $02, $80, $F5, $FF, $00, $80, $03, $08, $ED, $04, $80, $F8, $F0, $02, $80
@@ -997,7 +997,7 @@ data_079C84:
 	.byte	$00, $40, $04, $03, $00, $06, $40, $FB, $FC, $04, $40, $F0, $F4, $02, $40, $EA
 	.byte	$EE, $00, $40, $04, $05, $FE, $06, $40, $FC, $FB, $04, $40, $F0, $F5, $02, $40
 	.byte	$E7, $F1
-	; CDL: read by sub_03FA93; partly not accessed
+	; CDL: read by draw_topdown_metasprite_p2; partly not accessed
 	.byte	$00, $40, $04, $FE, $04, $06, $40, $E4, $F6, $04, $40, $F4, $F6, $02, $40, $04
 	.byte	$FA, $00, $40, $03, $E4, $F8, $04, $40, $F4, $F8, $02, $40, $04, $F8, $00, $40
 	.byte	$04, $E0, $FA, $06, $40, $F0, $FA, $04, $40, $00, $F8, $02, $40, $04, $F5, $00
@@ -1086,7 +1086,7 @@ data_079C84:
 	.byte	$00, $FB, $EC, $02, $00, $EE, $F0, $00, $00, $04, $F3, $02, $06, $00, $FB, $FC
 	.byte	$04, $00, $FC, $EC, $02, $00, $EC, $F2, $00, $00, $04, $F1, $01, $06, $00, $FE
 	.byte	$FD, $04, $00, $FE, $ED, $02, $00, $EE, $F1, $00, $00
-	; CDL: read by draw_topdown_metasprite, sub_03FA93; partly not accessed
+	; CDL: read by draw_topdown_metasprite, draw_topdown_metasprite_p2; partly not accessed
 	.byte	$04, $F0, $01, $06, $00, $FE, $FE, $04, $00, $00, $EE, $02, $00, $F1, $F1, $00
 	.byte	$00, $04, $00, $00, $06, $00, $F0, $00, $04, $00, $02, $F0, $02, $00, $F2, $F0
 	.byte	$00, $00, $04, $00, $00, $06, $00, $F0, $00, $04, $00, $06, $F0, $02, $00, $F6
@@ -1112,7 +1112,7 @@ data_079C84:
 	.byte	$04, $40, $F8, $00, $02, $40, $F8, $F0, $00, $40, $03, $E8, $00, $04, $40, $F8
 	.byte	$00, $02, $40, $F8, $F0, $00, $40, $03, $F0, $02, $04, $40, $00, $02, $02, $40
 	.byte	$F8, $F2, $00, $40
-	; CDL: read by draw_topdown_metasprite, sub_03FA93
+	; CDL: read by draw_topdown_metasprite, draw_topdown_metasprite_p2
 	.byte	$03, $F0, $02, $04, $40, $00, $02, $02, $40, $F8, $F2, $00, $40, $03, $F8, $04
 	.byte	$04, $40, $F8, $F4, $02, $40, $08, $F8, $00, $40, $03, $F9, $05, $04, $40, $F0
 	.byte	$F5, $02, $40, $00, $F5, $00, $40, $03, $00, $08, $04, $40, $F0, $F8, $02, $40
@@ -1141,7 +1141,7 @@ data_079C84:
 	.byte	$00, $00, $02, $40, $F8, $F0, $00, $40, $03, $F0, $01, $04, $40, $00, $01, $02
 	.byte	$40, $F8, $F1, $00, $40, $03, $F7, $02, $04, $40, $F7, $F2, $02, $40, $07, $F8
 	.byte	$00, $40
-	; CDL: read by draw_topdown_metasprite, sub_03FA93
+	; CDL: read by draw_topdown_metasprite, draw_topdown_metasprite_p2
 	.byte	$03, $F8, $08, $04, $40, $F0, $F8, $02, $40, $00, $F8, $00, $40, $03, $F9, $08
 	.byte	$04, $40, $F0, $F8, $02, $40, $00, $F8, $00, $40, $03, $00, $08, $04, $40, $F0
 	.byte	$F8, $02, $40, $00, $F8, $00, $40, $03, $00, $F8, $04, $80, $F0, $F8, $02, $80
@@ -1184,7 +1184,7 @@ data_079C84:
 	.byte	$00, $F8, $02, $80, $F0, $F8, $00, $80, $03, $F8, $E8, $04, $80, $00, $F8, $02
 	.byte	$80, $F0, $F8, $00, $80, $03, $F8, $E8, $04, $80, $00, $F8, $02, $80, $F0, $F8
 	.byte	$00, $80
-	; CDL: read by draw_topdown_metasprite, sub_03FA93
+	; CDL: read by draw_topdown_metasprite, draw_topdown_metasprite_p2
 	.byte	$03, $F0, $E8, $04, $80, $00, $F8, $02, $80, $F0, $F8, $00, $80, $03, $F0, $F8
 	.byte	$04, $40, $00, $F8, $02, $40, $F0, $E8, $00, $40, $03, $F0, $F8, $04, $40, $00
 	.byte	$F8, $02, $40, $F0, $E8, $00, $40, $03, $F0, $F8, $04, $40, $00, $F8, $02, $40
@@ -1250,7 +1250,7 @@ data_079C84:
 	.byte	$00, $04, $00, $00, $FB, $02, $00, $F1, $F5, $00, $00, $03, $04, $FE, $04, $00
 	.byte	$F8, $FD, $02, $00, $F3, $F5, $00, $00, $03, $02, $FF, $04, $00, $FB, $FD, $02
 	.byte	$00, $F3, $F3, $00, $00, $03, $00, $01, $04, $00, $F0, $FE, $02, $00, $F5, $F1
-	; CDL: read by sub_03FA93; partly not accessed
+	; CDL: read by draw_topdown_metasprite_p2; partly not accessed
 	.byte	$00, $00, $03, $08, $03, $04, $00, $F8, $00, $02, $00, $F5, $F0, $00, $00, $03
 	.byte	$F8, $10, $04, $00, $F9, $00, $02, $00, $F6, $F3, $00, $00, $03, $F8, $F0, $04
 	.byte	$C0, $F8, $00, $02, $C0, $F8, $10, $00, $C0, $03, $F9, $F0, $04, $C0, $F6, $00
@@ -1258,7 +1258,7 @@ data_079C84:
 	.byte	$06, $00, $C0, $03, $FB, $F3, $04, $C0, $F3, $F8, $02, $C0, $F2, $04, $00, $C0
 	.byte	$03, $FD, $F3, $04, $C0, $F3, $FA, $02, $C0, $F1, $02, $00, $C0, $03, $F2, $F0
 	.byte	$04, $C0, $FF, $F5, $02, $C0, $EF, $00, $00, $C0
-	; CDL: read by draw_topdown_metasprite, sub_03FA93; partly not accessed
+	; CDL: read by draw_topdown_metasprite, draw_topdown_metasprite_p2; partly not accessed
 	.byte	$03, $00, $F5, $04, $C0, $F0, $F8, $02, $C0, $ED, $08, $00, $C0, $03, $E0, $F8
 	.byte	$04, $C0, $F0, $F9, $02, $C0, $FD, $F6, $00, $C0, $03, $E0, $F8, $04, $C0, $F0
 	.byte	$F8, $02, $C0, $00, $F8, $00, $C0, $03, $E0, $F8, $04, $C0, $F0, $F6, $02, $C0
@@ -1294,13 +1294,13 @@ data_079C84:
 	.byte	$04, $05, $F2, $06, $C0, $FC, $F5, $04, $C0, $F0, $FB, $02, $C0, $E7, $FF, $00
 	.byte	$C0, $04, $FE, $EC, $06, $C0, $E4, $FA, $04, $C0, $F4, $FA, $02, $C0, $04, $F6
 	.byte	$00, $C0, $03, $E4, $F8, $04, $C0, $F4, $F8, $02, $C0, $04, $F8, $00, $C0
-	; CDL: read by sub_03FA93; partly not accessed
+	; CDL: read by draw_topdown_metasprite_p2; partly not accessed
 	.byte	$04, $E0, $F6, $06, $C0, $F0, $F6, $04, $C0, $00, $F8, $02, $C0, $04, $FB, $00
 	.byte	$C0, $04, $E6, $F4, $06, $C0, $F6, $F5, $04, $C0, $00, $F9, $02, $C0, $04, $FD
 	.byte	$00, $C0, $04, $E8, $F2, $06, $C0, $F8, $F2, $04, $C0, $FC, $FC, $02, $C0, $03
 	.byte	$FF, $00, $C0, $04, $EA, $EE, $06, $C0, $F3, $F1, $04, $C0, $FB, $FB, $02, $C0
 	.byte	$01, $01
-	; CDL: read by draw_topdown_metasprite, sub_03FA93; partly not accessed
+	; CDL: read by draw_topdown_metasprite, draw_topdown_metasprite_p2; partly not accessed
 	.byte	$00, $C0, $04, $EE, $EA, $06, $C0, $F4, $F0, $04, $C0, $FC, $FB, $02, $C0, $00
 	.byte	$03, $00, $C0, $04, $F1, $E7, $06, $C0, $F5, $F0, $04, $C0, $FB, $FC, $02, $C0
 	.byte	$FE, $05, $00, $C0, $04, $F6, $E4, $06, $C0, $F6, $F4, $04, $C0, $FA, $04, $02
@@ -1320,7 +1320,7 @@ data_079C84:
 	.byte	$04, $80, $00, $00, $02, $80, $F0, $00, $00, $80, $04, $00, $F0, $06, $80, $F0
 	.byte	$F0, $04, $80, $00, $00, $02, $80, $F0, $00, $00, $80, $04, $00, $F0, $06, $80
 	.byte	$F0, $F0, $04, $80, $00, $00, $02, $80, $F0, $00, $00, $80
-	; CDL: read by sub_03FA93
+	; CDL: read by draw_topdown_metasprite_p2
 	.byte	$04, $00, $F0, $06, $80, $F0, $F0, $04, $80, $00, $00, $02, $80, $F0, $00, $00
 	.byte	$80, $04, $00, $F0, $06, $80, $F0, $F0, $04, $80, $00, $00, $02, $80, $F0, $00
 	.byte	$00, $80, $04, $00, $F0, $06, $80, $F0, $F0, $04, $80, $00, $00, $02, $80, $F0
@@ -1343,7 +1343,7 @@ data_079C84:
 	.byte	$02, $40, $00, $F0, $00, $40, $04, $F0, $00, $06, $40, $00, $00, $04, $40, $F0
 	.byte	$F0, $02, $40, $00, $F0, $00, $40, $04, $F0, $00, $06, $40, $00, $00, $04, $40
 	.byte	$F0, $F0, $02, $40, $00, $F0, $00, $40
-	; CDL: read by sub_03FA93
+	; CDL: read by draw_topdown_metasprite_p2
 	.byte	$04, $F8, $E8, $06, $80, $F8, $F8, $04, $80, $F8, $08, $02, $80, $E8, $FD, $00
 	.byte	$80, $04, $F8, $E4, $06, $80, $F8, $F4, $04, $80, $FB, $04, $02, $80, $EE, $00
 	.byte	$00, $80, $04, $F3, $EE, $06, $80, $FB, $F4, $04, $80, $FC, $04, $02, $80, $EC
@@ -1368,7 +1368,7 @@ data_079C84:
 	.byte	$02, $40, $04, $F2, $00, $40, $04, $FF, $01, $06, $40, $F2, $FD, $04, $40, $F2
 	.byte	$ED, $02, $40, $02, $F1, $00, $40, $04, $00, $01, $06, $40, $F2, $FE, $04, $40
 	.byte	$F0, $EE, $02, $40, $FF, $F1, $00, $40
-	; CDL: read by draw_topdown_metasprite, sub_03FA93; partly not accessed
+	; CDL: read by draw_topdown_metasprite, draw_topdown_metasprite_p2; partly not accessed
 	.byte	$04, $F0, $00, $06, $40, $00, $00, $04, $40, $EE, $F0, $02, $40, $FE, $F0, $00
 	.byte	$40, $04, $F0, $00, $06, $40, $00, $00, $04, $40, $EA, $F0, $02, $40, $FA, $F0
 	.byte	$00, $40, $04, $F0, $FE, $06, $40, $00, $FE, $04, $40, $E8, $F3, $02, $40, $F8
@@ -1689,7 +1689,7 @@ data_079C84:
 	.byte	$00, $04, $40, $00, $F0, $02, $40, $F0, $F8, $00, $40, $02, $FC, $F6, $02, $40
 	.byte	$F4, $F9, $00, $40, $02, $00, $F8, $02, $00, $F0, $F8, $00, $00, $02, $00, $F8
 	.byte	$06, $00, $F0, $F8, $04, $00, $01, $F8, $F8, $24, $00, $01, $F8, $F8, $26, $00
-	; CDL: read by sub_03FA93
+	; CDL: read by draw_topdown_metasprite_p2
 	.byte	$04, $00, $00, $02, $40, $00, $F0, $00, $40, $F0, $00, $02, $00, $F0, $F0, $00
 	.byte	$00, $04, $00, $00, $06, $00, $F0, $00, $04, $00, $00, $F0, $02, $00, $F0, $F0
 	.byte	$00, $00, $04, $00, $00, $06, $00, $F0, $00, $04, $00, $00, $F0, $02, $00, $F0
@@ -1720,7 +1720,7 @@ data_079C84:
 	.byte	$04, $00, $F0, $00, $40, $F0, $F0, $02, $40, $00, $00, $00, $C0, $F0, $00, $02
 	.byte	$C0, $04, $00, $00, $04, $40, $F0, $00, $06, $40, $00, $F0, $00, $40, $F0, $F0
 	.byte	$02, $40
-	; CDL: read by sub_03FA93
+	; CDL: read by draw_topdown_metasprite_p2
 	.byte	$04, $00, $00, $04, $40, $F0, $00, $06, $40, $00, $F0, $00, $40, $F0, $F0, $02
 	.byte	$40, $04, $00, $00, $04, $40, $F0, $00, $06, $40, $00, $F0, $00, $40, $F0, $F0
 	.byte	$02, $40, $04, $00, $00, $04, $40, $F0, $00, $06, $40, $00, $F0, $00, $40, $F0
@@ -1810,13 +1810,13 @@ data_079C84:
 	.byte	$FD, $01, $04, $C0, $FB, $F5, $02, $C0, $EF, $FC, $00, $C0, $03, $FA, $00, $04
 	.byte	$C0, $FD, $F5, $02, $C0, $ED, $F8, $00, $C0, $04, $FD, $00, $06, $C0, $FD, $F0
 	.byte	$04, $C0, $ED, $F0, $02, $C0
-	; CDL: read by draw_topdown_metasprite, sub_03FA93; partly not accessed
+	; CDL: read by draw_topdown_metasprite, draw_topdown_metasprite_p2; partly not accessed
 	.byte	$ED, $00, $00, $C0, $04, $FD, $00, $06, $C0, $FD, $F0, $04, $C0, $ED, $F0, $02
 	.byte	$C0, $ED, $00, $00, $C0, $04, $FD, $00, $06, $C0, $FD, $F0, $04, $C0, $ED, $F0
 	.byte	$02, $C0, $ED, $00, $00, $C0, $02, $00, $F8, $02, $00, $F0, $F8, $00, $00, $01
 	.byte	$F8, $F8, $00, $00, $04, $00, $00, $06, $00, $F0, $00, $04, $00, $00, $F0, $02
 	.byte	$00, $F0, $F0, $00, $00, $01, $F8, $F8, $A0, $01, $01, $F8, $F8, $A2, $01
-	; CDL: read by sub_03F077, sub_03FB11; partly not accessed
+	; CDL: read by draw_td_item_metasprite, draw_td_item_metasprite_p2; partly not accessed
 	.byte	$04, $00, $00, $A6, $C1, $F0, $00, $A6, $81, $00, $F0, $A6, $41, $F0, $F0, $A6
 	.byte	$01, $04, $00, $00, $A8, $C1, $F0, $00, $A8, $81, $00, $F0, $A8, $41, $F0, $F0
 	.byte	$A8, $01, $04, $00, $00, $AA, $C1, $F0, $00, $AA, $81, $00, $F0, $AA, $41, $F0
@@ -1833,12 +1833,12 @@ data_079C84:
 	.byte	$04, $00, $00, $E0, $C1, $F0, $00, $E0, $81, $00, $F0, $E0, $41, $F0, $F0, $E0
 	.byte	$01, $04, $00, $00, $EE, $C1, $F0, $00, $EE, $81, $00, $F0, $EE, $41, $F0, $F0
 	.byte	$EE, $01, $04
-	; CDL: read by sub_03F077, sub_03FB11
+	; CDL: read by draw_td_item_metasprite, draw_td_item_metasprite_p2
 	.byte	$FC, $FE, $E5, $00, $FC, $F6, $E4, $00, $00, $F8, $EC, $01, $F0, $F8, $EA, $01
 	.byte	$04, $FC, $FE, $F5, $00, $FC, $F6, $E4, $00, $00, $F8, $EC, $01, $F0, $F8, $EA
 	.byte	$01, $04, $FC, $FE, $F6, $00, $FC, $F6, $E6, $00, $00, $F8, $EC, $01, $F0, $F8
 	.byte	$EA, $01, $04
-	; CDL: read by sub_03F077
+	; CDL: read by draw_td_item_metasprite
 	.byte	$FC, $FE, $F7, $00, $FC, $F6, $E7, $00, $00, $F8, $EC, $01, $F0, $F8, $EA, $01
 	.byte	$04, $FC, $FE, $F8, $00, $FC, $F6, $E8, $00, $00, $F8, $EC, $01, $F0, $F8, $EA
 	.byte	$01

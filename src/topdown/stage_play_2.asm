@@ -223,7 +223,7 @@ loc_02E820:
 	sta	zp_1C
 	lda	a:p1_view_anchor_y
 	sta	zp_1E
-	jsl	f:sub_02B2AE
+	jsl	f:project_around_stage2_boss
 	bcc	loc_02E84D
 	lda	#$0200
 	sta	a:p1_m7_hofs
@@ -327,7 +327,7 @@ loc_02E912:
 	sta	zp_1C
 	lda	a:p1_view_anchor_y
 	sta	zp_1E
-	jsl	f:sub_02B2AE
+	jsl	f:project_around_stage2_boss
 	bcc	loc_02E93F
 	lda	#$0200
 	sta	a:p1_m7_hofs
@@ -371,7 +371,7 @@ loc_02E97C:
 	sta	zp_1C
 	lda	a:p2_view_anchor_y
 	sta	zp_1E
-	jsl	f:sub_02B2AE
+	jsl	f:project_around_stage2_boss
 	bcc	loc_02E9A9
 	lda	#$0200
 	sta	a:p2_m7_hofs
@@ -399,7 +399,7 @@ loc_02E9C9:
 	beq	loc_02E9D1
 	brl	loc_02EA1D
 loc_02E9D1:
-	jsr	a:sub_02EAA4
+	jsr	a:td_scroll_shared_view_x
 	lda	a:p1_view_x
 	sta	a:p1_m7_center_x
 	sec
@@ -408,7 +408,7 @@ loc_02E9D1:
 	lda	#$0080
 	sta	a:p1_view_anchor_x
 	sta	a:p2_view_anchor_x
-	jsr	a:sub_02EAFD
+	jsr	a:td_scroll_shared_view_y
 	lda	a:p1_view_y
 	sta	a:p1_m7_center_y
 	sec
@@ -430,11 +430,11 @@ loc_02EA19:
 	stz	a:p1_m7_angle
 	rtl
 loc_02EA1D:
-	jsr	a:sub_02EAA4
+	jsr	a:td_scroll_shared_view_x
 	lda	#$0080
 	sta	a:p1_view_anchor_x
 	sta	a:p2_view_anchor_x
-	jsr	a:sub_02EAFD
+	jsr	a:td_scroll_shared_view_y
 	lda	#$007C
 	sta	a:p1_view_anchor_y
 	sta	a:p2_view_anchor_y
@@ -458,7 +458,7 @@ loc_02EA4B:
 	sta	zp_1C
 	lda	a:p1_view_anchor_y
 	sta	zp_1E
-	jsl	f:sub_02B2AE
+	jsl	f:project_around_stage2_boss
 	bcc	loc_02EA7E
 	lda	#$0200
 	sta	a:p1_m7_hofs
@@ -486,14 +486,14 @@ loc_02EA7E:
 loc_02EAA3:
 	rtl
 
-sub_02EAA4:
+td_scroll_shared_view_x:
 	; (not executed in the CDL traces)
-	jsr	a:sub_02EAEA
-	jsr	a:sub_02EAAE
-	jsr	a:sub_02EAC1
+	jsr	a:td_shared_view_bounds_x
+	jsr	a:td_shared_view_follow_p1_x
+	jsr	a:td_shared_view_follow_p2_x
 	rts
 
-sub_02EAAE:
+td_shared_view_follow_p1_x:
 	; (not executed in the CDL traces)
 	lda	a:wram_0ED2
 	beq	loc_02EAC0
@@ -507,7 +507,7 @@ loc_02EABC:
 loc_02EAC0:
 	rts
 
-sub_02EAC1:
+td_shared_view_follow_p2_x:
 	; (not executed in the CDL traces)
 	lda	a:wram_0F12
 	beq	loc_02EAD3
@@ -525,14 +525,14 @@ loc_02EAD4:
 	sbc	#$0048
 	sta	a:p1_view_x
 	sta	a:p2_view_x
-	bra	sub_02EAEA
+	bra	td_shared_view_bounds_x
 loc_02EAE0:
 	clc
 	adc	#$0048
 	sta	a:p1_view_x
 	sta	a:p2_view_x
 
-sub_02EAEA:
+td_shared_view_bounds_x:
 	; (not executed in the CDL traces)
 	lda	a:p1_view_x
 	clc
@@ -544,14 +544,14 @@ sub_02EAEA:
 	sta	zp_1A
 	rts
 
-sub_02EAFD:
+td_scroll_shared_view_y:
 	; (not executed in the CDL traces)
-	jsr	a:sub_02EB43
-	jsr	a:sub_02EB07
-	jsr	a:sub_02EB1A
+	jsr	a:td_shared_view_bounds_y
+	jsr	a:td_shared_view_follow_p1_y
+	jsr	a:td_shared_view_follow_p2_y
 	rts
 
-sub_02EB07:
+td_shared_view_follow_p1_y:
 	; (not executed in the CDL traces)
 	lda	a:p1_lives
 	beq	loc_02EB19
@@ -565,7 +565,7 @@ loc_02EB15:
 loc_02EB19:
 	rts
 
-sub_02EB1A:
+td_shared_view_follow_p2_y:
 	; (not executed in the CDL traces)
 	lda	a:p2_lives
 	beq	loc_02EB2C
@@ -583,14 +583,14 @@ loc_02EB2D:
 	sbc	#$002C
 	sta	a:p1_view_y
 	sta	a:p2_view_y
-	bra	sub_02EB43
+	bra	td_shared_view_bounds_y
 loc_02EB39:
 	clc
 	adc	#$002C
 	sta	a:p1_view_y
 	sta	a:p2_view_y
 
-sub_02EB43:
+td_shared_view_bounds_y:
 	; (not executed in the CDL traces)
 	lda	a:p1_view_y
 	clc
@@ -684,14 +684,14 @@ td_score_kill_2:
 	jsl	f:add_score
 	rts
 
-sub_02EBCE:
+td_score_enemy_kill:
 	; (not executed in the CDL traces)
 	phx
-	jsr	a:sub_02EBD4
+	jsr	a:td_score_enemy_kill_2
 	plx
 	rtl
 
-sub_02EBD4:
+td_score_enemy_kill_2:
 	; (not executed in the CDL traces)
 	jsr	a:td_get_enemy_points
 	tyx
@@ -1193,16 +1193,16 @@ loc_02EF81:
 	inc	a:screen_shake_offset
 	bra	loc_02EF5C
 
-sub_02EF8D:
-	jsl	f:sub_02EFA2
-	jsr	a:sub_02F109
-	jsr	a:sub_02F1B1
-	jsr	a:sub_02F257
-	jsr	a:sub_02F365
-	jsl	f:sub_02F18F
+update_stage5_boss:
+	jsl	f:stage5_boss_run_state
+	jsr	a:stage5_boss_animate_body
+	jsr	a:stage5_boss_update_palette_cycle
+	jsr	a:stage5_boss_update_spit
+	jsr	a:stage5_boss_flash_on_hit
+	jsl	f:stage5_boss_stream_chr
 	rtl
 
-sub_02EFA2:
+stage5_boss_run_state:
 	lda	$06,x
 	bpl	loc_02EFA9
 	brl	loc_02F09A
@@ -1211,23 +1211,23 @@ loc_02EFA9:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02EFB8,x
+	lda	f:tbl_stage5_boss_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02EFB8:
-	.addr	sub_02EFCC
-	.addr	sub_02EFFE
-	.addr	sub_02F00D
-	.addr	sub_02F03B
-	.addr	sub_02F04D
-	.addr	sub_02F057
-	.addr	sub_02F065
-	.addr	sub_02F082
-	.addr	sub_02F0B3
-	.addr	sub_02F0FB
+tbl_stage5_boss_states:
+	.addr	stage5_boss_state_0
+	.addr	stage5_boss_state_1
+	.addr	stage5_boss_state_2
+	.addr	stage5_boss_state_3
+	.addr	stage5_boss_state_4
+	.addr	stage5_boss_state_5
+	.addr	stage5_boss_state_6
+	.addr	stage5_boss_state_7
+	.addr	stage5_boss_state_8
+	.addr	stage5_boss_state_9
 
-sub_02EFCC:
+stage5_boss_state_0:
 	ldy	difficulty
 	lda	a:data_05E670,y
 	sta	$06,x
@@ -1245,13 +1245,13 @@ sub_02EFCC:
 	stz	a:wram_15BC
 	stz	a:wram_15C8
 loc_02EFF1:
-	jsr	a:sub_02F3CF
+	jsr	a:stage5_boss_spawn_arm
 	lda	#$0040
 	sta	$24,x
 	lda	#$0001
 	sta	$12,x
 
-sub_02EFFE:
+stage5_boss_state_1:
 	dec	$24,x
 	bmi	loc_02F003
 	rtl
@@ -1261,10 +1261,10 @@ loc_02F003:
 	lda	#$0002
 	sta	$12,x
 
-sub_02F00D:
+stage5_boss_state_2:
 	dec	$24,x
 	bmi	loc_02F015
-	jsr	a:sub_02F225
+	jsr	a:stage5_boss_target_player
 	rtl
 loc_02F015:
 	ldy	difficulty
@@ -1272,7 +1272,7 @@ loc_02F015:
 	lsr	a
 	cmp	$06,x
 	bcc	loc_02F031
-	jsl	f:sub_02B1A3
+	jsl	f:td_select_target_player_long
 	lda	a:wram_15A0
 	cmp	#$4000
 	bcs	loc_02F02E
@@ -1286,10 +1286,10 @@ loc_02F031:
 	lda	#$0003
 	sta	$12,x
 
-sub_02F03B:
+stage5_boss_state_3:
 	dec	$24,x
 	bmi	loc_02F043
-	jsr	a:sub_02F225
+	jsr	a:stage5_boss_target_player
 	rtl
 loc_02F043:
 	lda	#$0040
@@ -1297,7 +1297,7 @@ loc_02F043:
 	lda	#$0004
 	sta	$12,x
 
-sub_02F04D:
+stage5_boss_state_4:
 	dec	$24,x
 	bmi	loc_02F052
 	rtl
@@ -1305,8 +1305,8 @@ loc_02F052:
 	lda	#$0005
 	sta	$12,x
 
-sub_02F057:
-	jsr	a:sub_02F75F
+stage5_boss_state_5:
+	jsr	a:stage5_boss_check_arm_out
 	bne	loc_02F05F
 	brl	loc_02EFF1
 loc_02F05F:
@@ -1315,37 +1315,37 @@ loc_02F060:
 	lda	#$0006
 	sta	$12,x
 
-sub_02F065:
-	jsr	a:sub_02F75F
+stage5_boss_state_6:
+	jsr	a:stage5_boss_check_arm_out
 	bne	loc_02F06D
 	brl	loc_02EFF1
 loc_02F06D:
-	jsl	f:sub_02B1A3
+	jsl	f:td_select_target_player_long
 	lda	a:wram_15A0
 	cmp	#$4000
 	bcs	loc_02F07D
-	jsr	a:sub_02F237
+	jsr	a:stage5_boss_target_circle
 	rtl
 loc_02F07D:
 	lda	#$0007
 	sta	$12,x
 
-sub_02F082:
-	jsr	a:sub_02F75F
+stage5_boss_state_7:
+	jsr	a:stage5_boss_check_arm_out
 	bne	loc_02F08A
 	; (not executed in the CDL traces)
 	brl	loc_02EFF1
 loc_02F08A:
-	jsl	f:sub_02B1A3
+	jsl	f:td_select_target_player_long
 	lda	a:wram_15A0
 	cmp	#$4000
 	bcc	loc_02F060
-	jsr	a:sub_02F225
+	jsr	a:stage5_boss_target_player
 	rtl
 loc_02F09A:
 	lda	#$0008
 	cmp	$12,x
-	beq	sub_02F0B3
+	beq	stage5_boss_state_8
 	sta	$12,x
 	stz	$16,x
 	lda	#$0200
@@ -1354,8 +1354,8 @@ loc_02F09A:
 	lda	#$0002
 	sta	a:screen_shake_offset
 
-sub_02F0B3:
-	jsl	f:sub_02B7C9
+stage5_boss_state_8:
+	jsl	f:td_play_rumble_sound
 	lda	$24,x
 	beq	loc_02F0EF
 	cmp	#$000C
@@ -1378,7 +1378,7 @@ sub_02F0B3:
 	sta	a:wram_0B0E
 	phx
 	ldx	#$0B00
-	jsl	f:sub_02AC72
+	jsl	f:td_spawn_explosion_effect
 	plx
 loc_02F0EC:
 	dec	$24,x
@@ -1390,16 +1390,16 @@ loc_02F0EF:
 	lda	#$0009
 	sta	$12,x
 
-sub_02F0FB:
+stage5_boss_state_9:
 	lda	$24,x
 	and	#$0003
 	bne	loc_02F106
-	jsl	f:sub_02AC72
+	jsl	f:td_spawn_explosion_effect
 loc_02F106:
 	dec	$24,x
 	rtl
 
-sub_02F109:
+stage5_boss_animate_body:
 	lda	a:wram_0AD2
 	cmp	#$0008
 	bcs	loc_02F182
@@ -1422,24 +1422,24 @@ sub_02F109:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02F144,x
+	lda	f:tbl_stage5_boss_body_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02F144:
-	.addr	sub_02F14C
-	.addr	sub_02F155
-	.addr	sub_02F16A
-	.addr	sub_02F188
+tbl_stage5_boss_body_steps:
+	.addr	stage5_boss_body_step_0
+	.addr	stage5_boss_body_step_1
+	.addr	stage5_boss_body_step_2
+	.addr	stage5_boss_body_step_3
 
-sub_02F14C:
+stage5_boss_body_step_0:
 	; (not executed in the CDL traces)
 	stz	a:wram_1592
 loc_02F14F:
 	lda	#$0001
 	sta	a:wram_15C0
 
-sub_02F155:
+stage5_boss_body_step_1:
 	lda	a:wram_1592
 	bne	loc_02F160
 	lda	#$1000
@@ -1452,7 +1452,7 @@ loc_02F164:
 	lda	#$0002
 	sta	a:wram_15C0
 
-sub_02F16A:
+stage5_boss_body_step_2:
 	lda	a:wram_1592
 	cmp	#$0017
 	bcc	loc_02F17E
@@ -1468,12 +1468,12 @@ loc_02F182:
 	lda	#$0003
 	sta	a:wram_15C0
 
-sub_02F188:
+stage5_boss_body_step_3:
 	lda	#$0018
 	sta	a:wram_1592
 	rts
 
-sub_02F18F:
+stage5_boss_stream_chr:
 	lda	#$3200
 	sta	a:boss_chr_stream_vram
 	lda	#$007E
@@ -1489,21 +1489,21 @@ sub_02F18F:
 	sta	a:boss_chr_stream_src
 	rtl
 
-sub_02F1B1:
+stage5_boss_update_palette_cycle:
 	lda	a:wram_15BC
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02F1C1,x
+	lda	f:tbl_stage5_boss_palette_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02F1C1:
-	.addr	sub_02F1C7
-	.addr	sub_02F1D9
-	.addr	sub_02F204
+tbl_stage5_boss_palette_steps:
+	.addr	stage5_boss_palette_step_0
+	.addr	stage5_boss_palette_step_1
+	.addr	stage5_boss_palette_step_2
 
-sub_02F1C7:
+stage5_boss_palette_step_0:
 	stz	a:palette_cycle_speed
 	stz	a:palette_cycle_counter
 	lda	#$0001
@@ -1511,7 +1511,7 @@ sub_02F1C7:
 	lda	#$0001
 	sta	a:wram_15BC
 
-sub_02F1D9:
+stage5_boss_palette_step_1:
 	lda	a:wram_0AD2
 	cmp	#$0008
 	bcs	loc_02F1EB
@@ -1532,7 +1532,7 @@ loc_02F1EC:
 	lda	#$0002
 	sta	a:wram_15BC
 
-sub_02F204:
+stage5_boss_palette_step_2:
 	lda	a:wram_15C4
 	beq	loc_02F21C
 	lda	a:palette_cycle_paused
@@ -1546,11 +1546,11 @@ loc_02F219:
 loc_02F21C:
 	lda	a:wram_0AD2
 	cmp	#$0008
-	bcs	sub_02F1C7
+	bcs	stage5_boss_palette_step_0
 	rts
 
-sub_02F225:
-	jsl	f:sub_02B1A3
+stage5_boss_target_player:
+	jsl	f:td_select_target_player_long
 	ldy	a:wram_159E
 	lda	a:$0ECA,y
 	sta	$3E,x
@@ -1558,7 +1558,7 @@ sub_02F225:
 	sta	$3C,x
 	rts
 
-sub_02F237:
+stage5_boss_target_circle:
 	lda	stage_frame_counter
 	eor	#$00FF
 	and	#$00FF
@@ -1574,7 +1574,7 @@ sub_02F237:
 	sta	$3C,x
 	rts
 
-sub_02F257:
+stage5_boss_update_spit:
 	lda	a:wram_0AC6
 	bpl	loc_02F25F
 	brl	loc_02F306
@@ -1583,20 +1583,20 @@ loc_02F25F:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02F26F,x
+	lda	f:tbl_stage5_boss_spit_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02F26F:
-	.addr	sub_02F27C
-	.addr	sub_02F2A9
-	.addr	sub_02F2B8
-	.addr	sub_02F300
-	.addr	sub_02F32D
+tbl_stage5_boss_spit_steps:
+	.addr	stage5_boss_spit_step_0
+	.addr	stage5_boss_spit_step_1
+	.addr	stage5_boss_spit_step_2
+	.addr	stage5_boss_spit_step_3
+	.addr	stage5_boss_spit_step_4
 loc_02F279:
 	stz	a:wram_15C8
 
-sub_02F27C:
+stage5_boss_spit_step_0:
 	lda	a:wram_0AD2
 	cmp	#$0006
 	beq	loc_02F285
@@ -1610,12 +1610,12 @@ loc_02F285:
 	lda	#$0020
 	sta	a:wram_15CA
 	lda	#$0300
-	jsr	a:sub_02F336
+	jsr	a:stage5_boss_spawn_spit
 	stz	a:wram_0314
 	lda	#$0001
 	sta	a:wram_15C8
 
-sub_02F2A9:
+stage5_boss_spit_step_1:
 	dec	a:wram_15CA
 	bmi	loc_02F2AF
 	rts
@@ -1624,7 +1624,7 @@ loc_02F2AF:
 	lda	#$0002
 	sta	a:wram_15C8
 
-sub_02F2B8:
+stage5_boss_spit_step_2:
 	lda	a:wram_15CA
 	inc	a:wram_15CA
 	cmp	#$0020
@@ -1639,7 +1639,7 @@ sub_02F2B8:
 	lda	#$0001
 	sta	a:$0014,y
 	tya
-	jsr	a:sub_02F336
+	jsr	a:stage5_boss_spawn_spit
 loc_02F2DB:
 	rts
 loc_02F2DC:
@@ -1656,7 +1656,7 @@ loc_02F2DC:
 	lda	#$0003
 	sta	a:wram_15C8
 
-sub_02F300:
+stage5_boss_spit_step_3:
 	dec	a:wram_15CA
 	bmi	loc_02F306
 	; (not executed in the CDL traces)
@@ -1676,14 +1676,14 @@ loc_02F306:
 	lda	#$0004
 	sta	a:wram_15C8
 
-sub_02F32D:
+stage5_boss_spit_step_4:
 	dec	a:wram_15CA
 	bpl	loc_02F335
 	brl	loc_02F279
 loc_02F335:
 	rts
 
-sub_02F336:
+stage5_boss_spawn_spit:
 	phx
 	tax
 	lda	#$000B
@@ -1707,7 +1707,7 @@ sub_02F336:
 	plx
 	rts
 
-sub_02F365:
+stage5_boss_flash_on_hit:
 	lda	a:wram_15B0
 	inc	a:wram_15B0
 	lsr	a
@@ -1721,7 +1721,7 @@ sub_02F365:
 	sta	zp_04
 	lda	$2A,x
 	beq	loc_02F390
-	jsr	a:sub_02F3C1
+	jsr	a:stage5_boss_restore_palette
 	dec	$2A,x
 	lda	$2E,x
 	and	#$FFBF
@@ -1730,7 +1730,7 @@ sub_02F365:
 loc_02F390:
 	lda	$2E,x
 	bit	#$0040
-	beq	sub_02F3C1
+	beq	stage5_boss_restore_palette
 	and	#$FFBF
 	sta	$2E,x
 	lda	#$0004
@@ -1754,7 +1754,7 @@ loc_02F390:
 	plx
 	rts
 
-sub_02F3C1:
+stage5_boss_restore_palette:
 	phx
 	phb
 	ldx	zp_00
@@ -1765,8 +1765,8 @@ sub_02F3C1:
 	plx
 	rts
 
-sub_02F3CF:
-	jsl	f:sub_02B1A3
+stage5_boss_spawn_arm:
+	jsl	f:td_select_target_player_long
 	ldy	a:wram_159E
 	lda	a:$0ECA,y
 	sec
@@ -1852,12 +1852,12 @@ sub_02F3CF:
 	sta	a:wram_0BBA
 	rts
 
-sub_02F4B8:
+update_stage5_boss_claw:
 	lda	a:wram_0AC6
 	bpl	loc_02F4C0
 	brl	loc_02F5B6
 loc_02F4C0:
-	jsr	a:sub_02F745
+	jsr	a:stage5_boss_arm_check_dead
 	bcc	loc_02F4C8
 	brl	loc_02F5B6
 loc_02F4C8:
@@ -1884,20 +1884,20 @@ loc_02F4E8:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02F501,x
+	lda	f:tbl_stage5_boss_claw_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02F501:
-	.addr	sub_02F50F
-	.addr	sub_02F531
-	.addr	sub_02F554
-	.addr	sub_02F564
-	.addr	sub_02F57E
-	.addr	sub_02F5A3
-	.addr	sub_02F5C8
+tbl_stage5_boss_claw_states:
+	.addr	stage5_boss_claw_state_0
+	.addr	stage5_boss_claw_state_1
+	.addr	stage5_boss_claw_state_2
+	.addr	stage5_boss_claw_state_3
+	.addr	stage5_boss_claw_state_4
+	.addr	stage5_boss_claw_state_5
+	.addr	stage5_boss_claw_state_6
 
-sub_02F50F:
+stage5_boss_claw_state_0:
 	ldy	difficulty
 	lda	a:data_05E6B6,y
 	sta	$06,x
@@ -1912,15 +1912,15 @@ sub_02F50F:
 	stz	$0C,x
 	lda	#$0001
 	cmp	$12,x
-	beq	sub_02F531
+	beq	stage5_boss_claw_state_1
 	sta	$12,x
 
-sub_02F531:
+stage5_boss_claw_state_1:
 	rtl
 loc_02F532:
 	lda	#$0002
 	cmp	$12,x
-	beq	sub_02F554
+	beq	stage5_boss_claw_state_2
 	sta	$12,x
 	lda	#$B000
 	sta	$16,x
@@ -1933,40 +1933,40 @@ loc_02F532:
 	lda	$0E,x
 	sta	a:wram_1902
 
-sub_02F554:
+stage5_boss_claw_state_2:
 	lda	#$0002
-	jsr	a:sub_02F78A
+	jsr	a:stage5_boss_claw_turn_to_target
 	rtl
 loc_02F55B:
 	lda	#$0003
 	cmp	$12,x
-	beq	sub_02F564
+	beq	stage5_boss_claw_state_3
 	sta	$12,x
 
-sub_02F564:
+stage5_boss_claw_state_3:
 	lda	#$0002
-	jsr	a:sub_02F78A
+	jsr	a:stage5_boss_claw_turn_to_target
 	lda	#$0020
-	jsl	f:sub_029C7F
-	jsr	a:sub_02F7F0
+	jsl	f:td_move_at_angle
+	jsr	a:stage5_boss_claw_record_trail
 	rtl
 loc_02F575:
 	lda	#$0004
 	cmp	$12,x
-	beq	sub_02F57E
+	beq	stage5_boss_claw_state_4
 	sta	$12,x
 
-sub_02F57E:
+stage5_boss_claw_state_4:
 	lda	a:wram_0AE4
 	cmp	#$0010
 	bne	loc_02F58A
-	jsl	f:sub_02F86F
+	jsl	f:stage5_boss_claw_fire
 loc_02F58A:
 	rtl
 loc_02F58B:
 	lda	#$0005
 	cmp	$12,x
-	beq	sub_02F5A3
+	beq	stage5_boss_claw_state_5
 	sta	$12,x
 	lda	#$B000
 	sta	$16,x
@@ -1975,10 +1975,10 @@ loc_02F58B:
 	lda	#$2000
 	sta	$02,x
 
-sub_02F5A3:
-	jsr	a:sub_02F7DB
+stage5_boss_claw_state_5:
+	jsr	a:stage5_boss_arm_angle_from_head
 	sta	$04,x
-	jsr	a:sub_02F834
+	jsr	a:stage5_boss_arm_follow_trail
 	lda	$3A,x
 	cmp	#$1900
 	bcs	loc_02F5B5
@@ -1988,27 +1988,27 @@ loc_02F5B5:
 loc_02F5B6:
 	lda	#$0006
 	cmp	$12,x
-	beq	sub_02F5C8
+	beq	stage5_boss_claw_state_6
 	sta	$12,x
 	lda	#$0030
 	jsl	f:queue_sound
 	stz	$16,x
 
-sub_02F5C8:
+stage5_boss_claw_state_6:
 	lda	zp_EB
 	and	#$0002
 	sta	$14,x
-	jsl	f:sub_02AC8F
-	jsl	f:sub_029D0C
+	jsl	f:td_spawn_item_drop
+	jsl	f:td_start_explosion
 	rtl
 
-sub_02F5D8:
+update_stage5_boss_arm_base:
 	lda	a:wram_0B50
 	bne	loc_02F5E0
 	brl	clear_topdown_slot
 loc_02F5E0:
-	jsr	a:sub_02F753
-	jsr	a:sub_02F745
+	jsr	a:stage5_boss_arm_pass_damage
+	jsr	a:stage5_boss_arm_check_dead
 	bcc	loc_02F5EB
 	brl	loc_02F675
 loc_02F5EB:
@@ -2016,17 +2016,17 @@ loc_02F5EB:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02F5FA,x
+	lda	f:tbl_stage5_boss_arm_base_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02F5FA:
-	.addr	sub_02F602
-	.addr	sub_02F61D
-	.addr	sub_02F63C
-	.addr	sub_02F665
+tbl_stage5_boss_arm_base_states:
+	.addr	stage5_boss_arm_base_state_0
+	.addr	stage5_boss_arm_base_state_1
+	.addr	stage5_boss_arm_base_state_2
+	.addr	stage5_boss_arm_base_state_3
 
-sub_02F602:
+stage5_boss_arm_base_state_0:
 	stz	$16,x
 	stz	$2E,x
 	stz	$00,x
@@ -2041,11 +2041,11 @@ sub_02F602:
 	lda	#$0001
 	sta	$12,x
 
-sub_02F61D:
+stage5_boss_arm_base_state_1:
 	lda	$3A,x
 	cmp	#$18E0
 	beq	loc_02F628
-	jsr	a:sub_02F834
+	jsr	a:stage5_boss_arm_follow_trail
 	rtl
 loc_02F628:
 	lda	#$B000
@@ -2057,11 +2057,11 @@ loc_02F628:
 	lda	#$0002
 	sta	$12,x
 
-sub_02F63C:
+stage5_boss_arm_base_state_2:
 	lda	$3A,x
 	cmp	#$1900
 	beq	loc_02F660
-	jsr	a:sub_02F834
+	jsr	a:stage5_boss_arm_follow_trail
 	lda	$3A,x
 	cmp	#$18E0
 	bcs	loc_02F650
@@ -2072,34 +2072,34 @@ loc_02F650:
 	sta	$0A,x
 	lda	a:wram_1902
 	sta	$0E,x
-	jsr	a:sub_02F7C6
+	jsr	a:stage5_boss_arm_angle_from_tail
 	sta	$04,x
 	rtl
 loc_02F660:
 	lda	#$0003
 	sta	$12,x
 
-sub_02F665:
-	jsr	a:sub_02F834
+stage5_boss_arm_base_state_3:
+	jsr	a:stage5_boss_arm_follow_trail
 	lda	$3A,x
 	cmp	#$1900
 	bcc	loc_02F628
-	jsr	a:sub_02F7C6
+	jsr	a:stage5_boss_arm_angle_from_tail
 	sta	$04,x
 	rtl
 loc_02F675:
 	stz	$16,x
-	jsl	f:sub_029D0C
+	jsl	f:td_start_explosion
 	rtl
 
-sub_02F67C:
+update_stage5_boss_arm_segment:
 	lda	a:wram_0B50
 	bne	loc_02F684
 	; (not executed in the CDL traces)
 	brl	clear_topdown_slot
 loc_02F684:
-	jsr	a:sub_02F753
-	jsr	a:sub_02F745
+	jsr	a:stage5_boss_arm_pass_damage
+	jsr	a:stage5_boss_arm_check_dead
 	bcc	loc_02F68F
 	brl	loc_02F719
 loc_02F68F:
@@ -2107,18 +2107,18 @@ loc_02F68F:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02F69E,x
+	lda	f:tbl_stage5_boss_arm_segment_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02F69E:
-	.addr	sub_02F6A8
-	.addr	sub_02F6C3
-	.addr	sub_02F6EA
-	.addr	sub_02F70E
-	.addr	sub_02F729
+tbl_stage5_boss_arm_segment_states:
+	.addr	stage5_boss_arm_segment_state_0
+	.addr	stage5_boss_arm_segment_state_1
+	.addr	stage5_boss_arm_segment_state_2
+	.addr	stage5_boss_arm_segment_state_3
+	.addr	stage5_boss_arm_segment_state_4
 
-sub_02F6A8:
+stage5_boss_arm_segment_state_0:
 	stz	$16,x
 	stz	$2E,x
 	stz	$00,x
@@ -2133,14 +2133,14 @@ sub_02F6A8:
 	lda	#$0001
 	sta	$12,x
 
-sub_02F6C3:
+stage5_boss_arm_segment_state_1:
 	lda	a:wram_0B52
 	cmp	#$0002
 	bcc	loc_02F6D5
 	lda	$3A,x
 	cmp	#$18E0
 	beq	loc_02F6D6
-	jsr	a:sub_02F834
+	jsr	a:stage5_boss_arm_follow_trail
 loc_02F6D5:
 	rtl
 loc_02F6D6:
@@ -2153,11 +2153,11 @@ loc_02F6D6:
 	lda	#$0002
 	sta	$12,x
 
-sub_02F6EA:
+stage5_boss_arm_segment_state_2:
 	lda	$3A,x
 	cmp	#$1900
 	beq	loc_02F709
-	jsr	a:sub_02F834
+	jsr	a:stage5_boss_arm_follow_trail
 	lda	$3A,x
 	cmp	#$18E0
 	bcs	loc_02F6FE
@@ -2172,8 +2172,8 @@ loc_02F709:
 	lda	#$0003
 	sta	$12,x
 
-sub_02F70E:
-	jsr	a:sub_02F834
+stage5_boss_arm_segment_state_3:
+	jsr	a:stage5_boss_arm_follow_trail
 	lda	$3A,x
 	cmp	#$1900
 	bcc	loc_02F6D6
@@ -2181,13 +2181,13 @@ sub_02F70E:
 loc_02F719:
 	lda	$12,x
 	cmp	#$0004
-	beq	sub_02F729
+	beq	stage5_boss_arm_segment_state_4
 	stz	$16,x
 	stz	$24,x
 	lda	#$0004
 	sta	$12,x
 
-sub_02F729:
+stage5_boss_arm_segment_state_4:
 	inc	$24,x
 	lda	$24,x
 	cmp	#$0010
@@ -2203,7 +2203,7 @@ loc_02F735:
 	sta	$02,x
 	rtl
 
-sub_02F745:
+stage5_boss_arm_check_dead:
 	lda	a:wram_0AC6
 	bmi	loc_02F751
 	lda	a:wram_0B46
@@ -2214,7 +2214,7 @@ loc_02F751:
 	sec
 	rts
 
-sub_02F753:
+stage5_boss_arm_pass_damage:
 	lda	a:wram_0B46
 	clc
 	adc	$06,x
@@ -2222,7 +2222,7 @@ sub_02F753:
 	stz	$06,x
 	rts
 
-sub_02F75F:
+stage5_boss_check_arm_out:
 	lda	a:wram_0B50
 	ora	a:wram_0B90
 	ora	a:wram_0BD0
@@ -2239,9 +2239,9 @@ sub_02F75F:
 	ora	a:wram_0E90
 	rts
 
-sub_02F78A:
+stage5_boss_claw_turn_to_target:
 	sta	zp_FA
-	jsr	a:sub_02F7B1
+	jsr	a:stage5_boss_claw_angle_to_target
 	sec
 	sbc	$04,x
 	beq	loc_02F7A3
@@ -2264,7 +2264,7 @@ loc_02F7A5:
 	sec
 	rts
 
-sub_02F7B1:
+stage5_boss_claw_angle_to_target:
 	sec
 	lda	a:wram_0AFE
 	sbc	$0A,x
@@ -2276,7 +2276,7 @@ sub_02F7B1:
 	jsl	f:calc_angle
 	rts
 
-sub_02F7C6:
+stage5_boss_arm_angle_from_tail:
 	sec
 	lda	$0A,x
 	sbc	a:wram_0E8A
@@ -2288,7 +2288,7 @@ sub_02F7C6:
 	jsl	f:calc_angle
 	rts
 
-sub_02F7DB:
+stage5_boss_arm_angle_from_head:
 	sec
 	lda	$0A,x
 	sbc	a:wram_0BCA
@@ -2300,7 +2300,7 @@ sub_02F7DB:
 	jsl	f:calc_angle
 	rts
 
-sub_02F7F0:
+stage5_boss_claw_record_trail:
 	lda	a:wram_0B52
 	cmp	#$0005
 	beq	loc_02F821
@@ -2342,7 +2342,7 @@ loc_02F821:
 	sty	$3A,x
 	rts
 
-sub_02F834:
+stage5_boss_arm_follow_trail:
 	lda	a:wram_0B52
 	cmp	#$0005
 	beq	loc_02F85C
@@ -2377,11 +2377,11 @@ loc_02F85C:
 	sty	$3A,x
 	rts
 
-sub_02F86F:
+stage5_boss_claw_fire:
 	lda	$2E,x
 	bit	#$0003
 	beq	loc_02F8D3
-	jsl	f:sub_029BC2
+	jsl	f:td_find_free_enemy_shot_slot
 	bcs	loc_02F8D3
 	lda	#$000E
 	sta	a:$0010,y
@@ -2413,7 +2413,7 @@ sub_02F86F:
 	phx
 	phy
 	tyx
-	jsl	f:sub_02B1A3
+	jsl	f:td_select_target_player_long
 	ply
 	plx
 	lda	a:wram_159E
@@ -2423,7 +2423,7 @@ sub_02F86F:
 loc_02F8D3:
 	rtl
 
-sub_02F8D4:
+update_td_nest:
 	lda	$06,x
 	bpl	loc_02F8DB
 	brl	loc_02F98A
@@ -2432,19 +2432,19 @@ loc_02F8DB:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02F8EA,x
+	lda	f:tbl_td_nest_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02F8EA:
-	.addr	sub_02F8F6
-	.addr	sub_02F912
-	.addr	sub_02F94B
-	.addr	sub_02F963
-	.addr	sub_02F97D
-	.addr	sub_02F9A4
+tbl_td_nest_states:
+	.addr	td_nest_state_0
+	.addr	td_nest_state_1
+	.addr	td_nest_state_2
+	.addr	td_nest_state_3
+	.addr	td_nest_state_4
+	.addr	td_nest_state_5
 
-sub_02F8F6:
+td_nest_state_0:
 	ldy	difficulty
 	lda	a:data_05E6CC,y
 	sta	$06,x
@@ -2459,7 +2459,7 @@ loc_02F903:
 	lda	#$0001
 	sta	$12,x
 
-sub_02F912:
+td_nest_state_1:
 	dec	$24,x
 	bmi	loc_02F917
 	rtl
@@ -2471,7 +2471,7 @@ loc_02F917:
 loc_02F920:
 	rtl
 loc_02F921:
-	jsl	f:sub_029B77
+	jsl	f:td_get_hatch_enemy_slot
 	bcs	loc_02F920
 	lda	#$0006
 	sta	a:$0010,y
@@ -2488,7 +2488,7 @@ loc_02F921:
 	sta	$24,x
 	inc	$12,x
 
-sub_02F94B:
+td_nest_state_2:
 	dec	$24,x
 	beq	loc_02F950
 	rtl
@@ -2502,10 +2502,10 @@ loc_02F950:
 	sta	$24,x
 	inc	$12,x
 
-sub_02F963:
+td_nest_state_3:
 	dec	$24,x
 	bmi	loc_02F96C
-	jsl	f:sub_02F9C7
+	jsl	f:td_nest_flash_on_hit
 	rtl
 loc_02F96C:
 	lda	#$0002
@@ -2516,7 +2516,7 @@ loc_02F96C:
 	sta	$24,x
 	inc	$12,x
 
-sub_02F97D:
+td_nest_state_4:
 	dec	$24,x
 	bpl	loc_02F989
 	lda	#$0040
@@ -2536,13 +2536,13 @@ loc_02F98A:
 	lda	#$0005
 	sta	$12,x
 
-sub_02F9A4:
+td_nest_state_5:
 	dec	$24,x
 	bmi	loc_02F9B4
 	lda	$24,x
 	bit	#$0003
 	bne	loc_02F9B3
-	jsl	f:sub_02AC72
+	jsl	f:td_spawn_explosion_effect
 loc_02F9B3:
 	rtl
 loc_02F9B4:
@@ -2550,11 +2550,11 @@ loc_02F9B4:
 	sta	$20,x
 	cmp	$28,x
 	bne	loc_02F9B3
-	jsl	f:sub_02AC8F
+	jsl	f:td_spawn_item_drop
 	bcs	loc_02F9B3
 	jml	f:clear_topdown_slot
 
-sub_02F9C7:
+td_nest_flash_on_hit:
 	lda	$2A,x
 	bne	loc_02F9EA
 	lda	$2E,x
@@ -2579,7 +2579,7 @@ loc_02F9EA:
 loc_02F9F5:
 	rtl
 
-sub_02F9F6:
+update_gun_hatch_aim:
 	lda	$06,x
 	bpl	loc_02F9FD
 	brl	loc_02FAA0
@@ -2588,19 +2588,19 @@ loc_02F9FD:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02FA0C,x
+	lda	f:tbl_gun_hatch_aim_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02FA0C:
-	.addr	sub_02FA18
-	.addr	sub_02FA35
-	.addr	sub_02FA61
-	.addr	sub_02FA79
-	.addr	sub_02FA93
-	.addr	sub_02FABA
+tbl_gun_hatch_aim_states:
+	.addr	gun_hatch_state_0
+	.addr	gun_hatch_aim_state_1
+	.addr	gun_hatch_aim_state_2
+	.addr	gun_hatch_state_3
+	.addr	gun_hatch_state_4
+	.addr	gun_hatch_state_5
 
-sub_02FA18:
+gun_hatch_state_0:
 	ldy	difficulty
 	lda	a:data_05E6D2,y
 	sta	$06,x
@@ -2616,7 +2616,7 @@ loc_02FA25:
 	sta	$12,x
 	rtl
 
-sub_02FA35:
+gun_hatch_aim_state_1:
 	dec	$24,x
 	bmi	loc_02FA3A
 	rtl
@@ -2629,7 +2629,7 @@ loc_02FA43:
 	rtl
 loc_02FA44:
 	lda	#$0010
-	jsr	a:sub_02FC71
+	jsr	a:gun_hatch_spawn_turret
 	bcs	loc_02FA43
 	lda	a:$0004,y
 	eor	#$0080
@@ -2640,7 +2640,7 @@ loc_02FA44:
 	sta	$24,x
 	inc	$12,x
 
-sub_02FA61:
+gun_hatch_aim_state_2:
 	dec	$24,x
 	beq	loc_02FA66
 	rtl
@@ -2654,10 +2654,10 @@ loc_02FA66:
 	sta	$24,x
 	inc	$12,x
 
-sub_02FA79:
+gun_hatch_state_3:
 	dec	$24,x
 	bmi	loc_02FA82
-	jsl	f:sub_02FC9C
+	jsl	f:gun_hatch_flash_on_hit
 	rtl
 loc_02FA82:
 	lda	#$005B
@@ -2668,7 +2668,7 @@ loc_02FA82:
 	sta	$24,x
 	inc	$12,x
 
-sub_02FA93:
+gun_hatch_state_4:
 	dec	$24,x
 	bpl	loc_02FA9F
 	lda	#$0040
@@ -2688,13 +2688,13 @@ loc_02FAA0:
 	lda	#$0005
 	sta	$12,x
 
-sub_02FABA:
+gun_hatch_state_5:
 	dec	$24,x
 	bmi	loc_02FACA
 	lda	$24,x
 	bit	#$0003
 	bne	loc_02FAC9
-	jsl	f:sub_02AC72
+	jsl	f:td_spawn_explosion_effect
 loc_02FAC9:
 	rtl
 loc_02FACA:
@@ -2702,11 +2702,11 @@ loc_02FACA:
 	sta	$20,x
 	cmp	$28,x
 	bne	loc_02FAC9
-	jsl	f:sub_02AC8F
+	jsl	f:td_spawn_item_drop
 	bcs	loc_02FAC9
 	jml	f:clear_topdown_slot
 
-sub_02FADD:
+update_gun_hatch_spin:
 	lda	$06,x
 	bpl	loc_02FAE4
 	brl	loc_02FAA0
@@ -2715,19 +2715,19 @@ loc_02FAE4:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02FAF3,x
+	lda	f:tbl_gun_hatch_spin_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02FAF3:
-	.addr	sub_02FA18
-	.addr	sub_02FAFF
-	.addr	sub_02FB2B
-	.addr	sub_02FA79
-	.addr	sub_02FA93
-	.addr	sub_02FABA
+tbl_gun_hatch_spin_states:
+	.addr	gun_hatch_state_0
+	.addr	gun_hatch_spin_state_1
+	.addr	gun_hatch_spin_state_2
+	.addr	gun_hatch_state_3
+	.addr	gun_hatch_state_4
+	.addr	gun_hatch_state_5
 
-sub_02FAFF:
+gun_hatch_spin_state_1:
 	dec	$24,x
 	bmi	loc_02FB04
 	rtl
@@ -2740,7 +2740,7 @@ loc_02FB0D:
 	rtl
 loc_02FB0E:
 	lda	#$0009
-	jsr	a:sub_02FC71
+	jsr	a:gun_hatch_spawn_turret
 	bcs	loc_02FB0D
 	lda	a:$0004,y
 	eor	#$0080
@@ -2751,14 +2751,14 @@ loc_02FB0E:
 	sta	$24,x
 	inc	$12,x
 
-sub_02FB2B:
+gun_hatch_spin_state_2:
 	dec	$24,x
 	bne	loc_02FB32
 	brl	loc_02FA66
 loc_02FB32:
 	rtl
 
-sub_02FB33:
+update_gun_hatch_sweep:
 	lda	$06,x
 	bpl	loc_02FB3A
 	brl	loc_02FAA0
@@ -2767,19 +2767,19 @@ loc_02FB3A:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02FB49,x
+	lda	f:tbl_gun_hatch_sweep_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02FB49:
-	.addr	sub_02FA18
-	.addr	sub_02FB55
-	.addr	sub_02FB78
-	.addr	sub_02FA79
-	.addr	sub_02FA93
-	.addr	sub_02FABA
+tbl_gun_hatch_sweep_states:
+	.addr	gun_hatch_state_0
+	.addr	gun_hatch_sweep_state_1
+	.addr	gun_hatch_sweep_state_2
+	.addr	gun_hatch_state_3
+	.addr	gun_hatch_state_4
+	.addr	gun_hatch_state_5
 
-sub_02FB55:
+gun_hatch_sweep_state_1:
 	dec	$24,x
 	bmi	loc_02FB5A
 	rtl
@@ -2792,7 +2792,7 @@ loc_02FB63:
 	rtl
 loc_02FB64:
 	lda	#$0011
-	jsr	a:sub_02FC71
+	jsr	a:gun_hatch_spawn_turret
 	bcs	loc_02FB63
 	lda	#$005B
 	sta	$20,x
@@ -2800,14 +2800,14 @@ loc_02FB64:
 	sta	$24,x
 	inc	$12,x
 
-sub_02FB78:
+gun_hatch_sweep_state_2:
 	dec	$24,x
 	bne	loc_02FB7F
 	brl	loc_02FA66
 loc_02FB7F:
 	rtl
 
-sub_02FB80:
+update_gun_hatch_no_fire:
 	lda	$06,x
 	bpl	loc_02FB87
 	; (not executed in the CDL traces)
@@ -2817,19 +2817,19 @@ loc_02FB87:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02FB96,x
+	lda	f:tbl_gun_hatch_no_fire_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02FB96:
-	.addr	sub_02FA18
-	.addr	sub_02FBA2
-	.addr	sub_02FBD4
-	.addr	sub_02FA79
-	.addr	sub_02FA93
-	.addr	sub_02FABA
+tbl_gun_hatch_no_fire_states:
+	.addr	gun_hatch_state_0
+	.addr	gun_hatch_no_fire_state_1
+	.addr	gun_hatch_no_fire_state_2
+	.addr	gun_hatch_state_3
+	.addr	gun_hatch_state_4
+	.addr	gun_hatch_state_5
 
-sub_02FBA2:
+gun_hatch_no_fire_state_1:
 	dec	$24,x
 	bmi	loc_02FBA7
 	; (not executed in the CDL traces)
@@ -2843,13 +2843,13 @@ loc_02FBB0:
 	rtl
 loc_02FBB1:
 	; (not executed in the CDL traces)
-	jsl	f:sub_02B1A3
+	jsl	f:td_select_target_player_long
 	ldy	a:wram_159E
 	lda	a:$152C,y
 	bit	#$4000
 	bne	loc_02FBB0
 	lda	#$0010
-	jsr	a:sub_02FC71
+	jsr	a:gun_hatch_spawn_turret
 	bcs	loc_02FBB0
 	lda	#$005B
 	sta	$20,x
@@ -2857,7 +2857,7 @@ loc_02FBB1:
 	sta	$24,x
 	inc	$12,x
 
-sub_02FBD4:
+gun_hatch_no_fire_state_2:
 	; (not executed in the CDL traces)
 	dec	$24,x
 	bne	loc_02FBDB
@@ -2874,9 +2874,9 @@ loc_02FBDC:
 	lda	a:data_05E6D8,y
 	sta	$24,x
 	inc	$12,x
-	jmp	a:sub_02FA79
+	jmp	a:gun_hatch_state_3
 
-sub_02FBF4:
+update_gun_hatch_behind:
 	lda	$06,x
 	bpl	loc_02FBFB
 	; (not executed in the CDL traces)
@@ -2886,19 +2886,19 @@ loc_02FBFB:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_02FC0A,x
+	lda	f:tbl_gun_hatch_behind_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_02FC0A:
-	.addr	sub_02FA18
-	.addr	sub_02FC16
-	.addr	sub_02FC51
-	.addr	sub_02FA79
-	.addr	sub_02FA93
-	.addr	sub_02FABA
+tbl_gun_hatch_behind_states:
+	.addr	gun_hatch_state_0
+	.addr	gun_hatch_behind_state_1
+	.addr	gun_hatch_behind_state_2
+	.addr	gun_hatch_state_3
+	.addr	gun_hatch_state_4
+	.addr	gun_hatch_state_5
 
-sub_02FC16:
+gun_hatch_behind_state_1:
 	dec	$24,x
 	bmi	loc_02FC1B
 	rtl
@@ -2910,8 +2910,8 @@ loc_02FC1B:
 loc_02FC24:
 	rtl
 loc_02FC25:
-	jsl	f:sub_02B1A3
-	jsl	f:sub_029B06
+	jsl	f:td_select_target_player_long
+	jsl	f:td_angle_to_nearest_player
 	ldy	a:wram_159E
 	sec
 	sbc	a:$0EC4,y
@@ -2920,7 +2920,7 @@ loc_02FC25:
 	bit	#$0080
 	bne	loc_02FC24
 	lda	#$0010
-	jsr	a:sub_02FC71
+	jsr	a:gun_hatch_spawn_turret
 	bcs	loc_02FC24
 	lda	#$005B
 	sta	$20,x
@@ -2928,7 +2928,7 @@ loc_02FC25:
 	sta	$24,x
 	inc	$12,x
 
-sub_02FC51:
+gun_hatch_behind_state_2:
 	dec	$24,x
 	bne	loc_02FC58
 	brl	loc_02FC59
@@ -2944,11 +2944,11 @@ loc_02FC59:
 	lda	a:data_05E6DE,y
 	sta	$24,x
 	inc	$12,x
-	jmp	a:sub_02FA79
+	jmp	a:gun_hatch_state_3
 
-sub_02FC71:
+gun_hatch_spawn_turret:
 	pha
-	jsl	f:sub_029B77
+	jsl	f:td_get_hatch_enemy_slot
 	bcc	loc_02FC7B
 	; (not executed in the CDL traces)
 	pla
@@ -2965,13 +2965,13 @@ loc_02FC7B:
 	sta	a:$000E,y
 	stx	$3A,y
 	phy
-	jsl	f:sub_029B06
+	jsl	f:td_angle_to_nearest_player
 	ply
 	sta	a:$0004,y
 	clc
 	rts
 
-sub_02FC9C:
+gun_hatch_flash_on_hit:
 	lda	$2A,x
 	bne	loc_02FCBF
 	lda	$2E,x

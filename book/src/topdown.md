@@ -180,7 +180,7 @@ The top-down stages use the object RAM in their own way:
 | `$0300-$047F` | `$20` | enemy shots | `update_topdown_shots` |
 | `$0480-$06FF` | `$20` | player 1's shots (second weapon from `$05C0`) | `update_topdown_shots` |
 | `$0700-$097F` | `$20` | player 2's shots | `update_topdown_shots` |
-| `$0980-$0ABF` | `$40` | other objects (not identified yet) | `sub_02A9F8` |
+| `$0980-$0ABF` | `$40` | other objects (not identified yet) | `update_td_items` |
 | `$0AC0-$0D3F` | `$40` | map objects: the targets, the bosses | `update_map_objects`, `tbl_map_object_types` |
 | `$0D40-$0EBF` | `$40` | enemies | `td_update_enemies`, `tbl_td_enemy_types` |
 | `$0EC0`, `$0F00` | `$40` | players 1 and 2 | `update_topdown_player` |
@@ -207,7 +207,7 @@ chosen from the buttons every frame (states checked in the emulator):
 | 2 | `td_player_state_stand_fire` | standing, Y held |
 | 3 | `td_player_state_walk` | walking: up/down forward and back along the view, left/right sideways (`td_walk_by_dpad`) |
 | 4 | `td_player_state_walk_fire` | walking and firing |
-| 5 | `sub_0291CB` | B pressed: a short action (8 frames), not identified yet |
+| 5 | `td_player_state_jump` | B pressed: a short action (8 frames), not identified yet |
 | 6 | `td_player_state_turn_buttons` | L and R held together |
 | 7 | `td_player_state_spin_fire` | L+R+Y: the player spins 8 units a frame firing both weapons sideways |
 | 8 | `td_player_state_dying` | hit: spins, slows down, respawns after `$80` frames |
@@ -255,12 +255,12 @@ map a rotation of colours `$38-$3F` (`rotate_palette_colors_up`).
 ## Still to do
 
 The enemy, map object and shot handlers (`tbl_td_enemy_types`,
-`tbl_map_object_types`, `tbl_topdown_shot_types`, `tbl_02AA20`), the
-bosses, the stage 2 boss camera (`sub_02B2AE`) and the tile attribute
+`tbl_map_object_types`, `tbl_topdown_shot_types`, `tbl_td_item_types`), the
+bosses, the stage 2 boss camera (`project_around_stage2_boss`) and the tile attribute
 values are not named yet. Data that milestone 3 must turn into labels:
 the pointers in `sprite_data_07.asm` (metasprites and stream tables read
-through `data_078806` / `data_078828`), the per-angle walking vectors
-(`data_079118`, `data_079198`, `data_079398`, `data_079418`), the
+through `ptrs_td_metasprite_sets` / `ptrs_td_stream_sets`), the per-angle walking vectors
+(`td_walk_y_int`, `td_walk_x_int`, `td_walk_y_frac`, `td_walk_x_frac`), the
 stream-list pointers built from immediates in `draw_enemies`, and the
 loader lists passed as immediates (`load_stage2_assets` and its
 siblings).
