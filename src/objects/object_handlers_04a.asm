@@ -5957,8 +5957,8 @@ face_boss_larva_state_02:
 	lda	#$0010
 	jml	f:set_velocity_from_angle
 
-; Turns OBJ_ANGLE by zp_00 towards the face boss (slot $0900): the larvae
-; return to the mouth.
+; Turns OBJ_ANGLE by zp_00 towards the face boss (slot $0900; state 2 of the
+; larva, probably going back to the mouth).
 face_boss_larva_turn_toward_boss:
 	sta	zp_00
 	lda	a:wram_090A
