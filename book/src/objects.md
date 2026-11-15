@@ -122,12 +122,46 @@ stat block at slot + `$1D80` (`$1F80`, `$1FC0`; `p1_*` / `p2_*` in the
 `PLAYER_WEAPON_2`, `PLAYER_BARRIER`, `PLAYER_LIVES`, `PLAYER_BOMBS`,
 `PLAYER_SPIN`.
 
+### States
+
+`OBJ_STATE` of a player selects both its input routine (`tbl_player_input`,
+called by `read_player_input`) and its handler (`tbl_player_states`, called
+by `run_player_state`). Identified so far (`PLAYER_STATE_*` in
+`src/ram.inc`; seen in the emulator or from the code):
+
+| state | constant | handler | |
+|---|---|---|---|
+| `$00` | `PLAYER_STATE_GROUND` | `player_state_ground` | standing, walking, crouching |
+| `$01` | | `player_state_hang` | hanging from a bar (BG) or an object |
+| `$02` | | `player_state_climb_right` | climbing a wall on the right |
+| `$03` | `PLAYER_STATE_JUMP` | `player_state_jump` | jumping (somersault) |
+| `$04` | `PLAYER_STATE_FALL` | `player_state_fall` | falling; also the drop-in after a respawn |
+| `$05` | | `player_state_climb_left` | climbing a wall on the left |
+| `$07` | `PLAYER_STATE_DYING` | `player_state_dying` | thrown back |
+| `$08` | `PLAYER_STATE_DEAD` | `player_state_dead` | lying dead, then a life is taken |
+| `$0B` | `PLAYER_STATE_SPIN_STANCE` | `player_state_spin_stance` | L+R held |
+| `$0C` | `PLAYER_STATE_SPIN_JUMP` | `player_state_jump` | spin jump, both weapons fire around |
+| `$0E` | `PLAYER_STATE_OUT` | `player_state_out` | waiting to respawn |
+| `$0F` | `PLAYER_STATE_RESPAWN` | `player_state_respawn` | placed by the respawn mode (`wram_1672`) |
+
+States `$06`, `$09`-`$0A`, `$0D` and `$10`-`$14` (scripted moves, other
+hanging variants) are not identified yet. Each state recomputes the body
+box (`set_player_box_standing`, `set_player_box_jumping`,
+`set_player_box_hanging`...) and `PLAYER_CENTER_X`/`Y`, and aims and fires
+through a table indexed by `PLAYER_AIM` (`tbl_ground_aim`, `tbl_jump_aim`,
+`tbl_fall_aim`, `tbl_hang_aim`, `tbl_climb_right_aim`,
+`tbl_climb_left_aim`) whose entries choose a pose and call `fire_weapon`
+with the shot angle (`$00` up, `$20` right, `$40` down, `$60` left) and the
+muzzle position.
+
 ### Getting killed
 
 Nothing hurts a player directly: contact sets `PCONTACT_KILLED` in
-`PLAYER_CONTACT` (an `OBJF_HARMFUL` object in `update_objects`, enemy
-bullets and hazards in `kill_player_outside`, falling off the bottom of the screen
-in `run_player_state`), and the player's state handlers jump to `kill_player`
+`PLAYER_CONTACT` (touching an `OBJF_HARMFUL` object, enemies and their
+bullets alike, in `update_objects`; being outside limits set by a stage
+object, `kill_players_outside`; being crushed by a solid object,
+`solid_object_vs_player`; falling off the bottom of the screen in
+`run_player_state`), and the player's state handlers jump to `kill_player`
 when they see it: death sound, knock-back (`PLAYER_STATE_DYING`), loss of
 the active weapon and of the barrier, then `PLAYER_STATE_DEAD`, a life
 taken (`PLAYER_LIVES`) and the bombs reset to 1. Protection:
@@ -158,7 +192,37 @@ the shot spawners of `src/objects/player_shots.asm` through one of three
 tables indexed by weapon (`tbl_spin_fire_1`, `tbl_spin_fire_2`, `tbl_fire_weapon`), which
 reload `PLAYER_FIRE_DELAY_1/2` from `weapon_fire_delays`. Weapon 1's shots
 use the first 10 shot slots of the player, weapon 2's the next 10.
-Holding L and R (`PLAYER_SPIN`) fires both.
+Holding L and R (`PLAYER_SPIN`) and jumping fires both, in a circle
+(`spin_fire_weapon_1` / `_2`, angles `PLAYER_SPIN_ANGLE_1` / `_2`).
+
+Shot damage (`SHOT_DAMAGE`, set by the spawners; seen in the emulator):
+default gun 2, spread 2 per pellet, homing 2, laser 3, flame 1 per flame,
+crush: two shot types, damage 4 and 0.
+
+## For cheats and hacks
+
+- Player death is only `PCONTACT_KILLED` (bit 2 of `PLAYER_CONTACT`,
+  `$023C` / `$027C`), tested by every state handler before `kill_player`.
+  Keeping `p1_barrier_timer` non-zero, or a non-zero `PLAYER_INVULN_TIMER`
+  (`$0224`) with `PLAYERF_INVULNERABLE` in `$0216`, makes player 1 immune
+  to enemies and their bullets, but not to falling off the screen
+  (`run_player_state`); the barrier also does not protect from
+  `kill_players_outside` called with a non-zero A.
+- Lives: `p1_lives` (`dec` in `player_state_dead`); bombs: `p1_bombs`
+  (`dec` in `check_bomb_button`); weapons: `p1_weapon_1` / `p1_weapon_2`
+  (`WEAPON_*`), lost in `kill_player`.
+- Damage to enemies: `update_shots` (`OBJ_HP` minus `SHOT_DAMAGE`; patch
+  the `sbc` or the damages set by the spawners), the bomb in
+  `bomb_hit_targets` (1 per frame per player), the barrier in
+  `update_objects` (1 per frame).
+- Fire rate: `weapon_fire_delays` (frames between shots per weapon, bank
+  `$05`); the spawners also need free shot slots (10 per weapon).
+- Enemy bullet speed: `ptrs_enemy_bullet_speeds` (one table for easy and
+  normal, a faster one for hard).
+- Respawn invulnerability: 96 frames (`respawn_player`);
+  `make_players_invulnerable` is what bosses and stage ends use.
+- Unused debug code: `debug_player_keys` (Select + Up: difficulty, Select
+  + X: lives, bombs and barrier `$8000`) has no caller.
 
 ## Player shots: the secondary list
 
