@@ -1,14 +1,17 @@
-; topdown/bg_data_03.asm -- Top-down stages: BG data (bank $03)
+; topdown/sine_products.asm -- Top-down stages: sine product tables
 ; Bank $03, $03:8000-$03:E17F. Included by main.asm in segment BANK03.
 ;
-; Data read by the top-down BG routines of topdown/bg_render.asm (sub_03E1A5,
-; sub_03E322, sub_03E3E5).
+; 65 tables of $C0 words, $180 bytes apart: table a (0-64) holds
+; floor(k * sin(a * 90 / 64 degrees)) for k = 0..$BF (table 0 is all 0,
+; table 64 is k). setup_p1_view_projection points zp_D4 at the table of the
+; view angle and zp_D7 at the table of 64 minus it (the cosine), and
+; project_to_view rotates map offsets with them (no multiplications).
 
-	; CDL: read by sub_03E1A5, sub_03E3E5
+	; CDL: read by project_quadrant_0, project_quadrant_3
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00
-	; CDL: read by sub_03E1A5, sub_03E322, sub_03E3E5
+	; CDL: read by project_quadrant_0, project_quadrant_2, project_quadrant_3
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
@@ -1545,7 +1548,7 @@
 	.byte	$B8, $00, $B9, $00, $BA, $00, $BB, $00, $BC, $00, $BD, $00, $BE, $00, $00, $00
 	.byte	$01, $00, $02, $00, $03, $00, $04, $00, $05, $00, $06, $00, $07, $00, $08, $00
 	.byte	$09, $00, $0A, $00, $0B, $00, $0C, $00, $0D, $00, $0E, $00, $0F, $00, $10, $00
-	; CDL: read by sub_03E1A5, sub_03E322, sub_03E3E5
+	; CDL: read by project_quadrant_0, project_quadrant_2, project_quadrant_3
 	.byte	$11, $00, $12, $00, $13, $00, $14, $00, $15, $00, $16, $00, $17, $00, $18, $00
 	.byte	$19, $00, $1A, $00, $1B, $00, $1C, $00, $1D, $00, $1E, $00, $1F, $00, $20, $00
 	.byte	$21, $00, $22, $00, $23, $00, $24, $00, $25, $00, $26, $00, $27, $00, $28, $00
@@ -1554,7 +1557,7 @@
 	.byte	$39, $00, $3A, $00, $3B, $00, $3C, $00, $3D, $00, $3E, $00, $3F, $00, $40, $00
 	.byte	$41, $00, $42, $00, $43, $00, $44, $00, $45, $00, $46, $00, $47, $00, $48, $00
 	.byte	$49, $00, $4A, $00, $4B, $00, $4C, $00, $4D, $00, $4E, $00, $4F, $00, $50, $00
-	; CDL: read by sub_03E1A5, sub_03E322, sub_03E3E5; partly not accessed
+	; CDL: read by project_quadrant_0, project_quadrant_2, project_quadrant_3; partly not accessed
 	.byte	$51, $00, $52, $00, $53, $00, $54, $00, $55, $00, $56, $00, $57, $00, $58, $00
 	.byte	$59, $00, $5A, $00, $5B, $00, $5C, $00, $5D, $00, $5E, $00, $5F, $00, $60, $00
 	.byte	$61, $00, $62, $00, $63, $00, $64, $00, $65, $00, $66, $00, $67, $00, $68, $00

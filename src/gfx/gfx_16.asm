@@ -2,7 +2,7 @@
 ; Bank $16, $16:8000-$16:FFFF. Included by main.asm in segment BANK16.
 ;
 ; Compressed graphics (decompress_chunk), data DMA'd by the top-down streaming code
-; (sub_009C18) and data read by the attract demo code (demo_read_p1_event).
+; (stream_topdown_sprite_gfx) and data read by the attract demo code (demo_read_p1_event).
 ;
 ; Data only (no labels, no code). Each block starts at a CDL comment.
 
@@ -1152,7 +1152,7 @@
 	.byte	$02, $27, $C2, $73, $C0, $33, $C0, $13, $C0, $03, $C0, $43, $C2, $63, $0B, $7B
 	.byte	$00, $4D, $04, $4D, $0A, $3F, $06, $46, $C2, $9C, $CA, $9F, $82, $9C, $FF, $02
 	.byte	$5B
-	; CDL: DMA (started in sub_009C18)
+	; CDL: DMA (started in stream_topdown_sprite_gfx)
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $27, $27

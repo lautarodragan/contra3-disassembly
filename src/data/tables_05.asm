@@ -3143,13 +3143,13 @@ data_05E748:
 	.byte	$04, $80, $06, $C0, $08, $C0, $0A, $C0, $0C, $C0, $0E, $C0, $20, $C0, $22, $C0
 	.byte	$24, $C0, $22, $40, $20, $40, $0E, $40, $0C, $40, $0A, $40, $08, $40, $06, $40
 data_05E788:
-	; CDL: read by sub_03E6C2, sub_03E79B
+	; CDL: read by draw_p1_start_cursor, draw_p2_start_cursor
 	.byte	$2B, $00, $5E, $00, $91, $00, $C4, $00
 data_05E790:
-	; CDL: read by sub_03E6C2, sub_03E79B
+	; CDL: read by draw_p1_start_cursor, draw_p2_start_cursor
 	.byte	$2A, $00, $5D, $00, $90, $00
 data_05E796:
-	; CDL: read by sub_03E6C2, sub_03E87C
+	; CDL: read by draw_p1_start_cursor, sub_03E87C
 	.byte	$C3, $00, $30, $00, $40, $00, $50, $00, $60, $00, $70, $00, $80, $00, $90, $00
 	.byte	$A0, $00, $B0, $00
 data_05E7AA:

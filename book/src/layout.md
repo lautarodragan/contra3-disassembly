@@ -14,7 +14,7 @@ file give its title, its address range and what is known about its contents.
 | `src/sound/` | sound CPU communication (queue, upload, song sets) and the sound data banks |
 | `src/game/` | game mode state machine, attract mode, menus/screens, side-view stage state machine |
 | `src/objects/` | object lists and dispatchers, players, weapons, object type handlers, shared helpers |
-| `src/topdown/` | the top-down (Mode 7) stages 2 and 5: their state machine, gameplay, BG rendering and data |
+| `src/topdown/` | the top-down (Mode 7) stages 2 and 5: their state machine, gameplay, sprite projection, Mode 7 map building and data |
 | `src/effects/` | window/raster effect shapes |
 | `src/data/` | shared tables (bank `$05`), metasprite data (bank `$06`), bank `$1D` tail |
 | `src/gfx/` | data-only files of the graphics banks (`$08-$19`, `$1C`) |
@@ -82,8 +82,8 @@ banks, stay as source because they contain pointers that will become labels.
 | `src/effects/window_shapes.asm` | `$02:DDC6-$02:E65E` | Window shapes |
 | `src/topdown/stage_play_2.asm` | `$02:E65F-$02:FCCA` | Top-down stages: gameplay (part 2) |
 | `src/objects/object_handlers_02.asm` | `$02:FCCB-$02:FFFF` | Object handlers (bank $02) |
-| `src/topdown/bg_data_03.asm` | `$03:8000-$03:E17F` | Top-down stages: BG data (bank $03) |
-| `src/topdown/bg_render.asm` | `$03:E180-$03:FFFF` | Top-down stages: BG rendering |
+| `src/topdown/sine_products.asm` | `$03:8000-$03:E17F` | Top-down stages: products k*sin(angle) for sprite projection |
+| `src/topdown/sprite_render.asm` | `$03:E180-$03:FFFF` | Top-down stages: sprite projection and OAM |
 | `src/objects/object_handlers_04a.asm` | `$04:8000-$04:D877` | Object handlers (bank $04, part 1) |
 | `src/game/game_mode_5.asm` | `$04:D878-$04:D9F0` | Game mode 5 |
 | `src/sound/stage_music.asm` | `$04:D9F1-$04:DA06` | Stage music |
@@ -91,7 +91,7 @@ banks, stay as source because they contain pointers that will become labels.
 | `src/objects/object_handlers_04b.asm` | `$04:E21B-$04:FFFF` | Object handlers (bank $04, part 2) |
 | `src/data/tables_05.asm` | `$05:8000-$05:FFFF` | Shared data tables (bank $05) |
 | `src/data/sprites_06.asm` | `$06:8000-$06:FFFF` | Metasprite data (bank $06) |
-| `src/topdown/bg_data_07.asm` | `$07:8000-$07:FFFF` | Top-down stages: BG data (bank $07) |
+| `src/topdown/sprite_data_07.asm` | `$07:8000-$07:FFFF` | Top-down stages: sprite data (bank $07) |
 | `src/gfx/gfx_08.asm` | `$08:8000-$08:FFFF` | Palettes and compressed graphics (bank $08) |
 | `src/gfx/gfx_09.asm` | `$09:8000-$09:FFFF` | Compressed graphics (bank $09) |
 | `src/gfx/gfx_0A.asm` | `$0A:8000-$0A:FFFF` | Compressed graphics (bank $0A) |

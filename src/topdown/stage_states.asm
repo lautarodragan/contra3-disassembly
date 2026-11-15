@@ -2,7 +2,7 @@
 ; Bank $02, $02:8000-$02:8E32. Included by main.asm in segment BANK02.
 ;
 ; Entered from tbl_stage_runners for stages 2 and 5 (top-down, Mode 7): run_topdown_stage
-; dispatches $1E42 through tbl_stage2_states (tbl_stage5_states for $86 = 5); screen and
+; dispatches topdown_state through tbl_stage2_states (tbl_stage5_states in stage 5):
 ; setup, the start-point intro, the Select map view, play, boss and stage end.
 
 ; Top-down stage frame (stages 2 and 5), reached from tbl_stage_runners: runs
@@ -73,7 +73,7 @@ loc_028064:
 stage2_state_setup:
 	jsr	a:init_stage2_vars
 	jsl	f:spawn_stage2_targets
-	jsr	a:sub_028B4B
+	jsr	a:reset_m7_block_patches
 	jsr	a:load_stage2_assets
 	jsr	a:blank_topdown_display
 	jsl	f:init_topdown_irq
@@ -83,7 +83,7 @@ stage2_state_setup:
 ; State 2: the start-point intro (update_topdown_intro); when it ends,
 ; puts the players at their start points.
 stage2_state_intro:
-	jsl	f:sub_04DA07
+	jsl	f:animate_topdown_palettes
 	jsr	a:update_topdown_intro
 	bcc	loc_028096
 	jsl	f:init_topdown_views
@@ -110,7 +110,7 @@ loc_02809D:
 	jsl	f:sub_02B7E6
 	jsl	f:sub_02DC3B
 	jsl	f:update_screen_shake
-	jsl	f:sub_04DA07
+	jsl	f:animate_topdown_palettes
 	jsl	f:update_topdown_views
 	jsl	f:sub_02EB56
 	jsr	a:update_topdown_fade
@@ -182,7 +182,7 @@ stage2_state_boss_setup:
 	jsl	f:sub_02B77D
 	jsl	f:init_topdown_views
 	jsl	f:spawn_stage2_boss
-	jsr	a:sub_028B4B
+	jsr	a:reset_m7_block_patches
 	jsr	a:load_stage2_boss_assets
 	lda	#$0068
 	jsl	f:queue_sound
@@ -205,7 +205,7 @@ stage2_state_boss:
 	jsl	f:sub_02A9F8
 	jsl	f:sub_02B7E6
 	jsl	f:update_screen_shake
-	jsl	f:sub_04DA07
+	jsl	f:animate_topdown_palettes
 	jsl	f:update_topdown_views
 	jsl	f:sub_02EB56
 loc_028199:
@@ -271,7 +271,7 @@ stage2_boss_exit:
 stage5_state_setup:
 	jsr	a:init_stage5_vars
 	jsl	f:spawn_stage5_targets
-	jsr	a:sub_028B4B
+	jsr	a:reset_m7_block_patches
 	jsr	a:load_stage5_assets
 	jsr	a:blank_topdown_display
 	jsl	f:init_topdown_irq
@@ -280,7 +280,7 @@ stage5_state_setup:
 
 ; State 2 of stage 5 (see stage2_state_intro).
 stage5_state_intro:
-	jsl	f:sub_04DA07
+	jsl	f:animate_topdown_palettes
 	jsr	a:update_topdown_intro
 	bcc	loc_02822E
 	jsl	f:init_topdown_views
@@ -306,7 +306,7 @@ loc_028235:
 	jsl	f:sub_02B7E6
 	jsl	f:sub_02DD19
 	jsl	f:update_screen_shake
-	jsl	f:sub_04DA07
+	jsl	f:animate_topdown_palettes
 	jsl	f:update_topdown_views
 	jsl	f:sub_02EB56
 	jsr	a:update_topdown_fade
@@ -322,7 +322,7 @@ stage5_state_boss_setup:
 	jsl	f:sub_02F18F
 	jsl	f:init_topdown_views
 	jsl	f:spawn_stage5_boss
-	jsr	a:sub_028B4B
+	jsr	a:reset_m7_block_patches
 	jsr	a:load_stage5_boss_assets
 	lda	#$0068
 	jsl	f:queue_sound
@@ -346,7 +346,7 @@ stage5_state_boss:
 	jsl	f:sub_02A9F8
 	jsl	f:sub_02B7E6
 	jsl	f:update_screen_shake
-	jsl	f:sub_04DA07
+	jsl	f:animate_topdown_palettes
 	jsl	f:update_topdown_views
 	jsl	f:sub_02EB56
 loc_0282D1:
@@ -411,7 +411,7 @@ stage5_boss_exit:
 ; The Select map view: the whole map zoomed out (scale $0500).
 ; Returns carry set while the map view is open (play is suspended).
 update_map_view:
-	jsl	f:sub_04DA07
+	jsl	f:animate_topdown_palettes
 	lda	a:map_view_step
 	asl	a
 	tax
@@ -1485,7 +1485,8 @@ clear_topdown_ram:
 	sta	nmi_mode
 	rts
 
-sub_028B4B:
+; Points the four block patch slots at VRAM $6000, outside the Mode 7 data.
+reset_m7_block_patches:
 	lda	#$6000
 	sta	a:wram_1808
 	sta	a:wram_180A
@@ -1511,7 +1512,7 @@ load_stage2_assets:
 	jsl	f:load_data_list
 	ldy	#$CFB2
 	jsl	f:sub_009982
-	jsl	f:sub_04DB02
+	jsl	f:build_m7_tilemap
 	rts
 
 ; Loads stage 5's graphics and palettes.
@@ -1520,7 +1521,7 @@ load_stage5_assets:
 	jsl	f:load_data_list
 	ldy	#$D056
 	jsl	f:sub_009982
-	jsl	f:sub_04DB02
+	jsl	f:build_m7_tilemap
 	rts
 
 ; Loads the stage 2 boss graphics and palettes.
@@ -1533,7 +1534,7 @@ load_stage2_boss_assets:
 	jsl	f:load_data_list
 	ldy	#$D006
 	jsl	f:sub_009982
-	jsl	f:sub_04DB02
+	jsl	f:build_m7_tilemap
 	rts
 
 ; Loads the stage 5 boss graphics and palettes.
@@ -1546,7 +1547,7 @@ load_stage5_boss_assets:
 	jsl	f:load_data_list
 	ldy	#$D0AA
 	jsl	f:sub_009982
-	jsl	f:sub_04DB02
+	jsl	f:build_m7_tilemap
 	rts
 
 ; topdown_map = stage 2, clears the objects ($0200-$11DF), full brightness target.

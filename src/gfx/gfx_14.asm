@@ -2,7 +2,7 @@
 ; Bank $14, $14:8000-$14:FFFF. Included by main.asm in segment BANK14.
 ;
 ; Compressed graphics (decompress_chunk) and data read or DMA'd by the top-down
-; streaming code (sub_009C18).
+; streaming code (stream_topdown_sprite_gfx).
 ;
 ; Data only (no labels, no code). Each block starts at a CDL comment.
 
@@ -974,7 +974,7 @@
 	.byte	$01, $F1, $81, $B9, $A4, $3B, $10, $44, $90, $80, $00, $83, $08, $02, $50, $07
 	.byte	$BD, $81, $40, $03, $B7, $E0, $07, $C3, $A7, $08, $52, $80, $40, $10, $00, $80
 	.byte	$00, $00
-	; CDL: DMA (started in sub_009C18)
+	; CDL: DMA (started in stream_topdown_sprite_gfx)
 	.byte	$00, $00, $00, $00, $00, $00, $0F, $0F, $0C, $0F, $06, $06, $01, $01, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $0F, $0F, $08, $0F, $07, $07, $01, $01, $00, $00
 	.byte	$02, $03, $05, $06, $0A, $0C, $8F, $8B, $CC, $4C, $3A, $7B, $DD, $FD, $B2, $DC
@@ -1487,7 +1487,7 @@
 	.byte	$FF, $C0, $F1, $00, $FF, $FE, $FF, $41, $DF, $50, $E7, $00, $43, $00, $40, $00
 	.byte	$A0, $A0, $60, $E0, $A0, $60, $E0, $E0, $7C, $FC, $5A, $D6, $AD, $2B, $4A, $69
 	.byte	$E0, $E0, $E0, $60, $E0, $20, $E0, $E0, $FC, $7C, $DE, $72, $EF, $39, $AF, $18
-	; CDL: read by sub_009C18
+	; CDL: read by stream_topdown_sprite_gfx
 	.byte	$96, $14, $DE, $FF, $93, $CD, $C2, $9E, $80, $34, $08, $69, $11, $52, $23, $A4
 	.byte	$47, $88, $4E, $D0, $19, $3F, $FF, $7F, $C1, $FF, $94, $FE, $FF, $FC, $FF, $F8
 	.byte	$FF, $F1, $FF, $E7, $FF, $B8, $3F, $61, $7F, $8E, $FE, $38, $F8, $73, $F3, $00

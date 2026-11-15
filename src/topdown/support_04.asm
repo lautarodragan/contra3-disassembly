@@ -1,30 +1,35 @@
-; topdown/support_04.asm -- Top-down stages: support routines (bank $04)
+; topdown/support_04.asm -- Top-down stages: Mode 7 map and palettes (bank $04)
 ; Bank $04, $04:DA07-$04:E21A. Included by main.asm in segment BANK04.
 ;
-; Routines called from the top-down stage code in bank $02 (VRAM uploads,
-; buffers at $1800).
+; Per-map palette animation (animate_topdown_palettes), building the Mode 7
+; tilemap and the tile attribute map from the block map (build_m7_tilemap),
+; and queueing 4x4-tile block changes of the tilemap (queue_m7_block_patch).
 
-sub_04DA07:
+; Per-map palette animation (tbl_topdown_palette_anims by topdown_map).
+animate_topdown_palettes:
 	ldx	a:topdown_map
-	jmp	(.loword(tbl_04DA0D),x)
-tbl_04DA0D:
-	.addr	sub_04DA15
-	.addr	sub_04DA15
-	.addr	sub_04DA1C
-	.addr	sub_04DA24
+	jmp	(.loword(tbl_topdown_palette_anims),x)
+tbl_topdown_palette_anims:
+	.addr	animate_stage2_palettes
+	.addr	animate_stage2_palettes
+	.addr	animate_stage5_palettes
+	.addr	animate_stage5_boss_palettes
 
-sub_04DA15:
-	jsl	f:sub_04DA36
-	jmp	a:sub_04DA27
+animate_stage2_palettes:
+	jsl	f:start_stage2_palette_tasks
+	jmp	a:step_palette_anim_timer
 
-sub_04DA1C:
-	jsl	f:sub_04DA4F
-	jsl	f:sub_04DA27
+animate_stage5_palettes:
+	jsl	f:start_stage5_palette_tasks
+	jsl	f:step_palette_anim_timer
 
-sub_04DA24:
+; Cycles colours $38-$3F of the palette buffer ($7E:2270), wram_15B6
+; steps per frame (high byte) or frames per step (low byte), unless wram_15BE.
+animate_stage5_boss_palettes:
 	jmp	a:loc_04DA68
 
-sub_04DA27:
+; Counts wram_1584 from 0 to $5F, wrapping.
+step_palette_anim_timer:
 	inc	a:wram_1584
 	lda	a:wram_1584
 	cmp	#$0060
@@ -33,7 +38,8 @@ sub_04DA27:
 loc_04DA35:
 	rtl
 
-sub_04DA36:
+; Starts the stage 2 palette tasks at timer 0 and $20.
+start_stage2_palette_tasks:
 	lda	a:wram_1584
 	bne	loc_04DA42
 	ldy	#$F576
@@ -46,7 +52,8 @@ loc_04DA42:
 loc_04DA4E:
 	rtl
 
-sub_04DA4F:
+; Starts the stage 5 palette tasks at timer 0 and $20.
+start_stage5_palette_tasks:
 	lda	a:wram_1584
 	bne	loc_04DA5B
 	ldy	#$F582
@@ -72,14 +79,14 @@ loc_04DA68:
 loc_04DA80:
 	and	#$00FF
 	sta	a:wram_15B8
-	jsr	a:sub_04DAC4
+	jsr	a:rotate_palette_colors_up
 	rtl
 loc_04DA8A:
 	xba
 	and	#$00FF
 	sta	a:wram_15B8
 loc_04DA91:
-	jsr	a:sub_04DAC4
+	jsr	a:rotate_palette_colors_up
 	dec	a:wram_15B8
 	bne	loc_04DA91
 loc_04DA99:
@@ -96,20 +103,21 @@ loc_04DA9A:
 loc_04DAAA:
 	and	#$00FF
 	sta	a:wram_15B8
-	jsr	a:sub_04DAE3
+	jsr	a:rotate_palette_colors_down
 	rtl
 loc_04DAB4:
 	xba
 	and	#$00FF
 	sta	a:wram_15B8
 loc_04DABB:
-	jsr	a:sub_04DAE3
+	jsr	a:rotate_palette_colors_down
 	dec	a:wram_15B8
 	bne	loc_04DABB
 loc_04DAC3:
 	rtl
 
-sub_04DAC4:
+; Rotates the 8 colours at $7E:2270 by one entry.
+rotate_palette_colors_up:
 	phb
 	sep	#$20
 	.a8
@@ -131,7 +139,8 @@ loc_04DAD3:
 	plb
 	rts
 
-sub_04DAE3:
+; Rotates the 8 colours at $7E:2270 the other way.
+rotate_palette_colors_down:
 	; (not executed in the CDL traces)
 	phb
 	sep	#$20
@@ -154,7 +163,10 @@ loc_04DAF2:
 	plb
 	rts
 
-sub_04DB02:
+; Builds the 128x128 Mode 7 tilemap in VRAM from the map of 4x4-tile blocks at
+; $7E:9000 (block definitions at $7E:8000, 32 bytes each), a row of blocks at a time
+; through $7E:3400, and the tile attribute map at $7E:4000 (build_tile_attr_rows).
+build_m7_tilemap:
 	stz	a:VMADDL
 	sep	#$10
 	.i8
@@ -181,15 +193,15 @@ sub_04DB02:
 	rep	#$20
 loc_04DB31:
 	.a16
-	jsl	f:sub_04DB79
+	jsl	f:expand_m7_block_row
 	lda	zp_08
 	clc
 	adc	#$0080
 	sta	zp_08
 	dec	zp_12
 	bne	loc_04DB31
-	jsl	f:sub_04DC3C
-	jsl	f:sub_04DC6D
+	jsl	f:upload_m7_tilemap_rows
+	jsl	f:build_tile_attr_rows
 	lda	#$3400
 	sta	zp_0C
 	lda	zp_08
@@ -217,33 +229,35 @@ loc_04DB31:
 	.a16
 	rtl
 
-sub_04DB79:
+; Expands 8 blocks of the block map into 4 tile rows at $7E:3400.
+expand_m7_block_row:
 	ldy	zp_08
 	lda	a:$0000,y
-	jsl	f:sub_04DBC1
+	jsl	f:expand_m7_block
 	ldy	zp_08
 	lda	a:$0002,y
-	jsl	f:sub_04DBC1
+	jsl	f:expand_m7_block
 	ldy	zp_08
 	lda	a:$0004,y
-	jsl	f:sub_04DBC1
+	jsl	f:expand_m7_block
 	ldy	zp_08
 	lda	a:$0006,y
-	jsl	f:sub_04DBC1
+	jsl	f:expand_m7_block
 	ldy	zp_08
 	lda	a:$0008,y
-	jsl	f:sub_04DBC1
+	jsl	f:expand_m7_block
 	ldy	zp_08
 	lda	a:$000A,y
-	jsl	f:sub_04DBC1
+	jsl	f:expand_m7_block
 	ldy	zp_08
 	lda	a:$000C,y
-	jsl	f:sub_04DBC1
+	jsl	f:expand_m7_block
 	ldy	zp_08
 	lda	a:$000E,y
-	jml	f:sub_04DBC1
+	jml	f:expand_m7_block
 
-sub_04DBC1:
+; Expands one block (A) into 4x4 tiles at zp_0C.
+expand_m7_block:
 	and	#$00FF
 	asl	a
 	asl	a
@@ -296,7 +310,8 @@ sub_04DBC1:
 	sta	zp_0C
 	rtl
 
-sub_04DC3C:
+; DMAs the 4 tile rows at $7E:3400 to the Mode 7 tilemap (VRAM low bytes).
+upload_m7_tilemap_rows:
 	sep	#$20
 	.a8
 	lda	#$05
@@ -329,16 +344,18 @@ sub_04DC6C:
 	.a16
 	rtl
 
-sub_04DC6D:
+; Translates the 4 tile rows at $7E:3400 into the tile attribute map
+; ($7E:4000, one byte per tile, read by the collision code) with the map's table.
+build_tile_attr_rows:
 	ldx	a:topdown_map
-	jmp	(.loword(tbl_04DC73),x)
-tbl_04DC73:
-	.addr	sub_04DC7B
+	jmp	(.loword(tbl_tile_attr_builders),x)
+tbl_tile_attr_builders:
+	.addr	build_tile_attr_rows_stage2
 	.addr	sub_04DC6C
-	.addr	sub_04DC98
-	.addr	sub_04DCB5
+	.addr	build_tile_attr_rows_stage5
+	.addr	build_tile_attr_rows_stage5_boss
 
-sub_04DC7B:
+build_tile_attr_rows_stage2:
 	ldy	#$0000
 loc_04DC7E:
 	lda	a:$3400,y
@@ -346,7 +363,7 @@ loc_04DC7E:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	sta	(zp_0A)
 	rep	#$20
 	.a16
@@ -356,7 +373,7 @@ loc_04DC7E:
 	bcc	loc_04DC7E
 	rtl
 
-sub_04DC98:
+build_tile_attr_rows_stage5:
 	ldy	#$0000
 loc_04DC9B:
 	lda	a:$3400,y
@@ -364,7 +381,7 @@ loc_04DC9B:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	sta	(zp_0A)
 	rep	#$20
 	.a16
@@ -374,7 +391,7 @@ loc_04DC9B:
 	bcc	loc_04DC9B
 	rtl
 
-sub_04DCB5:
+build_tile_attr_rows_stage5_boss:
 	ldy	#$0000
 loc_04DCB8:
 	lda	a:$3400,y
@@ -382,7 +399,7 @@ loc_04DCB8:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FB03,x
+	lda	f:tile_attrs_stage5_boss,x
 	sta	(zp_0A)
 	rep	#$20
 	.a16
@@ -392,25 +409,28 @@ loc_04DCB8:
 	bcc	loc_04DCB8
 	rtl
 
-sub_04DCD2:
+; Queues a 4x4-tile block (Y) at VRAM address A in the first free patch
+; slot; carry set when all four are taken.
+queue_m7_block_patch:
 	ldx	a:wram_1800
-	beq	sub_04DCF1
+	beq	set_m7_block_patch_0
 	ldx	a:wram_1802
 	bne	loc_04DCDF
-	brl	sub_04E047
+	brl	set_m7_block_patch_1
 loc_04DCDF:
 	ldx	a:wram_1804
 	bne	loc_04DCE7
-	brl	sub_04E0E3
+	brl	set_m7_block_patch_2
 loc_04DCE7:
 	ldx	a:wram_1806
 	bne	loc_04DCEF
-	brl	loc_04E17F
+	brl	set_m7_block_patch_3
 loc_04DCEF:
 	sec
 	rtl
 
-sub_04DCF1:
+; Fills patch slot 0: VRAM row addresses from A, tiles of block Y.
+set_m7_block_patch_0:
 	rep	#$30
 	sta	zp_FE
 	sta	a:wram_1808
@@ -504,7 +524,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0000,x
 	rep	#$20
@@ -514,7 +534,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0001,x
 	rep	#$20
@@ -524,7 +544,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0002,x
 	rep	#$20
@@ -534,7 +554,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0003,x
 	rep	#$20
@@ -544,7 +564,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0080,x
 	rep	#$20
@@ -554,7 +574,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0081,x
 	rep	#$20
@@ -564,7 +584,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0082,x
 	rep	#$20
@@ -574,7 +594,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0083,x
 	rep	#$20
@@ -584,7 +604,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0100,x
 	rep	#$20
@@ -594,7 +614,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0101,x
 	rep	#$20
@@ -604,7 +624,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0102,x
 	rep	#$20
@@ -614,7 +634,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0103,x
 	rep	#$20
@@ -624,7 +644,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0180,x
 	rep	#$20
@@ -634,7 +654,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0181,x
 	rep	#$20
@@ -644,7 +664,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0182,x
 	rep	#$20
@@ -654,7 +674,7 @@ loc_04DDA3:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07F903,x
+	lda	f:tile_attrs_stage2,x
 	ldx	zp_FC
 	sta	a:$0183,x
 	rep	#$20
@@ -678,7 +698,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0000,x
 	rep	#$20
@@ -688,7 +708,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0001,x
 	rep	#$20
@@ -698,7 +718,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0002,x
 	rep	#$20
@@ -708,7 +728,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0003,x
 	rep	#$20
@@ -718,7 +738,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0080,x
 	rep	#$20
@@ -728,7 +748,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0081,x
 	rep	#$20
@@ -738,7 +758,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0082,x
 	rep	#$20
@@ -748,7 +768,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0083,x
 	rep	#$20
@@ -758,7 +778,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0100,x
 	rep	#$20
@@ -768,7 +788,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0101,x
 	rep	#$20
@@ -778,7 +798,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0102,x
 	rep	#$20
@@ -788,7 +808,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0103,x
 	rep	#$20
@@ -798,7 +818,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0180,x
 	rep	#$20
@@ -808,7 +828,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0181,x
 	rep	#$20
@@ -818,7 +838,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0182,x
 	rep	#$20
@@ -828,7 +848,7 @@ loc_04DEF5:
 	tax
 	sep	#$20
 	.a8
-	lda	f:data_07FA03,x
+	lda	f:tile_attrs_stage5,x
 	ldx	zp_FC
 	sta	a:$0183,x
 	rep	#$20
@@ -843,7 +863,7 @@ loc_04DEF5:
 	clc
 	rtl
 
-sub_04E047:
+set_m7_block_patch_1:
 	rep	#$30
 	sta	zp_FE
 	sta	a:wram_1810
@@ -912,7 +932,7 @@ sub_04E047:
 	sta	a:wram_1802
 	jmp	a:loc_04DD8A
 
-sub_04E0E3:
+set_m7_block_patch_2:
 	rep	#$30
 	sta	zp_FE
 	sta	a:wram_1818
@@ -980,7 +1000,7 @@ sub_04E0E3:
 	lda	#$0006
 	sta	a:wram_1804
 	jmp	a:loc_04DD8A
-loc_04E17F:
+set_m7_block_patch_3:
 	rep	#$30
 	sta	zp_FE
 	sta	a:wram_1820

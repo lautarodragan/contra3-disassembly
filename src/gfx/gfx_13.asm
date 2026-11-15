@@ -2,7 +2,7 @@
 ; Bank $13, $13:8000-$13:FFFF. Included by main.asm in segment BANK13.
 ;
 ; Compressed graphics (decompress_chunk) and tile data DMA'd to VRAM by the top-down
-; streaming code (sub_009C18).
+; streaming code (stream_topdown_sprite_gfx).
 ;
 ; Data only (no labels, no code). Each block starts at a CDL comment.
 
@@ -712,7 +712,7 @@
 	.byte	$C8, $01, $CA, $89, $E4, $18, $4C, $F8, $C4, $30, $6C, $98, $D8, $02, $C2, $83
 	.byte	$00, $24, $3C, $C0, $F8, $C1, $FC, $83, $1C, $FC, $14, $03, $D5, $82, $F8, $B8
 	.byte	$C0, $30
-	; CDL: DMA (started in sub_009C18)
+	; CDL: DMA (started in stream_topdown_sprite_gfx)
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $01

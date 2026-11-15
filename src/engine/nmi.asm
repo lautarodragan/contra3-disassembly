@@ -305,9 +305,9 @@ nmi_frame_top_down:
 	rep	#$20
 	.a16
 	jsl	f:sub_02DDC6
-	jsl	f:sub_00A257
+	jsl	f:upload_m7_block_patches
 	jsl	f:sub_00E4EE
-	jsl	f:sub_009C18
+	jsl	f:stream_topdown_sprite_gfx
 	jsr	a:dma_oam_and_palette
 	lda	force_blank_frames
 	beq	@set_brightness
@@ -353,7 +353,7 @@ nmi_frame_top_down:
 	jsl	f:next_random
 	jsl	f:sub_00E3CD
 	jsl	f:compute_m7_matrix
-	jsl	f:sub_03E180
+	jsl	f:draw_topdown_sprites
 	jsl	f:sub_009995
 	jsl	f:run_pending_loads
 	jsl	f:send_queued_sound

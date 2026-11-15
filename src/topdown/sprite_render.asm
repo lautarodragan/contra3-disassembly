@@ -1,11 +1,16 @@
-; topdown/bg_render.asm -- Top-down stages: BG rendering
+; topdown/sprite_render.asm -- Top-down stages: sprite projection and OAM
 ; Bank $03, $03:E180-$03:FFFF. Included by main.asm in segment BANK03.
 ;
-; sub_03E180 (from the top-down NMI frame handler nmi_frame_top_down) builds the
-; tilemap updates of the top-down stages into the buffer at $1780 (one half
-; per player view in two-player games, on alternate frames).
+; draw_topdown_sprites (from the top-down NMI frame handler nmi_frame_top_down)
+; projects every object from map coordinates into the rotated view
+; (project_to_view, with the tables of sine_products.asm) and builds the OAM
+; buffer at $0FC0 (high table $11C0), one player view per frame (alternate
+; frames in 2P-A). It also picks the rotated graphics of the players and
+; enemies and lists them at $1780/$17C0 for stream_topdown_sprite_gfx.
 
-sub_03E180:
+; NMI (top-down): builds the OAM buffer for player 1's view (player 2's on
+; odd frames in 2P-A): projects every object through the view's rotation.
+draw_topdown_sprites:
 	.a16
 	.i16
 	rep	#$30
@@ -17,21 +22,25 @@ sub_03E180:
 	lsr	a
 	bcs	loc_03E193
 loc_03E18F:
-	jml	f:loc_03E918
+	jml	f:draw_p1_view_sprites
 loc_03E193:
-	jml	f:loc_03F3B2
+	jml	f:draw_p2_view_sprites
 
-sub_03E197:
+; Rotates the map point (Y = x, A = y) into the view set up by
+; setup_p1_view_projection: screen x/y in zp_00/zp_02; carry set when farther than
+; $B8 pixels on an axis. Uses the products of sine_products.asm.
+project_to_view:
 	phx
 	ldx	zp_DA
-	jmp	(.loword(tbl_03E19D),x)
-tbl_03E19D:
-	.addr	sub_03E1A5
-	.addr	sub_03E262
-	.addr	sub_03E322
-	.addr	sub_03E3E5
+	jmp	(.loword(tbl_project_quadrants),x)
+tbl_project_quadrants:
+	.addr	project_quadrant_0
+	.addr	project_quadrant_1
+	.addr	project_quadrant_2
+	.addr	project_quadrant_3
 
-sub_03E1A5:
+; project_to_view for view angles $00-$3F.
+project_quadrant_0:
 	sec
 	sbc	zp_1A
 	bmi	loc_03E201
@@ -153,7 +162,8 @@ loc_03E238:
 	plx
 	rts
 
-sub_03E262:
+; project_to_view for view angles $40-$7F.
+project_quadrant_1:
 	sec
 	sbc	zp_1A
 	bmi	loc_03E2C1
@@ -276,7 +286,8 @@ loc_03E2FB:
 	plx
 	rts
 
-sub_03E322:
+; project_to_view for view angles $80-$BF.
+project_quadrant_2:
 	sec
 	sbc	zp_1A
 	bmi	loc_03E384
@@ -400,7 +411,8 @@ loc_03E3BB:
 	plx
 	rts
 
-sub_03E3E5:
+; project_to_view for view angles $C0-$FF.
+project_quadrant_3:
 	sec
 	sbc	zp_1A
 	bmi	loc_03E444
@@ -522,7 +534,8 @@ loc_03E478:
 	clc
 	plx
 	rts
-loc_03E4A5:
+; Sprites of the Select map view: players, targets at 1/5 scale.
+draw_map_view_sprites:
 	; (not executed in the CDL traces)
 	ldy	#$0FC0
 	lda	#$AAAA
@@ -803,7 +816,8 @@ sub_03E662:
 	iny
 	iny
 	rts
-loc_03E682:
+; Sprites of the start-point intro (cursors).
+draw_intro_sprites:
 	ldy	#$0FC0
 	lda	#$AAAA
 	sta	a:wram_11C0
@@ -819,8 +833,8 @@ loc_03E682:
 	brl	loc_03E6B2
 loc_03E6A6:
 	jsr	a:sub_03E87C
-	jsr	a:sub_03E6C2
-	jsr	a:sub_03E79B
+	jsr	a:draw_p1_start_cursor
+	jsr	a:draw_p2_start_cursor
 	jsr	a:sub_03E89E
 loc_03E6B2:
 	lda	#$F000
@@ -834,7 +848,8 @@ loc_03E6B5:
 	bcc	loc_03E6B5
 	rtl
 
-sub_03E6C2:
+; Player 1's start-point cursor (blinks once chosen).
+draw_p1_start_cursor:
 	lda	a:p1_lives
 	bne	loc_03E6CA
 	; (not executed in the CDL traces)
@@ -957,7 +972,8 @@ loc_03E6F4:
 loc_03E79A:
 	rts
 
-sub_03E79B:
+; Player 2's start-point cursor.
+draw_p2_start_cursor:
 	lda	a:title_menu_cursor
 	bne	loc_03E7A3
 	brl	loc_03E87B
@@ -1175,7 +1191,8 @@ loc_03E90F:
 	lda	a:data_05E7C0,x
 	sta	zp_06
 	rts
-loc_03E918:
+; Sprites of player 1's view (or the intro / map view ones).
+draw_p1_view_sprites:
 	rep	#$30
 	lda	a:topdown_map
 	cmp	#TD_MAP_STAGE2_BOSS
@@ -1186,12 +1203,12 @@ loc_03E918:
 loc_03E92A:
 	lda	a:intro_phase
 	beq	loc_03E932
-	brl	loc_03E682
+	brl	draw_intro_sprites
 loc_03E932:
 	lda	a:map_view_active
 	beq	loc_03E93A
 	; (not executed in the CDL traces)
-	brl	loc_03E4A5
+	brl	draw_map_view_sprites
 loc_03E93A:
 	sep	#$20
 	.a8
@@ -1200,18 +1217,18 @@ loc_03E93A:
 	plb
 	rep	#$20
 	.a16
-	jsr	a:sub_03E9E8
-	jsr	a:sub_03EA78
-	jsr	a:sub_03EAA9
+	jsr	a:setup_p1_view_projection
+	jsr	a:draw_target_arrows
+	jsr	a:start_oam_list
 	jsr	a:sub_03E9D7
 	bcs	loc_03E956
-	jsr	a:sub_03EABF
+	jsr	a:draw_small_objects
 	jsr	a:sub_03EB48
 loc_03E956:
-	jsr	a:sub_03EB72
-	jsr	a:sub_03EB8F
-	jsr	a:sub_03EC63
-	jsr	a:sub_03F0F7
+	jsr	a:end_small_sprites
+	jsr	a:draw_enemies
+	jsr	a:draw_topdown_players
+	jsr	a:project_map_objects
 	jsr	a:sub_03F161
 	sep	#$20
 	.a8
@@ -1229,16 +1246,16 @@ loc_03E96E:
 	plb
 	rep	#$20
 	.a16
-	jsr	a:sub_03E9E8
-	jsr	a:sub_03EA78
-	jsr	a:sub_03EAA9
-	jsr	a:sub_03EABF
+	jsr	a:setup_p1_view_projection
+	jsr	a:draw_target_arrows
+	jsr	a:start_oam_list
+	jsr	a:draw_small_objects
 	jsr	a:sub_03EB48
-	jsr	a:sub_03EB72
+	jsr	a:end_small_sprites
 	jsr	a:sub_03ED33
 	jsr	a:sub_03EDF6
 	jsr	a:sub_03EEAA
-	jsr	a:sub_03F0F7
+	jsr	a:project_map_objects
 	jsr	a:sub_03F161
 	sep	#$20
 	.a8
@@ -1256,19 +1273,19 @@ loc_03E9A0:
 	plb
 	rep	#$20
 	.a16
-	jsr	a:sub_03E9E8
-	jsr	a:sub_03EA78
-	jsr	a:sub_03EAA9
+	jsr	a:setup_p1_view_projection
+	jsr	a:draw_target_arrows
+	jsr	a:start_oam_list
 	jsr	a:sub_03E9D7
 	bcs	loc_03E9BC
-	jsr	a:sub_03EABF
+	jsr	a:draw_small_objects
 	jsr	a:sub_03EB48
 loc_03E9BC:
-	jsr	a:sub_03EB72
+	jsr	a:end_small_sprites
 	jsr	a:sub_03F1B0
 	jsr	a:sub_03F202
 	jsr	a:sub_03F2E3
-	jsr	a:sub_03EC63
+	jsr	a:draw_topdown_players
 	jsr	a:sub_03F161
 	sep	#$20
 	.a8
@@ -1293,7 +1310,9 @@ loc_03E9E6:
 	clc
 	rts
 
-sub_03E9E8:
+; Sets up project_to_view for player 1's view: centre, anchor, angle
+; quadrant (zp_DA) and the two product tables for the angle (zp_D4, zp_D7).
+setup_p1_view_projection:
 	lda	a:title_menu_cursor
 	beq	loc_03E9F0
 	dec	a
@@ -1367,7 +1386,8 @@ loc_03EA3C:
 	.a16
 	rts
 
-sub_03EA78:
+; Copies the two target arrows (objects $0200 and $0240) to the first OAM entries.
+draw_target_arrows:
 	lda	a:wram_020A
 	sta	a:wram_0FC0
 	lda	a:wram_020E
@@ -1386,7 +1406,8 @@ sub_03EA78:
 	sta	a:wram_11C0
 	rts
 
-sub_03EAA9:
+; OAM write pointer zp_10 = $0FD0, high table pointer zp_12 = $11C0.
+start_oam_list:
 	ldx	#$0FD0
 	stx	zp_10
 	ldx	#$11C0
@@ -1398,7 +1419,9 @@ sub_03EAA9:
 	sta	zp_14
 	rts
 
-sub_03EABF:
+; One sprite per object of the $20-byte slots $0300-$097F (shots), its tile
+; picked by its angle relative to the view (data_0780C8).
+draw_small_objects:
 	ldx	#$0300
 loc_03EAC2:
 	lda	$10,x
@@ -1421,7 +1444,7 @@ loc_03EADE:
 	sta	zp_04
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcs	loc_03EB39
 	ldy	zp_10
 	sec
@@ -1482,7 +1505,7 @@ loc_03EB4B:
 	beq	loc_03EB66
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcs	loc_03EB66
 	lda	$02,x
 	ora	#$0100
@@ -1500,7 +1523,8 @@ loc_03EB66:
 	bcc	loc_03EB4B
 	rts
 
-sub_03EB72:
+; Ends the first OAM section: hides the entries left up to $10C0.
+end_small_sprites:
 	lda	zp_14
 loc_03EB74:
 	lsr	a
@@ -1521,7 +1545,9 @@ loc_03EB83:
 loc_03EB8E:
 	rts
 
-sub_03EB8F:
+; Enemies ($0D40-$0EBF): metasprite by type and relative angle, and their
+; graphics queued in the stream list at $1780 (stream_topdown_sprite_gfx).
+draw_enemies:
 	ldx	#$10C0
 	stx	zp_10
 	ldx	#$11D0
@@ -1550,7 +1576,7 @@ loc_03EBB3:
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03EBD6
 	lda	$2E,x
 	and	#$FFFB
@@ -1593,7 +1619,7 @@ loc_03EBD6:
 	lda	a:$0004,x
 	sta	a:$1784,y
 	ply
-	jsr	a:sub_03EFF9
+	jsr	a:draw_topdown_metasprite
 	plx
 	lda	zp_D0
 	bne	loc_03EC2D
@@ -1636,7 +1662,8 @@ loc_03EC57:
 loc_03EC62:
 	rts
 
-sub_03EC63:
+; Players ($0EC0, $0F00), like draw_enemies; their screen positions in +$B0/+$B4.
+draw_topdown_players:
 	ldx	#$1180
 	stx	zp_10
 	ldx	#$11DC
@@ -1671,7 +1698,7 @@ loc_03EC93:
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03ECB7
 	lda	#$8000
 	sta	a:$00B0,x
@@ -1715,7 +1742,7 @@ loc_03ECB7:
 	lda	a:$0004,x
 	sta	a:$1784,y
 	ply
-	jsr	a:sub_03EFF9
+	jsr	a:draw_topdown_metasprite
 	plx
 loc_03ED04:
 	inc	zp_08
@@ -1771,7 +1798,7 @@ loc_03ED54:
 	beq	loc_03EDD6
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03ED6D
 	lda	$2E,x
 	and	#$FFFB
@@ -1818,7 +1845,7 @@ loc_03ED6D:
 	lda	a:$0004,x
 	sta	a:$1784,y
 	ply
-	jsr	a:sub_03EFF9
+	jsr	a:draw_topdown_metasprite
 	plx
 	lda	zp_D0
 	bne	loc_03EDCF
@@ -1872,7 +1899,7 @@ loc_03EE0A:
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03EE2E
 	; (not executed in the CDL traces)
 	lda	#$8000
@@ -1917,7 +1944,7 @@ loc_03EE2E:
 	lda	a:$0004,x
 	sta	a:$1784,y
 	ply
-	jsr	a:sub_03EFF9
+	jsr	a:draw_topdown_metasprite
 	plx
 loc_03EE7B:
 	inc	zp_08
@@ -2007,10 +2034,10 @@ loc_03EF11:
 	lda	zp_C6
 	clc
 	adc	a:data_078010,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcs	loc_03EF2A
 	ldy	zp_CA
-	jsr	a:sub_03EFF9
+	jsr	a:draw_topdown_metasprite
 loc_03EF2A:
 	dec	zp_08
 	dec	zp_08
@@ -2052,7 +2079,7 @@ loc_03EF73:
 	lda	zp_C6
 	clc
 	adc	a:data_078054,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcs	loc_03EFD5
 	sec
 	lda	zp_02
@@ -2121,7 +2148,9 @@ loc_03EFED:
 loc_03EFF8:
 	rts
 
-sub_03EFF9:
+; Writes the metasprite at Y to OAM at screen zp_00/zp_02 (+screen shake),
+; clipped to the view; zp_D0 = number of sprites written.
+draw_topdown_metasprite:
 	stz	zp_D0
 	lda	zp_02
 	clc
@@ -2271,7 +2300,9 @@ loc_03F0EC:
 	stx	zp_10
 	rts
 
-sub_03F0F7:
+; Projects the map objects ($0AC0-$0EBF): screen position in +$18/+$1C,
+; +$2E bit 2 = in projection range, bit 0 = on screen.
+project_map_objects:
 	ldx	#$0AC0
 loc_03F0FA:
 	lda	$10,x
@@ -2287,7 +2318,7 @@ loc_03F10A:
 loc_03F10E:
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03F120
 	lda	$2E,x
 	and	#$FFFB
@@ -2337,7 +2368,7 @@ sub_03F161:
 	bne	loc_03F18D
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03F180
 	lda	#$8000
 	sta	$38,x
@@ -2358,7 +2389,7 @@ loc_03F18D:
 	bne	loc_03F1AF
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03F1A7
 	lda	#$8000
 	sta	$38,x
@@ -2379,7 +2410,7 @@ loc_03F1B3:
 	beq	loc_03F1F6
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03F1C9
 	lda	$2E,x
 	and	#$FFFB
@@ -2461,7 +2492,7 @@ loc_03F23B:
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03F25E
 	lda	$2E,x
 	and	#$FFFB
@@ -2504,7 +2535,7 @@ loc_03F25E:
 	lda	a:$0004,x
 	sta	a:$1784,y
 	ply
-	jsr	a:sub_03EFF9
+	jsr	a:draw_topdown_metasprite
 	plx
 	lda	zp_D0
 	bne	loc_03F2B5
@@ -2574,7 +2605,7 @@ loc_03F307:
 	sta	zp_04
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03F321
 	lda	$2E,x
 	and	#$FFFB
@@ -2662,7 +2693,8 @@ loc_03F3A6:
 	bcc	loc_03F3A6
 loc_03F3B1:
 	rts
-loc_03F3B2:
+; Sprites of player 2's view (2P-A, odd frames).
+draw_p2_view_sprites:
 	rep	#$30
 	lda	a:topdown_map
 	cmp	#TD_MAP_STAGE2_BOSS
@@ -2674,12 +2706,12 @@ loc_03F3B2:
 loc_03F3C4:
 	lda	a:intro_phase
 	beq	loc_03F3CC
-	brl	loc_03E682
+	brl	draw_intro_sprites
 loc_03F3CC:
 	lda	a:map_view_active
 	beq	loc_03F3D4
 	; (not executed in the CDL traces)
-	brl	loc_03E4A5
+	brl	draw_map_view_sprites
 loc_03F3D4:
 	sep	#$20
 	.a8
@@ -2911,7 +2943,7 @@ loc_03F578:
 	sta	zp_04
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcs	loc_03F5D3
 	ldy	zp_10
 	sec
@@ -2972,7 +3004,7 @@ loc_03F5E5:
 	beq	loc_03F600
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcs	loc_03F600
 	lda	$02,x
 	ora	#$0100
@@ -3040,7 +3072,7 @@ loc_03F64D:
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03F670
 	lda	$2E,x
 	and	#$FFF7
@@ -3161,7 +3193,7 @@ loc_03F72D:
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03F751
 	lda	#$8000
 	sta	a:$00B2,x
@@ -3261,7 +3293,7 @@ loc_03F7EE:
 	beq	loc_03F870
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03F807
 	lda	$2E,x
 	and	#$FFF7
@@ -3363,7 +3395,7 @@ loc_03F8A4:
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03F8C8
 	lda	#$8000
 	sta	a:$00B2,x
@@ -3497,7 +3529,7 @@ loc_03F9AB:
 	lda	zp_C6
 	clc
 	adc	a:data_078010,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcs	loc_03F9C4
 	ldy	zp_CA
 	jsr	a:sub_03FA93
@@ -3542,7 +3574,7 @@ loc_03FA0D:
 	lda	zp_C6
 	clc
 	adc	a:data_078054,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcs	loc_03FA6F
 	sec
 	lda	zp_02
@@ -3777,7 +3809,7 @@ loc_03FBA4:
 loc_03FBA8:
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03FBBA
 	lda	$2E,x
 	and	#$FFF7
@@ -3827,7 +3859,7 @@ sub_03FBFB:
 	bne	loc_03FC27
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03FC1A
 	lda	#$8000
 	sta	$3A,x
@@ -3848,7 +3880,7 @@ loc_03FC27:
 	bne	loc_03FC49
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03FC41
 	; (not executed in the CDL traces)
 	lda	#$8000
@@ -3871,7 +3903,7 @@ loc_03FC4D:
 	beq	loc_03FC90
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03FC63
 	lda	$2E,x
 	and	#$FFF7
@@ -3955,7 +3987,7 @@ loc_03FCD5:
 	sta	zp_C6
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03FCF8
 	lda	$2E,x
 	and	#$FFF7
@@ -4066,7 +4098,7 @@ loc_03FDA1:
 	sta	zp_04
 	ldy	$0A,x
 	lda	$0E,x
-	jsr	a:sub_03E197
+	jsr	a:project_to_view
 	bcc	loc_03FDBB
 	lda	$2E,x
 	and	#$FFF7

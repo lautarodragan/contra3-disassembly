@@ -4300,7 +4300,7 @@ sub_02ACCC:
 	tay
 	lda	$26,x
 	phx
-	jsl	f:sub_04DCD2
+	jsl	f:queue_m7_block_patch
 	plx
 	bcc	loc_02ACE1
 	stz	$28,x
@@ -10639,21 +10639,21 @@ loc_02DC4C:
 	ldy	a:data_05E17C,x
 	lda	a:data_05E1BC,x
 	phx
-	jsl	f:sub_04DCF1
+	jsl	f:set_m7_block_patch_0
 	plx
 	ldy	a:data_05E18C,x
 	lda	a:data_05E1CC,x
 	phx
-	jsl	f:sub_04E047
+	jsl	f:set_m7_block_patch_1
 	plx
 	ldy	a:data_05E19C,x
 	lda	a:data_05E1DC,x
 	phx
-	jsl	f:sub_04E0E3
+	jsl	f:set_m7_block_patch_2
 	plx
 	ldy	a:data_05E1AC,x
 	lda	a:data_05E1EC,x
-	jml	f:loc_04E17F
+	jml	f:set_m7_block_patch_3
 loc_02DC8A:
 	lda	a:wram_18AE
 	beq	loc_02DCC8
@@ -10666,21 +10666,21 @@ loc_02DC8A:
 	ldy	a:data_05E17C,x
 	lda	a:data_05E1FC,x
 	phx
-	jsl	f:sub_04DCF1
+	jsl	f:set_m7_block_patch_0
 	plx
 	ldy	a:data_05E18C,x
 	lda	a:data_05E20C,x
 	phx
-	jsl	f:sub_04E047
+	jsl	f:set_m7_block_patch_1
 	plx
 	ldy	a:data_05E19C,x
 	lda	a:data_05E21C,x
 	phx
-	jsl	f:sub_04E0E3
+	jsl	f:set_m7_block_patch_2
 	plx
 	ldy	a:data_05E1AC,x
 	lda	a:data_05E22C,x
-	jml	f:loc_04E17F
+	jml	f:set_m7_block_patch_3
 loc_02DCC8:
 	ldx	#$002C
 loc_02DCCB:
@@ -10710,7 +10710,7 @@ loc_02DD03:
 	phx
 	ldy	#$0057
 	lda	a:data_05E23C,x
-	jsl	f:sub_04DCD2
+	jsl	f:queue_m7_block_patch
 	plx
 	bcc	loc_02DD14
 	; (not executed in the CDL traces)
@@ -10787,7 +10787,7 @@ sub_02DD78:
 	tay
 	lda	$0C,x
 	phx
-	jsl	f:sub_04DCD2
+	jsl	f:queue_m7_block_patch
 	plx
 	rts
 

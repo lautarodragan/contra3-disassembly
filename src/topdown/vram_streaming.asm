@@ -2,10 +2,17 @@
 ; Bank $00, $00:9C18-$00:A376. Included by main.asm in segment BANK00.
 ;
 ; Run by the NMI frame handler of the top-down (Mode 7) stages (nmi_frame_top_down):
-; sub_009C18 streams map/tile data to VRAM (from banks $13, $14, $16),
-; sub_00A257 transfers the buffers at $1800-$1827.
+; stream_topdown_sprite_gfx DMAs the rotated sprite graphics listed at $1780
+; (and on the boss maps the boss's Mode 7 characters), upload_m7_block_patches
+; writes the queued 4x4-tile blocks of the Mode 7 tilemap ($1800-$1867).
 
-sub_009C18:
+; NMI (top-down): DMAs this frame's sprite graphics to VRAM: the
+; rotated frames of the players and enemies chosen by draw_topdown_sprites,
+; listed at $1780 (player 1's view, to VRAM $4000) or $17C0 (player 2's view,
+; to $4800, odd frames in 2P-A). On the boss maps also the boss's Mode 7
+; characters (wram_158C/wram_15AC, wram_15AE bytes to VRAM wram_15AA).
+; Nothing during the intro and the map view.
+stream_topdown_sprite_gfx:
 	lda	a:intro_phase
 	bne	loc_009C22
 	lda	a:map_view_active
@@ -587,7 +594,10 @@ loc_00A189:
 	.i16
 	rtl
 
-sub_00A257:
+; NMI (top-down): writes the queued 4x4-tile blocks of the Mode 7 tilemap
+; (slots at $1800: flag, $1808: four VRAM row addresses, $1828: 16 tiles), then
+; clears the flags. Unused slots point at VRAM $6000 (reset_m7_block_patches).
+upload_m7_block_patches:
 	sep	#$20
 	.a8
 	stz	a:VMAIN
@@ -597,13 +607,13 @@ sub_00A257:
 	ldy	#$0004
 	lda	#$01
 	ldx	a:wram_1800
-	jsr	(.loword(tbl_00A291),x)
+	jsr	(.loword(tbl_m7_block_patch_uploaders),x)
 	ldx	a:wram_1802
-	jsr	(.loword(tbl_00A291),x)
+	jsr	(.loword(tbl_m7_block_patch_uploaders),x)
 	ldx	a:wram_1804
-	jsr	(.loword(tbl_00A291),x)
+	jsr	(.loword(tbl_m7_block_patch_uploaders),x)
 	ldx	a:wram_1806
-	jsr	(.loword(tbl_00A291),x)
+	jsr	(.loword(tbl_m7_block_patch_uploaders),x)
 	rep	#$20
 	.a16
 	stz	a:wram_1800
@@ -611,14 +621,15 @@ sub_00A257:
 	stz	a:wram_1804
 	stz	a:wram_1806
 	rtl
-tbl_00A291:
-	.addr	sub_00A29B
-	.addr	sub_00A29B
-	.addr	sub_00A2D2
-	.addr	sub_00A309
-	.addr	sub_00A340
+tbl_m7_block_patch_uploaders:
+	.addr	upload_m7_block_patch_0
+	.addr	upload_m7_block_patch_0
+	.addr	upload_m7_block_patch_1
+	.addr	upload_m7_block_patch_2
+	.addr	upload_m7_block_patch_3
 
-sub_00A29B:
+; DMAs block patch slot 0 (4 rows of 4 tiles).
+upload_m7_block_patch_0:
 	.a8
 	ldx	#$1828
 	stx	a:A1T0L
@@ -640,7 +651,7 @@ sub_00A29B:
 	sta	a:MDMAEN
 	rts
 
-sub_00A2D2:
+upload_m7_block_patch_1:
 	ldx	#$1838
 	stx	a:A1T0L
 	sty	a:DAS0L
@@ -661,7 +672,7 @@ sub_00A2D2:
 	sta	a:MDMAEN
 	rts
 
-sub_00A309:
+upload_m7_block_patch_2:
 	ldx	#$1848
 	stx	a:A1T0L
 	sty	a:DAS0L
@@ -682,7 +693,7 @@ sub_00A309:
 	sta	a:MDMAEN
 	rts
 
-sub_00A340:
+upload_m7_block_patch_3:
 	ldx	#$1858
 	stx	a:A1T0L
 	sty	a:DAS0L

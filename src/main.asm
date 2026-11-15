@@ -61,8 +61,8 @@
 
 ; ---- bank $03 ----
 .segment "BANK03"
-.include "topdown/bg_data_03.asm"
-.include "topdown/bg_render.asm"
+.include "topdown/sine_products.asm"
+.include "topdown/sprite_render.asm"
 
 ; ---- bank $04 ----
 .segment "BANK04"
@@ -82,7 +82,7 @@
 
 ; ---- bank $07 ----
 .segment "BANK07"
-.include "topdown/bg_data_07.asm"
+.include "topdown/sprite_data_07.asm"
 
 ; ---- bank $08 ----
 .segment "BANK08"
