@@ -1594,15 +1594,17 @@ data_05AA68:
 	.byte	$B0, $00, $C0, $00, $20, $00, $30, $00
 data_05AA80:
 	; CDL: read by spawn_stage1_boss_falling_debris
-	.byte	$F8, $B6, $F8, $B6, $E7, $B6, $E7, $B6, $F8, $B6, $E7, $B6, $F8, $B6, $F8, $B6
-	.byte	$E7, $B6, $F8, $B6, $F8, $B6, $E7, $B6
+	.addr	metasprite_06B6F8, metasprite_06B6F8, metasprite_06B6E7, metasprite_06B6E7
+	.addr	metasprite_06B6F8, metasprite_06B6E7, metasprite_06B6F8, metasprite_06B6F8
+	.addr	metasprite_06B6E7, metasprite_06B6F8, metasprite_06B6F8, metasprite_06B6E7
 data_05AA98:
 	; CDL: read by spawn_stage1_boss_falling_debris
 	.byte	$FC, $FF, $FD, $FF, $FD, $FF, $FE, $FF, $FF, $FF, $FD, $FF, $FF, $FF, $FC, $FF
 	.byte	$FD, $FF, $FE, $FF, $FE, $FF, $FF, $FF
 data_05AAB0:
 	; CDL: read by update_stage1_boss_wall_chunk, queue_vram_blocks_at_x
-	.byte	$99, $B6, $88, $B6, $73, $B6, $FD, $B6, $00, $80, $20, $80, $80, $80, $A0, $80
+	.addr	metasprite_06B699, metasprite_06B688, metasprite_06B673, metasprite_06B6FD
+	.byte	$00, $80, $20, $80, $80, $80, $A0, $80
 	.byte	$00, $81, $20, $81, $80, $81, $A0, $81, $40, $80, $60, $80, $C0, $80, $E0, $80
 	.byte	$40, $81, $60, $81
 data_05AAD4:
@@ -1919,7 +1921,9 @@ data_05B18C:
 	.byte	$01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $02, $00, $03, $00
 data_05B19C:
 	; CDL: read by object_type_11_state_01; partly not accessed
-	.byte	$08, $B4, $03, $B4, $FE, $B3, $08, $B4, $03, $B4, $FE, $B3
+	.addr	metasprite_06B408
+	.addr	metasprite_06B403, metasprite_06B3FE, metasprite_06B408, metasprite_06B403
+	.addr	metasprite_06B3FE
 data_05B1A8:
 	; CDL: read by object_type_11_state_01; partly not accessed
 	.byte	$FD, $FF, $FC, $FF, $FA, $FF, $FB, $FF, $FD, $FF, $FC, $FF
@@ -1955,13 +1959,13 @@ data_05B228:
 	.byte	$00, $00, $00, $00, $00, $40, $00, $C0, $00, $80, $00, $80, $00, $C0, $00, $40
 data_05B278:
 	; CDL: read by object_type_12_state_01
-	.byte	$F0, $B1, $AA, $B4
+	.addr	metasprite_06B1F0, metasprite_06B4AA
 data_05B27C:
 	; CDL: read by object_type_12_state_03
-	.byte	$05, $B2, $BF, $B4
+	.addr	metasprite_06B205, metasprite_06B4BF
 data_05B280:
 	; CDL: read by update_objects, object_type_12_state_05
-	.byte	$1A, $B2, $D4, $B4
+	.addr	metasprite_06B21A, metasprite_06B4D4
 anim_05B284:
 	anim_frame	$0006, metasprite_06AE91, metasprite_06AE91
 	anim_frame	$0006, metasprite_06AE96, metasprite_06AE96
@@ -2297,12 +2301,16 @@ data_05C46E:
 	.byte	$12, $00, $12, $00, $06, $00, $06, $00, $EF, $FF, $EF, $FF, $DB, $FF, $DB, $FF
 data_05C48E:
 	; CDL: read by window_sniper_set_aim_sprite; partly not accessed
-	.byte	$2F, $B2, $E9, $B4, $59, $B2, $13, $B5, $83, $B2, $3D, $B5, $AD, $B2, $67, $B5
-	.byte	$D7, $B2, $91, $B5, $AD, $B2, $67, $B5, $83, $B2, $3D, $B5, $59, $B2, $13, $B5
+	.addr	metasprite_06B22F, metasprite_06B4E9, metasprite_06B259, metasprite_06B513
+	.addr	metasprite_06B283, metasprite_06B53D, metasprite_06B2AD, metasprite_06B567
+	.addr	metasprite_06B2D7, metasprite_06B591, metasprite_06B2AD, metasprite_06B567
+	.addr	metasprite_06B283, metasprite_06B53D, metasprite_06B259, metasprite_06B513
 data_05C4AE:
 	; CDL: read by update_objects, window_sniper_set_fire_sprite, update_effect; partly not accessed
-	.byte	$44, $B2, $FE, $B4, $6E, $B2, $28, $B5, $98, $B2, $52, $B5, $C2, $B2, $7C, $B5
-	.byte	$EC, $B2, $A6, $B5, $C2, $B2, $7C, $B5, $98, $B2, $52, $B5, $44, $B2, $FE, $B4
+	.addr	metasprite_06B244, metasprite_06B4FE, metasprite_06B26E, metasprite_06B528
+	.addr	metasprite_06B298, metasprite_06B552, metasprite_06B2C2, metasprite_06B57C
+	.addr	metasprite_06B2EC, metasprite_06B5A6, metasprite_06B2C2, metasprite_06B57C
+	.addr	metasprite_06B298, metasprite_06B552, metasprite_06B244, metasprite_06B4FE
 anim_05C4CE:
 	anim_frame	$0001, metasprite_06AFEA, $3200
 	anim_frame	$0001, metasprite_06AFD9, $3200
@@ -2450,7 +2458,7 @@ data_05C792:
 	.byte	$00, $30, $00, $32, $00, $3E, $00, $30
 data_05C79A:
 	; CDL: read by update_dying_soldier
-	.byte	$D6, $B1, $90, $B4
+	.addr	metasprite_06B1D6, metasprite_06B490
 data_05C79E:
 	; CDL: read by update_dying_soldier
 	.byte	$FF, $FF, $00, $00
@@ -2500,7 +2508,8 @@ data_05C874:
 	.byte	$FF, $FF, $FE, $FF, $01, $00, $FE, $FF, $01, $00
 data_05C87E:
 	; CDL: read by swing_handle_follow_pivot
-	.byte	$55, $B7, $5A, $B7, $5F, $B7, $64, $B7, $69, $B7, $6E, $B7, $73, $B7, $78, $B7
+	.addr	metasprite_06B755, metasprite_06B75A, metasprite_06B75F, metasprite_06B764
+	.addr	metasprite_06B769, metasprite_06B76E, metasprite_06B773, metasprite_06B778
 data_05C88E:
 	; CDL: read by swing_player_climb
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $01, $00, $01, $00, $01, $00, $01, $00
@@ -2571,7 +2580,8 @@ anim_05C9B0:
 	anim_end	metasprite_06B7C1, metasprite_06B7C1
 data_05C9C8:
 	; CDL: read by rolling_mine_state_04
-	.byte	$EB, $B7, $FC, $B7, $0D, $B8, $1E, $B8, $2F, $B8, $62, $B8, $51, $B8, $40, $B8
+	.addr	metasprite_06B7EB, metasprite_06B7FC, metasprite_06B80D, metasprite_06B81E
+	.addr	metasprite_06B82F, metasprite_06B862, metasprite_06B851, metasprite_06B840
 data_05C9D8:
 	; CDL: read by rolling_mine_state_04
 	.byte	$04, $00, $14, $00, $18, $00, $10, $00, $04, $00, $FC, $FF, $F0, $FF, $F4, $FF
@@ -2663,7 +2673,8 @@ data_05CB37:
 	.byte	$20, $00, $09, $00, $08, $00
 data_05CB3D:
 	; CDL: read by spiked_climber_init_part
-	.byte	$D0, $B8, $B6, $B8, $00, $00
+	.addr	metasprite_06B8D0, metasprite_06B8B6
+	.byte	$00, $00
 data_05CB43:
 	; CDL: read by update_objects, stage3_spiked_climber_state_05; partly not accessed
 	.byte	$00, $03, $00, $02, $40, $00
@@ -2737,7 +2748,7 @@ data_05CC7B:
 	.byte	$E0, $FF, $40, $FF, $E0, $FF
 data_05CC81:
 	; CDL: read by update_objects, spiked_climber_set_hitbox; partly not accessed
-	.byte	$43, $B9, $F7, $B9, $BE, $B9
+	.addr	metasprite_06B943, metasprite_06B9F7, metasprite_06B9BE
 anim_05CC87:
 	anim_frame	$0002, metasprite_06B9F7, metasprite_06B9BE
 	anim_frame	$0002, metasprite_06BA10, metasprite_06B9CF
@@ -2781,7 +2792,7 @@ hoverbike_rider_hp:
 	.byte	$08, $00, $10, $00, $20, $00
 data_05CD07:
 	; CDL: read by update_objects, hoverbike_rider_state_00; partly not accessed
-	.byte	$C6, $C6, $EB, $C6
+	.addr	metasprite_06C6C6, metasprite_06C6EB
 anim_05CD0B:
 	anim_frame	$0008, metasprite_06C718, metasprite_06C718
 	anim_frame	$0010, metasprite_06C741, metasprite_06C741
@@ -3885,7 +3896,7 @@ data_05E80F:
 	.byte	$79, $00, $59, $00, $29, $00
 data_05E815:
 	; CDL: read by stage3_robot_state_00
-	.byte	$FE, $BC, $C8, $C0
+	.addr	metasprite_06BCFE, metasprite_06C0C8
 data_05E819:
 	; CDL: read by update_objects, stage3_robot_state_00; partly not accessed
 	.byte	$00, $36, $00, $38
@@ -3916,7 +3927,8 @@ data_05E85D:
 	.byte	$00, $00, $02, $00
 data_05E861:
 	; CDL: read by update_objects, stage3_second_robot_spawn_debris; partly not accessed
-	.byte	$4B, $BD, $19, $C1, $00, $00, $DA, $BB, $28, $BF
+	.addr	metasprite_06BD4B, metasprite_06C119
+	.byte	$00, $00, $DA, $BB, $28, $BF
 anim_05E86B:
 	anim_frame	$0018, metasprite_06BE00, metasprite_06C0AB
 anim_05E871:
@@ -3955,7 +3967,8 @@ data_05E8BF:
 	.byte	$8C, $41, $0C, $42
 data_05E8C3:
 	; CDL: read by skeleton_eye_fireball_state_01
-	.byte	$82, $AF, $87, $AF, $8C, $AF, $91, $AF, $82, $AF, $87, $AF, $8C, $AF, $91, $AF
+	.addr	metasprite_06AF82, metasprite_06AF87, metasprite_06AF8C, metasprite_06AF91
+	.addr	metasprite_06AF82, metasprite_06AF87, metasprite_06AF8C, metasprite_06AF91
 data_05E8D3:
 	; CDL: read by skeleton_eye_fireball_state_01
 	.byte	$FD, $FF, $FE, $FF
@@ -4161,7 +4174,8 @@ data_05ED20:
 	.byte	$F0, $FF, $C0, $FF
 data_05ED24:
 	; CDL: read by winged_alien_tail_tip_state_00
-	.byte	$77, $C4, $7C, $C4, $81, $C4, $86, $C4, $8B, $C4, $90, $C4, $95, $C4, $9A, $C4
+	.addr	metasprite_06C477, metasprite_06C47C, metasprite_06C481, metasprite_06C486
+	.addr	metasprite_06C48B, metasprite_06C490, metasprite_06C495, metasprite_06C49A
 data_05ED34:
 	; CDL: read by queue_vram_blocks_at_x, winged_alien_queue_tiles
 	.byte	$3A, $ED, $46, $ED, $52, $ED, $00, $B0, $00, $B0, $00, $B0, $C0, $BD, $E0, $BD
@@ -4274,7 +4288,7 @@ data_05EEAA:
 	.byte	$00, $00, $00, $00
 data_05EEAE:
 	; CDL: read by enemy_type_68_state_00
-	.byte	$FE, $C2, $3A, $C3
+	.addr	metasprite_06C2FE, metasprite_06C33A
 data_05EEB2:
 	; CDL: read by enemy_type_68_state_01
 	.byte	$00, $00, $FF, $FF
@@ -4414,7 +4428,7 @@ data_05F08A:
 	.byte	$00, $B0, $00, $B0, $80, $B7, $A0, $B7, $C0, $B7, $E0, $B7
 data_05F0C6:
 	; CDL: read by update_cave_beast_fireball
-	.byte	$82, $AF, $87, $AF, $8C, $AF, $91, $AF
+	.addr	metasprite_06AF82, metasprite_06AF87, metasprite_06AF8C, metasprite_06AF91
 ; OBJ_HP of face_boss_side_head by difficulty (easy, normal, hard)
 face_boss_side_head_hp:
 	; CDL: read by face_boss_side_head_state_00; partly not accessed
@@ -4572,8 +4586,11 @@ data_05F28F:
 	.byte	$08, $00, $F8, $FF
 data_05F293:
 	; CDL: read by sub_04D70A; partly not accessed
-	.byte	$6E, $C8, $D3, $C8, $59, $C8, $E4, $C8, $94, $C8, $A9, $C8, $7F, $C8, $BE, $C8
-	.byte	$6E, $C8, $D3, $C8, $59, $C8, $E4, $C8, $44, $C8, $F9, $C8, $59, $C8, $E4, $C8
+	.addr	metasprite_06C86E, metasprite_06C8D3, metasprite_06C859, metasprite_06C8E4
+	.addr	metasprite_06C894
+	.addr	metasprite_06C8A9, metasprite_06C87F, metasprite_06C8BE, metasprite_06C86E
+	.addr	metasprite_06C8D3, metasprite_06C859, metasprite_06C8E4, metasprite_06C844
+	.addr	metasprite_06C8F9, metasprite_06C859, metasprite_06C8E4
 data_05F2B3:
 	; CDL: read by sub_04D724; partly not accessed
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $08, $00, $06, $00, $08, $00, $06, $00
@@ -4813,7 +4830,8 @@ data_05F89C:
 	.byte	$05, $00, $FB, $FF, $70, $43, $42, $10, $00, $E8, $7E, $7E, $FF, $FF, $80
 data_05F8AB:
 	; CDL: read by setup_stage_hdma, update_enemy_type_96
-	.byte	$9C, $C5, $BE, $C5, $AD, $C5, $F2, $C4
+	.addr	metasprite_06C59C
+	.addr	metasprite_06C5BE, metasprite_06C5AD, metasprite_06C4F2
 data_05F8B3:
 	; CDL: read by ending_creature_feed_arm
 	.byte	$48, $00, $B0, $00, $60, $00, $98, $00
@@ -5055,7 +5073,8 @@ data_05FF61:
 	.byte	$40, $00, $50, $00, $80, $00
 data_05FF67:
 	; CDL: read by brain_boss_spawn_orb_clusters
-	.byte	$14, $C5, $25, $C5, $36, $C5, $58, $C5, $47, $C5, $69, $C5, $7A, $C5, $8B, $C5
+	.addr	metasprite_06C514, metasprite_06C525, metasprite_06C536, metasprite_06C558
+	.addr	metasprite_06C547, metasprite_06C569, metasprite_06C57A, metasprite_06C58B
 data_05FF77:
 	; CDL: read by brain_boss_spawn_orb_clusters
 	.byte	$00, $06, $00, $06, $00, $06, $00, $04, $00, $00, $00, $0E, $00, $04, $00, $00
