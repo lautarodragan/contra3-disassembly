@@ -25,15 +25,15 @@ loc_00D671:
 	tax
 	clc
 	adc	#$0140
-	sta	$06
+	sta	zp_06
 	pla
 	phx
 	asl	a
 	tax
 	lda	f:tbl_00D686,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_00D686:
 	.addr	sub_00D758
 	.addr	sub_00D7E3
@@ -60,15 +60,15 @@ loc_00D6AD:
 	tax
 	clc
 	adc	#$0140
-	sta	$06
+	sta	zp_06
 	pla
 	phx
 	asl	a
 	tax
 	lda	f:tbl_00D6C2,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_00D6C2:
 	.addr	sub_00D741
 	.addr	sub_00D7C6
@@ -78,7 +78,7 @@ tbl_00D6C2:
 	.addr	sub_00DC3D
 loc_00D6CE:
 	lda	$22,x
-	bit	$88
+	bit	zp_88
 	beq	loc_00D740
 	lda	#$000E
 	sta	a:$1300,x
@@ -86,7 +86,7 @@ loc_00D6CE:
 
 sub_00D6DC:
 	lda	$22,x
-	bit	$88
+	bit	zp_88
 	beq	loc_00D740
 loc_00D6E2:
 	lda	a:$1D80,x
@@ -108,15 +108,15 @@ loc_00D702:
 	tax
 	clc
 	adc	#$0140
-	sta	$06
+	sta	zp_06
 	pla
 	phx
 	asl	a
 	tax
 	lda	f:tbl_00D717,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_00D717:
 	.addr	sub_00D76B
 	.addr	sub_00D81A
@@ -150,7 +150,7 @@ sub_00D741:
 	sta	a:$0034,y
 	adc	#$0040
 	and	#$007E
-	sta	$12
+	sta	zp_12
 	bra	sub_00D76B
 
 sub_00D758:
@@ -159,7 +159,7 @@ sub_00D758:
 	adc	#$0008
 	and	#$007E
 	sta	a:$0036,y
-	sta	$12
+	sta	zp_12
 	bra	sub_00D76B
 loc_00D769:
 	tyx
@@ -178,12 +178,12 @@ sub_00D76B:
 	stz	$16,x
 	phy
 	ldy	#$3F82
-	lda	$BC
+	lda	zp_BC
 	bne	loc_00D78F
 	ldy	#$3FEC
 loc_00D78F:
 	sty	$02,x
-	ldy	$12
+	ldy	zp_12
 	lda	a:data_058E1A,y
 	sta	$18,x
 	lda	a:data_058D7A,y
@@ -195,11 +195,11 @@ loc_00D78F:
 	ply
 	clc
 	lda	a:$000A,y
-	adc	$14
+	adc	zp_14
 	sta	$0A,x
 	clc
 	lda	a:$000E,y
-	adc	$16
+	adc	zp_16
 	sta	$0E,x
 	tyx
 	lda	#$0001
@@ -220,7 +220,7 @@ loc_00D7CC:
 	sta	a:$0034,y
 	adc	#$0040
 	and	#$007E
-	sta	$12
+	sta	zp_12
 	bra	loc_00D820
 
 sub_00D7E3:
@@ -234,7 +234,7 @@ loc_00D7E9:
 	adc	#$0020
 	and	#$007E
 	sta	a:$0036,y
-	sta	$12
+	sta	zp_12
 	bra	loc_00D820
 
 sub_00D7FA:
@@ -264,12 +264,12 @@ sub_00D81A:
 	rtl
 loc_00D820:
 	lda	#$0005
-	sta	$10
+	sta	zp_10
 	sec
-	lda	$12
+	lda	zp_12
 	sbc	#$000C
 	and	#$007E
-	sta	$12
+	sta	zp_12
 loc_00D830:
 	lda	#$0002
 	sta	$10,x
@@ -281,12 +281,12 @@ loc_00D830:
 	sta	$14,x
 	lda	#$0002
 	sta	$06,x
-	sty	$FE
+	sty	zp_FE
 	clc
-	lda	$12
+	lda	zp_12
 	adc	#$0004
 	and	#$007E
-	sta	$12
+	sta	zp_12
 	tay
 	lda	a:data_058E1A,y
 	sta	$18,x
@@ -296,20 +296,20 @@ loc_00D830:
 	sta	$1C,x
 	lda	a:data_058D5A,y
 	sta	$1E,x
-	ldy	$FE
+	ldy	zp_FE
 	clc
 	lda	a:$000A,y
-	adc	$14
+	adc	zp_14
 	sta	$0A,x
 	clc
 	lda	a:$000E,y
-	adc	$16
+	adc	zp_16
 	sta	$0E,x
 	txa
 	clc
 	adc	#$0020
 	tax
-	dec	$10
+	dec	zp_10
 	bne	loc_00D830
 	tyx
 	lda	#$0001
@@ -330,7 +330,7 @@ loc_00D89B:
 	sta	a:$0034,y
 	adc	#$0040
 	and	#$007E
-	sta	$12
+	sta	zp_12
 	bra	loc_00D8E9
 
 sub_00D8B2:
@@ -343,7 +343,7 @@ loc_00D8B8:
 	adc	#$0010
 	and	#$007E
 	sta	a:$0036,y
-	sta	$12
+	sta	zp_12
 	bra	loc_00D8E9
 
 sub_00D8C9:
@@ -374,8 +374,8 @@ loc_00D8E9:
 	sta	$10,x
 	lda	#$0004
 	sta	$06,x
-	sty	$FE
-	lda	$12
+	sty	zp_FE
+	lda	zp_12
 	tay
 	lsr	a
 	lsr	a
@@ -393,14 +393,14 @@ loc_00D8E9:
 	ply
 	lda	a:data_05A014,y
 	sta	$02,x
-	ldy	$FE
+	ldy	zp_FE
 	clc
 	lda	a:$000A,y
-	adc	$14
+	adc	zp_14
 	sta	$0A,x
 	clc
 	lda	a:$000E,y
-	adc	$16
+	adc	zp_16
 	sta	$0E,x
 	lda	#$0010
 	sta	$04,x
@@ -426,7 +426,7 @@ loc_00D94A:
 	sta	a:$0034,y
 	adc	#$0040
 	and	#$007E
-	sta	$12
+	sta	zp_12
 	bra	loc_00D982
 
 sub_00D961:
@@ -441,7 +441,7 @@ loc_00D969:
 	adc	#$0010
 	and	#$007E
 	sta	a:$0036,y
-	sta	$12
+	sta	zp_12
 	bra	loc_00D982
 
 sub_00D97A:
@@ -455,10 +455,10 @@ loc_00D982:
 	lda	#$0002
 	sta	$06,x
 	phy
-	stx	$04
+	stx	zp_04
 	sec
-	lda	$06
-	sbc	$04
+	lda	zp_06
+	sbc	zp_04
 	lsr	a
 	lsr	a
 	lsr	a
@@ -467,7 +467,7 @@ loc_00D982:
 	sec
 	sbc	#$0006
 	clc
-	adc	$12
+	adc	zp_12
 	and	#$007E
 	tay
 	sta	$04,x
@@ -482,11 +482,11 @@ loc_00D982:
 	ply
 	clc
 	lda	a:$000A,y
-	adc	$14
+	adc	zp_14
 	sta	$0A,x
 	clc
 	lda	a:$000E,y
-	adc	$16
+	adc	zp_16
 	sta	$0E,x
 	lda	#$305E
 	sta	$02,x
@@ -505,7 +505,7 @@ sub_00D9DE:
 	sta	a:$0034,y
 	adc	#$0040
 	and	#$007E
-	sta	$12
+	sta	zp_12
 	bra	sub_00DA08
 
 sub_00D9F5:
@@ -515,7 +515,7 @@ sub_00D9F5:
 	adc	#$0004
 	and	#$007E
 	sta	a:$0036,y
-	sta	$12
+	sta	zp_12
 	bra	sub_00DA08
 loc_00DA06:
 	tyx
@@ -542,7 +542,7 @@ loc_00DA0F:
 	stz	$18,x
 	stz	$1E,x
 	stz	$1C,x
-	lda	$12
+	lda	zp_12
 	asl	a
 	asl	a
 	sta	$14,x
@@ -565,27 +565,27 @@ loc_00DA0F:
 	sta	a:$012A,x
 	phx
 	tyx
-	lda	$12
+	lda	zp_12
 	lsr	a
 	lsr	a
 	lsr	a
 	tay
 	clc
 	lda	$0A,x
-	adc	$14
+	adc	zp_14
 	adc	a:data_05A024,y
-	sta	$00
+	sta	zp_00
 	clc
 	lda	$0E,x
-	adc	$16
+	adc	zp_16
 	adc	a:data_05A034,y
 	ply
 	sta	a:$000E,y
-	lda	$00
+	lda	zp_00
 	sta	a:$000A,y
 	rtl
 loc_00DA80:
-	lda	$78
+	lda	zp_78
 	bit	#$000F
 	bne	loc_00DA8E
 	lda	#$000A
@@ -607,11 +607,11 @@ loc_00DA8E:
 	sta	$34,x
 	clc
 	lda	a:$000A,y
-	adc	$14
-	sta	$00
+	adc	zp_14
+	sta	zp_00
 	sec
 	lda	$0A,x
-	sbc	$00
+	sbc	zp_00
 	cmp	#$0005
 	bcc	loc_00DAD3
 	cmp	#$FFFB
@@ -627,16 +627,16 @@ loc_00DACB:
 	adc	#$0005
 	bra	loc_00DAD5
 loc_00DAD3:
-	lda	$00
+	lda	zp_00
 loc_00DAD5:
 	sta	$0A,x
 	clc
 	lda	a:$000E,y
-	adc	$16
-	sta	$00
+	adc	zp_16
+	sta	zp_00
 	sec
 	lda	$0E,x
-	sbc	$00
+	sbc	zp_00
 	cmp	#$0005
 	bcc	loc_00DB00
 	cmp	#$FFFB
@@ -652,23 +652,23 @@ loc_00DAF8:
 	adc	#$0005
 	bra	loc_00DB02
 loc_00DB00:
-	lda	$00
+	lda	zp_00
 loc_00DB02:
 	sta	$0E,x
 	phy
-	lda	$12
+	lda	zp_12
 	asl	a
 	asl	a
-	sta	$06
+	sta	zp_06
 	tay
 	sec
-	lda	$06
+	lda	zp_06
 	sbc	$14,x
 	beq	loc_00DB17
 	bmi	loc_00DB1B
 	bpl	loc_00DB2D
 loc_00DB17:
-	lda	$06
+	lda	zp_06
 	bra	loc_00DB40
 loc_00DB1B:
 	cmp	#$FF00
@@ -832,7 +832,7 @@ loc_00DC43:
 	sta	a:$0034,y
 	adc	#$0040
 	and	#$007E
-	sta	$12
+	sta	zp_12
 	bra	loc_00DC8E
 
 sub_00DC5A:
@@ -845,7 +845,7 @@ loc_00DC60:
 	adc	#$0010
 	and	#$007E
 	sta	a:$0036,y
-	sta	$12
+	sta	zp_12
 	bra	loc_00DC8E
 
 sub_00DC71:
@@ -879,8 +879,8 @@ loc_00DC8E:
 	sta	$D0,x
 	sta	$F0,x
 	sta	a:$0110,x
-	sty	$FE
-	ldy	$12
+	sty	zp_FE
+	ldy	zp_12
 	lda	a:data_058E1A,y
 	sta	$18,x
 	sta	$58,x
@@ -917,7 +917,7 @@ loc_00DC8E:
 	sta	$DE,x
 	sta	$FE,x
 	sta	a:$011E,x
-	lda	$12
+	lda	zp_12
 	lsr	a
 	lsr	a
 	lsr	a
@@ -925,9 +925,9 @@ loc_00DC8E:
 	lda	a:data_05A064,y
 	sta	$02,x
 	lda	a:data_05A044,y
-	sta	$00
+	sta	zp_00
 	lda	a:data_05A054,y
-	sta	$02
+	sta	zp_02
 	lda	#$0004
 	sta	$44,x
 	inc	a
@@ -959,58 +959,58 @@ loc_00DC8E:
 	sta	$D4,x
 	sta	$F4,x
 	sta	a:$0114,x
-	ldy	$FE
+	ldy	zp_FE
 	clc
 	lda	a:$000A,y
-	adc	$14
+	adc	zp_14
 	sta	$0A,x
 	sta	$2A,x
 	clc
-	adc	$00
+	adc	zp_00
 	sta	$4A,x
 	clc
-	adc	$00
+	adc	zp_00
 	sta	$6A,x
 	clc
-	adc	$00
+	adc	zp_00
 	sta	$8A,x
 	clc
-	adc	$00
+	adc	zp_00
 	sta	$AA,x
 	clc
-	adc	$00
+	adc	zp_00
 	sta	$CA,x
 	clc
-	adc	$00
+	adc	zp_00
 	sta	$EA,x
 	clc
-	adc	$00
+	adc	zp_00
 	sta	a:$010A,x
 	clc
 	lda	a:$000E,y
-	adc	$16
+	adc	zp_16
 	sta	$0E,x
 	sta	$2E,x
 	clc
-	adc	$02
+	adc	zp_02
 	sta	$4E,x
 	clc
-	adc	$02
+	adc	zp_02
 	sta	$6E,x
 	clc
-	adc	$02
+	adc	zp_02
 	sta	$8E,x
 	clc
-	adc	$02
+	adc	zp_02
 	sta	$AE,x
 	clc
-	adc	$02
+	adc	zp_02
 	sta	$CE,x
 	clc
-	adc	$02
+	adc	zp_02
 	sta	$EE,x
 	clc
-	adc	$02
+	adc	zp_02
 	sta	a:$010E,x
 	lda	#$0004
 	sta	$06,x

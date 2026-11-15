@@ -12,7 +12,7 @@ sub_008BA7:
 	stz	a:HDMAEN
 	rep	#$30
 	.a16
-	lda	$46
+	lda	zp_46
 	bne	loc_008BB3
 	rtl
 loc_008BB3:
@@ -63,12 +63,12 @@ irq:
 	pha
 	plb
 	lda	a:TIMEUP
-	lda	a:$1E82
+	lda	a:nmitimen_shadow
 	and	#$CF
 	sta	a:NMITIMEN
 	rep	#$20
 	.a16
-	ldx	$44
+	ldx	zp_44
 	jsr	(.loword(tbl_008C0E),x)
 	.a8
 	rep	#$30
@@ -91,44 +91,44 @@ sub_008C14:
 sub_008C15:
 	sep	#$20
 	.a8
-	lda	a:$1FA4
+	lda	a:wram_1FA4
 	sta	a:M7A
-	lda	a:$1FA5
+	lda	a:wram_1FA5
 	sta	a:M7A
-	lda	a:$1FA6
+	lda	a:wram_1FA6
 	sta	a:M7B
-	lda	a:$1FA7
+	lda	a:wram_1FA7
 	sta	a:M7B
-	lda	a:$1FA8
+	lda	a:wram_1FA8
 	sta	a:M7C
-	lda	a:$1FA9
+	lda	a:wram_1FA9
 	sta	a:M7C
-	lda	a:$1FAA
+	lda	a:wram_1FAA
 	sta	a:M7D
-	lda	a:$1FAB
+	lda	a:wram_1FAB
 	sta	a:M7D
-	lda	a:$1FAC
+	lda	a:wram_1FAC
 	sta	a:M7X
-	lda	a:$1FAD
+	lda	a:wram_1FAD
 	sta	a:M7X
-	lda	a:$1FAE
+	lda	a:wram_1FAE
 	sta	a:M7Y
-	lda	a:$1FAF
+	lda	a:wram_1FAF
 	sta	a:M7Y
-	lda	a:$1FB0
+	lda	a:wram_1FB0
 	sta	a:BG1HOFS
-	lda	a:$1FB1
+	lda	a:wram_1FB1
 	sta	a:BG1HOFS
-	lda	a:$1FB2
+	lda	a:wram_1FB2
 	sta	a:BG1VOFS
-	lda	a:$1FB3
+	lda	a:wram_1FB3
 	sta	a:BG1VOFS
-	ldx	$40
+	ldx	zp_40
 	beq	loc_008C8B
 	ldx	#$0070
 	stx	a:VTIMEL
 	ldx	#$0004
-	stx	$44
+	stx	zp_44
 	lda	#$A1
 	sta	a:NMITIMEN
 loc_008C8B:
@@ -138,45 +138,45 @@ sub_008C8C:
 	.a16
 	sep	#$20
 	.a8
-	lda	a:$1FE4
+	lda	a:wram_1FE4
 	sta	a:M7A
-	lda	a:$1FE5
+	lda	a:wram_1FE5
 	sta	a:M7A
-	lda	a:$1FE6
+	lda	a:wram_1FE6
 	sta	a:M7B
-	lda	a:$1FE7
+	lda	a:wram_1FE7
 	sta	a:M7B
-	lda	a:$1FE8
+	lda	a:wram_1FE8
 	sta	a:M7C
-	lda	a:$1FE9
+	lda	a:wram_1FE9
 	sta	a:M7C
-	lda	a:$1FEA
+	lda	a:wram_1FEA
 	sta	a:M7D
-	lda	a:$1FEB
+	lda	a:wram_1FEB
 	sta	a:M7D
-	lda	a:$1FEC
+	lda	a:wram_1FEC
 	sta	a:M7X
-	lda	a:$1FED
+	lda	a:wram_1FED
 	sta	a:M7X
-	lda	a:$1FEE
+	lda	a:wram_1FEE
 	sta	a:M7Y
-	lda	a:$1FEF
+	lda	a:wram_1FEF
 	sta	a:M7Y
-	lda	a:$1FF0
+	lda	a:wram_1FF0
 	sta	a:BG1HOFS
-	lda	a:$1FF1
+	lda	a:wram_1FF1
 	sta	a:BG1HOFS
-	lda	a:$1FF2
+	lda	a:wram_1FF2
 	sta	a:BG1VOFS
-	lda	a:$1FF3
+	lda	a:wram_1FF3
 	sta	a:BG1VOFS
 	ldx	#$0002
-	stx	$44
+	stx	zp_44
 	rts
 loc_008CF4:
 	.a16
 	lda	#$3000
-	sta	$4E
+	sta	zp_4E
 	lda	#$3400
-	sta	$50
+	sta	zp_50
 	rtl

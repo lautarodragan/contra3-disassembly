@@ -21,9 +21,9 @@ loc_00E1BF:
 	rtl
 loc_00E1CB:
 	jsl	f:sub_00E355
-	lda	a:$1E02
+	lda	a:title_menu_cursor
 	beq	loc_00E1E4
-	lda	$BC
+	lda	zp_BC
 	beq	loc_00E1DF
 	cpx	#$0D40
 	bcc	loc_00E1E4
@@ -34,7 +34,7 @@ loc_00E1DF:
 loc_00E1E4:
 	lda	$02,x
 	beq	loc_00E1ED
-	ldy	$AC
+	ldy	zp_AC
 	jsr	a:sub_00E2D7
 loc_00E1ED:
 	clc
@@ -72,7 +72,7 @@ loc_00E21C:
 loc_00E22A:
 	lda	$06,x
 	beq	loc_00E1BF
-	lda	$BC
+	lda	zp_BC
 	bne	loc_00E239
 	cpx	#$0D40
 	bcs	loc_00E23E
@@ -83,10 +83,10 @@ loc_00E239:
 loc_00E23E:
 	lda	$0A,x
 	adc	#$000A
-	sta	$00
+	sta	zp_00
 	lda	$0E,x
 	adc	#$000A
-	sta	$02
+	sta	zp_02
 	txy
 	ldx	#$159E
 	phx
@@ -100,13 +100,13 @@ loc_00E251:
 	tax
 	lda	$06,x
 	bmi	loc_00E251
-	lda	$00
+	lda	zp_00
 	cmp	$0A,x
 	bmi	loc_00E251
 	lda	a:$000E,y
 	cmp	$0E,x
 	bpl	loc_00E251
-	lda	$02
+	lda	zp_02
 	cmp	$2E,x
 	bmi	loc_00E251
 	lda	a:$000A,y
@@ -169,13 +169,13 @@ sub_00E2D7:
 	cmp	#$00FE
 	bcs	loc_00E31F
 	and	#$00FF
-	sta	$08
+	sta	zp_08
 	lda	$0E,x
 	cmp	#$00F0
 	bcs	loc_00E31F
 	and	#$00FF
 	xba
-	ora	$08
+	ora	zp_08
 	sta	a:$0000,y
 	lda	$02,x
 	and	#$FEFF
@@ -185,23 +185,23 @@ sub_00E2D7:
 	iny
 	iny
 	clc
-	ror	$9C
+	ror	zp_9C
 	sec
-	ror	$9C
+	ror	zp_9C
 	bcc	loc_00E31D
 loc_00E30C:
 	phx
-	ldx	$AE
-	lda	$9C
+	ldx	zp_AE
+	lda	zp_9C
 	sta	$00,x
 	inx
 	inx
 	lda	#$8000
-	sta	$9C
-	stx	$AE
+	sta	zp_9C
+	stx	zp_AE
 	plx
 loc_00E31D:
-	sty	$AC
+	sty	zp_AC
 loc_00E31F:
 	rts
 loc_00E320:
@@ -210,14 +210,14 @@ loc_00E320:
 	cmp	#$00FE
 	bcs	loc_00E31F
 	and	#$00FF
-	sta	$08
+	sta	zp_08
 	lda	$0E,x
 	adc	#$0004
 	cmp	#$00F4
 	bcs	loc_00E31F
 	and	#$00FF
 	xba
-	ora	$08
+	ora	zp_08
 	sta	a:$0000,y
 	lda	$02,x
 	sta	a:$0002,y
@@ -226,20 +226,20 @@ loc_00E320:
 	iny
 	iny
 	clc
-	ror	$9C
+	ror	zp_9C
 	clc
-	ror	$9C
+	ror	zp_9C
 	bcc	loc_00E31D
 	bcs	loc_00E30C
 
 sub_00E355:
-	sta	$00
+	sta	zp_00
 	asl	a
 	clc
-	adc	$00
+	adc	zp_00
 	tay
 	lda	a:tbl_05A0B4,y
-	sta	$00
+	sta	zp_00
 	lda	a:tbl_05A0B4+2,y
-	sta	$02
-	jml	[$0000]
+	sta	zp_02
+	jml	[zp_00]

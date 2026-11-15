@@ -5,7 +5,7 @@
 ; command (data_05F38A).
 
 sub_04D9F1:
-	lda	$86
+	lda	stage_number
 	asl	a
 	tay
 	lda	a:data_05F364,y

@@ -6,22 +6,22 @@
 ; Also two small entry points used by objects (sub_01F6A8, sub_01F6AF).
 
 sub_01F6A8:
-	sta	a:$16BE
-	stz	a:$16C0
+	sta	a:wram_16BE
+	stz	a:wram_16C0
 	rtl
 
 sub_01F6AF:
-	ldy	a:$16BE
-	stz	a:$16BE
+	ldy	a:wram_16BE
+	stz	a:wram_16BE
 	bra	loc_01F6C7
 
 sub_01F6B7:
-	ldy	a:$16BE
+	ldy	a:wram_16BE
 	beq	loc_01F6E4
-	dec	a:$16C0
+	dec	a:wram_16C0
 	bpl	loc_01F6D2
 	lda	#$0030
-	sta	a:$16C0
+	sta	a:wram_16C0
 loc_01F6C7:
 	phx
 	lda	a:data_05CD1B,y
@@ -30,7 +30,7 @@ loc_01F6C7:
 	plx
 	rtl
 loc_01F6D2:
-	lda	a:$16C0
+	lda	a:wram_16C0
 	cmp	#$0010
 	bne	loc_01F6E4
 	phx

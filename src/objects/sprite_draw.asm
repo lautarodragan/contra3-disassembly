@@ -14,11 +14,11 @@ sub_00EB1A:
 	.a16
 	clc
 	lda	$0E,x
-	adc	$A0
-	sta	$0A
+	adc	zp_A0
+	sta	zp_0A
 	lda	a:$0000,y
 	and	#$00FF
-	sta	$16
+	sta	zp_16
 	iny
 loc_00EB32:
 	lda	a:$0000,y
@@ -28,7 +28,7 @@ loc_00EB32:
 loc_00EB3D:
 	xba
 	clc
-	adc	$0A
+	adc	zp_0A
 	cmp	#$00E8
 	bcc	loc_00EB4B
 	cmp	#$FFF0
@@ -36,7 +36,7 @@ loc_00EB3D:
 loc_00EB4B:
 	xba
 	and	#$FF00
-	sta	$04
+	sta	zp_04
 	dey
 	lda	a:$0000,y
 	and	#$FF00
@@ -48,12 +48,12 @@ loc_00EB5D:
 	adc	$0A,x
 	xba
 	lsr	a
-	ror	$9C
+	ror	zp_9C
 	asl	a
 	xba
 	and	#$00FF
-	ora	$04
-	sta	$08
+	ora	zp_04
+	sta	zp_08
 	iny
 	lda	a:$0002,y
 	sec
@@ -62,40 +62,40 @@ loc_00EB5D:
 	clc
 loc_00EB79:
 	ora	$02,x
-	sta	$02
-	ror	$9C
+	sta	zp_02
+	ror	zp_9C
 	bcc	loc_00EB97
 	phx
-	ldx	$AE
-	lda	$9C
+	ldx	zp_AE
+	lda	zp_9C
 	sta	$00,x
 	inx
 	inx
-	stx	$AE
+	stx	zp_AE
 	cpx	#$11E0
 	bcs	loc_00EBBA
 	lda	#$8000
-	sta	$9C
+	sta	zp_9C
 	plx
 loc_00EB97:
 	phx
-	ldx	$AC
-	lda	$08
+	ldx	zp_AC
+	lda	zp_08
 	sta	$00,x
-	lda	$02
+	lda	zp_02
 	sta	$02,x
 	inx
 	inx
 	inx
 	inx
-	stx	$AC
+	stx	zp_AC
 	plx
 loc_00EBA9:
 	iny
 	iny
 	iny
 	iny
-	dec	$16
+	dec	zp_16
 	bne	loc_00EB32
 	sep	#$20
 	.a8

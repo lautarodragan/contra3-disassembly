@@ -11,27 +11,27 @@ sub_00F27C:
 	bne	loc_00F28A
 	dec	a
 	ldy	#$0100
-	sty	a:$1686
+	sty	a:wram_1686
 loc_00F28A:
 	sta	$32,x
 	jsl	f:sub_0181E8
 loc_00F290:
-	inc	a:$1636
+	inc	a:wram_1636
 	ldy	#$0012
-	lda	$C0
+	lda	zp_C0
 	cmp	#$0005
 	bcs	loc_00F2A0
 	ldy	#$0000
 loc_00F2A0:
-	sty	a:$1E8A
+	sty	a:wram_1E8A
 	lda	$12,x
 	phx
 	asl	a
 	tax
 	lda	f:tbl_00F2B2,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_00F2B2:
 	.addr	sub_00F2C4
 	.addr	sub_00F2EF
@@ -47,33 +47,33 @@ sub_00F2C4:
 	lda	#$0002
 	jsl	f:sub_01F6A8
 	lda	#$F48A
-	sta	a:$1682
+	sta	a:wram_1682
 	lda	#$0004
-	sta	a:$1680
+	sta	a:wram_1680
 	stz	$32,x
 	inc	$12,x
 	lda	#$0040
-	sta	$04
+	sta	zp_04
 	lda	#$A000
-	sta	$02
+	sta	zp_02
 	ldy	#$4830
 	lda	#$0018
 	jml	f:sub_00CFAF
 
 sub_00F2EF:
-	lda	a:$13BA
+	lda	a:wram_13BA
 	cmp	#$0004
 	bne	loc_00F319
-	stz	$46
+	stz	zp_46
 	inc	$12,x
 	lda	#$0080
 	sta	$24,x
-	stx	$FC
+	stx	zp_FC
 	ldx	#.loword(data_05AA1F)
 	jsl	f:sub_0090A8
 	ldy	#$AA28
 	jsl	f:sub_009982
-	ldx	$FC
+	ldx	zp_FC
 	jsl	f:sub_00FF30
 	jsr	a:sub_00F65E
 loc_00F319:
@@ -85,7 +85,7 @@ sub_00F31A:
 	dec	$24,x
 	bpl	loc_00F34B
 loc_00F322:
-	lda	a:$1678
+	lda	a:wram_1678
 	bne	loc_00F34B
 	lda	#$0068
 	jsl	f:sub_00868F
@@ -95,10 +95,10 @@ loc_00F322:
 	sta	$24,x
 	inc	$12,x
 	jsr	a:sub_00F514
-	stz	a:$163A
+	stz	a:wram_163A
 	lda	#$0020
-	sta	a:$163C
-	sta	a:$1640
+	sta	a:wram_163C
+	sta	a:wram_1640
 loc_00F34B:
 	rtl
 
@@ -110,7 +110,7 @@ sub_00F34C:
 	plx
 	ldy	#$AAB8
 	lda	#$4018
-	sta	$0C
+	sta	zp_0C
 	lda	#$0040
 	bra	loc_00F383
 loc_00F362:
@@ -125,22 +125,22 @@ loc_00F362:
 	sta	$2A,x
 	ldy	#$AAC8
 	lda	#$4218
-	sta	$0C
+	sta	zp_0C
 	lda	#$0030
 loc_00F383:
-	sta	$08
-	lda	a:$1380
+	sta	zp_08
+	lda	a:wram_1380
 	bit	#$0100
 	beq	loc_00F395
 	clc
-	lda	$0C
+	lda	zp_0C
 	adc	#$0400
-	sta	$0C
+	sta	zp_0C
 loc_00F395:
 	lda	#$0002
-	sta	$02
+	sta	zp_02
 	phx
-	lda	$0C
+	lda	zp_0C
 	jsl	f:sub_00FEA3
 	plx
 	rtl
@@ -161,74 +161,74 @@ sub_00F3B8:
 	dec	$24,x
 	bne	loc_00F3DF
 	lda	#$0006
-	sta	$46
+	sta	zp_46
 	inc	$12,x
 	lda	#$0020
-	sta	a:$1636
+	sta	a:wram_1636
 	stz	$36,x
 	lda	#$0080
 	sta	$38,x
 	lda	#$0080
-	sta	a:$0474
+	sta	a:wram_0474
 	lda	#$0100
-	sta	a:$1638
+	sta	a:wram_1638
 	jsr	a:sub_00F907
 loc_00F3DF:
-	dec	a:$030E
+	dec	a:wram_030E
 	jsr	a:sub_00F5D9
 	jsr	a:sub_00F8E2
 	rtl
 
 sub_00F3E9:
-	lda	a:$163C
+	lda	a:wram_163C
 	cmp	#$0020
 	bne	loc_00F405
 	lda	$32,x
 	bne	loc_00F3FC
-	lda	$E8
+	lda	rng_lo
 	bit	#$003F
 	bne	loc_00F405
 loc_00F3FC:
 	lda	#$0003
-	sta	a:$163E
+	sta	a:wram_163E
 	inc	$12,x
 	rtl
 loc_00F405:
 	lda	#$2000
-	sta	$00
-	stz	$02
+	sta	zp_00
+	stz	zp_02
 	jsr	a:sub_00F850
 	jsr	a:sub_00F672
 	brl	loc_00F46D
 
 sub_00F415:
-	lda	a:$163C
+	lda	a:wram_163C
 	cmp	#$0007
 	bcs	loc_00F42D
 	lda	#$0056
 	jsl	f:sub_00868F
 	lda	#$0004
-	sta	a:$1662
+	sta	a:wram_1662
 	inc	$12,x
 	rtl
 loc_00F42D:
-	stz	$00
+	stz	zp_00
 	lda	#$0002
-	sta	$02
+	sta	zp_02
 	jsr	a:sub_00F85A
 	jsr	a:sub_00F672
 	brl	loc_00F46D
 
 sub_00F43D:
-	lda	a:$163C
+	lda	a:wram_163C
 	cmp	#$0020
 	bcc	loc_00F45D
-	dec	a:$163E
+	dec	a:wram_163E
 	bne	loc_00F45A
 	lda	$32,x
 	bne	loc_00F45A
 	lda	#$0020
-	sta	a:$1636
+	sta	a:wram_1636
 	lda	#$0006
 	sta	$12,x
 	rtl
@@ -236,9 +236,9 @@ loc_00F45A:
 	dec	$12,x
 	rtl
 loc_00F45D:
-	stz	$00
+	stz	zp_00
 	lda	#$0002
-	sta	$02
+	sta	zp_02
 	jsr	a:sub_00F871
 	jsr	a:sub_00F672
 	brl	loc_00F46D
@@ -258,14 +258,14 @@ sub_00F484:
 	jsl	f:sub_00FD8D
 	lda	$0A,x
 	adc	#$FFE0
-	sta	$00
+	sta	zp_00
 	lda	$0E,x
 	adc	#$0010
-	sta	$02
+	sta	zp_02
 	lda	#$007F
-	sta	$04
+	sta	zp_04
 	lda	#$007F
-	sta	$06
+	sta	zp_06
 	ldy	#$0280
 	lda	#$C516
 	jsl	f:sub_01CF3C
@@ -283,9 +283,9 @@ sub_00F4B7:
 	ldy	#$AB30
 loc_00F4C3:
 	lda	#$0002
-	sta	$02
+	sta	zp_02
 	lda	#$0040
-	sta	$08
+	sta	zp_08
 	lda	#$4D8C
 	phx
 	ldx	#$0020
@@ -295,9 +295,9 @@ loc_00F4C3:
 
 sub_00F4DA:
 	lda	#$A000
-	sta	$00
+	sta	zp_00
 	lda	#$0020
-	sta	$E2
+	sta	zp_E2
 	lda	#$5E00
 	jml	f:loc_00F4EB
 loc_00F4EB:
@@ -312,12 +312,12 @@ loc_00F4EB:
 	clc
 	adc	#$0010
 	sta	a:$1806,y
-	lda	$00
+	lda	zp_00
 	sta	a:$1840,y
 	clc
-	lda	$B6
+	lda	zp_B6
 	adc	#$0008
-	sta	$B6
+	sta	zp_B6
 	rtl
 
 sub_00F514:
@@ -364,27 +364,27 @@ sub_00F559:
 	eor	#$0002
 	sta	$30,x
 	lda	#$0020
-	sta	a:$1644
+	sta	a:wram_1644
 	brl	loc_00F5B1
 loc_00F571:
 	rts
 loc_00F572:
-	dec	a:$1644
+	dec	a:wram_1644
 	bpl	loc_00F5B0
 	lda	#$0020
 	sta	$24,x
-	stz	a:$0318
-	stz	a:$031A
-	stz	a:$031C
-	stz	a:$031E
-	stz	a:$0330
-	stz	a:$03D8
-	stz	a:$03DA
-	stz	a:$03DC
-	stz	a:$03DE
-	stz	a:$03F0
+	stz	a:wram_0318
+	stz	a:wram_031A
+	stz	a:wram_031C
+	stz	a:wram_031E
+	stz	a:wram_0330
+	stz	a:wram_03D8
+	stz	a:wram_03DA
+	stz	a:wram_03DC
+	stz	a:wram_03DE
+	stz	a:wram_03F0
 	lda	#$0004
-	sta	a:$1662
+	sta	a:wram_1662
 	lda	#$0056
 	jsl	f:sub_00868F
 	lda	#$0056
@@ -415,13 +415,13 @@ loc_00F5BE:
 	rts
 
 sub_00F5D9:
-	stz	$00
+	stz	zp_00
 	sec
-	lda	a:$030A
-	sbc	a:$03CA
+	lda	a:wram_030A
+	sbc	a:wram_03CA
 	bpl	loc_00F5E9
 	eor	#$FFFF
-	inc	$00
+	inc	zp_00
 loc_00F5E9:
 	and	#$00FF
 	sta	a:WRDIVL
@@ -431,31 +431,31 @@ loc_00F5E9:
 	sta	a:WRDIVB
 	rep	#$20
 	.a16
-	stz	$02
+	stz	zp_02
 	sec
-	lda	a:$030E
-	sbc	a:$03CE
+	lda	a:wram_030E
+	sbc	a:wram_03CE
 	bpl	loc_00F608
 	eor	#$FFFF
-	inc	$02
+	inc	zp_02
 loc_00F608:
 	and	#$00FF
 	pha
 	lda	a:RDDIVL
-	ldy	$00
+	ldy	zp_00
 	bne	loc_00F616
 	eor	#$FFFF
 loc_00F616:
-	sta	$00
+	sta	zp_00
 	clc
-	lda	a:$030A
-	adc	$00
+	lda	a:wram_030A
+	adc	zp_00
 	adc	#$0000
-	sta	a:$034A
+	sta	a:wram_034A
 	clc
-	adc	$00
+	adc	zp_00
 	adc	#$0000
-	sta	a:$038A
+	sta	a:wram_038A
 	pla
 	sta	a:WRDIVL
 	sep	#$20
@@ -473,19 +473,19 @@ loc_00F616:
 	nop
 	nop
 	lda	a:RDDIVL
-	ldy	$02
+	ldy	zp_02
 	bne	loc_00F64C
 	; (not executed in the CDL traces)
 	eor	#$FFFF
 loc_00F64C:
-	sta	$02
+	sta	zp_02
 	clc
-	lda	a:$030E
-	adc	$02
-	sta	a:$034E
+	lda	a:wram_030E
+	adc	zp_02
+	sta	a:wram_034E
 	clc
-	adc	$02
-	sta	a:$038E
+	adc	zp_02
+	sta	a:wram_038E
 	rts
 
 sub_00F65E:
@@ -508,8 +508,8 @@ sub_00F672:
 	tax
 	lda	f:tbl_00F681,x
 	plx
-	sta	$0C
-	jmp	($000C)
+	sta	zp_0C
+	jmp	(zp_0C)
 tbl_00F681:
 	.addr	sub_00F7AE
 	.addr	sub_00F6E3
@@ -520,7 +520,7 @@ tbl_00F681:
 	.addr	sub_00F68F
 
 sub_00F68F:
-	ldy	a:$1640
+	ldy	a:wram_1640
 	cpy	#$002C
 	bcs	loc_00F69A
 	brl	loc_00F882
@@ -535,12 +535,12 @@ sub_00F69D:
 	lda	#$0025
 	jsl	f:sub_00868F
 	inc	$36,x
-	ldy	$84
+	ldy	difficulty
 	lda	a:data_05AB52,y
 	sta	$38,x
 loc_00F6B6:
 	jsr	a:sub_00FB71
-	ldy	a:$1640
+	ldy	a:wram_1640
 	cpy	#$001C
 	bcs	loc_00F6C4
 	brl	loc_00F882
@@ -551,7 +551,7 @@ sub_00F6C7:
 	lda	#$0002
 	sta	$3E,x
 	lda	#$0001
-	sta	a:$1660
+	sta	a:wram_1660
 	dec	$38,x
 	bne	loc_00F6DD
 	stz	$36,x
@@ -562,7 +562,7 @@ loc_00F6DD:
 	brl	loc_00F828
 
 sub_00F6E3:
-	lda	$C0
+	lda	zp_C0
 	bne	loc_00F6EC
 	lda	#$0004
 	sta	$3E,x
@@ -574,8 +574,8 @@ loc_00F6EC:
 	sta	$38,x
 loc_00F6F7:
 	jsr	a:sub_00FA55
-	ldy	a:$1640
-	lda	a:$1636
+	ldy	a:wram_1640
+	lda	a:wram_1636
 	and	#$0010
 	bne	loc_00F710
 loc_00F705:
@@ -593,7 +593,7 @@ loc_00F718:
 	brl	loc_00F882
 
 sub_00F71B:
-	lda	a:$1636
+	lda	a:wram_1636
 	and	#$0040
 	beq	loc_00F728
 	lda	#$0002
@@ -606,8 +606,8 @@ loc_00F728:
 	sta	$38,x
 loc_00F733:
 	jsr	a:sub_00F9FD
-	ldy	a:$1640
-	lda	a:$1636
+	ldy	a:wram_1640
+	lda	a:wram_1636
 	and	#$0020
 	bne	loc_00F74C
 	cpy	#$0024
@@ -623,7 +623,7 @@ loc_00F754:
 	brl	loc_00F882
 
 sub_00F757:
-	lda	$78
+	lda	zp_78
 	bit	#$001F
 	bne	loc_00F763
 	lda	#$0004
@@ -634,31 +634,31 @@ loc_00F763:
 	stz	$36,x
 	lda	#$0080
 	sta	$38,x
-	stz	a:$0464
+	stz	a:wram_0464
 loc_00F771:
-	ldy	a:$1640
+	ldy	a:wram_1640
 	lda	$38,x
 	bit	#$0080
 	bne	loc_00F78F
-	lda	a:$1F8A
+	lda	a:p1_lives
 	bne	loc_00F783
 	; (not executed in the CDL traces)
 	brl	loc_00F797
 loc_00F783:
 	sec
-	lda	a:$020E
-	sbc	a:$044E
+	lda	a:wram_020E
+	sbc	a:wram_044E
 	bcs	loc_00F7A3
 	brl	loc_00F705
 loc_00F78F:
-	lda	a:$1FCA
+	lda	a:p2_lives
 	bne	loc_00F797
 	brl	loc_00F783
 loc_00F797:
 	; (not executed in the CDL traces)
 	sec
-	lda	a:$024E
-	sbc	a:$044E
+	lda	a:wram_024E
+	sbc	a:wram_044E
 	bcs	loc_00F7A3
 	brl	loc_00F705
 loc_00F7A3:
@@ -672,7 +672,7 @@ loc_00F7AB:
 sub_00F7AE:
 	dec	$38,x
 	bne	loc_00F80A
-	lda	$E8
+	lda	rng_lo
 	bit	#$0003
 	beq	loc_00F7DD
 	bit	#$0001
@@ -683,7 +683,7 @@ sub_00F7AE:
 loc_00F7C6:
 	lda	#$0057
 	jsl	f:sub_00868F
-	lda	a:$0490
+	lda	a:wram_0490
 	cmp	#$0020
 	bne	loc_00F7E2
 	ldy	#$0080
@@ -703,15 +703,15 @@ loc_00F7F3:
 	lda	#$0057
 	jsl	f:sub_00868F
 	lda	#$0001
-	sta	a:$0464
+	sta	a:wram_0464
 	ldy	#$0100
 	lda	#$0003
 loc_00F806:
 	sta	$36,x
 	sty	$38,x
 loc_00F80A:
-	ldy	a:$1640
-	lda	a:$1636
+	ldy	a:wram_1640
+	lda	a:wram_1636
 	and	#$0010
 	bne	loc_00F820
 	cpy	#$0024
@@ -729,10 +729,10 @@ loc_00F828:
 loc_00F82C:
 	clc
 	lda	f:$7EA0C6,x
-	adc	$00
+	adc	zp_00
 	sta	f:$7EA0C6,x
 	lda	f:$7EA046,x
-	adc	$02
+	adc	zp_02
 	and	#$00FF
 	ora	#$4000
 	sta	f:$7EA046,x
@@ -744,21 +744,21 @@ loc_00F82C:
 	rts
 
 sub_00F850:
-	lda	a:$1636
+	lda	a:wram_1636
 	and	#$0040
 	bne	sub_00F85A
 	bra	sub_00F871
 
 sub_00F85A:
-	lda	$00
+	lda	zp_00
 	eor	#$FFFF
 	clc
 	adc	#$0001
-	sta	$00
-	lda	$02
+	sta	zp_00
+	lda	zp_02
 	eor	#$FFFF
 	adc	#$0000
-	sta	$02
+	sta	zp_02
 	bra	loc_00F876
 
 sub_00F871:
@@ -772,33 +772,33 @@ loc_00F879:
 	lda	#$003A
 	bra	loc_00F897
 loc_00F882:
-	inc	a:$1640
+	inc	a:wram_1640
 	ldy	#$0000
 	bra	loc_00F890
 loc_00F88A:
-	dec	a:$1640
+	dec	a:wram_1640
 	ldy	#$0038
 loc_00F890:
 	phx
 	ldx	#$0000
 	lda	#$0020
 loc_00F897:
-	sta	$08
+	sta	zp_08
 loc_00F899:
 	clc
 	lda	f:$7EA0C6,x
 	adc	a:data_05921A,y
-	sta	$04
+	sta	zp_04
 	lda	f:$7EA046,x
 	adc	a:data_0591AA,y
 	and	#$00FF
-	sta	$06
+	sta	zp_06
 	clc
-	lda	$04
-	adc	$00
+	lda	zp_04
+	adc	zp_00
 	sta	f:$7EA0C6,x
-	lda	$06
-	adc	$02
+	lda	zp_06
+	adc	zp_02
 	and	#$00FF
 	ora	#$4000
 	sta	f:$7EA046,x
@@ -806,35 +806,35 @@ loc_00F899:
 	iny
 	inx
 	inx
-	cpx	$08
+	cpx	zp_08
 	bcc	loc_00F899
 	plx
 	rts
 
 sub_00F8D0:
 	clc
-	lda	a:$163A
-	adc	$00
-	sta	a:$163A
-	lda	a:$163C
-	adc	$02
-	sta	a:$163C
+	lda	a:wram_163A
+	adc	zp_00
+	sta	a:wram_163A
+	lda	a:wram_163C
+	adc	zp_02
+	sta	a:wram_163C
 	rts
 
 sub_00F8E2:
 	sec
 	lda	#$01C0
-	sbc	a:$030A
-	sta	a:$13C0
+	sbc	a:wram_030A
+	sta	a:wram_13C0
 	sec
 	lda	#$009C
-	sbc	a:$030E
-	sta	a:$13D8
+	sbc	a:wram_030E
+	sta	a:wram_13D8
 loc_00F8F6:
-	lda	a:$030A
+	lda	a:wram_030A
 	adc	#$FFE0
 	sta	$0A,x
-	lda	a:$030E
+	lda	a:wram_030E
 	adc	#$001C
 	sta	$0E,x
 	rts
@@ -864,16 +864,16 @@ loc_00F90E:
 	tax
 	cpy	#$0006
 	bcc	loc_00F90E
-	ldy	$84
+	ldy	difficulty
 	lda	#$0160
-	sta	a:$0406
+	sta	a:wram_0406
 	lda	a:data_05AB40,y
-	sta	a:$0486
+	sta	a:wram_0486
 	plx
 	rts
 
 sub_00F949:
-	lda	a:$1638
+	lda	a:wram_1638
 	and	#$01F8
 	ora	#$4000
 	phx
@@ -884,19 +884,19 @@ loc_00F956:
 	inx
 	cpx	#$0020
 	bcc	loc_00F956
-	lda	a:$1638
+	lda	a:wram_1638
 	bit	#$0100
 	beq	loc_00F98C
 	and	#$00F8
 	lsr	a
 	lsr	a
 	lsr	a
-	sta	$00
+	sta	zp_00
 	lda	#$00F8
 	dex
 	dex
 loc_00F976:
-	dec	$00
+	dec	zp_00
 	bmi	loc_00F98C
 	clc
 	adc	#$0008
@@ -915,23 +915,23 @@ sub_00F98E:
 	.a8
 	sec
 	lda	#$B8
-	sbc	f:$7EA068
-	sta	a:$040E
-	stz	a:$040F
+	sbc	f:wram_7EA068
+	sta	a:wram_040E
+	stz	a:wram_040F
 	sec
 	lda	#$90
-	sbc	f:$7EA056
-	sta	a:$044E
-	stz	a:$044F
+	sbc	f:wram_7EA056
+	sta	a:wram_044E
+	stz	a:wram_044F
 	sec
 	lda	#$60
-	sbc	a:$1638
-	sta	a:$044A
-	stz	a:$044B
+	sbc	a:wram_1638
+	sta	a:wram_044A
+	stz	a:wram_044B
 	sec
 	lda	#$9C
-	sbc	f:$7EA070
-	sta	a:$030E
+	sbc	f:wram_7EA070
+	sta	a:wram_030E
 	rep	#$20
 	.a16
 	brl	loc_00F8F6
@@ -967,10 +967,10 @@ loc_00F9F5:
 	bra	loc_00F9CB
 
 sub_00F9FD:
-	lda	$78
+	lda	zp_78
 	bit	#$0040
 	beq	loc_00FA54
-	lda	$C0
+	lda	zp_C0
 	bne	loc_00FA54
 	ldy	#$0500
 	jsl	f:sub_019EAE
@@ -984,13 +984,13 @@ sub_00F9FD:
 	sta	a:$0002,y
 	lda	#$AB14
 	sta	a:$0020,y
-	lda	a:$048E
+	lda	a:wram_048E
 	adc	#$FFE8
 	sta	a:$000E,y
-	lda	a:$048A
+	lda	a:wram_048A
 	adc	#$0010
 	sta	a:$000A,y
-	lda	$E8
+	lda	rng_lo
 	sta	a:$001C,x
 	lda	#$FFFF
 	sta	a:$001A,y
@@ -1003,7 +1003,7 @@ loc_00FA54:
 	rts
 
 sub_00FA55:
-	lda	$78
+	lda	zp_78
 	bit	#$000F
 	bne	loc_00FA54
 	ldy	#$0500
@@ -1020,14 +1020,14 @@ sub_00FA55:
 	sta	a:$0020,y
 	lda	#$0001
 	sta	a:$0004,y
-	lda	a:$044E
+	lda	a:wram_044E
 	sta	a:$000E,y
-	lda	a:$044A
+	lda	a:wram_044A
 	adc	#$0008
 	sta	a:$000A,y
 	lda	#$0001
 	sta	a:$0006,y
-	lda	$E8
+	lda	rng_lo
 	and	#$0003
 	asl	a
 	tax
@@ -1054,7 +1054,7 @@ sub_00FAC0:
 	lda	#$C59A
 	jml	f:sub_01CF66
 loc_00FAD3:
-	lda	$E6
+	lda	zp_E6
 	cmp	#$0002
 	bcc	loc_00FADE
 	inc	$0E,x
@@ -1069,7 +1069,7 @@ loc_00FAE0:
 	ldy	#$0240
 loc_00FAEC:
 	lda	a:$000E,y
-	ldy	$84
+	ldy	difficulty
 	cmp	$0E,x
 	bpl	loc_00FB05
 	sec
@@ -1102,8 +1102,8 @@ sub_00FB15:
 loc_00FB2A:
 	lda	$12,x
 	bne	loc_00FB6B
-	stz	$00
-	stz	$02
+	stz	zp_00
+	stz	zp_02
 	jsl	f:sub_00E16E
 	beq	loc_00FB44
 	jsl	f:sub_0193DB
@@ -1121,8 +1121,8 @@ loc_00FB44:
 	sta	$1E,x
 	rtl
 loc_00FB54:
-	stz	$00
-	stz	$02
+	stz	zp_00
+	stz	zp_02
 	jsl	f:sub_00E16E
 	beq	loc_00FB44
 	jsl	f:sub_0193DB
@@ -1148,10 +1148,10 @@ sub_00FB71:
 	sta	a:$0010,y
 	lda	#$1200
 	sta	a:$0002,y
-	lda	a:$044A
+	lda	a:wram_044A
 	adc	#$0010
 	sta	a:$000A,y
-	lda	a:$044E
+	lda	a:wram_044E
 	adc	#$FFFC
 	sta	a:$000E,y
 	lda	#$0080
@@ -1167,10 +1167,10 @@ sub_00FBAB:
 	bcs	loc_00FBE1
 	lda	#$000F
 	sta	a:$0016,y
-	lda	a:$044A
+	lda	a:wram_044A
 	adc	#$0010
 	sta	a:$000A,y
-	lda	a:$044E
+	lda	a:wram_044E
 	adc	#$FFFC
 	sta	a:$000E,y
 	lda	#$FFF0
@@ -1189,72 +1189,72 @@ sub_00FBE2:
 	lda	$24,x
 	bne	loc_00FBF8
 	ldy	#$0100
-	lda	a:$1638
+	lda	a:wram_1638
 	cmp	#$0100
 	bcs	loc_00FC11
 loc_00FBF8:
-	sty	$00
-	lda	a:$1638
+	sty	zp_00
+	lda	a:wram_1638
 	clc
 	adc	#$0004
-	cmp	$00
+	cmp	zp_00
 	bcc	loc_00FC07
-	lda	$00
+	lda	zp_00
 loc_00FC07:
-	sta	a:$1638
+	sta	a:wram_1638
 	rtl
 loc_00FC0B:
-	lda	a:$1638
+	lda	a:wram_1638
 	ldy	#$00E0
 loc_00FC11:
-	sty	$00
+	sty	zp_00
 	sec
 	sbc	#$000C
-	cmp	$00
+	cmp	zp_00
 	bcs	loc_00FC1D
-	lda	$00
+	lda	zp_00
 loc_00FC1D:
-	sta	a:$1638
+	sta	a:wram_1638
 	rtl
 
 sub_00FC21:
 	dec	$34,x
 	bpl	loc_00FC43
-	ldy	$84
-	lda	$E8
+	ldy	difficulty
+	lda	rng_lo
 	and	#$007F
 	adc	a:data_05AB4C,y
 	sta	$34,x
 	lda	$0E,x
 	adc	#$FFF8
-	sta	$02
+	sta	zp_02
 	lda	$0A,x
 	adc	#$0010
-	sta	$00
+	sta	zp_00
 	jsl	f:sub_01A0E9
 loc_00FC43:
 	lda	$26,x
 	beq	loc_00FC58
 	lda	#$912A
-	sta	$9A
+	sta	zp_9A
 	lda	#$0060
-	sta	$98
+	sta	zp_98
 	lda	#$000F
 	jsl	f:sub_00868F
 loc_00FC58:
 	lda	$06,x
 	bpl	loc_00FCBD
 	lda	#$0100
-	sta	a:$0932
+	sta	a:wram_0932
 	lda	#$0110
-	sta	a:$093E
+	sta	a:wram_093E
 	lda	#$0006
-	sta	a:$0936
-	stz	a:$0464
+	sta	a:wram_0936
+	stz	a:wram_0464
 	lda	#$8000
 	sta	$16,x
 	lda	#$C540
-	sta	$00
+	sta	zp_00
 	ldy	#$0010
 	lda	#$4E94
 	jml	f:loc_00FE7D
@@ -1262,12 +1262,12 @@ loc_00FC58:
 sub_00FC85:
 	sec
 	lda	#$0060
-	sbc	f:$7EA068
+	sbc	f:wram_7EA068
 	and	#$00FF
 	sta	a:$000E,x
 	lda	$12,x
 	bne	loc_00FCC9
-	lda	a:$0932
+	lda	a:wram_0932
 	bne	loc_00FCA0
 	lda	$06,x
 	bpl	loc_00FCBD
@@ -1278,7 +1278,7 @@ loc_00FCA0:
 	sta	$24,x
 	inc	$12,x
 	lda	#$C480
-	sta	$00
+	sta	zp_00
 	ldy	#$0008
 	lda	#$4D14
 	jml	f:loc_00FE7D
@@ -1295,23 +1295,23 @@ loc_00FCC9:
 	lda	#$8000
 	sta	$16,x
 loc_00FCD2:
-	lda	$C0
+	lda	zp_C0
 	bne	loc_00FCBD
 	lda	$0A,x
-	sta	$00
+	sta	zp_00
 	lda	$0E,x
-	sta	$02
+	sta	zp_02
 	lda	#$001F
-	sta	$04
+	sta	zp_04
 	lda	#$0007
-	sta	$06
+	sta	zp_06
 	ldy	#$0500
 	jsl	f:sub_01CF3C
 	bcs	loc_00FD11
 	lda	#$C516
 	sta	a:$0020,y
 	phx
-	lda	$E8
+	lda	rng_lo
 	and	#$000E
 	tax
 	lda	a:data_05C838,x
@@ -1379,12 +1379,12 @@ sub_00FD6A:
 	lda	#$8000
 	sta	$16,x
 loc_00FD73:
-	lda	a:$044A
+	lda	a:wram_044A
 	sta	$0A,x
-	lda	a:$044E
+	lda	a:wram_044E
 	adc	#$FFFC
 	sta	$0E,x
-	lda	$78
+	lda	zp_78
 	and	#$0004
 	lsr	a
 	xba

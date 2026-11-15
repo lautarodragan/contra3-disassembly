@@ -12,7 +12,7 @@ sub_0086AC:
 	lda	#$8F
 	sta	a:INIDISP
 	lda	#$03
-	sta	a:$1E86
+	sta	a:wram_1E86
 	sta	a:OBSEL
 	lda	#$00
 	sta	a:OAMADDL
@@ -20,19 +20,19 @@ sub_0086AC:
 	lda	#$09
 	sta	a:BGMODE
 	lda	#$00
-	sta	a:$1E8A
+	sta	a:wram_1E8A
 	sta	a:MOSAIC
 	lda	#$01
-	sta	a:$1E8C
+	sta	a:wram_1E8C
 	sta	a:BG1SC
 	lda	#$11
-	sta	a:$1E8E
+	sta	a:wram_1E8E
 	sta	a:BG2SC
 	lda	#$5A
-	sta	a:$1E90
+	sta	a:wram_1E90
 	sta	a:BG3SC
 	lda	#$59
-	sta	a:$1E92
+	sta	a:wram_1E92
 	sta	a:BG4SC
 	lda	#$22
 	sta	a:BG12NBA
@@ -88,22 +88,22 @@ sub_0086AC:
 	sta	a:WBGLOG
 	sta	a:WOBJLOG
 	lda	#$17
-	sta	a:$1E9A
+	sta	a:wram_1E9A
 	sta	a:TM
 	lda	#$17
-	sta	a:$1E9C
+	sta	a:wram_1E9C
 	sta	a:TS
 	lda	#$00
 	sta	a:TMW
 	sta	a:TSW
 	lda	#$30
-	sta	a:$1E94
+	sta	a:wram_1E94
 	sta	a:CGWSEL
 	lda	#$00
-	sta	a:$1E96
+	sta	a:wram_1E96
 	sta	a:CGADSUB
 	lda	#$E0
-	sta	a:$1E98
+	sta	a:wram_1E98
 	sta	a:COLDATA
 	lda	#$00
 	sta	a:SETINI
@@ -138,7 +138,7 @@ sub_0086AC:
 	sta	a:TM
 	sta	a:TS
 	lda	#$81
-	sta	a:$1E82
+	sta	a:nmitimen_shadow
 	sta	a:NMITIMEN
 	plp
 	.a16
@@ -150,7 +150,7 @@ sub_008819:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:$000000
+	sta	f:zp_00
 	lda	#$1BFE
 	ldx	#$0000
 	txy
@@ -165,7 +165,7 @@ sub_008830:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:$000084
+	sta	f:difficulty
 	lda	#$007A
 	ldx	#$0084
 	txy
@@ -180,7 +180,7 @@ sub_008847:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:$000200
+	sta	f:player1_obj
 	lda	#$19FE
 	ldx	#$0200
 	txy
@@ -193,7 +193,7 @@ sub_00885E:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:$001C00
+	sta	f:wram_1C00
 	lda	#$00FE
 	ldx	#$1C00
 	txy
@@ -208,7 +208,7 @@ sub_008875:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:$000070
+	sta	f:stage_index
 	lda	#$008E
 	ldx	#$0070
 	txy
@@ -223,7 +223,7 @@ sub_00888C:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:$001200
+	sta	f:wram_1200
 	lda	#$08FE
 	ldx	#$1200
 	txy
@@ -240,7 +240,7 @@ sub_0088A3:
 	.i16
 	phb
 	lda	#$0000
-	sta	f:$001380
+	sta	f:wram_1380
 	lda	#$00FE
 	ldx	#$1380
 	txy
@@ -255,7 +255,7 @@ sub_0088BA:
 	.a16
 	phb
 	lda	#$0000
-	sta	f:$000200
+	sta	f:player1_obj
 	lda	#$0DBE
 	ldx	#$0200
 	txy
@@ -278,7 +278,7 @@ sub_0088E7:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:$001200
+	sta	f:wram_1200
 	lda	#$007E
 	ldx	#$1200
 	txy
@@ -288,7 +288,7 @@ sub_0088E7:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:$7E2000
+	sta	f:wram_7E2000
 	lda	#$03FE
 	ldx	#$2000
 	txy
@@ -301,7 +301,7 @@ sub_008914:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:$001280
+	sta	f:wram_1280
 	lda	#$007E
 	ldx	#$1280
 	txy
@@ -316,7 +316,7 @@ sub_00892B:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:$001B00
+	sta	f:wram_1B00
 	lda	#$00FE
 	ldx	#$1B00
 	txy
@@ -329,7 +329,7 @@ sub_008942:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:$7E4000
+	sta	f:wram_7E4000
 	lda	#$BFFE
 	ldx	#$4000
 	txy
@@ -344,7 +344,7 @@ sub_008959:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:$7E8000
+	sta	f:wram_7E8000
 	lda	#$1FFE
 	ldx	#$8000
 	txy
@@ -354,7 +354,7 @@ sub_008959:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:$7EC000
+	sta	f:wram_7EC000
 	lda	#$1FFE
 	ldx	#$C000
 	txy

@@ -18,12 +18,12 @@ loc_00898D:
 	lsr	a
 	and	#$0002
 	tay
-	lda	a:$1F98
+	lda	a:wram_1F98
 	clc
 	adc	f:data_058000,x
 	and	#$01FF
 	pha
-	lda	a:$1F98
+	lda	a:wram_1F98
 	and	#$00FF
 	asl	a
 	clc
@@ -38,32 +38,32 @@ loc_00898D:
 	bcc	loc_0089CB
 	lda	#$0000
 	sec
-	sbc	$00
-	sta	$00
+	sbc	zp_00
+	sta	zp_00
 loc_0089CB:
 	ply
 	tya
 	asl	a
 	tax
-	lda	$00
+	lda	zp_00
 	sta	a:$1E9E,x
 	dey
 	bpl	loc_00898D
-	lda	a:$1F90
-	sta	a:$1EA6
-	lda	a:$1F92
-	sta	a:$1EA8
+	lda	a:wram_1F90
+	sta	a:wram_1EA6
+	lda	a:wram_1F92
+	sta	a:wram_1EA8
 	rtl
 
 sub_0089E4:
 	; (not executed in the CDL traces)
 	rep	#$30
-	sta	$00
-	stx	$02
+	sta	zp_00
+	stx	zp_02
 	lda	#$8000
-	sta	$04
+	sta	zp_04
 	ldy	#$0008
-	lda	$02
+	lda	zp_02
 loc_0089F4:
 	asl	a
 	bcs	loc_0089FC
@@ -71,16 +71,16 @@ loc_0089F4:
 	bne	loc_0089F4
 	beq	loc_008A03
 loc_0089FC:
-	lsr	$04
-	lsr	$02
+	lsr	zp_04
+	lsr	zp_02
 	dey
 	bne	loc_0089FC
 loc_008A03:
-	lda	$04
+	lda	zp_04
 	sta	a:WRDIVL
 	sep	#$20
 	.a8
-	lda	$02
+	lda	zp_02
 	sta	a:WRDIVB
 	lda	#$04
 loc_008A11:
@@ -89,8 +89,8 @@ loc_008A11:
 	rep	#$20
 	.a16
 	ldx	a:RDDIVL
-	stx	$02
-	lda	$00
+	stx	zp_02
+	lda	zp_00
 	cmp	#$FFFF
 	clc
 	bne	loc_008A27
@@ -98,9 +98,9 @@ loc_008A11:
 	sec
 loc_008A27:
 	ror	a
-	sta	$00
+	sta	zp_00
 	ldy	#$0008
-	lda	$02
+	lda	zp_02
 loc_008A2F:
 	asl	a
 	bcs	loc_008A37
@@ -108,16 +108,16 @@ loc_008A2F:
 	bne	loc_008A2F
 	beq	loc_008A3E
 loc_008A37:
-	lsr	$00
-	lsr	$02
+	lsr	zp_00
+	lsr	zp_02
 	dey
 	bne	loc_008A37
 loc_008A3E:
-	lda	$00
+	lda	zp_00
 	sta	a:WRDIVL
 	sep	#$20
 	.a8
-	lda	$02
+	lda	zp_02
 	sta	a:WRDIVB
 	lda	#$04
 loc_008A4C:
@@ -127,7 +127,7 @@ loc_008A4C:
 	.a16
 	lda	a:RDDIVL
 	asl	a
-	sta	$00
+	sta	zp_00
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
@@ -135,37 +135,37 @@ sub_008A58:
 	; (not executed in the CDL traces)
 	rep	#$20
 	rep	#$10
-	lda	$00
+	lda	zp_00
 	sec
-	sbc	$02
-	sta	$08
+	sbc	zp_02
+	sta	zp_08
 	lda	#$0000
 	sbc	#$0000
-	sta	$0A
-	sta	$0C
+	sta	zp_0A
+	sta	zp_0C
 	tya
 	beq	loc_008A84
 	bmi	loc_008A7B
 loc_008A72:
-	asl	$08
-	rol	$0A
+	asl	zp_08
+	rol	zp_0A
 	dey
 	bne	loc_008A72
 	beq	loc_008A84
 loc_008A7B:
-	lsr	$0C
-	ror	$0A
-	ror	$08
+	lsr	zp_0C
+	ror	zp_0A
+	ror	zp_08
 	iny
 	bne	loc_008A7B
 loc_008A84:
-	lda	$04
+	lda	zp_04
 	sec
-	sbc	$08
-	sta	$00
-	lda	$06
-	sbc	$0A
-	sta	$02
+	sbc	zp_08
+	sta	zp_00
+	lda	zp_06
+	sbc	zp_0A
+	sta	zp_02
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
@@ -218,31 +218,31 @@ sub_008ADB:
 	; (not executed in the CDL traces)
 	sep	#$10
 	.i8
-	ldx	$00
-	ldy	$02
+	ldx	zp_00
+	ldy	zp_02
 	sty	a:WRMPYA
 	stx	a:WRMPYB
-	stz	$06
-	ldx	$01
+	stz	zp_06
+	ldx	zp_01
 	lda	a:RDMPYL
 	stx	a:WRMPYB
-	sta	$04
-	ldx	$00
+	sta	zp_04
+	ldx	zp_00
 	lda	a:RDMPYL
-	ldy	$03
+	ldy	zp_03
 	sty	a:WRMPYA
 	stx	a:WRMPYB
 	clc
-	adc	$05
+	adc	zp_05
 	clc
 	adc	a:RDMPYL
-	ldx	$01
+	ldx	zp_01
 	stx	a:WRMPYB
-	sta	$05
-	lda	$06
+	sta	zp_05
+	lda	zp_06
 	clc
 	adc	a:RDMPYL
-	sta	$06
+	sta	zp_06
 	rep	#$10
 	.i16
 	rtl

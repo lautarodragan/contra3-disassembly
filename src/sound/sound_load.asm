@@ -224,12 +224,12 @@ loc_009780:
 	bcc	loc_009771
 	rts
 loc_00978C:
-	stx	a:$1F2C
-	stz	a:$1F26
+	stx	a:wram_1F2C
+	stz	a:wram_1F26
 	lda	f:$050001,x
 	and	#$00FF
 	ora	#$C000
-	sta	a:$1F2E
+	sta	a:wram_1F2E
 	stz	$5A
 	stz	$6A
 	stz	$16
@@ -395,9 +395,9 @@ loc_0098B8:
 sub_0098BF:
 	; (not executed in the CDL traces)
 	rep	#$20
-	lda	a:$1F2C
+	lda	a:wram_1F2C
 	bne	loc_0098D3
-	lda	a:$1F16
+	lda	a:wram_1F16
 	beq	loc_0098D3
 	cmp	#$0004
 	bne	loc_0098D3
@@ -408,17 +408,17 @@ loc_0098D3:
 sub_0098D4:
 	rep	#$30
 	lda	#$00FF
-	sta	$52
+	sta	zp_52
 	jsl	f:sub_0098E2
-	stz	$52
+	stz	zp_52
 	rtl
 
 sub_0098E2:
 	rep	#$20
-	stz	$54
-	stz	$56
-	stz	$5A
-	stz	$6A
+	stz	sound_queue_read
+	stz	sound_queue_write
+	stz	zp_5A
+	stz	zp_6A
 	lda	f:$050000,x
 	inx
 	php
@@ -475,19 +475,19 @@ loc_009947:
 sub_00994F:
 	rep	#$20
 	lda	#$00FF
-	sta	$52
-	stx	a:$1F2C
+	sta	zp_52
+	stx	a:wram_1F2C
 	rtl
 
 sub_00995A:
 	rep	#$20
-	lda	$52
+	lda	zp_52
 	cmp	#$00FF
 	bne	loc_009970
-	ldx	a:$1F2C
+	ldx	a:wram_1F2C
 	jsl	f:sub_0098E2
-	stz	$54
-	stz	$56
-	stz	$52
+	stz	sound_queue_read
+	stz	sound_queue_write
+	stz	zp_52
 loc_009970:
 	rtl

@@ -9,7 +9,7 @@
 
 sub_00E960:
 	ldx	#$0200
-	lda	$BC
+	lda	zp_BC
 	bne	loc_00E96A
 	ldx	#$0240
 loc_00E96A:
@@ -29,14 +29,14 @@ loc_00E97D:
 sub_00E97E:
 	ldx	#$0280
 	lda	#$0300
-	sta	a:$166A
+	sta	a:wram_166A
 	bra	loc_00E997
 
 sub_00E989:
 	lda	#$15A0
-	sta	$AA
+	sta	zp_AA
 	lda	#$0AC0
-	sta	a:$166A
+	sta	a:wram_166A
 	ldx	#$0300
 loc_00E997:
 	lda	$10,x
@@ -53,7 +53,7 @@ loc_00E99E:
 	lda	$0A,x
 	adc	$1A,x
 	sec
-	sbc	a:$138E
+	sbc	a:wram_138E
 	sta	$0A,x
 	clc
 	lda	$0C,x
@@ -62,7 +62,7 @@ loc_00E99E:
 	lda	$0E,x
 	adc	$1E,x
 	sec
-	sbc	a:$13A6
+	sbc	a:wram_13A6
 	sta	$0E,x
 	lda	$16,x
 loc_00E9C9:
@@ -92,17 +92,17 @@ loc_00E9EE:
 	lda	$0E,x
 	adc	$2A,x
 	sta	$2E,x
-	ldy	$AA
+	ldy	zp_AA
 	txa
 	sta	a:$0000,y
-	inc	$AA
-	inc	$AA
+	inc	zp_AA
+	inc	zp_AA
 	lda	$16,x
 loc_00EA0B:
 	bit	#$0008
 	beq	loc_00EA76
 	ldy	#$0200
-	lda	$BC
+	lda	zp_BC
 	beq	loc_00EA1A
 	ldy	#$0240
 loc_00EA1A:
@@ -215,7 +215,7 @@ loc_00EADB:
 loc_00EAE1:
 	ldy	$00,x
 	beq	loc_00EAEF
-	lda	$AE
+	lda	zp_AE
 	cmp	#$11E0
 	bcs	loc_00EAEF
 	jsr	a:sub_00EB1A
@@ -226,23 +226,23 @@ loc_00EAF1:
 	txa
 	adc	#$0040
 	tax
-	cmp	a:$166A
+	cmp	a:wram_166A
 	bcs	loc_00EAFF
 	brl	loc_00E997
 loc_00EAFF:
-	ldx	$AA
+	ldx	zp_AA
 	stz	$00,x
 	rtl
 
 sub_00EB04:
 	lda	$10,x
-	sta	$00
+	sta	zp_00
 	asl	a
 	clc
-	adc	$00
+	adc	zp_00
 	tay
 	lda	a:tbl_05A48A,y
-	sta	$00
+	sta	zp_00
 	lda	a:tbl_05A48A+2,y
-	sta	$02
-	jml	[$0000]
+	sta	zp_02
+	jml	[zp_00]

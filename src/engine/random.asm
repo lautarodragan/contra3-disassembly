@@ -9,24 +9,24 @@ sub_00816C:
 	ldx	#$0000
 	phx
 	pld
-	lda	$E8
+	lda	rng_lo
 	bne	loc_00817B
-	lda	$3A
-	sta	$E8
+	lda	frame_counter
+	sta	rng_lo
 loc_00817B:
 	eor	#$FFFF
-	sta	$E6
-	lda	$EA
-	eor	$E6
-	asl	$E8
-	rol	$EA
-	asl	$E6
+	sta	zp_E6
+	lda	rng_hi
+	eor	zp_E6
+	asl	rng_lo
+	rol	rng_hi
+	asl	zp_E6
 	bcc	loc_00819A
-	lda	$E8
+	lda	rng_lo
 	eor	#$2125
-	sta	$E8
-	lda	$EA
+	sta	rng_lo
+	lda	rng_hi
 	eor	#$1010
-	sta	$EA
+	sta	rng_hi
 loc_00819A:
 	rtl

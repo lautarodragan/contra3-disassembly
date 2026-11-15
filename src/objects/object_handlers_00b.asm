@@ -83,7 +83,7 @@ loc_00DE3D:
 	adc	#$0020
 	tay
 	adc	#$0040
-	sta	$00
+	sta	zp_00
 loc_00DE53:
 	lda	a:$0010,y
 	beq	loc_00DE63
@@ -91,17 +91,17 @@ loc_00DE53:
 	clc
 	adc	#$0020
 	tay
-	cmp	$00
+	cmp	zp_00
 	bcc	loc_00DE53
 	rtl
 loc_00DE63:
-	lda	$E8
+	lda	rng_lo
 	and	#$001F
 	sec
 	adc	$0A,x
 	sbc	#$000F
 	sta	a:$000A,y
-	lda	$EA
+	lda	rng_hi
 	and	#$001F
 	sec
 	adc	$0E,x
@@ -113,11 +113,11 @@ loc_00DE63:
 	sta	a:$0010,y
 	lda	#$0004
 	sta	a:$0006,y
-	lda	$3A
-	adc	$E8
-	sta	$E8
-	adc	$EA
-	sta	$EA
+	lda	frame_counter
+	adc	rng_lo
+	sta	rng_lo
+	adc	rng_hi
+	sta	rng_hi
 	rtl
 
 sub_00DE9C:
@@ -125,7 +125,7 @@ sub_00DE9C:
 	beq	loc_00DEA3
 	brl	loc_00DDEF
 loc_00DEA3:
-	lda	$BC
+	lda	zp_BC
 	bne	loc_00DEAE
 	txa
 	bit	#$0020
@@ -138,9 +138,9 @@ loc_00DEAE:
 	bne	loc_00DEB5
 	rtl
 loc_00DEB5:
-	ldy	a:$1646
+	ldy	a:wram_1646
 	lda	#$0021
-	sta	$00
+	sta	zp_00
 loc_00DEBD:
 	lda	a:$0016,y
 	bit	#$0010
@@ -156,9 +156,9 @@ loc_00DECA:
 	lda	#$0280
 loc_00DED7:
 	tay
-	dec	$00
+	dec	zp_00
 	bpl	loc_00DEBD
-	sty	a:$1646
+	sty	a:wram_1646
 	lda	$04,x
 	bra	loc_00DF38
 loc_00DEE3:
@@ -169,25 +169,25 @@ loc_00DEE3:
 	bcc	loc_00DEF0
 	lda	#$0280
 loc_00DEF0:
-	sta	a:$1646
+	sta	a:wram_1646
 	lda	a:$0028,y
 	lsr	a
 	adc	a:$000A,y
 	sbc	$0A,x
-	sta	$08
+	sta	zp_08
 	lda	a:$002A,y
 	sec
 	ror	a
 	adc	a:$000E,y
 	sbc	$0E,x
-	sta	$0A
+	sta	zp_0A
 	jsl	f:sub_1DABA0
 	lsr	a
 	and	#$00FE
-	sta	$0A
+	sta	zp_0A
 	sec
 	lda	$04,x
-	sbc	$0A
+	sbc	zp_0A
 	bpl	loc_00DF28
 	cmp	#$FFC0
 	bcc	loc_00DF2D
@@ -252,7 +252,7 @@ sub_00DF73:
 	sta	$1E,x
 	rtl
 loc_00DF89:
-	lda	$E4
+	lda	zp_E4
 	bne	loc_00DF92
 	lda	$04,x
 	sta	$02,x
@@ -280,7 +280,7 @@ loc_00DFA9:
 	adc	#$0020
 	tay
 	adc	#$0100
-	sta	$00
+	sta	zp_00
 loc_00DFBA:
 	lda	a:$0010,y
 	beq	loc_00DFCA
@@ -288,17 +288,17 @@ loc_00DFBA:
 	clc
 	adc	#$0020
 	tay
-	cmp	$00
+	cmp	zp_00
 	bcc	loc_00DFBA
 	rtl
 loc_00DFCA:
-	lda	$E8
+	lda	rng_lo
 	and	#$001F
 	sec
 	adc	$0A,x
 	sbc	#$000F
 	sta	a:$000A,y
-	lda	$EA
+	lda	rng_hi
 	and	#$001F
 	sec
 	adc	$0E,x
@@ -322,14 +322,14 @@ sub_00DFF9:
 	lda	$1A,x
 	adc	#$0000
 	sta	$1A,x
-	lda	$BC
+	lda	zp_BC
 	beq	loc_00E049
 	txy
 	phx
 	txa
 	clc
 	adc	#$0140
-	sta	$00
+	sta	zp_00
 loc_00E019:
 	lda	$30,x
 	beq	loc_00E029
@@ -337,7 +337,7 @@ loc_00E019:
 	clc
 	adc	#$0020
 	tax
-	cmp	$00
+	cmp	zp_00
 	bcc	loc_00E019
 	plx
 	rtl
@@ -400,7 +400,7 @@ sub_00E072:
 	sta	$04,x
 	rtl
 loc_00E08B:
-	lda	$E4
+	lda	zp_E4
 	beq	loc_00E097
 	lda	$02,x
 	and	#$F1FF
@@ -415,7 +415,7 @@ loc_00E097:
 sub_00E09F:
 	dec	$04,x
 	beq	loc_00E0AF
-	lda	$C0
+	lda	zp_C0
 	and	#$0006
 	tay
 	lda	a:data_05A086,y
@@ -505,7 +505,7 @@ sub_00E122:
 	clc
 	adc	#$0020
 	tax
-	cmp	$06
+	cmp	zp_06
 	bne	sub_00E122
 	sec
 	rtl
@@ -556,41 +556,41 @@ loc_00E16A:
 sub_00E16E:
 	clc
 	lda	$0E,x
-	adc	$02
+	adc	zp_02
 	cmp	#$00E0
 	bcs	loc_00E16A
 	clc
-	adc	a:$1398
+	adc	a:wram_1398
 	and	#$00FF
-	sta	$0A
-	lda	a:$1380
+	sta	zp_0A
+	lda	a:wram_1380
 	clc
 	adc	$0A,x
 	clc
-	adc	$00
+	adc	zp_00
 	and	#$01FF
-	sta	$08
+	sta	zp_08
 	and	#$0100
 	asl	a
 	asl	a
-	sta	$0C
-	lda	$08
+	sta	zp_0C
+	lda	zp_08
 	lsr	a
 	lsr	a
 	lsr	a
 	and	#$001F
-	ora	$0C
-	sta	$0C
-	lda	$0A
+	ora	zp_0C
+	sta	zp_0C
+	lda	zp_0A
 	asl	a
 	asl	a
 	and	#$03E0
-	ora	$0C
+	ora	zp_0C
 	phx
 	asl	a
 	tax
 	lda	f:$7E4000,x
-	sta	$08
+	sta	zp_08
 	plx
-	lda	$08
+	lda	zp_08
 	rtl

@@ -5,13 +5,13 @@
 ; through tbl_05A48A.
 
 sub_04E21B:
-	lda	$00
+	lda	zp_00
 	pha
 	phx
 	phy
-	stz	$00
+	stz	zp_00
 loc_04E222:
-	lda	$00
+	lda	zp_00
 	asl	a
 	tay
 	lda	a:data_05F5EE,y
@@ -44,15 +44,15 @@ loc_04E222:
 	stz	$24,x
 	stz	$12,x
 	jsr	a:sub_04E37F
-	inc	$00
-	lda	$00
-	ldy	$84
+	inc	zp_00
+	lda	zp_00
+	ldy	difficulty
 	cmp	a:data_05F5FE,y
 	bcc	loc_04E222
 	ply
 	plx
 	pla
-	sta	$00
+	sta	zp_00
 	rtl
 
 sub_04E278:
@@ -66,8 +66,8 @@ sub_04E27C:
 	tax
 	lda	f:tbl_04E28B,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_04E28B:
 	.addr	sub_04E291
 	.addr	sub_04E2D0
@@ -134,8 +134,8 @@ sub_04E2F1:
 	tax
 	lda	f:tbl_04E300,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_04E300:
 	.addr	sub_04E30A
 	.addr	sub_04E31B
@@ -216,7 +216,7 @@ loc_04E372:
 sub_04E37F:
 	lda	#$0100
 	sec
-	sbc	a:$1398
+	sbc	a:wram_1398
 	clc
 	adc	$32,x
 	sta	$0E,x

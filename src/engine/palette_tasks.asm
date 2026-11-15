@@ -35,12 +35,12 @@ sub_009995:
 	rep	#$10
 	ldx	#$1200
 loc_00999C:
-	stx	$FC
+	stx	zp_FC
 	lda	$00,x
 	beq	loc_0099A6
 	jsl	f:sub_0099B3
 loc_0099A6:
-	lda	$FC
+	lda	zp_FC
 	clc
 	adc	#$0010
 	tax
@@ -55,8 +55,8 @@ sub_0099B3:
 	tax
 	lda	f:tbl_0099C1,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_0099C1:
 	.addr	sub_0099C9
 	.addr	sub_009A19
@@ -115,7 +115,7 @@ sub_009A19:
 	lda	$04,x
 	xba
 	and	#$00FF
-	sta	$04
+	sta	zp_04
 	lda	a:$0000,y
 	and	#$00FF
 	bne	loc_009A2E
@@ -135,12 +135,12 @@ loc_009A3D:
 	xba
 	and	#$00FF
 	sec
-	sbc	$04
+	sbc	zp_04
 	beq	loc_009A52
-	sta	$02
+	sta	zp_02
 loc_009A4A:
 	jsl	f:sub_009A53
-	dec	$02
+	dec	zp_02
 	bne	loc_009A4A
 loc_009A52:
 	rtl
@@ -148,7 +148,7 @@ loc_009A52:
 sub_009A53:
 	; (not executed in the CDL traces)
 	lda	a:$0003,y
-	sta	$00
+	sta	zp_00
 	ldx	a:$0001,y
 loc_009A5B:
 	sec
@@ -168,7 +168,7 @@ loc_009A76:
 	sta	f:$7E0000,x
 	inx
 	inx
-	cpx	$00
+	cpx	zp_00
 	bcc	loc_009A5B
 	rtl
 
@@ -218,19 +218,19 @@ loc_009AC1:
 	and	#$00FF
 	eor	#$001F
 loc_009ACA:
-	sta	$08
+	sta	zp_08
 	asl	a
 	asl	a
 	asl	a
 	asl	a
 	asl	a
-	sta	$0A
+	sta	zp_0A
 	asl	a
 	asl	a
 	asl	a
 	asl	a
 	asl	a
-	sta	$0C
+	sta	zp_0C
 	ldx	a:$0003,y
 	lda	a:$0001,y
 	tay
@@ -242,40 +242,40 @@ loc_009ACA:
 	rep	#$20
 	.a16
 	lda	a:$0000,y
-	sta	$02
+	sta	zp_02
 loc_009AEE:
 	lda	a:$0002,y
 	and	#$001F
 	sec
-	sbc	$08
+	sbc	zp_08
 	bpl	loc_009AFC
 	lda	#$0000
 loc_009AFC:
-	sta	$00
+	sta	zp_00
 	lda	a:$0002,y
 	and	#$03E0
 	sec
-	sbc	$0A
+	sbc	zp_0A
 	bpl	loc_009B0C
 	lda	#$0000
 loc_009B0C:
-	ora	$00
-	sta	$00
+	ora	zp_00
+	sta	zp_00
 	lda	a:$0002,y
 	and	#$7C00
 	sec
-	sbc	$0C
+	sbc	zp_0C
 	bpl	loc_009B1E
 	lda	#$0000
 loc_009B1E:
-	ora	$00
+	ora	zp_00
 	sta	f:$7E0000,x
 	inx
 	inx
 	iny
 	iny
-	dec	$02
-	dec	$02
+	dec	zp_02
+	dec	zp_02
 	bpl	loc_009AEE
 	sep	#$20
 	.a8
@@ -291,7 +291,7 @@ sub_009B37:
 	; (not executed in the CDL traces)
 	jsl	f:sub_009B4A
 	bne	loc_009B46
-	ldy	$FC
+	ldy	zp_FC
 	sty	$0A,x
 	lda	a:$0010,y
 	sta	$0C,x
@@ -330,19 +330,19 @@ sub_009B65:
 
 sub_009B76:
 	ldx	#$1280
-	lda	$3A
+	lda	frame_counter
 	lsr	a
 	bcs	loc_009B81
 	ldx	#$1290
 loc_009B81:
-	stx	$FC
+	stx	zp_FC
 	lda	$00,x
 	beq	loc_009B8B
 	; (not executed in the CDL traces)
 	jsl	f:sub_009B98
 loc_009B8B:
 	clc
-	lda	$FC
+	lda	zp_FC
 	adc	#$0020
 	tax
 	cpx	#$1300
@@ -357,8 +357,8 @@ sub_009B98:
 	tax
 	lda	f:tbl_009BA6,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_009BA6:
 	.addr	sub_009BA8
 
@@ -370,8 +370,8 @@ sub_009BA8:
 	rtl
 loc_009BAF:
 	lda	$02,x
-	sta	$00
-	lda	($00)
+	sta	zp_00
+	lda	(zp_00)
 	sta	$08,x
 loc_009BB7:
 	inc	$06,x
@@ -379,9 +379,9 @@ loc_009BB7:
 	ldy	$06,x
 	iny
 	iny
-	lda	($00),y
+	lda	(zp_00),y
 	beq	loc_009C06
-	ldx	$4E
+	ldx	zp_4E
 	tay
 loc_009BC6:
 	lda	a:$0000,y
@@ -407,14 +407,14 @@ loc_009BC6:
 	tax
 	bra	loc_009BC6
 loc_009C00:
-	stx	$4E
-	ldx	$FC
+	stx	zp_4E
+	ldx	zp_FC
 	bra	sub_009BA8
 loc_009C06:
 	inc	$04,x
 	stz	$06,x
 	ldy	#$0002
-	lda	($00),y
+	lda	(zp_00),y
 	bmi	loc_009BB7
 	cmp	$04,x
 	bcs	loc_009BB7

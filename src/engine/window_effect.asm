@@ -6,43 +6,43 @@
 ; is set, with the shape routines in effects/window_shapes.asm.
 
 sub_00E7EF:
-	lda	$BC
+	lda	zp_BC
 	asl	a
 	tay
-	lda	a:$1FCA
+	lda	a:p2_lives
 	beq	loc_00E80C
-	lda	a:$1F8A
+	lda	a:p1_lives
 	beq	loc_00E805
 	lda	a:data_05A39E,y
 	tax
-	sta	$FE
+	sta	zp_FE
 	bra	loc_00E811
 loc_00E805:
 	; (not executed in the CDL traces)
 	ldx	#$0240
-	stx	$FE
+	stx	zp_FE
 	bra	loc_00E811
 loc_00E80C:
 	ldx	#$0200
-	stx	$FE
+	stx	zp_FE
 loc_00E811:
 	lda	a:data_05A3A2,y
-	sta	$C6
+	sta	zp_C6
 	lda	a:data_05A3A6,y
-	sta	$9E
-	sta	$1E
+	sta	zp_9E
+	sta	zp_1E
 	clc
 	adc	#$0020
-	sta	$1C
+	sta	zp_1C
 	lda	a:$1310,x
 	bne	loc_00E855
 	lda	a:$1D88,x
 	bne	loc_00E839
 loc_00E82D:
-	stz	$9E
-	stz	$C6
+	stz	zp_9E
+	stz	zp_C6
 	jsl	f:sub_02E003
-	stz	a:$1E98
+	stz	a:wram_1E98
 	rtl
 loc_00E839:
 	jsr	a:sub_00E86B
@@ -65,49 +65,49 @@ loc_00E855:
 
 sub_00E86B:
 	lda	#$0022
-	sta	a:$1EAC
+	sta	a:wram_1EAC
 	lda	#$0203
-	sta	a:$1EBA
-	stz	a:$1E98
+	sta	a:wram_1EBA
+	stz	a:wram_1E98
 	lda	#$A42A
-	sta	$12
+	sta	zp_12
 	lda	#$0018
-	sta	$10
+	sta	zp_10
 	lda	a:$1312,x
-	sta	$14
+	sta	zp_14
 	lda	a:$1314,x
-	sta	$16
-	stz	$18
+	sta	zp_16
+	stz	zp_18
 	lda	#$00E0
-	sta	$1A
+	sta	zp_1A
 	rts
 
 sub_00E896:
-	sta	$10
-	and	a:$16AA
-	ora	a:$16AC
-	sta	a:$1E98
+	sta	zp_10
+	and	a:wram_16AA
+	ora	a:wram_16AC
+	sta	a:wram_1E98
 	lda	#$0023
-	sta	a:$1EAC
+	sta	a:wram_1EAC
 	lda	#$0200
-	sta	a:$1EBA
+	sta	a:wram_1EBA
 	lda	a:$131C,x
-	sta	$14
+	sta	zp_14
 	lda	a:$131E,x
-	sta	$16
-	stz	$18
+	sta	zp_16
+	stz	zp_18
 	lda	#$00E0
-	sta	$1A
-	stz	$C6
+	sta	zp_1A
+	stz	zp_C6
 	rts
 
 sub_00E8C1:
-	ldx	$9E
-	ldy	$C6
+	ldx	zp_9E
+	ldy	zp_C6
 	tya
 	clc
 	adc	#$0010
-	sta	$FC
+	sta	zp_FC
 loc_00E8CC:
 	sep	#$20
 	.a8
@@ -122,9 +122,9 @@ loc_00E8CC:
 	inx
 	iny
 	iny
-	cpy	$FC
+	cpy	zp_FC
 	bcc	loc_00E8CC
-	ldx	$C6
+	ldx	zp_C6
 loc_00E8E4:
 	sep	#$20
 	.a8
@@ -134,7 +134,7 @@ loc_00E8E4:
 	inx
 	inx
 	inx
-	cpx	$FC
+	cpx	zp_FC
 	bcc	loc_00E8E4
 	; (not executed in the CDL traces)
 	sep	#$20
@@ -150,7 +150,7 @@ loc_00E8FF:
 	rep	#$20
 	.a16
 	clc
-	lda	$C6
+	lda	zp_C6
 	adc	#$0020
 	sta	a:$0001,x
 	sep	#$20
@@ -163,23 +163,23 @@ loc_00E8FF:
 	rts
 
 sub_00E913:
-	lda	$06
-	sta	$FC
-	ldx	$FE
+	lda	zp_06
+	sta	zp_FC
+	ldx	zp_FE
 	ldy	#$8F40
 	lda	a:$1D88,x
 	cmp	#$0060
 	bcs	loc_00E927
 	ldy	#$0F20
 loc_00E927:
-	sty	$00
-	lda	$78
+	sty	zp_00
+	lda	zp_78
 	asl	a
 	asl	a
 	eor	#$FFFF
 	and	#$007F
 	tax
-	ldy	$C6
+	ldy	zp_C6
 	sep	#$20
 	.a8
 	lda	#$7E
@@ -190,7 +190,7 @@ loc_00E93E:
 	.a16
 	lda	f:data_05A3AA,x
 	and	#$00FF
-	ora	$00
+	ora	zp_00
 	xba
 	sta	a:$0020,y
 	iny
@@ -199,7 +199,7 @@ loc_00E93E:
 	txa
 	and	#$007F
 	tax
-	dec	$FC
+	dec	zp_FC
 	bne	loc_00E93E
 	sep	#$20
 	.a8

@@ -25,18 +25,18 @@ sub_1DABAD:
 	sep	#$30
 	.a8
 	.i8
-	lda	$08
+	lda	zp_08
 	bne	loc_1DABBB
-	ldy	$0B
+	ldy	zp_0B
 	bpl	loc_1DABB8
 	rts
 loc_1DABB8:
 	lda	#$80
 	rts
 loc_1DABBB:
-	lda	$0A
+	lda	zp_0A
 	bne	loc_1DABC9
-	lda	$09
+	lda	zp_09
 	bmi	loc_1DABC6
 	lda	#$40
 	rts
@@ -44,47 +44,47 @@ loc_1DABC6:
 	lda	#$C0
 	rts
 loc_1DABC9:
-	lda	$09
+	lda	zp_09
 	bmi	loc_1DAC44
-	lda	$0B
+	lda	zp_0B
 	bpl	loc_1DABFD
-	lda	$0A
+	lda	zp_0A
 	eor	#$FF
 	inc	a
-	sta	$0A
-	cmp	$08
+	sta	zp_0A
+	cmp	zp_08
 	bne	loc_1DABDF
 	lda	#$20
 	rts
 loc_1DABDF:
 	bcc	loc_1DABEF
-	lda	$08
+	lda	zp_08
 	sta	a:WRDIVH
 	stz	a:WRDIVL
-	stz	$0C
-	lda	$0A
+	stz	zp_0C
+	lda	zp_0A
 	bra	loc_1DAC33
 loc_1DABEF:
 	sta	a:WRDIVH
 	stz	a:WRDIVL
 	lda	#$40
-	sta	$0C
-	lda	$08
+	sta	zp_0C
+	lda	zp_08
 	bra	loc_1DAC16
 loc_1DABFD:
-	lda	$0A
-	cmp	$08
+	lda	zp_0A
+	cmp	zp_08
 	bne	loc_1DAC06
 	lda	#$60
 	rts
 loc_1DAC06:
 	bcc	loc_1DAC27
-	lda	$08
+	lda	zp_08
 	sta	a:WRDIVH
 	stz	a:WRDIVL
 	lda	#$80
-	sta	$0C
-	lda	$0A
+	sta	zp_0C
+	lda	zp_0A
 loc_1DAC16:
 	sta	a:WRDIVB
 	nop
@@ -92,7 +92,7 @@ loc_1DAC16:
 	nop
 	nop
 	sec
-	lda	$0C
+	lda	zp_0C
 	ldy	a:RDDIVL
 	sbc	a:data_05F694,y
 	rts
@@ -100,8 +100,8 @@ loc_1DAC27:
 	sta	a:WRDIVH
 	stz	a:WRDIVL
 	lda	#$40
-	sta	$0C
-	lda	$08
+	sta	zp_0C
+	lda	zp_08
 loc_1DAC33:
 	sta	a:WRDIVB
 	nop
@@ -109,61 +109,61 @@ loc_1DAC33:
 	nop
 	nop
 	clc
-	lda	$0C
+	lda	zp_0C
 	ldy	a:RDDIVL
 	adc	a:data_05F694,y
 	rts
 loc_1DAC44:
-	lda	$08
+	lda	zp_08
 	eor	#$FF
 	inc	a
-	sta	$08
-	lda	$0B
+	sta	zp_08
+	lda	zp_0B
 	bmi	loc_1DAC78
-	lda	$0A
-	cmp	$08
+	lda	zp_0A
+	cmp	zp_08
 	bne	loc_1DAC58
 	lda	#$A0
 	rts
 loc_1DAC58:
 	bcc	loc_1DAC6A
-	lda	$08
+	lda	zp_08
 	sta	a:WRDIVH
 	stz	a:WRDIVL
 	lda	#$80
-	sta	$0C
-	lda	$0A
+	sta	zp_0C
+	lda	zp_0A
 	bra	loc_1DAC33
 loc_1DAC6A:
 	sta	a:WRDIVH
 	stz	a:WRDIVL
 	lda	#$C0
-	sta	$0C
-	lda	$08
+	sta	zp_0C
+	lda	zp_08
 	bra	loc_1DAC16
 loc_1DAC78:
-	lda	$0A
+	lda	zp_0A
 	eor	#$FF
 	inc	a
-	sta	$0A
-	cmp	$08
+	sta	zp_0A
+	cmp	zp_08
 	bne	loc_1DAC86
 	lda	#$E0
 	rts
 loc_1DAC86:
 	bcc	loc_1DAC96
-	lda	$08
+	lda	zp_08
 	sta	a:WRDIVH
 	stz	a:WRDIVL
-	stz	$0C
-	lda	$0A
+	stz	zp_0C
+	lda	zp_0A
 	bra	loc_1DAC16
 loc_1DAC96:
 	sta	a:WRDIVH
 	stz	a:WRDIVL
 	lda	#$C0
-	sta	$0C
-	lda	$08
+	sta	zp_0C
+	lda	zp_08
 	bra	loc_1DAC33
 
 sub_1DACA4:
@@ -177,15 +177,15 @@ sub_1DACA4:
 	jsr	a:sub_1DACEF
 	lda	#$0000
 	sec
-	sbc	$0A
-	sta	$0A
+	sbc	zp_0A
+	sta	zp_0A
 	rtl
 loc_1DACBD:
 	jsr	a:sub_1DACEF
-	lda	$08
-	ldy	$0A
-	sty	$08
-	sta	$0A
+	lda	zp_08
+	ldy	zp_0A
+	sty	zp_08
+	sta	zp_0A
 	rtl
 loc_1DACC9:
 	bit	#$0040
@@ -193,20 +193,20 @@ loc_1DACC9:
 	jsr	a:sub_1DACEF
 	lda	#$0000
 	sec
-	sbc	$08
-	sta	$08
+	sbc	zp_08
+	sta	zp_08
 	rtl
 loc_1DACDA:
 	jsr	a:sub_1DACEF
 	lda	#$0000
 	sec
-	sbc	$08
+	sbc	zp_08
 	tay
 	lda	#$0000
 	sec
-	sbc	$0A
-	sta	$08
-	sty	$0A
+	sbc	zp_0A
+	sta	zp_08
+	sty	zp_0A
 	rtl
 
 sub_1DACEF:
@@ -217,42 +217,42 @@ sub_1DACEF:
 	lda	a:data_05F794,y
 	sta	a:WRMPYB
 	nop
-	stz	$09
+	stz	zp_09
 	lda	a:RDMPYH
-	sta	$08
+	sta	zp_08
 	lda	a:data_05F814,y
 	sta	a:WRMPYB
 	rep	#$20
 	.a16
 	clc
-	lda	$08
+	lda	zp_08
 	adc	a:RDMPYL
 	xba
 	and	#$00FF
-	sta	$08
+	sta	zp_08
 	sep	#$20
 	.a8
 	lda	a:data_05F7D4,y
 	sta	a:WRMPYB
 	nop
-	stz	$0B
+	stz	zp_0B
 	lda	a:RDMPYH
-	sta	$0A
+	sta	zp_0A
 	lda	a:data_05F854,y
 	sta	a:WRMPYB
 	rep	#$20
 	.a16
 	clc
-	lda	$0A
+	lda	zp_0A
 	adc	a:RDMPYL
 	xba
 	and	#$00FF
-	sta	$0A
+	sta	zp_0A
 	rts
 
 sub_1DAD3C:
 	phy
-	lda	$08
+	lda	zp_08
 	bpl	loc_1DAD45
 	eor	#$FFFF
 	inc	a
@@ -265,7 +265,7 @@ loc_1DAD45:
 	sta	a:WRMPYB
 	rep	#$20
 	.a16
-	lda	$0A
+	lda	zp_0A
 	bpl	loc_1DAD5C
 	eor	#$FFFF
 	inc	a
@@ -281,11 +281,11 @@ loc_1DAD5C:
 	.a16
 	tya
 	lsr	a
-	sta	$FA
+	sta	zp_FA
 	lda	a:RDMPYL
 	lsr	a
 	clc
-	adc	$FA
+	adc	zp_FA
 	ply
 	rtl
 loc_1DAD7B:
@@ -512,7 +512,7 @@ loc_1DAECF:
 
 sub_1DAED0:
 	phy
-	lda	$08
+	lda	zp_08
 	bpl	loc_1DAED9
 	eor	#$FFFF
 	inc	a
@@ -525,7 +525,7 @@ loc_1DAED9:
 	sta	a:WRMPYB
 	rep	#$20
 	.a16
-	lda	$0A
+	lda	zp_0A
 	bpl	loc_1DAEF0
 	eor	#$FFFF
 	inc	a
@@ -540,10 +540,10 @@ loc_1DAEF0:
 	rep	#$20
 	.a16
 	tya
-	sta	$FA
+	sta	zp_FA
 	lda	a:RDMPYL
 	clc
-	adc	$FA
+	adc	zp_FA
 	bcs	loc_1DAF10
 	ply
 	bra	loc_1DAF15
@@ -558,11 +558,11 @@ loc_1DAF15:
 loc_1DAF19:
 	iny
 	iny
-	sty	$FA
+	sty	zp_FA
 	sec
-	sbc	$FA
+	sbc	zp_FA
 	bcs	loc_1DAF19
-	lda	$FA
+	lda	zp_FA
 	lsr	a
 	ply
 	rtl

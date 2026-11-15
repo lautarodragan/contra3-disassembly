@@ -6,14 +6,14 @@
 
 sub_04D878:
 	; (not executed in the CDL traces)
-	lda	a:$1C00
+	lda	a:wram_1C00
 	phx
 	asl	a
 	tax
 	lda	f:tbl_04D888,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_04D888:
 	.addr	sub_04D890
 	.addr	sub_04D8A1
@@ -26,30 +26,30 @@ sub_04D890:
 	jsl	f:sub_0090A8
 	ldy	#$8412
 	jsl	f:sub_009982
-	inc	a:$1C00
+	inc	a:wram_1C00
 
 sub_04D8A1:
 	; (not executed in the CDL traces)
 	php
-	lda	a:$1E80
+	lda	a:wram_1E80
 	bit	#$0080
 	beq	loc_04D8B0
 	and	#$000F
-	sta	a:$1E80
+	sta	a:wram_1E80
 loc_04D8B0:
 	cmp	#$000F
 	bcs	loc_04D8BA
-	inc	a:$1E80
+	inc	a:wram_1E80
 	plp
 	rtl
 loc_04D8BA:
 	plp
-	inc	a:$1C00
+	inc	a:wram_1C00
 
 sub_04D8BE:
 	; (not executed in the CDL traces)
-	lda	$28
-	ora	$2A
+	lda	joy1_pressed
+	ora	joy2_pressed
 	bit	#$1000
 	bne	loc_04D8EF
 	bit	#$8000
@@ -68,80 +68,80 @@ loc_04D8E7:
 	jsl	f:sub_00868F
 	rtl
 loc_04D8EF:
-	inc	a:$1C00
+	inc	a:wram_1C00
 
 sub_04D8F2:
 	; (not executed in the CDL traces)
 	php
 	rep	#$20
-	lda	a:$1E80
+	lda	a:wram_1E80
 	and	#$000F
-	sta	a:$1E80
+	sta	a:wram_1E80
 	beq	loc_04D905
-	dec	a:$1E80
+	dec	a:wram_1E80
 	plp
 	rtl
 loc_04D905:
 	lda	#$0080
-	sta	a:$1E80
+	sta	a:wram_1E80
 	plp
 	lda	#$0001
-	sta	$36
+	sta	zp_36
 	rtl
 
 sub_04D912:
 	; (not executed in the CDL traces)
-	lda	$28
-	ora	$2A
+	lda	joy1_pressed
+	ora	joy2_pressed
 	bit	#$0F00
 	beq	loc_04D920
-	stz	a:$1C04
+	stz	a:wram_1C04
 	bra	loc_04D945
 loc_04D920:
-	lda	$20
-	ora	$22
+	lda	joy1_held
+	ora	joy2_held
 	bit	#$0F00
 	beq	loc_04D966
-	inc	a:$1C04
+	inc	a:wram_1C04
 	bne	loc_04D934
 	lda	#$0020
-	sta	a:$1C04
+	sta	a:wram_1C04
 loc_04D934:
-	lda	a:$1C04
+	lda	a:wram_1C04
 	cmp	#$0020
 	bcc	loc_04D966
 	bit	#$0003
 	bne	loc_04D966
-	lda	$20
-	ora	$22
+	lda	joy1_held
+	ora	joy2_held
 loc_04D945:
 	bit	#$0500
 	bne	loc_04D957
-	lda	a:$1C02
+	lda	a:wram_1C02
 	dec	a
 	bpl	loc_04D953
 	lda	#$006A
 loc_04D953:
-	sta	a:$1C02
+	sta	a:wram_1C02
 	rts
 loc_04D957:
-	lda	a:$1C02
+	lda	a:wram_1C02
 	inc	a
 	cmp	#$006B
 	bcc	loc_04D963
 	lda	#$0000
 loc_04D963:
-	sta	a:$1C02
+	sta	a:wram_1C02
 loc_04D966:
 	rts
 
 sub_04D967:
 	; (not executed in the CDL traces)
-	lda	$28
-	ora	$2A
+	lda	joy1_pressed
+	ora	joy2_pressed
 	bit	#$4000
 	beq	loc_04D988
-	ldx	a:$1C02
+	ldx	a:wram_1C02
 	lda	f:data_1DCCE0,x
 	and	#$00FF
 	cmp	#$0060
@@ -164,7 +164,7 @@ loc_04D989:
 	ply
 	lda	a:data_05F388,y
 	jsl	f:sub_008624
-	ldx	a:$1C02
+	ldx	a:wram_1C02
 	lda	f:data_1DCCE0,x
 	and	#$00FF
 	jsl	f:sub_008624
@@ -173,10 +173,10 @@ loc_04D989:
 sub_04D9AF:
 	; (not executed in the CDL traces)
 	ldy	#$5A52
-	lda	a:$1C02
-	sta	$FA
+	lda	a:wram_1C02
+	sta	zp_FA
 	jsl	f:sub_008D41
-	lda	$FA
+	lda	zp_FA
 	and	#$00F0
 	lsr	a
 	lsr	a
@@ -185,7 +185,7 @@ sub_04D9AF:
 	jsr	a:sub_04D9E2
 	ora	#$2000
 	jsl	f:sub_008DA5
-	lda	$FA
+	lda	zp_FA
 	and	#$000F
 	jsr	a:sub_04D9E2
 	ora	#$2000

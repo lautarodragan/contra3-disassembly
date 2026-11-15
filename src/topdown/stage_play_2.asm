@@ -57,111 +57,111 @@ loc_02E6B7:
 	lda	$24,x
 	lsr	a
 	lsr	a
-	sta	$18
+	sta	zp_18
 	asl	a
 	asl	a
 	asl	a
 	sec
-	sbc	$18
+	sbc	zp_18
 	sta	$14,x
 	rts
 
 sub_02E6C6:
 	lda	#$0100
-	sta	a:$1F94
-	sta	a:$1FD4
-	sta	a:$1F96
-	sta	a:$1FD6
-	lda	a:$1E02
+	sta	a:wram_1F94
+	sta	a:wram_1FD4
+	sta	a:wram_1F96
+	sta	a:wram_1FD6
+	lda	a:title_menu_cursor
 	beq	loc_02E723
 	dec	a
 	bne	loc_02E6E0
 	brl	loc_02E751
 loc_02E6E0:
 	; (not executed in the CDL traces)
-	lda	a:$1510
-	sta	a:$0ECA
-	stz	a:$0EC8
-	lda	a:$1512
-	sta	a:$0ECE
-	stz	a:$0ECC
-	lda	a:$1550
-	sta	a:$0F0A
-	stz	a:$0F08
-	lda	a:$1552
-	sta	a:$0F0E
-	stz	a:$0F0C
-	stz	a:$150A
-	stz	a:$154A
-	stz	a:$1518
-	stz	a:$1558
-	stz	a:$1514
-	stz	a:$1554
-	stz	a:$0ED2
-	stz	a:$0F12
-	stz	a:$0EC4
-	stz	a:$0F04
+	lda	a:wram_1510
+	sta	a:wram_0ECA
+	stz	a:wram_0EC8
+	lda	a:wram_1512
+	sta	a:wram_0ECE
+	stz	a:wram_0ECC
+	lda	a:wram_1550
+	sta	a:wram_0F0A
+	stz	a:wram_0F08
+	lda	a:wram_1552
+	sta	a:wram_0F0E
+	stz	a:wram_0F0C
+	stz	a:wram_150A
+	stz	a:wram_154A
+	stz	a:wram_1518
+	stz	a:wram_1558
+	stz	a:wram_1514
+	stz	a:wram_1554
+	stz	a:wram_0ED2
+	stz	a:wram_0F12
+	stz	a:wram_0EC4
+	stz	a:wram_0F04
 	rtl
 loc_02E723:
 	lda	#$0080
-	sta	a:$150C
+	sta	a:wram_150C
 	lda	#$00A0
-	sta	a:$150E
-	lda	a:$1510
-	sta	a:$0ECA
-	stz	a:$0EC8
-	lda	a:$1512
-	sta	a:$0ECE
-	stz	a:$0ECC
-	stz	a:$150A
-	stz	a:$1514
-	stz	a:$1518
-	stz	a:$0ED2
-	stz	a:$0EC4
+	sta	a:wram_150E
+	lda	a:wram_1510
+	sta	a:wram_0ECA
+	stz	a:wram_0EC8
+	lda	a:wram_1512
+	sta	a:wram_0ECE
+	stz	a:wram_0ECC
+	stz	a:wram_150A
+	stz	a:wram_1514
+	stz	a:wram_1518
+	stz	a:wram_0ED2
+	stz	a:wram_0EC4
 	rtl
 loc_02E751:
 	lda	#$0060
-	sta	a:$150C
-	sta	a:$154C
+	sta	a:wram_150C
+	sta	a:wram_154C
 	lda	#$0034
-	sta	a:$150E
+	sta	a:wram_150E
 	lda	#$00AC
-	sta	a:$154E
-	lda	a:$1510
-	sta	a:$0ECA
-	stz	a:$0EC8
-	lda	a:$1512
-	sta	a:$0ECE
-	stz	a:$0ECC
-	lda	a:$1550
-	sta	a:$0F0A
-	stz	a:$0F08
-	lda	a:$1552
-	sta	a:$0F0E
-	stz	a:$0F0C
-	stz	a:$150A
-	stz	a:$154A
-	stz	a:$1514
-	stz	a:$1554
+	sta	a:wram_154E
+	lda	a:wram_1510
+	sta	a:wram_0ECA
+	stz	a:wram_0EC8
+	lda	a:wram_1512
+	sta	a:wram_0ECE
+	stz	a:wram_0ECC
+	lda	a:wram_1550
+	sta	a:wram_0F0A
+	stz	a:wram_0F08
+	lda	a:wram_1552
+	sta	a:wram_0F0E
+	stz	a:wram_0F0C
+	stz	a:wram_150A
+	stz	a:wram_154A
+	stz	a:wram_1514
+	stz	a:wram_1554
 	lda	#$0040
-	sta	a:$1518
-	sta	a:$1558
-	stz	a:$0ED2
-	stz	a:$0F12
+	sta	a:wram_1518
+	sta	a:wram_1558
+	stz	a:wram_0ED2
+	stz	a:wram_0F12
 	lda	#$0040
-	sta	a:$0EC4
-	sta	a:$0F04
+	sta	a:wram_0EC4
+	sta	a:wram_0F04
 	rtl
 
 sub_02E7AF:
 	rep	#$30
-	lda	a:$1590
-	ora	a:$158E
+	lda	a:wram_1590
+	ora	a:wram_158E
 	beq	loc_02E7BA
 	; (not executed in the CDL traces)
 	rtl
 loc_02E7BA:
-	lda	a:$1E02
+	lda	a:title_menu_cursor
 	beq	loc_02E7C8
 	dec	a
 	bne	loc_02E7C5
@@ -170,313 +170,313 @@ loc_02E7C5:
 	; (not executed in the CDL traces)
 	brl	loc_02E9C9
 loc_02E7C8:
-	lda	a:$15A8
+	lda	a:wram_15A8
 	beq	loc_02E7D0
 	brl	loc_02E809
 loc_02E7D0:
-	lda	a:$0ECA
-	sta	a:$1510
-	sta	a:$1F90
+	lda	a:wram_0ECA
+	sta	a:wram_1510
+	sta	a:wram_1F90
 	sec
-	sbc	a:$150C
-	sta	a:$1F9A
-	lda	a:$0ECE
-	sta	a:$1512
-	sta	a:$1F92
+	sbc	a:wram_150C
+	sta	a:wram_1F9A
+	lda	a:wram_0ECE
+	sta	a:wram_1512
+	sta	a:wram_1F92
 	sec
-	sbc	a:$150E
-	sta	a:$1F9C
-	lda	a:$150A
+	sbc	a:wram_150E
+	sta	a:wram_1F9C
+	lda	a:wram_150A
 	bne	loc_02E7FB
-	lda	a:$0EC4
-	sta	a:$1514
+	lda	a:wram_0EC4
+	sta	a:wram_1514
 loc_02E7FB:
-	lda	a:$1514
+	lda	a:wram_1514
 	eor	#$00FF
 	inc	a
 	and	#$00FF
-	sta	a:$1F98
+	sta	a:wram_1F98
 	rtl
 loc_02E809:
-	lda	a:$0ECA
-	sta	a:$1510
-	lda	a:$0ECE
-	sta	a:$1512
-	lda	a:$150A
+	lda	a:wram_0ECA
+	sta	a:wram_1510
+	lda	a:wram_0ECE
+	sta	a:wram_1512
+	lda	a:wram_150A
 	bne	loc_02E820
-	lda	a:$0EC4
-	sta	a:$1514
+	lda	a:wram_0EC4
+	sta	a:wram_1514
 loc_02E820:
-	lda	a:$1510
-	sta	$18
-	lda	a:$1512
-	sta	$1A
-	lda	a:$1514
-	sta	$16
-	lda	a:$150C
-	sta	$1C
-	lda	a:$150E
-	sta	$1E
+	lda	a:wram_1510
+	sta	zp_18
+	lda	a:wram_1512
+	sta	zp_1A
+	lda	a:wram_1514
+	sta	zp_16
+	lda	a:wram_150C
+	sta	zp_1C
+	lda	a:wram_150E
+	sta	zp_1E
 	jsl	f:sub_02B2AE
 	bcc	loc_02E84D
 	lda	#$0200
-	sta	a:$1F9A
-	sta	a:$1F9C
-	stz	a:$1F98
+	sta	a:wram_1F9A
+	sta	a:wram_1F9C
+	stz	a:wram_1F98
 	bra	loc_02E86C
 loc_02E84D:
 	lda	#$00F0
 	sec
-	sbc	$00
-	sta	a:$1F9A
+	sbc	zp_00
+	sta	a:wram_1F9A
 	lda	#$0110
 	sec
-	sbc	$02
-	sta	a:$1F9C
-	lda	a:$0AC4
+	sbc	zp_02
+	sta	a:wram_1F9C
+	lda	a:wram_0AC4
 	sec
-	sbc	a:$1514
+	sbc	a:wram_1514
 	eor	#$0080
-	sta	a:$1F98
+	sta	a:wram_1F98
 loc_02E86C:
 	rtl
 loc_02E86D:
-	lda	a:$15A8
+	lda	a:wram_15A8
 	beq	loc_02E875
 	; (not executed in the CDL traces)
 	brl	loc_02E8F4
 loc_02E875:
-	lda	a:$0ECA
-	sta	a:$1510
-	sta	a:$1F90
+	lda	a:wram_0ECA
+	sta	a:wram_1510
+	sta	a:wram_1F90
 	sec
-	sbc	a:$150C
-	sta	a:$1F9A
-	lda	a:$0ECE
-	sta	a:$1512
-	sta	a:$1F92
+	sbc	a:wram_150C
+	sta	a:wram_1F9A
+	lda	a:wram_0ECE
+	sta	a:wram_1512
+	sta	a:wram_1F92
 	sec
-	sbc	a:$150E
-	sta	a:$1F9C
-	lda	a:$150A
+	sbc	a:wram_150E
+	sta	a:wram_1F9C
+	lda	a:wram_150A
 	bne	loc_02E8A7
-	lda	a:$0EC4
+	lda	a:wram_0EC4
 	sec
-	sbc	a:$1518
+	sbc	a:wram_1518
 	and	#$00FF
-	sta	a:$1514
+	sta	a:wram_1514
 loc_02E8A7:
-	lda	a:$1514
+	lda	a:wram_1514
 	eor	#$00FF
 	inc	a
 	and	#$00FF
-	sta	a:$1F98
-	lda	a:$0F0A
-	sta	a:$1550
-	sta	a:$1FD0
+	sta	a:wram_1F98
+	lda	a:wram_0F0A
+	sta	a:wram_1550
+	sta	a:wram_1FD0
 	sec
-	sbc	a:$154C
-	sta	a:$1FDA
-	lda	a:$0F0E
-	sta	a:$1552
-	sta	a:$1FD2
+	sbc	a:wram_154C
+	sta	a:wram_1FDA
+	lda	a:wram_0F0E
+	sta	a:wram_1552
+	sta	a:wram_1FD2
 	sec
-	sbc	a:$154E
-	sta	a:$1FDC
-	lda	a:$154A
+	sbc	a:wram_154E
+	sta	a:wram_1FDC
+	lda	a:wram_154A
 	bne	loc_02E8E6
-	lda	a:$0F04
+	lda	a:wram_0F04
 	sec
-	sbc	a:$1558
+	sbc	a:wram_1558
 	and	#$00FF
-	sta	a:$1554
+	sta	a:wram_1554
 loc_02E8E6:
-	lda	a:$1554
+	lda	a:wram_1554
 	eor	#$00FF
 	inc	a
 	and	#$00FF
-	sta	a:$1FD8
+	sta	a:wram_1FD8
 	rtl
 loc_02E8F4:
 	; (not executed in the CDL traces)
-	lda	a:$0ECA
-	sta	a:$1510
-	lda	a:$0ECE
-	sta	a:$1512
-	lda	a:$150A
+	lda	a:wram_0ECA
+	sta	a:wram_1510
+	lda	a:wram_0ECE
+	sta	a:wram_1512
+	lda	a:wram_150A
 	bne	loc_02E912
-	lda	a:$0EC4
+	lda	a:wram_0EC4
 	sec
-	sbc	a:$1518
+	sbc	a:wram_1518
 	and	#$00FF
-	sta	a:$1514
+	sta	a:wram_1514
 loc_02E912:
-	lda	a:$1510
-	sta	$18
-	lda	a:$1512
-	sta	$1A
-	lda	a:$1514
-	sta	$16
-	lda	a:$150C
-	sta	$1C
-	lda	a:$150E
-	sta	$1E
+	lda	a:wram_1510
+	sta	zp_18
+	lda	a:wram_1512
+	sta	zp_1A
+	lda	a:wram_1514
+	sta	zp_16
+	lda	a:wram_150C
+	sta	zp_1C
+	lda	a:wram_150E
+	sta	zp_1E
 	jsl	f:sub_02B2AE
 	bcc	loc_02E93F
 	lda	#$0200
-	sta	a:$1F9A
-	sta	a:$1F9C
-	stz	a:$1F98
+	sta	a:wram_1F9A
+	sta	a:wram_1F9C
+	stz	a:wram_1F98
 	bra	loc_02E95E
 loc_02E93F:
 	lda	#$00F0
 	sec
-	sbc	$00
-	sta	a:$1F9A
+	sbc	zp_00
+	sta	a:wram_1F9A
 	lda	#$0110
 	sec
-	sbc	$02
-	sta	a:$1F9C
-	lda	a:$0AC4
+	sbc	zp_02
+	sta	a:wram_1F9C
+	lda	a:wram_0AC4
 	sec
-	sbc	a:$1514
+	sbc	a:wram_1514
 	eor	#$0080
-	sta	a:$1F98
+	sta	a:wram_1F98
 loc_02E95E:
-	lda	a:$0F0A
-	sta	a:$1550
-	lda	a:$0F0E
-	sta	a:$1552
-	lda	a:$154A
+	lda	a:wram_0F0A
+	sta	a:wram_1550
+	lda	a:wram_0F0E
+	sta	a:wram_1552
+	lda	a:wram_154A
 	bne	loc_02E97C
-	lda	a:$0F04
+	lda	a:wram_0F04
 	sec
-	sbc	a:$1558
+	sbc	a:wram_1558
 	and	#$00FF
-	sta	a:$1554
+	sta	a:wram_1554
 loc_02E97C:
-	lda	a:$1550
-	sta	$18
-	lda	a:$1552
-	sta	$1A
-	lda	a:$1554
-	sta	$16
-	lda	a:$154C
-	sta	$1C
-	lda	a:$154E
-	sta	$1E
+	lda	a:wram_1550
+	sta	zp_18
+	lda	a:wram_1552
+	sta	zp_1A
+	lda	a:wram_1554
+	sta	zp_16
+	lda	a:wram_154C
+	sta	zp_1C
+	lda	a:wram_154E
+	sta	zp_1E
 	jsl	f:sub_02B2AE
 	bcc	loc_02E9A9
 	lda	#$0200
-	sta	a:$1FDA
-	sta	a:$1FDC
-	stz	a:$1FD8
+	sta	a:wram_1FDA
+	sta	a:wram_1FDC
+	stz	a:wram_1FD8
 	bra	loc_02E9C8
 loc_02E9A9:
 	lda	#$00F0
 	sec
-	sbc	$00
-	sta	a:$1FDA
+	sbc	zp_00
+	sta	a:wram_1FDA
 	lda	#$0110
 	sec
-	sbc	$02
-	sta	a:$1FDC
-	lda	a:$0AC4
+	sbc	zp_02
+	sta	a:wram_1FDC
+	lda	a:wram_0AC4
 	sec
-	sbc	a:$1554
+	sbc	a:wram_1554
 	eor	#$0080
-	sta	a:$1FD8
+	sta	a:wram_1FD8
 loc_02E9C8:
 	rtl
 loc_02E9C9:
-	lda	a:$15A8
+	lda	a:wram_15A8
 	beq	loc_02E9D1
 	brl	loc_02EA1D
 loc_02E9D1:
 	jsr	a:sub_02EAA4
-	lda	a:$1510
-	sta	a:$1F90
+	lda	a:wram_1510
+	sta	a:wram_1F90
 	sec
 	sbc	#$0080
-	sta	a:$1F9A
+	sta	a:wram_1F9A
 	lda	#$0080
-	sta	a:$150C
-	sta	a:$154C
+	sta	a:wram_150C
+	sta	a:wram_154C
 	jsr	a:sub_02EAFD
-	lda	a:$1512
-	sta	a:$1F92
+	lda	a:wram_1512
+	sta	a:wram_1F92
 	sec
 	sbc	#$007C
-	sta	a:$1F9C
+	sta	a:wram_1F9C
 	lda	#$007C
-	sta	a:$150E
-	sta	a:$154E
-	lda	a:$150A
+	sta	a:wram_150E
+	sta	a:wram_154E
+	lda	a:wram_150A
 	bne	loc_02EA0E
-	lda	a:$0EC4
-	sta	a:$1518
+	lda	a:wram_0EC4
+	sta	a:wram_1518
 loc_02EA0E:
-	lda	a:$154A
+	lda	a:wram_154A
 	bne	loc_02EA19
-	lda	a:$0F04
-	sta	a:$1558
+	lda	a:wram_0F04
+	sta	a:wram_1558
 loc_02EA19:
-	stz	a:$1F98
+	stz	a:wram_1F98
 	rtl
 loc_02EA1D:
 	jsr	a:sub_02EAA4
 	lda	#$0080
-	sta	a:$150C
-	sta	a:$154C
+	sta	a:wram_150C
+	sta	a:wram_154C
 	jsr	a:sub_02EAFD
 	lda	#$007C
-	sta	a:$150E
-	sta	a:$154E
-	lda	a:$150A
+	sta	a:wram_150E
+	sta	a:wram_154E
+	lda	a:wram_150A
 	bne	loc_02EA40
-	lda	a:$0EC4
-	sta	a:$1518
+	lda	a:wram_0EC4
+	sta	a:wram_1518
 loc_02EA40:
-	lda	a:$154A
+	lda	a:wram_154A
 	bne	loc_02EA4B
-	lda	a:$0F04
-	sta	a:$1558
+	lda	a:wram_0F04
+	sta	a:wram_1558
 loc_02EA4B:
-	lda	a:$1510
-	sta	$18
-	lda	a:$1512
-	sta	$1A
-	lda	a:$1514
-	sta	$16
-	lda	a:$150C
-	sta	$1C
-	lda	a:$150E
-	sta	$1E
+	lda	a:wram_1510
+	sta	zp_18
+	lda	a:wram_1512
+	sta	zp_1A
+	lda	a:wram_1514
+	sta	zp_16
+	lda	a:wram_150C
+	sta	zp_1C
+	lda	a:wram_150E
+	sta	zp_1E
 	jsl	f:sub_02B2AE
 	bcc	loc_02EA7E
 	lda	#$0200
-	sta	a:$1F9A
-	sta	a:$1F9C
-	sta	a:$1F90
-	sta	a:$1F92
-	stz	a:$1F98
+	sta	a:wram_1F9A
+	sta	a:wram_1F9C
+	sta	a:wram_1F90
+	sta	a:wram_1F92
+	stz	a:wram_1F98
 	bra	loc_02EAA3
 loc_02EA7E:
 	lda	#$00F0
-	sta	a:$1F90
+	sta	a:wram_1F90
 	sec
-	sbc	$00
-	sta	a:$1F9A
+	sbc	zp_00
+	sta	a:wram_1F9A
 	lda	#$0110
-	sta	a:$1F92
+	sta	a:wram_1F92
 	sec
-	sbc	$02
-	sta	a:$1F9C
-	lda	a:$0AC4
+	sbc	zp_02
+	sta	a:wram_1F9C
+	lda	a:wram_0AC4
 	sec
-	sbc	a:$1514
+	sbc	a:wram_1514
 	eor	#$0080
-	sta	a:$1F98
+	sta	a:wram_1F98
 loc_02EAA3:
 	rtl
 
@@ -489,53 +489,53 @@ sub_02EAA4:
 
 sub_02EAAE:
 	; (not executed in the CDL traces)
-	lda	a:$0ED2
+	lda	a:wram_0ED2
 	beq	loc_02EAC0
-	lda	a:$0ECA
-	cmp	$18
+	lda	a:wram_0ECA
+	cmp	zp_18
 	beq	loc_02EABC
 	bpl	loc_02EAD4
 loc_02EABC:
-	cmp	$1A
+	cmp	zp_1A
 	bmi	loc_02EAE0
 loc_02EAC0:
 	rts
 
 sub_02EAC1:
 	; (not executed in the CDL traces)
-	lda	a:$0F12
+	lda	a:wram_0F12
 	beq	loc_02EAD3
-	lda	a:$0F0A
-	cmp	$18
+	lda	a:wram_0F0A
+	cmp	zp_18
 	beq	loc_02EACF
 	bpl	loc_02EAD4
 loc_02EACF:
-	cmp	$1A
+	cmp	zp_1A
 	bmi	loc_02EAE0
 loc_02EAD3:
 	rts
 loc_02EAD4:
 	sec
 	sbc	#$0048
-	sta	a:$1510
-	sta	a:$1550
+	sta	a:wram_1510
+	sta	a:wram_1550
 	bra	sub_02EAEA
 loc_02EAE0:
 	clc
 	adc	#$0048
-	sta	a:$1510
-	sta	a:$1550
+	sta	a:wram_1510
+	sta	a:wram_1550
 
 sub_02EAEA:
 	; (not executed in the CDL traces)
-	lda	a:$1510
+	lda	a:wram_1510
 	clc
 	adc	#$0048
-	sta	$18
-	lda	a:$1510
+	sta	zp_18
+	lda	a:wram_1510
 	sec
 	sbc	#$0048
-	sta	$1A
+	sta	zp_1A
 	rts
 
 sub_02EAFD:
@@ -547,67 +547,67 @@ sub_02EAFD:
 
 sub_02EB07:
 	; (not executed in the CDL traces)
-	lda	a:$1F8A
+	lda	a:p1_lives
 	beq	loc_02EB19
-	lda	a:$0ECE
-	cmp	$18
+	lda	a:wram_0ECE
+	cmp	zp_18
 	beq	loc_02EB15
 	bpl	loc_02EB2D
 loc_02EB15:
-	cmp	$1A
+	cmp	zp_1A
 	bmi	loc_02EB39
 loc_02EB19:
 	rts
 
 sub_02EB1A:
 	; (not executed in the CDL traces)
-	lda	a:$1FCA
+	lda	a:p2_lives
 	beq	loc_02EB2C
-	lda	a:$0F0E
-	cmp	$18
+	lda	a:wram_0F0E
+	cmp	zp_18
 	beq	loc_02EB28
 	bpl	loc_02EB2D
 loc_02EB28:
-	cmp	$1A
+	cmp	zp_1A
 	bmi	loc_02EB39
 loc_02EB2C:
 	rts
 loc_02EB2D:
 	sec
 	sbc	#$002C
-	sta	a:$1512
-	sta	a:$1552
+	sta	a:wram_1512
+	sta	a:wram_1552
 	bra	sub_02EB43
 loc_02EB39:
 	clc
 	adc	#$002C
-	sta	a:$1512
-	sta	a:$1552
+	sta	a:wram_1512
+	sta	a:wram_1552
 
 sub_02EB43:
 	; (not executed in the CDL traces)
-	lda	a:$1512
+	lda	a:wram_1512
 	clc
 	adc	#$002C
-	sta	$18
-	lda	a:$1512
+	sta	zp_18
+	lda	a:wram_1512
 	sec
 	sbc	#$002C
-	sta	$1A
+	sta	zp_1A
 	rts
 
 sub_02EB56:
 	rep	#$30
-	lda	a:$1E02
+	lda	a:title_menu_cursor
 	beq	loc_02EB6B
-	lda	$78
+	lda	zp_78
 	lsr	a
 	bcs	loc_02EB6B
-	lda	a:$0F12
+	lda	a:wram_0F12
 	beq	loc_02EB74
 	jml	f:loc_02D449
 loc_02EB6B:
-	lda	a:$0ED2
+	lda	a:wram_0ED2
 	beq	loc_02EB74
 	jml	f:loc_02CC57
 loc_02EB74:
@@ -709,25 +709,25 @@ sub_02EBF2:
 	sep	#$20
 	.a8
 	lda	#$01
-	sta	f:$7E3C00
-	sta	f:$7E3E00
+	sta	f:wram_7E3C00
+	sta	f:wram_7E3E00
 	rep	#$20
 	.a16
 	lda	#$3C1E
-	sta	f:$7E3C01
+	sta	f:wram_7E3C01
 	lda	#$3E1E
-	sta	f:$7E3E01
+	sta	f:wram_7E3E01
 	sep	#$20
 	.a8
 	lda	#$00
-	sta	f:$7E3C03
-	sta	f:$7E3E03
+	sta	f:wram_7E3C03
+	sta	f:wram_7E3E03
 	rep	#$20
 	.a16
 	lda	#$0001
-	sta	f:$7E3E1E
-	sta	f:$7E3C1E
-	lda	a:$1E02
+	sta	f:wram_7E3E1E
+	sta	f:wram_7E3C1E
+	lda	a:title_menu_cursor
 	beq	loc_02EC34
 	dec	a
 	beq	loc_02EC71
@@ -855,54 +855,54 @@ sub_02ECB4:
 	rts
 
 sub_02ED3B:
-	lda	a:$1E02
+	lda	a:title_menu_cursor
 	beq	loc_02ED43
 	dec	a
 	beq	loc_02ED5D
 loc_02ED43:
 	lda	#$0000
-	sta	a:$1EC0
+	sta	a:htime_shadow
 	lda	#$0008
-	sta	a:$1EC2
+	sta	a:vtime_shadow
 	lda	#$00A1
-	sta	a:$1E82
+	sta	a:nmitimen_shadow
 	lda	#$0002
-	sta	$44
-	stz	$40
+	sta	zp_44
+	stz	zp_40
 	rtl
 loc_02ED5D:
 	lda	#$0000
-	sta	a:$1EC0
+	sta	a:htime_shadow
 	lda	#$0000
-	sta	a:$1EC2
+	sta	a:vtime_shadow
 	lda	#$00A1
-	sta	a:$1E82
+	sta	a:nmitimen_shadow
 	lda	#$0002
-	sta	$44
-	sta	$40
+	sta	zp_44
+	sta	zp_40
 	rtl
 
 sub_02ED77:
 	rep	#$30
-	lda	a:$1E02
+	lda	a:title_menu_cursor
 	beq	loc_02ED85
 	dec	a
 	bne	loc_02ED85
 	jsl	f:sub_02EE3E
 loc_02ED85:
-	lda	a:$1F98
+	lda	a:wram_1F98
 	clc
 	adc	#$0040
 	xba
 	pha
-	lda	a:$1F98
+	lda	a:wram_1F98
 	and	#$007F
 	asl	a
 	tay
 	lda	a:data_05E570,y
-	sta	$0A
-	lda	a:$1F94
-	sta	$08
+	sta	zp_0A
+	lda	a:wram_1F94
+	sta	zp_08
 	jsr	a:sub_02EEF7
 	asl	a
 	ply
@@ -910,18 +910,18 @@ loc_02ED85:
 	eor	#$FFFF
 	inc	a
 loc_02EDAB:
-	sta	a:$1FA4
-	lda	a:$1F98
+	sta	a:wram_1FA4
+	lda	a:wram_1F98
 	xba
 	pha
-	lda	a:$1F98
+	lda	a:wram_1F98
 	and	#$007F
 	asl	a
 	tay
 	lda	a:data_05E4F0,y
-	sta	$0A
-	lda	a:$1F94
-	sta	$08
+	sta	zp_0A
+	lda	a:wram_1F94
+	sta	zp_08
 	jsr	a:sub_02EEF7
 	asl	a
 	ply
@@ -929,18 +929,18 @@ loc_02EDAB:
 	eor	#$FFFF
 	inc	a
 loc_02EDD0:
-	sta	a:$1FA6
-	lda	a:$1F98
+	sta	a:wram_1FA6
+	lda	a:wram_1F98
 	xba
 	pha
-	lda	a:$1F98
+	lda	a:wram_1F98
 	and	#$007F
 	asl	a
 	tay
 	lda	a:data_05E4F0,y
-	sta	$0A
-	lda	a:$1F96
-	sta	$08
+	sta	zp_0A
+	lda	a:wram_1F96
+	sta	zp_08
 	jsr	a:sub_02EEF7
 	asl	a
 	ply
@@ -948,20 +948,20 @@ loc_02EDD0:
 	eor	#$FFFF
 	inc	a
 loc_02EDF5:
-	sta	a:$1FA8
-	lda	a:$1F98
+	sta	a:wram_1FA8
+	lda	a:wram_1F98
 	clc
 	adc	#$0040
 	xba
 	pha
-	lda	a:$1F98
+	lda	a:wram_1F98
 	and	#$007F
 	asl	a
 	tay
 	lda	a:data_05E570,y
-	sta	$0A
-	lda	a:$1F96
-	sta	$08
+	sta	zp_0A
+	lda	a:wram_1F96
+	sta	zp_08
 	jsr	a:sub_02EEF7
 	asl	a
 	ply
@@ -969,33 +969,33 @@ loc_02EDF5:
 	eor	#$FFFF
 	inc	a
 loc_02EE1E:
-	sta	a:$1FAA
-	lda	a:$1F90
-	sta	a:$1FAC
-	lda	a:$1F92
-	sta	a:$1FAE
-	lda	a:$1F9A
-	sta	a:$1FB0
-	lda	a:$1F9C
+	sta	a:wram_1FAA
+	lda	a:wram_1F90
+	sta	a:wram_1FAC
+	lda	a:wram_1F92
+	sta	a:wram_1FAE
+	lda	a:wram_1F9A
+	sta	a:wram_1FB0
+	lda	a:wram_1F9C
 	sec
-	sbc	a:$15A2
-	sta	a:$1FB2
+	sbc	a:wram_15A2
+	sta	a:wram_1FB2
 	rtl
 
 sub_02EE3E:
-	lda	a:$1FD8
+	lda	a:wram_1FD8
 	clc
 	adc	#$0040
 	xba
 	pha
-	lda	a:$1FD8
+	lda	a:wram_1FD8
 	and	#$007F
 	asl	a
 	tay
 	lda	a:data_05E570,y
-	sta	$0A
-	lda	a:$1FD4
-	sta	$08
+	sta	zp_0A
+	lda	a:wram_1FD4
+	sta	zp_08
 	jsr	a:sub_02EEF7
 	asl	a
 	ply
@@ -1003,18 +1003,18 @@ sub_02EE3E:
 	eor	#$FFFF
 	inc	a
 loc_02EE64:
-	sta	a:$1FE4
-	lda	a:$1FD8
+	sta	a:wram_1FE4
+	lda	a:wram_1FD8
 	xba
 	pha
-	lda	a:$1FD8
+	lda	a:wram_1FD8
 	and	#$007F
 	asl	a
 	tay
 	lda	a:data_05E4F0,y
-	sta	$0A
-	lda	a:$1FD4
-	sta	$08
+	sta	zp_0A
+	lda	a:wram_1FD4
+	sta	zp_08
 	jsr	a:sub_02EEF7
 	asl	a
 	ply
@@ -1022,18 +1022,18 @@ loc_02EE64:
 	eor	#$FFFF
 	inc	a
 loc_02EE89:
-	sta	a:$1FE6
-	lda	a:$1FD8
+	sta	a:wram_1FE6
+	lda	a:wram_1FD8
 	xba
 	pha
-	lda	a:$1FD8
+	lda	a:wram_1FD8
 	and	#$007F
 	asl	a
 	tay
 	lda	a:data_05E4F0,y
-	sta	$0A
-	lda	a:$1FD6
-	sta	$08
+	sta	zp_0A
+	lda	a:wram_1FD6
+	sta	zp_08
 	jsr	a:sub_02EEF7
 	asl	a
 	ply
@@ -1041,20 +1041,20 @@ loc_02EE89:
 	eor	#$FFFF
 	inc	a
 loc_02EEAE:
-	sta	a:$1FE8
-	lda	a:$1FD8
+	sta	a:wram_1FE8
+	lda	a:wram_1FD8
 	clc
 	adc	#$0040
 	xba
 	pha
-	lda	a:$1FD8
+	lda	a:wram_1FD8
 	and	#$007F
 	asl	a
 	tay
 	lda	a:data_05E570,y
-	sta	$0A
-	lda	a:$1FD6
-	sta	$08
+	sta	zp_0A
+	lda	a:wram_1FD6
+	sta	zp_08
 	jsr	a:sub_02EEF7
 	asl	a
 	ply
@@ -1062,107 +1062,107 @@ loc_02EEAE:
 	eor	#$FFFF
 	inc	a
 loc_02EED7:
-	sta	a:$1FEA
-	lda	a:$1FD0
-	sta	a:$1FEC
-	lda	a:$1FD2
-	sta	a:$1FEE
-	lda	a:$1FDA
-	sta	a:$1FF0
-	lda	a:$1FDC
+	sta	a:wram_1FEA
+	lda	a:wram_1FD0
+	sta	a:wram_1FEC
+	lda	a:wram_1FD2
+	sta	a:wram_1FEE
+	lda	a:wram_1FDA
+	sta	a:wram_1FF0
+	lda	a:wram_1FDC
 	sec
-	sbc	a:$15A2
-	sta	a:$1FF2
+	sbc	a:wram_15A2
+	sta	a:wram_1FF2
 	rtl
 
 sub_02EEF7:
 	sep	#$20
 	.a8
-	lda	$0A
+	lda	zp_0A
 	sta	a:WRMPYA
-	lda	$08
+	lda	zp_08
 	sta	a:WRMPYB
 	rep	#$20
 	.a16
 	nop
 	nop
-	stz	$02
+	stz	zp_02
 	lda	a:RDMPYL
-	sta	$00
+	sta	zp_00
 	sep	#$20
 	.a8
-	lda	$09
+	lda	zp_09
 	sta	a:WRMPYB
 	rep	#$20
 	.a16
 	nop
 	clc
-	lda	$01
+	lda	zp_01
 	adc	a:RDMPYL
-	sta	$01
+	sta	zp_01
 	bcc	loc_02EF24
 	; (not executed in the CDL traces)
-	inc	$03
+	inc	zp_03
 loc_02EF24:
 	sep	#$20
 	.a8
-	lda	$0B
+	lda	zp_0B
 	sta	a:WRMPYA
-	lda	$08
+	lda	zp_08
 	sta	a:WRMPYB
 	rep	#$20
 	.a16
 	nop
 	clc
-	lda	$01
+	lda	zp_01
 	adc	a:RDMPYL
-	sta	$01
+	sta	zp_01
 	bcc	loc_02EF3F
-	inc	$03
+	inc	zp_03
 loc_02EF3F:
 	sep	#$20
 	.a8
-	lda	$09
+	lda	zp_09
 	sta	a:WRMPYB
 	rep	#$20
 	.a16
 	nop
 	clc
-	lda	$02
+	lda	zp_02
 	adc	a:RDMPYL
-	sta	$02
+	sta	zp_02
 	rts
 	; CDL: not accessed
 	.byte	$C2, $30
 
 sub_02EF54:
-	lda	a:$15A4
+	lda	a:wram_15A4
 	beq	loc_02EF6E
-	dec	a:$15A4
+	dec	a:wram_15A4
 loc_02EF5C:
-	lda	$78
+	lda	zp_78
 	and	#$0001
 	bne	loc_02EF6D
-	lda	a:$15A2
+	lda	a:wram_15A2
 	eor	#$FFFF
 	inc	a
-	sta	a:$15A2
+	sta	a:wram_15A2
 loc_02EF6D:
 	rtl
 loc_02EF6E:
-	lda	a:$15A2
+	lda	a:wram_15A2
 	beq	loc_02EF6D
 	bmi	loc_02EF81
-	lda	$78
+	lda	zp_78
 	bit	#$0003
 	bne	loc_02EF5C
-	dec	a:$15A2
+	dec	a:wram_15A2
 	bra	loc_02EF5C
 loc_02EF81:
-	lda	$78
+	lda	zp_78
 	bit	#$0003
 	bne	loc_02EF5C
-	inc	a:$15A2
+	inc	a:wram_15A2
 	bra	loc_02EF5C
 
 sub_02EF8D:
@@ -1185,8 +1185,8 @@ loc_02EFA9:
 	tax
 	lda	f:tbl_02EFB8,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02EFB8:
 	.addr	sub_02EFCC
 	.addr	sub_02EFFE
@@ -1200,7 +1200,7 @@ tbl_02EFB8:
 	.addr	sub_02F0FB
 
 sub_02EFCC:
-	ldy	$84
+	ldy	difficulty
 	lda	a:data_05E670,y
 	sta	$06,x
 	stz	$16,x
@@ -1213,9 +1213,9 @@ sub_02EFCC:
 	sta	$0E,x
 	stz	$08,x
 	stz	$0C,x
-	stz	a:$15C0
-	stz	a:$15BC
-	stz	a:$15C8
+	stz	a:wram_15C0
+	stz	a:wram_15BC
+	stz	a:wram_15C8
 loc_02EFF1:
 	jsr	a:sub_02F3CF
 	lda	#$0040
@@ -1239,13 +1239,13 @@ sub_02F00D:
 	jsr	a:sub_02F225
 	rtl
 loc_02F015:
-	ldy	$84
+	ldy	difficulty
 	lda	a:data_05E670,y
 	lsr	a
 	cmp	$06,x
 	bcc	loc_02F031
 	jsl	f:sub_02B1A3
-	lda	a:$15A0
+	lda	a:wram_15A0
 	cmp	#$4000
 	bcs	loc_02F02E
 	brl	loc_02F060
@@ -1293,7 +1293,7 @@ sub_02F065:
 	brl	loc_02EFF1
 loc_02F06D:
 	jsl	f:sub_02B1A3
-	lda	a:$15A0
+	lda	a:wram_15A0
 	cmp	#$4000
 	bcs	loc_02F07D
 	jsr	a:sub_02F237
@@ -1309,7 +1309,7 @@ sub_02F082:
 	brl	loc_02EFF1
 loc_02F08A:
 	jsl	f:sub_02B1A3
-	lda	a:$15A0
+	lda	a:wram_15A0
 	cmp	#$4000
 	bcc	loc_02F060
 	jsr	a:sub_02F225
@@ -1322,9 +1322,9 @@ loc_02F09A:
 	stz	$16,x
 	lda	#$0200
 	sta	$24,x
-	sta	a:$15A4
+	sta	a:wram_15A4
 	lda	#$0002
-	sta	a:$15A2
+	sta	a:wram_15A2
 
 sub_02F0B3:
 	jsl	f:sub_02B7C9
@@ -1334,20 +1334,20 @@ sub_02F0B3:
 	bcc	loc_02F0EC
 	and	#$0003
 	bne	loc_02F0EC
-	lda	$EA
+	lda	rng_hi
 	and	#$003F
 	sec
 	sbc	#$0020
 	clc
 	adc	$0A,x
-	sta	a:$0B0A
-	lda	$E8
+	sta	a:wram_0B0A
+	lda	rng_lo
 	and	#$003F
 	sec
 	sbc	#$0020
 	clc
 	adc	$0E,x
-	sta	a:$0B0E
+	sta	a:wram_0B0E
 	phx
 	ldx	#$0B00
 	jsl	f:sub_02AC72
@@ -1372,7 +1372,7 @@ loc_02F106:
 	rtl
 
 sub_02F109:
-	lda	a:$0AD2
+	lda	a:wram_0AD2
 	cmp	#$0008
 	bcs	loc_02F182
 	cmp	#$0001
@@ -1390,14 +1390,14 @@ sub_02F109:
 	cmp	#$0007
 	beq	loc_02F164
 	; (not executed in the CDL traces)
-	lda	a:$15C0
+	lda	a:wram_15C0
 	phx
 	asl	a
 	tax
 	lda	f:tbl_02F144,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02F144:
 	.addr	sub_02F14C
 	.addr	sub_02F155
@@ -1406,88 +1406,88 @@ tbl_02F144:
 
 sub_02F14C:
 	; (not executed in the CDL traces)
-	stz	a:$1592
+	stz	a:wram_1592
 loc_02F14F:
 	lda	#$0001
-	sta	a:$15C0
+	sta	a:wram_15C0
 
 sub_02F155:
-	lda	a:$1592
+	lda	a:wram_1592
 	bne	loc_02F160
 	lda	#$1000
 	sta	$16,x
 	rts
 loc_02F160:
-	dec	a:$1592
+	dec	a:wram_1592
 	rts
 loc_02F164:
 	lda	#$0002
-	sta	a:$15C0
+	sta	a:wram_15C0
 
 sub_02F16A:
-	lda	a:$1592
+	lda	a:wram_1592
 	cmp	#$0017
 	bcc	loc_02F17E
 	lda	#$0017
-	sta	a:$1592
+	sta	a:wram_1592
 	lda	#$B000
 	sta	$16,x
 	rts
 loc_02F17E:
-	inc	a:$1592
+	inc	a:wram_1592
 	rts
 loc_02F182:
 	lda	#$0003
-	sta	a:$15C0
+	sta	a:wram_15C0
 
 sub_02F188:
 	lda	#$0018
-	sta	a:$1592
+	sta	a:wram_1592
 	rts
 
 sub_02F18F:
 	lda	#$3200
-	sta	a:$15AA
+	sta	a:wram_15AA
 	lda	#$007E
-	sta	a:$15AC
+	sta	a:wram_15AC
 	lda	#$0280
-	sta	a:$15AE
-	lda	a:$1592
+	sta	a:wram_15AE
+	lda	a:wram_1592
 	lsr	a
 	lsr	a
 	and	#$0006
 	tay
 	lda	a:data_05E676,y
-	sta	a:$158C
+	sta	a:wram_158C
 	rtl
 
 sub_02F1B1:
-	lda	a:$15BC
+	lda	a:wram_15BC
 	phx
 	asl	a
 	tax
 	lda	f:tbl_02F1C1,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02F1C1:
 	.addr	sub_02F1C7
 	.addr	sub_02F1D9
 	.addr	sub_02F204
 
 sub_02F1C7:
-	stz	a:$15B6
-	stz	a:$15B8
+	stz	a:wram_15B6
+	stz	a:wram_15B8
 	lda	#$0001
-	sta	a:$15BE
+	sta	a:wram_15BE
 	lda	#$0001
-	sta	a:$15BC
+	sta	a:wram_15BC
 
 sub_02F1D9:
-	lda	a:$0AD2
+	lda	a:wram_0AD2
 	cmp	#$0008
 	bcs	loc_02F1EB
-	ldy	$84
+	ldy	difficulty
 	lda	a:data_05E670,y
 	lsr	a
 	cmp	$06,x
@@ -1496,34 +1496,34 @@ loc_02F1EB:
 	rts
 loc_02F1EC:
 	lda	#$0008
-	sta	a:$15C4
-	sta	a:$15BE
+	sta	a:wram_15C4
+	sta	a:wram_15BE
 	lda	#$0100
-	sta	a:$15B6
-	stz	a:$15B8
+	sta	a:wram_15B6
+	stz	a:wram_15B8
 	lda	#$0002
-	sta	a:$15BC
+	sta	a:wram_15BC
 
 sub_02F204:
-	lda	a:$15C4
+	lda	a:wram_15C4
 	beq	loc_02F21C
-	lda	a:$15BE
+	lda	a:wram_15BE
 	bne	loc_02F219
-	dec	a:$15C4
-	lda	a:$15C4
-	sta	a:$15BE
+	dec	a:wram_15C4
+	lda	a:wram_15C4
+	sta	a:wram_15BE
 	bra	loc_02F21C
 loc_02F219:
-	dec	a:$15BE
+	dec	a:wram_15BE
 loc_02F21C:
-	lda	a:$0AD2
+	lda	a:wram_0AD2
 	cmp	#$0008
 	bcs	sub_02F1C7
 	rts
 
 sub_02F225:
 	jsl	f:sub_02B1A3
-	ldy	a:$159E
+	ldy	a:wram_159E
 	lda	a:$0ECA,y
 	sta	$3E,x
 	lda	a:$0ECE,y
@@ -1531,34 +1531,34 @@ sub_02F225:
 	rts
 
 sub_02F237:
-	lda	$78
+	lda	zp_78
 	eor	#$00FF
 	and	#$00FF
 	ldy	#$0040
 	jsl	f:sub_1DACA4
 	lda	#$0200
 	clc
-	adc	$08
+	adc	zp_08
 	sta	$3E,x
 	lda	#$0200
 	clc
-	adc	$0A
+	adc	zp_0A
 	sta	$3C,x
 	rts
 
 sub_02F257:
-	lda	a:$0AC6
+	lda	a:wram_0AC6
 	bpl	loc_02F25F
 	brl	loc_02F306
 loc_02F25F:
-	lda	a:$15C8
+	lda	a:wram_15C8
 	phx
 	asl	a
 	tax
 	lda	f:tbl_02F26F,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02F26F:
 	.addr	sub_02F27C
 	.addr	sub_02F2A9
@@ -1566,39 +1566,39 @@ tbl_02F26F:
 	.addr	sub_02F300
 	.addr	sub_02F32D
 loc_02F279:
-	stz	a:$15C8
+	stz	a:wram_15C8
 
 sub_02F27C:
-	lda	a:$0AD2
+	lda	a:wram_0AD2
 	cmp	#$0006
 	beq	loc_02F285
 	rts
 loc_02F285:
 	lda	#$003A
 	jsl	f:sub_00868F
-	lda	$E8
+	lda	rng_lo
 	and	#$0006
-	sta	a:$15CC
+	sta	a:wram_15CC
 	lda	#$0020
-	sta	a:$15CA
+	sta	a:wram_15CA
 	lda	#$0300
 	jsr	a:sub_02F336
-	stz	a:$0314
+	stz	a:wram_0314
 	lda	#$0001
-	sta	a:$15C8
+	sta	a:wram_15C8
 
 sub_02F2A9:
-	dec	a:$15CA
+	dec	a:wram_15CA
 	bmi	loc_02F2AF
 	rts
 loc_02F2AF:
-	stz	a:$15CA
+	stz	a:wram_15CA
 	lda	#$0002
-	sta	a:$15C8
+	sta	a:wram_15C8
 
 sub_02F2B8:
-	lda	a:$15CA
-	inc	a:$15CA
+	lda	a:wram_15CA
+	inc	a:wram_15CA
 	cmp	#$0020
 	bcs	loc_02F2DC
 	bit	#$0003
@@ -1616,40 +1616,40 @@ loc_02F2DB:
 	rts
 loc_02F2DC:
 	lda	#$0000
-	sta	a:$15CA
-	stz	a:$0314
-	stz	a:$0334
-	stz	a:$0354
-	stz	a:$0374
-	stz	a:$0394
-	stz	a:$03B4
-	stz	a:$03D4
-	stz	a:$03F4
+	sta	a:wram_15CA
+	stz	a:wram_0314
+	stz	a:wram_0334
+	stz	a:wram_0354
+	stz	a:wram_0374
+	stz	a:wram_0394
+	stz	a:wram_03B4
+	stz	a:wram_03D4
+	stz	a:wram_03F4
 	lda	#$0003
-	sta	a:$15C8
+	sta	a:wram_15C8
 
 sub_02F300:
-	dec	a:$15CA
+	dec	a:wram_15CA
 	bmi	loc_02F306
 	; (not executed in the CDL traces)
 	rts
 loc_02F306:
 	lda	#$0020
-	sta	a:$15CA
+	sta	a:wram_15CA
 	lda	#$0002
-	sta	a:$0312
-	sta	a:$0332
-	sta	a:$0352
-	sta	a:$0372
-	sta	a:$0392
-	sta	a:$03B2
-	sta	a:$03D2
-	sta	a:$03F2
+	sta	a:wram_0312
+	sta	a:wram_0332
+	sta	a:wram_0352
+	sta	a:wram_0372
+	sta	a:wram_0392
+	sta	a:wram_03B2
+	sta	a:wram_03D2
+	sta	a:wram_03F2
 	lda	#$0004
-	sta	a:$15C8
+	sta	a:wram_15C8
 
 sub_02F32D:
-	dec	a:$15CA
+	dec	a:wram_15CA
 	bpl	loc_02F335
 	brl	loc_02F279
 loc_02F335:
@@ -1663,7 +1663,7 @@ sub_02F336:
 	stz	$12,x
 	lda	#$2000
 	sta	$02,x
-	ldy	a:$15CC
+	ldy	a:wram_15CC
 	lda	a:data_05E6A6,y
 	sta	$0A,x
 	stz	$08,x
@@ -1680,17 +1680,17 @@ sub_02F336:
 	rts
 
 sub_02F365:
-	lda	a:$15B0
-	inc	a:$15B0
+	lda	a:wram_15B0
+	inc	a:wram_15B0
 	lsr	a
 	and	#$0006
 	tay
 	lda	a:data_05E69E,y
-	sta	$00
+	sta	zp_00
 	lda	#$22A0
-	sta	$02
+	sta	zp_02
 	lda	#$0020
-	sta	$04
+	sta	zp_04
 	lda	$2A,x
 	beq	loc_02F390
 	jsr	a:sub_02F3C1
@@ -1711,13 +1711,13 @@ loc_02F390:
 	jsl	f:sub_00868F
 	phx
 	phb
-	ldx	$02
+	ldx	zp_02
 	lda	#$7FFF
 	sta	f:$7E0000,x
 	txy
 	iny
 	iny
-	lda	$04
+	lda	zp_04
 	dec	a
 	dec	a
 	dec	a
@@ -1729,9 +1729,9 @@ loc_02F390:
 sub_02F3C1:
 	phx
 	phb
-	ldx	$00
-	ldy	$02
-	lda	$04
+	ldx	zp_00
+	ldy	zp_02
+	lda	zp_04
 	mvn	#$08, #$7E
 	plb
 	plx
@@ -1739,17 +1739,17 @@ sub_02F3C1:
 
 sub_02F3CF:
 	jsl	f:sub_02B1A3
-	ldy	a:$159E
+	ldy	a:wram_159E
 	lda	a:$0ECA,y
 	sec
 	sbc	$0A,x
-	sta	$08
+	sta	zp_08
 	lda	a:$0ECE,y
 	sec
 	sbc	$0E,x
-	sta	$0A
+	sta	zp_0A
 	jsl	f:sub_1DABA0
-	sta	a:$0B44
+	sta	a:wram_0B44
 	clc
 	adc	#$0020
 	asl	a
@@ -1759,73 +1759,73 @@ sub_02F3CF:
 	and	#$0006
 	tay
 	lda	a:data_05E6A6,y
-	sta	a:$0B4A
+	sta	a:wram_0B4A
 	lda	a:data_05E6AE,y
-	sta	a:$0B4E
+	sta	a:wram_0B4E
 	lda	#$000A
-	sta	a:$0B50
+	sta	a:wram_0B50
 	lda	#$0013
-	sta	a:$0B90
+	sta	a:wram_0B90
 	lda	#$000B
-	sta	a:$0BD0
-	sta	a:$0C10
-	sta	a:$0C50
-	sta	a:$0C90
-	sta	a:$0CD0
-	sta	a:$0D10
-	sta	a:$0D50
-	sta	a:$0D90
-	sta	a:$0DD0
-	sta	a:$0E10
-	sta	a:$0E50
-	sta	a:$0E90
-	stz	a:$0B52
-	stz	a:$0B92
-	stz	a:$0BD2
-	stz	a:$0C12
-	stz	a:$0C52
-	stz	a:$0C92
-	stz	a:$0CD2
-	stz	a:$0D12
-	stz	a:$0D52
-	stz	a:$0D92
-	stz	a:$0DD2
-	stz	a:$0E12
-	stz	a:$0E52
-	stz	a:$0E92
+	sta	a:wram_0BD0
+	sta	a:wram_0C10
+	sta	a:wram_0C50
+	sta	a:wram_0C90
+	sta	a:wram_0CD0
+	sta	a:wram_0D10
+	sta	a:wram_0D50
+	sta	a:wram_0D90
+	sta	a:wram_0DD0
+	sta	a:wram_0E10
+	sta	a:wram_0E50
+	sta	a:wram_0E90
+	stz	a:wram_0B52
+	stz	a:wram_0B92
+	stz	a:wram_0BD2
+	stz	a:wram_0C12
+	stz	a:wram_0C52
+	stz	a:wram_0C92
+	stz	a:wram_0CD2
+	stz	a:wram_0D12
+	stz	a:wram_0D52
+	stz	a:wram_0D92
+	stz	a:wram_0DD2
+	stz	a:wram_0E12
+	stz	a:wram_0E52
+	stz	a:wram_0E92
 	sec
 	lda	#$1900
-	sta	a:$0B7A
+	sta	a:wram_0B7A
 	sbc	#$0020
-	sta	a:$0BFA
+	sta	a:wram_0BFA
 	sbc	#$0020
-	sta	a:$0C3A
+	sta	a:wram_0C3A
 	sbc	#$0020
-	sta	a:$0C7A
+	sta	a:wram_0C7A
 	sbc	#$0020
-	sta	a:$0CBA
+	sta	a:wram_0CBA
 	sbc	#$0020
-	sta	a:$0CFA
+	sta	a:wram_0CFA
 	sbc	#$0020
-	sta	a:$0D3A
+	sta	a:wram_0D3A
 	sbc	#$0020
-	sta	a:$0D7A
+	sta	a:wram_0D7A
 	sbc	#$0020
-	sta	a:$0DBA
+	sta	a:wram_0DBA
 	sbc	#$0020
-	sta	a:$0DFA
+	sta	a:wram_0DFA
 	sbc	#$0020
-	sta	a:$0E3A
+	sta	a:wram_0E3A
 	sbc	#$0020
-	sta	a:$0E7A
+	sta	a:wram_0E7A
 	sbc	#$0020
-	sta	a:$0EBA
+	sta	a:wram_0EBA
 	sbc	#$0020
-	sta	a:$0BBA
+	sta	a:wram_0BBA
 	rts
 
 sub_02F4B8:
-	lda	a:$0AC6
+	lda	a:wram_0AC6
 	bpl	loc_02F4C0
 	brl	loc_02F5B6
 loc_02F4C0:
@@ -1833,7 +1833,7 @@ loc_02F4C0:
 	bcc	loc_02F4C8
 	brl	loc_02F5B6
 loc_02F4C8:
-	lda	a:$0AD2
+	lda	a:wram_0AD2
 	cmp	#$0002
 	beq	loc_02F532
 	cmp	#$0003
@@ -1858,8 +1858,8 @@ loc_02F4E8:
 	tax
 	lda	f:tbl_02F501,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02F501:
 	.addr	sub_02F50F
 	.addr	sub_02F531
@@ -1870,7 +1870,7 @@ tbl_02F501:
 	.addr	sub_02F5C8
 
 sub_02F50F:
-	ldy	$84
+	ldy	difficulty
 	lda	a:data_05E6B6,y
 	sta	$06,x
 	stz	$16,x
@@ -1901,9 +1901,9 @@ loc_02F532:
 	lda	#$2000
 	sta	$02,x
 	lda	$0A,x
-	sta	a:$1900
+	sta	a:wram_1900
 	lda	$0E,x
-	sta	a:$1902
+	sta	a:wram_1902
 
 sub_02F554:
 	lda	#$0002
@@ -1929,7 +1929,7 @@ loc_02F575:
 	sta	$12,x
 
 sub_02F57E:
-	lda	a:$0AE4
+	lda	a:wram_0AE4
 	cmp	#$0010
 	bne	loc_02F58A
 	jsl	f:sub_02F86F
@@ -1967,7 +1967,7 @@ loc_02F5B6:
 	stz	$16,x
 
 sub_02F5C8:
-	lda	$EB
+	lda	zp_EB
 	and	#$0002
 	sta	$14,x
 	jsl	f:sub_02AC8F
@@ -1975,7 +1975,7 @@ sub_02F5C8:
 	rtl
 
 sub_02F5D8:
-	lda	a:$0B50
+	lda	a:wram_0B50
 	bne	loc_02F5E0
 	brl	sub_029B21
 loc_02F5E0:
@@ -1990,8 +1990,8 @@ loc_02F5EB:
 	tax
 	lda	f:tbl_02F5FA,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02F5FA:
 	.addr	sub_02F602
 	.addr	sub_02F61D
@@ -2040,9 +2040,9 @@ sub_02F63C:
 	; (not executed in the CDL traces)
 	brl	sub_029B21
 loc_02F650:
-	lda	a:$1900
+	lda	a:wram_1900
 	sta	$0A,x
-	lda	a:$1902
+	lda	a:wram_1902
 	sta	$0E,x
 	jsr	a:sub_02F7C6
 	sta	$04,x
@@ -2065,7 +2065,7 @@ loc_02F675:
 	rtl
 
 sub_02F67C:
-	lda	a:$0B50
+	lda	a:wram_0B50
 	bne	loc_02F684
 	; (not executed in the CDL traces)
 	brl	sub_029B21
@@ -2081,8 +2081,8 @@ loc_02F68F:
 	tax
 	lda	f:tbl_02F69E,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02F69E:
 	.addr	sub_02F6A8
 	.addr	sub_02F6C3
@@ -2106,7 +2106,7 @@ sub_02F6A8:
 	sta	$12,x
 
 sub_02F6C3:
-	lda	a:$0B52
+	lda	a:wram_0B52
 	cmp	#$0002
 	bcc	loc_02F6D5
 	lda	$3A,x
@@ -2135,9 +2135,9 @@ sub_02F6EA:
 	bcs	loc_02F6FE
 	brl	sub_029B21
 loc_02F6FE:
-	lda	a:$1900
+	lda	a:wram_1900
 	sta	$0A,x
-	lda	a:$1902
+	lda	a:wram_1902
 	sta	$0E,x
 	rtl
 loc_02F709:
@@ -2176,9 +2176,9 @@ loc_02F735:
 	rtl
 
 sub_02F745:
-	lda	a:$0AC6
+	lda	a:wram_0AC6
 	bmi	loc_02F751
-	lda	a:$0B46
+	lda	a:wram_0B46
 	bmi	loc_02F751
 	clc
 	rts
@@ -2187,32 +2187,32 @@ loc_02F751:
 	rts
 
 sub_02F753:
-	lda	a:$0B46
+	lda	a:wram_0B46
 	clc
 	adc	$06,x
-	sta	a:$0B46
+	sta	a:wram_0B46
 	stz	$06,x
 	rts
 
 sub_02F75F:
-	lda	a:$0B50
-	ora	a:$0B90
-	ora	a:$0BD0
-	ora	a:$0C10
-	ora	a:$0C50
-	ora	a:$0C90
-	ora	a:$0CD0
-	ora	a:$0D10
-	ora	a:$0D50
-	ora	a:$0D90
-	ora	a:$0DD0
-	ora	a:$0E10
-	ora	a:$0E50
-	ora	a:$0E90
+	lda	a:wram_0B50
+	ora	a:wram_0B90
+	ora	a:wram_0BD0
+	ora	a:wram_0C10
+	ora	a:wram_0C50
+	ora	a:wram_0C90
+	ora	a:wram_0CD0
+	ora	a:wram_0D10
+	ora	a:wram_0D50
+	ora	a:wram_0D90
+	ora	a:wram_0DD0
+	ora	a:wram_0E10
+	ora	a:wram_0E50
+	ora	a:wram_0E90
 	rts
 
 sub_02F78A:
-	sta	$FA
+	sta	zp_FA
 	jsr	a:sub_02F7B1
 	sec
 	sbc	$04,x
@@ -2221,7 +2221,7 @@ sub_02F78A:
 	bne	loc_02F7A5
 	lda	$04,x
 	clc
-	adc	$FA
+	adc	zp_FA
 	and	#$00FF
 	sta	$04,x
 loc_02F7A3:
@@ -2230,7 +2230,7 @@ loc_02F7A3:
 loc_02F7A5:
 	lda	$04,x
 	sec
-	sbc	$FA
+	sbc	zp_FA
 	and	#$00FF
 	sta	$04,x
 	sec
@@ -2238,42 +2238,42 @@ loc_02F7A5:
 
 sub_02F7B1:
 	sec
-	lda	a:$0AFE
+	lda	a:wram_0AFE
 	sbc	$0A,x
-	sta	$08
+	sta	zp_08
 	sec
-	lda	a:$0AFC
+	lda	a:wram_0AFC
 	sbc	$0E,x
-	sta	$0A
+	sta	zp_0A
 	jsl	f:sub_1DABA0
 	rts
 
 sub_02F7C6:
 	sec
 	lda	$0A,x
-	sbc	a:$0E8A
-	sta	$08
+	sbc	a:wram_0E8A
+	sta	zp_08
 	sec
 	lda	$0E,x
-	sbc	a:$0E8E
-	sta	$0A
+	sbc	a:wram_0E8E
+	sta	zp_0A
 	jsl	f:sub_1DABA0
 	rts
 
 sub_02F7DB:
 	sec
 	lda	$0A,x
-	sbc	a:$0BCA
-	sta	$08
+	sbc	a:wram_0BCA
+	sta	zp_08
 	sec
 	lda	$0E,x
-	sbc	a:$0BCE
-	sta	$0A
+	sbc	a:wram_0BCE
+	sta	zp_0A
 	jsl	f:sub_1DABA0
 	rts
 
 sub_02F7F0:
-	lda	a:$0B52
+	lda	a:wram_0B52
 	cmp	#$0005
 	beq	loc_02F821
 	cmp	#$0003
@@ -2315,7 +2315,7 @@ loc_02F821:
 	rts
 
 sub_02F834:
-	lda	a:$0B52
+	lda	a:wram_0B52
 	cmp	#$0005
 	beq	loc_02F85C
 	cmp	#$0003
@@ -2370,11 +2370,11 @@ sub_02F86F:
 	ply
 	lda	$0A,x
 	clc
-	adc	$08
+	adc	zp_08
 	sta	a:$000A,y
 	lda	$0E,x
 	clc
-	adc	$0A
+	adc	zp_0A
 	sta	a:$000E,y
 	lda	#$0000
 	sta	a:$0008,y
@@ -2388,7 +2388,7 @@ sub_02F86F:
 	jsl	f:sub_02B1A3
 	ply
 	plx
-	lda	a:$159E
+	lda	a:wram_159E
 	clc
 	adc	#$0EC0
 	sta	a:$0014,y
@@ -2406,8 +2406,8 @@ loc_02F8DB:
 	tax
 	lda	f:tbl_02F8EA,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02F8EA:
 	.addr	sub_02F8F6
 	.addr	sub_02F912
@@ -2417,7 +2417,7 @@ tbl_02F8EA:
 	.addr	sub_02F9A4
 
 sub_02F8F6:
-	ldy	$84
+	ldy	difficulty
 	lda	a:data_05E6CC,y
 	sta	$06,x
 	stz	$2E,x
@@ -2562,8 +2562,8 @@ loc_02F9FD:
 	tax
 	lda	f:tbl_02FA0C,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02FA0C:
 	.addr	sub_02FA18
 	.addr	sub_02FA35
@@ -2573,7 +2573,7 @@ tbl_02FA0C:
 	.addr	sub_02FABA
 
 sub_02FA18:
-	ldy	$84
+	ldy	difficulty
 	lda	a:data_05E6D2,y
 	sta	$06,x
 	stz	$2E,x
@@ -2689,8 +2689,8 @@ loc_02FAE4:
 	tax
 	lda	f:tbl_02FAF3,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02FAF3:
 	.addr	sub_02FA18
 	.addr	sub_02FAFF
@@ -2741,8 +2741,8 @@ loc_02FB3A:
 	tax
 	lda	f:tbl_02FB49,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02FB49:
 	.addr	sub_02FA18
 	.addr	sub_02FB55
@@ -2791,8 +2791,8 @@ loc_02FB87:
 	tax
 	lda	f:tbl_02FB96,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02FB96:
 	.addr	sub_02FA18
 	.addr	sub_02FBA2
@@ -2816,7 +2816,7 @@ loc_02FBB0:
 loc_02FBB1:
 	; (not executed in the CDL traces)
 	jsl	f:sub_02B1A3
-	ldy	a:$159E
+	ldy	a:wram_159E
 	lda	a:$152C,y
 	bit	#$4000
 	bne	loc_02FBB0
@@ -2842,7 +2842,7 @@ loc_02FBDC:
 	stz	$2A,x
 	lda	#$B000
 	sta	$16,x
-	ldy	$84
+	ldy	difficulty
 	lda	a:data_05E6D8,y
 	sta	$24,x
 	inc	$12,x
@@ -2860,8 +2860,8 @@ loc_02FBFB:
 	tax
 	lda	f:tbl_02FC0A,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02FC0A:
 	.addr	sub_02FA18
 	.addr	sub_02FC16
@@ -2884,7 +2884,7 @@ loc_02FC24:
 loc_02FC25:
 	jsl	f:sub_02B1A3
 	jsl	f:sub_029B06
-	ldy	a:$159E
+	ldy	a:wram_159E
 	sec
 	sbc	a:$0EC4,y
 	clc
@@ -2912,7 +2912,7 @@ loc_02FC59:
 	stz	$2A,x
 	lda	#$B000
 	sta	$16,x
-	ldy	$84
+	ldy	difficulty
 	lda	a:data_05E6DE,y
 	sta	$24,x
 	inc	$12,x

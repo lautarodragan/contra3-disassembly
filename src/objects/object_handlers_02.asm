@@ -5,12 +5,12 @@
 ; bank $1D.
 
 sub_02FCCB:
-	lda	$78
+	lda	zp_78
 	and	#$007F
 	bne	loc_02FD09
 	jsr	a:sub_02FD0E
 	bcs	loc_02FD09
-	lda	$78
+	lda	zp_78
 	and	#$0180
 	asl	a
 	xba
@@ -20,13 +20,13 @@ sub_02FCCB:
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
-	lda	$E9
+	lda	zp_E9
 	and	#$007F
 	clc
 	adc	#$0040
 	sta	a:$000A,y
-	lda	$3A
-	adc	$E8
+	lda	frame_counter
+	adc	rng_lo
 	and	#$001F
 	adc	#$0020
 	sta	a:$000E,y
@@ -69,8 +69,8 @@ sub_02FD2A:
 	tax
 	lda	f:tbl_02FD39,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02FD39:
 	.addr	sub_02FD3D
 	.addr	sub_02FD56
@@ -95,11 +95,11 @@ sub_02FD56:
 	cmp	#$000F
 	bcc	loc_02FD73
 	jsr	a:sub_02FD74
-	stx	$00
+	stx	zp_00
 	lda	#$0000
 	ldy	#$0000
 loc_02FD6A:
-	sta	($00),y
+	sta	(zp_00),y
 	iny
 	iny
 	cpy	#$0020
@@ -108,19 +108,19 @@ loc_02FD73:
 	rtl
 
 sub_02FD74:
-	stz	$00
+	stz	zp_00
 loc_02FD76:
 	jsr	a:sub_02FD0E
 	bcs	loc_02FDB5
-	sty	$02
+	sty	zp_02
 	lda	$14,x
 	and	#$0003
 	asl	a
 	tay
 	lda	a:data_05E734,y
-	ldy	$02
+	ldy	zp_02
 	sta	a:$0010,y
-	lda	$00
+	lda	zp_00
 	sta	a:$0004,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -137,13 +137,13 @@ loc_02FD76:
 	lda	$1E,x
 	sta	a:$001E,y
 loc_02FDB5:
-	inc	$00
+	inc	zp_00
 	lda	$14,x
 	and	#$0003
 	asl	a
 	tay
 	lda	a:data_05E73C,y
-	cmp	$00
+	cmp	zp_00
 	bcs	loc_02FD76
 	rts
 
@@ -165,8 +165,8 @@ sub_02FDD3:
 	tax
 	lda	f:tbl_02FDE5,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02FDE5:
 	.addr	sub_02FDEB
 	.addr	sub_02FE0B
@@ -176,15 +176,15 @@ sub_02FDEB:
 	lda	#$3E4F
 	sta	$02,x
 	jsr	a:sub_02FF17
-	lda	$08
+	lda	zp_08
 	sta	$18,x
-	lda	$00
+	lda	zp_00
 	sta	$1A,x
-	lda	$0A
+	lda	zp_0A
 	sta	$1C,x
 	lda	$1E,x
 	clc
-	adc	$02
+	adc	zp_02
 	sta	$1E,x
 	stz	$00,x
 	inc	$12,x
@@ -214,11 +214,11 @@ loc_02FE28:
 	lda	$00,x
 	cmp	#$003C
 	bcc	loc_02FE44
-	stx	$00
+	stx	zp_00
 	lda	#$0000
 	ldy	#$0000
 loc_02FE3B:
-	sta	($00),y
+	sta	(zp_00),y
 	iny
 	iny
 	cpy	#$0020
@@ -234,8 +234,8 @@ sub_02FE45:
 	tax
 	lda	f:tbl_02FE57,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02FE57:
 	.addr	sub_02FE5D
 	.addr	sub_02FE7D
@@ -245,15 +245,15 @@ sub_02FE5D:
 	lda	#$3E4F
 	sta	$02,x
 	jsr	a:sub_02FF27
-	lda	$08
+	lda	zp_08
 	sta	$18,x
-	lda	$00
+	lda	zp_00
 	sta	$1A,x
-	lda	$0A
+	lda	zp_0A
 	sta	$1C,x
 	lda	$1E,x
 	clc
-	adc	$02
+	adc	zp_02
 	sta	$1E,x
 	stz	$00,x
 	inc	$12,x
@@ -284,11 +284,11 @@ loc_02FE9A:
 	cmp	#$0046
 	bcc	loc_02FEB6
 loc_02FEA5:
-	stx	$00
+	stx	zp_00
 	lda	#$0000
 	ldy	#$0000
 loc_02FEAD:
-	sta	($00),y
+	sta	(zp_00),y
 	iny
 	iny
 	cpy	#$0020
@@ -304,8 +304,8 @@ sub_02FEB7:
 	tax
 	lda	f:tbl_02FEC9,x
 	plx
-	sta	$00
-	jmp	($0000)
+	sta	zp_00
+	jmp	(zp_00)
 tbl_02FEC9:
 	.addr	sub_02FECF
 	.addr	sub_02FEF7
@@ -315,19 +315,19 @@ sub_02FECF:
 	lda	#$3E4F
 	sta	$02,x
 	jsr	a:sub_02FF27
-	asl	$08
-	rol	$00
-	asl	$0A
-	rol	$02
-	lda	$08
+	asl	zp_08
+	rol	zp_00
+	asl	zp_0A
+	rol	zp_02
+	lda	zp_08
 	sta	$18,x
-	lda	$00
+	lda	zp_00
 	sta	$1A,x
-	lda	$0A
+	lda	zp_0A
 	sta	$1C,x
 	lda	$1E,x
 	clc
-	adc	$02
+	adc	zp_02
 	sta	$1E,x
 	stz	$00,x
 	inc	$12,x
@@ -353,13 +353,13 @@ loc_02FF09:
 	jmp	a:loc_02FEA5
 
 sub_02FF17:
-	lda	$E8
-	sta	$08
+	lda	rng_lo
+	sta	zp_08
 	eor	#$EA9E
 	ror	a
-	sta	$0A
-	adc	$E9
-	sta	$E8
+	sta	zp_0A
+	adc	zp_E9
+	sta	rng_lo
 	bra	loc_02FF4B
 
 sub_02FF27:
@@ -371,7 +371,7 @@ sub_02FF27:
 	tay
 	lda	a:data_05E744,y
 	and	#$00FF
-	sta	$00
+	sta	zp_00
 	tay
 	lda	$04,x
 	asl	a
@@ -382,18 +382,18 @@ sub_02FF27:
 	clc
 	adc	#$0010
 	and	#$00FF
-	sta	$00
+	sta	zp_00
 	jsl	f:sub_1DACA4
 loc_02FF4B:
-	lda	$08
+	lda	zp_08
 	bmi	loc_02FF54
 	lda	#$0000
 	bra	loc_02FF57
 loc_02FF54:
 	lda	#$FFFF
 loc_02FF57:
-	sta	$00
-	lda	$08
+	sta	zp_00
+	lda	zp_08
 	asl	a
 	asl	a
 	asl	a
@@ -401,16 +401,16 @@ loc_02FF57:
 	asl	a
 	asl	a
 	asl	a
-	sta	$08
-	lda	$0A
+	sta	zp_08
+	lda	zp_0A
 	bmi	loc_02FF6D
 	lda	#$0000
 	bra	loc_02FF70
 loc_02FF6D:
 	lda	#$FFFF
 loc_02FF70:
-	sta	$02
-	lda	$0A
+	sta	zp_02
+	lda	zp_0A
 	asl	a
 	asl	a
 	asl	a
@@ -418,7 +418,7 @@ loc_02FF70:
 	asl	a
 	asl	a
 	asl	a
-	sta	$0A
+	sta	zp_0A
 	rts
 	; CDL: not accessed
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF

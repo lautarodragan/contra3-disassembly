@@ -29,25 +29,25 @@ nmi:
 	plb
 	lda	a:RDNMI
 	sei
-	lda	a:$1E82
+	lda	a:nmitimen_shadow
 	sta	a:NMITIMEN
 	rep	#$20
 	.a16
-	lda	a:$1EC0
+	lda	a:htime_shadow
 	sta	a:HTIMEL
-	lda	a:$1EC2
+	lda	a:vtime_shadow
 	sta	a:VTIMEL
 	cli
-	lda	$3C
+	lda	nmi_busy
 	beq	loc_0081D1
 	lda	#$0001
-	sta	$3C
+	sta	nmi_busy
 	bra	loc_0081DA
 loc_0081D1:
-	inc	$3C
-	ldx	$42
+	inc	nmi_busy
+	ldx	nmi_mode
 	jsr	(.loword(tbl_0081E0),x)
-	stz	$3C
+	stz	nmi_busy
 loc_0081DA:
 	plb
 	pld
@@ -75,21 +75,21 @@ sub_0081E6:
 	jsl	f:sub_008CFF
 	sep	#$20
 	.a8
-	lda	$3E
+	lda	zp_3E
 	beq	loc_008215
-	dec	$3E
+	dec	zp_3E
 	beq	loc_008215
-	lda	a:$1E80
+	lda	a:wram_1E80
 	ora	#$80
 	bra	loc_008218
 loc_008215:
-	lda	a:$1E80
+	lda	a:wram_1E80
 loc_008218:
 	sta	a:INIDISP
 	rep	#$20
 	.a16
 	jsl	f:sub_008B19
-	stz	$5C
+	stz	sound_last_queued
 	jsl	f:sub_00A377
 	jsl	f:sub_00816C
 	jsl	f:sub_009995
@@ -128,7 +128,7 @@ sub_00823C:
 	.a16
 	lda	$18,x
 	sec
-	sbc	$A0
+	sbc	zp_A0
 	sta	$22,x
 	ldx	#$13C0
 	lda	$0A,x
@@ -152,7 +152,7 @@ sub_00823C:
 	.a16
 	lda	$18,x
 	sec
-	sbc	$A2
+	sbc	zp_A2
 	sta	$22,x
 	ldx	#$1400
 	sep	#$20
@@ -179,10 +179,10 @@ sub_00823C:
 	jsr	a:sub_008452
 	sep	#$20
 	.a8
-	lda	$98
+	lda	zp_98
 	beq	loc_008301
 	sta	a:CGADD
-	ldx	$9A
+	ldx	zp_9A
 	stx	a:A1T1L
 	lda	#$05
 	sta	a:A1B1
@@ -190,10 +190,10 @@ sub_00823C:
 	stx	a:DAS1L
 	lda	#$02
 	sta	a:MDMAEN
-	lda	$99
+	lda	zp_99
 	beq	loc_008301
 	sta	a:CGADD
-	ldx	$9A
+	ldx	zp_9A
 	stx	a:A1T1L
 	lda	#$05
 	sta	a:A1B1
@@ -206,31 +206,31 @@ loc_008301:
 	.a16
 	jsl	f:sub_008CFF
 	jsl	f:sub_00E4F6
-	lda	a:$1E02
+	lda	a:title_menu_cursor
 	beq	loc_008314
 	jsl	f:sub_00E535
 loc_008314:
 	jsl	f:sub_00E575
 	jsl	f:sub_00C283
-	lda	a:$1EAC
+	lda	a:wram_1EAC
 	sta	a:W12SEL
-	lda	a:$1EAE
+	lda	a:wram_1EAE
 	sta	a:WOBJSEL
-	lda	a:$1EBA
+	lda	a:wram_1EBA
 	sta	a:TMW
 	sep	#$20
 	.a8
-	lda	a:$1EB8
+	lda	a:wram_1EB8
 	sta	a:WBGLOG
-	lda	$3E
+	lda	zp_3E
 	beq	loc_008345
-	dec	$3E
+	dec	zp_3E
 	beq	loc_008345
-	lda	a:$1E80
+	lda	a:wram_1E80
 	ora	#$80
 	bra	loc_008348
 loc_008345:
-	lda	a:$1E80
+	lda	a:wram_1E80
 loc_008348:
 	sta	a:INIDISP
 	rep	#$20
@@ -248,21 +248,21 @@ loc_008348:
 	jsl	f:sub_008B19
 	jsl	f:sub_00E7EF
 	jsl	f:sub_00E5F7
-	stz	$5C
+	stz	sound_last_queued
 	jsl	f:sub_00A377
 	jsl	f:sub_00816C
 	jsl	f:sub_009995
 	jsl	f:sub_0090C7
 	jsl	f:sub_009B76
 	jsl	f:sub_0085F3
-	lda	$3A
+	lda	frame_counter
 	bit	#$0001
 	bne	loc_008399
 	jsl	f:sub_00E3DA
 loc_008398:
 	rts
 loc_008399:
-	lda	a:$1E02
+	lda	a:title_menu_cursor
 	beq	loc_008398
 	jsl	f:sub_00E464
 	rts
@@ -271,12 +271,12 @@ sub_0083A3:
 	sep	#$20
 	.a8
 	lda	#$80
-	sta	f:$7E38A3
-	sta	f:$7E38A7
-	sta	f:$7E38A1
-	sta	f:$7E38A5
+	sta	f:wram_7E38A3
+	sta	f:wram_7E38A7
+	sta	f:wram_7E38A1
+	sta	f:wram_7E38A5
 	sta	a:INIDISP
-	lda	a:$1EC4
+	lda	a:wram_1EC4
 	sta	a:HDMAEN
 	rep	#$20
 	.a16
@@ -285,25 +285,25 @@ sub_0083A3:
 	jsl	f:sub_00E4EE
 	jsl	f:sub_009C18
 	jsr	a:sub_008452
-	lda	$3E
+	lda	zp_3E
 	beq	loc_0083DD
-	dec	$3E
+	dec	zp_3E
 	bne	loc_008427
 loc_0083DD:
-	lda	a:$1E02
+	lda	a:title_menu_cursor
 	beq	loc_0083E5
 	dec	a
 	beq	loc_008407
 loc_0083E5:
 	sep	#$20
 	.a8
-	lda	a:$1FB4
-	sta	f:$7E38A3
-	lda	a:$1FF4
-	sta	f:$7E38A7
-	lda	a:$1E80
-	sta	f:$7E38A1
-	sta	f:$7E38A5
+	lda	a:wram_1FB4
+	sta	f:wram_7E38A3
+	lda	a:wram_1FF4
+	sta	f:wram_7E38A7
+	lda	a:wram_1E80
+	sta	f:wram_7E38A1
+	sta	f:wram_7E38A5
 	sta	a:INIDISP
 	rep	#$20
 	.a16
@@ -311,20 +311,20 @@ loc_0083E5:
 loc_008407:
 	sep	#$20
 	.a8
-	lda	a:$1FF4
-	sta	f:$7E38A7
-	lda	a:$1E80
-	sta	f:$7E38A1
-	sta	f:$7E38A5
-	lda	a:$1FB4
-	sta	f:$7E38A3
+	lda	a:wram_1FF4
+	sta	f:wram_7E38A7
+	lda	a:wram_1E80
+	sta	f:wram_7E38A1
+	sta	f:wram_7E38A5
+	lda	a:wram_1FB4
+	sta	f:wram_7E38A3
 	sta	a:INIDISP
 	rep	#$20
 loc_008427:
 	.a16
 	jsl	f:sub_02DDDC
 	jsl	f:sub_008B19
-	stz	$5C
+	stz	sound_last_queued
 	jsl	f:sub_00A377
 	jsl	f:sub_00816C
 	jsl	f:sub_00E3CD
@@ -350,7 +350,7 @@ sub_008452:
 	stz	a:CGADD
 	ldx	#$2200
 	stx	a:DMAP1
-	ldx	$48
+	ldx	zp_48
 	stx	a:A1T1L
 	lda	#$7E
 	sta	a:A1B1
@@ -369,9 +369,9 @@ sub_00848F:
 	.i8
 	lda	a:RDNMI
 	lda	#$0F
-	sta	a:$1E80
+	sta	a:wram_1E80
 	lda	#$81
-	sta	a:$1E82
+	sta	a:nmitimen_shadow
 	sta	a:NMITIMEN
 	jsl	f:sub_0088A3
 	.a16
@@ -380,7 +380,7 @@ sub_00848F:
 	.a8
 	.i8
 	lda	#$04
-	sta	$3E
+	sta	zp_3E
 	plp
 	.a16
 	.i16
@@ -389,55 +389,55 @@ sub_00848F:
 sub_0084AE:
 	sep	#$20
 	.a8
-	lda	a:$1E9A
+	lda	a:wram_1E9A
 	sta	a:TM
-	lda	a:$1E9C
+	lda	a:wram_1E9C
 	sta	a:TS
-	lda	a:$1E94
+	lda	a:wram_1E94
 	sta	a:CGWSEL
-	lda	a:$1E96
+	lda	a:wram_1E96
 	sta	a:CGADSUB
-	lda	a:$1E98
+	lda	a:wram_1E98
 	sta	a:COLDATA
-	lda	a:$1E86
+	lda	a:wram_1E86
 	sta	a:OBSEL
-	lda	a:$1E84
+	lda	a:wram_1E84
 	sta	a:BGMODE
-	lda	a:$1E8A
+	lda	a:wram_1E8A
 	sta	a:MOSAIC
-	lda	a:$1E8C
+	lda	a:wram_1E8C
 	sta	a:BG1SC
-	lda	a:$1E8E
+	lda	a:wram_1E8E
 	sta	a:BG2SC
-	lda	a:$1E92
+	lda	a:wram_1E92
 	sta	a:BG4SC
-	lda	a:$1E90
+	lda	a:wram_1E90
 	sta	a:BG3SC
-	lda	a:$1E9E
+	lda	a:wram_1E9E
 	sta	a:M7A
-	lda	a:$1E9F
+	lda	a:wram_1E9F
 	sta	a:M7A
-	lda	a:$1EA0
+	lda	a:wram_1EA0
 	sta	a:M7B
-	lda	a:$1EA1
+	lda	a:wram_1EA1
 	sta	a:M7B
-	lda	a:$1EA2
+	lda	a:wram_1EA2
 	sta	a:M7C
-	lda	a:$1EA3
+	lda	a:wram_1EA3
 	sta	a:M7C
-	lda	a:$1EA4
+	lda	a:wram_1EA4
 	sta	a:M7D
-	lda	a:$1EA5
+	lda	a:wram_1EA5
 	sta	a:M7D
-	lda	a:$1EA6
+	lda	a:wram_1EA6
 	sta	a:M7X
-	lda	a:$1EA7
+	lda	a:wram_1EA7
 	sta	a:M7X
-	lda	a:$1EA8
+	lda	a:wram_1EA8
 	sta	a:M7Y
-	lda	a:$1EA9
+	lda	a:wram_1EA9
 	sta	a:M7Y
-	lda	a:$1EAA
+	lda	a:wram_1EAA
 	sta	a:M7SEL
 	rep	#$20
 	.a16
@@ -521,12 +521,12 @@ sub_0085C1:
 	sep	#$20
 	.a8
 	lda	a:RDNMI
-	lda	a:$1E82
+	lda	a:nmitimen_shadow
 	sta	a:NMITIMEN
-	lda	a:$1E80
+	lda	a:wram_1E80
 loc_0085D0:
 	lda	#$04
-	sta	a:$003E
+	sta	a:zp_3E
 	lda	#$00
 	sta	a:HDMAEN
 	sta	a:MDMAEN
@@ -538,11 +538,11 @@ sub_0085DF:
 	php
 	sep	#$20
 	.a8
-	lda	a:$1E82
+	lda	a:nmitimen_shadow
 	bpl	loc_0085D0
 	lda	#$80
-	sta	a:$003C
+	sta	a:nmi_busy
 loc_0085EC:
-	lda	a:$003C
+	lda	a:nmi_busy
 	bmi	loc_0085EC
 	bra	loc_0085BA

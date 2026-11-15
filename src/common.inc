@@ -7,5 +7,6 @@ COMMON_INC = 1
 .smart -
 
 .include "snes_registers.inc"
+.include "ram.inc"
 
 .endif

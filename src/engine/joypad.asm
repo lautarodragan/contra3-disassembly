@@ -30,7 +30,7 @@ loc_008B29:
 	ldx	#$0000
 loc_008B3E:
 	rep	#$20
-	lda	$30
+	lda	zp_30
 	and	a:data_058228,x
 	beq	loc_008B5C
 	lda	$28,x
@@ -40,7 +40,7 @@ loc_008B3E:
 	cmp	#$3030
 	bne	loc_008B5C
 	; (not executed in the CDL traces)
-	lda	$3E
+	lda	zp_3E
 	bne	loc_008B5C
 	jmp	a:loc_0080A3
 loc_008B5C:
@@ -55,16 +55,16 @@ sub_008B64:
 	; (not executed in the CDL traces)
 	rep	#$10
 	rep	#$20
-	lda	$3E
+	lda	zp_3E
 	bne	loc_008B90
-	lda	$28
+	lda	joy1_pressed
 	and	#$3000
 	beq	loc_008B90
 	jsl	f:sub_008BA1
-	lda	$32
+	lda	game_mode
 	cmp	#$0002
 	bne	loc_008B91
-	lda	$28
+	lda	joy1_pressed
 	and	#$2000
 	bne	loc_008B90
 	lda	#$0006
@@ -74,7 +74,7 @@ loc_008B90:
 	rtl
 loc_008B91:
 	lda	#$0004
-	sta	$3E
+	sta	zp_3E
 	jsl	f:sub_00865C
 	lda	#$0002
 	jml	f:sub_00ABA3
@@ -82,5 +82,5 @@ loc_008B91:
 sub_008BA1:
 	; (not executed in the CDL traces)
 	lda	#$0200
-	sta	$68
+	sta	zp_68
 	rtl

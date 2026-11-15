@@ -6,7 +6,7 @@
 ; modes (sub_00B7B2, sub_00B83B...).
 
 sub_00B679:
-	lda	a:$1C00
+	lda	a:wram_1C00
 	asl	a
 	tax
 	jmp	(.loword(tbl_00B681),x)
@@ -23,22 +23,22 @@ tbl_00B681:
 sub_00B691:
 	php
 	rep	#$20
-	lda	a:$1E80
+	lda	a:wram_1E80
 	and	#$000F
-	sta	a:$1E80
+	sta	a:wram_1E80
 	beq	loc_00B6A4
-	dec	a:$1E80
+	dec	a:wram_1E80
 	plp
 	rtl
 loc_00B6A4:
 	lda	#$0080
-	sta	a:$1E80
+	sta	a:wram_1E80
 	plp
 	lda	#$0001
-	sta	a:$1E9A
+	sta	a:wram_1E9A
 	ldx	#$F4EF
 	jsl	f:sub_0098D4
-	lda	$86
+	lda	stage_number
 	asl	a
 	tay
 	lda	a:data_0587F1,y
@@ -46,31 +46,31 @@ loc_00B6A4:
 	jsl	f:sub_0090A8
 	ldy	#$8880
 	jsl	f:sub_009982
-	inc	a:$1C00
+	inc	a:wram_1C00
 	rtl
 
 sub_00B6CF:
 	php
-	lda	a:$1E80
+	lda	a:wram_1E80
 	bit	#$0080
 	beq	loc_00B6DE
 	and	#$000F
-	sta	a:$1E80
+	sta	a:wram_1E80
 loc_00B6DE:
 	cmp	#$000F
 	bcs	loc_00B6E8
-	inc	a:$1E80
+	inc	a:wram_1E80
 	plp
 	rtl
 loc_00B6E8:
 	plp
 	lda	#$006A
 	jsl	f:sub_00868F
-	inc	a:$1C00
+	inc	a:wram_1C00
 	rtl
 
 sub_00B6F4:
-	lda	$86
+	lda	stage_number
 	inc	a
 	cmp	#$0007
 	bcc	loc_00B6FF
@@ -79,33 +79,33 @@ sub_00B6F4:
 loc_00B6FF:
 	jsl	f:sub_00B99F
 	lda	#$0001
-	sta	$76
-	inc	a:$1C00
+	sta	zp_76
+	inc	a:wram_1C00
 	rtl
 
 sub_00B70C:
-	dec	$76
+	dec	zp_76
 	bpl	loc_00B738
 	jsl	f:sub_00B7B2
 	lda	#$0001
-	sta	a:$1C04
+	sta	a:wram_1C04
 	lda	#$0000
-	sta	a:$1C02
+	sta	a:wram_1C02
 	jsr	a:sub_00B8D5
 	ldy	#$8889
 	jsl	f:sub_009982
 	lda	#$0040
-	sta	$76
+	sta	zp_76
 	lda	#$0005
-	sta	a:$1E9A
-	inc	a:$1C00
+	sta	a:wram_1E9A
+	inc	a:wram_1C00
 loc_00B738:
 	rtl
 
 sub_00B739:
-	dec	$76
+	dec	zp_76
 	bpl	loc_00B740
-	inc	a:$1C00
+	inc	a:wram_1C00
 loc_00B740:
 	rtl
 
@@ -113,62 +113,62 @@ sub_00B741:
 	jsr	a:sub_00B934
 	jsl	f:sub_00B7B2
 	jsr	a:sub_00B8D5
-	lda	a:$1C02
+	lda	a:wram_1C02
 	bit	#$0100
 	bne	loc_00B75A
 	lda	#$0003
 	jsl	f:sub_00868F
 loc_00B75A:
-	lda	a:$1C02
-	ora	a:$1C04
+	lda	a:wram_1C02
+	ora	a:wram_1C04
 	beq	loc_00B763
 	rtl
 loc_00B763:
 	lda	#$0100
-	sta	$76
-	inc	a:$1C00
+	sta	zp_76
+	inc	a:wram_1C00
 	rtl
 
 sub_00B76C:
-	dec	$76
+	dec	zp_76
 	bpl	loc_00B773
 	; (not executed in the CDL traces)
 	brl	loc_00B77D
 loc_00B773:
-	lda	$28
-	ora	$2A
+	lda	joy1_pressed
+	ora	joy2_pressed
 	bit	#$D0C0
 	bne	loc_00B77D
 	rtl
 loc_00B77D:
-	inc	a:$1C00
+	inc	a:wram_1C00
 	rtl
 
 sub_00B781:
 	php
 	rep	#$20
-	lda	a:$1E80
+	lda	a:wram_1E80
 	and	#$000F
-	sta	a:$1E80
+	sta	a:wram_1E80
 	beq	loc_00B794
-	dec	a:$1E80
+	dec	a:wram_1E80
 	plp
 	rtl
 loc_00B794:
 	lda	#$0080
-	sta	a:$1E80
+	sta	a:wram_1E80
 	plp
-	stz	a:$1E40
-	inc	$86
-	lda	$86
+	stz	a:wram_1E40
+	inc	stage_number
+	lda	stage_number
 	cmp	#$0007
 	bcc	loc_00B7AC
 	; (not executed in the CDL traces)
 	lda	#$0001
-	sta	$86
+	sta	stage_number
 loc_00B7AC:
 	lda	#$0001
-	sta	$36
+	sta	zp_36
 	rtl
 
 sub_00B7B2:
@@ -229,10 +229,10 @@ sub_00B833:
 
 sub_00B83B:
 	sed
-	sta	$FA
+	sta	zp_FA
 	sec
 	lda	$36,x
-	sbc	$FA
+	sbc	zp_FA
 	sta	$36,x
 	lda	$38,x
 	sbc	#$0000
@@ -260,7 +260,7 @@ loc_00B866:
 	adc	#$0006
 	sta	$38,x
 loc_00B877:
-	lda	$FA
+	lda	zp_FA
 	clc
 	adc	$20,x
 	sta	$20,x
@@ -283,7 +283,7 @@ loc_00B89C:
 	rtl
 
 sub_00B89E:
-	sta	$FA
+	sta	zp_FA
 	phx
 	jsl	f:sub_008D41
 	plx
@@ -315,7 +315,7 @@ sub_00B8D5:
 	rts
 
 sub_00B8ED:
-	sta	$FA
+	sta	zp_FA
 	phx
 	jsl	f:sub_008D41
 	plx
@@ -355,20 +355,20 @@ sub_00B923:
 sub_00B927:
 	and	#$000F
 	inc	a
-	ora	$FA
+	ora	zp_FA
 	phx
 	jsl	f:sub_008DA5
 	plx
 	rtl
 
 sub_00B934:
-	lda	a:$1F8A
+	lda	a:p1_lives
 	beq	loc_00B943
 	lda	#$0100
 	ldx	#$1F80
 	jsl	f:sub_00B83B
 loc_00B943:
-	lda	a:$1FCA
+	lda	a:p2_lives
 	beq	loc_00B952
 	; (not executed in the CDL traces)
 	lda	#$0100
@@ -377,38 +377,38 @@ loc_00B943:
 loc_00B952:
 	sed
 	sec
-	lda	a:$1C02
+	lda	a:wram_1C02
 	sbc	#$0100
-	sta	a:$1C02
-	lda	a:$1C04
+	sta	a:wram_1C02
+	lda	a:wram_1C04
 	sbc	#$0000
-	sta	a:$1C04
+	sta	a:wram_1C04
 	cld
 	rts
 
 sub_00B968:
 	sec
-	lda	a:$1E44
-	sbc	a:$1FA0
-	lda	a:$1E46
-	sbc	a:$1FA2
+	lda	a:wram_1E44
+	sbc	a:wram_1FA0
+	lda	a:wram_1E46
+	sbc	a:wram_1FA2
 	bcs	loc_00B983
-	lda	a:$1FA0
-	sta	a:$1E44
-	lda	a:$1FA2
-	sta	a:$1E46
+	lda	a:wram_1FA0
+	sta	a:wram_1E44
+	lda	a:wram_1FA2
+	sta	a:wram_1E46
 loc_00B983:
 	sec
-	lda	a:$1E44
-	sbc	a:$1FE0
-	lda	a:$1E46
-	sbc	a:$1FE2
+	lda	a:wram_1E44
+	sbc	a:wram_1FE0
+	lda	a:wram_1E46
+	sbc	a:wram_1FE2
 	bcs	loc_00B99E
 	; (not executed in the CDL traces)
-	lda	a:$1FE0
-	sta	a:$1E44
-	lda	a:$1FE2
-	sta	a:$1E46
+	lda	a:wram_1FE0
+	sta	a:wram_1E44
+	lda	a:wram_1FE2
+	sta	a:wram_1E46
 loc_00B99E:
 	rts
 
@@ -430,7 +430,7 @@ sub_00B99F:
 	rtl
 
 sub_00B9BE:
-	lda	a:$1C00
+	lda	a:wram_1C00
 	asl	a
 	tax
 	jmp	(.loword(tbl_00B9C6),x)
@@ -448,22 +448,22 @@ sub_00B9CC:
 	ldx	#$8948
 	lda	#$2400
 	jsl	f:sub_009015
-	inc	a:$1C00
+	inc	a:wram_1C00
 	rtl
 
 sub_00B9EB:
 	php
-	lda	a:$1E80
+	lda	a:wram_1E80
 	bit	#$0080
 	beq	loc_00B9FA
 	; (not executed in the CDL traces)
 	and	#$000F
-	sta	a:$1E80
+	sta	a:wram_1E80
 loc_00B9FA:
 	cmp	#$000F
 	bcs	loc_00BA04
 	; (not executed in the CDL traces)
-	inc	a:$1E80
+	inc	a:wram_1E80
 	plp
 	rtl
 loc_00BA04:
@@ -474,38 +474,38 @@ loc_00BA04:
 	jsr	a:sub_00BAC6
 	jsr	a:sub_00BAE8
 	bcs	loc_00BA20
-	lda	$28
-	ora	$2A
+	lda	joy1_pressed
+	ora	joy2_pressed
 	bit	#$1000
 	bne	loc_00BA20
 	rtl
 loc_00BA20:
 	lda	#$0002
 	jsl	f:sub_00868F
-	inc	a:$1C00
+	inc	a:wram_1C00
 	rtl
 
 sub_00BA2B:
 	php
 	rep	#$20
-	lda	a:$1E80
+	lda	a:wram_1E80
 	and	#$000F
-	sta	a:$1E80
+	sta	a:wram_1E80
 	beq	loc_00BA3E
-	dec	a:$1E80
+	dec	a:wram_1E80
 	plp
 	rtl
 loc_00BA3E:
 	lda	#$0080
-	sta	a:$1E80
+	sta	a:wram_1E80
 	plp
 	lda	#$0001
-	sta	$36
+	sta	zp_36
 	rtl
 
 sub_00BA4B:
-	lda	$28
-	ora	$2A
+	lda	joy1_pressed
+	ora	joy2_pressed
 	bit	#$0C00
 	beq	loc_00BA7E
 	pha
@@ -514,27 +514,27 @@ sub_00BA4B:
 	pla
 	bit	#$0800
 	bne	loc_00BA72
-	lda	a:$1C02
+	lda	a:wram_1C02
 	inc	a
 	cmp	#$0004
 	bcc	loc_00BA6E
 	; (not executed in the CDL traces)
 	lda	#$0000
 loc_00BA6E:
-	sta	a:$1C02
+	sta	a:wram_1C02
 	rts
 loc_00BA72:
-	lda	a:$1C02
+	lda	a:wram_1C02
 	dec	a
 	bpl	loc_00BA7B
 	lda	#$0003
 loc_00BA7B:
-	sta	a:$1C02
+	sta	a:wram_1C02
 loc_00BA7E:
 	rts
 
 sub_00BA7F:
-	lda	a:$1C02
+	lda	a:wram_1C02
 	cmp	#$0000
 	beq	loc_00BA91
 	ldx	#$8956
@@ -549,7 +549,7 @@ loc_00BA91:
 	jmp	a:loc_00BB6A
 
 sub_00BAA4:
-	lda	a:$1C02
+	lda	a:wram_1C02
 	cmp	#$0001
 	beq	loc_00BAB6
 	ldx	#$895F
@@ -563,7 +563,7 @@ loc_00BAB6:
 	jmp	a:loc_00BBDF
 
 sub_00BAC6:
-	lda	a:$1C02
+	lda	a:wram_1C02
 	cmp	#$0002
 	beq	loc_00BAD8
 	ldx	#$8967
@@ -577,7 +577,7 @@ loc_00BAD8:
 	jmp	a:loc_00BC2D
 
 sub_00BAE8:
-	lda	a:$1C02
+	lda	a:wram_1C02
 	cmp	#$0003
 	beq	loc_00BAF9
 	ldx	#$896F
@@ -589,16 +589,16 @@ loc_00BAF9:
 	ldx	#$896F
 	lda	#$2400
 	jsl	f:sub_009015
-	lda	$28
-	ora	$2A
+	lda	joy1_pressed
+	ora	joy2_pressed
 	bit	#$C0C0
 	beq	loc_00BAF7
 	sec
 	rts
 
 sub_00BB0E:
-	lda	$28
-	ora	$2A
+	lda	joy1_pressed
+	ora	joy2_pressed
 	bit	#$0300
 	beq	loc_00BB41
 	; (not executed in the CDL traces)
@@ -608,35 +608,35 @@ sub_00BB0E:
 	pla
 	bit	#$0100
 	bne	loc_00BB32
-	lda	a:$1C04
+	lda	a:wram_1C04
 	dec	a
 	bpl	loc_00BB2E
 	lda	#$0002
 loc_00BB2E:
-	sta	a:$1C04
+	sta	a:wram_1C04
 	rts
 loc_00BB32:
-	lda	a:$1C04
+	lda	a:wram_1C04
 	inc	a
 	cmp	#$0003
 	bcc	loc_00BB3E
 	lda	#$0000
 loc_00BB3E:
-	sta	a:$1C04
+	sta	a:wram_1C04
 loc_00BB41:
 	rts
 
 sub_00BB42:
-	lda	a:$1C04
+	lda	a:wram_1C04
 	asl	a
 	tay
 	lda	a:data_0588FB,y
-	sta	a:$1E3C
+	sta	a:wram_1E3C
 	rts
 
 sub_00BB4E:
 	ldy	#$0000
-	lda	a:$1E3C
+	lda	a:wram_1E3C
 	cmp	#$0003
 	beq	loc_00BB66
 	; (not executed in the CDL traces)
@@ -648,11 +648,11 @@ sub_00BB4E:
 	beq	loc_00BB66
 	iny
 loc_00BB66:
-	sty	a:$1C04
+	sty	a:wram_1C04
 	rts
 loc_00BB6A:
 	ldy	#$5992
-	lda	a:$1E3C
+	lda	a:wram_1E3C
 	cmp	#$0063
 	bcc	loc_00BB78
 	; (not executed in the CDL traces)
@@ -680,8 +680,8 @@ loc_00BB78:
 	rts
 
 sub_00BBA9:
-	lda	$28
-	ora	$2A
+	lda	joy1_pressed
+	ora	joy2_pressed
 	bit	#$0300
 	beq	loc_00BBDE
 	pha
@@ -691,34 +691,34 @@ sub_00BBA9:
 	bit	#$0100
 	bne	loc_00BBCE
 	; (not executed in the CDL traces)
-	lda	a:$1E3E
+	lda	a:wram_1E3E
 	dec	a
 	dec	a
 	bpl	loc_00BBCA
 	lda	#$0004
 loc_00BBCA:
-	sta	a:$1E3E
+	sta	a:wram_1E3E
 	rts
 loc_00BBCE:
-	lda	a:$1E3E
+	lda	a:wram_1E3E
 	inc	a
 	inc	a
 	cmp	#$0006
 	bcc	loc_00BBDB
 	lda	#$0000
 loc_00BBDB:
-	sta	a:$1E3E
+	sta	a:wram_1E3E
 loc_00BBDE:
 	rts
 loc_00BBDF:
-	ldy	a:$1E3E
+	ldy	a:wram_1E3E
 	ldx	a:data_058903,y
 	jsl	f:sub_009024
 	rts
 
 sub_00BBEA:
-	lda	$28
-	ora	$2A
+	lda	joy1_pressed
+	ora	joy2_pressed
 	bit	#$0300
 	beq	loc_00BC11
 	; (not executed in the CDL traces)
@@ -728,41 +728,41 @@ sub_00BBEA:
 	pla
 	bit	#$0100
 	bne	loc_00BC12
-	lda	a:$1E54
+	lda	a:wram_1E54
 	dec	a
 	dec	a
 	bpl	loc_00BC0B
 	lda	#$0002
 loc_00BC0B:
-	sta	a:$1E54
+	sta	a:wram_1E54
 	jsr	a:sub_00BC22
 loc_00BC11:
 	rts
 loc_00BC12:
 	; (not executed in the CDL traces)
-	lda	a:$1E54
+	lda	a:wram_1E54
 	inc	a
 	inc	a
 	cmp	#$0004
 	bcc	loc_00BC1F
 	lda	#$0000
 loc_00BC1F:
-	sta	a:$1E54
+	sta	a:wram_1E54
 
 sub_00BC22:
 	; (not executed in the CDL traces)
-	ldy	a:$1E54
+	ldy	a:wram_1E54
 	lda	a:data_05892A,y
 	jsl	f:sub_00868F
 	rts
 loc_00BC2D:
-	ldy	a:$1E54
+	ldy	a:wram_1E54
 	ldx	a:data_05892E,y
 	jsl	f:sub_009024
 	rts
 
 sub_00BC38:
-	lda	a:$1C00
+	lda	a:wram_1C00
 	asl	a
 	tax
 	jmp	(.loword(tbl_00BC40),x)
@@ -775,52 +775,52 @@ tbl_00BC40:
 sub_00BC48:
 	php
 	rep	#$20
-	lda	a:$1E80
+	lda	a:wram_1E80
 	and	#$000F
-	sta	a:$1E80
+	sta	a:wram_1E80
 	beq	loc_00BC5B
-	dec	a:$1E80
+	dec	a:wram_1E80
 	plp
 	rtl
 loc_00BC5B:
 	lda	#$0080
-	sta	a:$1E80
+	sta	a:wram_1E80
 	plp
 	lda	#$0005
-	sta	a:$1E9A
+	sta	a:wram_1E9A
 	ldx	#.loword(data_058976)
 	jsl	f:sub_0090A8
 	ldy	#$898E
 	jsl	f:sub_009982
 	jsl	f:sub_00BCC9
-	inc	a:$1C00
+	inc	a:wram_1C00
 	rtl
 
 sub_00BC7E:
 	php
-	lda	a:$1E80
+	lda	a:wram_1E80
 	bit	#$0080
 	beq	loc_00BC8D
 	and	#$000F
-	sta	a:$1E80
+	sta	a:wram_1E80
 loc_00BC8D:
 	cmp	#$000F
 	bcs	loc_00BC97
-	inc	a:$1E80
+	inc	a:wram_1E80
 	plp
 	rtl
 loc_00BC97:
 	plp
-	inc	a:$1C00
+	inc	a:wram_1C00
 	rtl
 
 sub_00BC9C:
-	lda	$28
-	ora	$2A
+	lda	joy1_pressed
+	ora	joy2_pressed
 	bit	#$1000
 	beq	loc_00BCA8
 	; (not executed in the CDL traces)
-	inc	a:$1C00
+	inc	a:wram_1C00
 loc_00BCA8:
 	rtl
 
@@ -828,19 +828,19 @@ sub_00BCA9:
 	; (not executed in the CDL traces)
 	php
 	rep	#$20
-	lda	a:$1E80
+	lda	a:wram_1E80
 	and	#$000F
-	sta	a:$1E80
+	sta	a:wram_1E80
 	beq	loc_00BCBC
-	dec	a:$1E80
+	dec	a:wram_1E80
 	plp
 	rtl
 loc_00BCBC:
 	lda	#$0080
-	sta	a:$1E80
+	sta	a:wram_1E80
 	plp
 	lda	#$0001
-	sta	$36
+	sta	zp_36
 	rtl
 
 sub_00BCC9:
