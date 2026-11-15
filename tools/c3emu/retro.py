@@ -22,6 +22,7 @@ read/write, and access to the CDL tracer exported by our patched snes9x
 (`retro_cdl_*`, see cores/patches/snes9x-cdl.patch and tools/c3emu/cdl.py).
 """
 import ctypes
+import hashlib
 import os
 import shutil
 import sys
@@ -99,19 +100,8 @@ class AvInfo(ctypes.Structure):
                 ("fps", ctypes.c_double), ("sample_rate", ctypes.c_double)]
 
 
+# One live Console per core file: libretro cores are process-wide singletons.
 _loaded = {}
-
-
-def _load_private(core):
-    """dlopen a private copy of the core: libretro cores keep global state,
-    so two Consoles must not share one mapping. Each copy is loaded once per
-    process and reused (cores are not designed to be dlclose'd)."""
-    d = tempfile.mkdtemp(prefix="core-")
-    path = os.path.join(d, os.path.basename(core))
-    shutil.copyfile(core, path)
-    lib = ctypes.CDLL(path)
-    shutil.rmtree(d, True)
-    return lib
 
 
 class Console:
@@ -158,6 +148,7 @@ class Console:
         self._forced = dict(CORE_OPTIONS.get(self.library, {}), **(options or {}))
 
         data = open(rom, "rb").read()
+        self.rom_sha1 = hashlib.sha1(data).hexdigest()
         # A private copy in an empty directory: the core may look next to the
         # ROM for MSU-1 tracks, patches, saves; nothing should be found.
         own_dir = tempfile.mkdtemp(prefix="retro-")
@@ -390,7 +381,7 @@ class Console:
         m = L.retro_cdl_regs(None, 0)
         rb = (ctypes.c_uint32 * (3 * m))()
         L.retro_cdl_regs(rb, m)
-        cdl = Cdl(size)
+        cdl = Cdl(size, self.rom_sha1)
         cdl.a[:] = a
         cdl.b[:] = b
         cdl.wram[:] = w
@@ -408,3 +399,23 @@ class Console:
 
     def cdl_clear(self):
         self.lib.retro_cdl_clear()
+
+    # -- write watch (patched snes9x only) ---------------------------------------
+
+    def watch(self, address, length=1, on=True):
+        """Log every CPU/DMA write to WRAM offsets [address, address+length)."""
+        self.lib.retro_cdl_watch(ctypes.c_uint32(address), ctypes.c_uint32(length),
+                                 1 if on else 0)
+
+    def watch_log(self, clear=True):
+        """[(pc24, wram_offset, size, value, frame, by_dma)] since the last call."""
+        L = self.lib
+        L.retro_cdl_watch_log.restype = ctypes.c_size_t
+        L.retro_cdl_watch_log.argtypes = [ctypes.c_void_p, ctypes.c_size_t]
+        n = L.retro_cdl_watch_log(None, 0)
+        buf = (ctypes.c_uint32 * (4 * n))()
+        L.retro_cdl_watch_log(buf, n)
+        if clear:
+            L.retro_cdl_watch_clear()
+        return [(buf[4 * i] & 0xFFFFFF, buf[4 * i + 1] & 0xFFFFFF, buf[4 * i + 1] >> 24,
+                 buf[4 * i + 2], buf[4 * i + 3], bool(buf[4 * i] >> 31)) for i in range(n)]

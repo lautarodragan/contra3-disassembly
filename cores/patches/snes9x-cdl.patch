@@ -1,9 +1,9 @@
 diff --git a/cdl.cpp b/cdl.cpp
 new file mode 100644
-index 00000000..7fbd056b
+index 0000000..b1ea206
 --- /dev/null
 +++ b/cdl.cpp
-@@ -0,0 +1,415 @@
+@@ -0,0 +1,467 @@
 +/*****************************************************************************\
 +   Code/Data Logger (CDL) for the snes9x libretro core. See cdl.h.
 +
@@ -38,11 +38,13 @@ index 00000000..7fbd056b
 +#include "snes9x.h"
 +#include "memmap.h"
 +#include "cpuexec.h"
++#include "ppu.h"
 +#include "cdl.h"
 +
 +#include <string.h>
 +#include <stdlib.h>
 +#include <unordered_map>
++#include <vector>
 +
 +uint8_t  *cdl_rom_base = NULL;
 +uint32_t  cdl_rom_size = 0;
@@ -53,6 +55,25 @@ index 00000000..7fbd056b
 +uint32_t  cdl_cur_lo = 0xffffffff, cdl_cur_hi = 0;
 +uint32_t  cdl_cur_pc1 = 0;
 +int       cdl_irq_pending = 0;
++uint8_t  *cdl_watch_map = NULL;
++
++struct watch_rec { uint32_t pc; uint32_t off; uint32_t value; uint32_t frame; };
++static std::vector<watch_rec> watch_log;
++static const size_t WATCH_LOG_MAX = 1 << 20;
++
++void cdl_watch_hit(uint32_t wram_off, uint32_t value, int n)
++{
++	if (watch_log.size() >= WATCH_LOG_MAX)
++		return;
++	watch_rec r;
++	r.pc = (CPU.InDMAorHDMA ? 0x80000000u : 0) | (Registers.PBPC & 0xffffff);
++	if (!CPU.InDMAorHDMA && cdl_cur_pc1)
++		r.pc = cdl_cur_pc1 - 1;   /* PC of the instruction, not of its operand */
++	r.off = wram_off | ((uint32_t) n << 24);
++	r.value = value;
++	r.frame = IPPU.TotalEmulatedFrames;
++	watch_log.push_back(r);
++}
 +
 +static uint32_t  alloc_size = 0;
 +static uint8_t  *wram = NULL;            /* 0x20000 */
@@ -333,7 +354,6 @@ index 00000000..7fbd056b
 +	if (!on)
 +	{
 +		cdl_rom_base = NULL;
-+		cdl_ram_base = NULL;
 +		return cdl_rom_size;
 +	}
 +	if (!Memory.ROM || !Memory.CalculatedSize)
@@ -381,6 +401,38 @@ index 00000000..7fbd056b
 +uint32_t *retro_cdl_readers(void) { return cdl_reader; }
 +uint64_t retro_cdl_stat(int which) { return which >= 0 && which < 3 ? stats[which] : 0; }
 +
++/* Write watch. retro_cdl_watch(off, len, on) flags WRAM offsets
++   [off, off+len) (off in 0..0x1FFFF); retro_cdl_watch_log(out, max) copies
++   4 uint32 per write {pc24 (bit 31: by DMA), wram_off | size << 24, value,
++   frame} and returns the total; retro_cdl_watch_clear() empties the log.
++   Works whether or not the CDL is enabled. */
++void retro_cdl_watch(uint32_t off, uint32_t len, int on)
++{
++	if (!cdl_watch_map)
++		cdl_watch_map = (uint8_t *) calloc(0x20000, 1);
++	cdl_ram_base = Memory.RAM;
++	for (uint32_t i = off; i < off + len && i < 0x20000; i++)
++		cdl_watch_map[i] = on ? 1 : 0;
++}
++
++size_t retro_cdl_watch_log(uint32_t *out, size_t max)
++{
++	size_t n = watch_log.size();
++	for (size_t i = 0; out && i < n && i < max; i++)
++	{
++		out[4 * i + 0] = watch_log[i].pc;
++		out[4 * i + 1] = watch_log[i].off;
++		out[4 * i + 2] = watch_log[i].value;
++		out[4 * i + 3] = watch_log[i].frame;
++	}
++	return n;
++}
++
++void retro_cdl_watch_clear(void)
++{
++	watch_log.clear();
++}
++
 +size_t retro_cdl_flows(uint32_t *out, size_t max)
 +{
 +	size_t n = 0;
@@ -421,10 +473,10 @@ index 00000000..7fbd056b
 +}
 diff --git a/cdl.h b/cdl.h
 new file mode 100644
-index 00000000..a9344b98
+index 0000000..12f1e5e
 --- /dev/null
 +++ b/cdl.h
-@@ -0,0 +1,74 @@
+@@ -0,0 +1,86 @@
 +/*****************************************************************************\
 +   Code/Data Logger (CDL) for the snes9x libretro core.
 +
@@ -476,6 +528,18 @@ index 00000000..a9344b98
 +extern uint32_t  cdl_cur_pc1;      /* PBPC+1 of the instruction being executed (0: none) */
 +extern int       cdl_irq_pending;
 +
++/* Write watch (debugging aid): WRAM offsets flagged in cdl_watch_map log
++   every CPU write to them, with the writing instruction's address. */
++extern uint8_t  *cdl_watch_map;    /* 0x20000 bytes, NULL when no watch    */
++void cdl_watch_hit(uint32_t wram_off, uint32_t value, int n);
++
++static inline void cdl_write_ptr(const uint8_t *p, uint32_t value, int n)
++{
++	uint32_t off = (uint32_t)(p - cdl_ram_base);
++	if (off < 0x20000 && (cdl_watch_map[off] || (n == 2 && off + 1 < 0x20000 && cdl_watch_map[off + 1])))
++		cdl_watch_hit(off, value, n);
++}
++
 +void cdl_begin_instruction(void);
 +void cdl_end_instruction(void);
 +void cdl_dma_range(uint32_t addr, uint32_t count, int step, int is_hdma);
@@ -500,7 +564,7 @@ index 00000000..a9344b98
 +
 +#endif
 diff --git a/cpuexec.cpp b/cpuexec.cpp
-index 04948106..040df6f0 100644
+index 0494810..040df6f 100644
 --- a/cpuexec.cpp
 +++ b/cpuexec.cpp
 @@ -14,6 +14,7 @@
@@ -548,7 +612,7 @@ index 04948106..040df6f0 100644
  			S9xSA1MainLoop();
  	}
 diff --git a/dma.cpp b/dma.cpp
-index 95cb1a96..7b8974fd 100644
+index 95cb1a9..7b8974f 100644
 --- a/dma.cpp
 +++ b/dma.cpp
 @@ -4,6 +4,7 @@
@@ -579,7 +643,7 @@ index 95cb1a96..7b8974fd 100644
  					{
  						// HDMA REALLY-SLOW PATH
 diff --git a/getset.h b/getset.h
-index bd3b3658..c94d3c09 100644
+index bd3b365..fe2bfea 100644
 --- a/getset.h
 +++ b/getset.h
 @@ -17,6 +17,9 @@
@@ -610,8 +674,26 @@ index bd3b3658..c94d3c09 100644
  		addCyclesInMemoryAccess_x2;
  		return (word);
  	}
+@@ -346,6 +353,8 @@ inline void S9xSetByte (uint8 Byte, uint32 Address)
+ 	if (SetAddress >= (uint8 *) CMemory::MAP_LAST)
+ 	{
+ 		*(SetAddress + (Address & 0xffff)) = Byte;
++		if (cdl_watch_map)
++			cdl_write_ptr(SetAddress + (Address & 0xffff), Byte, 1);
+ 		addCyclesInMemoryAccess;
+ 		return;
+ 	}
+@@ -491,6 +500,8 @@ inline void S9xSetWord (uint16 Word, uint32 Address, enum s9xwrap_t w = WRAP_NON
+ 	if (SetAddress >= (uint8 *) CMemory::MAP_LAST)
+ 	{
+ 		WRITE_WORD(SetAddress + (Address & 0xffff), Word);
++		if (cdl_watch_map)
++			cdl_write_ptr(SetAddress + (Address & 0xffff), Word, 2);
+ 		addCyclesInMemoryAccess_x2;
+ 		return;
+ 	}
 diff --git a/libretro/Makefile.common b/libretro/Makefile.common
-index 664c6f77..3f03ade5 100644
+index 664c6f7..3f03ade 100644
 --- a/libretro/Makefile.common
 +++ b/libretro/Makefile.common
 @@ -32,6 +32,7 @@ SOURCES_CXX := $(CORE_DIR)/apu/apu.cpp \
