@@ -506,7 +506,7 @@ load_list_0587AB:
 	load_end
 palette_task_0587C3:
 	palette_animate	$00, $00
-	palette_copy	gfx_08, $2260
+	palette_copy	palette_088000, $2260
 	palette_copy	palette_088022, $2200
 	palette_copy	palette_088022, $2220
 	palette_copy	palette_088022, $2240
@@ -1007,17 +1007,17 @@ circle15_x:
 	.byte	$06, $08, $0B, $0D, $0E, $0F, $10, $0F, $0E, $0D, $0B, $08, $06, $03
 	; CDL: DMA (started in nmi_frame_side_view)
 palette_05912A:
-	.byte	$CE, $39, $EF, $3D, $10, $42, $52, $4A, $94, $52, $D6, $5A, $F7, $5E, $18, $63
-	.byte	$39, $67, $5A, $6B, $7B, $6F, $9C, $73, $BD, $77, $DE, $7B, $FF, $7F, $FF, $7F
+	; ASSET: palette: 16 colours, $05:912A-$05:9149 (the 32 bytes nmi_frame_side_view DMAs to CGRAM), used by update_stage1_boss, update_midboss_tank, stage4_tank_state_02 (+11 more)
+	.incbin	"palettes/palette_05912A.bin"
 palette_05914A:
-	.byte	$00, $00, $FF, $7F, $FF, $7F, $FF, $7F, $6D, $31, $F1, $3D, $D6, $5A, $09, $21
-	.byte	$FF, $7F, $FF, $7F, $FF, $7F, $FF, $7F, $FF, $7F, $FF, $7F, $FF, $7F, $00, $00
+	; ASSET: palette: 16 colours, $05:914A-$05:9169 (the 32 bytes nmi_frame_side_view DMAs to CGRAM), used by update_barricade_core
+	.incbin	"palettes/palette_05914A.bin"
 palette_05916A:
-	.byte	$00, $00, $94, $62, $D6, $6A, $39, $77, $9C, $7F, $FE, $7F, $FE, $7F, $FF, $7F
-	.byte	$FF, $7F, $00, $00, $1E, $6F, $9F, $7B, $FF, $7F, $FF, $7F, $5B, $29, $FF, $3D
+	; ASSET: palette: 16 colours, $05:916A-$05:9189 (the 32 bytes nmi_frame_side_view DMAs to CGRAM), used by update_stage3_searchlight_craft
+	.incbin	"palettes/palette_05916A.bin"
 palette_05918A:
-	.byte	$00, $00, $42, $08, $C6, $18, $29, $25, $8C, $31, $31, $46, $B5, $56, $18, $63
-	.byte	$9C, $73, $FF, $7F, $06, $00, $6A, $18, $8C, $2C, $12, $31, $B5, $39, $5A, $5A
+	; ASSET: palette: 16 colours, $05:918A-$05:91A9 (the 32 bytes nmi_frame_side_view DMAs to CGRAM), used by update_ending_sequence, brain_boss_state_0A
+	.incbin	"palettes/palette_05918A.bin"
 ; Stage 1 boss: steps added line by line to the HDMA scroll table at $7E:A046
 ; (integer part; fraction in stage1_boss_hdma_line_steps_sub, table at
 ; $7E:A0C6) when the body moves up or down (stage1_boss_move_up /

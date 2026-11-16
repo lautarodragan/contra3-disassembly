@@ -5,7 +5,9 @@
 #   raw:          the source includes <path>.bin, the data as it is
 # The data is <path>.bin, or with png=FORMAT (2bpp, 4bpp, 8bpp, mode7) the
 # first `tiles` 8x8 tiles of <path>.png, followed by the bytes `tail` gives
-# in hex (tools/snesgfx.py).
+# in hex (tools/snesgfx.py); with gpl=LAYOUT (block, colours) the palette
+# <path>.gpl (tools/snespal.py); with tilemap=FORMAT (bg, mode7) the tilemap
+# text <path>.tilemap (tools/snesmap.py).
 gfx/gfx_06D6A7                   lz-v2  png=4bpp tiles=256
 gfx/gfx_06EC94                   lz-v2
 gfx/gfx_06EF5C                   lz-v2
@@ -205,3 +207,51 @@ wram/packed_178000               lz-v2
 wram/packed_1798AD               lz-v2
 wram/packed_17AFDA               lz-v2
 wram/packed_19DB20               lz-v2
+palettes/palette_088000          raw    gpl=block
+palettes/palette_088022          raw    gpl=block
+palettes/palette_088044          raw    gpl=block
+palettes/palette_088066          raw    gpl=block
+palettes/palette_088088          raw    gpl=block
+palettes/palette_0880AA          raw    gpl=block
+palettes/palette_088150          raw    gpl=block
+palettes/palette_088254          raw    gpl=block
+palettes/palette_0882B6          raw    gpl=block
+palettes/palette_0882F8          raw    gpl=block
+palettes/palette_0883BA          raw    gpl=block
+palettes/palette_08841C          raw    gpl=block
+palettes/palette_08843E          raw    gpl=block
+palettes/palette_088540          raw    gpl=block
+palettes/palette_088602          raw    gpl=block
+palettes/palette_088664          raw    gpl=block
+palettes/palette_0886C6          raw    gpl=block
+palettes/palette_088728          raw    gpl=block
+palettes/palette_08878A          raw    gpl=block
+palettes/palette_08882C          raw    gpl=block
+palettes/palette_08892E          raw    gpl=block
+palettes/palette_0889F0          raw    gpl=block
+palettes/palette_088AF2          raw    gpl=block
+palettes/palette_088AF6          raw    gpl=block
+palettes/palette_088B18          raw    gpl=block
+palettes/palette_088B7A          raw    gpl=block
+palettes/palette_088C1C          raw    gpl=block
+palettes/palette_088CE0          raw    gpl=block
+palettes/palette_088D62          raw    gpl=block
+palettes/palette_088D7A          raw    gpl=block
+palettes/palette_088D82          raw    gpl=block
+palettes/palette_088DA4          raw    gpl=block
+palettes/palette_088E46          raw    gpl=block
+palettes/palette_088F0C          raw    gpl=block
+palettes/palette_088F2E          raw    gpl=block
+palettes/palette_088F50          raw    gpl=block
+palettes/palette_088F92          raw    gpl=block
+palettes/palette_08EFCA          raw    gpl=block
+palettes/palette_08F00C          raw    gpl=block
+palettes/palette_08F01A          raw    gpl=block
+palettes/palette_08F02A          raw    gpl=block
+palettes/palette_08F032          raw    gpl=block
+palettes/palette_08F04E          raw    gpl=block
+palettes/palette_08F06E          raw    gpl=block
+palettes/palette_05912A          raw    gpl=colours colours=16
+palettes/palette_05914A          raw    gpl=colours colours=16
+palettes/palette_05916A          raw    gpl=colours colours=16
+palettes/palette_05918A          raw    gpl=colours colours=16

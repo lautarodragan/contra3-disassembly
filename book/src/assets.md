@@ -16,7 +16,8 @@ assets/gfx/<label>.bin       tilemaps loaded to VRAM
 assets/wram/<label>.png      the player's tiles (streams decompressed to WRAM $7F)
 assets/wram/<label>.bin      the other streams decompressed to WRAM
 assets/sound/<label>.bin     sound CPU data
-build/assets/<dir>/<label>.bin   the tiles of a PNG, made by the build
+assets/palettes/<label>.gpl  palettes (GIMP palettes)
+build/assets/<dir>/<label>.bin   the tiles of a PNG, the bytes of a palette, made by the build
 build/assets/<dir>/<label>.lz    the compressed streams, made by the build
 ```
 
@@ -55,7 +56,9 @@ sound/spc_block_1D8002           raw
   uncompressed sound blocks and `td_sprite_tiles_16`);
 - without `png=`, the data is `assets/<path>.bin`; with `png=FORMAT`, it
   is the first `tiles` tiles of `assets/<path>.png` in that format, followed
-  by the bytes that `tail` gives in hex (see [Graphics](#graphics-png)).
+  by the bytes that `tail` gives in hex (see [Graphics](#graphics-png));
+- with `gpl=LAYOUT`, it is the palette `assets/<path>.gpl` (see
+  [Palettes](#palettes-gimp-gpl)).
 
 ca65 looks the included path up in `assets/`, then in `build/assets/`:
 every assembly of `src/` passes `--bin-include-dir assets
@@ -128,9 +131,9 @@ way, so moving them to a file changes nothing for shifting.
 - `td_sprite_tiles_13`: the `td_tiles` records only use its first `$A00`
   bytes; the `$1600` bytes after them are not referenced, so where the
   block really ends is not known.
-- The palettes of bank `$08` and the other tables: they are not marked
-  `ASSET` (palettes overlap: some labels are inside the palette before),
-  and banks `$05`-`$07` hold pointers.
+- Five palette blocks of bank `$08` and the colours in them (see
+  [Palettes](#palettes-gimp-gpl)), and the tables: banks `$05`-`$07` hold
+  pointers.
 
 ## Graphics (PNG)
 
@@ -217,9 +220,67 @@ The [Graphics gallery](gallery.md) shows all 97.
   directories, the samples and the songs; what each is and where it goes
   in the sound CPU's memory is in [Sound](sound.md#sound-cpu-memory).
 
-Not editable as files yet either: the palettes (`.byte` lines in bank `$08`
-and in the tables, where some palettes overlap) and the tilemaps above as
-images or tables of tile numbers.
+Not editable as files yet either: the tilemaps above as images or tables
+of tile numbers.
+
+## Palettes (GIMP .gpl)
+
+The colours are BGR555 words: bits 0-4 red, 5-9 green, 10-14 blue (bit 15
+unused). The game keeps them in two places:
+
+- **bank `$08`**: palette *blocks*, a word (the size in bytes minus 1),
+  then the colours. `palette_task_animate` copies size+1 bytes with `mvn`,
+  the fades (`palette_task_fade_in`, `palette_task_fade_out`) read as many
+  (see [Engine](engine.md#palettes)); the scripts in bank `$05` name the
+  block and the destination in the palette buffer. `$08:8000`-`$08:8FD3`
+  is a chain of 43 such blocks, each starting where the one before ends
+  (its size word gives its end), and `$08:EFCA`-`$08:F089` holds 7 more;
+  three of these are followed by one colour that their size word leaves
+  out (kept inline after the include);
+- **bank `$05`**: four 16-colour palettes (`palette_05912A`,
+  `palette_05914A`, `palette_05916A`, `palette_05918A`) that
+  `nmi_frame_side_view` DMAs to CGRAM, 32 bytes, from `cgram_upload_src`
+  (the flashing of hit bosses).
+
+48 are files: 44 blocks of bank `$08` (`gpl=block`) and the 4 of bank
+`$05` (`gpl=colours colours=16`: the DMA copies 32 bytes, so the build
+stops if the file does not have 16 colours). The first block,
+`palette_088000`, is at `gfx_08`, the label of the bank. Left inline:
+
+- `$08:810C`, `$08:812E`, `$08:8212`: blocks that nothing points to
+  (CDL: not accessed);
+- `palette_088C3E`: `palette_088C60` is inside it
+  (`update_stage2_boss_core` copies `$71` bytes from there);
+- the block at `$08:8E68`: its 48 colours are three palettes,
+  `palette_088E6A`, `palette_088E8A` and `palette_088EAA`, that
+  `stage5_boss_flash_on_hit` copies alone, 33 bytes each (`mvn` with
+  `$20`): one byte more than the 16 colours;
+- `palette_088ECA`: the 33rd byte of the copy of `palette_088EAA` is its
+  first byte.
+
+A palette file is a [GIMP palette](https://developer.gimp.org/core/standards/gpl/)
+(`.gpl`), which GIMP, Aseprite, Krita, Inkscape and text editors open:
+
+```
+GIMP Palette
+Name: palette_088022
+Columns: 16
+#
+  0   0   0	$0000
+  0   0  99	$3000
+```
+
+One line per colour, in order: red, green and blue (0-255, a 5-bit
+component `c` shown as `c << 3 | c >> 2`) and, as the colour's name, the
+word. `tools/snespal.py` reads a line as its word when the red, green and
+blue are that word's colour, so the round trip is exact (bit 15
+included); a line whose colour was changed (an editor keeps the old name)
+gives the new colour, each component `>> 3`. `make assets-check` reports
+lines that are not exact words; `python3 tools/assets.py normalize`
+rewrites them so. The build writes the block (size word and colours) or
+the colours to `build/assets/palettes/<label>.bin`. A block may have more
+or fewer colours (its size word follows), but where the palette task
+copies them is in its script: more colours overwrite the ones after.
 
 ## Shifting
 

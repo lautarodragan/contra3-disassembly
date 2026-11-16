@@ -10,6 +10,15 @@
 ; bounds are exact and that holds no pointers; such blocks (and the WRAM
 ; streams) are binary files in assets/, included with .incbin (book: Assets).
 ; Other blocks start at a CDL comment.
+;
+; A palette here is a block: a word, its size in bytes minus 1, then the
+; colours (BGR555 words); palette_task_animate copies size+1 bytes with mvn
+; and the fades read as many. Each palette whose bounds are certain is a
+; GIMP palette in assets/palettes/ (tools/snespal.py); the build writes the
+; block from it. Inline: the blocks that nothing points to, palette_088C3E
+; (palette_088C60 is inside it), the colours of the block at $08:8E68 (three
+; palettes the stage 5 boss copies alone, 33 bytes each) and palette_088ECA
+; (the first byte of which the last of those copies reads).
 
 ; The bank of the palettes: the palette tasks read f:GFX_08_BASE,x and copy
 ; with mvn #^gfx_08.
@@ -17,33 +26,24 @@ gfx_08:
 GFX_08_BASE = ^gfx_08 << 16
 
 	; CDL: read by palette_task_animate
-	.byte	$1F, $00, $20, $04, $01, $00, $01, $00, $01, $00, $01, $00, $08, $20, $4D, $2C
-	.byte	$B2, $38, $7C, $55, $DC, $59, $3C, $62, $BD, $6A, $9E, $7B, $01, $00, $01, $00
-	.byte	$01, $00
+palette_088000:
+	; ASSET: palette: a size-1 word and 16 colours, $08:8000-$08:8021 (from its size word), used by palette_task_0587C3
+	.incbin	"palettes/palette_088000.bin"
 palette_088022:
-	.byte	$1F, $00, $00, $00, $00, $00, $00, $30, $00, $44, $00, $58, $00, $7C
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $20, $00
-	.byte	$00, $00, $00, $00
+	; ASSET: palette: a size-1 word and 16 colours, $08:8022-$08:8043 (from its size word), used by palette_task_0587C3
+	.incbin	"palettes/palette_088022.bin"
 palette_088044:
-	.byte	$1F, $00, $00, $00, $00, $00, $7B, $6F, $B5, $56, $10, $42
-	.byte	$A5, $14, $D6, $66, $94, $5E, $52, $56, $10, $4E, $EF, $49, $AD, $41, $6B, $39
-	.byte	$4A, $35, $08, $2D, $A5, $20
+	; ASSET: palette: a size-1 word and 16 colours, $08:8044-$08:8065 (from its size word), used by palette_task_0587D8
+	.incbin	"palettes/palette_088044.bin"
 palette_088066:
-	.byte	$1F, $00, $FF, $7F, $00, $00, $7E, $02, $3B, $02
-	.byte	$F9, $01, $75, $05, $9F, $03, $5E, $03, $1D, $03, $DC, $02, $9B, $02, $7A, $02
-	.byte	$3A, $02, $F9, $01, $B8, $01, $56, $01
+	; ASSET: palette: a size-1 word and 16 colours, $08:8066-$08:8087 (from its size word), used by palette_task_0587E1
+	.incbin	"palettes/palette_088066.bin"
 palette_088088:
-	.byte	$1F, $00, $FF, $7F, $00, $00, $BE, $01
-	.byte	$5B, $01, $18, $01, $92, $04, $1F, $02, $9E, $01, $1D, $01, $1B, $00, $19, $00
-	.byte	$17, $00, $15, $00, $13, $04, $11, $04, $2E, $08
+	; ASSET: palette: a size-1 word and 16 colours, $08:8088-$08:80A9 (from its size word), used by palette_task_0587EA
+	.incbin	"palettes/palette_088088.bin"
 palette_0880AA:
-	.byte	$5F, $00, $00, $00, $00, $44
-	.byte	$B5, $7E, $FF, $7F, $00, $00, $11, $00, $BF, $56, $FF, $7F, $00, $00, $7F, $02
-	.byte	$00, $50, $1F, $00, $00, $00, $B5, $11, $19, $00, $00, $00, $00, $00, $A5, $14
-	.byte	$31, $46, $FF, $7F, $00, $00, $50, $66, $92, $6E, $D4, $76, $00, $00, $1D, $2C
-	.byte	$FF, $01, $74, $4E, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $07, $00
-	.byte	$0D, $00, $13, $00, $17, $00, $DB, $00, $5F, $01, $3F, $16, $00, $00, $62, $1C
-	.byte	$C5, $24, $49, $39, $CD, $49, $91, $5E, $36, $77, $DD, $7F
+	; ASSET: palette: a size-1 word and 48 colours, $08:80AA-$08:810B (from its size word), used by palette_task_05854B
+	.incbin	"palettes/palette_0880AA.bin"
 	; CDL: not accessed
 	.byte	$1F, $00, $00, $00, $13, $50, $11, $50, $0E, $54, $0B, $54, $09, $54, $06, $54
 	.byte	$00, $54, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
@@ -52,19 +52,8 @@ palette_0880AA:
 	.byte	$F6, $10, $44, $10
 	; CDL: read by palette_task_animate
 palette_088150:
-	.byte	$BF, $00, $00, $00, $42, $08, $C7, $18, $09, $21, $6D, $31, $F1, $3D, $D6, $5A
-	.byte	$7F, $6F, $64, $08, $88, $04, $0C, $11, $90, $1D, $F4, $25, $9B, $3A, $7F, $4F
-	.byte	$FF, $67, $00, $00, $66, $08, $C7, $18, $09, $21, $AE, $08, $6D, $31, $D8, $2D
-	.byte	$73, $25, $64, $08, $86, $00, $C8, $08, $0A, $11, $6C, $19, $CF, $25, $52, $32
-	.byte	$D6, $42, $00, $00, $66, $08, $6A, $08, $AE, $08, $10, $11, $73, $25, $D8, $2D
-	.byte	$9F, $3E, $83, $0C, $C5, $10, $07, $1D, $8B, $29, $EE, $35, $72, $4A, $15, $5B
-	.byte	$DC, $73, $00, $00, $11, $00, $1F, $00, $9F, $36, $6D, $31, $F1, $3D, $D6, $5A
-	.byte	$09, $21, $A0, $0C, $E6, $08, $4A, $19, $AC, $25, $0F, $2E, $B4, $3E, $37, $4B
-	.byte	$00, $00, $00, $00, $43, $0C, $A4, $1C, $E6, $24, $49, $35, $CD, $45, $B3, $5E
-	.byte	$A5, $14, $29, $25, $AD, $31, $32, $46, $B5, $52, $9C, $77, $11, $00, $1F, $00
-	.byte	$DF, $15, $00, $00, $20, $0C, $62, $14, $A4, $1C, $E6, $24, $28, $2D, $6A, $35
-	.byte	$AC, $41, $EE, $49, $30, $52, $65, $10, $A7, $18, $E9, $20, $2B, $29, $6D, $31
-	.byte	$AF, $39
+	; ASSET: palette: a size-1 word and 96 colours, $08:8150-$08:8211 (from its size word), used by palette_task_058B4C
+	.incbin	"palettes/palette_088150.bin"
 	; CDL: not accessed
 	.byte	$3F, $00, $0E, $5E, $00, $44, $B5, $7E, $FF, $7F, $0E, $5E, $11, $00, $BF, $56
 	.byte	$FF, $7F, $0E, $5E, $7F, $02, $00, $50, $1F, $00, $0E, $5E, $B5, $11, $19, $00
@@ -73,203 +62,66 @@ palette_088150:
 	.byte	$00, $00
 	; CDL: read by palette_task_animate, palette_task_fade_in
 palette_088254:
-	.byte	$5F, $00, $00, $00, $EA, $62, $C3, $45, $C3, $24, $FF, $6B, $1F, $47, $1C, $2A
-	.byte	$34, $11, $BF, $77, $B8, $4A, $B0, $2D, $2C, $1D, $86, $08, $AF, $04, $BF, $04
-	.byte	$9F, $2F, $00, $00, $9F, $1E, $58, $09, $2B, $00, $DF, $5F, $DF, $42, $FA, $29
-	.byte	$53, $19, $B7, $6B, $90, $4E, $C9, $31, $24, $1D, $60, $04, $CD, $04, $A0, $7E
-	.byte	$65, $39, $00, $00, $DF, $63, $5F, $3F, $9F, $0A, $BF, $09, $1F, $00, $32, $00
-	.byte	$0A, $00, $DF, $77, $59, $63, $D5, $56, $51, $46, $ED, $39, $69, $29, $E5, $1C
-	.byte	$00, $00
+	; ASSET: palette: a size-1 word and 48 colours, $08:8254-$08:82B5 (from its size word), used by palette_task_058AC7, palette_task_05A815, palette_task_05A830 (+2 more)
+	.incbin	"palettes/palette_088254.bin"
 palette_0882B6:
-	.byte	$3F, $00, $EA, $29, $BD, $7F, $F7, $7E, $73, $7E, $8B, $7D, $00, $7C
-	.byte	$00, $54, $00, $28, $DF, $5F, $5F, $37, $BF, $12, $BF, $05, $5B, $00, $BE, $6B
-	.byte	$6B, $25, $00, $00, $EA, $29, $FF, $7F, $DF, $6F, $BF, $63, $9F, $5B, $7F, $53
-	.byte	$5F, $47, $3F, $37, $FF, $7F, $DD, $7B, $9C, $73, $5A, $6B, $39, $63, $F7, $5A
-	.byte	$B6, $52, $53, $46
+	; ASSET: palette: a size-1 word and 32 colours, $08:82B6-$08:82F7 (from its size word), used by palette_task_058AC7, palette_task_05A815
+	.incbin	"palettes/palette_0882B6.bin"
 palette_0882F8:
-	.byte	$BF, $00, $00, $00, $65, $04, $CA, $0C, $0E, $15, $70, $15
-	.byte	$F5, $1D, $99, $22, $1F, $37, $7F, $5F, $42, $08, $A5, $14, $08, $21, $6B, $2D
-	.byte	$CE, $39, $31, $46, $94, $52, $00, $00, $EA, $08, $2C, $11, $6E, $19, $AF, $25
-	.byte	$34, $2A, $B9, $3E, $E7, $2C, $4A, $39, $AD, $45, $A5, $14, $08, $21, $6B, $2D
-	.byte	$CE, $39, $31, $46, $F4, $72, $00, $00, $EA, $08, $2C, $11, $6E, $19, $AF, $25
-	.byte	$34, $2A, $B9, $3E, $23, $04, $66, $0C, $C9, $18, $2C, $25, $8F, $31, $F2, $3D
-	.byte	$55, $4A, $B8, $56, $1B, $63, $00, $00, $A5, $24, $E7, $2C, $4A, $39, $AD, $45
-	.byte	$4F, $5E, $F4, $72, $79, $7F, $FF, $7F, $00, $00, $2F, $31, $B5, $3D, $9B, $5A
-	.byte	$1F, $73, $11, $00, $1F, $00, $00, $00, $E8, $18, $09, $1D, $2A, $21, $4B, $25
-	.byte	$8D, $2D, $AE, $31, $CF, $35, $C7, $10, $0A, $19, $2B, $1D, $6D, $25, $CF, $29
-	.byte	$F1, $31, $33, $3A, $54, $42, $00, $00, $4B, $25, $8E, $29, $F0, $35, $54, $42
-	.byte	$D9, $4E, $75, $4E, $13, $42, $AF, $39, $6C, $2D, $2A, $25, $09, $21, $E8, $20
-	.byte	$A7, $18, $65, $10, $42, $04
+	; ASSET: palette: a size-1 word and 96 colours, $08:82F8-$08:83B9 (from its size word), used by palette_task_058BE7
+	.incbin	"palettes/palette_0882F8.bin"
 palette_0883BA:
-	.byte	$5F, $00, $00, $00, $83, $18, $E5, $34, $8B, $51
-	.byte	$10, $5E, $B6, $7A, $BB, $7F, $1F, $00, $4A, $1D, $D4, $4A, $9C, $6F, $31, $41
-	.byte	$B5, $59, $BF, $7E, $5F, $7F, $FF, $7F, $00, $00, $25, $04, $6D, $14, $D3, $20
-	.byte	$56, $35, $19, $4E, $7F, $67, $E0, $03, $4A, $1D, $D4, $4A, $9C, $6F, $97, $2D
-	.byte	$1C, $3E, $DF, $52, $1F, $63, $FF, $7F, $00, $00, $A5, $0C, $2A, $15, $8F, $1D
-	.byte	$F5, $29, $78, $3E, $DB, $56, $BF, $6B, $1F, $00, $00, $00, $0B, $2D, $D3, $51
-	.byte	$FB, $66, $00, $00, $00, $00, $00, $00
+	; ASSET: palette: a size-1 word and 48 colours, $08:83BA-$08:841B (from its size word), used by palette_task_058B4C
+	.incbin	"palettes/palette_0883BA.bin"
 palette_08841C:
-	.byte	$1F, $00, $00, $00, $42, $08, $C7, $18
-	.byte	$09, $21, $6D, $31, $F1, $3D, $D6, $5A, $FF, $7F, $82, $0C, $85, $0C, $C9, $14
-	.byte	$0E, $1D, $70, $25, $36, $36, $1F, $4B, $DF, $67
+	; ASSET: palette: a size-1 word and 16 colours, $08:841C-$08:843D (from its size word), used by palette_task_05AA28
+	.incbin	"palettes/palette_08841C.bin"
 palette_08843E:
-	.byte	$FF, $00, $0E, $5E, $00, $44
-	.byte	$B5, $7E, $FF, $7F, $0E, $5E, $11, $00, $BF, $56, $FF, $7F, $0E, $5E, $7F, $02
-	.byte	$00, $50, $1F, $00, $0E, $5E, $B5, $11, $19, $00, $00, $00, $0E, $5E, $A5, $14
-	.byte	$31, $46, $FF, $7F, $0E, $5E, $50, $66, $92, $6E, $D4, $76, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $0E, $5E, $42, $08
-	.byte	$84, $10, $C6, $18, $29, $25, $8C, $31, $EF, $3D, $94, $52, $F7, $5E, $5A, $6B
-	.byte	$BD, $77, $D1, $2D, $6C, $29, $14, $36, $D8, $56, $9F, $67, $0E, $5E, $37, $7F
-	.byte	$4B, $21, $6C, $29, $AE, $31, $11, $3A, $33, $42, $75, $4A, $B6, $52, $4D, $1D
-	.byte	$8F, $25, $D1, $2D, $14, $36, $57, $3E, $98, $46, $DB, $4E, $0E, $5E, $8A, $4D
-	.byte	$CC, $55, $0E, $5E, $50, $66, $92, $6E, $D4, $76, $16, $7B, $58, $7F, $9A, $7F
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $0E, $5E, $82, $00
-	.byte	$C3, $08, $05, $11, $47, $19, $89, $21, $CB, $29, $0D, $32, $4F, $3A, $91, $42
-	.byte	$D3, $4A, $15, $53, $57, $5B, $99, $63, $DB, $6B, $FD, $73, $0E, $5E, $82, $00
-	.byte	$C3, $08, $05, $11, $47, $19, $89, $21, $CB, $29, $A5, $1C, $6B, $35, $52, $52
-	.byte	$18, $6B, $0B, $00, $14, $00, $1C, $00, $FF, $3D, $5F, $6B, $0E, $5E, $63, $14
-	.byte	$A5, $1C, $E7, $24, $28, $31, $8A, $39, $CC, $41, $0E, $4A, $50, $56, $92, $5E
-	.byte	$D4, $66, $58, $73, $C6, $14, $8C, $2D, $10, $3E, $39, $63
+	; ASSET: palette: a size-1 word and 128 colours, $08:843E-$08:853F (from its size word), used by palette_task_058C62
+	.incbin	"palettes/palette_08843E.bin"
 palette_088540:
-	.byte	$BF, $00, $00, $00
-	.byte	$45, $00, $89, $00, $EC, $0C, $2E, $15, $90, $1D, $14, $2A, $B9, $3E, $3F, $5F
-	.byte	$C8, $10, $2B, $1D, $AF, $2D, $54, $42, $B5, $0C, $BE, $29, $DF, $7B, $00, $00
-	.byte	$42, $08, $C6, $18, $29, $25, $8C, $31, $31, $46, $B5, $56, $18, $63, $9C, $73
-	.byte	$FF, $7F, $06, $00, $0F, $00, $35, $04, $1D, $00, $DF, $29, $DF, $56, $00, $00
-	.byte	$21, $08, $42, $0C, $63, $10, $84, $14, $A5, $18, $C6, $1C, $E7, $20, $08, $25
-	.byte	$29, $29, $4A, $2D, $00, $00, $03, $14, $45, $1C, $87, $24, $C9, $2C, $00, $00
-	.byte	$00, $00, $CA, $10, $2E, $19, $93, $21, $F6, $2D, $59, $3A, $BB, $46, $1D, $53
-	.byte	$9F, $63, $FF, $7F, $6D, $04, $B5, $0C, $3D, $11, $5F, $36, $3F, $5B, $00, $00
-	.byte	$00, $00, $8E, $0C, $12, $1D, $96, $2D, $1A, $3E, $9E, $4E, $0A, $00, $0F, $00
-	.byte	$52, $08, $B5, $14, $18, $21, $7B, $2D, $DE, $39, $3F, $46, $9F, $52, $00, $00
-	.byte	$63, $14, $A5, $1C, $E7, $24, $28, $31, $8A, $39, $CC, $41, $0E, $4A, $50, $56
-	.byte	$92, $5E, $D4, $66, $58, $73, $C6, $14, $8C, $2D, $10, $3E, $39, $63
+	; ASSET: palette: a size-1 word and 96 colours, $08:8540-$08:8601 (from its size word), used by palette_task_058CCD
+	.incbin	"palettes/palette_088540.bin"
 palette_088602:
-	.byte	$5F, $00
-	.byte	$F0, $39, $82, $08, $0E, $11, $76, $21, $DC, $21, $DF, $42, $5F, $63, $DF, $73
-	.byte	$1F, $00, $64, $1C, $EA, $30, $6E, $45, $33, $56, $F9, $6E, $7D, $7F, $FF, $7F
-	.byte	$F0, $39, $25, $04, $6D, $14, $D3, $20, $56, $35, $19, $4E, $7F, $67, $E0, $03
-	.byte	$4A, $1D, $D4, $4A, $9C, $6F, $97, $2D, $1C, $3E, $DF, $52, $1F, $63, $FF, $7F
-	.byte	$F0, $39, $84, $04, $08, $0D, $AC, $19, $30, $26, $F6, $3E, $7A, $57, $1F, $00
-	.byte	$4A, $1D, $D4, $4A, $9C, $6F, $8C, $39, $31, $4E, $D6, $66, $5A, $73, $FF, $7F
+	; ASSET: palette: a size-1 word and 48 colours, $08:8602-$08:8663 (from its size word), used by palette_task_058BE7
+	.incbin	"palettes/palette_088602.bin"
 palette_088664:
-	.byte	$5F, $00, $00, $00, $B7, $5A, $D1, $41, $87, $0C, $0B, $2D, $EB, $14, $F5, $15
-	.byte	$6B, $2D, $21, $04, $AD, $01, $74, $42, $C6, $00, $77, $00, $B4, $7F, $1E, $1B
-	.byte	$BD, $77, $00, $00, $21, $04, $A5, $18, $29, $29, $8C, $35, $EF, $41, $9C, $77
-	.byte	$1F, $00, $84, $18, $28, $35, $8B, $41, $30, $56, $B5, $62, $BC, $7F, $FF, $7F
-	.byte	$00, $00, $00, $00, $25, $04, $6D, $14, $D3, $20, $56, $35, $19, $4E, $7F, $67
-	.byte	$1F, $00, $84, $18, $28, $2D, $8B, $35, $30, $4A, $B5, $5A, $BC, $7B, $FF, $7F
-	.byte	$00, $00
+	; ASSET: palette: a size-1 word and 48 colours, $08:8664-$08:86C5 (from its size word), used by palette_task_058C62
+	.incbin	"palettes/palette_088664.bin"
 palette_0886C6:
-	.byte	$5F, $00, $00, $00, $25, $04, $6D, $14, $D3, $20, $56, $35, $19, $4E
-	.byte	$3F, $6F, $E0, $03, $4A, $1D, $A7, $10, $0B, $1D, $AF, $31, $55, $46, $D8, $56
-	.byte	$7C, $6B, $FF, $7F, $00, $00, $42, $08, $C6, $18, $29, $25, $8C, $31, $31, $46
-	.byte	$B5, $56, $18, $63, $9C, $73, $FF, $7F, $06, $00, $0F, $00, $35, $04, $1D, $00
-	.byte	$DF, $29, $DF, $56, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00
+	; ASSET: palette: a size-1 word and 48 colours, $08:86C6-$08:8727 (from its size word), used by palette_task_058CCD
+	.incbin	"palettes/palette_0886C6.bin"
 palette_088728:
-	.byte	$5F, $00, $00, $00, $A5, $24, $E7, $2C, $4A, $39, $AD, $45
-	.byte	$4F, $5E, $F4, $72, $79, $7F, $FF, $7F, $63, $14, $2F, $31, $B5, $3D, $9B, $5A
-	.byte	$1F, $73, $11, $00, $1F, $00, $00, $00, $24, $04, $8B, $10, $30, $25, $93, $31
-	.byte	$38, $3A, $FE, $52, $7F, $63, $FF, $7F, $C6, $20, $28, $2D, $CE, $45, $B4, $5E
-	.byte	$5A, $73, $BD, $7F, $1F, $00, $00, $00, $21, $10, $84, $2C, $29, $41, $8C, $4D
-	.byte	$2E, $62, $F4, $7A, $78, $7F, $FF, $7F, $C6, $20, $28, $2D, $CE, $45, $B4, $5E
-	.byte	$5A, $73, $BD, $7F, $1F, $00
+	; ASSET: palette: a size-1 word and 48 colours, $08:8728-$08:8789 (from its size word), used by palette_task_05E7E2
+	.incbin	"palettes/palette_088728.bin"
 palette_08878A:
-	.byte	$9F, $00, $00, $00, $AE, $31, $11, $3E, $74, $4A
-	.byte	$D7, $56, $00, $00, $66, $04, $A8, $08, $0B, $15, $4D, $1D, $8F, $25, $D1, $2D
-	.byte	$14, $36, $57, $3E, $98, $46, $DB, $4E, $00, $00, $37, $7F, $4B, $21, $6C, $29
-	.byte	$AE, $31, $11, $3A, $33, $42, $75, $4A, $B6, $52, $4D, $1D, $8F, $25, $D1, $2D
-	.byte	$14, $36, $57, $3E, $98, $46, $DB, $4E, $00, $00, $21, $08, $42, $0C, $63, $10
-	.byte	$84, $14, $A5, $18, $C6, $1C, $E7, $20, $08, $25, $29, $29, $4A, $2D, $00, $00
-	.byte	$03, $14, $45, $1C, $87, $24, $C9, $2C, $00, $00, $8A, $4D, $CC, $55, $0E, $5E
-	.byte	$50, $66, $92, $6E, $D4, $76, $16, $7B, $58, $7F, $9A, $7F, $84, $10, $08, $21
-	.byte	$AD, $35, $52, $4A, $18, $63, $BD, $77, $00, $00, $08, $1D, $4A, $25, $AE, $31
-	.byte	$51, $29, $D5, $39, $8B, $25, $0F, $3A, $B6, $52, $4D, $1D, $8F, $25, $D1, $2D
-	.byte	$14, $36, $57, $3E, $8C, $3D, $31, $52
+	; ASSET: palette: a size-1 word and 80 colours, $08:878A-$08:882B (from its size word), used by palette_task_05F8DA
+	.incbin	"palettes/palette_08878A.bin"
 palette_08882C:
-	.byte	$FF, $00, $00, $00, $00, $44, $B5, $7E
-	.byte	$FF, $7F, $00, $00, $11, $00, $BF, $56, $FF, $7F, $00, $00, $7F, $02, $00, $50
-	.byte	$1F, $00, $00, $00, $B5, $11, $19, $00, $00, $00, $00, $00, $A5, $14, $31, $46
-	.byte	$FF, $7F, $00, $00, $50, $66, $92, $6E, $D4, $76, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $B4, $15, $3B, $22
-	.byte	$FF, $3A, $13, $0D, $9D, $25, $5F, $3E, $40, $03, $ED, $08, $AA, $04, $10, $0D
-	.byte	$73, $19, $F7, $29, $9C, $3E, $1F, $4F, $BF, $63, $00, $00, $E4, $24, $88, $35
-	.byte	$EB, $41, $4E, $4E, $B1, $5A, $14, $67, $2A, $29, $53, $4E, $AA, $04, $10, $0D
-	.byte	$73, $19, $F7, $29, $9C, $3E, $1F, $4F, $BF, $63, $00, $00, $AD, $14, $B3, $04
-	.byte	$19, $0D, $9D, $21, $FE, $31, $BF, $52, $2A, $29, $53, $4E, $AA, $04, $10, $0D
-	.byte	$73, $19, $F7, $29, $9C, $3E, $1F, $4F, $BF, $63, $00, $00, $07, $35, $A9, $51
-	.byte	$91, $6E, $C8, $18, $8D, $31, $D8, $5E, $2A, $29, $53, $4E, $AA, $04, $10, $0D
-	.byte	$73, $19, $F7, $29, $9C, $3E, $1F, $4F, $BF, $63, $00, $00, $AB, $04, $0E, $11
-	.byte	$71, $1D, $D4, $29, $37, $36, $9A, $42, $5F, $5B, $1F, $00, $64, $14, $EA, $28
-	.byte	$6E, $3D, $33, $4E, $F9, $6A, $7D, $7B, $FF, $7F, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	; ASSET: palette: a size-1 word and 128 colours, $08:882C-$08:892D (from its size word), used by palette_task_058880
+	.incbin	"palettes/palette_08882C.bin"
 palette_08892E:
-	.byte	$BF, $00, $00, $00, $0F, $01
-	.byte	$96, $0D, $5A, $26, $6E, $00, $F8, $10, $BA, $29, $A0, $02, $48, $00, $05, $00
-	.byte	$6B, $00, $CE, $04, $52, $15, $F7, $29, $7A, $3A, $1A, $4F, $00, $00, $40, $10
-	.byte	$E3, $20, $46, $2D, $A9, $39, $0C, $46, $6F, $52, $85, $14, $AE, $39, $05, $00
-	.byte	$6B, $00, $CE, $04, $52, $15, $F7, $29, $7A, $3A, $1A, $4F, $00, $00, $08, $00
-	.byte	$0E, $00, $74, $00, $F8, $0C, $59, $1D, $1A, $3E, $85, $14, $AE, $39, $05, $00
-	.byte	$6B, $00, $CE, $04, $52, $15, $F7, $29, $7A, $3A, $1A, $4F, $00, $00, $62, $20
-	.byte	$04, $3D, $EC, $59, $23, $04, $E8, $1C, $33, $4A, $85, $14, $AE, $39, $05, $00
-	.byte	$6B, $00, $CE, $04, $52, $15, $F7, $29, $7A, $3A, $1A, $4F, $00, $00, $06, $00
-	.byte	$69, $00, $CC, $08, $2F, $15, $92, $21, $F5, $2D, $BA, $46, $1A, $00, $00, $00
-	.byte	$45, $14, $C9, $28, $8E, $39, $54, $56, $D8, $66, $5A, $6B, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	; ASSET: palette: a size-1 word and 96 colours, $08:892E-$08:89EF (from its size word), used by palette_task_058889
+	.incbin	"palettes/palette_08892E.bin"
 palette_0889F0:
-	.byte	$FF, $00, $00, $00
-	.byte	$FF, $02, $DF, $03, $3F, $00, $26, $00, $29, $00, $2B, $00, $4F, $00, $71, $00
-	.byte	$93, $00, $D5, $04, $16, $05, $59, $05, $DB, $09, $5E, $12, $1F, $2F, $00, $00
-	.byte	$07, $00, $46, $0C, $A9, $18, $EA, $20, $2D, $29, $6F, $31, $B1, $39, $0A, $00
-	.byte	$0D, $00, $10, $00, $13, $00, $16, $00, $19, $00, $1C, $00, $1F, $00, $00, $00
-	.byte	$42, $18, $A5, $18, $C6, $1C, $E7, $20, $29, $2D, $8C, $39, $10, $4A, $00, $00
-	.byte	$63, $1C, $84, $20, $A5, $24, $C6, $28, $E7, $2C, $08, $31, $29, $35, $00, $00
-	.byte	$E9, $20, $0A, $25, $4C, $2D, $AF, $39, $12, $46, $54, $4E, $96, $56, $00, $00
-	.byte	$63, $7C, $00, $7C, $00, $7C, $00, $7C, $00, $7C, $00, $7C, $00, $7C, $00, $00
-	.byte	$B4, $15, $3B, $22, $FF, $3A, $13, $0D, $9D, $25, $5F, $3E, $46, $00, $ED, $08
-	.byte	$AA, $04, $10, $0D, $73, $19, $F7, $29, $7B, $3A, $1F, $4F, $BF, $63, $00, $00
-	.byte	$07, $35, $A9, $51, $91, $6E, $C8, $18, $8D, $31, $D8, $5E, $2A, $29, $53, $4E
-	.byte	$AA, $04, $10, $0D, $73, $19, $F7, $29, $9C, $3E, $1F, $4F, $BF, $63, $00, $00
-	.byte	$AD, $14, $B3, $04, $19, $0D, $9D, $21, $FE, $31, $BF, $52, $2A, $29, $53, $4E
-	.byte	$AA, $04, $10, $0D, $73, $19, $F7, $29, $9C, $3E, $1F, $4F, $BF, $63, $00, $00
-	.byte	$A7, $0C, $EA, $10, $4D, $21, $B1, $31, $34, $3A, $D8, $4E, $46, $00, $ED, $08
-	.byte	$AA, $04, $10, $0D, $73, $19, $F7, $29, $7B, $3A, $1F, $4F, $BF, $63
+	; ASSET: palette: a size-1 word and 128 colours, $08:89F0-$08:8AF1 (from its size word), used by palette_task_05A815
+	.incbin	"palettes/palette_0889F0.bin"
 palette_088AF2:
-	.byte	$01, $00
-	.byte	$FF, $7F
+	; ASSET: palette: a size-1 word and 1 colour, $08:8AF2-$08:8AF5 (from its size word), used by palette_task_05A845
+	.incbin	"palettes/palette_088AF2.bin"
 	; CDL: read by palette_task_animate
 palette_088AF6:
-	.byte	$1F, $00, $00, $00, $08, $00, $2C, $00, $4F, $00, $71, $00, $53, $04, $96, $04
-	.byte	$B9, $04, $DD, $08, $5E, $11, $BE, $1D, $1F, $26, $7F, $32, $DF, $36, $5F, $3B
-	.byte	$FF, $43
+	; ASSET: palette: a size-1 word and 16 colours, $08:8AF6-$08:8B17 (from its size word), used by palette_task_05854B, palette_task_05A815, palette_task_05A82A
+	.incbin	"palettes/palette_088AF6.bin"
 palette_088B18:
-	.byte	$5F, $00, $00, $00, $A5, $14, $3F, $53, $7D, $3A, $D9, $25, $12, $0D
-	.byte	$1C, $01, $93, $04, $2C, $52, $66, $3D, $0D, $32, $69, $21, $90, $39, $A7, $18
-	.byte	$18, $67, $05, $21, $00, $00, $C6, $18, $1F, $43, $FC, $21, $54, $15, $EE, $08
-	.byte	$C3, $6D, $C3, $3C, $4D, $32, $A9, $25, $1C, $01, $93, $04, $BA, $0E, $92, $01
-	.byte	$18, $67, $05, $21, $00, $00, $A5, $14, $FF, $42, $7D, $36, $97, $19, $EF, $08
-	.byte	$4D, $32, $67, $19, $3D, $05, $B4, $04, $2C, $56, $04, $39, $7C, $52, $EF, $1C
-	.byte	$18, $67, $8A, $10
+	; ASSET: palette: a size-1 word and 48 colours, $08:8B18-$08:8B79 (from its size word), used by palette_task_05FEE8
+	.incbin	"palettes/palette_088B18.bin"
 palette_088B7A:
-	.byte	$9F, $00, $00, $00, $00, $44, $B5, $7E, $FF, $7F, $00, $00
-	.byte	$11, $00, $BF, $56, $FF, $7F, $00, $00, $7F, $02, $00, $50, $1F, $00, $00, $00
-	.byte	$B5, $11, $19, $00, $00, $00, $00, $00, $A5, $14, $31, $46, $FF, $7F, $00, $00
-	.byte	$50, $66, $92, $6E, $D4, $76, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $B4, $15, $3B, $22, $FF, $3A, $13, $0D
-	.byte	$9D, $25, $5F, $3E, $40, $03, $ED, $08, $AA, $04, $10, $0D, $73, $19, $F7, $29
-	.byte	$9C, $3E, $1F, $4F, $BF, $63, $00, $00, $C3, $20, $46, $2D, $CA, $3D, $4E, $4E
-	.byte	$D2, $5E, $56, $6F, $2A, $29, $74, $52, $AA, $04, $10, $0D, $73, $19, $F7, $29
-	.byte	$9C, $3E, $AE, $39, $5B, $6F, $00, $00, $1F, $00, $A9, $51, $91, $6E, $C8, $18
-	.byte	$8D, $31, $D8, $5E, $2A, $29, $53, $4E, $AA, $04, $10, $0D, $73, $19, $F7, $29
-	.byte	$9C, $3E, $1F, $4F, $BF, $63
+	; ASSET: palette: a size-1 word and 80 colours, $08:8B7A-$08:8C1B (from its size word), used by palette_task_05898E
+	.incbin	"palettes/palette_088B7A.bin"
 palette_088C1C:
-	.byte	$1F, $00, $00, $00, $07, $00, $0D, $00, $13, $00
-	.byte	$17, $00, $DB, $00, $5F, $01, $3F, $16, $00, $00, $62, $1C, $C5, $24, $49, $39
-	.byte	$CD, $49, $91, $5E, $36, $77, $DD, $7F
+	; ASSET: palette: a size-1 word and 16 colours, $08:8C1C-$08:8C3D (from its size word), used by palette_task_058558
+	.incbin	"palettes/palette_088C1C.bin"
 palette_088C3E:
 	.byte	$9F, $00, $00, $00, $63, $08, $E7, $14
 	.byte	$2A, $21, $8C, $2D, $F1, $35, $D9, $52, $3D, $5F, $49, $29, $20, $08, $60, $10
@@ -286,42 +138,28 @@ palette_088C60:
 	.byte	$8B, $35, $EE, $41, $51, $4E, $B4, $5A, $17, $67, $00, $00, $C5, $18, $07, $21
 	.byte	$69, $2D, $EE, $3D, $92, $52, $F5, $5E, $7A, $6F
 palette_088CE0:
-	.byte	$7F, $00, $20, $00, $CA, $5A
-	.byte	$E3, $41, $24, $21, $FF, $6B, $1F, $47, $3C, $2E, $97, $1D, $7C, $6F, $53, $4A
-	.byte	$8D, $31, $09, $21, $22, $04, $12, $11, $BF, $04, $9F, $2F, $20, $00, $9F, $1E
-	.byte	$58, $09, $B1, $00, $D5, $5E, $FF, $46, $1B, $2E, $95, $21, $73, $63, $4E, $46
-	.byte	$87, $29, $E2, $14, $81, $08, $0B, $19, $A0, $7E, $89, $45, $20, $00, $BD, $7F
-	.byte	$F7, $7E, $73, $7E, $8B, $7D, $00, $7C, $00, $54, $00, $28, $DF, $5F, $5F, $37
-	.byte	$BF, $12, $BF, $05, $5B, $00, $BE, $6B, $6B, $25, $00, $00, $20, $00, $DF, $63
-	.byte	$5F, $3F, $9F, $0A, $BF, $09, $1F, $00, $34, $00, $0C, $00, $DF, $73, $5B, $63
-	.byte	$D7, $56, $53, $46, $EF, $39, $6B, $29, $E7, $1C, $00, $00
+	; ASSET: palette: a size-1 word and 64 colours, $08:8CE0-$08:8D61 (from its size word), used by palette_task_05CFB2, palette_task_05D006, palette_task_05D056 (+1 more)
+	.incbin	"palettes/palette_088CE0.bin"
 	; CDL: read by palette_task_fade_in
 palette_088D62:
-	.byte	$15, $00, $0D, $00, $1F, $00, $FF, $3D, $83, $74, $A6, $75, $C4, $7B, $19, $1B
-	.byte	$DF, $6F, $15, $00, $FF, $1C, $FF, $5E
+	; ASSET: palette: a size-1 word and 11 colours, $08:8D62-$08:8D79 (from its size word), used by palette_task_05F576, palette_task_05F57C
+	.incbin	"palettes/palette_088D62.bin"
 palette_088D7A:
-	.byte	$05, $00, $11, $00, $1F, $00, $BF, $56
+	; ASSET: palette: a size-1 word and 3 colours, $08:8D7A-$08:8D81 (from its size word), used by palette_task_05F582, palette_task_05F588
+	.incbin	"palettes/palette_088D7A.bin"
 	; CDL: read by palette_task_animate; partly not accessed
 palette_088D82:
-	.byte	$1F, $00, $00, $00, $C5, $18, $07, $21, $69, $2D, $EE, $3D, $92, $52, $F5, $5E
-	.byte	$7A, $6F, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00
+	; ASSET: palette: a size-1 word and 16 colours, $08:8D82-$08:8DA3 (from its size word), used by palette_task_05D006
+	.incbin	"palettes/palette_088D82.bin"
 palette_088DA4:
-	.byte	$9F, $00, $00, $00, $02, $00, $24, $00, $25, $04, $46, $04, $67, $04
-	.byte	$A9, $04, $CA, $08, $0B, $15, $4D, $1D, $8F, $25, $D1, $2D, $13, $36, $55, $3E
-	.byte	$97, $46, $D9, $4E, $11, $00, $1F, $00, $BF, $56, $8C, $08, $53, $19, $F6, $29
-	.byte	$7C, $3E, $DF, $4A, $C8, $10, $0B, $1D, $4C, $21, $8E, $29, $D0, $31, $12, $3A
-	.byte	$54, $46, $96, $4E, $00, $00, $42, $08, $84, $10, $C6, $18, $08, $21, $4A, $29
-	.byte	$8C, $31, $CE, $39, $10, $42, $52, $4A, $94, $52, $D6, $5A, $18, $63, $5A, $6B
-	.byte	$9C, $73, $DF, $7B, $64, $18, $A5, $20, $09, $2D, $6B, $41, $AF, $49, $53, $62
-	.byte	$F8, $6E, $3B, $73, $66, $0C, $AB, $18, $0D, $29, $70, $31, $B4, $35, $59, $4E
-	.byte	$FF, $66, $3F, $73, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00
+	; ASSET: palette: a size-1 word and 80 colours, $08:8DA4-$08:8E45 (from its size word), used by palette_task_05D056, palette_task_05D0AA
+	.incbin	"palettes/palette_088DA4.bin"
 palette_088E46:
-	.byte	$1F, $00, $00, $00, $46, $04, $8A, $10, $CE, $1C, $72, $31
-	.byte	$F6, $49, $5B, $52, $FD, $6E, $64, $18, $A5, $20, $09, $2D, $6B, $41, $AF, $49
-	.byte	$53, $62, $F8, $6E, $3B, $73, $5F, $00
+	; ASSET: palette: a size-1 word and 16 colours, $08:8E46-$08:8E67 (from its size word), used by palette_task_05D0AA
+	.incbin	"palettes/palette_088E46.bin"
+	; $08:8E68: the size-1 word of a 48-colour block that no palette task
+	; copies; its colours are the three palettes below, copied alone
+	.byte	$5F, $00
 	; CDL: read by stage5_boss_restore_palette
 palette_088E6A:
 	; LAYOUT: inside the palette before (its colours from here are copied alone)
@@ -344,25 +182,17 @@ palette_088ECA:
 	.byte	$8D, $25, $0A, $15, $A4, $0C, $62, $04, $FA, $0C, $DC, $20, $95, $04, $29, $00
 	.byte	$B0, $08
 palette_088F0C:
-	.byte	$1F, $00, $20, $00, $FF, $7F, $DF, $6F, $BF, $63, $9F, $5B, $7F, $53
-	.byte	$5F, $47, $3F, $37, $FF, $7F, $DD, $7B, $9C, $73, $5A, $6B, $39, $63, $F7, $5A
-	.byte	$B6, $52, $53, $46
+	; ASSET: palette: a size-1 word and 16 colours, $08:8F0C-$08:8F2D (from its size word), used by palette_task_05CFB2, palette_task_05D006, palette_task_05D056 (+1 more)
+	.incbin	"palettes/palette_088F0C.bin"
 palette_088F2E:
-	.byte	$1F, $00, $CE, $39, $DF, $67, $7A, $57, $F6, $3E, $30, $26
-	.byte	$AC, $19, $08, $0D, $84, $04, $1F, $00, $FF, $7F, $5A, $73, $D6, $66, $31, $4E
-	.byte	$8C, $39, $29, $2D, $84, $18
+	; ASSET: palette: a size-1 word and 16 colours, $08:8F2E-$08:8F4F (from its size word), used by palette_task_05CFB2, palette_task_05D056
+	.incbin	"palettes/palette_088F2E.bin"
 palette_088F50:
-	.byte	$3F, $00, $34, $3E, $BC, $7B, $EC, $4D, $F1, $41
-	.byte	$C6, $1C, $3B, $57, $96, $3E, $51, $32, $CF, $21, $2B, $11, $1F, $4F, $39, $3A
-	.byte	$94, $1D, $4E, $25, $85, $08, $E6, $18, $34, $3E, $FF, $7F, $97, $52, $B0, $35
-	.byte	$C9, $18, $5F, $0A, $7F, $09, $F7, $04, $75, $00, $4E, $00, $3E, $2F, $3A, $02
-	.byte	$15, $01, $6D, $00, $47, $04, $00, $00
+	; ASSET: palette: a size-1 word and 32 colours, $08:8F50-$08:8F91 (from its size word), used by palette_task_05CFB2
+	.incbin	"palettes/palette_088F50.bin"
 palette_088F92:
-	.byte	$3F, $00, $00, $00, $00, $44, $B5, $7E
-	.byte	$FF, $7F, $00, $00, $11, $00, $BF, $56, $FF, $7F, $00, $00, $7F, $02, $00, $50
-	.byte	$1F, $00, $00, $00, $B5, $11, $19, $00, $00, $00, $00, $00, $A5, $14, $31, $46
-	.byte	$FF, $7F, $00, $00, $50, $66, $92, $6E, $D4, $76, $00, $00, $1D, $2C, $FF, $01
-	.byte	$74, $4E, $00, $00, $00, $00, $00, $00, $00, $00
+	; ASSET: palette: a size-1 word and 32 colours, $08:8F92-$08:8FD3 (from its size word), used by palette_task_058412, palette_task_058B4C, palette_task_058BE7 (+5 more)
+	.incbin	"palettes/palette_088F92.bin"
 	; CDL: read by decompress_chunk
 gfx_088FD4:
 	; ASSET: compressed graphics (VRAM), $08:8FD4-$08:91DD (from its length word), loaded by load_list_0587AB
@@ -390,31 +220,31 @@ gfx_08D8AF:
 	.incbin	"gfx/gfx_08D8AF.lz"
 	; CDL: read by palette_task_animate
 palette_08EFCA:
-	.byte	$3F, $00, $00, $00, $00, $7C, $D6, $7E, $FF, $7F, $00, $00, $1F, $00, $DF, $5A
-	.byte	$FF, $7F, $00, $00, $00, $5C, $10, $5E, $F7, $5E, $00, $00, $17, $00, $17, $42
-	.byte	$F7, $5E, $00, $00, $00, $3C, $6B, $3D, $EF, $3D, $00, $00, $0F, $00, $6F, $2D
-	.byte	$EF, $3D, $00, $00, $00, $20, $A5, $20, $08, $21, $00, $00, $08, $00, $A8, $14
-	.byte	$08, $21
+	; ASSET: palette: a size-1 word and 32 colours, $08:EFCA-$08:F00B (from its size word), used by palette_task_05F8E3
+	.incbin	"palettes/palette_08EFCA.bin"
 	; CDL: read by palette_task_fade_in; partly not accessed
 palette_08F00C:
-	.byte	$0B, $00, $84, $10, $08, $21, $AD, $35, $52, $4A, $18, $63, $BD, $77
+	; ASSET: palette: a size-1 word and 6 colours, $08:F00C-$08:F019 (from its size word), used by palette_task_05FED3, palette_task_05FED9
+	.incbin	"palettes/palette_08F00C.bin"
 palette_08F01A:
-	.byte	$0D, $00
-	.byte	$00, $7C, $D6, $7E, $FF, $7F, $00, $00, $1F, $00, $DF, $5A, $FF, $7F
+	; ASSET: palette: a size-1 word and 7 colours, $08:F01A-$08:F029 (from its size word), used by palette_task_05FEC7, palette_task_05FECD
+	.incbin	"palettes/palette_08F01A.bin"
 palette_08F02A:
-	.byte	$05, $00
-	.byte	$11, $00, $1F, $00, $DF, $15
+	; ASSET: palette: a size-1 word and 3 colours, $08:F02A-$08:F031 (from its size word), used by palette_task_05CD29, palette_task_05CD2F
+	.incbin	"palettes/palette_08F02A.bin"
 palette_08F032:
-	.byte	$17, $00, $A5, $24, $E7, $2C, $4A, $39, $AD, $45
-	.byte	$4F, $5E, $F4, $72, $79, $7F, $FF, $7F, $00, $00, $2F, $31, $B5, $3D, $9B, $5A
+	; ASSET: palette: a size-1 word and 12 colours, $08:F032-$08:F04B (from its size word), used by palette_task_05CD35, palette_task_05CD3B
+	.incbin	"palettes/palette_08F032.bin"
+	; one more colour that the size word leaves out (the fades copy size+1 bytes)
 	.byte	$1F, $73
 palette_08F04E:
-	.byte	$1B, $00, $E8, $18, $09, $1D, $2A, $21, $4B, $25, $8D, $2D, $AE, $31
-	.byte	$CF, $35, $C7, $10, $0A, $19, $2B, $1D, $6D, $25, $CF, $29, $F1, $31, $33, $3A
+	; ASSET: palette: a size-1 word and 14 colours, $08:F04E-$08:F06B (from its size word), used by palette_task_05CD41, palette_task_05CD47
+	.incbin	"palettes/palette_08F04E.bin"
+	; one more colour that the size word leaves out (the fades copy size+1 bytes)
 	.byte	$54, $42
 palette_08F06E:
-	.byte	$19, $00, $8E, $0C, $12, $1D, $96, $2D, $1A, $3E, $9E, $4E, $0A, $00
-	.byte	$0F, $00, $52, $08, $B5, $14, $18, $21, $7B, $2D, $DE, $39, $3F, $46
+	; ASSET: palette: a size-1 word and 13 colours, $08:F06E-$08:F089 (from its size word), used by palette_task_05CD4D, palette_task_05CD53
+	.incbin	"palettes/palette_08F06E.bin"
 	; CDL: not accessed
 	.byte	$9F, $52, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	; The rest of the bank is free: filled with $FF by the linker (contra3.cfg).
