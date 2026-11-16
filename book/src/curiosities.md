@@ -335,9 +335,13 @@ With X the bomb's slot (`$0F40` or `$0F80`), the address runs past the end
 of the data bank (`$05`) into bank `$06`, whose `$0000-$1FFF` is the same
 low RAM, and lands on the player's slot `$80` bytes below the bomb.
 
-**Unkillable on HARD.** The HARD entries of `lightning_pylon_hp` and
-`stage1_boss_shell_hp` are `$7FFF`, so in practice the pylons and the
-stage 1 boss's shell cannot be shot down on HARD. The brain boss's HP is
+**Unkillable on HARD.** The HARD entries of `lightning_pylon_hp`,
+`stage1_boss_shell_hp` and `leaping_fireball_hp` are `$7FFF` (32767, the
+largest positive word), so in practice the pylons, the stage 1 boss's
+shell and the fireballs leaping out of stage 1's fire cannot be shot
+down on HARD. The fireballs have 16 HP on EASY and 64 on NORMAL; on
+HARD it would take some 16,000 hits of the default gun (damage 2), and
+they can only be hit while out of the fire. The brain boss's HP is
 1025 on EASY but 16982 on NORMAL and 29986 on HARD, a jump nobody has
 explained yet ([Enemies and bosses](enemies-late.md#hp-and-difficulty)).
 
