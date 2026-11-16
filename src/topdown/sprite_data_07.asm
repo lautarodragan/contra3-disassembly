@@ -16,16 +16,19 @@ stage2_arena_rubble_x:
 	; CDL: read by draw_stage2_boss_arena
 	.byte	$D0, $FF, $50, $00, $D0, $00, $D0, $FF, $50, $00, $D0, $00, $D0, $FF, $50, $00
 stage2_arena_rubble_y:
+	; LAYOUT: read on from stage2_arena_rubble_x (adc a:stage2_arena_rubble_x - 2,x)
 	; CDL: read by draw_stage2_boss_arena
 	.byte	$D0, $00, $D0, $FF, $D0, $FF, $D0, $FF, $50, $00, $50, $00, $50, $00, $D0, $00
 	.byte	$D0, $00
 stage2_arena_debris_x:
+	; LAYOUT: read on from stage2_arena_rubble_y (adc a:stage2_arena_rubble_y,x)
 	; CDL: read by draw_stage2_boss_arena
 	.byte	$D0, $00, $80, $FF, $00, $00, $80, $00, $00, $01, $80, $FF, $B0, $FF, $00, $00
 	.byte	$30, $00, $80, $00, $B0, $00, $00, $01, $80, $FF, $B0, $FF, $00, $00, $30, $00
 	.byte	$80, $00, $B0, $00, $00, $01, $80, $FF, $B0, $FF, $00, $00, $30, $00, $80, $00
 	.byte	$B0, $00
 stage2_arena_debris_y:
+	; LAYOUT: read on from stage2_arena_debris_x (adc a:stage2_arena_debris_x,x)
 	; CDL: read by draw_stage2_boss_arena
 	.byte	$00, $01, $88, $FF, $88, $FF, $88, $FF, $88, $FF, $08, $00, $B0, $FF, $08, $00
 	.byte	$B0, $FF, $08, $00, $B0, $FF, $08, $00, $88, $00, $30, $00, $88, $00, $30, $00
@@ -204,6 +207,7 @@ ptrs_td_metasprite_sets:
 	.addr	ptrs_td_metasprite_sets + 2
 	.addr	ptrs_td_metasprite_sets + 2
 ptrs_td_tile_lists:
+	; LAYOUT: read on from ptrs_td_metasprite_sets (lda a:ptrs_td_metasprite_sets,y)
 	; CDL: read by draw_enemies, draw_topdown_players, draw_stage2_boss_cannon (+3 more); partly not accessed
 	.addr	td_metasprites_stage5_boss_claw		; entry $11 of ptrs_td_metasprite_sets
 	.addr	td_tile_list_player
