@@ -3588,9 +3588,20 @@ palette_task_05D0AA:
 	palette_copy	palette_088F0C, $2360
 	palette_copy	palette_088CE0, $2380
 	palette_copy_end
-	.byte	$00, $01, $00, $30, $7B, $97, $1C, $FF, $FF
-	.byte	$00, $01, $00, $30, $CC, $A9, $1A, $FF, $FF, $00, $01, $00, $30, $A6, $BC, $1A
-	.byte	$FF, $FF
+; Never read in the traces and named by nothing: three VRAM lists of one
+; stream each (sound data, so probably leftovers).
+unused_load_list_05D0C3:
+	load_list	$00, $01
+	load_vram	$3000, spc_data_1C977B
+	load_end
+unused_load_list_05D0CC:
+	load_list	$00, $01
+	load_vram	$3000, spc_block_1AA9CC
+	load_end
+unused_load_list_05D0D5:
+	load_list	$00, $01
+	load_vram	$3000, spc_data_1ABCA6
+	load_end
 start_points_x:
 	; CDL: read by set_start_points, respawn_at_start_point_stage2; partly not accessed
 	.byte	$80, $00, $80, $01, $80, $02, $80, $03, $80, $00, $80, $01, $80, $02, $80, $03
@@ -5530,10 +5541,13 @@ song_set_05F46B:
 	load_spc_raw	$3000, spc_block_1AA9CC, $12D8
 	load_end
 song_set_05F48A:
-	.byte	$02, $00, $FE, $FF, $00, $30, $CC, $A9, $1A, $D8, $12, $FF, $FF
+	load_list	$02, $00
+	load_spc_raw	$3000, spc_block_1AA9CC, $12D8
+	load_end
 song_set_05F497:
-	.byte	$02, $00, $FE
-	.byte	$FF, $00, $30, $23, $CA, $1A, $A6, $1F, $FF, $FF
+	load_list	$02, $00
+	load_spc_raw	$3000, spc_block_1ACA23, $1FA6
+	load_end
 song_set_05F4A4:
 	load_list	$02, $00
 	load_spc_raw	$5000, spc_block_1D860E, $0100
