@@ -6648,7 +6648,7 @@ heart_boss_bug_state_03:
 	jsl	f:make_effect_object
 	rtl
 
-; Spawns a type $68 creature at the pod (enemy_type_68), y offset by kind.
+; Spawns a type $68 crawler at the pod (update_heart_boss_crawler), y offset by kind.
 heart_boss_bug_spawn_crawler:
 	ldy	#$03C0
 	jsl	f:find_free_slot_from_y
