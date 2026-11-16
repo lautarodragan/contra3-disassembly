@@ -23,12 +23,14 @@ gfx_10B927:
 gfx_10D5A2:
 	; ASSET: compressed graphics (VRAM), $10:D5A2-$10:F1FD (from its length word), loaded by load_list_058C97
 	.incbin	"gfx/gfx_10D5A2.lz"
-packed_10F1FE:
+stage6_bg1_map:
 	; Compressed data for WRAM $7E:9000, $10:F1FE-$10:F730 (from its length word), loaded by load_list_058C6F.
+	; Stage 6: BG1 map, one word per metatile (byte offset of the metatile, bits 14-15 flip), 8x8 metatiles per $80-byte page.
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_10F1FE.lz"
-packed_10F731:
+	.incbin	"wram/stage6_bg1_map.lz"
+stage6_bg2_map:
 	; Compressed data for WRAM $7E:F000, $10:F731-$10:F8C0 (from its length word), loaded by load_list_058C6F.
+	; Stage 6: BG2 map (as BG1).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_10F731.lz"
+	.incbin	"wram/stage6_bg2_map.lz"
 	; The rest of the bank is free: filled with $FF by the linker (contra3.cfg).

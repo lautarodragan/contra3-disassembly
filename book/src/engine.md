@@ -169,7 +169,10 @@ that reproduces the ROM's streams (`tools/c3lz.py`).
 each have a scroll state of `$40` bytes: BG1 at `bg1_x` (`$1380`), BG2 at
 `bg2_x` (`$13C0`), with the fields `BG_X`, `BG_Y`, `BG_X_DELTA`,
 `BG_Y_DELTA`, `BG_PAGE`, `BG_MAP_OFFSET`... The layers' maps are in `$7E`,
-made of metatiles of 4x4 tiles; when the scroll crosses a tile column or
+made of metatiles of 4x4 tiles (BG1: map at `$7E:9000`, metatiles at
+`$7E:5000`; BG2: map at `$7E:F000`, metatiles at `$7E:B000`; decompressed
+there by the stage's load list, e.g. `stage1_bg1_map` and
+`stage1_bg1_metatiles`, see [Assets](assets.md#wram-streams-of-bank-7e)); when the scroll crosses a tile column or
 row, `draw_bg_column` / `draw_bg_row` queue the tiles that enter the screen,
 and `update_bg_collision_map` turns the same tiles into the collision map
 at `$7E:4000` (one word per tile, the class chosen by tile-number

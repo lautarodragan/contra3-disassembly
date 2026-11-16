@@ -132,15 +132,15 @@ def test_png_must_be_whole_tiles(tmp_path):
 # ---------------------------------------------------------------- other kinds
 
 def test_bin_too_big_is_rejected(tmp_path, manifest):
-    # a WRAM stream: $7E:9400, the same list loads packed_13EF62 at $7E:9800
-    root, a = scratch(tmp_path, manifest, "wram/packed_13EE4E")
+    # a WRAM stream: $7E:9400, the same list loads stage2_block_map_2 at $7E:9800
+    root, a = scratch(tmp_path, manifest, "wram/stage2_block_map_1")
     assert a.options["max"] == "$0400"
     data = open(os.path.join(root, a.source), "rb").read()
     open(os.path.join(root, a.source), "wb").write(data + bytes(0x400 - len(data)))
     assert errors(root) == []
     open(os.path.join(root, a.source), "ab").write(b"\x01")
     errs = errors(root)
-    assert len(errs) == 1 and "1,025 bytes" in errs[0] and "packed_13EF62" in errs[0]
+    assert len(errs) == 1 and "1,025 bytes" in errs[0] and "stage2_block_map_2" in errs[0]
 
 
 def test_raw_sound_block_must_match_its_size_word(tmp_path, manifest):
@@ -154,7 +154,7 @@ def test_raw_sound_block_must_match_its_size_word(tmp_path, manifest):
 
 
 def test_stream_larger_than_a_bank_is_rejected(tmp_path, manifest):
-    root, a = scratch(tmp_path, manifest, "wram/packed_0AB064", {"max": "$FFFF"})
+    root, a = scratch(tmp_path, manifest, "wram/stage1_bg1_metatiles", {"max": "$FFFF"})
     rnd = random.Random(1)
     open(os.path.join(root, a.source), "wb").write(bytes(rnd.randrange(256) for _ in range(0x8000)))
     errs = errors(root)
@@ -211,4 +211,4 @@ def test_bank_overflow_names_the_assets():
     out = "src/contra3.cfg:17: Warning: Segment 'BANK0A' overflows memory area 'ROM0A' by 3574 bytes\n"
     msg = asset_limits.ld65_diagnosis(out, SRC, [os.path.join(ROOT, d) for d in assets.INCLUDE_DIRS])
     assert "bank $0A is 3,574 bytes too full" in msg
-    assert "wram/packed_0AB064.lz" in msg and "cannot cross" in msg
+    assert "wram/stage1_bg1_metatiles.lz" in msg and "cannot cross" in msg

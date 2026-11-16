@@ -17,10 +17,11 @@ gfx_118000:
 gfx_119D0E:
 	; ASSET: compressed graphics (VRAM), $11:9D0E-$11:B7AE (from its length word), loaded by load_list_059EC9, load_list_05FF30
 	.incbin	"gfx/gfx_119D0E.lz"
-packed_11B7AF:
+stage6_bg_anim_tiles:
 	; Compressed data for WRAM $7E:A000, $11:B7AF-$11:C385 (from its length word), loaded by load_list_058C6F.
+	; Stage 6: 3 frames of $400 bytes of 4bpp BG tiles, DMAd to VRAM $3A90 by update_stage6_bg_tile_animator.
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_11B7AF.lz"
+	.incbin	"wram/stage6_bg_anim_tiles.lz"
 gfx_11C386:
 	; ASSET: compressed graphics (VRAM), $11:C386-$11:CDE9 (from its length word), loaded by load_list_059E95
 	.incbin	"gfx/gfx_11C386.lz"

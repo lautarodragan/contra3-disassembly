@@ -134,6 +134,12 @@ translates each tile through the map's table (`tile_attrs_stage2`,
 map* at `$7E:4000`, one byte per tile (index `(y / 8) * 128 + x / 8`),
 which the collision code of the players and the shots reads (walls,
 holes).
+The block map and the block definitions are decompressed there by the
+map's load list (`stage2_block_map_0`-`_3` and `stage2_m7_blocks` for
+stage 2, and the same for the two boss maps and stage 5; see
+[Assets](assets.md#wram-streams-of-bank-7e)), with the sprite tiles at
+`$7E:A000`-`$7E:EFFF` and, on the boss maps, the boss's Mode 7
+characters at `$7E:C000`.
 
 Things that change on the floor are tilemap changes, not sprites: the
 targets and turrets of `update_map_objects` show a block (object field

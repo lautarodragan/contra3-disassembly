@@ -541,46 +541,56 @@ td_sprite_tiles_13:
 gfx_13CC02:
 	; ASSET: compressed graphics (VRAM), $13:CC02-$13:E41F (from its length word), loaded by load_list_05CF2A
 	.incbin	"gfx/gfx_13CC02.lz"
-packed_13E420:
+stage2_m7_blocks:
 	; Compressed data for WRAM $7E:8000, $13:E420-$13:ED39 (from its length word), loaded by load_list_058623, load_list_05CF7E.
+	; Stage 2: Mode 7 block definitions, $20 bytes per 4x4-tile block (tile numbers in the even bytes; expand_m7_block, queue_m7_block_patch).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_13E420.lz"
-packed_13ED3A:
+	.incbin	"wram/stage2_m7_blocks.lz"
+stage2_block_map_0:
 	; Compressed data for WRAM $7E:9000, $13:ED3A-$13:EE4D (from its length word), loaded by load_list_058623, load_list_05CF7E.
+	; Stage 2: block map, rows 0-7 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_13ED3A.lz"
-packed_13EE4E:
+	.incbin	"wram/stage2_block_map_0.lz"
+stage2_block_map_1:
 	; Compressed data for WRAM $7E:9400, $13:EE4E-$13:EF61 (from its length word), loaded by load_list_058623, load_list_05CF7E.
+	; Stage 2: block map, rows 8-15 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_13EE4E.lz"
-packed_13EF62:
+	.incbin	"wram/stage2_block_map_1.lz"
+stage2_block_map_2:
 	; Compressed data for WRAM $7E:9800, $13:EF62-$13:F075 (from its length word), loaded by load_list_058623, load_list_05CF7E.
+	; Stage 2: block map, rows 16-23 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_13EF62.lz"
-packed_13F076:
+	.incbin	"wram/stage2_block_map_2.lz"
+stage2_block_map_3:
 	; Compressed data for WRAM $7E:9C00, $13:F076-$13:F189 (from its length word), loaded by load_list_058623, load_list_05CF7E.
+	; Stage 2: block map, rows 24-31 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_13F076.lz"
-packed_13F18A:
+	.incbin	"wram/stage2_block_map_3.lz"
+stage2_boss_m7_blocks:
 	; Compressed data for WRAM $7E:8000, $13:F18A-$13:F4A4 (from its length word), loaded by load_list_05CFD8.
+	; Stage 2 boss map: Mode 7 block definitions, $20 bytes per 4x4-tile block (tile numbers in the even bytes; expand_m7_block, queue_m7_block_patch).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_13F18A.lz"
-packed_13F4A5:
+	.incbin	"wram/stage2_boss_m7_blocks.lz"
+stage2_boss_block_map_0:
 	; Compressed data for WRAM $7E:9000, $13:F4A5-$13:F4EE (from its length word), loaded by load_list_05CFD8.
+	; Stage 2 boss map: block map, rows 0-7 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_13F4A5.lz"
-packed_13F4EF:
+	.incbin	"wram/stage2_boss_block_map_0.lz"
+stage2_boss_block_map_1:
 	; Compressed data for WRAM $7E:9400, $13:F4EF-$13:F544 (from its length word), loaded by load_list_05CFD8.
+	; Stage 2 boss map: block map, rows 8-15 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_13F4EF.lz"
-packed_13F545:
+	.incbin	"wram/stage2_boss_block_map_1.lz"
+stage2_boss_block_map_2:
 	; Compressed data for WRAM $7E:9800, $13:F545-$13:F568 (from its length word), loaded by load_list_05CFD8.
+	; Stage 2 boss map: block map, rows 16-23 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_13F545.lz"
-packed_13F569:
+	.incbin	"wram/stage2_boss_block_map_2.lz"
+stage2_boss_block_map_3:
 	; Compressed data for WRAM $7E:9C00, $13:F569-$13:F58C (from its length word), loaded by load_list_05CFD8.
+	; Stage 2 boss map: block map, rows 24-31 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_13F569.lz"
+	.incbin	"wram/stage2_boss_block_map_3.lz"
 	; CDL: not accessed
 	.byte	$52, $00, $9F, $03, $00, $0C, $03, $13, $0F, $2D, $1D, $5B, $33, $74, $11, $A9
 	.byte	$7B, $D9, $32, $C0, $00, $B0, $40, $28, $90, $D4, $78, $0A, $5C, $B2, $BC, $6D

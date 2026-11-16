@@ -497,6 +497,18 @@ drawn where it is known how the game shows them, and the palettes.
 
 ## Sprite tiles decompressed to WRAM
 
+### stage1_bomber_m7_chars
+
+`assets/wram/stage1_bomber_m7_chars.png`: mode7, 63 tiles, tail `50`, lz-v1.
+
+<img src="gallery/wram/stage1_bomber_m7_chars.png" alt="stage1_bomber_m7_chars" width="256" style="image-rendering: pixelated">
+
+### stage1_bomber_fire_tiles
+
+`assets/wram/stage1_bomber_fire_tiles.png`: 4bpp, 112 tiles, lz-v2.
+
+<img src="gallery/wram/stage1_bomber_fire_tiles.png" alt="stage1_bomber_fire_tiles" width="256" style="image-rendering: pixelated">
+
 ### packed_0B8000
 
 `assets/wram/packed_0B8000.png`: 4bpp, 256 tiles, lz-v2.
@@ -532,6 +544,18 @@ drawn where it is known how the game shows them, and the palettes.
 `assets/wram/packed_0BD88C.png`: 4bpp, 256 tiles, lz-v2.
 
 <img src="gallery/wram/packed_0BD88C.png" alt="packed_0BD88C" width="256" style="image-rendering: pixelated">
+
+### stage3_funnel_cloud_tiles
+
+`assets/wram/stage3_funnel_cloud_tiles.png`: 4bpp, 96 tiles, lz-v2.
+
+<img src="gallery/wram/stage3_funnel_cloud_tiles.png" alt="stage3_funnel_cloud_tiles" width="256" style="image-rendering: pixelated">
+
+### stage6_bg_anim_tiles
+
+`assets/wram/stage6_bg_anim_tiles.png`: 4bpp, 96 tiles, tail `F1`, lz-v2.
+
+<img src="gallery/wram/stage6_bg_anim_tiles.png" alt="stage6_bg_anim_tiles" width="256" style="image-rendering: pixelated">
 
 ### packed_11CDEA
 
@@ -592,6 +616,60 @@ drawn where it is known how the game shows them, and the palettes.
 `assets/wram/packed_139567.png`: 4bpp, 256 tiles, lz-v2.
 
 <img src="gallery/wram/packed_139567.png" alt="packed_139567" width="256" style="image-rendering: pixelated">
+
+### stage2_boss_m7_chars
+
+`assets/wram/stage2_boss_m7_chars.png`: mode7, 72 tiles, tail `00`, lz-v1.
+
+<img src="gallery/wram/stage2_boss_m7_chars.png" alt="stage2_boss_m7_chars" width="256" style="image-rendering: pixelated">
+
+### stage2_boss_sprite_tiles
+
+`assets/wram/stage2_boss_sprite_tiles.png`: 4bpp, 172 tiles, tail `00`, lz-v2.
+
+<img src="gallery/wram/stage2_boss_sprite_tiles.png" alt="stage2_boss_sprite_tiles" width="256" style="image-rendering: pixelated">
+
+### stage5_sprite_tiles_1
+
+`assets/wram/stage5_sprite_tiles_1.png`: 4bpp, 256 tiles, lz-v2.
+
+<img src="gallery/wram/stage5_sprite_tiles_1.png" alt="stage5_sprite_tiles_1" width="256" style="image-rendering: pixelated">
+
+### stage5_sprite_tiles_2
+
+`assets/wram/stage5_sprite_tiles_2.png`: 4bpp, 256 tiles, lz-v2.
+
+<img src="gallery/wram/stage5_sprite_tiles_2.png" alt="stage5_sprite_tiles_2" width="256" style="image-rendering: pixelated">
+
+### stage5_boss_m7_chars
+
+`assets/wram/stage5_boss_m7_chars.png`: mode7, 40 tiles, tail `00`, lz-v2.
+
+<img src="gallery/wram/stage5_boss_m7_chars.png" alt="stage5_boss_m7_chars" width="256" style="image-rendering: pixelated">
+
+### stage5_boss_sprite_tiles
+
+`assets/wram/stage5_boss_sprite_tiles.png`: 4bpp, 100 tiles, lz-v2.
+
+<img src="gallery/wram/stage5_boss_sprite_tiles.png" alt="stage5_boss_sprite_tiles" width="256" style="image-rendering: pixelated">
+
+### stage2_sprite_tiles_1
+
+`assets/wram/stage2_sprite_tiles_1.png`: 4bpp, 256 tiles, lz-v2.
+
+<img src="gallery/wram/stage2_sprite_tiles_1.png" alt="stage2_sprite_tiles_1" width="256" style="image-rendering: pixelated">
+
+### stage2_sprite_tiles_2
+
+`assets/wram/stage2_sprite_tiles_2.png`: 4bpp, 256 tiles, lz-v2.
+
+<img src="gallery/wram/stage2_sprite_tiles_2.png" alt="stage2_sprite_tiles_2" width="256" style="image-rendering: pixelated">
+
+### stage2_sprite_tiles_3
+
+`assets/wram/stage2_sprite_tiles_3.png`: 4bpp, 112 tiles, lz-v2.
+
+<img src="gallery/wram/stage2_sprite_tiles_3.png" alt="stage2_sprite_tiles_3" width="256" style="image-rendering: pixelated">
 
 ## Tilemaps
 

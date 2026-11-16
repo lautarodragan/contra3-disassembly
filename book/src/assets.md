@@ -15,8 +15,8 @@ palette or a tilemap, and what was left as it was, and why.
 assets/manifest.txt          every asset: its path and how the build makes it
 assets/gfx/<label>.png       graphics (VRAM streams, td_sprite_tiles_16)
 assets/gfx/<label>.tilemap   tilemaps loaded to VRAM (text)
-assets/wram/<label>.png      the player's tiles (streams decompressed to WRAM $7F)
-assets/wram/<label>.bin      the other streams decompressed to WRAM
+assets/wram/<label>.png      graphics decompressed to WRAM, copied to VRAM later
+assets/wram/<label>.bin      the other streams decompressed to WRAM (maps, metatiles)
 assets/sound/<label>.bin     sound CPU data
 assets/palettes/<label>.gpl  palettes (GIMP palettes)
 assets/views.txt             how the gallery shows them (viewing only)
@@ -146,13 +146,13 @@ above became text files (see [Tilemaps](#tilemaps)).
 
 ## Graphics (PNG)
 
-97 assets are graphics whose format is known, stored as indexed PNGs:
+110 assets are graphics whose format is known, stored as indexed PNGs:
 
 | format | assets | what |
 |---|---|---|
-| `4bpp` | 74 VRAM streams, `td_sprite_tiles_16`, 16 WRAM streams | BG1/BG2 characters and sprites: 32 bytes per 8x8 tile, 16 colours |
+| `4bpp` | 74 VRAM streams, `td_sprite_tiles_16`, 26 WRAM streams | BG1/BG2 characters and sprites: 32 bytes per 8x8 tile, 16 colours |
 | `2bpp` | 1 (`gfx_089D7E`, the font) | BG3 characters: 16 bytes per tile, 4 colours |
-| `mode7` | 5 (`gfx_089249`, `gfx_13CC02`, `gfx_148000`, `gfx_158000`, `gfx_168000`) | Mode 7 characters: 64 bytes per tile, one byte per pixel, 256 colours |
+| `mode7` | 5 VRAM streams (`gfx_089249`, `gfx_13CC02`, `gfx_148000`, `gfx_158000`, `gfx_168000`), 3 WRAM streams (`stage1_bomber_m7_chars`, `stage2_boss_m7_chars`, `stage5_boss_m7_chars`) | Mode 7 characters: 64 bytes per tile, one byte per pixel, 256 colours |
 
 `tools/snesgfx.py` converts both ways. The SNES planar formats (`2bpp`,
 `4bpp`, `8bpp`) store a tile's rows as bitplane pairs (planes 0 and 1 in
@@ -183,6 +183,11 @@ How the format of each was worked out, from where it is loaded:
   the NMI copies from WRAM to sprite VRAM (the player's frames,
   `player_frames`): 4bpp; `td_sprite_tiles_16` is DMAd to sprite VRAM:
   4bpp;
+- 13 WRAM streams of bank `$7E` are graphics copied to VRAM later, by
+  code that names their WRAM address (see
+  [WRAM streams of bank $7E](#wram-streams-of-bank-7e)): the format
+  follows from where that code puts them (sprite or BG characters: 4bpp;
+  the high bytes of Mode 7 VRAM: `mode7`);
 - every PNG was then looked at: a wrong depth shows at once (rows doubled
   or halved, noise).
 
@@ -210,7 +215,13 @@ other 7 (`gfx_0E8307`, `gfx_11C386`, `gfx_148000`, `gfx_15DCD9`,
 `gfx_168000`, `gfx_17D20E`, `gfx_1AE9C9`) were never seen on screen at
 those moments and keep a grey ramp. An asset shown
 with several palettes (a sprite sheet shared by enemies of several
-colours) has the most frequent one.
+colours) has the most frequent one. The 13 WRAM graphics of bank `$7E` came
+later: 10 got their palette from the same tool (run every 60 frames); the
+three sets of Mode 7 characters (`stage1_bomber_m7_chars`,
+`stage2_boss_m7_chars`, `stage5_boss_m7_chars`) are not seen by it (the
+bomber is Mode 7 only in an HDMA band, and the bosses' characters were not
+matched), so they have the 256 colours of `palette_buffer` at a frame of
+the scripted play where they are on screen.
 
 71 PNGs have colours that are those of exactly one palette asset (an
 aligned or unaligned run of 2, 16 or 256 colours of it); `assets/views.txt`
@@ -222,13 +233,14 @@ palette's. The others (14 whose colours are in several palettes, the
 font among them, the Mode 7 graphics, whose 256 colours come from several
 palettes, and the grey ones) keep their colours.
 
-The [Graphics gallery](gallery.md) shows all 97.
+The [Graphics gallery](gallery.md) shows all 110.
 
 ## Not graphics, or format not known: still `.bin`
 
-- the 54 streams decompressed to WRAM bank `$7E`: what they hold
-  (tilemaps, metatiles, collision data, graphics copied to VRAM later) is
-  not worked out per stream yet;
+- 41 of the 54 streams decompressed to WRAM bank `$7E`: the maps and
+  metatiles of the side-view stages and the block maps and block
+  definitions of the top-down ones (see
+  [WRAM streams of bank $7E](#wram-streams-of-bank-7e));
 - the 30 sound CPU blocks (11 compressed, 19 not): the driver, the sample
   directories, the samples and the songs; what each is and where it goes
   in the sound CPU's memory is in [Sound](sound.md#sound-cpu-memory).
@@ -299,6 +311,89 @@ stay inline, see above) and the three BG3 maps of the closing message
 (which colours CGRAM holds then is not worked out). The previews are
 made by `make book` (`gallery-copy`), from the assets: editing a tilemap,
 a graphic or a palette changes them.
+
+## WRAM streams of bank $7E
+
+The 54 streams that the load lists (`load_wram`) decompress to bank `$7E`
+are named after what the code that reads them does with them. Each was
+found from its destination: the code that reads that WRAM area while the
+stream is there, then checked in the emulator (the stream's bytes found
+in WRAM, and in VRAM after the copy for the graphics; the side-view maps
+drawn from the streams alone, below).
+
+**Side-view stages** (and the opening cinematic, which runs as stage 0 on
+the same engine). The playfield is drawn from *metatiles* of 4x4 tiles:
+`draw_bg_column` and `draw_bg_row` (`src/engine/bg_scroll.asm`) read the
+map entry, a word whose bits 0-13 are the byte offset of the metatile
+(a multiple of `$20`) and bits 14-15 a vertical / horizontal flip of the
+whole metatile, then the metatile's 16 tilemap words (row by row;
+`metatile_column_offsets` / `metatile_row_offsets` reorder them when
+flipped, and the flip bits are XORed into each word). With the map base in
+`zp_FE` (`$4000` for BG1, `$A000` for BG2):
+
+| | BG1 | BG2 |
+|---|---|---|
+| map (`base + $5000`) | `$7E:9000` | `$7E:F000` |
+| metatiles (`base + $1000`) | `$7E:5000`, `$7E:7000` from metatile `$100` | `$7E:B000` |
+
+A map page (`$80` bytes, `BG_MAP_OFFSET` steps) is 8 rows of 8 metatiles,
+256x256 pixels. Drawn from these streams alone with the stage's VRAM and
+palette, stage 1's BG1 map is the stage's 32 screens and its BG2 map the
+city skyline, the burning city and the tanks drawn on BG2.
+
+| stage | BG1 metatiles | BG1 map | BG2 metatiles | BG2 map |
+|---|---|---|---|---|
+| opening | `opening_bg1_metatiles` | `opening_bg1_map` | | |
+| 1 | `stage1_bg1_metatiles`, `stage1_bg1_metatiles_2` | `stage1_bg1_map` | `stage1_bg2_metatiles` | `stage1_bg2_map` |
+| 3 | `stage3_bg1_metatiles`, `stage3_bg1_metatiles_2` | `stage3_bg1_map` | `stage3_bg2_metatiles` | `stage3_bg2_map` |
+| 4 | `stage4_bg1_metatiles` | `stage4_bg1_map` | `stage4_bg2_metatiles` | `stage4_bg2_map` |
+| 6 | `stage6_bg1_metatiles`, `stage6_bg1_metatiles_2` | `stage6_bg1_map` | `stage6_bg2_metatiles` | `stage6_bg2_map` |
+
+(The `load_wram` lists: `load_list_058AE6`, `load_list_058B5D`,
+`load_list_058BF8`, `load_list_058C6F` by stage through `ptrs_0588ED`;
+`load_list_0585D1` and `load_list_058687` load stage 1's and stage 4's for
+the attract demos; `load_list_05A84B` the opening's.) The collision map
+at `$7E:4000` is not a stream: `update_bg_collision_map` makes it from the
+tiles drawn (see [Side-view collision map](collision.md)).
+
+Graphics at `$7E:A000`, copied to VRAM by the stage's objects through
+`bg_dma_src` (`dma_bg_tilemap_updates`) or by their own code:
+
+| asset | loaded by | what |
+|---|---|---|
+| `stage1_bomber_m7_chars` | `load_list_059EFC` (trigger type `$07`, entry `$0B`, just before the bomber raid) | Mode 7 characters of the bomber (63 and a byte): `bomber_raid_state_02` writes them as the high bytes of VRAM `$0000`-`$0FFF` with the Mode 7 tilemap in the low bytes |
+| `stage1_bomber_fire_tiles` | `load_list_059FBA` (`bomber_raid_state_05`, over the bomber's) | 4 frames of `$380` bytes of BG tiles, the fire; `bomber_raid_animate_fire` DMAs one to VRAM `$2E40` |
+| `stage3_funnel_cloud_tiles` | `load_list_058B5D` (stage 3) | 4 frames (`$300` apart, `$2E0` used) of BG tiles; `update_stage3_funnel_clouds` DMAs one to VRAM `$0E80` every 8 frames |
+| `stage6_bg_anim_tiles` | `load_list_058C6F` (stage 6) | 3 frames of `$400` bytes of BG tiles (shown 0, 1, 2, 1); `update_stage6_bg_tile_animator` (object type `$55`) DMAs one to VRAM `$3A90` every 8 frames |
+
+**Top-down stages.** `build_m7_tilemap` (`src/topdown/support_04.asm`)
+builds the 128x128 Mode 7 tilemap from a 32x32 *block map* of 4x4-tile
+blocks (see [Top-down stages](topdown.md#the-map-blocks-tile-attributes-and-patches)).
+The block map is four streams of `$200` bytes, at `$7E:9000`, `$9400`,
+`$9800` and `$9C00`, each 8 block rows; in one, a row of 32 blocks is
+4 runs of 8 words `$80` bytes apart, and the block number is the low byte
+of the word (the high bytes are all 0). The block definitions at
+`$7E:8000` are `$20` bytes a block, the 16 tile numbers in the even bytes
+(`expand_m7_block`, `queue_m7_block_patch`); nothing found reads the odd
+bytes, which hold small values (`$00`, `$08`, `$0C`, ...). The sprite
+tiles at `$7E:A000`-`$7E:EFFF` are 4bpp, the sources of the `td_tiles`
+records that `stream_topdown_sprite_gfx` DMAs to sprite VRAM `$4000`; on
+the boss maps, the boss's Mode 7 characters at `$7E:C000` are DMAd to the
+high bytes of VRAM by the same routine (`boss_chr_stream_src`, from
+`stage2_boss_chr_sources` / `stage5_boss_chr_sources`).
+
+| map (list) | block definitions | block map | sprite tiles | boss characters |
+|---|---|---|---|---|
+| stage 2 (`load_list_05CF7E`, `load_list_058623`) | `stage2_m7_blocks` | `stage2_block_map_0`-`_3` | `stage2_sprite_tiles_1`-`_3` | |
+| stage 2 boss (`load_list_05CFD8`) | `stage2_boss_m7_blocks` | `stage2_boss_block_map_0`-`_3` | `stage2_boss_sprite_tiles` | `stage2_boss_m7_chars` (3 frames of `$600` bytes to VRAM `$0040`) |
+| stage 5 (`load_list_05D028`) | `stage5_m7_blocks` | `stage5_block_map_0`-`_3` | `stage5_sprite_tiles_1`, `_2` | |
+| stage 5 boss (`load_list_05D07C`) | `stage5_boss_m7_blocks` | `stage5_boss_block_map_0`-`_3` | `stage5_boss_sprite_tiles` | `stage5_boss_m7_chars` (4 frames of `$280` bytes to VRAM `$3200`) |
+
+The 13 graphics are PNGs (4bpp, or `mode7` for the three sets of Mode 7
+characters). The other 41 stay `.bin`: the metatile definitions are BG
+tilemap words (they could be [tilemap text](#tilemaps), 4 words a row; not
+converted yet), and the maps are tables of metatile offsets or block
+numbers, for which there is no text format yet.
 
 ## Palettes (GIMP .gpl)
 

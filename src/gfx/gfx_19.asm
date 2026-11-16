@@ -29,10 +29,11 @@ gfx_19CAB9:
 gfx_19D779:
 	; ASSET: compressed graphics (VRAM), $19:D779-$19:DB1F (from its length word), loaded by load_list_058868
 	.incbin	"gfx/gfx_19D779.lz"
-packed_19DB20:
+stage6_bg1_metatiles:
 	; Compressed data for WRAM $7E:5000, $19:DB20-$19:EF61 (from its length word), loaded by load_list_058C6F.
+	; Stage 6: BG1 metatiles from number 0 (4x4 tilemap words each, $20 bytes; draw_bg_column / draw_bg_row, map base $4000).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_19DB20.lz"
+	.incbin	"wram/stage6_bg1_metatiles.lz"
 gfx_19EF62:
 	; ASSET: compressed graphics (VRAM), $19:EF62-$19:FEE4 (from its length word), loaded by load_list_05FDEA
 	.incbin	"gfx/gfx_19EF62.lz"

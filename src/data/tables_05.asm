@@ -394,11 +394,11 @@ load_list_0585D1:
 	load_wram	$7FA000, packed_0BD88C
 	load_wram	$7FC000, packed_11CDEA
 	load_wram	$7FE000, packed_11DF75
-	load_wram	$7E5000, packed_0AB064
-	load_wram	$7E9000, packed_0AD871
-	load_wram	$7EB000, packed_0AC13B
-	load_wram	$7E7000, packed_0ACDBC
-	load_wram	$7EF000, packed_0ADE6D
+	load_wram	$7E5000, stage1_bg1_metatiles
+	load_wram	$7E9000, stage1_bg1_map
+	load_wram	$7EB000, stage1_bg2_metatiles
+	load_wram	$7E7000, stage1_bg1_metatiles_2
+	load_wram	$7EF000, stage1_bg2_map
 	load_end
 load_list_058623:
 	; CDL: read by load_data_list, init_loader_context, decompress_chunk
@@ -411,14 +411,14 @@ load_list_058623:
 	load_wram	$7FA000, packed_12E60A
 	load_wram	$7FC000, packed_138000
 	load_wram	$7FE000, packed_139567
-	load_wram	$7E8000, packed_13E420
-	load_wram	$7E9000, packed_13ED3A
-	load_wram	$7E9400, packed_13EE4E
-	load_wram	$7E9800, packed_13EF62
-	load_wram	$7E9C00, packed_13F076
-	load_wram	$7EA000, packed_178000
-	load_wram	$7EC000, packed_1798AD
-	load_wram	$7EE000, packed_17AFDA
+	load_wram	$7E8000, stage2_m7_blocks
+	load_wram	$7E9000, stage2_block_map_0
+	load_wram	$7E9400, stage2_block_map_1
+	load_wram	$7E9800, stage2_block_map_2
+	load_wram	$7E9C00, stage2_block_map_3
+	load_wram	$7EA000, stage2_sprite_tiles_1
+	load_wram	$7EC000, stage2_sprite_tiles_2
+	load_wram	$7EE000, stage2_sprite_tiles_3
 	load_end
 load_list_058687:
 	; CDL: read by load_data_list, init_loader_context, decompress_chunk
@@ -431,10 +431,10 @@ load_list_058687:
 	load_wram	$7FA000, packed_0BD88C
 	load_wram	$7FC000, packed_11CDEA
 	load_wram	$7FE000, packed_11DF75
-	load_wram	$7E5000, packed_0FEDEA
-	load_wram	$7E9000, packed_0EF366
-	load_wram	$7EB000, packed_0FF83B
-	load_wram	$7EF000, packed_0FFDB7
+	load_wram	$7E5000, stage4_bg1_metatiles
+	load_wram	$7E9000, stage4_bg1_map
+	load_wram	$7EB000, stage4_bg2_metatiles
+	load_wram	$7EF000, stage4_bg2_map
 	load_end
 ; D-pad sequence of check_button_code_unused (never run): right, down,
 ; down+right.
@@ -761,11 +761,11 @@ load_list_058ADD:
 load_list_058AE6:
 	; CDL: read by load_data_list, run_pending_loads, init_loader_context (+4 more)
 	load_list	$01, $00
-	load_wram	$7E5000, packed_0AB064
-	load_wram	$7E9000, packed_0AD871
-	load_wram	$7EB000, packed_0AC13B
-	load_wram	$7E7000, packed_0ACDBC
-	load_wram	$7EF000, packed_0ADE6D
+	load_wram	$7E5000, stage1_bg1_metatiles
+	load_wram	$7E9000, stage1_bg1_map
+	load_wram	$7EB000, stage1_bg2_metatiles
+	load_wram	$7E7000, stage1_bg1_metatiles_2
+	load_wram	$7EF000, stage1_bg2_map
 	load_end
 load_list_058B08:
 	load_list	$00, $00
@@ -794,12 +794,12 @@ palette_task_058B4C:
 load_list_058B5D:
 	; CDL: read by load_data_list, run_pending_loads, init_loader_context (+2 more)
 	load_list	$01, $00
-	load_wram	$7E5000, packed_0D8CC4
-	load_wram	$7E9000, packed_0EF5A2
-	load_wram	$7EB000, packed_0D8000
-	load_wram	$7E7000, packed_0D9C9E
-	load_wram	$7EF000, packed_0DA5E5
-	load_wram	$7EA000, packed_0EE8B1
+	load_wram	$7E5000, stage3_bg1_metatiles
+	load_wram	$7E9000, stage3_bg1_map
+	load_wram	$7EB000, stage3_bg2_metatiles
+	load_wram	$7E7000, stage3_bg1_metatiles_2
+	load_wram	$7EF000, stage3_bg2_map
+	load_wram	$7EA000, stage3_funnel_cloud_tiles
 	load_end
 load_list_058B85:
 	load_list	$00, $00
@@ -835,10 +835,10 @@ palette_task_058BE7:
 load_list_058BF8:
 	; CDL: read by load_data_list, run_pending_loads, init_loader_context (+2 more)
 	load_list	$01, $00
-	load_wram	$7E5000, packed_0FEDEA
-	load_wram	$7E9000, packed_0EF366
-	load_wram	$7EB000, packed_0FF83B
-	load_wram	$7EF000, packed_0FFDB7
+	load_wram	$7E5000, stage4_bg1_metatiles
+	load_wram	$7E9000, stage4_bg1_map
+	load_wram	$7EB000, stage4_bg2_metatiles
+	load_wram	$7EF000, stage4_bg2_map
 	load_end
 load_list_058C14:
 	load_list	$00, $00
@@ -869,12 +869,12 @@ palette_task_058C62:
 load_list_058C6F:
 	; CDL: read by load_data_list, run_pending_loads, init_loader_context (+4 more)
 	load_list	$01, $00
-	load_wram	$7E5000, packed_19DB20
-	load_wram	$7E7000, packed_09FA34
-	load_wram	$7E9000, packed_10F1FE
-	load_wram	$7EB000, packed_16DF52
-	load_wram	$7EF000, packed_10F731
-	load_wram	$7EA000, packed_11B7AF
+	load_wram	$7E5000, stage6_bg1_metatiles
+	load_wram	$7E7000, stage6_bg1_metatiles_2
+	load_wram	$7E9000, stage6_bg1_map
+	load_wram	$7EB000, stage6_bg2_metatiles
+	load_wram	$7EF000, stage6_bg2_map
+	load_wram	$7EA000, stage6_bg_anim_tiles
 	load_end
 load_list_058C97:
 	load_list	$00, $00
@@ -1492,7 +1492,7 @@ load_list_059EF3:
 	load_end
 load_list_059EFC:
 	load_list	$01, $01
-	load_wram	$7EA000, packed_09E638
+	load_wram	$7EA000, stage1_bomber_m7_chars
 	load_end
 ; update_song_change_trigger (type $4D), by field $3A: song_change_mode. Only
 ; one entry; the words after it are other data.
@@ -1551,7 +1551,7 @@ stage3_funnel_cloud_tile_frames:
 load_list_059FBA:
 	; CDL: read by load_data_list, init_loader_context, decompress_chunk (+1 more); DMA / HDMA; partly not accessed
 	load_list	$01, $01
-	load_wram	$7EA000, packed_0A9BC6
+	load_wram	$7EA000, stage1_bomber_fire_tiles
 	load_end
 hdma_table_059FC4:
 	.byte	$7F, $20, $21, $20, $80, $02
@@ -2085,8 +2085,8 @@ palette_task_05A845:
 load_list_05A84B:
 	; CDL: read by load_data_list, init_loader_context, load_wram_stream (+1 more)
 	load_list	$01, $00
-	load_wram	$7E9000, packed_07F552
-	load_wram	$7E5000, packed_15D80A
+	load_wram	$7E9000, opening_bg1_map
+	load_wram	$7E5000, opening_bg1_metatiles
 	load_end
 ; HDMA table copied to $7E:A000 for the city scene (opening_city_init,
 ; hdma_preset $0D).
@@ -3943,14 +3943,14 @@ load_list_05CF4A:
 load_list_05CF7E:
 	; CDL: read by load_data_list, init_loader_context, load_wram_stream (+3 more)
 	load_list	$01, $00
-	load_wram	$7E8000, packed_13E420
-	load_wram	$7E9000, packed_13ED3A
-	load_wram	$7E9400, packed_13EE4E
-	load_wram	$7E9800, packed_13EF62
-	load_wram	$7E9C00, packed_13F076
-	load_wram	$7EA000, packed_178000
-	load_wram	$7EC000, packed_1798AD
-	load_wram	$7EE000, packed_17AFDA
+	load_wram	$7E8000, stage2_m7_blocks
+	load_wram	$7E9000, stage2_block_map_0
+	load_wram	$7E9400, stage2_block_map_1
+	load_wram	$7E9800, stage2_block_map_2
+	load_wram	$7E9C00, stage2_block_map_3
+	load_wram	$7EA000, stage2_sprite_tiles_1
+	load_wram	$7EC000, stage2_sprite_tiles_2
+	load_wram	$7EE000, stage2_sprite_tiles_3
 	load_end
 palette_task_05CFB2:
 	palette_animate	$00, $00
@@ -3969,13 +3969,13 @@ load_list_05CFCF:
 load_list_05CFD8:
 	; CDL: read by load_data_list, init_loader_context, load_wram_stream (+3 more)
 	load_list	$01, $00
-	load_wram	$7E8000, packed_13F18A
-	load_wram	$7E9000, packed_13F4A5
-	load_wram	$7E9400, packed_13F4EF
-	load_wram	$7E9800, packed_13F545
-	load_wram	$7E9C00, packed_13F569
-	load_wram	$7EA000, packed_149C93
-	load_wram	$7EC000, packed_1497F0
+	load_wram	$7E8000, stage2_boss_m7_blocks
+	load_wram	$7E9000, stage2_boss_block_map_0
+	load_wram	$7E9400, stage2_boss_block_map_1
+	load_wram	$7E9800, stage2_boss_block_map_2
+	load_wram	$7E9C00, stage2_boss_block_map_3
+	load_wram	$7EA000, stage2_boss_sprite_tiles
+	load_wram	$7EC000, stage2_boss_m7_chars
 	load_end
 palette_task_05D006:
 	palette_animate	$00, $00
@@ -3993,13 +3993,13 @@ load_list_05D01F:
 load_list_05D028:
 	; CDL: read by load_data_list, init_loader_context, load_wram_stream (+3 more)
 	load_list	$01, $00
-	load_wram	$7E8000, packed_15A477
-	load_wram	$7E9000, packed_15A9EA
-	load_wram	$7E9400, packed_15AAFE
-	load_wram	$7E9800, packed_15AC12
-	load_wram	$7E9C00, packed_15AD26
-	load_wram	$7EA000, packed_15AE2E
-	load_wram	$7EC000, packed_15C2B3
+	load_wram	$7E8000, stage5_m7_blocks
+	load_wram	$7E9000, stage5_block_map_0
+	load_wram	$7E9400, stage5_block_map_1
+	load_wram	$7E9800, stage5_block_map_2
+	load_wram	$7E9C00, stage5_block_map_3
+	load_wram	$7EA000, stage5_sprite_tiles_1
+	load_wram	$7EC000, stage5_sprite_tiles_2
 	load_end
 palette_task_05D056:
 	palette_animate	$00, $00
@@ -4018,13 +4018,13 @@ load_list_05D073:
 load_list_05D07C:
 	; CDL: read by load_data_list, init_loader_context, load_wram_stream (+3 more); partly not accessed
 	load_list	$01, $00
-	load_wram	$7E8000, packed_16A8FE
-	load_wram	$7E9000, packed_16AE8B
-	load_wram	$7E9400, packed_16AEF6
-	load_wram	$7E9800, packed_16B004
-	load_wram	$7E9C00, packed_16B115
-	load_wram	$7EA000, packed_16B623
-	load_wram	$7EC000, packed_16B174
+	load_wram	$7E8000, stage5_boss_m7_blocks
+	load_wram	$7E9000, stage5_boss_block_map_0
+	load_wram	$7E9400, stage5_boss_block_map_1
+	load_wram	$7E9800, stage5_boss_block_map_2
+	load_wram	$7E9C00, stage5_boss_block_map_3
+	load_wram	$7EA000, stage5_boss_sprite_tiles
+	load_wram	$7EC000, stage5_boss_m7_chars
 	load_end
 palette_task_05D0AA:
 	palette_animate	$00, $00

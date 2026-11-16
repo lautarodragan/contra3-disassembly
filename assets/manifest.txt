@@ -140,34 +140,34 @@ sound/spc_song_stage1            lz-v2  max=$2000
 sound/spc_song_stage4            lz-v1  max=$2000
 sound/spc_song_stage5            lz-v1  max=$2000
 sound/spc_song_stage6            lz-v2  max=$2000
-wram/packed_07F552               lz-v1  max=$1000
-wram/packed_09E638               lz-v1  max=$1000
-wram/packed_09FA34               lz-v2  max=$1000
-wram/packed_0A9BC6               lz-v2  max=$1000
-wram/packed_0AB064               lz-v2  max=$2000
-wram/packed_0AC13B               lz-v1  max=$3000
-wram/packed_0ACDBC               lz-v2  max=$2000
-wram/packed_0AD871               lz-v1  max=$1000
-wram/packed_0ADE6D               lz-v1  max=$0800
+wram/opening_bg1_map             lz-v1  max=$1000
+wram/stage1_bomber_m7_chars      lz-v1  png=mode7 tiles=63 tail=50 max=$1000
+wram/stage6_bg1_metatiles_2      lz-v2  max=$1000
+wram/stage1_bomber_fire_tiles    lz-v2  png=4bpp tiles=112 max=$1000
+wram/stage1_bg1_metatiles        lz-v2  max=$2000
+wram/stage1_bg2_metatiles        lz-v1  max=$3000
+wram/stage1_bg1_metatiles_2      lz-v2  max=$2000
+wram/stage1_bg1_map              lz-v1  max=$1000
+wram/stage1_bg2_map              lz-v1  max=$0800
 wram/packed_0B8000               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_0B935C               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_0BAA9C               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_0BBCFD               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_0BC6A1               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_0BD88C               lz-v2  png=4bpp tiles=256 max=$2000
-wram/packed_0D8000               lz-v1  max=$3000
-wram/packed_0D8CC4               lz-v1  max=$2000
-wram/packed_0D9C9E               lz-v1  max=$2000
-wram/packed_0DA5E5               lz-v1  max=$0800
-wram/packed_0EE8B1               lz-v2  max=$1000
-wram/packed_0EF366               lz-v1  max=$1000
-wram/packed_0EF5A2               lz-v1  max=$1000
-wram/packed_0FEDEA               lz-v1  max=$2000
-wram/packed_0FF83B               lz-v1  max=$1000
-wram/packed_0FFDB7               lz-v1  max=$0800
-wram/packed_10F1FE               lz-v1  max=$1000
-wram/packed_10F731               lz-v1  max=$0800
-wram/packed_11B7AF               lz-v2  max=$1000
+wram/stage3_bg2_metatiles        lz-v1  max=$3000
+wram/stage3_bg1_metatiles        lz-v1  max=$2000
+wram/stage3_bg1_metatiles_2      lz-v1  max=$2000
+wram/stage3_bg2_map              lz-v1  max=$0800
+wram/stage3_funnel_cloud_tiles   lz-v2  png=4bpp tiles=96 max=$1000
+wram/stage4_bg1_map              lz-v1  max=$1000
+wram/stage3_bg1_map              lz-v1  max=$1000
+wram/stage4_bg1_metatiles        lz-v1  max=$2000
+wram/stage4_bg2_metatiles        lz-v1  max=$1000
+wram/stage4_bg2_map              lz-v1  max=$0800
+wram/stage6_bg1_map              lz-v1  max=$1000
+wram/stage6_bg2_map              lz-v1  max=$0800
+wram/stage6_bg_anim_tiles        lz-v2  png=4bpp tiles=96 tail=F1 max=$1000
 wram/packed_11CDEA               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_11DF75               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_128000               lz-v2  png=4bpp tiles=256 max=$2000
@@ -178,38 +178,38 @@ wram/packed_12CFEE               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_12E60A               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_138000               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_139567               lz-v2  png=4bpp tiles=256 max=$2000
-wram/packed_13E420               lz-v1  max=$2000
-wram/packed_13ED3A               lz-v2  max=$0400
-wram/packed_13EE4E               lz-v2  max=$0400
-wram/packed_13EF62               lz-v2  max=$0400
-wram/packed_13F076               lz-v2  max=$0400
-wram/packed_13F18A               lz-v1  max=$1000
-wram/packed_13F4A5               lz-v2  max=$0400
-wram/packed_13F4EF               lz-v2  max=$0400
-wram/packed_13F545               lz-v2  max=$0400
-wram/packed_13F569               lz-v2  max=$0400
-wram/packed_1497F0               lz-v1  max=$2000
-wram/packed_149C93               lz-v2  max=$2000
-wram/packed_15A477               lz-v2  max=$1000
-wram/packed_15A9EA               lz-v2  max=$0400
-wram/packed_15AAFE               lz-v2  max=$0400
-wram/packed_15AC12               lz-v2  max=$0400
-wram/packed_15AD26               lz-v2  max=$0400
-wram/packed_15AE2E               lz-v2  max=$2000
-wram/packed_15C2B3               lz-v2  max=$2000
-wram/packed_15D80A               lz-v1  max=$2000
-wram/packed_16A8FE               lz-v2  max=$1000
-wram/packed_16AE8B               lz-v1  max=$0400
-wram/packed_16AEF6               lz-v2  max=$0400
-wram/packed_16B004               lz-v2  max=$0400
-wram/packed_16B115               lz-v1  max=$0400
-wram/packed_16B174               lz-v2  max=$2000
-wram/packed_16B623               lz-v2  max=$1000
-wram/packed_16DF52               lz-v1  max=$3000
-wram/packed_178000               lz-v2  max=$2000
-wram/packed_1798AD               lz-v2  max=$2000
-wram/packed_17AFDA               lz-v2  max=$1000
-wram/packed_19DB20               lz-v2  max=$2000
+wram/stage2_m7_blocks            lz-v1  max=$2000
+wram/stage2_block_map_0          lz-v2  max=$0400
+wram/stage2_block_map_1          lz-v2  max=$0400
+wram/stage2_block_map_2          lz-v2  max=$0400
+wram/stage2_block_map_3          lz-v2  max=$0400
+wram/stage2_boss_m7_blocks       lz-v1  max=$1000
+wram/stage2_boss_block_map_0     lz-v2  max=$0400
+wram/stage2_boss_block_map_1     lz-v2  max=$0400
+wram/stage2_boss_block_map_2     lz-v2  max=$0400
+wram/stage2_boss_block_map_3     lz-v2  max=$0400
+wram/stage2_boss_m7_chars        lz-v1  png=mode7 tiles=72 tail=00 max=$2000
+wram/stage2_boss_sprite_tiles    lz-v2  png=4bpp tiles=172 tail=00 max=$2000
+wram/stage5_m7_blocks            lz-v2  max=$1000
+wram/stage5_block_map_0          lz-v2  max=$0400
+wram/stage5_block_map_1          lz-v2  max=$0400
+wram/stage5_block_map_2          lz-v2  max=$0400
+wram/stage5_block_map_3          lz-v2  max=$0400
+wram/stage5_sprite_tiles_1       lz-v2  png=4bpp tiles=256 max=$2000
+wram/stage5_sprite_tiles_2       lz-v2  png=4bpp tiles=256 max=$2000
+wram/opening_bg1_metatiles       lz-v1  max=$2000
+wram/stage5_boss_m7_blocks       lz-v2  max=$1000
+wram/stage5_boss_block_map_0     lz-v1  max=$0400
+wram/stage5_boss_block_map_1     lz-v2  max=$0400
+wram/stage5_boss_block_map_2     lz-v2  max=$0400
+wram/stage5_boss_block_map_3     lz-v1  max=$0400
+wram/stage5_boss_m7_chars        lz-v2  png=mode7 tiles=40 tail=00 max=$2000
+wram/stage5_boss_sprite_tiles    lz-v2  png=4bpp tiles=100 max=$1000
+wram/stage6_bg2_metatiles        lz-v1  max=$3000
+wram/stage2_sprite_tiles_1       lz-v2  png=4bpp tiles=256 max=$2000
+wram/stage2_sprite_tiles_2       lz-v2  png=4bpp tiles=256 max=$2000
+wram/stage2_sprite_tiles_3       lz-v2  png=4bpp tiles=112 max=$1000
+wram/stage6_bg1_metatiles        lz-v2  max=$2000
 palettes/palette_088000          raw    gpl=block
 palettes/palette_088022          raw    gpl=block
 palettes/palette_088044          raw    gpl=block

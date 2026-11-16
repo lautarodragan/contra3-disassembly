@@ -11,22 +11,26 @@
 ; Other blocks start at a CDL comment.
 
 	; CDL: read by decompress_chunk
-packed_0D8000:
+stage3_bg2_metatiles:
 	; Compressed data for WRAM $7E:B000, $0D:8000-$0D:8CC3 (from its length word), loaded by load_list_058B5D.
+	; Stage 3: BG2 metatiles (as BG1, map base $A000).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_0D8000.lz"
-packed_0D8CC4:
+	.incbin	"wram/stage3_bg2_metatiles.lz"
+stage3_bg1_metatiles:
 	; Compressed data for WRAM $7E:5000, $0D:8CC4-$0D:9C9D (from its length word), loaded by load_list_058B5D.
+	; Stage 3: BG1 metatiles from number 0 (4x4 tilemap words each, $20 bytes; draw_bg_column / draw_bg_row, map base $4000).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_0D8CC4.lz"
-packed_0D9C9E:
+	.incbin	"wram/stage3_bg1_metatiles.lz"
+stage3_bg1_metatiles_2:
 	; Compressed data for WRAM $7E:7000, $0D:9C9E-$0D:A5E4 (from its length word), loaded by load_list_058B5D.
+	; Stage 3: BG1 metatiles $100 and up (they continue stage3_bg1_metatiles at $7E:7000).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_0D9C9E.lz"
-packed_0DA5E5:
+	.incbin	"wram/stage3_bg1_metatiles_2.lz"
+stage3_bg2_map:
 	; Compressed data for WRAM $7E:F000, $0D:A5E5-$0D:A727 (from its length word), loaded by load_list_058B5D.
+	; Stage 3: BG2 map (as BG1).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_0DA5E5.lz"
+	.incbin	"wram/stage3_bg2_map.lz"
 gfx_0DA728:
 	; ASSET: compressed graphics (VRAM), $0D:A728-$0D:BCEA (from its length word), loaded by load_list_058AD4
 	.incbin	"gfx/gfx_0DA728.lz"

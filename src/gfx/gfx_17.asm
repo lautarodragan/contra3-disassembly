@@ -11,18 +11,21 @@
 ; Other blocks start at a CDL comment.
 
 	; CDL: read by decompress_chunk
-packed_178000:
+stage2_sprite_tiles_1:
 	; Compressed data for WRAM $7E:A000, $17:8000-$17:98AC (from its length word), loaded by load_list_058623, load_list_05CF7E.
+	; Stage 2: 4bpp sprite tiles, DMAd to VRAM $4000 by stream_topdown_sprite_gfx (td_tiles records in $7E).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_178000.lz"
-packed_1798AD:
+	.incbin	"wram/stage2_sprite_tiles_1.lz"
+stage2_sprite_tiles_2:
 	; Compressed data for WRAM $7E:C000, $17:98AD-$17:AFD9 (from its length word), loaded by load_list_058623, load_list_05CF7E.
+	; Stage 2: 4bpp sprite tiles, DMAd to VRAM $4000 by stream_topdown_sprite_gfx (td_tiles records in $7E).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_1798AD.lz"
-packed_17AFDA:
+	.incbin	"wram/stage2_sprite_tiles_2.lz"
+stage2_sprite_tiles_3:
 	; Compressed data for WRAM $7E:E000, $17:AFDA-$17:B952 (from its length word), loaded by load_list_058623, load_list_05CF7E.
+	; Stage 2: 4bpp sprite tiles, DMAd to VRAM $4000 by stream_topdown_sprite_gfx (td_tiles records in $7E).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_17AFDA.lz"
+	.incbin	"wram/stage2_sprite_tiles_3.lz"
 gfx_17B953:
 	; ASSET: compressed graphics (VRAM), $17:B953-$17:CE4C (from its length word), loaded by load_list_05A7DB
 	.incbin	"gfx/gfx_17B953.lz"

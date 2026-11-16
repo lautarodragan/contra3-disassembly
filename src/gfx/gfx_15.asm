@@ -14,38 +14,46 @@
 gfx_158000:
 	; ASSET: compressed graphics (VRAM), $15:8000-$15:A476 (from its length word), loaded by load_list_05D01F
 	.incbin	"gfx/gfx_158000.lz"
-packed_15A477:
+stage5_m7_blocks:
 	; Compressed data for WRAM $7E:8000, $15:A477-$15:A9E9 (from its length word), loaded by load_list_05D028.
+	; Stage 5: Mode 7 block definitions, $20 bytes per 4x4-tile block (tile numbers in the even bytes; expand_m7_block, queue_m7_block_patch).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_15A477.lz"
-packed_15A9EA:
+	.incbin	"wram/stage5_m7_blocks.lz"
+stage5_block_map_0:
 	; Compressed data for WRAM $7E:9000, $15:A9EA-$15:AAFD (from its length word), loaded by load_list_05D028.
+	; Stage 5: block map, rows 0-7 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_15A9EA.lz"
-packed_15AAFE:
+	.incbin	"wram/stage5_block_map_0.lz"
+stage5_block_map_1:
 	; Compressed data for WRAM $7E:9400, $15:AAFE-$15:AC11 (from its length word), loaded by load_list_05D028.
+	; Stage 5: block map, rows 8-15 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_15AAFE.lz"
-packed_15AC12:
+	.incbin	"wram/stage5_block_map_1.lz"
+stage5_block_map_2:
 	; Compressed data for WRAM $7E:9800, $15:AC12-$15:AD25 (from its length word), loaded by load_list_05D028.
+	; Stage 5: block map, rows 16-23 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_15AC12.lz"
-packed_15AD26:
+	.incbin	"wram/stage5_block_map_2.lz"
+stage5_block_map_3:
 	; Compressed data for WRAM $7E:9C00, $15:AD26-$15:AE2D (from its length word), loaded by load_list_05D028.
+	; Stage 5: block map, rows 24-31 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_15AD26.lz"
-packed_15AE2E:
+	.incbin	"wram/stage5_block_map_3.lz"
+stage5_sprite_tiles_1:
 	; Compressed data for WRAM $7E:A000, $15:AE2E-$15:C2B2 (from its length word), loaded by load_list_05D028.
+	; Stage 5: 4bpp sprite tiles, DMAd to VRAM $4000 by stream_topdown_sprite_gfx (td_tiles records in $7E).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_15AE2E.lz"
-packed_15C2B3:
+	.incbin	"wram/stage5_sprite_tiles_1.lz"
+stage5_sprite_tiles_2:
 	; Compressed data for WRAM $7E:C000, $15:C2B3-$15:D809 (from its length word), loaded by load_list_05D028.
+	; Stage 5: 4bpp sprite tiles, DMAd to VRAM $4000 by stream_topdown_sprite_gfx (td_tiles records in $7E).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_15C2B3.lz"
-packed_15D80A:
+	.incbin	"wram/stage5_sprite_tiles_2.lz"
+opening_bg1_metatiles:
 	; Compressed data for WRAM $7E:5000, $15:D80A-$15:DCD8 (from its length word), loaded by load_list_05A84B.
+	; Opening cinematic (stage 0): BG1 metatiles from number 0 (4x4 tilemap words each, $20 bytes; draw_bg_column / draw_bg_row, map base $4000).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_15D80A.lz"
+	.incbin	"wram/opening_bg1_metatiles.lz"
 gfx_15DCD9:
 	; ASSET: compressed graphics (VRAM), $15:DCD9-$15:F396 (from its length word), loaded by load_list_059EEA, load_list_05F8D1
 	.incbin	"gfx/gfx_15DCD9.lz"

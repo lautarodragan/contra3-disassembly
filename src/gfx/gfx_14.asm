@@ -14,14 +14,16 @@
 gfx_148000:
 	; ASSET: compressed graphics (VRAM), $14:8000-$14:97EF (from its length word), loaded by load_list_05CFCF
 	.incbin	"gfx/gfx_148000.lz"
-packed_1497F0:
+stage2_boss_m7_chars:
 	; Compressed data for WRAM $7E:C000, $14:97F0-$14:9C92 (from its length word), loaded by load_list_05CFD8.
+	; Stage 2 boss map: Mode 7 characters of the boss, 3 frames of $600 bytes (stage2_boss_chr_sources), DMAd to VRAM $0040 (high bytes) by stream_topdown_sprite_gfx.
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_1497F0.lz"
-packed_149C93:
+	.incbin	"wram/stage2_boss_m7_chars.lz"
+stage2_boss_sprite_tiles:
 	; Compressed data for WRAM $7E:A000, $14:9C93-$14:A86C (from its length word), loaded by load_list_05CFD8.
+	; Stage 2 boss map: 4bpp sprite tiles, DMAd to VRAM $4000 by stream_topdown_sprite_gfx (td_tiles records in $7E).
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_149C93.lz"
+	.incbin	"wram/stage2_boss_sprite_tiles.lz"
 gfx_14A86D:
 	; ASSET: compressed graphics (VRAM), $14:A86D-$14:BC61 (from its length word), loaded by load_list_05CF33
 	.incbin	"gfx/gfx_14A86D.lz"

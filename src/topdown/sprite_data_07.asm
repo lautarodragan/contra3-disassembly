@@ -7013,10 +7013,11 @@ gfx_07E9FE:
 	.byte	$0B, $85, $3F, $E1, $1F, $3E, $01, $02, $13, $1B, $A7, $01, $8D, $01, $49, $03
 	.byte	$83, $03, $91, $01, $43, $C1, $30, $0F, $0C, $01, $59, $01, $57, $01, $55, $01
 	.byte	$53, $09, $4F, $E0
-packed_07F552:
+opening_bg1_map:
 	; Compressed data for WRAM $7E:9000, $07:F552-$07:F78D (from its length word), loaded by load_list_05A84B.
+	; Opening cinematic (stage 0): BG1 map, one word per metatile (byte offset of the metatile, bits 14-15 flip), 8x8 metatiles per $80-byte page.
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_07F552.lz"
+	.incbin	"wram/opening_bg1_map.lz"
 gfx_07F78E:
 	; ASSET: compressed graphics (VRAM), $07:F78E-$07:F902 (from its length word), loaded by load_list_05FDB3
 	.incbin	"gfx/gfx_07F78E.lz"

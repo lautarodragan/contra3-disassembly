@@ -47,16 +47,19 @@ gfx_0EDA4E:
 gfx_0EDD88:
 	; ASSET: compressed graphics (VRAM), $0E:DD88-$0E:E8B0 (from its length word), loaded by load_list_058B2F, load_list_059E70
 	.incbin	"gfx/gfx_0EDD88.lz"
-packed_0EE8B1:
+stage3_funnel_cloud_tiles:
 	; Compressed data for WRAM $7E:A000, $0E:E8B1-$0E:F365 (from its length word), loaded by load_list_058B5D.
+	; Stage 3: 4 frames ($300 apart, $2E0 used) of 4bpp BG tiles, DMAd to VRAM $0E80 by update_stage3_funnel_clouds.
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_0EE8B1.lz"
-packed_0EF366:
+	.incbin	"wram/stage3_funnel_cloud_tiles.lz"
+stage4_bg1_map:
 	; Compressed data for WRAM $7E:9000, $0E:F366-$0E:F5A1 (from its length word), loaded by load_list_058687, load_list_058BF8.
+	; Stage 4: BG1 map, one word per metatile (byte offset of the metatile, bits 14-15 flip), 8x8 metatiles per $80-byte page.
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_0EF366.lz"
-packed_0EF5A2:
+	.incbin	"wram/stage4_bg1_map.lz"
+stage3_bg1_map:
 	; Compressed data for WRAM $7E:9000, $0E:F5A2-$0E:FB9C (from its length word), loaded by load_list_058B5D.
+	; Stage 3: BG1 map, one word per metatile (byte offset of the metatile, bits 14-15 flip), 8x8 metatiles per $80-byte page.
 	; What it decompresses to is not checked for pointers (none known).
-	.incbin	"wram/packed_0EF5A2.lz"
+	.incbin	"wram/stage3_bg1_map.lz"
 	; The rest of the bank is free: filled with $FF by the linker (contra3.cfg).
