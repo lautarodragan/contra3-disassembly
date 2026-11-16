@@ -6104,15 +6104,22 @@ data_05F154:
 data_05F156:
 	; CDL: read by snake_robot_state_00
 	.byte	$80, $04
-data_05F158:
+; Object slots of the snake robot: the first group of 8 is data_05F156 (its
+; first slot) and this table; this label, past the first slot, is reached
+; through ptrs_05F17E. All 16 slots are also read through data_05F156,y.
+snake_robot_slots_a_rest:
 	; LAYOUT: read on from data_05F156 (lda a:data_05F156,y)
 	; CDL: read by snake_robot_state_00
 	.byte	$40, $04, $00, $04, $C0, $03, $80, $03, $40, $03, $00, $03, $C0, $04
-data_05F166:
+; The second group of 8 object slots of the snake robot (through ptrs_05F182,
+; and read on from data_05F156).
+snake_robot_slots_b:
 	; LAYOUT: read on from data_05F156 (lda a:data_05F156,y)
 	; CDL: read by snake_robot_state_00
 	.byte	$80, $05
-data_05F168:
+; The second group past its first slot (through ptrs_05F17E, and read on from
+; data_05F156).
+snake_robot_slots_b_rest:
 	; LAYOUT: read on from data_05F156 (lda a:data_05F156,y)
 	; CDL: read by snake_robot_state_00
 	.byte	$C0, $05, $00, $06, $40, $06, $80, $06, $C0, $06, $00, $07, $40, $05
@@ -6127,11 +6134,11 @@ data_05F17C:
 	; CDL: read by sub_04CB63
 	.byte	$08, $00
 ptrs_05F17E:
-	.addr	data_05F158
-	.addr	data_05F168
+	.addr	snake_robot_slots_a_rest
+	.addr	snake_robot_slots_b_rest
 ptrs_05F182:
 	.addr	data_05F156
-	.addr	data_05F166
+	.addr	snake_robot_slots_b
 data_05F186:
 	; CDL: read by snake_robot_state_00
 	.byte	$00, $03
@@ -6922,9 +6929,7 @@ load_list_05FF30:
 data_05FF3E:
 	; CDL: read by brain_boss_init_minion
 	.byte	$1C, $00, $3D, $40, $00, $40, $3F, $40, $3D, $40, $3D, $40, $1F, $00, $3F
-data_05FF4D:
-	; LAYOUT: read on from data_05FF3E (lda a:data_05FF3E,y)
-	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, brain_boss_init_minion; partly not accessed
+	; (last byte of the table, read through data_05FF3E,y)
 	.byte	$40
 hdma_list_05FF4E:
 	hdma_channel_ind	$4370, $42, $10, $7EEA00, $7E
@@ -6946,16 +6951,12 @@ data_05FF77:
 data_05FF87:
 	; CDL: read by brain_boss_attack_4_step_01, brain_boss_attack_4_step_04
 	.byte	$00, $04, $40
-data_05FF8A:
-	; LAYOUT: read on from data_05FF87 (lda a:data_05FF87,y)
-	; CDL: read by brain_boss_attack_4_step_01
+	; (last byte of the table, read through data_05FF87,y)
 	.byte	$05
 data_05FF8B:
 	; CDL: read by brain_boss_attack_4_step_02
 	.byte	$74, $00, $8C
-data_05FF8E:
-	; LAYOUT: read on from data_05FF8B (cmp a:data_05FF8B,y)
-	; CDL: read by brain_boss_attack_4_step_02
+	; (the rest of the table, read through data_05FF8B,y)
 	.byte	$00, $80, $00, $80, $00
 data_05FF93:
 	; CDL: read by brain_boss_attack_4_step_02
