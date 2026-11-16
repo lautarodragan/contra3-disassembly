@@ -143,14 +143,33 @@ def test_bin_too_big_is_rejected(tmp_path, manifest):
     assert len(errs) == 1 and "1,025 bytes" in errs[0] and "stage2_block_map_2" in errs[0]
 
 
-def test_raw_sound_block_must_match_its_size_word(tmp_path, manifest):
-    path = next(p for p in manifest if p.startswith("sound/") and manifest[p].kind == "raw"
-                and os.path.getsize(os.path.join(ROOT, manifest[p].source)) == 0x100)
-    root, a = scratch(tmp_path, manifest, path)
+def test_raw_sound_block_must_match_its_size_word(tmp_path):
+    # a load_spc_raw entry with a number as its size uploads that many bytes
+    root = tmp_path / "root"
+    (root / "assets" / "sound").mkdir(parents=True)
+    (root / "assets" / "manifest.txt").write_text("sound/block_x raw\n")
+    (root / "assets" / "sound" / "block_x.bin").write_bytes(bytes(0x100))
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "lists.asm").write_text(
+        "song_set_x:\n\tload_list\t$02, $00\n\tload_spc_raw\t$5000, block_x, $0100\n\tload_end\n")
+    found = assets.read_manifest(str(root))
+    assert asset_limits.check(found, str(root), str(src)) == []
+    (root / "assets" / "sound" / "block_x.bin").write_bytes(bytes(0x101))
+    errs = asset_limits.check(found, str(root), str(src))
+    assert len(errs) == 1 and "exactly 256 ($0100)" in errs[0] and "load_spc_raw" in errs[0]
+
+
+def test_raw_song_too_big_is_rejected(tmp_path, manifest):
+    # an uncompressed song (its size word is <label>_size, computed): the
+    # song area is $3000-$4FFF, the sample directory is at $5000
+    root, a = scratch(tmp_path, manifest, "sound/spc_song_boss")
+    assert a.options["max"] == "$2000"
+    open(os.path.join(root, a.source), "wb").write(bytes(0x2000))
     assert errors(root) == []
     open(os.path.join(root, a.source), "ab").write(b"\x00")
     errs = errors(root)
-    assert len(errs) == 1 and "exactly 256 ($0100)" in errs[0] and "load_spc_raw" in errs[0]
+    assert len(errs) == 1 and "8,193 bytes" in errs[0] and "$5000" in errs[0]
 
 
 def test_stream_larger_than_a_bank_is_rejected(tmp_path, manifest):
@@ -212,3 +231,33 @@ def test_bank_overflow_names_the_assets():
     msg = asset_limits.ld65_diagnosis(out, SRC, [os.path.join(ROOT, d) for d in assets.INCLUDE_DIRS])
     assert "bank $0A is 3,574 bytes too full" in msg
     assert "wram/stage1_bg1_metatiles.lz" in msg and "cannot cross" in msg
+
+
+def test_palette_block_too_big_is_rejected(tmp_path, manifest):
+    # palette_088AF2: 1 colour at palette_buffer $2250; palette_task_0587C3
+    # copies palette_088000 to $2260: room for 8 colours (+ the size word)
+    root, a = scratch(tmp_path, manifest, "palettes/palette_088AF2")
+    assert a.options["max"] == "$0012"
+    gpl = os.path.join(root, a.source)
+    lines = open(gpl).read().rstrip("\n").split("\n")
+    colour = lines[-1]
+    open(gpl, "w").write("\n".join(lines + [colour] * 7) + "\n")
+    assert errors(root) == []
+    open(gpl, "a").write(colour + "\n")
+    errs = errors(root)
+    assert len(errs) == 1 and "20 bytes" in errs[0] and "palette_088000" in errs[0]
+
+
+def test_limit_set_by_hand(tmp_path, manifest):
+    # a max= raised by hand needs its reason in a "# limit:" comment
+    root, a = scratch(tmp_path, manifest, "wram/stage2_block_map_1", {"max": "$0500"})
+    assets.build(root)
+    found = assets.read_manifest(root)
+    assert asset_limits.verify(found, root, SRC)       # not what the source gives
+    path = os.path.join(root, assets.MANIFEST)
+    line = open(path).read().rstrip("\n")
+    open(path, "w").write(line + "  # limit: tested, the space up to $7E:9900 is free\n")
+    assert asset_limits.verify(found, root, SRC) == []
+    open(os.path.join(root, a.source), "ab").write(bytes(0x500))
+    errs = errors(root)
+    assert len(errs) == 1 and "set by hand: tested" in errs[0]

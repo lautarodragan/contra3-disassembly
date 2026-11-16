@@ -3,8 +3,9 @@
 Assets, "Size limits").
 
 The game decompresses a stream to the address its data list gives, until the
-stream ends: nothing checks the size, so a bigger asset overwrites whatever
-follows it in VRAM, WRAM or the sound CPU's RAM.  This module works out,
+stream ends, and copies a palette block as long as its size word says:
+nothing checks the size, so a bigger asset overwrites whatever follows it
+in VRAM, WRAM, the sound CPU's RAM or the palette buffer.  This module works out,
 from the source, what follows each asset there, and checks the assets
 against their limits.
 
@@ -19,6 +20,10 @@ whose label starts with `unused_` are never loaded and are left out):
   type 3+    VRAM, one byte per word (the low bytes for the first stream of
              a list with flags bit 0 set, else the high bytes): Mode 7.
 
+and every palette task (palette_animate + palette_copy, palette_fade_in,
+palette_fade_out): a palette block (gpl=block) goes to palette_buffer
+($7E:2200, the copy of CGRAM), its colours only (not its size word).
+
 What follows it (derive): the nearest of
 
   - a block that the same list loads after it and that starts inside it or
@@ -27,31 +32,43 @@ What follows it (derive): the nearest of
   - the start of a block that any list loads in the same space, at or after
     the end of the asset's limit (the blocks that start inside it belong to
     other screens: the original already covers them);
+  - for VRAM, a tilemap or character base that the code sets up (an
+    immediate value stored to BGnSC, BG12NBA, BG34NBA or OBSEL);
   - for WRAM, a label of src/ram.inc (a buffer the code uses) at or after
     that end;
+  - for a palette, the end of the 16-colour palette (32 bytes of CGRAM) it
+    ends in;
   - the end of the space: VRAM's $8000 words (the address wraps to 0), the
-    end of the WRAM bank, and for type 3 the $4000 words of Mode 7's 128x128
-    tilemap (low bytes) and 256 characters (high bytes; tile numbers are 8
-    bits).
+    end of the WRAM bank, the 512 bytes of palette_buffer, and for type 3 the
+    $4000 words of Mode 7's 128x128 tilemap (low bytes) and 256 characters
+    (high bytes; tile numbers are 8 bits).
 
 If nothing but the end of WRAM bank $7E or of the sound CPU's RAM is found,
-the capacity is not known.
+the capacity is not known: the limit is the original size.  These limits
+are upper bounds: what the code writes elsewhere (VRAM by DMA from code,
+WRAM buffers not in ram.inc) is only known where a register value or a
+ram.inc label says so.
 
 The limits are recorded in assets/manifest.txt (`max=`, hex) because they
 depend on the original size (which blocks of other lists are inside it), and
 an edited asset has lost that.  `python3 tools/assets.py limits --verify`
 checks that each recorded limit is still what the source gives (derive() of
-the limit itself), so a changed data list cannot leave a stale limit behind.
-Two kinds of asset have a size that the code fixes, with no `max=`:
+the limit itself), so a changed data list cannot leave a stale limit behind;
+a limit set by hand has its reason in a `# limit: ...` comment on its line.
+Three kinds of asset have a size that is fixed, with no `max=`:
 
-  - an uncompressed sound block (load_spc_raw): its size word;
+  - an uncompressed sound block (load_spc_raw) with a number as its size
+    word: that size (with a symbol, `<label>_size`, the assembler computes
+    it from the data, and the block has a max= like a stream);
   - raw tiles read by td_tiles records (td_sprite_tiles_16): $100 bytes
-    past the record with the largest offset (stream_topdown_sprite_gfx).
+    past the record with the largest offset (stream_topdown_sprite_gfx);
+  - a palette with `colours=N` in the manifest (gpl=colours: checked by
+    tools/snespal.py).
 
 A compressed stream must also stay in its bank: the decompressor reads it
 with [LDR_SRC],y, which carries into the next bank, and in LoROM $xx:0000
 is not the next bank's ROM.  ld65 enforces it (each bank is a memory area of
-$8000 bytes); bank_overflow() names the assets of a bank that overflows.
+$8000 bytes); ld65_diagnosis() names the assets of a bank that overflows.
 """
 import os
 import re
@@ -61,7 +78,11 @@ MODE7_END = 0x4000          # words, one byte each
 SPC_END = 0x10000
 BANK_SIZE = 0x8000          # LoROM bank: $xx:8000-$xx:FFFF
 
+PALETTE_BUFFER = 0x2200     # palette_buffer, $7E:2200 (ram.inc)
+PALETTE_SIZE = 0x200        # CGRAM: 256 colours
+
 SPACE_NAMES = {
+    "cgram": "palette_buffer",
     "vram": "VRAM",
     "m7lo": "VRAM (Mode 7 tilemap, low bytes)",
     "m7hi": "VRAM (Mode 7 characters, high bytes)",
@@ -81,6 +102,10 @@ class Entry:
         if macro == "load_spc_raw":
             self.dest, self.label = args[0], args[1]
             self.size_word = _num(args[2])
+        elif macro.startswith("palette_fade"):
+            self.label, self.dest = args[1], args[2]
+        elif macro == "palette_copy":
+            self.label, self.dest = args[0], args[1]
         else:
             self.dest, self.label = args[0], args[1]
 
@@ -110,6 +135,10 @@ class LoadList:
             return "wram%02X" % (dest >> 16), dest & 0xFFFF
         if self.type == 2:
             return "spc", dest
+        if self.type == "palette":
+            if PALETTE_BUFFER <= dest < PALETTE_BUFFER + PALETTE_SIZE:
+                return "cgram", dest - PALETTE_BUFFER
+            return None, None
         low = self.flags & 1 and entry.index == 0
         return ("m7lo" if low else "m7hi"), dest
 
@@ -151,14 +180,27 @@ def parse_lists(srcdir):
             words = code.split(None, 1)
             macro = words[0]
             args = [a.strip() for a in words[1].split(",")] if len(words) > 1 else []
+            rel = os.path.relpath(path, os.path.dirname(srcdir.rstrip("/")) or ".")
             if macro == "load_list":
-                cur = LoadList(label, _num(args[0]), _num(args[1]),
-                               os.path.relpath(path, os.path.dirname(srcdir.rstrip("/")) or "."), n)
+                cur = LoadList(label, _num(args[0]), _num(args[1]), rel, n)
                 lists.append(cur)
             elif macro in ("load_vram", "load_wram", "load_spc", "load_spc_raw") and cur:
                 cur.entries.append(Entry(cur, len(cur.entries), macro, args))
             elif macro == "load_end":
                 cur = None
+            # palette tasks (palette_tasks.asm): a palette_animate list of
+            # palette_copy, or one fade
+            elif macro == "palette_animate":
+                cur = LoadList(label, "palette", 0, rel, n)
+                lists.append(cur)
+            elif macro == "palette_copy" and cur:
+                cur.entries.append(Entry(cur, len(cur.entries), macro, args))
+            elif macro == "palette_copy_end":
+                cur = None
+            elif macro in ("palette_fade_in", "palette_fade_out"):
+                fade = LoadList(label, "palette", 0, rel, n)
+                fade.entries.append(Entry(fade, 0, macro, args))
+                lists.append(fade)
     return lists
 
 
@@ -261,6 +303,8 @@ class Source:
 
 
 def _fmt_addr(space, off):
+    if space == "cgram":
+        return "$%04X" % (off + PALETTE_BUFFER)
     if space == "vram":
         return "$%04X" % (off // 2)
     if space.startswith("wram"):
@@ -269,10 +313,16 @@ def _fmt_addr(space, off):
 
 
 class Limit:
-    def __init__(self, size, reason, known=True):
+    """note: set when the limit is the size it was derived from (the
+    original reaches past what follows it, or the capacity is unknown): the
+    source cannot tell a larger number from the original, so the manifest
+    line must say so in a `# limit:` comment (record() writes it)."""
+
+    def __init__(self, size, reason, known=True, note=None):
         self.size = size
         self.reason = reason
         self.known = known
+        self.note = note
 
     def __repr__(self):
         return f"Limit(${self.size:X}, {self.reason!r})"
@@ -285,8 +335,12 @@ def derive_entry(src, entry, size, sizes):
     lst = entry.list
     space, start = lst.space(entry)
     if space is None:
-        return Limit(size, f"{entry.where} loads it to {entry.dest}, not a number: "
-                     "original size, capacity unknown", known=False)
+        return Limit(size, f"{entry.where} loads it to {entry.dest}, not a number or not in its space: "
+                     "original size, capacity unknown", known=False,
+                     note="original size, capacity unknown")
+    # a palette block starts with its size-1 word, which is not copied
+    head = 2 if space == "cgram" else 0
+    full, size = size, size - head
     where = f"{entry.where} loads it to {SPACE_NAMES.get(space, 'WRAM')} {_fmt_addr(space, start)}"
     if space == "vram":
         end, end_why = VRAM_END, "the end of VRAM ($8000 words; the address wraps to $0000)"
@@ -296,6 +350,9 @@ def derive_entry(src, entry, size, sizes):
                    else "the end of the Mode 7 characters (256 of 64 pixels, $4000 words)")
     elif space == "spc":
         end, end_why = SPC_END, None
+    elif space == "cgram":
+        end, end_why = PALETTE_SIZE, ("the end of palette_buffer ($7E:2400; CGRAM has 256 colours, "
+                                      "and the VRAM loader's ring follows)")
     else:
         end = 0x10000
         end_why = (f"the end of WRAM bank ${space[4:]} (the address wraps to ${space[4:]}:0000)"
@@ -317,6 +374,7 @@ def derive_entry(src, entry, size, sizes):
             continue
         d = off - start
         osize = sizes.get(other.label)
+        osize = osize - head if osize is not None else None
         if other.index < entry.index and osize is not None and d + osize <= size:
             continue    # loaded before and overwritten whole: not there any more
         when = "after" if other.index > entry.index else "before"
@@ -330,6 +388,11 @@ def derive_entry(src, entry, size, sizes):
         for word, why in src.vram_bases:
             if word * 2 >= lim_end:
                 offer(word * 2 - start, why)
+    if space == "cgram":
+        row = -(-lim_end // 0x20) * 0x20
+        if row < end:
+            offer(row - start, f"the end of the 16-colour palette at ${row - 0x20 + PALETTE_BUFFER:04X} "
+                  "(the next 32 bytes of CGRAM are another palette)")
     if space.startswith("wram"):
         bank = int(space[4:], 16)
         for addr, name in src.ram:
@@ -337,13 +400,16 @@ def derive_entry(src, entry, size, sizes):
                 offer((addr & 0xFFFF) - start, f"{name} (src/ram.inc) at {_fmt_addr(space, addr & 0xFFFF)}")
     cap, why = best
     if why is None:
-        return Limit(size, f"{where}; nothing known after it: original size, capacity unknown",
-                     known=False)
+        return Limit(full, f"{where}; nothing known after it: original size, capacity unknown",
+                     known=False, note="original size, capacity unknown")
     if cap < size:
-        return Limit(size, f"{where}; next: {why}, {cap} bytes after its start, which the "
+        return Limit(full, f"{where}; next: {why}, {cap} bytes after its start, which the "
                      f"original already reaches past (its last {size - cap} bytes): "
-                     "it cannot grow", known=True)
-    return Limit(cap, f"{where}; next: {why}")
+                     "it cannot grow", known=True,
+                     note=f"original size, {_plural(size - cap, 'byte')} past "
+                          f"{why.split(', which')[0].split(' (')[0]} (book: Assets, Size limits)")
+    return Limit(cap + head, f"{where}; next: {why}"
+                 + (" (plus the 2 bytes of its size word)" if head else ""))
 
 
 def derive(src, label, size, sizes):
@@ -351,10 +417,10 @@ def derive(src, label, size, sizes):
     not loaded by a data list."""
     best = None
     for e in src.by_label.get(label, []):
-        if e.macro == "load_spc_raw":
-            continue
+        if e.macro == "load_spc_raw" and e.size_word is not None:
+            continue        # a fixed size (fixed_size)
         lim = derive_entry(src, e, size, sizes)
-        if best is None or lim.size < best.size or (lim.size == best.size and best.known is False):
+        if best is None or lim.size < best.size or (lim.size == best.size and best.note and not lim.note):
             best = lim
     return best
 
@@ -425,7 +491,7 @@ def check(assets, root, srcdir):
     """Error messages (empty: every asset fits)."""
     src = Source(srcdir)
     errors = []
-    sizes = None
+    sizes = notes = None
     for a in assets:
         label = label_of(a)
         try:
@@ -441,8 +507,11 @@ def check(assets, root, srcdir):
             if n > limit:
                 if sizes is None:
                     sizes = recorded_sizes(assets, root)
+                    notes = limit_notes(root)
                 lim = derive(src, label, limit, sizes)
                 why = lim.reason if lim else "not loaded by any data list: original size, capacity unknown"
+                if a.path in notes and not _derived_note(notes[a.path]):
+                    why = f"set by hand: {notes[a.path]} (the source gives: {why})"
                 errors.append(
                     f"{a.source}: {n:,} bytes{_tiles_note(a, n)} decompressed, more than its "
                     f"limit of {limit:,}{_tiles_note(a, limit)} (max=${limit:04X} in "
@@ -456,48 +525,87 @@ def check(assets, root, srcdir):
     return errors
 
 
+def limit_notes(root):
+    """{path: text} of the manifest lines with a `# limit: ...` comment: a
+    max= set by hand, with the reason (book: Assets, raising a limit)."""
+    out = {}
+    path = os.path.join(root, "assets", "manifest.txt")
+    for line in open(path):
+        if "#" not in line:
+            continue
+        data, comment = line.split("#", 1)
+        words = data.split()
+        comment = comment.strip()
+        if words and comment.startswith("limit:"):
+            out[words[0]] = comment[len("limit:"):].strip()
+    return out
+
+
+def _derived_note(text):
+    """A `# limit:` comment that record() wrote (the original size), not a
+    reason given by hand."""
+    return text.startswith("original size")
+
+
+def needs_max(asset, src):
+    """An asset whose limit depends on the original size, so it is
+    recorded: a compressed stream, a palette block, or another block a list
+    loads (an uncompressed sound block whose size the assembler computes)."""
+    return (asset.compressed or asset.options.get("gpl") == "block"
+            or (label_of(asset) in src.by_label and not fixed_size(src, label_of(asset))))
+
+
 def verify(assets, root, srcdir):
     """Recorded limits that the source no longer gives, and compressed
     assets without one (messages)."""
     src = Source(srcdir)
     sizes = recorded_sizes(assets, root)
+    notes = limit_notes(root)
     out = []
     for a in assets:
         label = label_of(a)
-        if fixed_size(src, label):
+        if fixed_size(src, label) or (a.path in notes and "max" in a.options):
             continue
         if "max" not in a.options:
-            if a.compressed:
+            if needs_max(a, src):
                 out.append(f"{a.path}: no limit (max=) in the manifest: "
                            f"python3 tools/assets.py limits --record {a.path}")
             continue
         limit = parse_max(a.options["max"])
         lim = derive(src, label, limit, sizes)
         if lim is None:
-            continue        # not loaded by a list: the original size, kept
+            lim = Limit(limit, "not loaded by a data list", known=False,
+                        note="original size, capacity unknown")
         if lim.size != limit:
             out.append(f"{a.path}: max=${limit:04X}, but the source gives ${lim.size:04X}: {lim.reason}")
+        elif lim.note:
+            out.append(f"{a.path}: max=${limit:04X} is only right if it is the original size ({lim.reason}); "
+                       f"say so on its manifest line: `# limit: {lim.note}`")
     return out
 
 
 def record(assets, root, srcdir):
     """Set max= on these assets from the source and their current size;
-    returns them."""
+    returns (assets, {path: `# limit:` comment} where one is needed)."""
     src = Source(srcdir)
     sizes = recorded_sizes(assets, root)
-    done = []
+    done, notes = [], {}
     for a in assets:
         n = data_size(a, root)
         lim = derive(src, label_of(a), n, sizes)
         a.options["max"] = "$%04X" % (lim.size if lim else n)
+        note = lim.note if lim else "original size, capacity unknown (not loaded by a data list)"
+        if note:
+            notes[a.path] = "limit: " + note
         done.append(a)
-    return done
+    return done, notes
 
 
 def report(assets, root, srcdir):
     """Lines: path, size, limit, room, where the limit comes from."""
     src = Source(srcdir)
     sizes = recorded_sizes(assets, root)
+    notes = limit_notes(root)
     out = []
     for a in assets:
         label = label_of(a)
@@ -505,10 +613,15 @@ def report(assets, root, srcdir):
         fixed = fixed_size(src, label)
         if fixed:
             limit, why = fixed[0], "exactly: " + fixed[1]
+        elif "colours" in a.options:
+            limit = 2 * int(a.options["colours"])
+            why = f"exactly: colours={a.options['colours']} in the manifest (tools/snespal.py checks it)"
         elif "max" in a.options:
             limit = parse_max(a.options["max"])
             lim = derive(src, label, limit, sizes)
             why = lim.reason if lim else "not loaded by a data list: original size, capacity unknown"
+            if a.path in notes and not _derived_note(notes[a.path]):
+                why = f"set by hand: {notes[a.path]} (the source gives ${lim.size:04X})" if lim else notes[a.path]
         else:
             limit, why = None, "no limit recorded"
         room = "-" if limit is None else f"{limit - n:+,}"

@@ -71,7 +71,9 @@ sound/spc_sample_dir_stage1      raw    dir=sound/spc_samples_common,sound/spc_s
 - with `brr=list`, it is the BRR samples that the sample list
   `assets/<path>.txt` names, one after the other; with `dir=PATH,...`, the
   sound CPU's sample directory made from those sample lists (see
-  [Sound: samples](sound.md#samples)).
+  [Sound: samples](sound.md#samples));
+- `max=`: the most bytes the data may have (hex, `max=$0400`), what fits
+  where the game puts it (see [Size limits](#size-limits)).
 
 ca65 looks the included path up in `assets/`, then in `build/assets/`:
 every assembly of `src/` passes `--bin-include-dir assets
@@ -487,8 +489,10 @@ goes into the ROM, so:
   "optimize" the palette (that renumbers the pixels); changing the
   palette's colours is harmless;
 - use only the first 4 (`2bpp`), 16 (`4bpp`) or 256 (`mode7`) colours;
-- keep the size, and leave the padding tiles after the last tile (if any)
-  colour 0. The build stops with a message naming the tile if not.
+- leave the padding tiles after the last tile (if any) colour 0. The build
+  stops with a message naming the tile if not. To add tiles, draw them and
+  raise `tiles=` in the manifest; the build checks that they fit (see
+  [Size limits](#size-limits)).
 
 Then run `make`. To start from a `.bin` that is not a PNG yet, `python3
 tools/assets.py topng FORMAT PATH` converts it and records `png=` in the
@@ -521,10 +525,8 @@ then no longer the original, so `make` reports a `MISMATCH` against
 in the emulator with `make emu-test` (the screenshots that show the edited
 graphic will differ from the goldens, the plays should pass).
 
-What the build does not check: the decompressed size. The game
-decompresses a stream to the address in its data list until the stream
-ends; a larger asset overwrites whatever follows it in VRAM or WRAM. Keep
-the size unless you know what is there.
+A bigger asset must still fit where the game puts it: the build checks
+that (next section).
 
 An example, done in a throwaway copy of the repository (before the
 graphics were PNGs, so on the `.bin`; on the PNG it is the same edit): in
@@ -542,3 +544,137 @@ With goldens taken from the edited ROM (`--update-goldens`, in that copy),
 the emulator suite's screenshots and scripted plays (`tests/test_screens.py`,
 `tests/test_play.py`, 29 tests) pass on the shifted copy: moving the bank
 after the edited stream changes nothing on screen.
+
+## Size limits
+
+The game decompresses a stream to the address its data list gives until
+the stream ends, and copies a palette block as long as its size word says;
+nothing in the game checks the size. A graphic that grows silently
+overwrites whatever follows it in VRAM, WRAM, the sound CPU's RAM or the
+palette buffer. So the build checks every asset against a limit, and stops
+before assembling with a message that names the asset, its size, its limit
+and where the limit comes from:
+
+```
+assets/gfx/gfx_0EDA4E.png: 1,056 bytes (33 4bpp tiles) decompressed, more than
+its limit of 1,024 (32 4bpp tiles) (max=$0400 in assets/manifest.txt). Where it
+comes from: load_list_058C14 (src/data/tables_05.asm:844) loads it to VRAM
+$7600; next: gfx_0DEF88, which the same list loads after it at $7800. ...
+```
+
+**Where the limits come from.** `tools/asset_limits.py` reads the data lists
+of `src/` (`load_vram`, `load_wram`, `load_spc`, `load_spc_raw`; lists named
+`unused_` are left out) and the palette tasks (`palette_copy`,
+`palette_fade_in`, `palette_fade_out`) to find where each asset goes (a
+list that names a block by its `<label>_size`, as the sound lists do, is
+followed like the others): VRAM
+(two bytes a word; a type-3 list one byte a word, Mode 7), a WRAM bank (the
+loader advances only the low word of the address, so it wraps in the bank),
+the sound CPU's RAM, or `palette_buffer` (`$7E:2200`, the copy of CGRAM; a
+palette block's size word is not copied). Its capacity there is the
+distance to the nearest of:
+
+- a block that the same list loads after it, inside or after it, or that the
+  list loaded before it and it does not overwrite whole (`load_list_058C97`
+  loads `gfx_0EA34B` over the five blocks it put at `$7000`-`$7FFF` before:
+  those do not count);
+- a block that any list loads in the same space, at or after the end of the
+  asset (blocks that start inside the original belong to other screens);
+- a tilemap or character base the code sets up (an immediate value stored to
+  `BG1SC`-`BG4SC`, `BG12NBA`, `BG34NBA`, `OBSEL`): the font `gfx_089D7E` at
+  `$5000` may have 256 tiles, not more, because the title screen's BG3
+  tilemap is at `$5800` (`BG3SC` = `$5A`, `init.asm`);
+- for WRAM, a label of `src/ram.inc` (`debug_window_hdma_a` at `$7E:F800`
+  bounds the streams loaded at `$7E:F000`);
+- for a palette, the end of the 16-colour palette (32 bytes of CGRAM) it
+  ends in;
+- the end of the space: VRAM's `$8000` words (the address wraps to 0), the
+  WRAM bank, the 512 bytes of `palette_buffer` (the VRAM loader's ring
+  follows), and in Mode 7 the `$4000` words of the 128x128 tilemap (low
+  bytes) or of the 256 characters (high bytes; tile numbers are 8 bits).
+
+Where the original already reaches past that (13 assets: 12 of the 16
+streams that are one byte longer than their tiles, whose last byte the next
+block of the list overwrites or which ends one byte past the 256 Mode 7
+characters, and `stage2_m7_blocks`, whose second half the same list covers
+with five blocks loaded after it), the limit is the original size: the
+asset cannot grow. Where nothing but the end of WRAM bank `$7E` or of the
+sound CPU's RAM is found, the limit is the original size, "original size,
+capacity unknown": the 7 sample blocks of the stages at ARAM `$B08E` (above
+them is the echo buffer, which the driver places from its own data, not
+`src/`; see [Sound](sound.md)). The source cannot tell such a limit from a
+larger number, so its manifest line says so in a comment:
+
+```
+gfx/gfx_188000                   lz-v2  png=4bpp tiles=256 tail=1F max=$2001  # limit: original size, 1 byte past gfx_1899A4 (book: Assets, Size limits)
+```
+
+These are upper bounds, not proofs that the space is free: the check knows
+what the lists load and what the register values and `ram.inc` say, not every
+byte the code writes. A limit larger than the original is room as far as the
+source shows.
+
+**Recorded in the manifest.** A capacity depends on the original size (which
+blocks of other lists the original covers), which an edited asset no longer
+has, so 242 assets have it recorded as `max=` (hex) on their manifest
+line: the 179 streams, the 44 palette blocks and the 19 uncompressed sound
+blocks (their size words are `<label>_size`, computed by the assembler). `make assets-check` (`python3 tools/assets.py
+limits --verify`) checks that every `max=` is still what the source gives,
+so a changed data list cannot leave a stale limit behind, that every
+asset a list loads has one, and that a limit the source cannot give (the
+original size above) has its `# limit:` comment. 90 assets have room
+(their limit is larger than their data); the others are full.
+
+Some sizes are fixed rather than limited, and must match exactly:
+
+- a sound block whose `load_spc_raw` entry gives its size as a number
+  (none at present): that number (the uploader sends that many bytes);
+- `td_sprite_tiles_16`: `$1800` bytes, `$100` past the `td_tiles` record with
+  the largest offset (`stream_topdown_sprite_gfx` DMAs `$100` bytes from each
+  half of a record);
+- the 4 palettes with `colours=16` (checked by `tools/snespal.py`).
+
+**What the format implies** is checked too: a PNG must be whole 8x8 tiles,
+with colour 0 after its `tiles`; a compressed stream (its length word
+included) cannot be larger than a bank (`$8000` bytes). A stream cannot
+cross into the next bank either: the decompressor reads it with
+`[LDR_SRC],y`, which would go on at `$xx:0000`, not ROM in LoROM. ld65
+refuses a bank that overflows (each bank is a memory area of `$8000`
+bytes); the build then names the assets of that bank, with their sizes and
+the original sizes:
+
+```
+bank $0A is 3,574 bytes too full. Its assets (in the ROM; the original in brackets ...):
+    wram/stage1_bg1_metatiles.lz            8,526 (original 4,311, +4,215)
+    ...
+```
+
+The same report comes from `tools/srcmap.py` (so `tools/shift.py build`
+when shifting pushes a bank over), and `ca65_args` runs the size check for
+the tools that assemble `src/` themselves.
+
+**Commands.** `python3 tools/assets.py limits --list` prints every asset
+with its size, its limit, the room left and where the limit comes from;
+`limits` alone checks them (what the build runs); `--verify` also checks the
+recorded limits against the source; `--record PATH ...` writes `max=` for a
+new asset from the source and its current size. The tests are in
+`tests/test_asset_limits.py` (no emulator needed: a PNG one tile too big,
+the font up to 256 tiles and not 257, a WRAM stream, a raw sound block, a
+palette block, a stream larger than a bank, and the cases above).
+
+**Raising a limit safely.** A limit says what the source shows follows the
+asset; it is not a number to bump. To give an asset more room:
+
+1. find what follows it (`limits --list`, or the message);
+2. move that, or the asset: change the address in the data list (and
+   whatever the code assumes about it: the register value of a tilemap or
+   character base, a buffer in `ram.inc`, a DMA length); then `limits
+   --verify` says which `max=` the source now gives, and `limits --record
+   PATH` writes it;
+3. if you know the space after it is free and the source cannot show it
+   (say the next block in another list is never on screen at the same
+   time), raise `max=` by hand and put the evidence in a `# limit: ...`
+   comment on its manifest line (`--verify` refuses a `max=` the source does
+   not give without one, and the build quotes it when the asset is too big);
+4. run `make emu-test` (and `make shift-test`): the screens that use the
+   asset will differ from the goldens, the others must not.

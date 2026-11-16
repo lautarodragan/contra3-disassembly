@@ -28,7 +28,7 @@ gfx/gfx_0891DE                   lz-v2  max=$0200 tilemap=bg
 gfx/gfx_089225                   lz-v2  max=$0E00 tilemap=bg
 gfx/gfx_089249                   lz-v1  png=mode7 tiles=118 tail=00 max=$4000
 gfx/gfx_089D7E                   lz-v2  png=2bpp tiles=253 max=$1000
-gfx/gfx_08A538                   lz-v2  png=4bpp tiles=256 tail=98 max=$2001
+gfx/gfx_08A538                   lz-v2  png=4bpp tiles=256 tail=98 max=$2001  # limit: original size, 1 byte past gfx_1899A4 (book: Assets, Size limits)
 gfx/gfx_08C078                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/gfx_08D8AF                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/gfx_098000                   lz-v2  png=4bpp tiles=256 max=$2000
@@ -55,8 +55,8 @@ gfx/gfx_0DD6D3                   lz-v2  png=4bpp tiles=64 max=$0800
 gfx/gfx_0DDC20                   lz-v2  png=4bpp tiles=64 max=$0800
 gfx/gfx_0DE218                   lz-v2  png=4bpp tiles=160 max=$1800
 gfx/gfx_0DEF88                   lz-v2  png=4bpp tiles=128 max=$1000
-gfx/gfx_0E8000                   lz-v2  png=4bpp tiles=32 tail=00 max=$0401
-gfx/gfx_0E8307                   lz-v2  png=4bpp tiles=32 tail=00 max=$0401
+gfx/gfx_0E8000                   lz-v2  png=4bpp tiles=32 tail=00 max=$0401  # limit: original size, 1 byte past gfx_0E8307 (book: Assets, Size limits)
+gfx/gfx_0E8307                   lz-v2  png=4bpp tiles=32 tail=00 max=$0401  # limit: original size, 1 byte past gfx_0DC2FE (book: Assets, Size limits)
 gfx/gfx_0E8651                   lz-v2  png=4bpp tiles=64 max=$0800
 gfx/gfx_0E8C89                   lz-v2  png=4bpp tiles=32 max=$0400
 gfx/gfx_0E8F5B                   lz-v2  png=4bpp tiles=64 max=$0800
@@ -73,35 +73,35 @@ gfx/gfx_0FAC90                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/gfx_0FC8E5                   lz-v2  png=4bpp tiles=77 tail=FD max=$2000
 gfx/gfx_0FD147                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/gfx_108000                   lz-v2  png=4bpp tiles=256 max=$2000
-gfx/gfx_109C17                   lz-v2  png=4bpp tiles=256 tail=0A max=$2001
+gfx/gfx_109C17                   lz-v2  png=4bpp tiles=256 tail=0A max=$2001  # limit: original size, 1 byte past gfx_10B927 (book: Assets, Size limits)
 gfx/gfx_10B927                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/gfx_10D5A2                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/gfx_118000                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/gfx_119D0E                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/gfx_11C386                   lz-v2  png=4bpp tiles=128 max=$1400
 gfx/gfx_11EB28                   lz-v2  png=4bpp tiles=128 max=$2000
-gfx/gfx_13CC02                   lz-v1  png=mode7 tiles=256 tail=BC max=$4001
+gfx/gfx_13CC02                   lz-v1  png=mode7 tiles=256 tail=BC max=$4001  # limit: original size, 1 byte past the end of the Mode 7 characters (book: Assets, Size limits)
 gfx/gfx_148000                   lz-v1  png=mode7 tiles=196 tail=00 max=$4000
-gfx/gfx_14A86D                   lz-v2  png=4bpp tiles=256 tail=00 max=$2001
+gfx/gfx_14A86D                   lz-v2  png=4bpp tiles=256 tail=00 max=$2001  # limit: original size, 1 byte past gfx_16BE91 (book: Assets, Size limits)
 gfx/gfx_14F0F8                   lz-v2  png=4bpp tiles=101 max=$2000
-gfx/gfx_158000                   lz-v1  png=mode7 tiles=256 tail=2C max=$4001
+gfx/gfx_158000                   lz-v1  png=mode7 tiles=256 tail=2C max=$4001  # limit: original size, 1 byte past the end of the Mode 7 characters (book: Assets, Size limits)
 gfx/gfx_15DCD9                   lz-v2  png=4bpp tiles=208 max=$2000
-gfx/gfx_168000                   lz-v1  png=mode7 tiles=256 tail=AC max=$4001
+gfx/gfx_168000                   lz-v1  png=mode7 tiles=256 tail=AC max=$4001  # limit: original size, 1 byte past the end of the Mode 7 characters (book: Assets, Size limits)
 gfx/gfx_16BE91                   lz-v2  png=4bpp tiles=116 max=$1000
 gfx/gfx_17B953                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/gfx_17CE4D                   lz-v2  png=4bpp tiles=54 max=$2000
 gfx/gfx_17D20E                   lz-v2  png=4bpp tiles=188 max=$2000
 gfx/gfx_17E599                   lz-v2  png=4bpp tiles=177 max=$2000
-gfx/gfx_188000                   lz-v2  png=4bpp tiles=256 tail=1F max=$2001
+gfx/gfx_188000                   lz-v2  png=4bpp tiles=256 tail=1F max=$2001  # limit: original size, 1 byte past gfx_1899A4 (book: Assets, Size limits)
 gfx/gfx_1899A4                   lz-v2  png=4bpp tiles=208 max=$2000
 gfx/gfx_18AAE3                   lz-v2  max=$1000 tilemap=bg
 gfx/gfx_18AF20                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/gfx_18C896                   lz-v2  png=4bpp tiles=96 max=$2000
 gfx/gfx_18D15B                   lz-v2  max=$1000 tilemap=bg
-gfx/gfx_18D4E3                   lz-v2  png=4bpp tiles=256 tail=00 max=$2001
+gfx/gfx_18D4E3                   lz-v2  png=4bpp tiles=256 tail=00 max=$2001  # limit: original size, 1 byte past gfx_18E9DF (book: Assets, Size limits)
 gfx/gfx_18E9DF                   lz-v2  png=4bpp tiles=176 max=$2000
 gfx/gfx_18FAF5                   lz-v2  max=$1000 tilemap=bg
-gfx/gfx_198000                   lz-v2  png=4bpp tiles=256 tail=7B max=$2001
+gfx/gfx_198000                   lz-v2  png=4bpp tiles=256 tail=7B max=$2001  # limit: original size, 1 byte past gfx_199AB1 (book: Assets, Size limits)
 gfx/gfx_199AB1                   lz-v2  png=4bpp tiles=176 max=$2000
 gfx/gfx_19AB40                   lz-v2  max=$1000 tilemap=bg
 gfx/gfx_19AF8C                   lz-v2  png=4bpp tiles=256 max=$2000
@@ -112,25 +112,25 @@ gfx/gfx_1AE9C9                   lz-v2  png=4bpp tiles=112 max=$2000
 gfx/gfx_1EEBD0                   lz-v1  max=$1000 tilemap=bg
 gfx/gfx_1FE855                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/td_sprite_tiles_16           raw    png=4bpp tiles=192
-sound/spc_sample_dir_boot        raw    dir=sound/spc_samples_common,sound/spc_samples_stage3
-sound/spc_song_boss              raw
-sound/spc_song_heart_boss        raw
-sound/spc_samples_common         raw    brr=list
-sound/spc_song_ending            raw
-sound/spc_sample_dir_opening     raw    dir=sound/spc_samples_common,sound/spc_samples_opening
-sound/spc_sample_dir_stage3      raw    dir=sound/spc_samples_common,sound/spc_samples_stage3
-sound/spc_sample_dir_stage2      raw    dir=sound/spc_samples_common,sound/spc_samples_stage2
-sound/spc_sample_dir_stage1      raw    dir=sound/spc_samples_common,sound/spc_samples_stage1
-sound/spc_sample_dir_stage4      raw    dir=sound/spc_samples_common,sound/spc_samples_stage4
-sound/spc_sample_dir_stage5      raw    dir=sound/spc_samples_common,sound/spc_samples_stage5
-sound/spc_sample_dir_stage6      raw    dir=sound/spc_samples_common,sound/spc_samples_stage6
-sound/spc_samples_stage6         raw    brr=list
-sound/spc_samples_opening        raw    brr=list
-sound/spc_samples_stage3         raw    brr=list
-sound/spc_samples_stage2         raw    brr=list
-sound/spc_samples_stage1         raw    brr=list
-sound/spc_samples_stage4         raw    brr=list
-sound/spc_samples_stage5         raw    brr=list
+sound/spc_sample_dir_boot        raw    dir=sound/spc_samples_common,sound/spc_samples_stage3 max=$0100
+sound/spc_song_boss              raw    max=$2000
+sound/spc_song_heart_boss        raw    max=$2000
+sound/spc_samples_common         raw    brr=list max=$5F8E
+sound/spc_song_ending            raw    max=$2000
+sound/spc_sample_dir_opening     raw    dir=sound/spc_samples_common,sound/spc_samples_opening max=$0100
+sound/spc_sample_dir_stage3      raw    dir=sound/spc_samples_common,sound/spc_samples_stage3 max=$0100
+sound/spc_sample_dir_stage2      raw    dir=sound/spc_samples_common,sound/spc_samples_stage2 max=$0100
+sound/spc_sample_dir_stage1      raw    dir=sound/spc_samples_common,sound/spc_samples_stage1 max=$0100
+sound/spc_sample_dir_stage4      raw    dir=sound/spc_samples_common,sound/spc_samples_stage4 max=$0100
+sound/spc_sample_dir_stage5      raw    dir=sound/spc_samples_common,sound/spc_samples_stage5 max=$0100
+sound/spc_sample_dir_stage6      raw    dir=sound/spc_samples_common,sound/spc_samples_stage6 max=$0100
+sound/spc_samples_stage6         raw    brr=list max=$2490  # limit: original size, capacity unknown
+sound/spc_samples_opening        raw    brr=list max=$1E96  # limit: original size, capacity unknown
+sound/spc_samples_stage3         raw    brr=list max=$2637  # limit: original size, capacity unknown
+sound/spc_samples_stage2         raw    brr=list max=$26FD  # limit: original size, capacity unknown
+sound/spc_samples_stage1         raw    brr=list max=$2544  # limit: original size, capacity unknown
+sound/spc_samples_stage4         raw    brr=list max=$2178  # limit: original size, capacity unknown
+sound/spc_samples_stage5         raw    brr=list max=$2193  # limit: original size, capacity unknown
 sound/spc_driver                 lz-v1  max=$2E00
 sound/spc_song_konami_logo       lz-v1  max=$2000
 sound/spc_song_stage_clear       lz-v2  max=$2000
@@ -173,14 +173,14 @@ wram/stage6_bg_anim_tiles        lz-v2  png=4bpp tiles=96 tail=F1 max=$1000
 wram/packed_11CDEA               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_11DF75               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_128000               lz-v2  png=4bpp tiles=256 max=$2000
-wram/packed_129417               lz-v2  png=4bpp tiles=256 tail=00 max=$2001
+wram/packed_129417               lz-v2  png=4bpp tiles=256 tail=00 max=$2001  # limit: original size, 1 byte past packed_12A7E8 (book: Assets, Size limits)
 wram/packed_12A7E8               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_12BC16               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_12CFEE               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_12E60A               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_138000               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_139567               lz-v2  png=4bpp tiles=256 max=$2000
-wram/stage2_m7_blocks            lz-v1  max=$2000
+wram/stage2_m7_blocks            lz-v1  max=$2000  # limit: original size, 4,096 bytes past stage2_block_map_0 (book: Assets, Size limits)
 wram/stage2_block_map_0          lz-v2  max=$0400
 wram/stage2_block_map_1          lz-v2  max=$0400
 wram/stage2_block_map_2          lz-v2  max=$0400
@@ -212,50 +212,50 @@ wram/stage2_sprite_tiles_1       lz-v2  png=4bpp tiles=256 max=$2000
 wram/stage2_sprite_tiles_2       lz-v2  png=4bpp tiles=256 max=$2000
 wram/stage2_sprite_tiles_3       lz-v2  png=4bpp tiles=112 max=$1000
 wram/stage6_bg1_metatiles        lz-v2  max=$2000
-palettes/palette_088000          raw    gpl=block
-palettes/palette_088022          raw    gpl=block
-palettes/palette_088044          raw    gpl=block
-palettes/palette_088066          raw    gpl=block
-palettes/palette_088088          raw    gpl=block
-palettes/palette_0880AA          raw    gpl=block
-palettes/palette_088150          raw    gpl=block
-palettes/palette_088254          raw    gpl=block
-palettes/palette_0882B6          raw    gpl=block
-palettes/palette_0882F8          raw    gpl=block
-palettes/palette_0883BA          raw    gpl=block
-palettes/palette_08841C          raw    gpl=block
-palettes/palette_08843E          raw    gpl=block
-palettes/palette_088540          raw    gpl=block
-palettes/palette_088602          raw    gpl=block
-palettes/palette_088664          raw    gpl=block
-palettes/palette_0886C6          raw    gpl=block
-palettes/palette_088728          raw    gpl=block
-palettes/palette_08878A          raw    gpl=block
-palettes/palette_08882C          raw    gpl=block
-palettes/palette_08892E          raw    gpl=block
-palettes/palette_0889F0          raw    gpl=block
-palettes/palette_088AF2          raw    gpl=block
-palettes/palette_088AF6          raw    gpl=block
-palettes/palette_088B18          raw    gpl=block
-palettes/palette_088B7A          raw    gpl=block
-palettes/palette_088C1C          raw    gpl=block
-palettes/palette_088CE0          raw    gpl=block
-palettes/palette_088D62          raw    gpl=block
-palettes/palette_088D7A          raw    gpl=block
-palettes/palette_088D82          raw    gpl=block
-palettes/palette_088DA4          raw    gpl=block
-palettes/palette_088E46          raw    gpl=block
-palettes/palette_088F0C          raw    gpl=block
-palettes/palette_088F2E          raw    gpl=block
-palettes/palette_088F50          raw    gpl=block
-palettes/palette_088F92          raw    gpl=block
-palettes/palette_08EFCA          raw    gpl=block
-palettes/palette_08F00C          raw    gpl=block
-palettes/palette_08F01A          raw    gpl=block
-palettes/palette_08F02A          raw    gpl=block
-palettes/palette_08F032          raw    gpl=block
-palettes/palette_08F04E          raw    gpl=block
-palettes/palette_08F06E          raw    gpl=block
+palettes/palette_088000          raw    gpl=block max=$0022
+palettes/palette_088022          raw    gpl=block max=$0022
+palettes/palette_088044          raw    gpl=block max=$0022
+palettes/palette_088066          raw    gpl=block max=$0022
+palettes/palette_088088          raw    gpl=block max=$0022
+palettes/palette_0880AA          raw    gpl=block max=$0062
+palettes/palette_088150          raw    gpl=block max=$00C2
+palettes/palette_088254          raw    gpl=block max=$0062
+palettes/palette_0882B6          raw    gpl=block max=$0042
+palettes/palette_0882F8          raw    gpl=block max=$00C2
+palettes/palette_0883BA          raw    gpl=block max=$0062
+palettes/palette_08841C          raw    gpl=block max=$0022
+palettes/palette_08843E          raw    gpl=block max=$0102
+palettes/palette_088540          raw    gpl=block max=$00C2
+palettes/palette_088602          raw    gpl=block max=$0062
+palettes/palette_088664          raw    gpl=block max=$0062
+palettes/palette_0886C6          raw    gpl=block max=$0062
+palettes/palette_088728          raw    gpl=block max=$0062
+palettes/palette_08878A          raw    gpl=block max=$00A2
+palettes/palette_08882C          raw    gpl=block max=$0102
+palettes/palette_08892E          raw    gpl=block max=$00C2
+palettes/palette_0889F0          raw    gpl=block max=$0102
+palettes/palette_088AF2          raw    gpl=block max=$0012
+palettes/palette_088AF6          raw    gpl=block max=$0022
+palettes/palette_088B18          raw    gpl=block max=$0062
+palettes/palette_088B7A          raw    gpl=block max=$00A2
+palettes/palette_088C1C          raw    gpl=block max=$0022
+palettes/palette_088CE0          raw    gpl=block max=$0082
+palettes/palette_088D62          raw    gpl=block max=$0018
+palettes/palette_088D7A          raw    gpl=block max=$0022
+palettes/palette_088D82          raw    gpl=block max=$0022
+palettes/palette_088DA4          raw    gpl=block max=$00A2
+palettes/palette_088E46          raw    gpl=block max=$0022
+palettes/palette_088F0C          raw    gpl=block max=$0022
+palettes/palette_088F2E          raw    gpl=block max=$0022
+palettes/palette_088F50          raw    gpl=block max=$0042
+palettes/palette_088F92          raw    gpl=block max=$0042
+palettes/palette_08EFCA          raw    gpl=block max=$0042
+palettes/palette_08F00C          raw    gpl=block max=$000E
+palettes/palette_08F01A          raw    gpl=block max=$0020
+palettes/palette_08F02A          raw    gpl=block max=$0008
+palettes/palette_08F032          raw    gpl=block max=$0020
+palettes/palette_08F04E          raw    gpl=block max=$0020
+palettes/palette_08F06E          raw    gpl=block max=$001E
 palettes/palette_05912A          raw    gpl=colours colours=16
 palettes/palette_05914A          raw    gpl=colours colours=16
 palettes/palette_05916A          raw    gpl=colours colours=16

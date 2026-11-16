@@ -303,8 +303,8 @@ def limits(argv):
         for p in args.record:
             if p not in known:
                 sys.exit(f"{p}: not in {MANIFEST}")
-        done = asset_limits.record([known[p] for p in args.record], ROOT, SRC)
-        write_manifest(done)
+        done, notes = asset_limits.record([known[p] for p in args.record], ROOT, SRC)
+        write_manifest(done, comments=notes)
         for a in done:
             print(f"{a.path}: max={a.options['max']}")
         return 0
@@ -438,9 +438,9 @@ def sync_palettes(root=ROOT):
     return changed
 
 
-def write_manifest(entries, root=ROOT):
+def write_manifest(entries, root=ROOT, comments=None):
     """Rewrite the manifest lines of these assets (keeping the others and
-    the comments)."""
+    the comments; comments: {path: new comment})."""
     by_path = {a.path: a for a in entries}
     path = os.path.join(root, MANIFEST)
     out = []
@@ -450,6 +450,8 @@ def write_manifest(entries, root=ROOT):
             a = by_path[words[0]]
             opts = " ".join(f"{k}={v}" for k, v in a.options.items())
             comment = "  #" + line.split("#", 1)[1].rstrip("\n") if "#" in line else ""
+            if comments and a.path in comments:
+                comment = "  # " + comments[a.path]
             line = f"{a.path:32} {a.kind:6} {opts}".rstrip() + comment + "\n"
         out.append(line)
     open(path, "w").write("".join(out))
