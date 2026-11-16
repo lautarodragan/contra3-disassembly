@@ -208,9 +208,11 @@ data_0583FC:
 	; CDL: read by continue_draw_menu
 	.byte	$00, $24, $00, $20
 data_058400:
+	; LAYOUT: the attribute tables of the menus overlap (indexed reads run on)
 	; CDL: read by continue_draw_player_menu
 	.byte	$00, $20
 data_058402:
+	; LAYOUT: the attribute tables of the menus overlap (indexed reads run on)
 	; CDL: read by continue_draw_player_menu
 	.byte	$00, $20
 data_058404:
@@ -236,17 +238,21 @@ text_stage_1:
 	.byte	$6D, $5A
 	.byte	$4D, $4E, $3C, $42, $40, $00, $02, $FF
 text_stage_2:
+	; LAYOUT: a shift test read the byte before this string while drawing it (draw_text); kept after the one before
 	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00
 	.byte	$03, $FF
 text_stage_3:
+	; LAYOUT: a shift test read the byte before this string while drawing it (draw_text); kept after the one before
 	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00, $04, $FF
 text_stage_4:
 	; LAYOUT: the string before goes on into this line ($FE, new line)
 	.byte	$6D, $5A, $4D, $4E
 	.byte	$3C, $42, $40, $00, $05, $FF
 text_stage_5:
+	; LAYOUT: a shift test read the byte before this string while drawing it (draw_text); kept after the one before
 	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00, $06, $FF
 text_stage_6:
+	; LAYOUT: a shift test read the byte before this string while drawing it (draw_text); kept after the one before
 	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00, $07, $FF
 text_game_over:
 	.byte	$2C, $5A, $42, $3C, $48, $40
@@ -294,12 +300,15 @@ data_058519:
 	; CDL: read by draw_title_menu_cursor
 	.byte	$00, $20
 data_05851B:
+	; LAYOUT: the attribute tables of the menus overlap (indexed reads run on)
 	; CDL: read by draw_title_menu_cursor
 	.byte	$00, $20
 data_05851D:
+	; LAYOUT: the attribute tables of the menus overlap (indexed reads run on)
 	; CDL: read by draw_title_menu_cursor
 	.byte	$00, $20
 data_05851F:
+	; LAYOUT: the attribute tables of the menus overlap (indexed reads run on)
 	; CDL: read by draw_title_menu_cursor
 	.byte	$00, $24, $00, $20, $00, $20, $00, $20
 load_list_058527:
@@ -458,6 +467,7 @@ text_05879F:
 text_0587A3:
 	.byte	$30, $00, $8C, $FF
 text_0587A7:
+	; LAYOUT: a shift test read the byte before this string while drawing it (draw_text); kept after the one before
 	.byte	$30, $00, $8E, $FF
 load_list_0587AB:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk (+2 more)
@@ -550,6 +560,7 @@ palette_task_058889:
 text_hi_score:
 	.byte	$6C, $58, $43, $44, $00, $4D, $3E, $4A, $4C, $40, $FF
 text_1p_score:
+	; LAYOUT: a shift test read the byte before this string while drawing it (draw_text); kept after the one before
 	.byte	$E3, $58, $02, $0B, $00
 	.byte	$4D, $3E, $4A, $4C, $40, $FF
 text_rest_03:
@@ -604,6 +615,7 @@ data_05892E:
 text_stereo:
 	.byte	$12, $5A, $4D, $4E, $40, $4C, $40, $4A, $00, $00, $FF
 text_monaural:
+	; LAYOUT: a shift test read the byte before this string while drawing it (draw_text); kept after the one before
 	.byte	$12
 	.byte	$5A, $48, $4A, $49, $3C, $4F, $4C, $3C, $47, $FF
 text_option_mode:
@@ -2072,6 +2084,7 @@ hdma_list_05AA31:
 hdma_table_05AA44:
 	.byte	$18, $09, $80, $0A, $00
 hdma_table_05AA49:
+	; LAYOUT: read on from the block before (DMA)
 	.byte	$18, $00, $00, $80, $80, $00
 	.byte	$00
 data_05AA50:
@@ -2309,6 +2322,7 @@ vram_blocks_05ACDF:
 vram_blocks_05AF1F:
 	.byte	$20, $50, $40, $50, $60, $50
 vram_blocks_05AF25:
+	; LAYOUT: read on from the block list before (queue_vram_blocks)
 	.byte	$A0, $50
 	.byte	$C0, $50, $E0, $50
 vram_blocks_05AF2B:
