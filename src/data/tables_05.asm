@@ -4481,7 +4481,10 @@ data_05E696:
 	.byte	$FC, $FF, $00, $00, $04, $00, $00, $00
 data_05E69E:
 	; CDL: read by stage5_boss_flash_on_hit
-	.byte	$6A, $8E, $8A, $8E, $AA, $8E, $8A, $8E
+	.addr	palette_088E6A
+	.addr	palette_088E8A
+	.addr	palette_088EAA
+	.addr	palette_088E8A
 data_05E6A6:
 	; CDL: read by stage5_boss_spawn_arm
 	.byte	$00, $02, $30, $02, $00, $02, $D0, $01
