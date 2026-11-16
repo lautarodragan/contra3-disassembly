@@ -214,7 +214,10 @@ chosen from the buttons every frame (states checked in the emulator):
 | 9 | `td_player_state_falling` | fall into a hole (`TDA_HOLE`, or the slopes `TDA_FALL_*`): the view zooms in and fades out while the player spins |
 
 L and R turn the player and its view (`td_turn_player`, speed from
-`td_update_turn_speed`). Weapons are the same as on the side-view stages
+`td_update_turn_speed`). The animations depend on the weapon slot in use
+(`p1_weapon_select`, 0 or 2): `td_player_stand_anims`,
+`td_player_walk_anims` ... have one entry per slot, and the shots leave
+from one side or the other (`td_fire_side_offsets`: -12 or +13 pixels). Weapons are the same as on the side-view stages
 (`WEAPON_DEFAULT` ... `WEAPON_LASER`, the player's two slots), fired by
 `fire_topdown_weapon` through `tbl_topdown_weapons` (`fire_td_spread`
 fires five shots at random spreads, `fire_td_flame` keeps one flame shot
@@ -226,8 +229,11 @@ object at `$0F40`/`$0F80` whose radius grows for `$70` frames
 
 The first part of each top-down stage is to destroy its targets: five map
 objects spawned at the start (`spawn_stage2_targets`, sets chosen by
-difficulty and at random) and drawn into the floor. The arrow points at
-the nearest one; when `td_aim_p1_target_arrow` finds none left it sets
+difficulty and at random; positions `stage2_target_x` / `stage2_target_y`,
+floor blocks at `stage2_target_vram_addrs`; stage 5's `stage5_target_*`) and drawn into the floor. The arrow points at
+the nearest one (two arrow sprites per view, one on the left or right edge
+and one on the top or bottom edge, from `td_arrow_lr_sprites`,
+`td_arrow_tb_sprites` and their positions, by eighth of a turn); when `td_aim_p1_target_arrow` finds none left it sets
 `targets_left_flag`, and `check_targets_destroyed` waits `$80` frames,
 fades out and moves to the boss map.
 
@@ -278,7 +284,8 @@ them some steps behind (`td_segment_follow_trail`); hits on any part count
 against the sum of their HP (`td_centipede_check_killed`).
 
 Map objects (`tbl_map_object_types`, `TDMT_*`) are the targets and the
-bosses; HP is `+$06` too:
+bosses; HP is `+$06` too (`td_get_map_object_at` finds the one that owns a
+tile through `stage2_map_object_by_cell` / `stage5_map_object_by_cell`):
 
 | type | constant | handler | what | HP |
 |---|---|---|---|---|
@@ -343,7 +350,14 @@ dies with its core (`TDMT_STAGE2_BOSS_CORE`, `td_boss_core_hp`); below
 half of the core's HP it always jumps. The cannon
 (`TDMT_STAGE2_BOSS_CANNON`) turns around the body and fires, the six pods
 (`TDMT_STAGE2_BOSS_POD`, `+$14` = arm) open and fire, and drop items when
-destroyed. Checked in the emulator (`stage_checkpoint` poked to 1 at the
+destroyed. The parts sit on circles around the body: the core at radius
+`$12` (`stage2_boss_core_offsets_x`), the pods at `$42`
+(`stage2_boss_pod_offsets_x`, angle `stage2_boss_pod_arm_angles` plus the
+body's); a pod's look is a floor block per state (`stage2_boss_pod_closed_blocks`,
+`stage2_boss_pod_half_open_blocks`, `stage2_boss_pod_open_blocks`,
+`stage2_boss_pod_hit_blocks`, `stage2_boss_pod_destroyed_blocks`). The fall
+spins and grows the view by difficulty (`stage2_boss_fall_spin_speeds`,
+`stage2_boss_fall_scale_speeds`). Checked in the emulator (`stage_checkpoint` poked to 1 at the
 start to begin at the boss).
 
 **Stage 5** (`TDMT_STAGE5_BOSS`, states `tbl_stage5_boss_states`): a
@@ -354,7 +368,8 @@ out of the pit at the nearest player (`stage5_boss_spawn_arm`: claw at
 target, reaches out recording a trail that the segments follow, fires
 `TDS_HOMING_ORB`, and pulls back; damage to any part of the arm counts
 against the claw's HP. The boss also spits shots from the edge of the
-pit (`stage5_boss_update_spit`) and the funnel tiles (`TDA_SAND_PIT`)
+pit (`stage5_boss_update_spit`; the four edges are `stage5_boss_pit_edge_x`
+/ `stage5_boss_pit_edge_y`, where the arm comes out too) and the funnel tiles (`TDA_SAND_PIT`)
 pull the players to the centre (`td_spiral_into_sand_pit`). Its HP is
 `td_boss_hp`.
 
@@ -368,16 +383,16 @@ values (`src/ram.inc`):
 | value | constant | effect |
 |---|---|---|
 | `$00` | `TDA_FLOOR` | walkable |
-| bits 0-2 | `TDA_WALL_MASK` | wall: 1 solid, 3-5 other shapes (`td_push_out_of_walls` checks the 2 x 2 tiles around an object and pushes it out) |
+| bits 0-2 | `TDA_WALL_MASK` | wall: 1 solid, 3-5 other shapes (`td_push_out_of_walls` checks the 2 x 2 tiles around an object and pushes it out, by `td_wall_push_dx`, `td_wall_push_dy`, `td_wall_push_diag`) |
 | bit 4 (+ bit 3) | `TDA_SET_PRIORITY`, `TDA_PRIORITY_HIGH` | sets the sprite priority of who crosses it: under or over a structure |
 | `$ED-$F4` | `TDA_FALL_*` | stage 5 slopes: the player slides that way and falls |
 | `$F5-$F8` | `TDA_PUSH_*` | stage 5 currents: move players and enemies by `td_push_speed` |
 | `$F9` | `TDA_SAND_PIT` | stage 5 boss funnel |
 | `$FA` | `TDA_WHIRL` | stage 5 whirlpool: turns the player around the cell's centre; enemies lose HP |
-| `$FB` | `TDA_SWITCH` | stage 5: Y or A here starts a switch event (`td_update_switch_events`) |
+| `$FB` | `TDA_SWITCH` | stage 5: Y or A here starts a switch event (`td_update_switch_events`; start points `td_switch0_x` ..., blocks `td_switch_event_blocks`) |
 | `$FC` | `TDA_MAP_OBJECT` | a target or boss: blocks shots, which damage it (`td_get_map_object_at`) |
-| `$FD` | `TDA_TRAP` | stage 2: 500 points, then a `TDI_BLAST` there `$30` frames later |
-| `$FE` | `TDA_BLOCK_ANIM` | stage 2: shake and a block animation |
+| `$FD` | `TDA_TRAP` | stage 2: 500 points, then a `TDI_BLAST` there `$30` frames later (`td_trap_timer_slots`, `td_trap_blast_x`, `td_trap_vram_addrs`) |
+| `$FE` | `TDA_BLOCK_ANIM` | stage 2: shake and a block animation (`td_block_anim_frames`, `td_block_anim_blocks_0` ...) |
 | `$FF` | `TDA_HOLE` | the player falls (state 9), an enemy dies |
 
 Special values (from `$ED` up) are handled by entry `$FF` - value of

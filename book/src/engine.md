@@ -202,10 +202,13 @@ spawned when the scroll position reaches it, into a free slot of its range
 The HUD (lives, weapons, bombs of each player) is a BG3 tilemap buffer at
 `hud_buffer` (`$1700`), built by `init_hud`, updated by `update_p1_hud` /
 `update_p2_hud` and DMAd by `upload_p1_hud` / `upload_p2_hud`
-(`src/engine/hdma.asm`).
+(`src/engine/hdma.asm`). `init_hud` copies its rows from
+`hud_p1_top_template`, `hud_p1_bottom_template` and the player 2 pair
+(each label sits 2 bytes before its row: the copy loop counts X from `$20`
+down to 2).
 
 HDMA: `setup_hdma_channels` (menus) and `setup_stage_hdma` (side view)
-program the channels from the preset `hdma_preset`; the side view adds the
+program the channels from the preset `hdma_preset` (`ptrs_hdma_presets`); the side view adds the
 window and colour-math channels. `build_scroll_split_hdma` builds tables
 that split the screen in horizontal bands with their own scroll
 (`scroll_split_pattern`, `scroll_split_y`).
@@ -217,5 +220,10 @@ that split the screen in horizontal bands with their own scroll
 `polar_to_xy`, `set_velocity_from_angle` (an object's velocity from its
 angle and a speed), `calc_distance` and `half_distance_squared`. The sine
 tables (`quarter_sine`, `quarter_cosine`) hold a quarter wave, value x 256.
+Bank `$05` has more: `half_turn_sine` (256 words, half a turn, value x
+`$FFFF`, for the unused Mode 7 matrix routine, the wavy ruins and one
+object), `circle_chord_widths` (the window circles), `td_boss_sine` /
+`td_boss_cosine` (bytes, for `project_around_stage2_boss`) and
+`td_distance_table` (distance for dx, dy up to 15).
 `next_random` (`src/engine/random.asm`) is a 32-bit shift-register
 generator in `rng_lo` / `rng_hi`, stepped once per frame.

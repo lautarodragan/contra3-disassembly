@@ -78,6 +78,13 @@ code (`run_side_view_stage`): stage 0 has no gameplay, its setup goes to
 | 5 | `opening_scene_hero_face` | the hero's face, "It's time for revenge." |
 | 6 | `opening_scene_heroes` | both heroes, "Let's attack aggressively." |
 
+The captions of scenes 5 and 6 appear part by part
+(`opening_hero_face_caption_delays` / `_parts`,
+`opening_heroes_caption_delays` / `_parts`; each part is a strip of tiles
+from `caption_part_vram_addrs` and `ptrs_caption_part_blocks`). The
+vortex is 16 objects (`opening_object_slots`, `opening_vortex_object_y`,
+`opening_vortex_object_anims`).
+
 Then `game_mode_opening` loads the title (`opening_load_title_screen`):
 the CONTRA III logo is a Mode 7 layer zoomed in from scale 0
 (`opening_zoom_title_logo`), the sprite words THE, ALIEN and WARS slide in
@@ -88,7 +95,11 @@ straight to the title (`load_title_screen` draws it at full size).
 
 The title menu (`run_title_menu`) moves `title_menu_cursor` with
 Up/Down/Select; `title_menu_timeout` (`$0300` frames, reset by every
-move) starts the demo. While the title is up, `load_demo_stage_graphics`
+move) starts the demo. The entries are drawn with the attribute of
+`title_menu_attrs_1p` ... `title_menu_attrs_option` at the cursor's index:
+four overlapping tables, `$2400` (highlighted) at the cursor's position;
+the continue menus do the same (`continue_menu_attrs`,
+`continue_player_menu_attrs_1p` ...). While the title is up, `load_demo_stage_graphics`
 loads the graphics of the next demo's stage.
 
 Three button codes are in the ROM but nothing calls them:
