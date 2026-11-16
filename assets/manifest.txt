@@ -12,18 +12,18 @@
 # the game loads it (tools/asset_limits.py; `python3 tools/assets.py limits
 # --list` says where each comes from).  Book: Assets, Size limits.
 gfx/gfx_06D6A7                   lz-v2  png=4bpp tiles=256 max=$2000
-gfx/gfx_06EC94                   lz-v2  max=$0800
-gfx/gfx_06EF5C                   lz-v2  max=$0800
-gfx/gfx_06F184                   lz-v2  max=$1000
-gfx/gfx_06F313                   lz-v2  max=$0800
-gfx/gfx_06F68F                   lz-v2  max=$1000
-gfx/gfx_06F84C                   lz-v1  max=$0800
-gfx/gfx_06F996                   lz-v1  max=$0800
-gfx/gfx_06FADF                   lz-v1  max=$4000
-gfx/gfx_07F78E                   lz-v1  max=$0800
-gfx/gfx_088FD4                   lz-v1  max=$2000
-gfx/gfx_0891DE                   lz-v2  max=$0200
-gfx/gfx_089225                   lz-v2  max=$0E00
+gfx/gfx_06EC94                   lz-v2  max=$0800 tilemap=bg
+gfx/gfx_06EF5C                   lz-v2  max=$0800 tilemap=bg
+gfx/gfx_06F184                   lz-v2  max=$1000 tilemap=bg
+gfx/gfx_06F313                   lz-v2  max=$0800 tilemap=bg
+gfx/gfx_06F68F                   lz-v2  max=$1000 tilemap=bg
+gfx/gfx_06F84C                   lz-v1  max=$0800 tilemap=bg
+gfx/gfx_06F996                   lz-v1  max=$0800 tilemap=bg
+gfx/gfx_06FADF                   lz-v1  max=$4000 tilemap=mode7
+gfx/gfx_07F78E                   lz-v1  max=$0800 tilemap=bg
+gfx/gfx_088FD4                   lz-v1  max=$2000 tilemap=bg
+gfx/gfx_0891DE                   lz-v2  max=$0200 tilemap=bg
+gfx/gfx_089225                   lz-v2  max=$0E00 tilemap=bg
 gfx/gfx_089249                   lz-v1  png=mode7 tiles=118 tail=00 max=$4000
 gfx/gfx_089D7E                   lz-v2  png=2bpp tiles=253 max=$1000
 gfx/gfx_08A538                   lz-v2  png=4bpp tiles=256 tail=98 max=$2001
@@ -92,22 +92,22 @@ gfx/gfx_17D20E                   lz-v2  png=4bpp tiles=188 max=$2000
 gfx/gfx_17E599                   lz-v2  png=4bpp tiles=177 max=$2000
 gfx/gfx_188000                   lz-v2  png=4bpp tiles=256 tail=1F max=$2001
 gfx/gfx_1899A4                   lz-v2  png=4bpp tiles=208 max=$2000
-gfx/gfx_18AAE3                   lz-v2  max=$1000
+gfx/gfx_18AAE3                   lz-v2  max=$1000 tilemap=bg
 gfx/gfx_18AF20                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/gfx_18C896                   lz-v2  png=4bpp tiles=96 max=$2000
-gfx/gfx_18D15B                   lz-v2  max=$1000
+gfx/gfx_18D15B                   lz-v2  max=$1000 tilemap=bg
 gfx/gfx_18D4E3                   lz-v2  png=4bpp tiles=256 tail=00 max=$2001
 gfx/gfx_18E9DF                   lz-v2  png=4bpp tiles=176 max=$2000
-gfx/gfx_18FAF5                   lz-v2  max=$1000
+gfx/gfx_18FAF5                   lz-v2  max=$1000 tilemap=bg
 gfx/gfx_198000                   lz-v2  png=4bpp tiles=256 tail=7B max=$2001
 gfx/gfx_199AB1                   lz-v2  png=4bpp tiles=176 max=$2000
-gfx/gfx_19AB40                   lz-v2  max=$1000
+gfx/gfx_19AB40                   lz-v2  max=$1000 tilemap=bg
 gfx/gfx_19AF8C                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/gfx_19CAB9                   lz-v2  png=4bpp tiles=144 max=$2000
-gfx/gfx_19D779                   lz-v2  max=$1000
+gfx/gfx_19D779                   lz-v2  max=$1000 tilemap=bg
 gfx/gfx_19EF62                   lz-v2  png=4bpp tiles=167 max=$2000
 gfx/gfx_1AE9C9                   lz-v2  png=4bpp tiles=112 max=$2000
-gfx/gfx_1EEBD0                   lz-v1  max=$1000
+gfx/gfx_1EEBD0                   lz-v1  max=$1000 tilemap=bg
 gfx/gfx_1FE855                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/td_sprite_tiles_16           raw    png=4bpp tiles=192
 sound/spc_sample_dir_boot        raw
