@@ -4571,12 +4571,12 @@ stage2_boss_pod_destroyed_blocks:
 	.byte	$0C, $00, $0D, $00, $0E, $00, $0F, $00, $10, $00, $11, $00
 ; Y offsets of a circle of radius $20 in 64 steps (the first 16 here, then the
 ; x table read a quarter turn later): the flame of the stage 2 boss cannon
-; (loc_02B748, not run in the traces).
+; (the flame branch of stage2_boss_cannon_fire, not run in the traces).
 td_circle_r32_y:
 	; CDL: not accessed
 	.byte	$E0, $FF, $E1, $FF, $E1, $FF, $E2, $FF, $E3, $FF, $E4, $FF, $E6, $FF, $E8, $FF
 	.byte	$EA, $FF, $EC, $FF, $EF, $FF, $F1, $FF, $F4, $FF, $F7, $FF, $FA, $FF, $FD, $FF
-; X offsets of a circle of radius $20 in 64 steps (sine; loc_02B748).
+; X offsets of a circle of radius $20 in 64 steps (sine; stage2_boss_cannon_fire).
 td_circle_r32_x:
 	; CDL: not accessed
 	.byte	$00, $00, $03, $00, $06, $00, $09, $00, $0C, $00, $0F, $00, $11, $00, $14, $00
