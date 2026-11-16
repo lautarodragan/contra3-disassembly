@@ -16,7 +16,9 @@ assets/manifest.txt          every asset: its path and how the build makes it
 assets/gfx/<label>.png       graphics (VRAM streams, td_sprite_tiles_16)
 assets/gfx/<label>.tilemap   tilemaps loaded to VRAM (text)
 assets/wram/<label>.png      graphics decompressed to WRAM, copied to VRAM later
-assets/wram/<label>.bin      the other streams decompressed to WRAM (maps, metatiles)
+assets/wram/<label>.map     the stages' maps, decompressed to WRAM (text)
+assets/wram/<label>.metatiles  side-view metatile definitions (text)
+assets/wram/<label>.blocks   top-down block definitions (text)
 assets/sound/<label>.bin     the sound driver (SPC700 code)
 assets/sound/<label>.seq     the songs (sequences as text)
 assets/sound/spc_samples_<bank>.txt  sample lists: the samples of a block, their loops
@@ -75,6 +77,8 @@ sound/spc_sample_dir_stage1      raw    dir=sound/spc_samples_common,sound/spc_s
   [Sound: samples](sound.md#samples)); with `seq=text`, the song
   `assets/<path>.seq` assembled (see
   [Sound driver: songs as text](sound-driver.md#songs-as-text));
+- with `level=FORMAT`, the level text `assets/<path>.metatiles`,
+  `.blocks` or `.map` (see [Level maps](#level-maps-text));
 - `max=`: the most bytes the data may have (hex, `max=$0400`), what fits
   where the game puts it (see [Size limits](#size-limits)).
 
@@ -253,10 +257,6 @@ The [Graphics gallery](gallery.md) shows all 110.
 
 ## Not graphics, or format not known: still `.bin`
 
-- 41 of the 54 streams decompressed to WRAM bank `$7E`: the maps and
-  metatiles of the side-view stages and the block maps and block
-  definitions of the top-down ones (see
-  [WRAM streams of bank $7E](#wram-streams-of-bank-7e));
 - the sound CPU's driver, `spc_driver` (code; what each sound block is
   and where it goes in the sound CPU's memory is in
   [Sound](sound.md#sound-cpu-memory)). The 14 songs are text
@@ -409,10 +409,147 @@ high bytes of VRAM by the same routine (`boss_chr_stream_src`, from
 | stage 5 boss (`load_list_05D07C`) | `stage5_boss_m7_blocks` | `stage5_boss_block_map_0`-`_3` | `stage5_boss_sprite_tiles` | `stage5_boss_m7_chars` (4 frames of `$280` bytes to VRAM `$3200`) |
 
 The 13 graphics are PNGs (4bpp, or `mode7` for the three sets of Mode 7
-characters). The other 41 stay `.bin`: the metatile definitions are BG
-tilemap words (they could be [tilemap text](#tilemaps), 4 words a row; not
-converted yet), and the maps are tables of metatile offsets or block
-numbers, for which there is no text format yet.
+characters). The other 41, the maps and their definitions, are text (next
+section).
+
+## Level maps (text)
+
+The 41 maps and definitions are text files, `level=` in the manifest,
+converted by `tools/levelmap.py` (`python3 tools/assets.py level FORMAT
+PATH` converts a `.bin`, checking the round trip). Each file starts with a
+`#` header that explains its format; `#` lines and blank lines are
+ignored.
+
+| format | file | assets | one unit |
+|---|---|---|---|
+| `metatiles` | `.metatiles` | 12: `*_bg1_metatiles`, `*_bg1_metatiles_2` (`first=100`), `*_bg2_metatiles`, `opening_bg1_metatiles` | a metatile, `$20` bytes |
+| `bgmap` | `.map` | 9: `*_bg1_map`, `*_bg2_map`, `opening_bg1_map` | a page, `$80` bytes |
+| `blocks` | `.blocks` | 4: `*_m7_blocks` | a block, `$20` bytes |
+| `blockmap` | `.map` | 16: `*_block_map_0`-`_3` | the whole stream, 8 block rows (`$200` bytes) |
+
+**Metatiles and blocks**: one line per definition, its number in hex, a
+colon, then its 4 rows of 4 words, top row first, separated by `|`:
+
+```
+100: 0260 0260 0260 0260 | 0260 0A58 0260 0260 | 0BFA 0BFA 0BFA 0BFA | 0260 09E9 0260 0260
+```
+
+A side-view word is the BG tilemap word, as in a [tilemap](#tilemaps)
+(`vhopppcc cccccccc`). A metatile's number is its byte offset from the
+metatile base divided by `$20`: BG1's second stream, decompressed to
+`$7E:7000`, `$2000` after the first, starts at `$100` (`first=100` in the
+manifest). The number must be the line's place (the build stops at a
+line out of order, so a line lost or added is caught). A top-down
+block's word has the Mode 7 character in its low byte; the high byte is
+not read by any code found (`$08`, `$0C`, `$2C`, `$34`...: they look like
+the palette and priority bits of a BG tilemap word, which Mode 7 does not
+have) and is kept as it is. Of `stage2_m7_blocks`' 256 blocks the game
+keeps 128: the block maps loaded after it at `$7E:9000` cover the rest.
+
+**Side-view maps**: one line per row of a page, 8 cells, and a comment
+`# page N (map offset $XXXX)` before each page, in the order of the map
+in WRAM. A cell is the metatile number in hex, then `h` and/or `v` for a
+horizontal / vertical flip of the whole metatile:
+
+```
+# page 0 (map offset $0000)
+000   000   000   000   000   000   000   000
+000   000   000   000   003   000   000   000
+000   00B   000   001   002   000   000   000
+```
+
+The build writes the word `number * $20`, plus `$4000` for `h` and `$8000`
+for `v` (`draw_bg_column` and `draw_bg_row` add the offset to the metatile
+base, reorder the metatile's words when it is flipped and XOR the flip
+bits into each). Every word of the 9 maps is such an offset (a multiple
+of `$20`), so the text gives them back exactly; the format refuses a
+number past `$1FF` (the word has 14 bits of offset). The page is the unit
+of `BG_MAP_OFFSET`: the stage starts at the page that `stage_bg1_map_offsets`
+/ `stage_bg2_map_offsets` give for its layout (a checkpoint layout starts
+further on), and scrolling right, or up on a vertical stretch, moves to the
+next page. Pages 6-9 of `stage1_bg2_map` name metatiles `$143` and
+`$160`-`$16B`, past the `$D5` that `stage1_bg2_metatiles` defines; they are
+kept as they are.
+
+**Top-down block maps**: 8 lines of 32 block numbers (two hex digits), the
+rows of the map in order: the four streams `_0` to `_3` are the rows 0-7,
+8-15, 16-23 and 24-31 of the 32x32-block map. In the stream a row is 4
+runs of 8 words `$80` bytes apart (`build_m7_tilemap`); the tool does the
+reordering, so the text is laid out as the map. The high byte of each word
+(not read) is 0 in all 16; a cell of four digits would give it. Two
+streams (`stage5_boss_block_map_1`, `_2`) are 513 bytes: the decompressor
+writes one more byte after the 512, kept as `tail=00` in the manifest.
+
+**Size limits.** A map or a definition list may grow or shrink by whole
+units within its `max=` (see [Size limits](#size-limits)); the build's
+message counts units (`2,176 bytes (17 pages)`). The limits come from the
+load lists as for any WRAM stream: the first BG1 metatile stream (`$7E:5000`)
+is full at 256 metatiles (the second follows at `$7E:7000`), the second
+holds up to 256 more (the map is at `$7E:9000`), BG2's metatiles up to 384
+(`$7E:B000`-`$7E:DFFF`), a BG1 map up to 32 pages and a BG2 map 16
+(`debug_window_hdma_a` at `$7E:F800`). A block map stream has exactly 8
+rows (`build_m7_tilemap` reads 8 from each), and the block definitions
+are bounded by the block map at `$7E:9000` (128 blocks;
+`stage2_m7_blocks` keeps its original 256, of which the game uses 128).
+
+**Previews.** The [gallery](gallery.md#levels) draws every map with its
+definitions, the characters of the stage's load list and the colours of
+its palette task (`level` lines of `assets/views.txt`): BG1 and BG2 of
+each side-view stage (and the opening's BG1) from `ptrs_stage_load_lists`
+and `ptrs_stage_palette_tasks` (first layout), the top-down maps from their
+type-3 character list and palette task, with the first frame of the
+boss's characters on the boss maps. Two of those palettes stay inline in
+`src/` (`palette_088C3E`, `palette_088ECA`; see [Palettes](#palettes-gimp-gpl)):
+a `level` line names them `asm:LABEL` and the tool reads their `.byte`
+lines. A side-view map is drawn page by page, 8 pages a row, so a
+vertical stretch shows as consecutive pages side by side.
+
+## Editing a level
+
+1. Find the page: the [gallery](gallery.md#levels) shows the map 8 pages
+   a row (page N at row N / 8, column N % 8), and the `.map` file has a
+   `# page N` comment before each page. A page is 256x256 pixels, 8x8
+   metatiles of 32x32.
+2. Change cells: a cell names a metatile of the stage's `.metatiles`
+   files (`1A7` is line `1A7:` of `stage1_bg1_metatiles_2.metatiles`),
+   with `h` / `v` to flip it. Top-down: change the block numbers in the
+   `_block_map_N.map` files (block `4C` is line `04C:` of the `.blocks`
+   file).
+3. To change what a metatile looks like, edit its words in the
+   `.metatiles` file (a character, a palette, a flip per tile); every cell
+   that names it changes. Adding metatiles: append lines with the next
+   numbers, within the limit above.
+4. Run `make` (`make build/contra3.sfc` to skip the hash check, which an
+   edited map fails) and `make book` to see the new gallery picture; run
+   the ROM (`make emu-test`: the screens of that stage will differ from
+   the goldens).
+
+What collides is not in the map: on the side-view stages,
+`update_bg_collision_map` gives each BG1 tile drawn a collision class from
+its character number, by stage thresholds (see
+[Side-view collision map](collision.md)); on stage 1 every character from
+`$391` up has a class, for instance. A metatile placed anywhere collides as its
+tiles do. On the top-down maps the tile attributes come from the Mode 7
+characters (`tile_attrs_stage2` ..., see
+[Top-down stages](topdown.md#the-map-blocks-tile-attributes-and-patches)).
+The enemies are not in the map either: they are spawned by page from the
+stage's spawn lists (`spawn_stage_objects`, see [Engine](engine.md)).
+
+An example, in a throwaway copy of the repository: in
+`assets/wram/stage1_bg1_map.map`, page 0, row 2, cells 1-6 changed from
+the sky (`000`) to the street metatile `00C` of row 6 (one of them
+flipped, `00Ch`):
+
+```
+000   00C   00C   00C   00Ch  00C   00C   000
+```
+
+The ROM built, and in the emulator stage 1 starts with a ledge of street
+in the air; its characters are in stage 1's collision range, so the player, dropped
+in at the start, lands on it and walks on it. Left the original, right the
+edit, at the start of the stage and a few seconds later:
+
+![Stage 1 with an edited map: a ledge of street in the air](img/level-edit-demo.png)
 
 ## Palettes (GIMP .gpl)
 
