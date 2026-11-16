@@ -72,7 +72,9 @@ make goldens                       # rewrite tests/goldens/*.png from the curren
 * `test_play.py`: scripted plays (`tools/c3emu/plays.py`): from power-on,
   pick a stage on the title (poking `$86`, and `$1E40` = 1 to start at the
   stage's midpoint, which reaches its boss), then play with seeded random
-  input, infinite lives and bombs and the barrier kept on. 15 plays: every
+  input (advancing with the game's own frames, so that a lag frame does not
+  change what the game sees), infinite lives and bombs and the barrier
+  kept on. 15 plays: every
   stage from its start and from its midpoint (the bosses, the stage
   transitions, the NORMAL ending of stage 6), 2-player modes A and B (the
   top-down split screen), HARD; plus the attract sequence. Every 60 frames

@@ -36,6 +36,7 @@ TOP_MOVES = [("up", "y"), ("up",), ("down", "y"), ("left", "y"), ("right", "y"),
              ("x",), ("a",), ("b", "y"), ("y",)]
 
 CHECKPOINT = 0x1E40     # stage_checkpoint: 1 starts the stage at its midpoint
+FRAME_COUNTER = 0x003A  # frame_counter: +1 per frame the game's logic runs
 
 
 class Play:
@@ -54,17 +55,17 @@ class Play:
 
 PLAYS = {p.name: p for p in [
     Play("stage1", 1, 12000, 11),
-    Play("stage1_boss", 1, 15000, 15, checkpoint=True),      # boss, stage 2 card
+    Play("stage1_boss", 1, 16000, 18, checkpoint=True),      # boss, stage 2 card
     Play("stage2", 2, 18000, 21),
     Play("stage2_boss", 2, 9000, 22, checkpoint=True),       # boss map, stage 3 start
     Play("stage3", 3, 18000, 31),
-    Play("stage3_boss", 3, 39000, 32, checkpoint=True),      # boss, stage 4 start
+    Play("stage3_boss", 3, 39000, 34, checkpoint=True),      # boss, stage 4 start
     Play("stage4", 4, 15000, 41),
-    Play("stage4_boss", 4, 21000, 42, checkpoint=True),      # boss, stage 5 start
+    Play("stage4_boss", 4, 21000, 44, checkpoint=True),      # boss, stage 5 start
     Play("stage5", 5, 18000, 51),
     Play("stage5_boss", 5, 24000, 52, checkpoint=True),      # boss map
     Play("stage6", 6, 15000, 61),
-    Play("stage6_boss", 6, 64000, 63, checkpoint=True),      # last bosses, the ending (NORMAL)
+    Play("stage6_boss", 6, 66000, 65, checkpoint=True),      # last bosses, the ending (NORMAL)
     Play("stage1_2p", 1, 8000, 71, menu=1),
     Play("stage2_2p", 2, 12000, 72, menu=1),                 # split screen
     Play("stage5_2pb_hard", 5, 9000, 73, menu=2, level=1),
@@ -80,7 +81,14 @@ def _hold(c, move, port, phase):
 
 def run(c, play, every=300):
     """Plays `play` on a fresh Console; yields the number of frames played
-    every `every` frames (after the stage is picked)."""
+    every `every` frames (after the stage is picked).
+
+    The input script advances with the game's own frames (frame_counter,
+    incremented by run_game_mode), not with the emulated ones: when the
+    game lags (its frame logic overruns and the next NMI is skipped), the
+    held buttons stay for the next game frame.  So the game sees the same
+    inputs whether or not a frame lags, and a ROM whose CPU timing differs
+    by some cycles (another layout) plays the same game."""
     if play.level is not None:
         game.set_options(c, level_rights=play.level)
     game.start_game(c, stage=play.stage, menu_downs=play.menu)
@@ -88,15 +96,11 @@ def run(c, play, every=300):
         c.write_ram(CHECKPOINT, 1)
     ports = (0, 1) if play.menu else (0,)
     rng = random.Random(play.seed)
-    done, left = 0, 0
+    done, left, played = 0, 0, 0
     moves = {}
     last_prog, still, chunk = None, 0, 0
+    counter = c.peek16(FRAME_COUNTER)
     while done < play.frames:
-        if done % 1000 == 0:
-            # once per 1000 frames: is the stage still progressing?
-            prog = (c.peek(game.STAGE), c.peek(game.PROGRESS))
-            still = still + 1 if prog == last_prog else 0
-            last_prog = prog
         if left == 0:
             stage = c.peek(game.STAGE)
             if stage in (2, 5):
@@ -116,9 +120,18 @@ def run(c, play, every=300):
         for port, mv in moves.items():
             _hold(c, mv, port, (chunk // 6) % 2 == 0)
         c.run(1)
-        chunk += 1
-        left -= 1
         done += 1
+        now = c.peek16(FRAME_COUNTER)
+        if now != counter:
+            counter = now
+            played += 1
+            chunk += 1
+            left -= 1
+            if played % 1000 == 0:
+                # once per 1000 game frames: is the stage still progressing?
+                prog = (c.peek(game.STAGE), c.peek(game.PROGRESS))
+                still = still + 1 if prog == last_prog else 0
+                last_prog = prog
         if done % every == 0:
             yield done
     for port in ports:
