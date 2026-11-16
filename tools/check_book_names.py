@@ -159,8 +159,12 @@ def main():
         # build/assets/<path>.lz or .bin: made from assets/<path>.bin, .png, .gpl or .tilemap
         if not p.startswith("build/assets/"):
             return False
-        stem = p[len("build/assets/"):].rsplit(".", 1)[0]
-        return any((ROOT / "assets" / (stem + ext)).exists() for ext in (".bin", ".png", ".gpl", ".tilemap"))
+        rest = p[len("build/assets/"):].rstrip("/")
+        if (ROOT / "assets" / rest).is_dir():  # a directory of generated files
+            return True
+        stem = rest.rsplit(".", 1)[0]
+        return any((ROOT / "assets" / (stem + ext)).exists()
+                   for ext in (".bin", ".png", ".gpl", ".tilemap", ".seq", ".txt"))
 
     def path_exists(p):
         p = p.rstrip("/")
