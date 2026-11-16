@@ -19,7 +19,8 @@ assets/wram/<label>.png      graphics decompressed to WRAM, copied to VRAM later
 assets/wram/<label>.map     the stages' maps, decompressed to WRAM (text)
 assets/wram/<label>.metatiles  side-view metatile definitions (text)
 assets/wram/<label>.blocks   top-down block definitions (text)
-assets/sound/<label>.bin     the sound driver (SPC700 code)
+assets/sound/spc_driver.s    the sound driver (SPC700 assembly, tools/spcasm.py)
+assets/sound/spc_sfx.seq     its sound effects (sequences as text, included by spc_driver.s)
 assets/sound/<label>.seq     the songs (sequences as text)
 assets/sound/spc_samples_<bank>.txt  sample lists: the samples of a block, their loops
 assets/sound/samples/<name>.brr      the sound samples (BRR), one per file
@@ -76,7 +77,10 @@ sound/spc_sample_dir_stage1      raw    dir=sound/spc_samples_common,sound/spc_s
   sound CPU's sample directory made from those sample lists (see
   [Sound: samples](sound.md#samples)); with `seq=text`, the song
   `assets/<path>.seq` assembled (see
-  [Sound driver: songs as text](sound-driver.md#songs-as-text));
+  [Sound driver: songs as text](sound-driver.md#songs-as-text)); with
+  `asm=spc700`, the SPC700 assembly `assets/<path>.s` assembled by
+  `tools/spcasm.py` (the sound driver, which includes its sound effects'
+  `.seq`; see [Sound driver: the driver's source](sound-driver.md#the-drivers-source));
 - with `level=FORMAT`, the level text `assets/<path>.metatiles`,
   `.blocks` or `.map` (see [Level maps](#level-maps-text));
 - `max=`: the most bytes the data may have (hex, `max=$0400`), what fits
@@ -257,12 +261,15 @@ The [Graphics gallery](gallery.md) shows all 110.
 
 ## Not graphics, or format not known: still `.bin`
 
-- the sound CPU's driver, `spc_driver` (code; what each sound block is
-  and where it goes in the sound CPU's memory is in
-  [Sound](sound.md#sound-cpu-memory)). The 14 songs are text
+- no sound asset: the sound CPU's driver, `spc_driver`, is SPC700
+  assembly and its sound effects are text
+  ([Sound driver: the driver's source](sound-driver.md#the-drivers-source));
+  the 14 songs are text
   ([Sound driver: songs as text](sound-driver.md#songs-as-text)), and the
   samples and their directories are made from one BRR file per sample and
-  the sample lists ([Sound: samples](sound.md#samples)).
+  the sample lists ([Sound: samples](sound.md#samples)). What each sound
+  block is and where it goes in the sound CPU's memory is in
+  [Sound](sound.md#sound-cpu-memory).
 
 ## Tilemaps
 
@@ -773,7 +780,12 @@ Some sizes are fixed rather than limited, and must match exactly:
 - `td_sprite_tiles_16`: `$1800` bytes, `$100` past the `td_tiles` record with
   the largest offset (`stream_topdown_sprite_gfx` DMAs `$100` bytes from each
   half of a record);
-- the 4 palettes with `colours=16` (checked by `tools/snespal.py`).
+- the 4 palettes with `colours=16` (checked by `tools/snespal.py`);
+- inside the sound driver (`spc_driver`, `max=$2E00`, always that size):
+  its code and tables stay at their addresses and its sound effects must end
+  by `$3000`, which the `.org` lines of its source check when it is
+  assembled (see
+  [Sound driver: the driver's source](sound-driver.md#the-drivers-source)).
 
 **What the format implies** is checked too: a PNG must be whole 8x8 tiles,
 with colour 0 after its `tiles`; a compressed stream (its length word

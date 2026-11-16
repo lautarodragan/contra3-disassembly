@@ -4,8 +4,9 @@ The music and sound effects are played by a program running on the sound
 CPU (SPC700), uploaded at boot. This page describes what the main CPU does
 to talk to it (`src/sound/`) and what it uploads where in the sound CPU's
 memory (ARAM); the driver's own code is not disassembled into `src/` (it
-is the asset `assets/sound/spc_driver.bin`; `tools/spc700.py` disassembles
-it).
+is the asset `assets/sound/spc_driver.s`, SPC700 assembly that
+`tools/spcasm.py` assembles, with its sound effects as text in
+`assets/sound/spc_sfx.seq`; see [Sound driver](sound-driver.md)).
 
 ## Commands
 
@@ -80,7 +81,7 @@ address at the start of every stage, and the driver at `$0200` after boot.
 | `$0000`-`$00EF` | the driver's variables (direct page) |
 | `$00F0`-`$00FF` | the sound CPU's I/O registers (DSP address/data, timers, ports) |
 | `$0100`-`$01CF` | variables (`$0100`-`$018E`) and the stack (from `$01CF` down) |
-| `$0200`-`$2FFF` | the driver, `spc_driver` (uploaded at boot); `$2DAC`-`$2FFF` are zeros |
+| `$0200`-`$2FFF` | the driver, `spc_driver` (uploaded at boot); `$2DAC`-`$2FFF` are zeros, the room the sound effects may grow into |
 | `$3000`-`$4FFF` | the song of the current song set (`spc_song_`), at most `$2000` bytes |
 | `$5000`-`$50FF` | the sample directory (`spc_sample_dir_`), DSP register DIR = `$50` |
 | `$5100`-`$B08D` | the samples every set shares, sources 0-19 (`spc_samples_common`, uploaded at boot) |
@@ -92,9 +93,10 @@ start-up code at `$0896`; `$0203`-`$03E5` are variables (zeros in the
 file, cleared again at start-up); `$03E6`-`$0895` are tables (sounds,
 instruments); `$0896`-`$1B36` is code with a few tables in it; `$1B37`-`$2DAB`
 are the sequences of the sound effects and of the songs that live in the
-driver. The [Sound driver](sound-driver.md) page describes the driver,
-its commands, instruments and the format of the songs, which are text
-files (`assets/sound/spc_song_stage1.seq` ...).
+driver (`assets/sound/spc_sfx.seq`). The [Sound driver](sound-driver.md)
+page describes the driver, its source, its commands, instruments and the
+format of the songs and sound effects, which are text files
+(`assets/sound/spc_song_stage1.seq` ...).
 
 ### The blocks
 

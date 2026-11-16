@@ -1,13 +1,15 @@
 # Sound driver (SPC700)
 
-The program the sound CPU runs, `spc_driver` (`assets/sound/spc_driver.bin`,
-uploaded to ARAM `$0200`; see [Sound](sound.md#sound-cpu-memory) for the
-memory map), and the format of the songs and sound effects it plays. It
-was read from the driver's code with `tools/spc700.py` (an SPC700
-disassembler: `python3 tools/spc700.py assets/sound/spc_driver.bin 200
---trace 200 ...` follows the code from the entry points given); the
-addresses below are ARAM addresses in the driver. What is not said here is
-not worked out.
+The program the sound CPU runs, `spc_driver` (uploaded to ARAM `$0200`;
+see [Sound](sound.md#sound-cpu-memory) for the memory map), and the format
+of the songs and sound effects it plays. The driver is SPC700 assembly,
+`assets/sound/spc_driver.s`, and its sound effects are sequence text,
+`assets/sound/spc_sfx.seq`, which the build assembles back to the original
+bytes (see [The driver's source](#the-drivers-source)). It was read with
+`tools/spc700.py` (an SPC700 disassembler: `python3 tools/spc700.py
+build/assets/sound/spc_driver.bin 200 --trace 200 ...` follows the code
+from the entry points given); the addresses below are ARAM addresses in
+the driver. What is not said here is not worked out.
 
 ## The driver
 
@@ -42,7 +44,7 @@ A command is the byte the game writes to APUIO0 (see
 |---|---|
 | `$01`-`$73` | play sound *n* from the sound table (below); 0 and the empty entries (`$40`, `$60`, `$6C`, `$70`, `$73`) do nothing |
 | `$74`-`$7A` | choose the instrument set *n* - `$74` (instruments `$14`-`$18`, below): the start command of a song set (`song_start_commands`) |
-| `$7B` | reads a jump address from before its table (`$18FD`): not used |
+| `$7B` | jumps through the word at `$19FD` (`jmp [!$18FF+x]` with x = `$FE`, inside the code): not used |
 | `$7C` | pause: channels 6 and 7 stop and are silenced, sound effects on music channels too, and the music plays at about a fifth of its volume (x 50 / 256) |
 | `$7D` | end of pause |
 | `$7E`, `$7F` | mono (every pan centred), stereo |
@@ -55,10 +57,11 @@ A command is the byte the game writes to APUIO0 (see
 
 ### The sound table
 
-`$03E6`: 5 bytes per sound `$01`-`$73`: the channel mask, the priority,
-the number of channels (bits 0-3; bits 4-7 set a per-channel flag that
-makes notes carry no gate and volume, never set), and the address of a
-list of one sequence address per channel. `python3 tools/spcseq.py driver`
+`sound_table` (`$03E6`): 5 bytes per sound `$01`-`$73`: the channel mask,
+the priority, the number of channels (bits 0-3; bits 4-7 set a per-channel
+flag that makes notes carry no gate and volume, never set), and the
+address of a list of one sequence address per channel (the sound's
+header, `sound_NN` in `spc_sfx.seq`). `python3 tools/spcseq.py driver`
 prints the table and decodes the sequences of the sound effects.
 
 - `$01`-`$3F`: one channel. The driver gives it channel 6 or 7: the one
@@ -81,7 +84,10 @@ prints the table and decodes the sequences of the sound effects.
   intro, `intro_init`).
 
 The sequences of sounds `$01`-`$5F`, `$6D` and `$6E` are in the driver,
-`$1B37`-`$2DAB`.
+`$1B37`-`$2DAB` (`assets/sound/spc_sfx.seq`, see
+[Sound effects as text](#sound-effects-as-text)). Sound `$58` has two
+channels but its second sequence address is 0 (an unreached sequence
+follows its header); sounds `$31` and `$5F` share a header.
 
 ## Instruments
 
@@ -220,3 +226,86 @@ bytes and 7,861 zeros), and in the songs of stages 2 and 5 `.org $4B00`,
 the zeros up to the top-down intro, which the driver plays from that
 address. Addresses are labels, so a sequence may change length; the song
 must stay below `$5000` (`max=$2000`) and the intro at `$4B00`.
+
+## The driver's source
+
+`assets/sound/spc_driver.s` is the driver as SPC700 assembly, in the syntax
+`tools/spc700.py` prints; `tools/spcasm.py` (a small assembler, standard
+library only) assembles it, and the build compresses the result like any
+asset (`asm=spc700` in the manifest; the source and the `.seq` it
+includes are its dependencies). The text was made from the original
+binary by `python3 tools/spcasm.py driver-totext BIN OUT.s OUT.seq`: the
+code is what the trace reaches from `$0200` and from the two jump tables
+(`seq_command_handlers`, `control_command_handlers`), everything else is
+data, and the round trip is exact (the ROM's hash; `tests/test_sound.py`
+also assembles every opcode as the disassembler prints it). In it:
+
+| ARAM | what |
+|---|---|
+| `$0200` | `jmp driver_start` |
+| `$0203`-`$03E5` | the variables (`.zero`) |
+| `$03E6` | `sound_table`, one `.byte` mask, priority, channels and one `.word` header per sound: the label of the sound effect's header, `$3000` / `$4B00` for a song, 0 for an empty entry |
+| `$0625` | `fade_speeds` |
+| `$0628` | `instrument_sets` (`.word instrument_set_0` ...) |
+| `$0636`-`$0895` | `instruments`, `instrument_set_0`, `drum_instruments`, `instrument_set_1` ... `instrument_set_6`: one `.byte` line of 8 per instrument, commented with its number (format in [Instruments](#instruments)) |
+| `$0896`-`$1B36` | the code, with the tables it reads: `seq_command_handlers`, `seq_command_operands`, `fir_registers`, `fir_coefficients`, `pitch_table`, `pitch_noise_16BC`, `pitch_noise_17BC`, `control_command_handlers` and three unnamed blocks |
+| `$1B37` | `.incseq "spc_sfx.seq"`: the sound effects |
+| up to `$3000` | zeros (`.org $3000`) |
+
+Branch and call targets are labels: `driver_start`, the handlers of the
+sequence commands named after them (`seq_rest`, `seq_inst`, ... `seq_end`)
+and of the control commands (`cmd_pause` ... `cmd_stop_all`), `Lxxxx`
+elsewhere. Data operands are numbers (`mov a, !$0347+x`), or a table's name
+where the operand is a table of the list above (`mov a,
+!seq_command_handlers+1+y`); the variables are not named.
+
+**The layout is fixed.** The code reads its tables at fixed addresses, and
+not every reference is a label, so the code and the tables do not move: an
+`.org` line precedes each table and each piece of code after data, and
+assembling fails if what is before it has grown past it (`.org $0DDD, "the
+code reads seq_command_handlers at $0DDD"`). A change to the code or a
+table must keep its size (shrinking is fine: `.org` pads with zeros, and a
+zero is `nop`). The instruments are edited in place (an instrument is its
+8 bytes). The sound effects are the part that may change size.
+
+`spcasm.py` syntax, besides the instructions: `label:`, `name = expr`,
+`.org addr [, "why"]`, `.byte`, `.word`, `.zero n`, `.incseq "file"`;
+expressions are `$hex`, decimal, `%binary`, labels, `*`, `+`, `-`, and
+`<` / `>` for the low and high byte. `python3 tools/spcasm.py space
+assets/sound/spc_driver.s` prints the room each `.org` leaves.
+
+## Sound effects as text
+
+`assets/sound/spc_sfx.seq` holds `$1B37`-`$2DAB`: the headers and sequences
+of every sound that lives in the driver, in the songs' syntax (see
+[Songs as text](#songs-as-text)), in their original order:
+
+```
+# sound $3E: an extra life (add_score)
+sound_3E:
+	song sound_3E_ch0
+sound_3E_ch0:
+	tempo $7D
+	inst $00
+	channel_volume $3C
+	transpose $05
+	note $30 $06 $65 $5A
+	...
+```
+
+`sound_NN:` is the header of sound `$NN` (one `song` address per channel),
+`sound_NN_chK` the sequence of its channel *K*, `Lxxxx` the other jump
+targets; bytes no sequence reaches are `.byte` lines. The driver's source
+includes the file at `$1B37` and `sound_table` points at the `sound_NN`
+labels, so the two share their labels: a sound effect may grow or shrink,
+the sounds after it move and the table follows. What is known of the
+sounds from the code that queues them is in the comments (`$04` the default
+gun, `$05` the laser, `$07` the crush gun, `$08` the homing gun, `$09` the
+spread gun, `$0A` the flame thrower, `$3E` an extra life).
+
+**Size limit.** The sound effects must end by `$3000`, where the song of
+the set is uploaded: the `.org $3000` that follows them in the driver's
+source stops the build otherwise (`.org $3000, but the bytes before it
+reach $30xx: the sound effects must end before the song of the set`).
+There are 596 bytes (`$254`) free; the driver asset as a whole keeps its
+`max=$2E00` (`$0200`-`$2FFF`).

@@ -21,7 +21,8 @@ things that look like code names, and every code span for paths into the repo:
     assets it makes in build/assets/); bare file
     names (`bank_00.asm`) must be the name of a tracked file.
 
-Symbols defined in the ca65 sources (src/**/*.asm, *.inc, *.cfg) are:
+Symbols defined in the ca65 sources (src/**/*.asm, *.inc, *.cfg), and the
+labels of the sound driver's source (assets/**/*.s, *.seq), are:
 labels (`name:`, also cheap locals `@name:`), constants (`name = ...`,
 `name := ...`, `.set`), `.define`, `.macro`, `.proc`, `.scope`, `.struct`,
 `.enum`, `.union` names, segment names (`.segment "BANK00"`), and the
@@ -91,7 +92,8 @@ def strip_comment(line):
 def asm_symbols():
     """Every symbol the ca65 sources and the ld65 config define."""
     names = set()
-    for pattern in ("src/**/*.asm", "src/**/*.inc", "src/**/*.cfg"):
+    for pattern in ("src/**/*.asm", "src/**/*.inc", "src/**/*.cfg",
+                    "assets/**/*.s", "assets/**/*.seq"):   # the sound driver (tools/spcasm.py)
         for f in ROOT.glob(pattern):
             for line in f.read_text(errors="replace").splitlines():
                 line = strip_comment(line)
@@ -164,7 +166,7 @@ def main():
             return True
         stem = rest.rsplit(".", 1)[0]
         return any((ROOT / "assets" / (stem + ext)).exists()
-                   for ext in (".bin", ".png", ".gpl", ".tilemap", ".seq", ".txt"))
+                   for ext in (".bin", ".png", ".gpl", ".tilemap", ".seq", ".txt", ".s"))
 
     def path_exists(p):
         p = p.rstrip("/")

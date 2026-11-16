@@ -30,7 +30,9 @@ build/assets/<path>.bin.  `max` is the largest the data may be, in bytes
 assets/<path>.txt names (assets/sound/samples/*.brr, one after the other);
 with dir=PATH,PATH... a sound CPU sample directory made from those sample
 lists (assets/PATH.txt each; tools/brr.py).  With seq=text the data is the
-sound driver's sequences in the text assets/<path>.seq (tools/spcseq.py).
+sound driver's sequences in the text assets/<path>.seq (tools/spcseq.py);
+with asm=spc700 the SPC700 assembly assets/<path>.s (tools/spcasm.py; the
+sound driver, which includes its sound effects' .seq).
 With level=FORMAT the data is a level map or its metatiles as text,
 assets/<path>.metatiles, .blocks or .map (tools/levelmap.py: metatiles,
 blocks, bgmap, blockmap; `first`: the number of the first metatile, hex;
@@ -75,6 +77,7 @@ import snespal  # noqa: E402
 import brr  # noqa: E402
 import spcseq  # noqa: E402
 import levelmap  # noqa: E402
+import spcasm  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
 ASSETS = "assets"
@@ -142,12 +145,17 @@ class Asset:
     def converted(self):
         """True if the build converts the source to the data."""
         return bool(self.png or self.gpl or self.tilemap or self.samples or self.seq
-                    or self.level)
+                    or self.level or self.asm)
 
     @property
     def seq(self):
         """True if the data is a sequence text (seq=text)."""
         return self.options.get("seq") == "text"
+
+    @property
+    def asm(self):
+        """True if the data is SPC700 assembly (asm=spc700)."""
+        return self.options.get("asm") == "spc700"
 
     @property
     def source(self):
@@ -159,6 +167,8 @@ class Asset:
             return os.path.join(ASSETS, self.path + ".seq")
         if self.level:
             return os.path.join(ASSETS, self.path + levelmap.FORMATS[self.level][0])
+        if self.asm:
+            return os.path.join(ASSETS, self.path + ".s")
         return os.path.join(ASSETS, self.path + ext)
 
     @property
@@ -192,6 +202,10 @@ class Asset:
             return brr.sources(",".join(self.samples)) + ["tools/brr.py"]
         if target == self.data_source and self.seq:
             return [self.source, "tools/spcseq.py"]
+        if target == self.data_source and self.asm:
+            srcs = spcasm.sources(os.path.join(ROOT, self.source))
+            return [os.path.relpath(p, ROOT) for p in srcs] + [
+                "tools/spcasm.py", "tools/spcseq.py", "tools/spc700.py"]
         if target == self.data_source and self.converted:
             return [self.source]
         return [self.data_source]
@@ -214,6 +228,11 @@ class Asset:
             return snespal.to_bytes(words, self.gpl)
         if self.seq:
             return spcseq.build(src)
+        if self.asm:
+            try:
+                return spcasm.build(src)
+            except spcasm.AsmError as e:
+                raise ValueError(str(e))
         if self.samples:
             if "dir" in self.options:
                 return brr.build_dir(self.samples, root)

@@ -1,0 +1,2199 @@
+# The sequences of the sounds that live in the sound driver (spc_driver.s
+# includes this file; book: Sound driver). `sound_NN:` is the header of sound
+# $NN (one sequence address per channel), which the driver's sound_table points
+# to; `sound_NN_chK` its channels' sequences. Same syntax as the songs. They may
+# change size: the labels follow, up to $3000 (the song of the set).
+at $1B37
+
+# sound $01
+sound_01:
+	song sound_01_ch0
+sound_01_ch0:
+	tempo $64
+	inst $06
+	channel_volume $41
+	note $2F $08 $65 $5A
+	slide $00 $05 $40
+	note $34 . . $19
+	slide $00 $05 $40
+	note $34 . . $0F
+	slide $00 $05 $40
+	note $34 $0A . $08
+	slide $00 $05 $40
+	end
+
+# sound $02
+sound_02:
+	song sound_02_ch0
+sound_02_ch0:
+	tempo $78
+	inst $06
+	channel_volume $41
+	repeat_start
+	note $3C $05 $65 $5A
+	note $37 . . $50
+	note $40 . . $5A
+	note $3C . . $50
+	note $43 . . $5A
+	note $40 . . $50
+	note $48 . . $5A
+	note $43 . . $50
+	repeat
+	channel_volume $10
+	repeat
+	channel_volume $07
+	repeat
+	end
+
+# sound $03
+sound_03:
+	song sound_03_ch0
+sound_03_ch0:
+	tempo $78
+	inst $06
+	channel_volume $3C
+	repeat_start
+	note $3C $02 $65 $46
+	note $41 . . $50
+	note $43 . . $50
+	note $45 . . $50
+	note $48 . . $50
+	repeat
+	channel_volume $26
+	repeat
+	channel_volume $11
+	repeat
+	channel_volume $0A
+	repeat
+	channel_volume $06
+	repeat
+	end
+
+# sound $04: the default gun's shot (spawn_shot_default)
+sound_04:
+	song sound_04_ch0
+sound_04_ch0:
+	tempo $FF
+	inst $12
+	transpose $14
+	channel_volume $3C
+	loop1_start
+	note $43 $14 $65 $7F
+	slide $00 $14 $0C
+	note $37 $0A . $64
+	slide $00 $14 $0C
+	note $2B $05 . $50
+	slide $00 $05 $0C
+	note $1F $03 . $28
+	slide $00 $03 $0C
+	loop1 $03 $CE $00
+	end
+
+# sound $05: the laser (spawn_shot_laser_in_slots)
+sound_05:
+	song sound_05_ch0
+sound_05_ch0:
+	tempo $FF
+	inst $07
+	channel_volume $26
+	channel_volume_fade $FF $28
+	loop1_start
+	loop2_start
+	note $48 $01 $65 $5A
+	note $4C . . $5A
+	loop2 $06 $00 $BA
+	loop1 $09 $00 $00
+	loop1_start
+	note $48 $01 . $64
+	note $4C . . $64
+	loop1 $78 $FF $F6
+	end
+
+# sound $07: the crush gun (spawn_shot_crush_in_slot)
+sound_07:
+	song sound_07_ch0
+sound_07_ch0:
+	tempo $FF
+	inst $05
+	channel_volume $2D
+	loop1_start
+	note $32 $01 $65 $5A
+	note $18 . . $5A
+	loop1 $06 $FB $FB
+	loop1_start
+	note $3C $01 . $64
+	note $41 . . $64
+	loop1 $64 $FF $EC
+	end
+
+# sound $08: the homing gun (spawn_shot_homing_in_slot)
+sound_08:
+	song sound_08_ch0
+sound_08_ch0:
+	tempo $FF
+	inst $03
+	channel_volume $2F
+	note $48 $0A $65 $7F
+	slide $00 $0F $18
+	note $48 . . $28
+	slide $00 $0F $18
+	loop1_start
+	note $24 $01 . $46
+	note $30 . . $55
+	loop1 $64 $FF $0E
+	end
+
+# sound $06
+sound_06:
+	song sound_06_ch0
+sound_06_ch0:
+	tempo $FF
+	inst $07
+	channel_volume $26
+	loop1_start
+	loop2_start
+	note $48 $01 $65 $5A
+	note $4C . . $5A
+	loop2 $06 $00 $BA
+	loop1 $14 $00 $00
+	end
+
+# sound $09: the spread gun (spawn_shots_spread_in_slots)
+sound_09:
+	song sound_09_ch0
+sound_09_ch0:
+	tempo $FF
+	inst $05
+	channel_volume $28
+	loop1_start
+	note $23 $05 $65 $64
+	slide $00 $05 $47
+	note $23 . . $64
+	slide $00 $05 $47
+	loop1_start
+	note $30 $01 . $64
+	note $32 . . $64
+	note $34 . . $64
+	loop1 $0C $00 $45
+	loop2_start
+	note $21 $07 . $1E
+	slide $00 $07 $47
+	loop1_start
+	note $30 $01 . $1E
+	note $32 . . $1E
+	note $34 . . $1E
+	loop1 $0C $00 $45
+	loop2 $03 $EA $00
+	end
+
+# sound $0A: the flame thrower (spawn_shots_flame)
+sound_0A:
+	song sound_0A_ch0
+sound_0A_ch0:
+	tempo $64
+	inst $05
+	channel_volume $41
+	vibrato $00 $32 $50
+	pitch_noise $FA $11 $00
+	note $16 $23 $64 $5A
+	channel_volume_fade $14 $00
+	note $16 $14 $64 $5A
+	end
+
+# sound $0D
+sound_0D:
+	song sound_0D_ch0
+sound_0D_ch0:
+	tempo $50
+	channel_volume $7F
+	inst $0C
+	pan $12
+	pan_fade $32 $03
+	envelope $96 $D2 $28
+	bend $00 $0D $06
+	note $2B $3C $0A $7F
+	end
+
+# sound $0B
+sound_0B:
+	song sound_0B_ch0
+sound_0B_ch0:
+	tempo $64
+	inst $07
+	channel_volume $41
+	note $48 $07 $50 $50
+	slide $00 $06 $0C
+	note $41 $0B . $64
+	slide $00 $0A $1D
+	note $41 . . $1E
+	slide $00 $0A $1D
+	note $41 . . $0C
+	slide $00 $0A $1D
+	end
+
+# sound $0F
+sound_0F:
+	song sound_0F_ch0
+sound_0F_ch0:
+	tempo $C8
+	inst $07
+	channel_volume $3C
+	vibrato $00 $50 $00
+	note $30 $0E $50 $5A
+	slide $00 $03 $41
+	slide $00 $0B $1C
+	note $30 . . $16
+	slide $00 $03 $41
+	slide $00 $0B $1C
+	note $30 . . $13
+	slide $00 $03 $41
+	slide $00 $0B $1C
+	note $30 . . $09
+	slide $00 $03 $41
+	slide $00 $0B $1C
+	note $30 . . $05
+	slide $00 $03 $41
+	slide $00 $0B $1C
+	end
+
+# sound $10
+sound_10:
+	song sound_10_ch0
+sound_10_ch0:
+	tempo $B4
+	inst $07
+	transpose $05
+	channel_volume $22
+	loop1_start
+	note $43 $03 $65 $64
+	note $3A $02 . $64
+	note $3F . . $64
+	note $46 . . $64
+	note $43 . . $2D
+	note $3A . . $28
+	note $3F . . $23
+	note $46 . . $23
+	note $43 . . $14
+	note $3A . . $12
+	note $3F . . $12
+	note $46 . . $10
+	end
+
+# sound $12
+sound_12:
+	song sound_12_ch0
+sound_12_ch0:
+	tempo $E6
+	inst $00
+	channel_volume $50
+	loop1_start
+	note $25 $07 $65 $64
+	slide $00 $07 $3D
+	note $3D . . $50
+	slide $00 $07 $25
+	loop1 $06 $00 $7F
+	channel_volume $14
+	loop1_start
+	note $25 $07 . $64
+	slide $00 $07 $3D
+	note $3D . . $64
+	slide $00 $07 $25
+	loop1 $06 $F3 $7F
+	end
+
+# sound $1A
+sound_1A:
+	song sound_1A_ch0
+sound_1A_ch0:
+	tempo $FF
+	inst $05
+	channel_volume $2D
+	loop1_start
+	note $39 $14 $65 $7F
+	slide $00 $14 $02
+	note $2D $0A . $64
+	slide $00 $14 $02
+	note $21 $05 . $50
+	slide $00 $05 $02
+	note $15 $03 . $28
+	slide $00 $03 $02
+	loop1 $03 $CE $00
+	end
+
+# sound $31
+# sound $5F
+sound_31:
+	song sound_31_ch0
+sound_31_ch0:
+	tempo $FF
+	inst $05
+	channel_volume $2D
+	loop1_start
+	note $26 $07 $65 $5A
+	slide $00 $05 $1C
+	note $30 . . $5A
+	slide $00 $05 $1B
+	note $2C $04 . $5A
+	slide $00 $03 $17
+	loop1 $32 $00 $00
+	end
+
+# sound $3F
+sound_3F:
+	song sound_3F_ch0
+sound_3F_ch0:
+	tempo $50
+	channel_volume $7F
+	inst $0C
+	pan $14
+	pan_fade $5A $01
+	note $28 $04 $63 $5A
+	channel_volume_fade $5A $01
+	note $2C $78 . $7F
+	slide $05 $FF $0E
+	end
+
+# sound $3E: an extra life (add_score)
+sound_3E:
+	song sound_3E_ch0
+sound_3E_ch0:
+	tempo $7D
+	inst $00
+	channel_volume $3C
+	transpose $05
+	note $30 $06 $65 $5A
+	note $2B $05 . $4B
+	note $34 . . $5A
+	note $30 . . $4B
+	note $37 . . $5A
+	note $30 . . $4B
+	note $34 . . $5A
+	note $30 . . $4B
+	note $37 . . $5A
+	note $34 . . $4B
+	note $3C . . $5A
+	repeat_start
+	drums_off
+	note $37 $05 $65 $4B
+	note $40 . . $5A
+	note $3C . . $4B
+	note $43 . . $5A
+	note $40 . . $4B
+	note $48 . . $5A
+	repeat
+	rest $01
+	channel_volume $0C
+	repeat
+	channel_volume $05
+	repeat
+	end
+
+# sound $43
+sound_43:
+	song sound_43_ch0 sound_43_ch1
+sound_43_ch0:
+	tempo $7F
+	channel_volume $7F
+	inst $0C
+	pan $0D
+	pan_fade $32 $07
+	note $2A $50 $63 $7F
+	slide $32 $1E $26
+	pan_fade $32 $0D
+	note $2A . . $3C
+	slide $32 $1E $26
+	pan_fade $32 $07
+	note $2A $55 . $1E
+	slide $32 $1E $26
+	pan_fade $32 $0D
+	note $2A $64 . $11
+	slide $46 $1E $26
+	end
+sound_43_ch1:
+	tempo $78
+	channel_volume $46
+	inst $0C
+	pan $07
+	detune $03
+	rest $16
+	pan_fade $32 $0D
+	note $2A $50 $63 $28
+	slide $32 $1E $26
+	pan_fade $32 $07
+	note $2A . . $1E
+	slide $32 $1E $26
+	pan_fade $32 $0D
+	note $2A $55 . $14
+	slide $32 $1E $26
+	pan_fade $32 $07
+	note $2A $64 . $0A
+	slide $46 $1E $26
+	end
+
+# sound $1B
+sound_1B:
+	song sound_1B_ch0
+sound_1B_ch0:
+	inst $11
+	channel_volume $7F
+	tempo $78
+	vibrato $00 $64 $1E
+	note $2B $46 $64 $7F
+	end
+
+# sound $1E
+sound_1E:
+	song sound_1E_ch0
+sound_1E_ch0:
+	tempo $FF
+	inst $05
+	channel_volume $28
+	loop1_start
+	note $26 $07 $65 $7F
+	slide $00 $05 $1C
+	note $2F . . $7F
+	slide $00 $05 $23
+	note $2D . . $7F
+	slide $00 $05 $17
+	loop1 $00 $00 $00
+	end
+
+# sound $1F
+sound_1F:
+	song sound_1F_ch0
+sound_1F_ch0:
+	tempo $FF
+	inst $05
+	channel_volume $23
+	loop1_start
+	note $26 $07 $65 $64
+	slide $00 $05 $1C
+	note $2F . . $64
+	slide $00 $05 $23
+	note $2D . . $64
+	slide $00 $05 $17
+	loop1 $05 $EE $C4
+	end
+
+# sound $20
+sound_20:
+	song sound_20_ch0
+sound_20_ch0:
+	inst $0F
+	channel_volume $7F
+	tempo $78
+	note $29 $06 $50 $7F
+	slide $00 $06 $00
+	note $29 $9B $64 $7F
+	end
+
+# sound $1D
+sound_1D:
+	song sound_1D_ch0
+	.byte $2E $1F
+sound_1D_ch0:
+	inst $0F
+	channel_volume $7F
+	tempo $8C
+	pan $15
+	vibrato $00 $96 $96
+	transpose $12
+	note $24 $1E $63 $7F
+	note $28 $14 . $7F
+	note $26 . . $7F
+	note $28 $0A . $7F
+	note $24 $14 . $7F
+	note $26 . . $7F
+	note $24 $0F . $7F
+	note $21 $14 . $7F
+	note $24 $0F . $7F
+	channel_volume_fade $50 $00
+	note $28 $14 . $7F
+	note $21 . . $7F
+	note $26 . . $7F
+	note $24 . . $7F
+	end
+	.byte $E2 $0A $EE $50 $E4 $00 $BE $C8 $E3 $00 $EC $00 $E6 $24 $0A $63
+	.byte $7F $26 $0F $FF $1D $14 $FF $21 $0F $FF $E7 $08 $F1 $00 $FF
+
+# sound $1C
+sound_1C:
+	song sound_1C_ch0
+sound_1C_ch0:
+	inst $0A
+	channel_volume $7F
+	tempo $8C
+	vibrato $00 $BE $FF
+	transpose $00
+	note $18 $7F $65 $7F
+	channel_volume_fade $64 $0A
+	note $18 $64 $63 $7F
+	end
+
+# sound $56
+sound_56:
+	song sound_56_ch0 sound_56_ch1
+sound_56_ch0:
+	inst $0F
+	channel_volume $7F
+	tempo $5A
+	vibrato $00 $FF $C8
+	note $30 $0F $63 $7F
+	slide $00 $0F $0C
+	vibrato $00 $FF $96
+	loop1_start
+	note $24 $0F . $7F
+	slide $00 $0F $18
+	loop1 $04 $E2 $CE
+	end
+sound_56_ch1:
+	inst $04
+	channel_volume $7F
+	tempo $5A
+	vibrato $00 $FF $9B
+	pitch_noise $FF $14 $14
+	note $18 $05 $63 $7F
+	slide $00 $05 $07
+	loop1_start
+	note $18 $14 . $7F
+	slide $00 $14 $07
+	loop1 $04 $D8 $00
+	end
+
+# sound $5A
+sound_5A:
+	song sound_5A_ch0 sound_5A_ch1
+
+# sound $5B
+sound_5B:
+	song sound_5B_ch0 sound_5B_ch1
+sound_5A_ch0:
+	inst $0F
+	channel_volume $3C
+	tempo $64
+	pan $16
+	pan_fade $FF $00
+	loop1_start
+	drums_off
+	note $24 $01 $63 $7F
+	loop1 $D2 $00 $07
+sound_5B_ch0:
+	tempo $64
+	inst $05
+	channel_volume $5A
+	inst $01
+	pan $0E
+	pan_fade $BE $05
+	vibrato $00 $8C $46
+	note $2B $07 $63 $7F
+	slide $00 $06 $0C
+	note $2B . . $7F
+	slide $00 $06 $0C
+	note $4B $1E . $7F
+	slide $00 $1E $15
+	note $4B . . $46
+	slide $00 $1E $15
+	note $4B . . $28
+	slide $00 $1E $15
+	note $4B . . $14
+	slide $00 $1E $15
+	note $4B . . $0A
+	slide $00 $1E $15
+	note $4B . . $06
+	slide $00 $1E $15
+	end
+sound_5A_ch1:
+	inst $06
+	channel_volume $2D
+	tempo $64
+	pan $00
+	pan_fade $FF $14
+	vibrato $00 $FF $DC
+	note $24 $D2 $63 $7F
+	slide $00 $D2 $4C
+sound_5B_ch1:
+	tempo $64
+	inst $0F
+	channel_volume $7F
+	pan $0E
+	pan_fade $BE $06
+	note $30 $07 $01 $7F
+	slide $00 $07 $18
+	note $30 . $63 $7F
+	slide $00 $07 $18
+	pitch_noise $6E $09 $00
+	vibrato $00 $50 $3C
+	note $30 $1E . $7F
+	note $34 . . $6E
+	note $23 . . $64
+	note $26 . . $5A
+	note $1D . . $50
+	note $16 $2F . $46
+	end
+
+# sound $30
+sound_30:
+	song sound_30_ch0
+sound_30_ch0:
+	tempo $3C
+	inst $0F
+	channel_volume $78
+	envelope $8C $D2 $00
+	pitch_noise $C8 $0D $63
+	vibrato $00 $5A $7F
+	note $2D $04 $63 $50
+	slide $00 $04 $18
+	note $38 $0E . $78
+	slide $00 $14 $28
+	envelope $96 $D2 $2D
+	channel_volume $32
+	note $35 $32 $0A $7F
+	slide $00 $14 $26
+	end
+
+# sound $41
+sound_41:
+	song sound_41_ch0 sound_41_ch1
+sound_41_ch0:
+	inst $0F
+	channel_volume $4B
+	pan $0D
+	transpose $03
+	envelope $82 $D2 $00
+	vibrato $00 $64 $A0
+	note $37 $3C $63 $7F
+	slide $00 $3C $22
+	envelope $96 $D2 $00
+	vibrato $00 $78 $E6
+	channel_volume_fade $FF $00
+	loop1_start
+	drums_off
+	note $24 $0A $63 $7F
+	note $26 $0F . $7F
+	note $1D $14 . $7F
+	note $21 $0F . $7F
+	loop1 $04 $00 $00
+	end
+sound_41_ch1:
+	inst $0A
+	channel_volume $37
+	vibrato $00 $BE $FA
+	pan $05
+	channel_volume_fade $FF $00
+	envelope $82 $D2 $00
+	loop1_start
+	drums_off
+	note $24 $0A $63 $7F
+	slide $00 $0A $0C
+	envelope $96 $D2 $00
+	note $26 $0F . $7F
+	slide $00 $0F $30
+	note $1D $14 . $7F
+	slide $00 $14 $0C
+	note $21 $0F . $7F
+	slide $00 $0F $24
+	loop1 $04 $00 $00
+	end
+
+# sound $6E
+sound_6E:
+	song sound_6E_ch0 sound_6E_ch1 sound_6E_ch2 sound_6E_ch3 sound_6E_ch4 sound_6E_ch5
+sound_6E_ch0:
+	inst $0F
+	pan $06
+	channel_volume $25
+	tempo $8C
+	vibrato $00 $82 $96
+	envelope $78 $D2 $00
+	transpose $01
+	note $36 $1F $63 $7F
+	call L21E1
+	end
+sound_6E_ch1:
+	inst $0F
+	pan $06
+	channel_volume $2D
+	tempo $96
+	pan $16
+	vibrato $00 $64 $C8
+	pitch_noise $64 $21 $64
+	envelope $6E $D2 $00
+	note $30 $0A $64 $7F
+	envelope $96 $D2 $00
+	loop1_start
+	drums_off
+	note $30 $02 $64 $7F
+	note $2D . . $7F
+	note $2F . . $7F
+	note $34 . . $7F
+	note $28 . . $7F
+	note $2B . . $7F
+	loop1 $19 $FB $F6
+	end
+sound_6E_ch2:
+	inst $0F
+	pan $0E
+	channel_volume $5A
+	channel_volume_fade $D2 $00
+	tempo $5A
+	vibrato $00 $FF $FF
+	transpose $FB
+	loop1_start
+	drums_off
+	note $24 $0A $63 $7F
+	slide $00 $0A $18
+	note $29 . . $7F
+	slide $00 $0A $0C
+	note $26 . . $7F
+	slide $00 $0A $0C
+	loop1 $07 $00 $F6
+	end
+sound_6E_ch3:
+	inst $0B
+	pan $08
+	channel_volume $2D
+	tempo $8C
+	vibrato $00 $FF $F0
+	note $32 $78 $63 $7F
+	slide $00 $78 $0C
+	channel_volume_fade $96 $05
+	note $0C $96 . $7F
+	slide $00 $96 $29
+	end
+sound_6E_ch4:
+	inst $0F
+	pan $0D
+	channel_volume $3C
+	tempo $8C
+	vibrato $00 $82 $96
+	envelope $82 $D2 $00
+	note $36 $1E $63 $7F
+	call L21E1
+	end
+sound_6E_ch5:
+	inst $0A
+	pan $0C
+	channel_volume $23
+	tempo $FF
+	envelope $78 $D2 $00
+	vibrato $00 $BE $E6
+	loop1_start
+	drums_off
+	note $24 $0A $63 $7F
+	note $26 $0F . $7F
+	note $1D $14 . $7F
+	note $21 $0F . $7F
+	loop1 $09 $F4 $00
+	end
+L21E1:
+	envelope $96 $D2 $00
+	note $3A $14 . $7F
+	note $38 . . $7F
+	note $36 $0F . $7F
+	note $33 $14 . $7F
+	note $36 $0F . $7F
+	channel_volume_fade $8C $05
+	note $3A $14 . $7F
+	note $33 . . $7F
+	note $38 . . $7F
+	note $36 . . $7F
+	note $33 . . $7F
+	note $2E . . $7F
+	note $21 . . $7F
+	end
+
+# sound $42
+sound_42:
+	song sound_42_ch0 sound_42_ch1
+sound_42_ch0:
+	inst $0F
+	channel_volume $7F
+	tempo $5A
+	pan $16
+	pitch_noise $FF $64 $32
+	vibrato $00 $5A $64
+	loop1_start
+	note $3C $02 $64 $7F
+	loop1 $32 $FE $F6
+	end
+sound_42_ch1:
+	inst $10
+	channel_volume $7F
+	pan $00
+	tempo $5A
+	note $26 $28 $64 $7F
+	slide $00 $28 $0C
+	inst $0B
+	channel_volume $64
+	vibrato $00 $FF $FF
+	channel_volume_fade $3C $00
+	note $21 $3C . $7F
+	slide $00 $3C $3C
+	end
+
+# sound $45
+sound_45:
+	song sound_45_ch0 sound_45_ch1
+sound_45_ch0:
+	inst $0D
+	channel_volume $0A
+	tempo $5A
+	vibrato $00 $5A $64
+	pitch_noise $82 $05 $50
+	channel_volume_fade $50 $7F
+	note $29 $FF $64 $7F
+	slide $00 $FF $24
+	end
+sound_45_ch1:
+	inst $05
+	channel_volume $00
+	call L22A3
+	channel_volume_fade $C8 $78
+	note $18 $FF $63 $7F
+	slide $00 $A0 $13
+	end
+
+# sound $46
+sound_46:
+	song sound_46_ch0 sound_46_ch1
+sound_46_ch0:
+	inst $09
+	channel_volume $5F
+	tempo $5A
+	vibrato $00 $41 $0F
+	pitch_noise $82 $05 $50
+	note $2F $FF $64 $7F
+	slide $00 $FF $1F
+	end
+sound_46_ch1:
+	inst $05
+	channel_volume $78
+	call L22A3
+	note $18 $FF $63 $7F
+	slide $00 $A0 $13
+	end
+L22A3:
+	tempo $5A
+	vibrato $00 $28 $AF
+	pitch_noise $82 $05 $50
+	end
+
+# sound $47
+sound_47:
+	song sound_47_ch0 sound_47_ch1
+sound_47_ch0:
+	inst $0F
+	channel_volume $7F
+	tempo $5A
+	pan $00
+	vibrato $00 $B4 $78
+	pitch_noise $82 $05 $50
+	note $30 $0A $63 $7F
+	note $32 $1E . $7F
+	note $32 $0A . $7F
+	note $32 $14 . $7F
+	note $32 $28 . $7F
+	note $32 $14 . $7F
+	note $32 $0A . $7F
+	note $32 $1E . $7F
+	note $32 $28 . $7F
+	note $32 $0A . $7F
+	note $32 $28 . $7F
+	note $32 $1E . $7F
+	note $32 $14 . $7F
+	note $32 . . $7F
+	note $2B $0A . $7F
+	note $2B $32 . $7F
+	channel_volume_fade $82 $00
+	note $1C . . $7F
+	note $1C $50 . $7F
+	end
+sound_47_ch1:
+	inst $0F
+	channel_volume $7F
+	tempo $5A
+	pitch_noise $78 $0A $50
+	pan $14
+	vibrato $00 $B4 $78
+	note $30 $0A $63 $7F
+	note $2D . . $7F
+	note $2D . . $7F
+	note $2D $14 . $7F
+	note $24 $28 . $7F
+	note $29 $14 . $7F
+	note $34 $0A . $7F
+	note $2B $1E . $7F
+	note $2D $28 . $7F
+	note $1A $0A . $7F
+	note $26 $28 . $7F
+	note $30 $1E . $7F
+	note $35 $14 . $7F
+	note $24 $28 . $7F
+	note $2C $0A . $7F
+	note $2C $32 . $7F
+	channel_volume_fade $78 $00
+	note $1D . . $7F
+	note $1D $46 . $7F
+	end
+
+# sound $44
+sound_44:
+	song sound_44_ch0 sound_44_ch1
+sound_44_ch0:
+	inst $0F
+	channel_volume $7F
+	tempo $96
+	vibrato $00 $96 $64
+	pitch_noise $32 $01 $32
+	note $2A $0A $63 $7F
+	inst $0E
+	transpose $06
+	loop1_start
+	note $1F $05 . $7F
+	note $1A $03 . $7F
+	note $24 $04 . $7F
+	note $21 $05 . $7F
+	note $1D $08 . $7F
+	loop1 $10 $00 $F6
+	end
+sound_44_ch1:
+	inst $0F
+	channel_volume $7F
+	tempo $96
+	vibrato $00 $78 $78
+	pitch_noise $0A $01 $64
+	note $2B $0A $63 $7F
+	note $1F $82 . $7F
+	note $1D $87 . $7F
+	note $1C . . $7F
+	end
+
+# sound $21
+sound_21:
+	song sound_21_ch0
+sound_21_ch0:
+	tempo $3C
+	inst $05
+	channel_volume $32
+	pitch_noise $C8 $0F $00
+	envelope $96 $D2 $1E
+	vibrato $00 $C8 $7F
+	note $24 $03 $63 $3C
+	note $35 $50 $14 $7F
+	slide $00 $0A $21
+	end
+
+# sound $22
+sound_22:
+	song sound_22_ch0
+sound_22_ch0:
+	tempo $64
+	inst $0B
+	channel_volume $00
+	channel_volume_fade $3C $6E
+	vibrato $00 $2D $64
+	pitch_noise $FA $0E $00
+	note $07 $16 $65 $7F
+	slide $00 $16 $1A
+	note $1B $DC . $7F
+	channel_volume_fade $5A $00
+	note $1B $5A . $7F
+	slide $32 $28 $07
+	end
+
+# sound $23
+sound_23:
+	song sound_23_ch0
+sound_23_ch0:
+	call L2482
+	loop2_start
+	note $07 $16 $65 $7F
+	slide $00 $16 $1B
+	note $1B $78 . $7F
+	envelope $96 $D2 $63
+	note $1B $16 $01 $7F
+	slide $00 $16 $07
+	channel_volume $19
+	note $1B $0F $65 $7F
+	note $1B $14 $01 $5A
+	slide $00 $10 $07
+	end
+
+# sound $25
+sound_25:
+	song sound_25_ch0
+sound_25_ch0:
+	tempo $64
+	inst $05
+	channel_volume $00
+	channel_volume_fade $0F $6E
+	vibrato $00 $2D $00
+	pitch_noise $FF $0F $1E
+	note $07 $16 $65 $7F
+	slide $00 $0A $1A
+	note $19 $3C . $7F
+	channel_volume_fade $46 $00
+	note $19 $46 . $7F
+	slide $1E $28 $07
+	end
+
+# sound $24
+sound_24:
+	song sound_24_ch0
+sound_24_ch0:
+	tempo $64
+	inst $0B
+	channel_volume $6E
+	vibrato $00 $2D $64
+	pitch_noise $FA $0E $00
+	repeat_start
+	note $07 $0C $65 $7F
+	slide $00 $0A $1B
+	note $1B $04 . $7F
+	repeat
+	repeat
+	loop1_start
+	repeat
+	repeat
+	note $1B $23 . $7F
+	repeat
+	repeat
+	note $1B $14 . $7F
+	repeat
+	note $1B $0B . $7F
+	repeat
+	repeat
+	loop1 $02 $00 $00
+	envelope $96 $D2 $32
+	note $1B $19 $28 $7F
+	slide $00 $14 $07
+	note $1B $1C $50 $28
+	slide $00 $14 $07
+	note $1B $1E . $0F
+	slide $00 $14 $07
+	note $1B $20 . $08
+	slide $00 $14 $07
+	end
+L2482:
+	tempo $64
+	inst $0B
+	channel_volume $00
+	channel_volume_fade $0F $6E
+	vibrato $00 $2D $6E
+	pitch_noise $FA $0F $00
+	end
+
+# sound $57
+sound_57:
+	song sound_57_ch0 sound_57_ch1
+sound_57_ch0:
+	inst $0C
+	channel_volume $7F
+	tempo $50
+	pan $09
+	vibrato $00 $B4 $3C
+	transpose $ED
+	call L24C8
+	channel_volume $28
+	call L24DD
+	end
+sound_57_ch1:
+	inst $0C
+	channel_volume $5A
+	tempo $50
+	pan $0C
+	vibrato $00 $B4 $3C
+	transpose $EE
+	rest $05
+	call L24C8
+	channel_volume $14
+	call L24DD
+	end
+L24C8:
+	note $43 $37 $63 $7F
+	slide $00 $0A $3C
+	slide $00 $0F $45
+	slide $00 $0F $3E
+	slide $00 $14 $37
+	end
+L24DD:
+	channel_volume_fade $32 $02
+	note $43 $32 . $7F
+	slide $00 $0A $3C
+	slide $00 $0F $45
+	slide $00 $0F $3E
+	slide $00 $14 $37
+	end
+
+# sound $58
+sound_58:
+	song sound_58_ch0 $0000
+sound_58_ch0:
+	inst $0B
+	channel_volume $7F
+	tempo $96
+	pan $16
+	note $3C $0A $63 $7F
+	slide $00 $0A $24
+	inst $0F
+	vibrato $14 $64 $FF
+	pitch_noise $64 $FA $64
+	loop1_start
+	call L2540
+	loop1 $03 $CE $F6
+	end
+	.byte $E2 $0B $EE $7F $EA $96 $E3 $00 $24 $0A $63 $7F $F3 $00 $0A $3C
+	.byte $E2 $0F $A4 $FF $E4 $14 $64 $FF $E5 $64 $FA $96 $E6 $FE $40 $25
+	.byte $E7 $03 $CE $F6 $FF
+L2540:
+	transpose $FA
+	note $30 $02 $64 $7F
+	note $2D . . $7F
+	note $2F . . $7F
+	note $34 . . $7F
+	note $28 . . $7F
+	note $2B . . $7F
+	transpose $F4
+	note $30 . . $7F
+	note $2D . . $7F
+	note $2F . . $7F
+	note $34 . . $7F
+	note $28 . . $7F
+	note $2B . . $7F
+	transpose $EE
+	note $30 . . $7F
+	note $2D . . $7F
+	note $2F . . $7F
+	note $34 . . $7F
+	note $28 . . $7F
+	note $2B . . $7F
+	end
+
+# sound $11
+sound_11:
+	song sound_11_ch0
+sound_11_ch0:
+	inst $0F
+	channel_volume $64
+	tempo $64
+	vibrato $00 $FA $64
+	pitch_noise $96 $FA $64
+	loop1_start
+	note $30 $02 $64 $7F
+	note $2D . . $7F
+	note $2F . . $7F
+	note $34 . . $7F
+	note $28 . . $7F
+	note $2B . . $7F
+	loop1 $07 $EC $EC
+	end
+
+# sound $26
+sound_26:
+	song sound_26_ch0
+sound_26_ch0:
+	call L2632
+	note $1F $A0 $63 $7F
+	slide $00 $A0 $0C
+	end
+
+# sound $27
+sound_27:
+	song sound_27_ch0
+sound_27_ch0:
+	call L2632
+	transpose $05
+	note $1F $A0 $63 $7F
+	slide $00 $A0 $0C
+	end
+
+# sound $28
+sound_28:
+	song sound_28_ch0
+sound_28_ch0:
+	call L2632
+	transpose $0A
+	note $1F $A0 $63 $7F
+	slide $00 $A0 $0C
+	end
+
+# sound $29
+sound_29:
+	song sound_29_ch0
+sound_29_ch0:
+	inst $0B
+	channel_volume $46
+	tempo $C8
+	envelope $9D $DE $00
+	transpose $0F
+	note $1F $A0 $63 $7F
+	slide $00 $A0 $0C
+	end
+
+# sound $2A
+sound_2A:
+	song sound_2A_ch0
+sound_2A_ch0:
+	inst $0B
+	channel_volume $46
+	tempo $C8
+	envelope $93 $DE $00
+	transpose $14
+	note $1F $A0 $63 $7F
+	slide $00 $A0 $0C
+	end
+
+# sound $2B
+sound_2B:
+	song sound_2B_ch0
+sound_2B_ch0:
+	inst $0B
+	channel_volume $3C
+	tempo $C8
+	envelope $89 $DE $00
+	transpose $19
+	note $1F $A0 $63 $7F
+	slide $00 $A0 $0C
+	end
+
+# sound $2C
+sound_2C:
+	song sound_2C_ch0
+sound_2C_ch0:
+	inst $0B
+	channel_volume $32
+	tempo $C8
+	envelope $7F $DE $00
+	transpose $1E
+	note $1F $A0 $63 $7F
+	slide $00 $A0 $0C
+	end
+
+# sound $2D
+sound_2D:
+	song sound_2D_ch0
+sound_2D_ch0:
+	inst $0B
+	channel_volume $28
+	tempo $C8
+	envelope $75 $DE $00
+	transpose $23
+	note $1F $A0 $63 $7F
+	slide $00 $A0 $0C
+	end
+L2632:
+	inst $0B
+	channel_volume $50
+	tempo $C8
+	envelope $9D $DE $00
+	end
+
+# sound $2E
+sound_2E:
+	song sound_2E_ch0
+sound_2E_ch0:
+	inst $0B
+	channel_volume $7F
+	tempo $96
+	channel_volume_fade $FF $28
+	vibrato $00 $FF $64
+	note $0C $FF $64 $7F
+	slide $00 $FF $48
+	end
+
+# sound $2F
+sound_2F:
+	song sound_2F_ch0
+sound_2F_ch0:
+	inst $0B
+	channel_volume $7F
+	tempo $96
+	channel_volume_fade $96 $28
+	vibrato $00 $96 $64
+	envelope $50 $DE $00
+	note $3C $96 $64 $7F
+	slide $00 $96 $0C
+	end
+
+# sound $0C
+sound_0C:
+	song sound_0C_ch0
+sound_0C_ch0:
+	inst $0C
+	tempo $5A
+	channel_volume $50
+	vibrato $00 $3C $7D
+	loop1_start
+	note $40 $14 $63 $7F
+	slide $00 $0A $47
+	slide $00 $0A $44
+	loop1 $03 $C9 $00
+	end
+
+# sound $18
+sound_18:
+	song sound_18_ch0
+sound_18_ch0:
+	tempo $FF
+	inst $07
+	channel_volume $28
+	envelope $78 $D2 $00
+	loop2_start
+	note $34 $01 $65 $7F
+	note $40 . . $7F
+	loop2 $31 $00 $08
+	loop1_start
+	note $34 $01 . $7F
+	note $40 . . $7F
+	loop1 $00 $00 $00
+	end
+
+# sound $19
+sound_19:
+	song sound_19_ch0
+sound_19_ch0:
+	tempo $FF
+	inst $07
+	channel_volume $26
+	channel_volume_fade $78 $00
+	envelope $96 $D2 $00
+	loop2_start
+	note $4C $01 $65 $7F
+	note $40 . . $7F
+	loop2 $28 $00 $F1
+	channel_volume $0A
+	channel_volume_fade $78 $01
+	loop2_start
+	note $4A $01 . $5A
+	note $3E . . $5A
+	loop2 $28 $00 $F1
+	end
+
+# sound $48
+sound_48:
+	song sound_48_ch0 sound_48_ch1
+sound_48_ch0:
+	call L270B
+	loop2_start
+	drums_off
+	note $18 $23 $63 $7F
+	slide $00 $23 $2B
+	loop2 $05 $FB $7F
+	call L2716
+	end
+sound_48_ch1:
+	call L270B
+	detune $FB
+	loop2_start
+	drums_off
+	note $18 $23 $63 $7F
+	slide $00 $23 $2B
+	loop2 $05 $FB $7F
+	call L2716
+	end
+L270B:
+	inst $0B
+	channel_volume $50
+	tempo $FA
+	envelope $64 $DE $00
+	end
+L2716:
+	channel_volume $32
+	tempo $96
+	note $2D $78 . $7F
+	slide $00 $78 $3E
+	note $3E $FF . $7F
+	slide $00 $FF $0C
+	note $00 . . $00
+	end
+
+# sound $49
+sound_49:
+	song sound_49_ch0 sound_49_ch1
+sound_49_ch0:
+	inst $0F
+	call L2743
+	note $21 $BE $63 $7F
+	end
+sound_49_ch1:
+	inst $11
+	call L2743
+	note $2B $BE $63 $7F
+	end
+L2743:
+	channel_volume $7F
+	tempo $C8
+	envelope $9D $DE $00
+	end
+
+# sound $4A
+sound_4A:
+	song sound_4A_ch0 sound_4A_ch1
+sound_4A_ch0:
+	inst $11
+	channel_volume $7F
+	tempo $64
+	pan $00
+	pan_fade $6E $14
+	call L2770
+	end
+sound_4A_ch1:
+	inst $11
+	channel_volume $7F
+	tempo $64
+	pan $16
+	pan_fade $6E $00
+	transpose $01
+	call L2770
+	end
+L2770:
+	envelope $9F $D2 $00
+	note $26 $6E $63 $7F
+	slide $00 $6E $2B
+	envelope $A0 $FF $00
+	channel_volume_fade $50 $2D
+	note $24 $50 . $7F
+	end
+
+# sound $4B
+sound_4B:
+	song sound_4B_ch0 sound_4B_ch1
+sound_4B_ch0:
+	inst $0F
+	channel_volume $7F
+	tempo $C8
+	envelope $9D $DE $00
+	note $30 $5A $63 $7F
+	end
+sound_4B_ch1:
+	inst $11
+	channel_volume $7F
+	tempo $C8
+	envelope $9D $DE $00
+	note $33 $5A $63 $7F
+	end
+
+# sound $32
+sound_32:
+	song sound_32_ch0
+sound_32_ch0:
+	inst $0F
+	channel_volume $7F
+	tempo $C8
+	vibrato $0A $B4 $46
+	note $30 $3C $63 $7F
+	note $30 $28 . $28
+	end
+
+# sound $33
+sound_33:
+	song sound_33_ch0
+sound_33_ch0:
+	inst $11
+	channel_volume $7F
+	tempo $FF
+	note $2B $14 $63 $7F
+	note $30 $32 . $7F
+	note $30 $28 . $32
+	end
+
+# sound $34
+sound_34:
+	song sound_34_ch0
+sound_34_ch0:
+	inst $00
+	channel_volume $28
+	tempo $2D
+	pitch_noise $28 $0C $FF
+	loop1_start
+	drums_off
+	note $11 $01 $63 $63
+	note $32 . $65 $63
+	note $49 . . $63
+	note $53 . . $63
+	note $36 . . $63
+	note $24 . . $63
+	note $38 . . $63
+	loop1 $06 $00 $00
+	loop1_start
+	drums_off
+	note $11 $01 $63 $14
+	note $32 . $65 $14
+	note $49 . . $14
+	note $53 . . $14
+	note $36 . . $14
+	note $24 . . $14
+	note $38 . . $14
+	loop1 $02 $F4 $00
+	end
+
+# sound $4C
+sound_4C:
+	song sound_4C_ch0 sound_4C_ch1
+sound_4C_ch0:
+	inst $0F
+	channel_volume $7F
+	tempo $64
+	vibrato $00 $BE $AA
+	note $30 $32 $63 $7F
+	end
+sound_4C_ch1:
+	inst $0B
+	channel_volume $7F
+	tempo $64
+	vibrato $00 $BE $8C
+	note $5F $32 $63 $7F
+	slide $00 $32 $0C
+	end
+
+# sound $4D
+sound_4D:
+	song sound_4D_ch0 sound_4D_ch1
+sound_4D_ch0:
+	call L283D
+	end
+sound_4D_ch1:
+	call L283D
+	end
+L283D:
+	inst $0E
+	channel_volume $7F
+	vibrato $00 $FF $64
+	note $21 $1E $63 $7F
+	note $28 . . $7F
+	vibrato $00 $FF $78
+	note $1D $3C . $7F
+	slide $0A $32 $30
+	end
+
+# sound $35
+sound_35:
+	song sound_35_ch0
+sound_35_ch0:
+	tempo $64
+	inst $05
+	channel_volume $37
+	vibrato $00 $2D $00
+	pitch_noise $FF $0F $1E
+	note $18 $50 $65 $7F
+	channel_volume_fade $46 $00
+	note $19 $46 . $7F
+	slide $1E $28 $07
+	end
+
+# sound $4E
+sound_4E:
+	song sound_4E_ch0 sound_4E_ch1
+sound_4E_ch0:
+	inst $0A
+	tempo $FF
+	channel_volume $46
+	vibrato $00 $46 $82
+	loop1_start
+	note $24 $23 $63 $7F
+	slide $00 $23 $0C
+	note $26 $28 . $7F
+	slide $00 $28 $0C
+	note $28 $2D . $7F
+	slide $00 $2D $0C
+	loop1 $04 $F6 $00
+	inst $0F
+	channel_volume $7F
+	vibrato $00 $00 $00
+	note $29 $FF . $7F
+	end
+sound_4E_ch1:
+	inst $11
+	channel_volume $7F
+	tempo $C8
+	envelope $9F $DE $00
+	note $2B $5F $63 $7F
+	note $2B . . $7F
+	note $2B . . $7F
+	note $2B . . $7F
+	note $29 $F0 . $7F
+	end
+
+# sound $6D
+sound_6D:
+	song sound_6D_ch0 sound_6D_ch1 sound_6D_ch2 sound_6D_ch3 sound_6D_ch4 sound_6D_ch5
+sound_6D_ch0:
+	call L28FF
+	note $2B $FF $63 $7F
+	end
+sound_6D_ch1:
+	call L28FF
+	note $26 $FF $63 $7F
+	end
+sound_6D_ch2:
+	call L28FF
+	note $28 $FF $63 $7F
+	end
+sound_6D_ch3:
+	call L290C
+	note $2D $FF $63 $7F
+	end
+sound_6D_ch4:
+	call L290C
+	note $24 $FF $63 $7F
+	end
+sound_6D_ch5:
+	call L290C
+	note $24 $FF $63 $7F
+	end
+L28FF:
+	inst $11
+	channel_volume $7F
+	tempo $82
+	pan $16
+	envelope $9F $DE $00
+	end
+L290C:
+	inst $11
+	channel_volume $7F
+	tempo $82
+	pan $00
+	envelope $9F $DE $00
+	end
+
+# sound $36
+sound_36:
+	song sound_36_ch0
+sound_36_ch0:
+	tempo $32
+	inst $00
+	channel_volume $5A
+	envelope $9C $96 $00
+	note $47 $08 $32 $64
+	note $43 . $41 $64
+	note $47 . $32 $0F
+	note $43 . . $0C
+	end
+
+# sound $4F
+sound_4F:
+	song sound_4F_ch0 sound_4F_ch1
+sound_4F_ch0:
+	inst $05
+	channel_volume $46
+	tempo $FA
+	vibrato $00 $28 $A0
+	note $18 $96 $63 $7F
+	slide $0A $32 $1F
+	slide $00 $5A $13
+	note $18 $FF . $7F
+	slide $00 $FF $13
+	tempo $64
+	channel_volume_fade $E6 $00
+	vibrato $00 $50 $AF
+	note $15 $E6 . $7F
+	end
+sound_4F_ch1:
+	inst $05
+	channel_volume $19
+	tempo $32
+	vibrato $00 $DC $64
+	note $18 $73 $63 $7F
+	slide $00 $0A $24
+	slide $00 $69 $18
+	inst $0B
+	channel_volume $6E
+	tempo $96
+	vibrato $00 $00 $00
+	channel_volume_fade $E6 $00
+	note $2B $E6 . $7F
+	slide $14 $E6 $3C
+	end
+
+# sound $13
+sound_13:
+	song sound_13_ch0
+sound_13_ch0:
+	inst $0A
+	channel_volume $32
+	tempo $FF
+	vibrato $00 $B4 $FA
+	pitch_noise $06 $96 $96
+	transpose $04
+	loop1_start
+	note $24 $0A $63 $7F
+	note $26 $0F . $7F
+	note $1D $14 . $7F
+	note $21 $0A . $7F
+	loop1 $04 $DB $CE
+	end
+
+# sound $15
+sound_15:
+	song sound_15_ch0
+sound_15_ch0:
+	tempo $C8
+	inst $0B
+	channel_volume $5A
+	pitch_noise $E6 $04 $50
+	loop2_start
+	note $4F $03 $65 $7F
+	loop2 $23 $00 $DD
+	channel_volume_fade $64 $00
+	pitch_noise $E6 $07 $00
+	loop1_start
+	note $4F $03 . $7F
+	loop1 $23 $00 $DD
+	end
+
+# sound $50
+sound_50:
+	song sound_50_ch0 sound_50_ch1
+sound_50_ch0:
+	inst $0F
+	channel_volume $7F
+	pan $0A
+	tempo $5A
+	vibrato $00 $B4 $B4
+	note $32 $1E $63 $7F
+	slide $00 $1E $0C
+	vibrato $00 $FF $80
+	transpose $FB
+	note $29 . . $7F
+	loop1_start
+	note $24 $0F . $7F
+	slide $00 $0F $18
+	note $29 $0A . $7F
+	slide $00 $0A $0C
+	note $26 . . $7F
+	slide $00 $0A $0C
+	loop1 $02 $F0 $D8
+	inst $0B
+	channel_volume $7F
+	tempo $32
+	vibrato $00 $00 $00
+	channel_volume_fade $FF $0A
+	note $1C $FF . $7F
+	slide $00 $FF $35
+	end
+sound_50_ch1:
+	inst $0B
+	channel_volume $7F
+	tempo $8C
+	pan $0A
+	vibrato $00 $A0 $64
+	note $32 $96 $63 $7F
+	slide $00 $96 $0C
+	vibrato $00 $FF $46
+	channel_volume_fade $FF $50
+	note $0C $FF . $7F
+	slide $00 $FF $3C
+	channel_volume $50
+	tempo $50
+	vibrato $00 $FF $64
+	channel_volume_fade $FF $0A
+	envelope $64 $DE $00
+	note $41 . . $7F
+	slide $00 $FF $0C
+	end
+
+# sound $37
+sound_37:
+	song sound_37_ch0
+sound_37_ch0:
+	inst $13
+	channel_volume $7F
+	tempo $FA
+	note $30 $28 $64 $7F
+	slide $00 $14 $1D
+	slide $00 $14 $3B
+	end
+
+# sound $38
+sound_38:
+	song sound_38_ch0
+sound_38_ch0:
+	inst $13
+	channel_volume $7F
+	tempo $64
+	vibrato $00 $1E $78
+	note $30 $3C $64 $7F
+	slide $00 $1E $1D
+	slide $00 $14 $34
+	slide $00 $0A $2B
+	end
+
+# sound $39
+sound_39:
+	song sound_39_ch0
+sound_39_ch0:
+	inst $13
+	channel_volume $64
+	tempo $64
+	vibrato $00 $1E $78
+	note $30 $28 $64 $7F
+	slide $00 $14 $1D
+	slide $00 $14 $34
+	end
+
+# sound $14
+sound_14:
+	song sound_14_ch0
+sound_14_ch0:
+	tempo $FF
+	inst $07
+	channel_volume $2D
+	loop1_start
+	drums_off
+	note $4C $0A $65 $5A
+	slide $00 $07 $35
+	slide $00 $03 $4C
+	loop1 $14 $00 $00
+	rest $01
+	channel_volume_fade $32 $05
+	loop1_start
+	drums_off
+	note $4C $0A $65 $14
+	slide $00 $07 $35
+	slide $00 $03 $4C
+	loop1 $05 $00 $F6
+	end
+
+# sound $16
+sound_16:
+	song sound_16_ch0
+sound_16_ch0:
+	tempo $FF
+	inst $06
+	channel_volume $19
+	loop1_start
+	detune $00
+	drums_off
+	note $42 $01 $65 $7F
+	detune $14
+	note $42 . . $7F
+	loop1 $50 $FF $F9
+	rest $02
+	channel_volume $06
+	channel_volume_fade $96 $01
+	loop1_start
+	detune $00
+	drums_off
+	note $3C $01 $65 $7F
+	detune $14
+	note $3C . . $7F
+	loop1 $50 $00 $F9
+	end
+
+# sound $17
+sound_17:
+	song sound_17_ch0
+sound_17_ch0:
+	tempo $A0
+	inst $07
+	channel_volume $46
+	note $3C $06 $50 $5A
+	slide $00 $06 $0C
+	note $18 $09 $63 $5A
+	slide $00 $09 $4D
+	note $24 . . $28
+	slide $00 $09 $4D
+	note $24 . . $14
+	slide $00 $09 $4D
+	note $24 . . $0A
+	slide $00 $09 $4D
+	end
+
+# sound $3A
+sound_3A:
+	song sound_3A_ch0
+sound_3A_ch0:
+	tempo $64
+	inst $05
+	channel_volume $46
+	vibrato $00 $2D $00
+	pitch_noise $FF $0F $1E
+	loop1_start
+	drums_off
+	note $0E $01 $65 $7F
+	note $10 . . $7F
+	note $12 . . $7F
+	loop1 $11 $00 $00
+	note $19 $19 . $7F
+	channel_volume_fade $46 $00
+	note $19 $3C . $7F
+	slide $1E $28 $07
+	end
+
+# sound $0E
+sound_0E:
+	song sound_0E_ch0
+sound_0E_ch0:
+	inst $0C
+	channel_volume $46
+	tempo $78
+	vibrato $03 $FF $C8
+	loop1_start
+	note $37 $28 $64 $7F
+	loop1 $02 $9D $00
+	end
+
+# sound $51
+sound_51:
+	song sound_51_ch0 sound_51_ch1
+sound_51_ch0:
+	inst $0A
+	call L2C4F
+	channel_volume_fade $FF $00
+	note $0C $FF $64 $7F
+	end
+sound_51_ch1:
+	inst $0C
+	channel_volume $28
+	tempo $78
+	vibrato $00 $FF $FF
+	loop1_start
+	note $3E $1E $64 $7F
+	loop1 $08 $EF $00
+	end
+
+# sound $3B
+sound_3B:
+	song sound_3B_ch0
+sound_3B_ch0:
+	inst $09
+	channel_volume $37
+	tempo $64
+	vibrato $00 $F0 $FF
+	pitch_noise $E6 $78 $14
+	loop1_start
+	note $30 $19 $63 $7F
+	loop1 $02 $9D $00
+	end
+
+# sound $3C
+sound_3C:
+	song sound_3C_ch0
+sound_3C_ch0:
+	inst $04
+	channel_volume $2D
+	tempo $32
+	vibrato $00 $FF $FF
+	pitch_noise $FF $3C $FF
+	channel_volume_fade $14 $14
+	note $48 $14 $64 $7F
+	slide $00 $14 $18
+	end
+
+# sound $52
+sound_52:
+	song sound_52_ch0 sound_52_ch1
+sound_52_ch0:
+	inst $01
+	channel_volume $14
+	tempo $82
+	vibrato $00 $FF $C8
+	pitch_noise $C8 $3C $63
+	pan $14
+	pan_fade $FF $00
+	channel_volume_fade $FF $0A
+	note $0C $FF $64 $7F
+	end
+sound_52_ch1:
+	inst $04
+	channel_volume $3C
+	tempo $82
+	vibrato $00 $FF $FF
+	pitch_noise $FF $3C $FF
+	pan $00
+	pan_fade $FF $14
+	channel_volume_fade $FF $0A
+	note $43 $FF $64 $7F
+	slide $00 $96 $0C
+	end
+
+# sound $53
+sound_53:
+	song sound_53_ch0 sound_53_ch1
+sound_53_ch0:
+	inst $0A
+	channel_volume $50
+	tempo $78
+	vibrato $00 $C3 $A0
+	channel_volume_fade $64 $00
+	loop1_start
+	note $30 $0A $63 $7F
+	slide $00 $0A $0C
+	note $32 $0F . $7F
+	slide $00 $0F $1A
+	note $2D $14 . $7F
+	slide $00 $14 $18
+	note $1F $05 . $7F
+	slide $00 $05 $0C
+	loop1 $02 $00 $00
+	end
+sound_53_ch1:
+	inst $04
+	call L2C4F
+	channel_volume_fade $64 $00
+	note $0C $64 $64 $7F
+	end
+L2C4F:
+	channel_volume $3C
+	tempo $78
+	vibrato $00 $FF $FF
+	pitch_noise $C8 $3C $63
+	end
+
+# sound $54
+sound_54:
+	song sound_54_ch0 sound_54_ch1
+sound_54_ch0:
+	inst $0E
+	channel_volume $32
+	tempo $C8
+	vibrato $00 $64 $BE
+	note $30 $0F $64 $7F
+	note $30 . . $7F
+	note $30 . . $7F
+	note $30 . . $7F
+	note $32 . . $7F
+	note $32 . . $7F
+	note $32 . . $7F
+	note $32 . . $7F
+	note $34 . . $7F
+	note $34 . . $7F
+	note $34 . . $7F
+	note $34 . . $7F
+	note $35 . . $7F
+	note $37 . . $7F
+	end
+sound_54_ch1:
+	inst $0A
+	channel_volume $23
+	tempo $C8
+	vibrato $00 $96 $FF
+	pitch_noise $0A $32 $FF
+	transpose $00
+	loop1_start
+	note $29 $02 $64 $7F
+	slide $00 $02 $0C
+	note $26 $04 . $7F
+	slide $00 $04 $0C
+	loop1 $14 $00 $32
+	loop1_start
+	note $24 $03 . $7F
+	slide $00 $03 $0C
+	note $18 $04 . $7F
+	slide $00 $04 $0C
+	loop1 $14 $F9 $50
+	end
+
+# sound $3D
+sound_3D:
+	song sound_3D_ch0
+sound_3D_ch0:
+	inst $09
+	channel_volume $46
+	tempo $8C
+	vibrato $00 $FF $D2
+	pitch_noise $46 $00 $00
+	loop1_start
+	note $30 $1E $63 $7F
+	loop1 $02 $C4 $00
+	loop1_start
+	note $37 $23 $64 $7F
+	loop1 $02 $9D $00
+	end
+
+# sound $55
+sound_55:
+	song sound_55_ch0 sound_55_ch1
+sound_55_ch0:
+	inst $0F
+	pan $05
+	tempo $FA
+	channel_volume $78
+	vibrato $00 $FF $96
+	note $30 $3C $63 $7F
+	note $26 $32 . $32
+	end
+sound_55_ch1:
+	inst $0F
+	pan $0F
+	tempo $FA
+	channel_volume $78
+	vibrato $00 $FF $96
+	note $32 $3C $63 $7F
+	note $28 $32 . $32
+	end
+
+# sound $59
+sound_59:
+	song sound_59_ch0 sound_59_ch1
+
+# sound $5D
+sound_5D:
+	song sound_5D_ch0 sound_59_ch1
+sound_5D_ch0:
+	echo $0F $1E $23
+	echo_setup $05 $32 $02
+sound_59_ch0:
+	inst $0C
+	channel_volume $6E
+	pan $07
+	tempo $78
+	vibrato $14 $50 $5A
+	note $15 $F0 $63 $7F
+	slide $00 $5A $1D
+	slide $00 $78 $1A
+	end
+sound_59_ch1:
+	inst $0C
+	channel_volume $46
+	tempo $78
+	pan $0D
+	vibrato $14 $50 $5A
+	note $16 $F0 $63 $7F
+	slide $00 $5A $1D
+	slide $00 $78 $1A
+	end
+
+# sound $5E
+sound_5E:
+	song sound_5E_ch0 sound_5E_ch1
+sound_5E_ch0:
+	inst $0F
+	channel_volume $6E
+	tempo $5A
+	vibrato $00 $FF $C8
+	note $2C $0F $63 $7F
+	slide $00 $0F $10
+	loop1_start
+	drums_off
+	note $24 $0F $63 $7F
+	slide $00 $0F $18
+	loop1 $04 $E2 $CE
+	end
+sound_5E_ch1:
+	inst $11
+	channel_volume $6E
+	tempo $C8
+	envelope $9D $DE $00
+	note $28 $C8 $63 $7F
+	end
+
+# sound $5C
+sound_5C:
+	song sound_5C_ch0 sound_5C_ch1
+sound_5C_ch0:
+	inst $0C
+	channel_volume $50
+	tempo $78
+	pan $0C
+	vibrato $00 $FF $AA
+	note $18 $AA $64 $7F
+	end
+sound_5C_ch1:
+	inst $0C
+	channel_volume $46
+	tempo $78
+	pan $08
+	vibrato $00 $FF $AA
+	note $1A $AA $64 $7F
+	end

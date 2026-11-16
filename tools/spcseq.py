@@ -32,7 +32,8 @@ when a sequence changes length.
     python3 tools/spcseq.py totext BIN AT [--song ADDR...]  binary -> text (stdout)
     python3 tools/spcseq.py build SEQ OUT                    text -> binary
     python3 tools/spcseq.py driver                           the driver's sound table
-                                                             and its sequences (stdout)
+                                                             and its sequences (stdout),
+                                                             from assets/sound/spc_driver.s
 
 `totext` follows the channels from the song headers at AT and at each
 --song address, like a disassembler follows code: notes and commands are
@@ -126,16 +127,21 @@ def _h(v):
     return "$%02X" % v
 
 
-def totext(data, at, songs=(), title=None):
+def totext(data, at, songs=(), title=None, names=None, notes=None):
     """The text of a song file: data loaded at `at`; song headers at `at`
-    and at each address of `songs` (channel count from the first pointer)."""
+    and at each address of `songs` (channel count from the first pointer),
+    or, if `songs` is a dict {address: channel count}, at those only.
+    `names` {address: label} replaces the default L + hex labels; `notes`
+    {address: [line, ...]} are comments before an address's label."""
     lo, hi = at, at + len(data)
     mem = bytearray(0x10000 + 16)
     mem[lo:hi] = data
     headers = {}
-    for s in [at] + list(songs):
+    counts = songs if isinstance(songs, dict) else {}
+    for s in sorted(counts) or [at] + list(songs):
         first = mem[s] | mem[s + 1] << 8
         count = (first - s) // 2 if s < first <= s + 16 and not (first - s) % 2 else 0
+        count = counts.get(s, count)
         if not count:
             continue
         headers[s] = [mem[s + 2 * i] | mem[s + 2 * i + 1] << 8 for i in range(count)]
@@ -153,8 +159,13 @@ def totext(data, at, songs=(), title=None):
             continue
         stmts[pc] = seen[pc]
         taken |= span
+    labels |= {a for a in headers if a in (names or {})}
     labels = {a for a in labels if a in stmts or a in headers or not lo <= a < hi}
     name = {a: "L%04X" % a for a in labels}
+    for a, n in (names or {}).items():
+        if a in labels:
+            name[a] = n
+    notes = notes or {}
 
     def ref(a):
         return name.get(a, "$%04X" % a)
@@ -172,6 +183,9 @@ def totext(data, at, songs=(), title=None):
             del pending[:16]
 
     while pc < hi:
+        if pc in notes and (pc in labels or pc in headers):
+            flush()
+            out += ["", *("# " + n for n in notes[pc])]
         if pc in labels and lo <= pc:
             flush()
             out.append("%s:" % name[pc])
@@ -229,6 +243,13 @@ def _num(tok, where):
 
 def assemble(text, where="<text>"):
     """(at, bytes) of a song file's text."""
+    return assemble_with(text, where)[:2]
+
+
+def assemble_with(text, where="<text>", extern=()):
+    """(at, bytes, labels) of a sequence text whose addresses may also be
+    the labels of `extern` (a dict); extern=None: labels not defined in the
+    text count as 0 (to find the size and the labels, tools/spcasm.py)."""
     at = None
     stmts = []          # (line, kind, args)
     for n, line in enumerate(text.split("\n"), 1):
@@ -282,9 +303,13 @@ def assemble(text, where="<text>"):
     def addr(tok, w):
         if tok.startswith("$"):
             return _num(tok, w)
-        if tok not in labels:
-            sys.exit(f"{w}: unknown label {tok}")
-        return labels[tok]
+        if tok in labels:
+            return labels[tok]
+        if extern is None:
+            return 0
+        if tok in extern:
+            return extern[tok]
+        sys.exit(f"{w}: unknown label {tok}")
 
     def byte(tok, w):
         v = _num(tok, w)
@@ -335,7 +360,7 @@ def assemble(text, where="<text>"):
                 ops = bytes(byte(a, w) for a in args)
             out.append(code)
             out += ops
-    return at, bytes(out)
+    return at, bytes(out), labels
 
 
 def build(path):
@@ -344,13 +369,14 @@ def build(path):
 
 # -- the driver -----------------------------------------------------------------
 
-DRIVER = os.path.join("assets", "sound", "spc_driver.bin")
+DRIVER = os.path.join("assets", "sound", "spc_driver.s")    # tools/spcasm.py
 DRIVER_AT = 0x0200
 SOUND_TABLE = 0x03E6       # 5-byte records of sounds $01-$73
 
 
 def driver_mem(root=ROOT):
-    data = open(os.path.join(root, DRIVER), "rb").read()
+    import spcasm
+    at, data = spcasm.assemble(os.path.join(root, DRIVER))
     mem = bytearray(0x10000 + 16)
     mem[DRIVER_AT:DRIVER_AT + len(data)] = data
     return mem
@@ -374,12 +400,12 @@ def driver_text(root=ROOT):
     for i, mask, pri, ch, fl, ptr in table:
         ptrs = [mem[ptr + 2 * k] | mem[ptr + 2 * k + 1] << 8 for k in range(ch)] if ptr else []
         if ptr and ptr < 0x3000:
-            entries += [p for p in ptrs if 0x1B37 <= p < 0x2DAC]
+            entries += [p for p in ptrs if 0x1B37 <= p < 0x3000]
         out.append("$%02X   $%02X  $%02X  %d  %d     $%04X  %s" % (
             i, mask, pri, ch, fl, ptr,
             " ".join("$%04X" % p for p in ptrs) if ptr and ptr < 0x3000 else
             "(the song at $%04X)" % ptr if ptr else "-"))
-    seen, labels = trace(mem, entries, 0x1B37, 0x2DAC)
+    seen, labels = trace(mem, entries, 0x1B37, 0x3000)
     out.append("")
     for pc in sorted(seen):
         if pc in labels:
