@@ -65,6 +65,50 @@ before `start_grenade_blast`:
   the code; it was not checked in the emulator, and there is no way to see
   in the game where the blast "should" have been.
 
+### The hover-bike riders' random delay is thrown away
+
+`stage4_spawn_hoverbike_rider` (stage 4, type `$74` riders) sets the delay
+to the next rider like this:
+
+```
+	ldy	difficulty
+	lda	rng_hi
+	and	#$001F		; a random 0-31...
+	lda	a:hoverbike_rider_spawn_delays,y	; ...overwritten
+	sta	$32,x
+```
+
+- **Meant:** probably a random part added to the difficulty's delay (an
+  `adc` instead of the `lda`, as the routine before it does with
+  `rng_lo`).
+- **Does:** the random value is lost; the delay is always 56, 48 or 40
+  frames (EASY, NORMAL, HARD).
+- **Effect:** the riders come at a fixed rhythm. Follows from the code;
+  not checked in the emulator.
+
+### The brain boss can leave X on the stack (latent)
+
+`brain_boss_attack_3` and `brain_boss_attack_7` (stage 6, file
+`object_handlers_1D.asm`) save X, spawn a minion and restore X:
+
+```
+	phx
+	jsr	a:brain_boss_spawn_minion
+	bcs	@return2	; no free slot: no plx
+	...
+	plx
+	rtl
+```
+
+- **Does:** when `find_free_slot` finds none of the slots `$0300-$077F`
+  free, the branch skips the `plx`, so the `rtl` pulls the saved X as
+  part of its return address and the game jumps into the void. Attack 7
+  also goes on with X = `$0780` (where the slot search stopped) instead of
+  the brain's slot. `brain_boss_attack_start_6` does not test the carry at
+  all and would write into slot `$0780`.
+- **Effect:** none seen: the failure path never ran in the traces (18
+  slots are rarely all in use).
+
 ## Developer leftovers
 
 Code and data that nothing in the game reaches. 73 routines in `src/` have
@@ -303,3 +347,52 @@ instruction overwrites; they change nothing:
 `ending_crowd_walker_a_state_01`, `ending_crowd_walker_b_state_01` and
 `ending_crowd_walker_b_state_03` load `OBJ_FACING` and then the animation
 pointer into A (probably a choice of animation by facing that was dropped).
+**Dead branches.** `weapon_item_move` has two branches to the very next label (`lda zp_04` /
+`beq @fall` just before `@fall:`, and the same before
+`weapon_item_gravity`): both ways go to the same place. It also ends one
+path with a `brl` into the player collision code in another file
+(`stop_and_snap_y_up_to_tile` in `player_weapons.asm`, the same bank
+`$01`), a tail call that works because both end in `rtl`.
+
+**Object type `$97` is not an object.** Its entry in the handler table,
+`update_enemy_type_97`, is really the setup of the ending's text screen,
+called with `jsr` by `ending_sequence_state_1E`; it ends with `rts`, so
+spawning a type `$97` object (handlers are called with `jsl`) would crash.
+Nothing spawns one ([Enemies and bosses](enemies-late.md)).
+
+**A comparison that can never succeed.** `helicopter_rope_state_02` (the
+helicopter that brings the rope, rising from y `$F0` at 1.5 pixels per
+frame) does:
+
+```
+	lda	OBJ_Y,x
+	cmp	#$0060
+	bcs	@smoke		; y >= $60
+	cmp	#$0078
+	bcs	@return		; y < $60 here, so never >= $78
+```
+
+The second test only runs with y below `$60`, so it is always false: the
+helicopter smokes while y is `$60` or more and drops the rope on the first
+frame below. Perhaps a window between `$60` and `$78` was meant; as it
+is, the `cmp #$78` does nothing.
+
+**Player numbers baked into copied code.** Much player 2 code is player 1
+code copied and patched with the other player's addresses and constants:
+the second half of `sprite_render.asm` (`draw_p2_view_sprites` ...
+`draw_stage5_boss_arm_p2`) and the player 2 collision and target arrow
+code in `stage_play.asm` (`td_run_p2_collisions` ...
+`td_p2_body_vs_stage5_boss`) differ from the player 1 routines almost only in
+those values. The copying left constant tests behind: `lda #$0000` (player
+1) or `lda #$0002` (player 2) followed by `beq`/`bne`, so one way of each
+branch is dead. In `build_td_p1_bomb_window` and `build_td_p2_bomb_window`
+(`window_shapes.asm`) it skips the "is a player's flag set" check in one
+half of the split screen; in `draw_stage2_boss_cannon`,
+`draw_stage2_boss_arena` and `draw_stage5_boss_arm` the `@keep_hi_bits`
+path is dead, and in their `_p2` copies it is the other path that is dead.
+
+**A player 2 marker for nobody.** `draw_map_view_sprites` skips the player
+1 marker when `p1_lives` is 0, but when `p2_lives` is 0 it only skips the
+position and still calls `write_map_view_p2_marker`, which writes two
+sprites from the values left by player 1 (a second copy of player 1's
+marker over the first). Harmless; the map view never ran in the traces.

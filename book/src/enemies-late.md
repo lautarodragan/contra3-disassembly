@@ -140,7 +140,8 @@ when it is read from a table indexed by `difficulty`.
 | `$98` | `update_ending_explosion` | explosions along the floor of the lair | |
 | `$9A-$9D` | `update_ending_crowd_member` | the crowd cheering under the helicopter (one handler, four types) | |
 | `$9E`, `$9F` | `update_ending_crowd_walker_a`, `update_ending_crowd_walker_b` | crowd members walking back and forth | |
-| `$97`, `$99` | `update_enemy_type_97`, `update_enemy_type_99` | not seen in the emulator | |
+| `$97` | `update_enemy_type_97` | not an object handler: the setup of the ending's text screen, called with `jsr` by `ending_sequence_state_1E`; it ends with `rts`, so run as a handler (`jsl`) it would crash. Never spawned | |
+| `$99` | `update_enemy_type_99` | not seen in the emulator | |
 
 `spawn_ending_crowd` creates 6, 7 or 8 crowd members on easy, normal and
 hard (`ending_crowd_counts`): a bigger crowd for a harder game.
@@ -219,7 +220,8 @@ Oddities:
 
 - The exact role of `update_enemy_type_70`, `update_enemy_type_7C`,
   `update_enemy_type_80`, `update_enemy_type_85`, `update_enemy_type_8E`, `update_enemy_type_8F` and
-  `update_enemy_type_96`; types `$6F`, `$97` and `$99` were never seen.
+  `update_enemy_type_96`; types `$6F` and `$99` were never seen (`$97` is not
+  a real object type, see the table).
 - The helpers and tables of these handlers are named, except `sub_04C3A2`
   (never called). Many names of BG block tables say what the code does with
   them (`stage3_boss_state_0C_delays`, `ptrs_rideable_missile_anim_blocks`)
