@@ -34,11 +34,22 @@ assets: $(asset_targets)
 
 all: compare
 
+# A bank that overflows (an asset that grew) is reported with its assets
+# (tools/assets.py overflow; book: Assets, Size limits).
 $(rom): build/main.o src/contra3.cfg
-	$(LD65) $(LD65FLAGS) -m build/contra3.map -Ln build/contra3.lbl -o $@ build/main.o
+	@echo '$(LD65) $(LD65FLAGS) -m build/contra3.map -Ln build/contra3.lbl -o $@ build/main.o'
+	@$(LD65) $(LD65FLAGS) -m build/contra3.map -Ln build/contra3.lbl -o $@ build/main.o 2> build/ld65.log; \
+	 s=$$?; cat build/ld65.log >&2; \
+	 if [ $$s != 0 ]; then $(PYTHON) tools/assets.py overflow build/ld65.log; exit $$s; fi
 
-build/main.o: $(src_files) $(asset_files) $(asset_targets) | build
+build/main.o: $(src_files) $(asset_files) $(asset_targets) build/assets.limits | build
 	$(CA65) $(CA65FLAGS) -o $@ src/main.asm
+
+# Every asset fits where the game decompresses it (its max= in the manifest,
+# the sizes the code fixes; tools/asset_limits.py).
+build/assets.limits: $(src_files) $(asset_files) $(asset_targets) tools/asset_limits.py | build
+	$(PYTHON) tools/assets.py limits
+	@touch $@
 
 build:
 	mkdir -p build
@@ -53,7 +64,7 @@ compare: $(rom)
 
 clean:
 	rm -f build/main.o build/contra3.sfc build/contra3.map build/contra3.lbl
-	rm -rf build/assets build/assets.mk
+	rm -rf build/assets build/assets.mk build/assets.limits build/ld65.log
 	rm -rf build/shift build/dbg build/cheats build/patches
 	rm -f build/contra3-*.sfc
 
@@ -182,7 +193,9 @@ compress-test: compare
 
 # The PNG assets (book: Assets): each one's tiles, drawn again, give the same
 # PNG pixels, so the PNG holds nothing the build drops.  (That the PNGs give
-# the ROM's bytes is what `make` checks.)
+# the ROM's bytes is what `make` checks.)  And every recorded size limit
+# (max= in the manifest) is still what the data lists of src/ give.
 #   make assets-check
 assets-check:
 	$(PYTHON) tools/assets.py check
+	$(PYTHON) tools/assets.py limits --verify

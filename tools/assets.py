@@ -24,7 +24,9 @@ tiles).  `width` is the number of tiles per row of the PNG `topng` writes
 the colours alone; `colours=N`: the number of colours it must have); with
 tilemap=FORMAT the tilemap text assets/<path>.tilemap (tools/snesmap.py: bg,
 mode7; `width`: cells per row).  The build converts both to
-build/assets/<path>.bin.
+build/assets/<path>.bin.  `max` is the largest the data may be, in bytes
+(hex): what fits where the game decompresses it (tools/asset_limits.py;
+`limits`).
 
 ca65 looks the included paths up in INCLUDE_DIRS (assets/, then
 build/assets/), so every assembly of src/ (the Makefile, tools/srcmap.py,
@@ -43,6 +45,9 @@ writes (`makefile`), so that editing an asset rebuilds what depends on it.
                                                  # palettes exact, PNG viewing palettes in sync
     python3 tools/assets.py sync-palettes        # PNG viewing palettes from assets/views.txt
     python3 tools/assets.py normalize            # rewrite the .gpl files with exact words
+    python3 tools/assets.py limits [--list | --verify | --record PATH ...]
+                                                 # every asset fits (book: Assets, Size limits)
+    python3 tools/assets.py overflow LD65_OUTPUT  # the assets of a bank ld65 says overflows
     python3 tools/assets.py gallery              # book/src/gallery.md (make book)
     python3 tools/assets.py gallery-copy DIR     # the PNGs into DIR/gallery/
 """
@@ -52,6 +57,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+import asset_limits  # noqa: E402
 import c3lz  # noqa: E402
 import snesgfx  # noqa: E402
 import snesmap  # noqa: E402
@@ -66,6 +72,7 @@ KINDS = ("raw", "lz-v1", "lz-v2")
 # the tools a generated file depends on
 TOOLS = ["tools/assets.py", "tools/c3lz.py", "tools/snesgfx.py", "tools/snespal.py",
          "tools/snesmap.py"]
+SRC = "src"
 
 
 class Asset:
@@ -226,7 +233,14 @@ def build(root=ROOT, targets=None, quiet=True):
                     continue
             elif not out_of_date(a, target, root):
                 continue
-            make_target(a, target, root)
+            try:
+                make_target(a, target, root)
+            except ValueError as e:
+                hint = ""
+                if "past the" in str(e):
+                    hint = (f"; to make the asset bigger, raise tiles= in {MANIFEST} "
+                            "(within its max=, see the book: Assets, Size limits)")
+                sys.exit(f"{e}{hint}")
             n += 1
             if not quiet:
                 print(f"{target}: from {' '.join(a.prerequisites(target))}")
@@ -237,10 +251,52 @@ def ca65_args(root=ROOT):
     """Build the out-of-date assets; the ca65 options that let `.incbin`
     find them."""
     build(root)
+    errors = check_limits(root)
+    if errors:
+        sys.exit("\n".join(errors))
     args = []
     for d in INCLUDE_DIRS:
         args += ["--bin-include-dir", os.path.join(root, d)]
     return args
+
+
+def check_limits(root=ROOT):
+    """Error messages for the assets that do not fit (after build())."""
+    return asset_limits.check(read_manifest(root), root, os.path.join(root, SRC))
+
+
+def limits(argv):
+    import argparse
+    ap = argparse.ArgumentParser(prog="assets.py limits")
+    ap.add_argument("--list", action="store_true", help="every asset, its size, limit and why")
+    ap.add_argument("--verify", action="store_true",
+                    help="each recorded max= is what the source gives")
+    ap.add_argument("--record", nargs="+", metavar="PATH",
+                    help="set max= from the source and the current size (a new asset)")
+    args = ap.parse_args(argv)
+    manifest = read_manifest()
+    build()
+    if args.record:
+        known = {a.path: a for a in manifest}
+        for p in args.record:
+            if p not in known:
+                sys.exit(f"{p}: not in {MANIFEST}")
+        done = asset_limits.record([known[p] for p in args.record], ROOT, SRC)
+        write_manifest(done)
+        for a in done:
+            print(f"{a.path}: max={a.options['max']}")
+        return 0
+    if args.list:
+        print("\n".join(asset_limits.report(manifest, ROOT, SRC)))
+        return 0
+    errors = check_limits()
+    if args.verify:
+        errors += asset_limits.verify(manifest, ROOT, SRC)
+    if errors:
+        print("\n".join(errors), file=sys.stderr)
+        return 1
+    print(f"{len(manifest)} assets fit their limits" + (", all as the source gives them" if args.verify else ""))
+    return 0
 
 
 def makefile(root=ROOT):
@@ -278,7 +334,8 @@ def write_manifest(entries, root=ROOT):
         if words and words[0] in by_path:
             a = by_path[words[0]]
             opts = " ".join(f"{k}={v}" for k, v in a.options.items())
-            line = f"{a.path:32} {a.kind:6} {opts}".rstrip() + "\n"
+            comment = "  #" + line.split("#", 1)[1].rstrip("\n") if "#" in line else ""
+            line = f"{a.path:32} {a.kind:6} {opts}".rstrip() + comment + "\n"
         out.append(line)
     open(path, "w").write("".join(out))
 
@@ -297,11 +354,14 @@ def topng(paths, fmt, width=16):
         body = data[:len(data) - tail]
         png = os.path.join(ASSETS, path + ".png")
         snesgfx.tiles_to_png(body, fmt, png, width, png_palette(path))
-        a.options = {"png": fmt, "tiles": str(tiles)}
+        a.options = {"png": fmt, "tiles": str(tiles),
+                     **({"max": a.options["max"]} if "max" in a.options else {})}
         if tail:
             a.options["tail"] = data[len(data) - tail:].hex().upper()
         if width != 16:
             a.options["width"] = str(width)
+        if "max" in a.options:
+            a.options["max"] = a.options.pop("max")     # last, as written
         if a.tiles_from_png() != data:
             os.remove(png)
             sys.exit(f"{path}: the PNG does not convert back to the same bytes")
@@ -435,6 +495,10 @@ def main(argv):
             print(f"{a.source}: {a.tilemap}")
     elif cmd == "check":
         return check()
+    elif cmd == "limits":
+        return limits(argv[2:])
+    elif cmd == "overflow":
+        print(asset_limits.ld65_diagnosis(open(argv[2]).read(), SRC, INCLUDE_DIRS), file=sys.stderr)
     elif cmd == "gallery":
         sys.stdout.write(gallery())
     elif cmd == "gallery-copy":

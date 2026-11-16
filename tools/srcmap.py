@@ -40,10 +40,16 @@ def assemble(srcdir, outdir, defines=(), cfg=None, rom_name="contra3.sfc"):
         cmd += ["-D", d]
     cmd.append(os.path.join(srcdir, "main.asm"))
     subprocess.run(cmd, check=True)
-    subprocess.run([LD65, "-C", cfg or os.path.join(srcdir, "contra3.cfg"),
-                    "--dbgfile", dbg, "-m", os.path.join(outdir, "contra3.map"),
-                    "-Ln", os.path.join(outdir, "contra3.lbl"),
-                    "-o", rom, obj], check=True)
+    link = subprocess.run([LD65, "-C", cfg or os.path.join(srcdir, "contra3.cfg"),
+                           "--dbgfile", dbg, "-m", os.path.join(outdir, "contra3.map"),
+                           "-Ln", os.path.join(outdir, "contra3.lbl"),
+                           "-o", rom, obj], stderr=subprocess.PIPE, text=True)
+    sys.stderr.write(link.stderr)
+    if link.returncode:
+        # a bank that overflows: name its assets (book: Assets, Size limits)
+        sys.stderr.write(assets.asset_limits.ld65_diagnosis(
+            link.stderr, srcdir, [os.path.join(assets.ROOT, d) for d in assets.INCLUDE_DIRS]) + "\n")
+        sys.exit(f"{LD65} failed ({srcdir})")
     return rom, dbg
 
 
