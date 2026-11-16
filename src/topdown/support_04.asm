@@ -26,7 +26,7 @@ animate_stage5_palettes:
 ; Cycles colours $38-$3F of the palette buffer ($7E:2270), palette_cycle_speed
 ; steps per frame (high byte) or frames per step (low byte), unless palette_cycle_paused.
 animate_stage5_boss_palettes:
-	jmp	a:loc_04DA68
+	jmp	a:cycle_palette_colors
 
 ; Counts td_palette_anim_timer from 0 to $5F, wrapping.
 step_palette_anim_timer:
@@ -41,10 +41,10 @@ step_palette_anim_timer:
 ; Starts the stage 2 palette tasks at timer 0 and $20.
 start_stage2_palette_tasks:
 	lda	a:td_palette_anim_timer
-	bne	loc_04DA42
+	bne	@second_task
 	ldy	#.loword(palette_task_05F576)
 	jml	f:start_palette_task
-loc_04DA42:
+@second_task:
 	cmp	#$0020
 	bne	@return
 	ldy	#.loword(palette_task_05F57C)
@@ -55,33 +55,36 @@ loc_04DA42:
 ; Starts the stage 5 palette tasks at timer 0 and $20.
 start_stage5_palette_tasks:
 	lda	a:td_palette_anim_timer
-	bne	loc_04DA5B
+	bne	@second_task
 	ldy	#.loword(palette_task_05F582)
 	jml	f:start_palette_task
-loc_04DA5B:
+@second_task:
 	cmp	#$0020
 	bne	@return
 	ldy	#.loword(palette_task_05F588)
 	jml	f:start_palette_task
 @return:
 	rtl
-loc_04DA68:
+
+; Body of animate_stage5_boss_palettes (comment there); a negative
+; palette_cycle_speed rotates the other way (not run in the traces).
+cycle_palette_colors:
 	lda	a:palette_cycle_paused
-	bne	loc_04DA99
+	bne	@return
 	lda	a:palette_cycle_speed
-	beq	loc_04DA99
-	bmi	loc_04DA9A
+	beq	@return
+	bmi	@backwards
 	cmp	#$0100
-	bcs	loc_04DA8A
+	bcs	@several_per_frame
 	dec	a:palette_cycle_counter
-	bmi	loc_04DA80
-	bne	loc_04DA99
-loc_04DA80:
+	bmi	@rotate_once
+	bne	@return
+@rotate_once:
 	and	#$00FF
 	sta	a:palette_cycle_counter
 	jsr	a:rotate_palette_colors_up
 	rtl
-loc_04DA8A:
+@several_per_frame:
 	xba
 	and	#$00FF
 	sta	a:palette_cycle_counter
@@ -89,31 +92,31 @@ loc_04DA8A:
 	jsr	a:rotate_palette_colors_up
 	dec	a:palette_cycle_counter
 	bne	@loop
-loc_04DA99:
+@return:
 	rtl
-loc_04DA9A:
+@backwards:
 	; (not executed in the CDL traces)
 	eor	#$FFFF
 	inc	a
 	cmp	#$0100
-	bcs	loc_04DAB4
+	bcs	@several_back_per_frame
 	dec	a:palette_cycle_counter
-	bmi	loc_04DAAA
-	bne	loc_04DAC3
-loc_04DAAA:
+	bmi	@rotate_back_once
+	bne	@return2
+@rotate_back_once:
 	and	#$00FF
 	sta	a:palette_cycle_counter
 	jsr	a:rotate_palette_colors_down
 	rtl
-loc_04DAB4:
+@several_back_per_frame:
 	xba
 	and	#$00FF
 	sta	a:palette_cycle_counter
-@loop:
+@loop2:
 	jsr	a:rotate_palette_colors_down
 	dec	a:palette_cycle_counter
-	bne	@loop
-loc_04DAC3:
+	bne	@loop2
+@return2:
 	rtl
 
 ; Rotates the 8 colours at $7E:2270 by one entry.
@@ -415,17 +418,17 @@ queue_m7_block_patch:
 	ldx	a:m7_patch_flags
 	beq	set_m7_block_patch_0
 	ldx	a:m7_patch_flags+2
-	bne	loc_04DCDF
+	bne	@slot_1_taken
 	brl	set_m7_block_patch_1
-loc_04DCDF:
+@slot_1_taken:
 	ldx	a:m7_patch_flags+4
-	bne	loc_04DCE7
+	bne	@slot_2_taken
 	brl	set_m7_block_patch_2
-loc_04DCE7:
+@slot_2_taken:
 	ldx	a:m7_patch_flags+6
-	bne	loc_04DCEF
+	bne	@all_taken
 	brl	set_m7_block_patch_3
-loc_04DCEF:
+@all_taken:
 	sec
 	rtl
 
@@ -497,9 +500,15 @@ set_m7_block_patch_0:
 	.a16
 	lda	#$0002
 	sta	a:m7_patch_flags
-loc_04DD8A:
+
+; Shared tail of set_m7_block_patch_0-3 (Y = the block's tiles, DB = $7E,
+; zp_FE = VRAM address): unless boss_centered_view, writes the attribute
+; of each of the 16 tiles (tile_attrs_stage2 on stage 2, else
+; tile_attrs_stage5) into the tile attribute map at $7E:4000 + address.
+; Restores DB, returns carry clear.
+set_m7_patch_tile_attrs:
 	lda	a:boss_centered_view
-	beq	loc_04DD99
+	beq	@set_attrs
 	sep	#$20
 	.a8
 	lda	#^tables_05
@@ -509,12 +518,12 @@ loc_04DD8A:
 	.a16
 	clc
 	rtl
-loc_04DD99:
+@set_attrs:
 	lda	stage_number
 	cmp	#$0002
-	beq	loc_04DDA3
-	brl	loc_04DEF5
-loc_04DDA3:
+	beq	@stage2_attrs
+	brl	@stage5_attrs
+@stage2_attrs:
 	lda	zp_FE
 	clc
 	adc	#$4000
@@ -688,7 +697,7 @@ loc_04DDA3:
 	.a16
 	clc
 	rtl
-loc_04DEF5:
+@stage5_attrs:
 	lda	zp_FE
 	clc
 	adc	#$4000
@@ -930,7 +939,7 @@ set_m7_block_patch_1:
 	.a16
 	lda	#$0004
 	sta	a:m7_patch_flags+2
-	jmp	a:loc_04DD8A
+	jmp	a:set_m7_patch_tile_attrs
 
 set_m7_block_patch_2:
 	rep	#$30
@@ -999,7 +1008,7 @@ set_m7_block_patch_2:
 	.a16
 	lda	#$0006
 	sta	a:m7_patch_flags+4
-	jmp	a:loc_04DD8A
+	jmp	a:set_m7_patch_tile_attrs
 set_m7_block_patch_3:
 	rep	#$30
 	sta	zp_FE
@@ -1067,4 +1076,4 @@ set_m7_block_patch_3:
 	.a16
 	lda	#$0008
 	sta	a:m7_patch_flags+6
-	jmp	a:loc_04DD8A
+	jmp	a:set_m7_patch_tile_attrs

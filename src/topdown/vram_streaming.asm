@@ -16,28 +16,28 @@ stream_topdown_sprite_gfx:
 	lda	a:intro_phase
 	bne	@return
 	lda	a:map_view_active
-	beq	loc_009C23
+	beq	@active
 @return:
 	rtl
-loc_009C23:
+@active:
 	lda	a:title_menu_cursor
-	beq	loc_009C33
+	beq	@p1_view
 	dec	a
-	bne	loc_009C33
+	bne	@p1_view
 	lda	frame_counter
 	lsr	a
-	bcc	loc_009C33
-	brl	loc_009F45
-loc_009C33:
+	bcc	@p1_view
+	brl	@p2_view
+@p1_view:
 	lda	a:topdown_map
 	cmp	#TD_MAP_STAGE2_BOSS
-	bne	loc_009C3E
-	brl	loc_009D81
-loc_009C3E:
+	bne	@not_stage2_boss
+	brl	@p1_stage2_boss
+@not_stage2_boss:
 	cmp	#TD_MAP_STAGE5_BOSS
-	bne	loc_009C46
-	brl	loc_009E77
-loc_009C46:
+	bne	@p1_sprites
+	brl	@p1_stage5_boss
+@p1_sprites:
 	sep	#$10
 	.i8
 	ldx	#$80
@@ -147,7 +147,7 @@ loc_009C46:
 	rep	#$10
 	.i16
 	rtl
-loc_009D81:
+@p1_stage2_boss:
 	sep	#$10
 	.i8
 	ldx	#$80
@@ -235,7 +235,7 @@ loc_009D81:
 	rep	#$10
 	.i16
 	rtl
-loc_009E77:
+@p1_stage5_boss:
 	sep	#$10
 	.i8
 	ldx	#$80
@@ -309,18 +309,18 @@ loc_009E77:
 	rep	#$10
 	.i16
 	rtl
-loc_009F45:
+@p2_view:
 	lda	a:topdown_map
 	cmp	#TD_MAP_STAGE2_BOSS
-	bne	loc_009F50
+	bne	@p2_not_stage2_boss
 	; (not executed in the CDL traces)
-	brl	loc_00A093
-loc_009F50:
-	cmp	#$0006
-	bne	loc_009F58
+	brl	@p2_stage2_boss
+@p2_not_stage2_boss:
+	cmp	#TD_MAP_STAGE5_BOSS
+	bne	@p2_sprites
 	; (not executed in the CDL traces)
-	brl	loc_00A189
-loc_009F58:
+	brl	@p2_stage5_boss
+@p2_sprites:
 	sep	#$10
 	.i8
 	ldx	#$80
@@ -430,7 +430,7 @@ loc_009F58:
 	rep	#$10
 	.i16
 	rtl
-loc_00A093:
+@p2_stage2_boss:
 	; (not executed in the CDL traces)
 	sep	#$10
 	.i8
@@ -519,7 +519,7 @@ loc_00A093:
 	rep	#$10
 	.i16
 	rtl
-loc_00A189:
+@p2_stage5_boss:
 	sep	#$10
 	.i8
 	ldx	#$80
