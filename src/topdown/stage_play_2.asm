@@ -97,10 +97,10 @@ loc_02E6E0:
 	lda	a:p2_view_y
 	sta	a:td_p2_y
 	stz	a:td_p2_y_frac
-	stz	a:wram_150A
-	stz	a:wram_154A
-	stz	a:wram_1518
-	stz	a:wram_1558
+	stz	a:p1_view_angle_frozen
+	stz	a:p2_view_angle_frozen
+	stz	a:p1_facing_in_view
+	stz	a:p2_facing_in_view
 	stz	a:p1_view_angle
 	stz	a:p2_view_angle
 	stz	a:td_p1_state
@@ -119,9 +119,9 @@ loc_02E723:
 	lda	a:p1_view_y
 	sta	a:td_p1_y
 	stz	a:td_p1_y_frac
-	stz	a:wram_150A
+	stz	a:p1_view_angle_frozen
 	stz	a:p1_view_angle
-	stz	a:wram_1518
+	stz	a:p1_facing_in_view
 	stz	a:td_p1_state
 	stz	a:td_p1_angle
 	rtl
@@ -145,13 +145,13 @@ loc_02E751:
 	lda	a:p2_view_y
 	sta	a:td_p2_y
 	stz	a:td_p2_y_frac
-	stz	a:wram_150A
-	stz	a:wram_154A
+	stz	a:p1_view_angle_frozen
+	stz	a:p2_view_angle_frozen
 	stz	a:p1_view_angle
 	stz	a:p2_view_angle
 	lda	#$0040
-	sta	a:wram_1518
-	sta	a:wram_1558
+	sta	a:p1_facing_in_view
+	sta	a:p2_facing_in_view
 	stz	a:td_p1_state
 	stz	a:td_p2_state
 	lda	#$0040
@@ -194,7 +194,7 @@ loc_02E7D0:
 	sec
 	sbc	a:p1_view_anchor_y
 	sta	a:p1_m7_vofs
-	lda	a:wram_150A
+	lda	a:p1_view_angle_frozen
 	bne	loc_02E7FB
 	lda	a:td_p1_angle
 	sta	a:p1_view_angle
@@ -210,7 +210,7 @@ loc_02E809:
 	sta	a:p1_view_x
 	lda	a:td_p1_y
 	sta	a:p1_view_y
-	lda	a:wram_150A
+	lda	a:p1_view_angle_frozen
 	bne	loc_02E820
 	lda	a:td_p1_angle
 	sta	a:p1_view_angle
@@ -266,11 +266,11 @@ loc_02E875:
 	sec
 	sbc	a:p1_view_anchor_y
 	sta	a:p1_m7_vofs
-	lda	a:wram_150A
+	lda	a:p1_view_angle_frozen
 	bne	loc_02E8A7
 	lda	a:td_p1_angle
 	sec
-	sbc	a:wram_1518
+	sbc	a:p1_facing_in_view
 	and	#$00FF
 	sta	a:p1_view_angle
 loc_02E8A7:
@@ -291,11 +291,11 @@ loc_02E8A7:
 	sec
 	sbc	a:p2_view_anchor_y
 	sta	a:p2_m7_vofs
-	lda	a:wram_154A
+	lda	a:p2_view_angle_frozen
 	bne	loc_02E8E6
 	lda	a:td_p2_angle
 	sec
-	sbc	a:wram_1558
+	sbc	a:p2_facing_in_view
 	and	#$00FF
 	sta	a:p2_view_angle
 loc_02E8E6:
@@ -311,11 +311,11 @@ loc_02E8F4:
 	sta	a:p1_view_x
 	lda	a:td_p1_y
 	sta	a:p1_view_y
-	lda	a:wram_150A
+	lda	a:p1_view_angle_frozen
 	bne	loc_02E912
 	lda	a:td_p1_angle
 	sec
-	sbc	a:wram_1518
+	sbc	a:p1_facing_in_view
 	and	#$00FF
 	sta	a:p1_view_angle
 loc_02E912:
@@ -355,11 +355,11 @@ loc_02E95E:
 	sta	a:p2_view_x
 	lda	a:td_p2_y
 	sta	a:p2_view_y
-	lda	a:wram_154A
+	lda	a:p2_view_angle_frozen
 	bne	loc_02E97C
 	lda	a:td_p2_angle
 	sec
-	sbc	a:wram_1558
+	sbc	a:p2_facing_in_view
 	and	#$00FF
 	sta	a:p2_view_angle
 loc_02E97C:
@@ -419,15 +419,15 @@ loc_02E9D1:
 	lda	#$007C
 	sta	a:p1_view_anchor_y
 	sta	a:p2_view_anchor_y
-	lda	a:wram_150A
+	lda	a:p1_view_angle_frozen
 	bne	loc_02EA0E
 	lda	a:td_p1_angle
-	sta	a:wram_1518
+	sta	a:p1_facing_in_view
 loc_02EA0E:
-	lda	a:wram_154A
+	lda	a:p2_view_angle_frozen
 	bne	loc_02EA19
 	lda	a:td_p2_angle
-	sta	a:wram_1558
+	sta	a:p2_facing_in_view
 loc_02EA19:
 	stz	a:p1_m7_angle
 	rtl
@@ -440,15 +440,15 @@ loc_02EA1D:
 	lda	#$007C
 	sta	a:p1_view_anchor_y
 	sta	a:p2_view_anchor_y
-	lda	a:wram_150A
+	lda	a:p1_view_angle_frozen
 	bne	loc_02EA40
 	lda	a:td_p1_angle
-	sta	a:wram_1518
+	sta	a:p1_facing_in_view
 loc_02EA40:
-	lda	a:wram_154A
+	lda	a:p2_view_angle_frozen
 	bne	loc_02EA4B
 	lda	a:td_p2_angle
-	sta	a:wram_1558
+	sta	a:p2_facing_in_view
 loc_02EA4B:
 	lda	a:p1_view_x
 	sta	zp_18
@@ -1533,7 +1533,7 @@ stage5_boss_palette_step_1:
 	rts
 loc_02F1EC:
 	lda	#$0008
-	sta	a:wram_15C4
+	sta	a:stage5_boss_cycle_pause
 	sta	a:palette_cycle_paused
 	lda	#$0100
 	sta	a:palette_cycle_speed
@@ -1542,12 +1542,12 @@ loc_02F1EC:
 	sta	a:stage5_boss_palette_step
 
 stage5_boss_palette_step_2:
-	lda	a:wram_15C4
+	lda	a:stage5_boss_cycle_pause
 	beq	loc_02F21C
 	lda	a:palette_cycle_paused
 	bne	loc_02F219
-	dec	a:wram_15C4
-	lda	a:wram_15C4
+	dec	a:stage5_boss_cycle_pause
+	lda	a:stage5_boss_cycle_pause
 	sta	a:palette_cycle_paused
 	bra	loc_02F21C
 loc_02F219:
@@ -1717,8 +1717,8 @@ stage5_boss_spawn_spit:
 	rts
 
 stage5_boss_flash_on_hit:
-	lda	a:wram_15B0
-	inc	a:wram_15B0
+	lda	a:stage5_boss_flash_counter
+	inc	a:stage5_boss_flash_counter
 	lsr	a
 	and	#$0006
 	tay

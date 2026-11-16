@@ -143,11 +143,18 @@ in the player stat blocks), the per-player top-down blocks at `$1500` /
 variables (`topdown_state`, `topdown_map`, `intro_step`, `map_view_step`)
 are described in [Top-down stages](topdown.md), with the boss variables
 (`boss_anim_frame`, `boss_target_player`, `stage5_boss_spit_step` ...)
+the view controls `p1_view_angle_frozen` / `p1_facing_in_view` (and
+player 2's), the map view's saved brightness (`map_view_saved_inidisp` ...),
 and the fields of fixed slots read directly (`td_p1_x`, `td_p1_hp`,
 `td_boss_hp`, `td_boss_core_hp` ...). The top-down stages reuse
 `$1780-$17FF` (sprite graphics stream list) and `$1800-$1867` (Mode 7 block
 patches) and the tile attribute map at `$7E:4000` differently from the
 side-view stages, so those addresses keep their placeholder names.
+`$1500-$153F` / `$1540-$157F` are the players' top-down blocks in the
+top-down stages but the players' `PLAYER_*` parallel fields (slot +
+`$1300`) in the side view, where the code writes them
+`player1_obj+PLAYER_BOMB_X` and so on; `stage_ram` (`$1500`) is where
+the stage setup clears `$1500-$18FF`.
 
 ## Engine and sound variables
 

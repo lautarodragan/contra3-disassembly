@@ -401,10 +401,10 @@ opening_beam_start_flash:
 	lda	#$FFFF	; [num]
 	sta	a:wram_16AA
 	lda	#$0080
-	sta	a:wram_151E
-	sta	a:wram_151C
-	sta	a:wram_155E
-	sta	a:wram_155C
+	sta	a:player1_obj+PLAYER_BOMB_Y
+	sta	a:player1_obj+PLAYER_BOMB_X
+	sta	a:player2_obj+PLAYER_BOMB_Y
+	sta	a:player2_obj+PLAYER_BOMB_X
 	lda	#$005B
 	jsl	f:queue_sound
 	inc	a:opening_step

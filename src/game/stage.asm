@@ -115,8 +115,8 @@ stage_init:
 	stz	a:wram_1EB2
 	lda	#$0030
 	sta	a:wobjsel_shadow
-	stz	a:p1_view_x
-	stz	a:p2_view_x
+	stz	a:player1_obj+PLAYER_BOMB_RADIUS
+	stz	a:player2_obj+PLAYER_BOMB_RADIUS
 	lda	#$0280
 	sta	a:wram_1646
 	stz	a:trail_buffers_used
@@ -282,8 +282,8 @@ stage_frame:
 	jsl	f:update_shots
 	stz	a:player1_obj+PLAYER_CONTACT
 	stz	a:player2_obj+PLAYER_CONTACT
-	stz	a:wram_1504
-	stz	a:wram_1544
+	stz	a:player1_obj+PLAYER_PLATFORM
+	stz	a:player2_obj+PLAYER_PLATFORM
 	lda	a:wram_16B6
 	bne	@objects
 	jsl	f:spawn_stage_objects

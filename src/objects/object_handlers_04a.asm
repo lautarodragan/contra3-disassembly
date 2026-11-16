@@ -2184,19 +2184,19 @@ stage4_controller_state_1A:
 
 stage4_controller_state_1B:
 	lda	#$0001
-	sta	a:p1_view_x
-	sta	a:p2_view_x
-	stz	a:wram_1518
-	stz	a:wram_1558
+	sta	a:player1_obj+PLAYER_BOMB_RADIUS
+	sta	a:player2_obj+PLAYER_BOMB_RADIUS
+	stz	a:player1_obj+PLAYER_BOMB_SPEED_SUB
+	stz	a:player2_obj+PLAYER_BOMB_SPEED_SUB
 	lda	#$000C
-	sta	a:wram_151A
-	sta	a:wram_155A
+	sta	a:player1_obj+PLAYER_BOMB_SPEED
+	sta	a:player2_obj+PLAYER_BOMB_SPEED
 	lda	#$00D8
-	sta	a:wram_151C
-	sta	a:wram_155C
+	sta	a:player1_obj+PLAYER_BOMB_X
+	sta	a:player2_obj+PLAYER_BOMB_X
 	lda	#$0080
-	sta	a:wram_151E
-	sta	a:wram_155E
+	sta	a:player1_obj+PLAYER_BOMB_Y
+	sta	a:player2_obj+PLAYER_BOMB_Y
 	lda	#$001F
 	sta	a:wram_16AC
 	lda	#$00FF
@@ -2207,15 +2207,15 @@ stage4_controller_state_1B:
 
 stage4_controller_state_1C:
 	lda	#$00E0
-	cmp	a:p1_view_x
+	cmp	a:player1_obj+PLAYER_BOMB_RADIUS
 	bcs	loc_0491DF
 	lda	#$00FE
-	sta	a:p1_view_x
-	sta	a:p2_view_x
-	stz	a:wram_1518
-	stz	a:wram_1558
-	stz	a:wram_151A
-	stz	a:wram_155A
+	sta	a:player1_obj+PLAYER_BOMB_RADIUS
+	sta	a:player2_obj+PLAYER_BOMB_RADIUS
+	stz	a:player1_obj+PLAYER_BOMB_SPEED_SUB
+	stz	a:player2_obj+PLAYER_BOMB_SPEED_SUB
+	stz	a:player1_obj+PLAYER_BOMB_SPEED
+	stz	a:player2_obj+PLAYER_BOMB_SPEED
 	lda	#$005B
 	jsl	f:queue_sound
 	lda	#$0002
@@ -2263,12 +2263,12 @@ stage4_controller_state_1D:
 	sta	OBJ_TIMER,x
 loc_0491EE:
 	lda	#$00FE
-	sta	a:p1_view_x
-	sta	a:p2_view_x
-	stz	a:wram_1518
-	stz	a:wram_1558
-	stz	a:wram_151A
-	stz	a:wram_155A
+	sta	a:player1_obj+PLAYER_BOMB_RADIUS
+	sta	a:player2_obj+PLAYER_BOMB_RADIUS
+	stz	a:player1_obj+PLAYER_BOMB_SPEED_SUB
+	stz	a:player2_obj+PLAYER_BOMB_SPEED_SUB
+	stz	a:player1_obj+PLAYER_BOMB_SPEED
+	stz	a:player2_obj+PLAYER_BOMB_SPEED
 	bra	loc_049231
 
 stage4_controller_state_1E:
@@ -2280,28 +2280,28 @@ stage4_controller_state_1E:
 
 stage4_controller_state_1F:
 	sec
-	lda	a:p1_view_x
+	lda	a:player1_obj+PLAYER_BOMB_RADIUS
 	sbc	#$0004
 	bpl	loc_04921D
 	lda	#$0000
 loc_04921D:
-	sta	a:p1_view_x
-	sta	a:p2_view_x
+	sta	a:player1_obj+PLAYER_BOMB_RADIUS
+	sta	a:player2_obj+PLAYER_BOMB_RADIUS
 	lda	stage_frame_odd
 	bne	loc_049231
-	lda	a:wram_151E
+	lda	a:player1_obj+PLAYER_BOMB_Y
 	inc	a
-	sta	a:wram_151E
-	sta	a:wram_155E
+	sta	a:player1_obj+PLAYER_BOMB_Y
+	sta	a:player2_obj+PLAYER_BOMB_Y
 loc_049231:
-	lda	a:wram_151C
+	lda	a:player1_obj+PLAYER_BOMB_X
 	dec	a
-	sta	a:wram_151C
-	sta	a:wram_155C
-	stz	a:wram_1518
-	stz	a:wram_1558
-	stz	a:wram_151A
-	stz	a:wram_155A
+	sta	a:player1_obj+PLAYER_BOMB_X
+	sta	a:player2_obj+PLAYER_BOMB_X
+	stz	a:player1_obj+PLAYER_BOMB_SPEED_SUB
+	stz	a:player2_obj+PLAYER_BOMB_SPEED_SUB
+	stz	a:player1_obj+PLAYER_BOMB_SPEED
+	stz	a:player2_obj+PLAYER_BOMB_SPEED
 	rtl
 
 ; Object type $65. Stage 4 (sky section) and the ending: the missiles the
@@ -6115,7 +6115,7 @@ loc_04AF5B:
 sub_04AF5C:
 	lda	a:p1_lives
 	beq	loc_04AF70
-	lda	a:p1_view_y
+	lda	a:player1_obj+PLAYER_CENTER_X
 	clc
 	adc	#$0020
 	sec
@@ -6125,7 +6125,7 @@ sub_04AF5C:
 loc_04AF70:
 	lda	a:p2_lives
 	beq	loc_04AF84
-	lda	a:p2_view_y
+	lda	a:player2_obj+PLAYER_CENTER_X
 	clc
 	adc	#$0020
 	sec

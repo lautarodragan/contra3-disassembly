@@ -443,11 +443,11 @@ loc_028369:
 	beq	loc_02838D
 	; (not executed in the CDL traces)
 	lda	a:inidisp_shadow
-	sta	a:wram_15D2
+	sta	a:map_view_saved_inidisp
 	lda	a:p1_view_brightness
-	sta	a:wram_15D4
+	sta	a:map_view_saved_p1_brightness
 	lda	a:p2_view_brightness
-	sta	a:wram_15D6
+	sta	a:map_view_saved_p2_brightness
 	lda	#$0001
 	sta	pause_disabled
 	lda	#$0001
@@ -624,27 +624,27 @@ map_view_close:
 map_view_restore_brightness:
 	; (not executed in the CDL traces)
 	lda	a:inidisp_shadow
-	cmp	a:wram_15D2
+	cmp	a:map_view_saved_inidisp
 	bcs	loc_0284E7
 	inc	a:inidisp_shadow
 	lda	a:p1_view_brightness
-	cmp	a:wram_15D4
+	cmp	a:map_view_saved_p1_brightness
 	bcs	loc_0284DA
 	inc	a:p1_view_brightness
 loc_0284DA:
 	lda	a:p2_view_brightness
-	cmp	a:wram_15D6
+	cmp	a:map_view_saved_p2_brightness
 	bcs	loc_0284E5
 	inc	a:p2_view_brightness
 loc_0284E5:
 	sec
 	rts
 loc_0284E7:
-	lda	a:wram_15D2
+	lda	a:map_view_saved_inidisp
 	sta	a:inidisp_shadow
-	lda	a:wram_15D4
+	lda	a:map_view_saved_p1_brightness
 	sta	a:p1_view_brightness
-	lda	a:wram_15D6
+	lda	a:map_view_saved_p2_brightness
 	sta	a:p2_view_brightness
 	stz	pause_disabled
 	stz	a:map_view_step
@@ -1450,7 +1450,7 @@ clear_topdown_ram:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:wram_1500
+	sta	f:stage_ram
 	lda	#$03FE
 	ldx	#$1500
 	txy
@@ -1607,7 +1607,7 @@ init_stage2_boss_vars:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:wram_1500
+	sta	f:stage_ram
 	lda	#$01FE
 	ldx	#$1500
 	txy
@@ -1658,7 +1658,7 @@ init_stage5_boss_vars:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:wram_1500
+	sta	f:stage_ram
 	lda	#$01FE
 	ldx	#$1500
 	txy

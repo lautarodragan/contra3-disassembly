@@ -25,7 +25,7 @@ demo_init:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:wram_1500
+	sta	f:stage_ram
 	lda	#$03FE
 	ldx	#$1500
 	txy
