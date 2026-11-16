@@ -80,8 +80,9 @@ def _hold(c, move, port, phase):
 
 
 def run(c, play, every=300):
-    """Plays `play` on a fresh Console; yields the number of frames played
-    every `every` frames (after the stage is picked).
+    """Plays `play` on a fresh Console; yields the number of game frames
+    played every `every` of them (after the stage is picked).  A play lasts
+    play.frames game frames.
 
     The input script advances with the game's own frames (frame_counter,
     incremented by run_game_mode), not with the emulated ones: when the
@@ -100,7 +101,7 @@ def run(c, play, every=300):
     moves = {}
     last_prog, still, chunk = None, 0, 0
     counter = c.peek16(FRAME_COUNTER)
-    while done < play.frames:
+    while played < play.frames:
         if left == 0:
             stage = c.peek(game.STAGE)
             if stage in (2, 5):
@@ -132,7 +133,7 @@ def run(c, play, every=300):
                 prog = (c.peek(game.STAGE), c.peek(game.PROGRESS))
                 still = still + 1 if prog == last_prog else 0
                 last_prog = prog
-        if done % every == 0:
-            yield done
+            if played % every == 0:
+                yield played
     for port in ports:
         c.hold(port=port)

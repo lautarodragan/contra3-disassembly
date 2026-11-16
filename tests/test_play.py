@@ -1,5 +1,6 @@
 """Scripted plays through every stage (tools/c3emu/plays.py), checked every
-CHECK frames against goldens: a hash of the screen (15-bit) and of the
+CHECK game frames (frame_counter: frames of game logic, so that a lag frame
+moves nothing) against goldens: a hash of the screen (15-bit) and of the
 sound command ring (WRAM $0100-$01FF, what queue_sound sends to the sound
 CPU); and the loudness of the audio stream in blocks of AUDIO_BLOCK bytes,
 within AUDIO_TOLERANCE over AUDIO_WINDOW blocks, failing only when that
@@ -57,19 +58,33 @@ NAMES = ["attract"] + list(plays.PLAYS)
 
 
 def _frames(c, name):
-    """Yields after every frame of the play, and SLACK frames more (so the
-    last checkpoint has its window too)."""
-    done = 0
+    """Yields the game frame count (frame_counter, which run_game_mode
+    increments once per frame of game logic) each time it moves, then
+    SLACK more (so the last checkpoint has its window too).  Counting game
+    frames, not emulated ones, a lag frame (the game's logic overrunning a
+    frame) changes nothing: the screen after game frame N is the same."""
+    played = 0
     if name == "attract":
-        for done in range(1, ATTRACT_FRAMES + 1):
+        counter = c.peek16(plays.FRAME_COUNTER)
+        while played < ATTRACT_FRAMES:
             c.run(1)
-            yield done
+            now = c.peek16(plays.FRAME_COUNTER)
+            if now != counter:
+                counter = now
+                played += 1
+                yield played
     else:
-        for done in plays.run(c, plays.PLAYS[name], every=1):
-            yield done
-    for k in range(1, SLACK + 1):
+        for played in plays.run(c, plays.PLAYS[name], every=1):
+            yield played
+    counter = c.peek16(plays.FRAME_COUNTER)
+    k = 0
+    while k < SLACK:
         c.run(1)
-        yield done + k
+        now = c.peek16(plays.FRAME_COUNTER)
+        if now != counter:
+            counter = now
+            k += 1
+            yield played + k
 
 
 def _level(block):
@@ -192,7 +207,7 @@ def test_play(play_runs, rom, core, name, update_goldens):
             # A lone checkpoint whose screen differs in a few pixels, between
             # two that match, is tolerated (checked below): a sprite or a
             # raster split a cycle-timing change can move for one frame.
-            isolated = [i for i in bad if i - 1 not in bad and i + 1 not in bad and 0 < i < len(g) - 1]
+            isolated = [i for i in bad if i - 1 not in bad and i + 1 not in bad and 0 < i]
             bad = [i for i in bad if i not in isolated]
         if bad:
             i = bad[0]
