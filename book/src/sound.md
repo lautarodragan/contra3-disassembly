@@ -91,7 +91,9 @@ start-up code at `$0896`; `$0203`-`$03E5` are variables (zeros in the
 file, cleared again at start-up); `$03E6`-`$0895` are tables (sounds,
 instruments); `$0896`-`$1B36` is code with a few tables in it; `$1B37`-`$2DAB`
 are the sequences of the sound effects and of the songs that live in the
-driver.
+driver. The [Sound driver](sound-driver.md) page describes the driver,
+its commands, instruments and the format of the songs, which are text
+files (`assets/sound/spc_song_stage1.seq` ...).
 
 ### The blocks
 
@@ -202,6 +204,8 @@ encoded with a BRR encoder such as BRRtools (`brr_encoder`). The file
 must be a whole number of blocks, with the end bit in the last block only,
 and the loop bit there if it loops; set its loop start in the lists that
 use it. A sample that grows moves the samples after it, and their
-directory entries follow. What the build does not check: that the common
-samples still end before `$B08E` (where the stage samples start), and
-that the stage samples end before the echo buffer at the top of ARAM.
+directory entries follow. The limits of the manifest (`max=`, see
+[Assets: size limits](assets.md#size-limits)) keep the common samples
+below `$B08E`, where the stage samples start, and the stage samples below
+`$D800`, where the echo buffer starts (`max=$2772`; see
+[Sound driver: echo](sound-driver.md#echo)).

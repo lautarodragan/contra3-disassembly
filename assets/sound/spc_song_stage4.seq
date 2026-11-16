@@ -1,0 +1,2142 @@
+# spc_song_stage4: the song of stage 4.
+# Sequences of the sound driver as text (tools/spcseq.py; book: Sound driver).
+# The build assembles this file; every line is exactly its bytes.
+at $3000
+	song L300C L3389 L35E2 L3970 L3BBA L3D46
+L300C:
+	echo $07 $3C $4E
+	echo_setup $05 $46 $02
+	tempo $75
+	inst $0D
+	channel_volume $7F
+	pan $0C
+	detune $03
+	envelope $82 $B4 $C8
+	repeat_start
+	drums_off
+	note $4A $0C $5A $46
+	note $4C $18 $28 $46
+	note $4A $0C $5A $46
+	note $4C $18 $28 $46
+	note $4A $0C $5A $46
+	note $4C $18 $2D $46
+	note $4A $0C $5A $46
+	note $4C $18 $28 $46
+	note $4A . $50 $46
+	note $4C . . $46
+	slide $12 $10 $4B
+	rest $C0
+	repeat
+	repeat
+	repeat
+	repeat
+	channel_volume $4B
+	pan $08
+	envelope $28 $D6 $C8
+	drums_off
+	note $3E $C0 $63 $3C
+	pan $0C
+	note $3F . . $3D
+	pan $08
+	note $40 . . $3F
+	pan $0C
+	note $41 . . $40
+	channel_volume $6E
+	pan $15
+	pan $0C
+	detune $03
+	envelope $9D $BB $46
+	rest $30
+	note $3C $90 $0A $4B
+	rest $0C
+	note $3D $18 $4B $3F
+	note $3D $48 $0A $3F
+	inst $12
+	channel_volume $6E
+	envelope $96 $DA $46
+	note $2B $54 $65 $4B
+	tie $30 $1E
+	inst $0D
+	channel_volume $6E
+	envelope $9D $BB $46
+	note $3E $24 $50 $3F
+	note $3E $6C $0A $3F
+	rest $30
+	note $3F $24 $55 $3F
+	note $40 . . $3F
+	note $41 . . $3F
+	note $42 $0C $4B $3F
+	note $43 . . $3F
+	note $44 . $50 $3F
+	tempo $75
+	echo $0B $3C $4B
+	echo_setup $05 $46 $02
+	inst $16
+	channel_volume $2F
+	pan $0B
+	detune $01
+	envelope $8C $DA $C8
+	repeat_start
+	drums_off
+	note $44 $24 $50 $4A
+	slide $01 $05 $45
+	note $40 . $14 $44
+	bend $00 $00 $00
+	note $49 $03 $52 $25
+	note $4A $2D . $5F
+	note $49 $18 $50 $3C
+	note $47 $0C . $3C
+	note $45 $24 . $3C
+	note $4C $30 . $47
+	note $4A $18 $23 $41
+	note $49 $0C $46 $3C
+	note $4F $6C $58 $5F
+	note $44 $24 $50 $4B
+	slide $01 $05 $45
+	note $40 . $14 $3C
+	note $4A $30 $50 $5F
+	note $49 $18 $28 $41
+	note $47 . $32 $3C
+	note $45 $0C $3C $3C
+	note $43 . $65 $52
+	tie $C0 $5A
+	repeat
+	repeat
+	bend $00 $00 $00
+	detune $00
+	inst $12
+	pan $0C
+	channel_volume $32
+	envelope $96 $D2 $64
+	drums_off
+	note $3E $0C $50 $3F
+	note $40 $18 $28 $3F
+	note $3E $0C $50 $3F
+	note $40 $18 $28 $3F
+	note $3E $0C $5A $3F
+	note $40 $18 $28 $3F
+	note $3E $0C $50 $3F
+	note $40 $18 $28 $3F
+	note $3E . $63 $43
+	note $40 . . $43
+	echo_setup $05 $46 $02
+	tempo $75
+	echo $09 $3C $4B
+	inst $16
+	pan $0C
+	channel_volume $1D
+	envelope $9D $D2 $E6
+	repeat_start
+	pan $0B
+	drums_off
+	note $43 $0C $46 $3F
+	pan $0A
+	note $2B . . $3F
+	pan $0C
+	note $37 . $50 $3F
+	pan $0B
+	note $43 . $41 $3F
+	pan $0C
+	note $37 . $46 $3F
+	pan $0B
+	note $43 . $41 $3F
+	note $43 . $46 $3F
+	pan $0A
+	note $2B . . $3F
+	pan $0C
+	note $37 . . $3F
+	pan $0A
+	note $2B . . $3F
+	note $2B . . $3F
+	pan $0B
+	note $43 . . $3F
+	pan $0C
+	note $37 . . $3F
+	pan $0A
+	note $2B . . $3F
+	note $2B . . $3F
+	pan $0B
+	note $43 . . $3F
+	repeat
+	repeat
+	repeat
+	drums_off
+	note $43 $24 $4E $4E
+	note $42 . . $4E
+	note $41 . . $4E
+	note $40 . . $4E
+	note $40 $18 $32 $4E
+	note $3F . . $4E
+	echo $0F $3C $4B
+	inst $0D
+	channel_volume $76
+	envelope $96 $D2 $FF
+	pan $0C
+	note $30 $0C $5A $3F
+	note $31 $18 $4B $3F
+	note $32 . . $3F
+	note $35 . $50 $3F
+	note $36 . $4B $3F
+	note $37 . . $3F
+	note $3A . $50 $3F
+	note $3C . $4B $3F
+	note $3D $0C $5A $3F
+	envelope $96 $D6 $28
+	note $3E $C0 $65 $3F
+	tie $C0 $0A
+	echo $06 $3C $4B
+	channel_volume $50
+	pan $15
+	pan $0D
+	detune $08
+	rest $48
+	drums_on
+	note $0A $78 $63 $41
+	rest $48
+	note $0A $78 $63 $41
+	rest $48
+	note $0A $78 $63 $41
+	rest $48
+	note $0A $78 $63 $41
+	pan $16
+	detune $00
+	drums_off
+	echo $0D $3C $4B
+	inst $05
+	channel_volume $17
+	pan $12
+	pan_fade $C0 $02
+	envelope $96 $D2 $FF
+	note $3E $08 $3C $4A
+	note $41 . $4B $4A
+	note $3E . $46 $4A
+	note $41 . $37 $4A
+	call L40C3
+	note $41 . $4B $4A
+	note $3D . $3C $4A
+	note $40 . $55 $4A
+	note $3D . $41 $4A
+	note $40 . $3C $4A
+	note $3D . $4B $4A
+	note $40 . $41 $4A
+	note $3D . $37 $4A
+	note $40 . $46 $4A
+	note $3D . $3C $4A
+	note $40 . . $4A
+	note $3D . $55 $4A
+	note $40 . . $4A
+	pan_fade $C0 $12
+	call L40D9
+	call L40C3
+	note $41 . $41 $4A
+	note $3D . $3C $4A
+	note $40 . $4B $4A
+	note $3D . $37 $4A
+	note $40 . . $4A
+	note $3D . $55 $4A
+	note $40 . $41 $4A
+	note $3C . $3C $4A
+	note $3F . $46 $4A
+	note $3C . $3C $4A
+	note $3F . . $4A
+	note $3C . $55 $4A
+	note $3F . . $4A
+	pan_fade $C0 $02
+	call L40D9
+	call L40C3
+	note $41 . $4B $4A
+	note $3F . $3C $4A
+	note $42 . $55 $4A
+	note $3F . $46 $4A
+	note $42 . $37 $4A
+	note $3F . $55 $4A
+	note $42 . $3C $4A
+	note $40 . $37 $4A
+	note $43 . $46 $4A
+	note $40 . $3C $4A
+	note $43 . $32 $4A
+	note $40 . $55 $4A
+	note $43 . . $4A
+	pan_fade $18 $04
+	note $3E . $3C $4A
+	note $41 . $4B $4A
+	note $3E . . $4A
+	pan_fade $18 $10
+	note $3F . $3C $4A
+	note $42 . $55 $4A
+	note $3F . $3C $4A
+	pan_fade $18 $04
+	note $40 . $37 $4A
+	note $43 . $46 $4A
+	note $40 . $3C $4A
+	pan_fade $18 $10
+	note $41 . $37 $4A
+	note $44 . $55 $4A
+	note $41 . $32 $4A
+	pan_fade $18 $04
+	note $42 . $28 $4A
+	note $45 . $55 $4A
+	note $42 . $32 $4A
+	pan_fade $18 $10
+	note $43 . $28 $4A
+	note $46 . $55 $4A
+	note $43 . $2D $4A
+	pan_fade $18 $04
+	note $44 . $32 $4A
+	note $47 . $55 $4A
+	note $44 . $28 $4A
+	pan_fade $18 $10
+	note $45 . $32 $4A
+	note $48 . $55 $4A
+	note $45 . . $4A
+	echo $07 $3C $3C
+	inst $10
+	pan $0F
+	channel_volume $37
+	envelope $78 $D6 $C8
+	glide $08
+	call L40E6
+	glide $06
+	call L40FE
+	note $4F . . $3F
+	note $54 . $5A $3F
+	glide $00
+	echo $0F $46 $50
+	inst $16
+	envelope $96 $D2 $FF
+	channel_volume $20
+	pan $08
+	pan_fade $48 $0C
+	note $50 $0C $50 $3F
+	note $4B . . $3F
+	note $46 . . $3F
+	note $44 . $4B $3F
+	note $3F . . $3F
+	note $3A . $50 $3F
+	pan $0A
+	pan_fade $48 $0E
+	note $4B . . $3F
+	note $46 . $4B $3F
+	note $44 . . $3F
+	note $3F . $50 $3F
+	note $3A . . $3F
+	note $38 . . $3F
+	pan $0C
+	pan_fade $30 $10
+	note $3F . . $3F
+	note $3A . $4B $3F
+	note $38 . $50 $3F
+	note $33 . . $3F
+	jump L300C
+	.byte $FF
+L3389:
+	tempo $75
+	inst $0D
+	channel_volume $73
+	pan $08
+	detune $FD
+	envelope $82 $B4 $C8
+	repeat_start
+	drums_off
+	note $3E $0C $5A $46
+	note $40 $18 $23 $46
+	note $3E $0C $5A $46
+	note $40 $18 $28 $46
+	note $3E $0C $5A $46
+	note $40 $18 $23 $46
+	note $3E $0C $5A $46
+	note $40 $18 $23 $46
+	note $3E . $4B $46
+	note $40 . $55 $46
+	slide $10 $10 $3F
+	rest $C0
+	repeat
+	repeat
+	repeat
+	repeat
+	inst $0D
+	channel_volume $5F
+	pan $0C
+	envelope $28 $D6 $C8
+	drums_off
+	note $41 $C0 $63 $3C
+	pan $08
+	note $42 . . $3D
+	pan $0C
+	note $43 . . $3F
+	pan $08
+	note $44 . . $40
+	inst $0D
+	channel_volume $7F
+	envelope $9D $BB $46
+	pan $0A
+	detune $04
+	rest $30
+	note $4D $90 $0A $5F
+	detune $00
+	rest $0C
+	note $4E $18 $4B $43
+	note $4E $48 $0A $43
+	envelope $96 $DA $46
+	note $2B $54 $65 $43
+	tie $32 $1E
+	envelope $9D $BB $46
+	note $4F $24 $50 $43
+	note $4F $6A $0A $43
+	rest $30
+	note $50 $24 $55 $43
+	note $51 . . $43
+	note $52 . . $43
+	note $53 $0C $4B $43
+	note $54 . . $43
+	note $55 . $5A $43
+	tempo $75
+	inst $16
+	channel_volume $21
+	pan $09
+	envelope $8C $DA $C8
+	repeat_start
+	bend $01 $01 $FF
+	rest $02
+	drums_off
+	note $39 $24 $50 $4A
+	note $34 . $14 $44
+	bend $00 $00 $00
+	note $3D $03 $52 $25
+	note $3E $2D . $5F
+	note $3D $18 $50 $3C
+	note $3B $0C . $3C
+	note $39 $24 . $3C
+	note $40 $30 . $47
+	note $3E $18 $23 $41
+	note $3D $0C $46 $3C
+	note $43 $6C $58 $5F
+	note $39 $24 $50 $4B
+	note $34 . $14 $3C
+	note $3E $30 $50 $5F
+	note $3D $18 $32 $41
+	note $3B . $28 $3C
+	note $39 $0C $32 $3C
+	note $37 . $65 $52
+	tie $BE $5A
+	repeat
+	repeat
+	bend $00 $00 $00
+	inst $0D
+	pan $09
+	channel_volume $69
+	drums_off
+	note $4A $0C $50 $3F
+	note $4C $18 $28 $3F
+	note $4A $0C $50 $3F
+	note $4C $18 $28 $3F
+	note $4A $0C $5A $3F
+	note $4C $18 $28 $3F
+	note $4A $0C $50 $3F
+	note $4C $18 $28 $3F
+	note $4A . $55 $3F
+	note $4C . $50 $3F
+	inst $15
+	channel_volume $2D
+	pan $09
+	detune $08
+	envelope $96 $DC $64
+	call L4142
+	call L41BD
+	detune $00
+	inst $10
+	channel_volume $28
+	pan $0B
+	envelope $96 $D2 $FF
+	note $30 $0C $49 $3F
+	call L41E1
+	note $29 $0C $58 $3F
+	envelope $96 $D6 $28
+	vibrato $30 $0C $0A
+	vibrato_fade $3C
+	note $28 $C0 $65 $3F
+	tie $C0 $09
+	vibrato $00 $00 $00
+	inst $16
+	pan $0C
+	channel_volume $23
+	envelope $96 $D3 $64
+	detune $01
+	glide $04
+	note $34 $0C $46 $3F
+	note $28 $18 . $3F
+	note $2B . . $3F
+	note $2D . $41 $3F
+	call L41F1
+	note $2E . . $3F
+	note $2F . . $3F
+	call L420B
+	note $34 . $41 $3F
+	note $28 $18 $46 $3F
+	note $2B . . $3F
+	note $2D . $4B $3F
+	call L41F1
+	note $2E . $4B $3F
+	note $2F . $46 $3F
+	call L420B
+	glide $00
+	inst $15
+	pan $09
+	channel_volume $32
+	detune $0A
+	envelope $96 $DC $64
+	note $34 $0D $5A $46
+	note $28 $17 $50 $40
+	note $2B $18 $4B $3F
+	call L4216
+	note $32 $0C $50 $3F
+	note $32 . . $3F
+	note $33 . $5A $3F
+	note $34 $0D . $44
+	note $28 $17 $4B $3F
+	note $2B $18 . $3F
+	call L4216
+	note $32 $0C $4B $3F
+	note $32 . $50 $3F
+	note $33 . $5A $3F
+	note $34 $0D . $45
+	note $28 $17 $4B $3F
+	note $2B $18 $50 $3F
+	call L4221
+	note $32 $0C $50 $3F
+	note $32 . $4B $3F
+	note $33 . $5A $3F
+	inst $10
+	channel_volume $28
+	detune $00
+	envelope $64 $B4 $78
+	rest $60
+	pan $09
+	note $39 $18 $50 $4E
+	pan $0B
+	note $3A . . $4E
+	pan $09
+	note $3B . . $4E
+	pan $0B
+	note $3C . . $4E
+	channel_volume $20
+	detune $04
+	pan $06
+	envelope $78 $D6 $C8
+	note $49 $0F $65 $41
+	call L40E6
+	call L40FE
+	note $4F $09 . $3F
+	detune $00
+	inst $02
+	channel_volume $1B
+	channel_volume_fade $C0 $39
+	vibrato $30 $0E $08
+	envelope $0E $D2 $0A
+	pan $0D
+	pan_fade $C0 $08
+	rest $02
+	note $46 $BE $63 $3F
+	vibrato $00 $00 $00
+	jump L3389
+	.byte $FF
+L35E2:
+	tempo $75
+	repeat_start
+	channel_volume $7F
+	drums_on
+	note $02 $C0 $63 $5F
+	inst $16
+	channel_volume $35
+	pan $0E
+	envelope $9D $B4 $FF
+	detune $06
+	drums_off
+	note $26 $0C $50 $28
+	call L422B
+	note $28 $18 . $28
+	channel_volume $7F
+	drums_on
+	note $02 $C0 $63 $5F
+	repeat
+	inst $16
+	channel_volume $26
+	pan $0D
+	envelope $9D $B4 $FF
+	drums_off
+	note $34 $0C $46 $59
+	note $34 . . $3F
+	note $34 . . $3F
+	note $33 $18 . $59
+	note $32 . $4B $59
+	note $34 . $46 $59
+	note $32 $0C . $59
+	note $33 . $4B $59
+	note $34 . . $59
+	note $2B . . $59
+	note $2C . $46 $59
+	note $2D $18 . $59
+	repeat
+	inst $16
+	channel_volume $2C
+	pan $0D
+	envelope $9D $B4 $FF
+	drums_off
+	note $2F $0C $50 $3F
+	note $32 . . $3F
+	note $33 . . $3F
+	note $34 . $5A $3F
+	note $37 . . $3F
+	note $38 . $4B $3F
+	note $39 . $50 $3F
+	note $36 $18 . $3F
+	note $39 $0C . $3F
+	note $3A . . $3F
+	note $3B . . $3F
+	note $3E . . $3F
+	note $40 . . $3F
+	note $41 . $4B $3F
+	note $42 . $50 $3F
+	inst $13
+	channel_volume $3C
+	pan $09
+	detune $0C
+	envelope $9D $E2 $00
+	repeat_start
+	call L423E
+	note $30 $18 . $46
+	note $2B $0C . $3F
+	note $31 $18 $4B $46
+	note $2B $0C $50 $3F
+	note $32 $18 . $50
+	note $29 . . $3F
+	note $2A . . $3F
+	repeat
+	repeat
+	repeat
+	repeat
+	channel_volume $3C
+	pan $15
+	envelope $9D $DE $00
+	call L423E
+	inst $10
+	channel_volume $2D
+	envelope $93 $D6 $64
+	note $48 $18 $32 $4B
+	call L424B
+	note $31 $18 . $3F
+	note $2B $0C $4B $3F
+	note $32 $18 $50 $3F
+	note $29 . . $3F
+	note $2A . $55 $3F
+	note $2B $0C $50 $3F
+	inst $10
+	channel_volume $2D
+	envelope $93 $D2 $64
+	note $49 $18 $37 $3F
+	note $49 $0C . $3F
+	inst $13
+	channel_volume $3C
+	envelope $9D $DE $00
+	note $30 $18 $50 $3F
+	note $2B $0C . $3F
+	note $31 $18 . $3F
+	inst $02
+	detune $07
+	channel_volume $64
+	envelope $93 $BB $46
+	note $1F $54 $63 $3F
+	call L424B
+	note $2E $18 $55 $3F
+	note $2B $0C $50 $3F
+	inst $10
+	channel_volume $26
+	envelope $93 $D2 $64
+	note $4A $24 $37 $3F
+	note $4A $18 . $3F
+	inst $13
+	channel_volume $3C
+	envelope $9D $DE $00
+	note $2B $0C $5A $3F
+	note $32 $18 $50 $3F
+	note $29 . . $3F
+	note $2A . . $3F
+	note $2B $0C $4B $3F
+	note $2E $18 . $3F
+	note $2B $0C . $3F
+	inst $10
+	channel_volume $2A
+	envelope $93 $D2 $64
+	note $4B $24 $46 $3F
+	note $4C . . $3F
+	note $4D . . $3F
+	note $4E $0C . $3F
+	note $4F . . $3F
+	note $50 . . $3F
+	detune $00
+	transpose $E8
+	inst $04
+	pan $09
+	detune $0A
+	channel_volume $6E
+	envelope $96 $E4 $00
+	call L4258
+	note $28 . $3C $25
+	call L42BF
+	note $34 . $1C $42
+	call L42E6
+	note $34 $18 $62 $43
+	note $32 $0C $3A $3C
+	note $34 . $39 $3C
+	call L42FC
+	transpose $00
+	inst $0D
+	detune $00
+	channel_volume $5F
+	note $3E . . $3F
+	note $40 $18 $23 $3F
+	note $3E $0C $4B $3F
+	note $40 $18 $23 $3F
+	note $3E $0C $4B $3F
+	note $40 $18 $23 $3F
+	note $3E $0C $4B $3F
+	note $40 $18 $23 $3F
+	note $3E . $50 $3F
+	note $40 . $55 $3F
+	channel_volume $78
+	pan $15
+	pan $0C
+	drums_on
+	note $02 $30 $63 $7F
+	inst $04
+	transpose $F4
+	envelope $96 $E4 $00
+	channel_volume $5F
+	drums_off
+	note $2B $18 $50 $3F
+	note $29 $0C $3C $3C
+	note $2B $18 $4E $47
+	note $29 $0C $46 $3D
+	note $2A . . $3D
+	note $2B . . $3D
+	note $24 . $50 $3F
+	note $25 . $4B $3F
+	note $26 $18 $5A $3F
+	note $2B . $52 $43
+	note $29 $0C $3C $3D
+	note $2B . . $3D
+	note $2B $18 $4B $3F
+	note $29 $0C $3F $34
+	note $2B $18 $50 $43
+	note $29 $0C $46 $3C
+	note $2A . . $3C
+	note $2B . . $3C
+	note $2E . $5A $3D
+	note $30 . $4B $3D
+	note $35 $18 $50 $3F
+	note $2B . . $43
+	note $29 $0C $3C $3D
+	note $2B . . $3D
+	note $2B $18 $50 $3F
+	note $29 $0C $46 $3C
+	note $2B . $4B $3D
+	note $2B . $3C $44
+	note $24 . $41 $3D
+	note $25 . $50 $3D
+	note $26 . $4B $3D
+	note $35 . $32 $43
+	note $29 . $50 $3F
+	note $35 . $65 $5F
+	note $37 . $58 $5F
+	transpose $00
+	inst $0D
+	channel_volume $69
+	detune $04
+	note $43 $24 $55 $3F
+	note $42 . $5A $3F
+	note $41 . $55 $3F
+	note $40 . . $3F
+	note $40 $18 $32 $43
+	note $3F . . $43
+	channel_volume $7F
+	pan $0A
+	envelope $78 $D2 $FF
+	note $3C $0C $4B $3F
+	note $3D $18 . $3F
+	note $3E . $50 $3F
+	note $41 . $55 $3F
+	note $42 . $50 $3F
+	note $43 . . $3F
+	note $46 . $55 $3F
+	note $48 . $50 $3F
+	note $49 $0C $5A $3F
+	envelope $96 $D6 $28
+	note $4A $C0 $65 $3F
+	tie $C0 $0A
+	inst $16
+	pan $09
+	channel_volume $16
+	envelope $96 $D3 $64
+	glide $02
+	note $40 $0C $46 $3F
+	note $34 $18 . $3F
+	note $37 . . $3F
+	note $39 . $41 $3F
+	call L438E
+	note $3A . . $3F
+	note $3B . . $3F
+	note $3E . . $3F
+	note $3E $0C $41 $3F
+	note $3E . $46 $3F
+	note $3F . . $3F
+	note $40 . $41 $3F
+	note $34 $18 $46 $3F
+	note $37 . . $3F
+	note $39 . $4B $3F
+	call L438E
+	note $3A . $4B $3F
+	note $3B . $46 $3F
+	note $3E . . $3F
+	note $3E $0C . $3F
+	note $3E . . $3F
+	note $3F . . $3F
+	glide $00
+	channel_volume $28
+	detune $00
+	glide $03
+	note $34 $0C $46 $3F
+	call L43A6
+	call L43B0
+	note $34 . . $3F
+	call L43A6
+	note $2F . $4B $3F
+	note $32 . $50 $3F
+	note $32 $0C $46 $3F
+	note $32 . . $3F
+	note $33 . . $3F
+	note $34 . $41 $3F
+	call L43BE
+	call L43B0
+	note $34 . $50 $3F
+	call L43BE
+	call L43B0
+	glide $00
+	inst $02
+	channel_volume $0F
+	pan $0D
+	envelope $78 $D8 $C8
+	note $44 $24 $63 $41
+	note $50 . . $3D
+	note $4F $60 $5F $3D
+	note $4E $18 $63 $3D
+	note $4D $24 . $3F
+	note $4C . . $3F
+	note $45 $78 $5A $47
+	note $3E $24 $55 $3F
+	note $4A . . $3F
+	note $48 $0C $4B $3F
+	note $4A . . $3F
+	note $48 . $50 $3F
+	note $43 . . $3F
+	note $3E . . $3F
+	note $3C . . $3F
+	note $37 . $5A $3F
+	note $32 . $4B $3F
+	note $30 . $5A $3F
+	note $2B . $50 $3F
+	note $31 . $5A $3F
+	note $32 . $50 $3F
+	note $37 . $4B $3F
+	note $3D . $50 $3F
+	note $3E . . $3F
+	note $43 . . $3F
+	note $37 . . $3F
+	note $3D . . $3F
+	note $3E . . $3F
+	note $43 . $4B $3F
+	note $49 . $50 $3F
+	note $4A . . $3F
+	note $43 . . $3F
+	note $49 . . $3F
+	note $4A . . $3F
+	note $4F . $5A $3F
+	inst $04
+	channel_volume $21
+	channel_volume_fade $C0 $3C
+	vibrato $30 $0E $0A
+	envelope $0E $D2 $0A
+	pan $09
+	rest $02
+	note $4B $BE $63 $3F
+	vibrato $00 $00 $00
+	jump L35E2
+	.byte $FF
+L3970:
+	tempo $75
+	repeat_start
+	detune $03
+	inst $04
+	channel_volume $69
+	envelope $96 $E4 $00
+	drums_off
+	call L43C9
+	inst $16
+	channel_volume $32
+	pan $07
+	envelope $9D $B4 $C8
+	note $26 $0E $50 $28
+	call L422B
+	note $28 $16 . $28
+	inst $04
+	channel_volume $69
+	envelope $96 $E4 $00
+	call L43C9
+	repeat
+	inst $16
+	channel_volume $2A
+	pan $08
+	envelope $9D $B4 $C8
+	drums_off
+	note $2F $0C $46 $59
+	note $2F . . $3F
+	note $2F . . $3F
+	note $2E $18 . $59
+	note $2D . $4B $59
+	note $2F . $46 $59
+	note $2D $0C . $59
+	note $2E . $4B $59
+	note $2F . . $59
+	note $26 . . $59
+	note $27 . $46 $59
+	note $28 $18 $4B $59
+	repeat
+	inst $16
+	channel_volume $1E
+	pan $08
+	drums_off
+	note $23 $0C $4B $5F
+	note $26 . . $5F
+	note $27 . . $5F
+	note $28 . . $5F
+	note $2B . . $5F
+	note $2C . . $5F
+	note $2D . . $5F
+	note $23 $18 . $5F
+	note $26 $0C . $5F
+	note $27 . . $5F
+	note $28 . . $5F
+	note $2B . . $5F
+	note $2D . . $5F
+	note $2E . . $5F
+	note $2F . $5A $5F
+	detune $00
+	inst $16
+	channel_volume $1D
+	envelope $96 $D2 $C8
+	repeat_start
+	call L43E8
+	call L43FE
+	repeat
+	repeat
+	repeat
+	repeat
+	repeat
+	call L43E8
+	inst $16
+	channel_volume $1D
+	envelope $96 $D2 $C8
+	repeat_start
+	call L43E8
+	call L43FE
+	repeat
+	repeat
+	repeat
+	repeat
+	repeat
+	call L43E8
+	inst $04
+	channel_volume $26
+	envelope $9D $96 $E6
+	repeat_start
+	call L4427
+	repeat
+	repeat
+	repeat
+	repeat
+	inst $04
+	channel_volume $26
+	envelope $9D $96 $E6
+	repeat_start
+	call L4427
+	repeat
+	repeat
+	repeat
+	repeat
+	channel_volume $64
+	pan $15
+	pan $09
+	drums_on
+	note $02 $60 $63 $5F
+	pan $16
+	inst $15
+	detune $0C
+	channel_volume $32
+	envelope $96 $DC $64
+	drums_off
+	note $28 $0C $23 $2D
+	call L4450
+	inst $04
+	channel_volume $26
+	envelope $9D $96 $E6
+	detune $00
+	pan $05
+	repeat_start
+	pan_fade $60 $0F
+	drums_off
+	note $37 $0C $13 $43
+	note $4F . . $43
+	note $43 . . $43
+	note $37 . . $43
+	note $4D $24 . $43
+	note $37 $0C . $43
+	pan_fade $60 $05
+	note $4A . . $43
+	note $48 . . $43
+	note $37 $18 . $43
+	note $46 $0C . $43
+	note $37 . . $43
+	note $48 $18 . $43
+	repeat
+	repeat
+	repeat
+	inst $0D
+	channel_volume $69
+	drums_off
+	note $3E $24 $55 $3F
+	note $3D . . $3F
+	note $3C . . $3F
+	note $3B . . $3F
+	note $3B $18 $32 $43
+	note $3A . . $43
+	inst $02
+	pan $0A
+	detune $04
+	channel_volume $4A
+	envelope $96 $DE $64
+	note $26 $0C $50 $3F
+	note $25 $18 . $3F
+	note $23 . . $3F
+	note $22 . . $3F
+	note $21 . . $3F
+	note $20 . . $3F
+	note $1F . . $3F
+	note $1E . . $3F
+	note $1D $0C . $3F
+	envelope $9D $D6 $28
+	note $1C $C0 $65 $3F
+	tie $C0 $0A
+	inst $15
+	pan $09
+	detune $06
+	channel_volume $32
+	envelope $96 $DC $64
+	note $34 $0D $5A $46
+	note $28 $17 $4B $3F
+	call L4466
+	note $34 $0D . $47
+	note $28 $17 $4B $3F
+	note $2B $18 . $3F
+	call L4221
+	note $32 $0C $41 $3F
+	note $32 . $50 $3F
+	note $33 . $5A $3F
+	note $34 $0D . $46
+	note $28 $17 $4B $3F
+	note $2B $18 $50 $3F
+	note $2D . $4B $3F
+	note $2E . $50 $3F
+	note $2F . . $3F
+	note $32 . $5A $3F
+	note $32 $0C $4B $3F
+	note $32 . $50 $3F
+	note $33 . $5A $3F
+	note $34 $0D . $47
+	note $28 $17 $4B $40
+	note $2B $18 $50 $3F
+	note $2D . $4B $3F
+	note $2E . $50 $3F
+	note $2F . $4B $3F
+	note $32 . $5A $3F
+	note $32 $0C $41 $3F
+	note $32 . $50 $3F
+	note $33 . $5A $3F
+	inst $04
+	detune $00
+	pan $0F
+	channel_volume $64
+	envelope $96 $96 $00
+	repeat_start
+	call L447F
+	note $3E . . $12
+	note $34 . . $12
+	note $44 . . $12
+	note $3E . . $12
+	note $34 . . $12
+	note $43 . . $12
+	note $3E . . $12
+	note $34 . . $12
+	repeat
+	repeat
+	repeat
+	call L447F
+	inst $10
+	channel_volume $28
+	envelope $64 $B4 $78
+	pan $0C
+	note $4E $18 $50 $4E
+	pan $08
+	note $4F . . $4E
+	pan $0C
+	note $50 . . $4E
+	pan $0C
+	note $51 . . $4E
+	inst $15
+	detune $07
+	pan $09
+	channel_volume $28
+	envelope $96 $D2 $64
+	call L4493
+	inst $04
+	channel_volume $25
+	channel_volume_fade $C0 $41
+	envelope $0E $D2 $0A
+	detune $00
+	pan $08
+	pan_fade $BC $14
+	rest $02
+	note $50 $BE $63 $3F
+	jump L3970
+	.byte $FF
+L3BBA:
+	tempo $75
+	inst $15
+	channel_volume $7F
+	envelope $8C $DC $6E
+	repeat_start
+	drums_off
+	call L44FF
+	note $34 . . $4D
+	envelope $8C $D2 $6E
+	note $32 $0C . $37
+	note $33 $18 . $37
+	call L451C
+	note $3B $0C . $37
+	note $32 . $46 $37
+	note $33 . . $37
+	note $34 $18 $50 $37
+	envelope $8C $DC $6E
+	call L44FF
+	note $34 . . $45
+	repeat
+	envelope $8C $D2 $6E
+	drums_off
+	note $3B $0C $5A $37
+	note $3B . . $37
+	note $3B . . $37
+	note $3A $18 . $37
+	note $39 . . $37
+	note $3B . . $37
+	note $39 $0C . $37
+	note $3A . $43 $37
+	note $3B . . $37
+	note $32 . . $37
+	note $33 . . $37
+	note $34 $18 $50 $37
+	repeat
+	envelope $8C $D2 $6E
+	drums_off
+	note $2F $0C $5A $37
+	note $32 . . $37
+	note $33 . . $37
+	note $34 . . $37
+	note $37 . . $37
+	note $38 . . $37
+	note $39 . . $37
+	note $2F $18 . $37
+	note $32 $0C . $37
+	note $33 . . $37
+	call L451C
+	note $3B . . $37
+	envelope $8C $DC $6E
+	repeat_start
+	drums_off
+	note $2B $0C $55 $42
+	note $2E $18 $50 $42
+	note $2B $0C . $42
+	note $30 $18 $55 $49
+	note $2B $0C $50 $42
+	note $31 $18 . $49
+	note $2B $0C $4B $42
+	note $32 $18 $55 $54
+	note $29 . $46 $42
+	note $2A . . $42
+	repeat
+	repeat
+	repeat
+	repeat
+	repeat
+	repeat
+	repeat
+	repeat
+	inst $15
+	pan $0C
+	envelope $8C $DC $6E
+	channel_volume $73
+	envelope $96 $DC $64
+	drums_off
+	call L4258
+	note $34 . $3C $25
+	call L42BF
+	note $28 . $1C $42
+	call L42E6
+	note $34 $18 $5A $43
+	note $32 $0C $3C $3C
+	note $34 . . $3C
+	call L42FC
+	channel_volume $7F
+	note $32 . $62 $43
+	note $34 . $3C $3F
+	note $28 . $23 $2D
+	note $32 . $62 $43
+	note $34 . $3C $3D
+	note $28 . $23 $2D
+	note $32 . $62 $43
+	note $34 . $3C $3F
+	note $28 . $23 $2D
+	call L4450
+	channel_volume $55
+	inst $15
+	call L4142
+	channel_volume $7F
+	call L41BD
+	inst $12
+	pan $0A
+	channel_volume $75
+	envelope $96 $DE $00
+	note $32 $0C $63 $3F
+	call L41E1
+	note $29 $0C . $3F
+	envelope $96 $D6 $28
+	note $28 $C0 $65 $3F
+	rest $90
+	drums_on
+	note $01 $30 $63 $48
+	drums_off
+	inst $15
+	pan $0C
+	channel_volume $5A
+	envelope $96 $DC $64
+	repeat_start
+	drums_off
+	note $34 $0D $5A $3C
+	note $28 $17 $4B $50
+	call L4466
+	repeat
+	repeat
+	repeat
+	repeat
+	channel_volume $64
+	repeat
+	repeat
+	repeat
+	repeat
+	channel_volume $5A
+	envelope $96 $D2 $64
+	drums_off
+	call L4493
+	inst $13
+	pan $09
+	channel_volume $1C
+	envelope $96 $D2 $FF
+	note $2E $0C $37 $3F
+	note $3F . . $3F
+	note $3A . . $3F
+	note $2E . . $3F
+	note $44 . $3C $3F
+	note $3F . $37 $3F
+	note $2E . . $3F
+	note $3A . $2D $3F
+	channel_volume $30
+	note $44 . $37 $3F
+	note $2E . $3C $3F
+	note $3F . $37 $3F
+	note $3A . . $3F
+	note $2E . . $3F
+	note $44 . . $3F
+	note $3F . $3C $3F
+	note $2E . $46 $3F
+	jump L3BBA
+	.byte $FF
+L3D46:
+	tempo $75
+	channel_volume $69
+	repeat_start
+	drums_on
+	note $01 $0C $63 $28
+	call L4525
+	note $01 . . $3F
+	call L4538
+	note $00 $18 . $63
+	note $00 . . $63
+	note $01 $0C . $36
+	note $01 $18 . $38
+	note $01 $07 . $12
+	note $01 . . $14
+	note $01 $0B . $4B
+	note $00 $23 . $63
+	note $0E $0C . $48
+	note $0F $18 . $3F
+	note $11 $0C . $38
+	note $01 . . $28
+	call L4525
+	note $01 . . $2D
+	call L4538
+	repeat
+	call L4543
+	note $01 $18 . $20
+	note $01 $0C . $38
+	note $00 . . $63
+	note $01 $18 . $38
+	note $00 $0C . $63
+	note $01 . . $39
+	note $01 . . $2D
+	note $0F . . $31
+	note $11 . . $38
+	drums_off
+	repeat
+	call L4543
+	note $01 $18 . $1D
+	note $01 $0C . $43
+	note $00 . . $63
+	note $01 $18 . $38
+	note $00 $0C . $46
+	note $01 . . $32
+	note $00 . . $3C
+	note $01 . . $46
+	note $01 . . $50
+	drums_off
+	repeat_start
+	drums_on
+	note $01 $18 $63 $38
+	note $00 . . $63
+	note $01 . . $38
+	note $00 $0C . $58
+	note $01 $18 . $24
+	note $01 . . $3F
+	note $00 $0C . $63
+	note $01 . . $2D
+	note $01 . . $1B
+	note $01 . . $26
+	note $01 . . $22
+	repeat
+	repeat
+	repeat
+	repeat
+	repeat
+	repeat
+	repeat
+	drums_on
+	note $01 $0C $63 $38
+	note $01 . . $38
+	note $00 $18 . $63
+	note $01 . . $38
+	note $01 $0C . $1B
+	note $01 . . $38
+	note $00 . . $63
+	note $01 . . $38
+	note $01 $18 . $38
+	note $01 $0C . $1F
+	note $01 . . $24
+	note $01 . . $34
+	note $01 . . $43
+	drums_off
+	tempo $75
+	repeat_start
+	call L454E
+	note $00 $24 . $58
+	note $01 $18 . $38
+	note $00 . . $63
+	repeat
+	drums_on
+	note $00 $18 $63 $63
+	note $00 $0C . $2A
+	note $00 . . $48
+	note $01 $18 . $38
+	note $00 $0C . $23
+	note $00 $18 . $50
+	note $00 $24 . $63
+	note $01 $18 . $38
+	note $01 $0C . $1B
+	note $01 . . $26
+	repeat
+	drums_on
+	note $00 $18 $63 $58
+	note $00 . . $63
+	note $01 $0C . $3C
+	note $00 $18 . $3F
+	note $00 . . $63
+	note $00 $0C . $50
+	note $00 $18 . $63
+	note $01 . . $38
+	note $01 . . $38
+	drums_off
+	call L454E
+	note $00 $0C . $5A
+	note $00 . . $12
+	note $00 . . $50
+	note $01 $24 . $38
+	note $00 $0C . $44
+	note $00 $18 . $63
+	note $00 . . $63
+	note $01 $0C . $38
+	note $00 $18 . $3F
+	note $00 . . $63
+	note $00 . . $50
+	note $00 $0C . $63
+	note $01 $18 . $38
+	note $01 $0C . $28
+	note $01 . . $22
+	note $00 $24 . $58
+	note $00 $0C . $5A
+	note $01 $18 . $38
+	note $00 $24 . $48
+	note $00 $0C . $63
+	note $00 . . $12
+	note $00 . . $48
+	note $01 $24 . $38
+	note $00 $0C . $48
+	note $00 $18 . $58
+	note $00 . . $63
+	note $01 . . $38
+	note $01 $0C . $1B
+	note $01 . . $2D
+	note $00 . . $50
+	note $00 . . $63
+	note $00 $18 . $46
+	note $01 . . $38
+	note $01 $0C . $23
+	note $01 . . $1C
+	note $01 . . $28
+	call L4525
+	note $01 . . $2D
+	call L4538
+	drums_off
+	drums_on
+	note $00 $18 $63 $63
+	note $00 $0C . $32
+	note $00 . . $50
+	note $01 $24 . $38
+	note $00 $18 . $50
+	note $00 . . $63
+	note $00 $0C . $50
+	call L4560
+	note $00 . . $50
+	note $01 . . $38
+	note $00 $18 . $2A
+	note $00 . . $32
+	note $00 . . $5A
+	note $00 $0C . $48
+	note $01 $18 . $38
+	note $01 $0C . $28
+	note $01 . . $1E
+	note $00 $18 . $63
+	note $00 $0C . $32
+	note $00 . . $46
+	note $01 $24 . $38
+	note $00 $18 . $50
+	note $00 $0C . $38
+	note $00 $18 . $38
+	note $01 . . $38
+	note $01 $0C . $2D
+	note $01 . . $1E
+	note $0E . . $2D
+	note $0F . . $36
+	note $00 . . $63
+	note $0F . . $2D
+	note $10 . . $36
+	note $00 . . $63
+	note $0F . . $2D
+	note $10 . . $36
+	note $00 . . $63
+	note $10 . . $2D
+	note $11 . . $36
+	note $00 . . $63
+	note $01 $18 . $28
+	note $01 $0C . $37
+	note $01 . . $46
+	drums_off
+	drums_on
+	note $01 $0C $63 $38
+	note $00 $18 . $32
+	note $00 . . $63
+	note $00 . . $2D
+	note $00 . . $63
+	note $01 $0C . $2D
+	note $01 . . $16
+	note $00 . . $63
+	note $0E $18 . $36
+	note $10 $0C . $2D
+	note $11 . . $24
+	note $00 $18 . $63
+	note $00 $0C . $46
+	note $00 . . $28
+	note $01 $24 . $3C
+	note $00 $18 . $63
+	note $00 . . $46
+	note $00 $0C . $63
+	note $01 $18 . $44
+	note $01 $0C . $19
+	note $01 . . $0F
+	note $00 $18 . $63
+	note $00 $0C . $3C
+	note $00 . . $32
+	note $01 $18 . $3F
+	note $13 $07 . $36
+	note $13 . . $24
+	note $00 $0A $5A $63
+	note $01 $24 $50 $55
+	note $00 $0C $63 $44
+	channel_volume $7F
+	note $02 $30 . $78
+	channel_volume $69
+	drums_off
+	drums_on
+	note $00 $24 $63 $58
+	note $00 . . $63
+	note $0A $18 . $2D
+	note $00 $24 . $58
+	note $00 $18 . $46
+	note $00 $24 . $63
+	note $00 . . $58
+	note $00 . . $63
+	note $0A $18 . $2D
+	note $00 $24 . $58
+	note $00 $18 . $46
+	note $00 $0C . $63
+	note $01 . . $19
+	note $01 . . $2B
+	note $00 $18 . $50
+	note $00 $0C . $2D
+	note $00 $24 . $63
+	note $0A $18 . $28
+	note $00 $0C . $50
+	note $00 $18 . $28
+	note $00 . . $50
+	note $00 $0C . $63
+	note $01 . . $19
+	note $01 . . $2B
+	note $00 $18 . $63
+	note $00 $0C . $28
+	note $00 $24 . $50
+	note $0A $0C . $28
+	note $00 . . $58
+	note $00 . . $32
+	note $00 . . $2D
+	note $00 . . $50
+	note $01 $18 . $1F
+	note $01 . . $31
+	note $01 $0C . $46
+	drums_off
+	tempo $75
+	drums_on
+	note $00 $18 $63 $63
+	note $00 $0C . $28
+	note $00 . . $3C
+	note $01 $24 . $38
+	note $00 $18 . $63
+	note $00 . . $3F
+	note $00 $0C . $50
+	note $01 $24 . $38
+	note $00 $0C . $46
+	note $00 $18 . $63
+	note $00 $0C . $28
+	note $00 . . $3C
+	note $01 . . $38
+	note $00 $18 . $5A
+	note $00 . . $44
+	note $00 . . $50
+	note $00 $0C . $3C
+	note $01 $24 . $38
+	note $00 $0C . $3C
+	note $00 $18 . $5A
+	note $00 $0C . $28
+	note $00 . . $3C
+	note $01 $18 . $38
+	note $00 $24 . $63
+	note $00 $0C . $32
+	note $00 $18 . $50
+	call L4560
+	note $00 . . $3C
+	note $01 . . $38
+	note $00 $18 . $50
+	note $01 $0C . $24
+	note $00 . . $3C
+	note $01 . . $28
+	note $01 . . $1E
+	note $00 . . $46
+	note $01 . . $38
+	note $01 . . $3C
+	note $01 . . $46
+	note $01 . . $4B
+	drums_off
+	drums_on
+	note $00 $24 $63 $63
+	note $00 $0C . $37
+	call L456D
+	note $00 . . $37
+	note $00 . . $63
+	note $00 $0C . $28
+	note $00 . . $3C
+	note $01 $24 . $38
+	note $00 $18 . $50
+	note $00 . . $5A
+	note $00 $0C . $46
+	note $01 $18 . $38
+	note $01 $0C . $28
+	note $01 . . $1E
+	note $00 $24 . $5A
+	note $00 $0C . $42
+	call L456D
+	note $00 . . $50
+	note $00 . . $5A
+	note $00 $0C . $28
+	note $00 . . $3C
+	note $01 . . $38
+	note $00 $18 . $50
+	note $00 $0C . $28
+	note $00 . . $3C
+	note $00 $18 . $5A
+	note $00 $0C . $50
+	note $01 . . $1F
+	note $01 . . $28
+	note $01 . . $36
+	note $01 . . $3F
+	drums_off
+	inst $13
+	detune $10
+	channel_volume $19
+	envelope $96 $D2 $FF
+	note $2E $0C $63 $38
+	note $3F . . $38
+	note $3A . . $38
+	note $2E . . $38
+	note $44 . . $38
+	note $3F . . $38
+	note $2E . . $38
+	note $3A . . $38
+	channel_volume $55
+	detune $00
+	envelope $96 $D2 $1E
+	drums_on
+	note $01 . . $1E
+	note $01 . . $32
+	note $01 $30 . $43
+	note $01 $0C . $2D
+	note $01 . . $38
+	drums_off
+	jump L3D46
+	.byte $FF
+L40C3:
+	note $3E . $55 $4A
+	note $41 . $3C $4A
+	note $3E . $37 $4A
+	note $41 . $46 $4A
+	note $3E . $3C $4A
+	note $41 . $37 $4A
+	note $3E . $55 $4A
+	end
+L40D9:
+	note $3E . $32 $4A
+	note $41 . $46 $4A
+	note $3E . $4B $4A
+	note $41 . $3C $4A
+	end
+L40E6:
+	note $49 $24 $63 $41
+	note $55 . . $3D
+	note $54 $60 $5F $3D
+	note $53 $18 $63 $3D
+	note $52 $24 . $3F
+	note $51 . . $3F
+	note $4A $78 $5A $47
+	end
+L40FE:
+	note $43 $24 $55 $3F
+	note $4F . . $3F
+	note $4D $0C $4B $3F
+	note $4F . . $3F
+	note $4D . $50 $3F
+	note $48 . . $3F
+	note $43 . . $3F
+	note $41 . . $3F
+	note $3C . $5A $3F
+	note $37 . $4B $3F
+	note $35 . $5A $3F
+	note $30 . $50 $3F
+	note $36 . $5A $3F
+	note $37 . $50 $3F
+	note $3C . $4B $3F
+	note $42 . $50 $3F
+	note $43 . . $3F
+	note $48 . . $3F
+	note $3C . . $3F
+	note $42 . . $3F
+	note $43 . . $3F
+	note $48 . $4B $3F
+	note $4E . $50 $3F
+	note $4F . . $3F
+	note $48 . . $3F
+	note $4E . . $3F
+	end
+L4142:
+	note $2B $18 $50 $45
+	note $29 $0C $3C $3C
+	note $2B . . $3C
+	note $2B $18 $50 $3F
+	note $29 $0C $3C $3C
+	note $2B $18 $4E $47
+	note $29 $0C $46 $3D
+	note $2A . . $3D
+	note $2B . . $3D
+	note $24 . $50 $3F
+	note $25 . $4B $3F
+	note $26 $18 $5A $3F
+	note $2B . $52 $43
+	note $29 $0C $3C $3D
+	note $2B . . $3D
+	note $2B $18 $4B $3F
+	note $29 $0C $3F $34
+	note $2B $18 $50 $43
+	note $29 $0C $46 $3C
+	note $2A . . $3C
+	note $2B . . $3C
+	note $2E . $5A $3D
+	note $30 . $4B $3D
+	note $35 $18 $50 $3F
+	note $2B . . $43
+	note $29 $0C $3C $3D
+	note $2B . . $3D
+	note $2B $18 $50 $3F
+	note $29 $0C $46 $3C
+	note $2B . $4B $3D
+	note $2B . $3C $44
+	note $24 . $41 $3D
+	note $25 . $50 $3D
+	note $26 . $4B $3D
+	note $35 . $32 $43
+	note $29 . $50 $3F
+	note $35 . $65 $5F
+	note $37 . $58 $5F
+	end
+L41BD:
+	note $2B . $3C $3F
+	note $37 $18 $50 $3F
+	note $2A $0C $3C $3F
+	note $36 $18 $50 $3F
+	note $29 $0C $3C $3F
+	note $35 $18 $50 $3F
+	note $28 $0C $3C $3F
+	note $34 $18 $50 $3F
+	note $34 . . $43
+	note $33 . . $43
+	end
+L41E1:
+	note $31 $18 . $3F
+	note $2F . . $3F
+	note $2E . . $3F
+	note $2D . . $3F
+	note $2C . . $3F
+	note $2B . . $3F
+	note $2A . . $3F
+	end
+L41F1:
+	note $2E . $46 $3F
+	note $2F . . $3F
+	note $32 . . $3F
+	note $32 $0C $3C $3F
+	note $32 . . $3F
+	note $33 . . $3F
+	note $34 . $46 $3F
+	note $28 $18 . $3F
+	note $2B . . $3F
+	note $2D . . $3F
+	end
+L420B:
+	note $32 . . $3F
+	note $32 $0C $3C $3F
+	note $32 . . $3F
+	note $33 . . $3F
+	end
+L4216:
+	note $2D . $50 $3F
+	note $2E . . $3F
+	note $2F . . $3F
+	note $32 . $5A $3F
+	end
+L4221:
+	note $2D . . $3F
+	note $2E . . $3F
+	note $2F . . $3F
+	note $32 . $5A $3F
+	end
+L422B:
+	note $27 $18 . $28
+	note $28 . . $28
+	note $2B . . $28
+	note $2D . . $28
+	note $2E . . $28
+	note $2F $0C . $28
+	note $26 . . $28
+	note $27 . . $28
+	end
+L423E:
+	drums_off
+	note $2B $0C $5A $3F
+	note $2E $18 $50 $3F
+	note $2B $0C . $3F
+	end
+L424B:
+	inst $13
+	channel_volume $3C
+	envelope $9D $DE $00
+	note $2B $0C $50 $3F
+	end
+L4258:
+	note $34 $18 $5A $3F
+	note $32 $0C $3C $39
+	note $34 . . $39
+	note $34 $18 $63 $3F
+	note $32 $0C $4B $3C
+	note $34 . $5A $3F
+	note $28 . $3C $25
+	note $32 . $4B $3D
+	note $33 . . $3D
+	note $34 . $5A $3F
+	note $34 . $32 $30
+	note $2D . $5A $3C
+	note $2E . $4B $3C
+	note $2F . $50 $3C
+	note $34 $18 $5F $3F
+	note $32 $0C $3C $3C
+	note $34 . . $3C
+	note $34 $18 $55 $3F
+	note $32 $0C $3C $3A
+	note $34 $18 $5F $42
+	note $32 $0C $4D $3C
+	note $33 . . $3E
+	note $34 . . $3E
+	note $37 . $50 $3F
+	note $39 . . $3F
+	note $3E $18 . $3F
+	note $34 . $5F $3F
+	note $32 $0C $3C $3C
+	note $34 . . $3C
+	note $34 $18 $58 $3F
+	note $32 $0C $3C $3C
+	note $34 . $50 $3F
+	end
+L42BF:
+	note $32 . $4B $3F
+	note $33 . $50 $3F
+	note $34 . $41 $3F
+	note $2D . $50 $3F
+	note $2E . . $3F
+	note $2F $18 $5A $3F
+	note $34 . $50 $3F
+	note $32 $0C $3C $3C
+	note $34 . . $3C
+	note $34 $18 $50 $3F
+	note $32 $0C $3C $3C
+	note $34 . $5A $3F
+	end
+L42E6:
+	note $32 . $4B $3C
+	note $33 . $50 $3F
+	note $34 . . $3F
+	note $3E . . $40
+	note $34 . $4B $3C
+	note $3E $0F $65 $5A
+	note $40 $09 $50 $4A
+	end
+L42FC:
+	note $34 $18 $5A $3F
+	note $32 $0C $3C $3C
+	note $34 . $5F $3F
+	note $28 . $3C $25
+	note $32 . $55 $3C
+	note $33 . $4B $3C
+	note $34 . . $3F
+	note $2D . $50 $3F
+	note $2E . $4B $3F
+	note $2F $18 $50 $3F
+	note $34 . $5F $3F
+	note $32 $0C $3C $3C
+	note $34 . . $3C
+	note $34 $18 $4B $3F
+	note $32 $0C . $3C
+	note $34 $18 $5F $42
+	note $32 $0C $4D $3D
+	note $33 . . $3D
+	note $34 . . $3D
+	note $37 . $50 $3E
+	note $39 . $4B $3C
+	note $3E $18 $50 $3D
+	note $34 . $5A $3F
+	note $32 $0C $3C $3C
+	note $34 . . $3C
+	note $34 $18 $5A $3F
+	note $32 $0C $50 $3C
+	note $34 . $5F $47
+	note $28 . $3C $2D
+	note $32 . $50 $3D
+	note $33 . . $3D
+	note $34 . . $3D
+	note $2D . . $3D
+	note $2E . $46 $3D
+	note $2F $18 $5F $3F
+	note $34 . . $40
+	note $32 $0C $3C $3C
+	note $34 . . $3C
+	note $28 . $4B $43
+	note $32 . . $43
+	note $32 . $2D $21
+	note $34 $18 $5F $43
+	note $28 $0C $4B $40
+	note $2B . . $40
+	note $28 . . $40
+	note $2D . . $40
+	note $28 . . $40
+	note $2E . . $40
+	note $2F . . $40
+	end
+L438E:
+	note $3A . $46 $3F
+	note $3B . . $3F
+	note $3E . . $3F
+	note $3E $0C . $3F
+	note $3E . . $3F
+	note $3F . . $3F
+	note $40 . . $3F
+	note $34 $18 . $3F
+	note $37 . . $3F
+	note $39 . . $3F
+	end
+L43A6:
+	note $28 $18 . $3F
+	note $2B . . $3F
+	note $2D . . $3F
+	note $2E . . $3F
+	end
+L43B0:
+	note $2F . . $3F
+	note $32 . $50 $3F
+	note $32 $0C $46 $3F
+	note $32 . . $3F
+	note $33 . . $3F
+	end
+L43BE:
+	note $28 $18 $46 $3F
+	note $2B . . $3F
+	note $2D . . $3F
+	note $2E . . $3F
+	end
+L43C9:
+	note $1A $0C $41 $45
+	note $1C $18 . $4D
+	note $1A $0C . $45
+	note $1C $18 . $4D
+	note $1A $0C . $45
+	note $1C $18 . $4D
+	note $1A $0C . $45
+	note $1C $18 . $4D
+	note $1A . $5A $45
+	note $1C . . $4D
+	end
+L43E8:
+	pan $08
+	drums_off
+	note $4D $0C $4B $37
+	pan $0C
+	note $4F . $50 $37
+	pan $09
+	note $43 . $4B $37
+	pan $0B
+	note $48 . . $37
+	end
+L43FE:
+	pan $08
+	note $4A . $50 $37
+	pan $0C
+	note $43 . $46 $37
+	pan $07
+	note $48 . $4B $37
+	pan $0D
+	note $49 . $50 $37
+	pan $08
+	note $43 . $41 $37
+	pan $0C
+	note $48 . $4B $37
+	pan $09
+	note $4A . $50 $37
+	pan $0B
+	note $43 . $46 $37
+	end
+L4427:
+	pan $05
+	pan_fade $60 $0F
+	drums_off
+	note $34 $0C $13 $43
+	note $4C . . $43
+	note $40 . . $43
+	note $34 . . $43
+	note $4A $24 . $43
+	note $34 $0C . $43
+	pan_fade $60 $05
+	note $47 . . $43
+	note $45 . . $43
+	note $34 $18 . $43
+	note $43 $0C . $43
+	note $34 . . $43
+	note $45 $18 . $43
+	end
+L4450:
+	note $32 . $62 $43
+	note $34 . $3C $3F
+	note $28 . $23 $2D
+	note $32 . $5A $40
+	note $28 . $3C $2D
+	note $33 . $65 $5F
+	note $34 . $63 $5F
+	end
+L4466:
+	note $2B $18 $50 $3F
+	note $2D . $4B $3F
+	note $2E . . $3F
+	note $2F . . $3F
+	note $32 . $5A $3F
+	note $32 $0C $4B $3F
+	note $32 . $50 $3F
+	note $33 . $5A $3F
+	end
+L447F:
+	drums_off
+	note $34 $0C $32 $12
+	note $43 . . $12
+	note $3E . . $12
+	note $34 . . $12
+	note $44 . . $12
+	note $3E . . $12
+	note $34 . . $12
+	note $43 . . $12
+	end
+L4493:
+	note $38 $0C $5A $47
+	note $2C $18 $50 $40
+	note $2F . $4B $3F
+	note $31 . $5A $3F
+	note $32 . $62 $3F
+	note $33 . . $3F
+	note $36 . . $3F
+	note $36 $0C $4B $3D
+	note $36 . . $3D
+	note $37 . $5A $3D
+	note $37 . . $44
+	note $2B $18 $50 $3F
+	note $2E . $5A $3F
+	note $30 . . $3F
+	note $31 . $62 $3F
+	note $32 . . $3F
+	note $35 . . $3F
+	note $35 $0C $4B $3D
+	note $35 . . $3C
+	note $36 . $50 $3C
+	note $38 . $5A $44
+	note $2C $18 . $3F
+	note $2F . . $3F
+	note $31 . . $3F
+	note $32 . $62 $3F
+	note $33 . . $3F
+	note $36 . . $3F
+	note $36 $0C $4D $3F
+	note $36 . . $3F
+	note $37 . $5A $3F
+	note $37 . . $44
+	note $2B $18 . $40
+	note $31 . . $3D
+	note $32 . . $3D
+	note $36 $0C . $3D
+	note $37 . . $40
+	note $2B $18 . $3D
+	note $31 . . $3D
+	note $32 . . $3D
+	note $37 $0C . $3F
+	end
+L44FF:
+	note $32 $0C $41 $45
+	note $34 $18 . $4D
+	note $32 $0C . $45
+	note $34 $18 . $4D
+	note $32 $0C . $45
+	note $34 $18 . $4D
+	note $32 $0C . $45
+	note $34 $18 . $4D
+	note $32 . $5A $45
+	end
+L451C:
+	note $34 . . $37
+	note $37 . . $37
+	note $39 . . $37
+	note $3A . . $37
+	end
+L4525:
+	note $01 $18 . $3F
+	note $01 $0C . $28
+	note $01 $18 . $3F
+	note $01 $0C . $28
+	note $01 $18 . $3F
+	note $01 $0C . $24
+	end
+L4538:
+	note $01 . . $36
+	note $01 $18 . $3F
+	note $01 $0C . $2D
+	note $01 . . $36
+	end
+L4543:
+	drums_on
+	note $00 $18 $63 $63
+	note $00 . . $63
+	note $01 $0C . $38
+	end
+L454E:
+	drums_on
+	note $00 $24 $63 $58
+	note $00 $0C . $63
+	note $01 $18 . $38
+	note $00 $0C . $2A
+	note $00 $18 . $63
+	end
+L4560:
+	note $01 $24 . $38
+	note $00 $0C . $3C
+	note $00 $18 . $63
+	note $00 $0C . $28
+	end
+L456D:
+	note $01 $18 . $38
+	note $00 $24 . $50
+	note $00 $18 . $46
+	note $00 $0C . $50
+	note $01 $18 . $38
+	end
+	.zero 91

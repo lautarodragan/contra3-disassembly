@@ -1,0 +1,155 @@
+# spc_song_konami_logo: the song of the Konami logo (sound $72).
+# Sequences of the sound driver as text (tools/spcseq.py; book: Sound driver).
+# The build assembles this file; every line is exactly its bytes.
+at $3000
+	song L3010 L302A L3044 L305E L308E L30A2 L30C5 L30EF
+L3010:
+	tempo $56
+	channel_volume $0A
+	inst $00
+	envelope $8C $0D $00
+	detune $04
+	rest $18
+	call L3112
+	loop1_start
+	call L312D
+	loop1 $06 $FA $00
+	end
+L302A:
+	tempo $56
+	channel_volume $0C
+	inst $00
+	envelope $8C $0D $00
+	detune $06
+	rest $12
+	call L3112
+	loop1_start
+	call L312D
+	loop1 $06 $FA $00
+	end
+L3044:
+	tempo $56
+	channel_volume $0E
+	inst $00
+	envelope $8C $0D $00
+	detune $09
+	rest $0C
+	call L3112
+	loop1_start
+	call L312D
+	loop1 $06 $FA $00
+	end
+L305E:
+	tempo $56
+	channel_volume $10
+	inst $00
+	envelope $8C $0D $00
+	detune $0C
+	rest $06
+	note $3B . $63 $46
+	note $3C . . $4B
+	note $40 . . $50
+	note $43 . . $55
+	note $47 . . $5A
+	note $48 . . $5F
+	note $4C . . $63
+	note $48 . . $5F
+	note $47 . . $5A
+	note $43 . . $55
+	note $40 . . $50
+	note $3C . . $4B
+	loop1_start
+	call L312D
+	loop1 $06 $FA $00
+	end
+L308E:
+	call L3140
+	note $3B $18 $55 $46
+	note $47 . . $5A
+	note $47 . . $5A
+	loop1_start
+	call L312D
+	loop1 $06 $FA $00
+	end
+L30A2:
+	call L3140
+	rest $06
+	note $3C $18 $55 $4B
+	note $48 . . $5F
+	loop1_start
+	note $43 $03 $65 $46
+	note $43 . . $50
+	note $43 . . $5F
+	note $43 . . $50
+	note $43 . . $46
+	note $43 . . $3A
+	note $43 . . $30
+	note $43 . . $3A
+	loop1 $06 $FA $00
+	end
+L30C5:
+	tempo $56
+	channel_volume $69
+	inst $00
+	envelope $9C $A3 $00
+	rest $0C
+	note $40 $18 $55 $4B
+	note $4C . . $5F
+	loop1_start
+	note $40 $03 $65 $46
+	note $40 . . $50
+	note $40 . . $5F
+	note $40 . . $50
+	note $40 . . $46
+	note $40 . . $3A
+	note $40 . . $30
+	note $40 . . $3A
+	loop1 $06 $FA $00
+	end
+L30EF:
+	call L3140
+	rest $12
+	note $43 $18 $55 $55
+	note $48 . . $5F
+	loop1_start
+	note $3C $03 $65 $46
+	note $3C . . $50
+	note $3C . . $5F
+	note $3C . . $50
+	note $3C . . $46
+	note $3C . . $3A
+	note $3C . . $30
+	note $3C . . $3A
+	loop1 $06 $FA $00
+	end
+L3112:
+	note $3B $06 $63 $46
+	note $3C . . $4B
+	note $40 . . $50
+	note $43 . . $55
+	note $47 . . $5A
+	note $48 . . $5F
+	note $4C . . $63
+	note $48 . . $5F
+	note $47 . . $5A
+	note $43 . . $55
+	note $40 . . $50
+	note $3C . . $4B
+	end
+L312D:
+	note $3B $03 $65 $46
+	note $3B . . $50
+	note $3B . . $5F
+	note $3B . . $50
+	note $3B . . $46
+	note $3B . . $3A
+	note $3B . . $30
+	note $3B . . $3A
+	end
+L3140:
+	tempo $56
+	channel_volume $64
+	inst $00
+	envelope $9C $A3 $00
+	end
+	.zero 7861

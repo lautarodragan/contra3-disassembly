@@ -17,7 +17,8 @@ assets/gfx/<label>.png       graphics (VRAM streams, td_sprite_tiles_16)
 assets/gfx/<label>.tilemap   tilemaps loaded to VRAM (text)
 assets/wram/<label>.png      graphics decompressed to WRAM, copied to VRAM later
 assets/wram/<label>.bin      the other streams decompressed to WRAM (maps, metatiles)
-assets/sound/<label>.bin     sound CPU data (the driver, the songs)
+assets/sound/<label>.bin     the sound driver (SPC700 code)
+assets/sound/<label>.seq     the songs (sequences as text)
 assets/sound/spc_samples_<bank>.txt  sample lists: the samples of a block, their loops
 assets/sound/samples/<name>.brr      the sound samples (BRR), one per file
 assets/palettes/<label>.gpl  palettes (GIMP palettes)
@@ -71,7 +72,9 @@ sound/spc_sample_dir_stage1      raw    dir=sound/spc_samples_common,sound/spc_s
 - with `brr=list`, it is the BRR samples that the sample list
   `assets/<path>.txt` names, one after the other; with `dir=PATH,...`, the
   sound CPU's sample directory made from those sample lists (see
-  [Sound: samples](sound.md#samples));
+  [Sound: samples](sound.md#samples)); with `seq=text`, the song
+  `assets/<path>.seq` assembled (see
+  [Sound driver: songs as text](sound-driver.md#songs-as-text));
 - `max=`: the most bytes the data may have (hex, `max=$0400`), what fits
   where the game puts it (see [Size limits](#size-limits)).
 
@@ -254,11 +257,12 @@ The [Graphics gallery](gallery.md) shows all 110.
   metatiles of the side-view stages and the block maps and block
   definitions of the top-down ones (see
   [WRAM streams of bank $7E](#wram-streams-of-bank-7e));
-- the sound CPU's driver and its 14 songs (11 compressed, 3 not); what
-  each block is and where it goes in the sound CPU's memory is in
-  [Sound](sound.md#sound-cpu-memory). The other 16 sound blocks, the
-  samples and their directories, are made from one BRR file per sample
-  and the sample lists ([Sound: samples](sound.md#samples)).
+- the sound CPU's driver, `spc_driver` (code; what each sound block is
+  and where it goes in the sound CPU's memory is in
+  [Sound](sound.md#sound-cpu-memory)). The 14 songs are text
+  ([Sound driver: songs as text](sound-driver.md#songs-as-text)), and the
+  samples and their directories are made from one BRR file per sample and
+  the sample lists ([Sound: samples](sound.md#samples)).
 
 ## Tilemaps
 

@@ -1,0 +1,229 @@
+# spc_song_stage_clear: the song of the stage clear screen (sound $6A).
+# Sequences of the sound driver as text (tools/spcseq.py; book: Sound driver).
+# The build assembles this file; every line is exactly its bytes.
+at $3000
+	song L300C L306F L30E0 L3124 L317B L31BF
+L300C:
+	echo $5D $46 $50
+	echo_setup $05 $28 $02
+	tempo $70
+	inst $0D
+	channel_volume $4B
+	detune $01
+	pan $07
+	detune $FC
+	envelope $82 $D2 $00
+	note $40 $0C $64 $55
+	note $40 . . $55
+	note $40 . . $55
+	envelope $82 $D2 $FF
+	note $40 $24 $32 $55
+	envelope $82 $D2 $00
+	note $42 $0C $64 $55
+	call L320E
+	note $3E . . $55
+	note $3E . . $55
+	envelope $82 $D2 $FF
+	note $3E $18 $32 $55
+	echo $3F $46 $50
+	envelope $82 $D2 $FF
+	inst $0D
+	pan $0D
+	channel_volume $62
+	detune $02
+	tempo_fade $24 $4C
+	note $39 $0C $64 $55
+	note $3B . . $55
+	note $3E . . $55
+	envelope $96 $D2 $14
+	note $40 $90 $32 $55
+	end
+L306F:
+	tempo $70
+	channel_volume $64
+	pan $15
+	envelope $96 $D2 $FF
+	pan $08
+	repeat_start
+	drums_on
+	note $01 $0C $64 $44
+	repeat
+	pan $0C
+	repeat
+	pan $08
+	repeat
+	pan $0C
+	drums_on
+	note $01 $0C $64 $4B
+	pan $0B
+	transpose $F1
+	note $01 $18 . $4B
+	pan $08
+	transpose $00
+	note $01 $04 . $3C
+	note $01 $08 . $3C
+	pan $0C
+	repeat
+	pan $08
+	repeat
+	pan $0C
+	repeat
+	pan $08
+	repeat
+	pan $0C
+	repeat
+	pan $08
+	repeat
+	pan $0C
+	drums_on
+	note $01 $0C $64 $3C
+	pan $0B
+	transpose $F1
+	note $01 . . $4B
+	transpose $00
+	inst $0D
+	channel_volume $44
+	pan $07
+	detune $01
+	envelope $96 $D2 $FF
+	tempo_fade $24 $4C
+	drums_off
+	note $34 . . $55
+	note $36 . . $55
+	note $39 . . $55
+	envelope $96 $D2 $14
+	note $3B $90 $32 $55
+	end
+L30E0:
+	tempo $70
+	inst $10
+	detune $FC
+	channel_volume $23
+	pan $05
+	envelope $96 $D2 $00
+	note $39 $0C $5A $55
+	note $39 . . $55
+	note $39 . . $55
+	envelope $96 $D2 $FF
+	note $39 $24 $32 $55
+	envelope $96 $D2 $00
+	note $3B $0C $5A $55
+	note $3B . . $55
+	note $3B . . $55
+	note $3B . . $55
+	note $37 . . $55
+	note $37 . . $55
+	note $37 . . $55
+	envelope $96 $D2 $FF
+	note $37 $18 $32 $55
+	inst $12
+	detune $02
+	pan $02
+	call L3217
+	end
+L3124:
+	tempo $70
+	inst $10
+	detune $04
+	channel_volume $23
+	pan $0F
+	envelope $96 $D2 $00
+	note $40 $0C $5A $55
+	note $40 . . $55
+	note $40 . . $55
+	envelope $96 $D2 $FF
+	note $40 $24 $32 $55
+	envelope $96 $D2 $00
+	note $42 $0C $5A $55
+	call L320E
+	note $3E $0B . $55
+	note $3E $0C . $55
+	envelope $96 $D2 $FF
+	note $3E $18 $32 $55
+	detune $0A
+	channel_volume $58
+	inst $12
+	pan $06
+	envelope $96 $D2 $FF
+	tempo_fade $24 $4C
+	note $39 $0C $5A $4E
+	note $3B . . $4E
+	note $3E . . $4E
+	envelope $96 $D2 $14
+	note $34 $91 $3C $51
+	end
+L317B:
+	tempo $70
+	inst $10
+	channel_volume $23
+	detune $FE
+	pan $0B
+	envelope $96 $D2 $00
+	note $3D $0C $5A $55
+	note $3D . . $55
+	note $3D . . $55
+	envelope $96 $D2 $FF
+	note $3D $24 $32 $55
+	envelope $96 $D2 $00
+	note $3F $0C $5A $55
+	note $3F . . $55
+	note $3F . . $55
+	note $3F . . $55
+	note $3B . . $55
+	note $3B . . $55
+	note $3B . . $55
+	envelope $96 $D2 $FF
+	note $3B $18 $32 $55
+	inst $12
+	detune $FD
+	pan $13
+	call L3217
+	end
+L31BF:
+	tempo $70
+	inst $13
+	channel_volume $78
+	detune $FC
+	envelope $9D $B4 $C8
+	note $28 $0C $5A $55
+	note $28 . . $55
+	note $28 . . $55
+	note $28 $24 $32 $55
+	note $28 $0C $5A $55
+	note $28 . . $55
+	note $28 . . $55
+	note $28 . . $55
+	note $28 . . $55
+	note $28 . . $55
+	note $28 . . $55
+	note $28 $18 $50 $55
+	detune $05
+	channel_volume $28
+	inst $05
+	pan $06
+	envelope $9D $78 $FF
+	tempo_fade $24 $4C
+	note $45 $0C . $36
+	note $47 . . $36
+	note $4A . . $36
+	envelope $9D $78 $14
+	bend $01 $02 $03
+	note $4C $90 $3C $37
+	end
+L320E:
+	note $42 . . $55
+	note $42 . . $55
+	note $42 . . $55
+	note $3E . . $55
+	end
+L3217:
+	channel_volume $64
+	envelope $96 $D2 $FF
+	tempo_fade $24 $4C
+	note $2D $0C $64 $44
+	note $2F . . $44
+	note $32 . . $44
+	envelope $96 $D2 $14
+	note $28 $90 $3C $51
+	end
+	.byte $00

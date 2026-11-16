@@ -29,7 +29,8 @@ build/assets/<path>.bin.  `max` is the largest the data may be, in bytes
 `limits`).  With brr=list the data is the BRR samples that the sample list
 assets/<path>.txt names (assets/sound/samples/*.brr, one after the other);
 with dir=PATH,PATH... a sound CPU sample directory made from those sample
-lists (assets/PATH.txt each; tools/brr.py).
+lists (assets/PATH.txt each; tools/brr.py).  With seq=text the data is the
+sound driver's sequences in the text assets/<path>.seq (tools/spcseq.py).
 
 ca65 looks the included paths up in INCLUDE_DIRS (assets/, then
 build/assets/), so every assembly of src/ (the Makefile, tools/srcmap.py,
@@ -66,6 +67,7 @@ import snesgfx  # noqa: E402
 import snesmap  # noqa: E402
 import snespal  # noqa: E402
 import brr  # noqa: E402
+import spcseq  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
 ASSETS = "assets"
@@ -126,7 +128,12 @@ class Asset:
     @property
     def converted(self):
         """True if the build converts the source to the data."""
-        return bool(self.png or self.gpl or self.tilemap or self.samples)
+        return bool(self.png or self.gpl or self.tilemap or self.samples or self.seq)
+
+    @property
+    def seq(self):
+        """True if the data is a sequence text (seq=text)."""
+        return self.options.get("seq") == "text"
 
     @property
     def source(self):
@@ -134,6 +141,8 @@ class Asset:
         ext = ".png" if self.png else ".gpl" if self.gpl else ".tilemap" if self.tilemap else ".bin"
         if self.samples:
             return os.path.join(ASSETS, self.samples[-1] + ".txt")
+        if self.seq:
+            return os.path.join(ASSETS, self.path + ".seq")
         return os.path.join(ASSETS, self.path + ext)
 
     @property
@@ -165,6 +174,8 @@ class Asset:
         target = target or self.target
         if target == self.data_source and self.samples:
             return brr.sources(",".join(self.samples)) + ["tools/brr.py"]
+        if target == self.data_source and self.seq:
+            return [self.source, "tools/spcseq.py"]
         if target == self.data_source and self.converted:
             return [self.source]
         return [self.data_source]
@@ -185,6 +196,8 @@ class Asset:
                 raise ValueError(f"{self.source}: {len(words)} colours, the game reads "
                                  f"{self.options['colours']}")
             return snespal.to_bytes(words, self.gpl)
+        if self.seq:
+            return spcseq.build(src)
         if self.samples:
             if "dir" in self.options:
                 return brr.build_dir(self.samples, root)

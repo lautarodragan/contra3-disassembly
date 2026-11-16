@@ -10,6 +10,7 @@
 # text <path>.tilemap (tools/snesmap.py).
 # With brr=list, the BRR samples that the sample list <path>.txt names; with
 # dir=PATH,... the sample directory of those sample lists (tools/brr.py).
+# With seq=text, the sound driver sequences of the text <path>.seq (tools/spcseq.py).
 # max=$NNNN: the most bytes the data may have (decompressed), what fits where
 # the game loads it (tools/asset_limits.py; `python3 tools/assets.py limits
 # --list` says where each comes from).  Book: Assets, Size limits.
@@ -113,10 +114,10 @@ gfx/gfx_1EEBD0                   lz-v1  max=$1000 tilemap=bg
 gfx/gfx_1FE855                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/td_sprite_tiles_16           raw    png=4bpp tiles=192
 sound/spc_sample_dir_boot        raw    dir=sound/spc_samples_common,sound/spc_samples_stage3 max=$0100
-sound/spc_song_boss              raw    max=$2000
-sound/spc_song_heart_boss        raw    max=$2000
+sound/spc_song_boss              raw    max=$2000 seq=text
+sound/spc_song_heart_boss        raw    max=$2000 seq=text
 sound/spc_samples_common         raw    brr=list max=$5F8E
-sound/spc_song_ending            raw    max=$2000
+sound/spc_song_ending            raw    max=$2000 seq=text
 sound/spc_sample_dir_opening     raw    dir=sound/spc_samples_common,sound/spc_samples_opening max=$0100
 sound/spc_sample_dir_stage3      raw    dir=sound/spc_samples_common,sound/spc_samples_stage3 max=$0100
 sound/spc_sample_dir_stage2      raw    dir=sound/spc_samples_common,sound/spc_samples_stage2 max=$0100
@@ -124,24 +125,24 @@ sound/spc_sample_dir_stage1      raw    dir=sound/spc_samples_common,sound/spc_s
 sound/spc_sample_dir_stage4      raw    dir=sound/spc_samples_common,sound/spc_samples_stage4 max=$0100
 sound/spc_sample_dir_stage5      raw    dir=sound/spc_samples_common,sound/spc_samples_stage5 max=$0100
 sound/spc_sample_dir_stage6      raw    dir=sound/spc_samples_common,sound/spc_samples_stage6 max=$0100
-sound/spc_samples_stage6         raw    brr=list max=$2490  # limit: original size, capacity unknown
-sound/spc_samples_opening        raw    brr=list max=$1E96  # limit: original size, capacity unknown
-sound/spc_samples_stage3         raw    brr=list max=$2637  # limit: original size, capacity unknown
-sound/spc_samples_stage2         raw    brr=list max=$26FD  # limit: original size, capacity unknown
-sound/spc_samples_stage1         raw    brr=list max=$2544  # limit: original size, capacity unknown
-sound/spc_samples_stage4         raw    brr=list max=$2178  # limit: original size, capacity unknown
-sound/spc_samples_stage5         raw    brr=list max=$2193  # limit: original size, capacity unknown
+sound/spc_samples_stage6         raw    brr=list max=$2772  # limit: $B08E up to the echo buffer at $D800 (echo delay 5, book: Sound driver)
+sound/spc_samples_opening        raw    brr=list max=$2772  # limit: $B08E up to the echo buffer at $D800 (echo delay 5, book: Sound driver)
+sound/spc_samples_stage3         raw    brr=list max=$2772  # limit: $B08E up to the echo buffer at $D800 (echo delay 5, book: Sound driver)
+sound/spc_samples_stage2         raw    brr=list max=$2772  # limit: $B08E up to the echo buffer at $D800 (echo delay 5, book: Sound driver)
+sound/spc_samples_stage1         raw    brr=list max=$2772  # limit: $B08E up to the echo buffer at $D800 (echo delay 5, book: Sound driver)
+sound/spc_samples_stage4         raw    brr=list max=$2772  # limit: $B08E up to the echo buffer at $D800 (echo delay 5, book: Sound driver)
+sound/spc_samples_stage5         raw    brr=list max=$2772  # limit: $B08E up to the echo buffer at $D800 (echo delay 5, book: Sound driver)
 sound/spc_driver                 lz-v1  max=$2E00
-sound/spc_song_konami_logo       lz-v1  max=$2000
-sound/spc_song_stage_clear       lz-v2  max=$2000
-sound/spc_song_game_over         lz-v1  max=$2000
-sound/spc_song_opening           lz-v2  max=$2000
-sound/spc_song_stage3            lz-v2  max=$2000
-sound/spc_song_stage2            lz-v1  max=$2000
-sound/spc_song_stage1            lz-v2  max=$2000
-sound/spc_song_stage4            lz-v1  max=$2000
-sound/spc_song_stage5            lz-v1  max=$2000
-sound/spc_song_stage6            lz-v2  max=$2000
+sound/spc_song_konami_logo       lz-v1  max=$2000 seq=text
+sound/spc_song_stage_clear       lz-v2  max=$2000 seq=text
+sound/spc_song_game_over         lz-v1  max=$2000 seq=text
+sound/spc_song_opening           lz-v2  max=$2000 seq=text
+sound/spc_song_stage3            lz-v2  max=$2000 seq=text
+sound/spc_song_stage2            lz-v1  max=$2000 seq=text
+sound/spc_song_stage1            lz-v2  max=$2000 seq=text
+sound/spc_song_stage4            lz-v1  max=$2000 seq=text
+sound/spc_song_stage5            lz-v1  max=$2000 seq=text
+sound/spc_song_stage6            lz-v2  max=$2000 seq=text
 wram/opening_bg1_map             lz-v1  max=$1000
 wram/stage1_bomber_m7_chars      lz-v1  png=mode7 tiles=63 tail=50 max=$1000
 wram/stage6_bg1_metatiles_2      lz-v2  max=$1000

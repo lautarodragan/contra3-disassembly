@@ -24,6 +24,7 @@
 - [Engine: frame flow, video and loading](engine.md)
   - [Compression](compression.md)
 - [Sound driver interface](sound.md)
+  - [Sound driver (SPC700)](sound-driver.md)
   - [Sound samples](sound-samples.md)
 - [Game flow](game-flow.md)
 - [Top-down stages](topdown.md)
