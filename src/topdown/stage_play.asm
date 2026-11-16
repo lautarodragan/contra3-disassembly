@@ -214,7 +214,6 @@ td_player_state_inactive:
 
 ; Y = the other player's slot.
 td_get_other_player:
-	; (not executed in the CDL traces)
 	cpx	#$0EC0
 	bne	@is_player2
 	ldy	#$0F00
@@ -255,7 +254,6 @@ td_respawn_split_screen:
 	bne	td_respawn_at_start_point
 	rts
 td_respawn_near_partner:
-	; (not executed in the CDL traces)
 	lda	$2C,x
 	beq	@return
 	jsr	a:td_get_other_player
@@ -275,6 +273,7 @@ td_respawn_near_partner:
 	lda	a:$0002,y
 	and	#$3000
 	bne	@has_priority
+	; (not executed in the CDL traces)
 	lda	#$2000
 @has_priority:
 	sta	zp_FA
@@ -1085,7 +1084,6 @@ td_keep_players_together:
 	dec	a
 	dec	a
 	bne	@return
-	; (not executed in the CDL traces)
 	jsr	a:td_get_other_player
 	lda	a:$0012,y
 	beq	@return
@@ -1095,7 +1093,6 @@ td_keep_players_together:
 	rts
 
 td_pull_towards_other_player_x:
-	; (not executed in the CDL traces)
 	lda	a:$000A,y
 	sec
 	sbc	#$0090
@@ -1119,7 +1116,6 @@ td_pull_towards_other_player_x:
 	rts
 
 td_pull_towards_other_player_y:
-	; (not executed in the CDL traces)
 	lda	a:$000E,y
 	sec
 	sbc	#$0058
@@ -1440,7 +1436,6 @@ fire_td_flame:
 	bcc	@update_flame
 	jsl	f:td_find_free_shot_slot
 	bcc	@new_flame
-	; (not executed in the CDL traces)
 	rtl
 @new_flame:
 	jsr	a:td_play_flame_sound
@@ -2807,7 +2802,6 @@ update_hatch_turret_spin:
 @check_destroyed:
 	cmp	#$0005
 	bne	@run_state
-	; (not executed in the CDL traces)
 	brl	hatch_turret_explode
 @run_state:
 	lda	$12,x
@@ -7629,7 +7623,6 @@ td_tile_map_object:
 	lda	a:$0090,x
 	cmp	#$0002
 	bne	@touch_object
-	; (not executed in the CDL traces)
 	lda	a:topdown_map
 	cmp	#TD_MAP_STAGE5_BOSS
 	beq	@return_clc
@@ -8664,7 +8657,6 @@ td_trigger_switch_event:
 	rts
 
 td_bomb_hits_map_object_tile:
-	; (not executed in the CDL traces)
 	jsr	a:td_get_map_object_at
 	lda	a:$0016,y
 	bpl	@return_sec
@@ -9019,7 +9011,6 @@ td_p1_vs_enemies:
 	bcs	@next
 	lda	a:p1_barrier_timer
 	beq	@kill_player
-	; (not executed in the CDL traces)
 	lda	$2E,x
 	ora	#$0040
 	sta	$2E,x
@@ -9282,7 +9273,6 @@ td_p1_vs_stage2_boss:
 	sbc_player_damage_x
 	sta	a:$0006,y
 	bpl	@next
-	; (not executed in the CDL traces)
 	jsl	f:td_score_shot_kill
 @next:
 	tya
@@ -9323,12 +9313,12 @@ td_p1_vs_stage2_boss:
 	bcs	@pods
 	lda	a:p1_barrier_timer
 	beq	@kill_player
-	; (not executed in the CDL traces)
 	lda	a:td_map_objects+3*OBJ_SIZE+$2E
 	ora	#$0040
 	sta	a:td_map_objects+3*OBJ_SIZE+$2E
 	dec	a:td_map_objects+3*OBJ_SIZE+OBJ_HP
 	bpl	@pods
+	; (not executed in the CDL traces)
 	ldx	#$0B80
 	ldy	#$1F80
 	jsl	f:td_score_kill
@@ -9355,7 +9345,6 @@ td_p1_vs_stage2_boss:
 	sbc	a:td_p1_y
 	cmp	#$0024
 	bcs	@next_pod
-	; (not executed in the CDL traces)
 	lda	a:p1_barrier_timer
 	beq	@kill_player2
 	lda	$2E,x
@@ -9363,6 +9352,7 @@ td_p1_vs_stage2_boss:
 	sta	$2E,x
 	dec	$06,x
 	bpl	@next_pod
+	; (not executed in the CDL traces)
 	ldy	#$1F80
 	jsl	f:td_score_kill
 	bra	@next_pod
@@ -9378,7 +9368,6 @@ td_p1_vs_stage2_boss:
 	bcc	@pod_loop
 	lda	a:p1_barrier_timer
 	beq	@check_boss_body
-	; (not executed in the CDL traces)
 	lda	a:td_map_objects+2*OBJ_SIZE+$16
 	bpl	@check_boss_body
 	lda	a:td_map_objects+2*OBJ_SIZE+OBJ_X
@@ -9403,6 +9392,7 @@ td_p1_vs_stage2_boss:
 @damage_core:
 	dec	a:td_boss_core_hp
 	bpl	@check_boss_body
+	; (not executed in the CDL traces)
 	ldx	#$0B40
 	ldy	#$1F80
 	jsl	f:td_score_kill
@@ -9806,7 +9796,6 @@ td_p1_body_vs_stage5_boss:
 	sbc	a:td_p1_y
 	cmp	#$0024
 	bcs	@parts
-	; (not executed in the CDL traces)
 	lda	a:td_map_objects+$2E
 	bit	#$0040
 	bne	@damage
@@ -9815,6 +9804,7 @@ td_p1_body_vs_stage5_boss:
 @damage:
 	dec	a:td_boss_hp
 	bpl	@parts
+	; (not executed in the CDL traces)
 	ldx	#$0AC0
 	ldy	#$1F80
 	jsl	f:td_score_kill
@@ -9839,7 +9829,6 @@ td_p1_body_vs_stage5_boss:
 	bcs	@next
 	lda	a:p1_barrier_timer
 	beq	@kill_player
-	; (not executed in the CDL traces)
 	lda	$2E,x
 	ora	#$0040
 	sta	$2E,x
@@ -9973,7 +9962,6 @@ td_p2_shots_vs_enemies:
 	sbc	$0E,x
 	cmp	#$0018
 	bcs	@next2
-	; (not executed in the CDL traces)
 	lda	a:$002E,y
 	ora	#$0040
 	sta	a:$002E,y
@@ -10033,7 +10021,6 @@ td_p2_vs_enemies:
 	bcs	@next
 	lda	a:p2_barrier_timer
 	beq	@kill_player
-	; (not executed in the CDL traces)
 	lda	$2E,x
 	ora	#$0040
 	sta	$2E,x
@@ -10605,7 +10592,6 @@ td_set_p2_arrow_sprites:
 	dec	a
 	beq	@split_screen
 @full_screen:
-	; (not executed in the CDL traces)
 	lda	a:td_p2_arrow_lr_sprites,y
 	beq	@no_lr_arrow
 	sta	a:td_arrow_objs

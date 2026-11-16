@@ -4871,10 +4871,10 @@ td_p2_arrow_tb_sprites:
 td_p2_arrow_lr_x:
 	; CDL: read by td_check_nearest_target_p2; partly not accessed
 	.byte	$F0, $00, $F0, $00, $F0, $00, $F0, $00, $00, $00, $00, $00, $00, $00, $00, $00
-; Y of player 2's top/bottom arrow with one view (td_check_nearest_target_p2;
-; not read in the traces).
+; Y of player 2's top/bottom arrow with one view (td_set_p2_arrow_sprites;
+; read in the traces only by play_stage5_2pb_hard).
 td_p2_arrow_tb_y:
-	; CDL: not accessed
+	; CDL: read by td_set_p2_arrow_sprites; partly not accessed
 	.byte	$18, $00, $18, $00, $D0, $00, $D0, $00, $D0, $00, $D0, $00, $18, $00, $18, $00
 ; Y of player 2's top/bottom arrow in the bottom half of the split screen
 ; (td_check_nearest_target_p2).
@@ -5003,7 +5003,8 @@ td_switch_event_blocks:
 	.byte	$17, $00
 ; Colour sequence of the smart bomb flash by its +$06 / 32, probably the
 ; radius (window_shapes.asm: COLDATA = sequence[stage_frame_counter / 2 & 15];
-; not run in the traces).
+; in the traces only entries 2 and 3 are read, by the scripted plays that
+; reach a top-down stage, e.g. play_stage2, play_stage5_2pb_hard).
 ptrs_bomb_flash_coldata:
 	.addr	bomb_flash_coldata_red
 	.addr	bomb_flash_coldata_red
@@ -5021,7 +5022,8 @@ ptrs_bomb_flash_coldata:
 	.addr	bomb_flash_coldata_blue
 	.addr	bomb_flash_coldata_white
 ; COLDATA values of the smart bomb flash (all three colours), one per 2 frames
-; (window_shapes.asm, through ptrs_bomb_flash_coldata; not run in the traces).
+; (window_shapes.asm, through ptrs_bomb_flash_coldata; only red and yellow
+; are read in the traces).
 bomb_flash_coldata_white:
 	; CDL: not accessed
 	.byte	$EF, $EE, $EC, $EB, $EA, $E8, $E7, $E5, $E4, $E5, $E7, $E8, $EA, $EB, $EC, $EE
@@ -5031,13 +5033,14 @@ bomb_flash_coldata_blue:
 	.byte	$9F, $9C, $99, $96, $93, $90, $8D, $8A, $87, $8A, $8D, $90, $93, $96, $99, $9C
 ; COLDATA values of the bomb flash, red and green.
 bomb_flash_coldata_yellow:
-	; CDL: not accessed
+	; CDL: read by build_td_p1_bomb_window
 	.byte	$6F, $6E, $6C, $6B, $6A, $68, $67, $65, $64, $65, $67, $68, $6A, $6B, $6C, $6E
 ; COLDATA values of the bomb flash, red.
 bomb_flash_coldata_red:
-	; CDL: not accessed
+	; CDL: read by build_td_p1_bomb_window
 	.byte	$3F, $3C, $39, $36, $33, $30, $2D, $2A, $27, $2A, $2D, $30, $33, $36, $39, $3C
 window_widths_05E2F6:
+	; CDL: read by build_window_from_widths
 	.byte	$00, $00, $05, $00, $07, $00, $09, $00, $0A, $00, $0B, $00, $0C, $00, $0D, $00
 	.byte	$0D, $00, $0E, $00, $0E, $00, $0F, $00, $0F, $00, $0F, $00, $0F, $00, $0F, $00
 	.byte	$10, $00, $0F, $00, $0F, $00, $0F, $00, $0F, $00, $0F, $00, $0E, $00, $0E, $00
@@ -5064,14 +5067,14 @@ circle_chord_widths:
 	.byte	$FD, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-; CGADSUB for the smart bomb flash of player 1 (code not run in the traces):
-; $13 or $11 by bit $2000 (sprite priority) of player 1's object attributes.
+; CGADSUB for the smart bomb flash of player 1: $13 or $11 by bit $2000
+; (sprite priority) of player 1's object attributes.
 bomb_flash_cgadsub_p1:
-	; CDL: not accessed
+	; CDL: read by build_td_p1_bomb_window; partly not accessed
 	.byte	$13, $00, $11, $00
 ; The same for player 2.
 bomb_flash_cgadsub_p2:
-	; CDL: not accessed
+	; CDL: read by build_td_p2_bomb_window; partly not accessed
 	.byte	$13, $00, $11, $00
 td_enemy_scores:
 	; CDL: read by td_get_enemy_points; partly not accessed
@@ -6240,7 +6243,8 @@ airship_turret_vram_addrs:
 	; CDL: read by airship_turret_draw_frame
 	.byte	$84, $40, $9C, $44, $8C, $40
 ; update_lightning_pylon: VRAM address of the pylon's BG tiles by field $3A,
-; cleared when it is destroyed (not seen: the pylons are hard to destroy).
+; cleared when it is destroyed (in the traces only play_stage4 destroys one,
+; on NORMAL).
 lightning_pylon_vram_addrs:
 	; CDL: read by update_objects; partly not accessed
 	.byte	$04, $45, $1C, $41, $14, $45, $0C, $45, $04, $45, $1C, $41

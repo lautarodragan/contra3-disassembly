@@ -5364,7 +5364,6 @@ face_boss_spawn_soldier_at_lost_head:
 	lda	a:obj_slots+9*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
 	beq	@return
-	; (not executed in the CDL traces)
 	bra	face_boss_spawn_right_soldier
 @return:
 	rts
@@ -7235,10 +7234,10 @@ cave_beast_state_06:
 	bmi	@left_wall
 	cmp	#$00AD
 	bcc	@check_players
-	; (not executed in the CDL traces)
 	lda	#$00AD
 	bra	@store_x
 @left_wall:
+	; (not executed in the CDL traces)
 	lda	#$002D
 @store_x:
 	sta	OBJ_X,x
@@ -10201,7 +10200,6 @@ update_lightning_pylon:
 	jsr	a:scroll_with_airship
 	lda	OBJ_HP,x
 	bpl	@alive
-	; (not executed in the CDL traces)
 	lda	#$0002
 	sta	OBJ_STATE,x
 	stz	OBJ_HP,x
@@ -10238,7 +10236,6 @@ update_lightning_pylon:
 @active:
 	cmp	#$0002
 	bne	@fire_timer
-	; (not executed in the CDL traces)
 	brl	airship_part_explode
 @fire_timer:
 	dec	OBJ_TIMER,x
@@ -10273,7 +10270,6 @@ update_lightning_bolt:
 	lda	a:$0016,y
 	bne	@dispatch
 @pylon_gone:
-	; (not executed in the CDL traces)
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	rtl

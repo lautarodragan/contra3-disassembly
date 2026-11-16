@@ -63,7 +63,6 @@ topdown_state_init:
 	ldy	#$0001
 	lda	a:stage_checkpoint
 	beq	@set_state
-	; (not executed in the CDL traces)
 	ldy	#$0004
 @set_state:
 	sty	a:topdown_state
@@ -849,7 +848,6 @@ randomize_start_cursors:
 	beq	@p1_cursor
 	dec	a
 	beq	@two_players_a
-	; (not executed in the CDL traces)
 	lda	rng_lo
 	and	#$0003
 	sta	a:p1_start_x
@@ -886,7 +884,6 @@ move_start_cursors:
 	bne	@mode_b
 	brl	@two_players_a
 @mode_b:
-	; (not executed in the CDL traces)
 	lda	a:p1_start_chosen
 	and	a:p2_start_chosen
 	bne	@return
@@ -905,6 +902,7 @@ move_start_cursors:
 	pla
 	bit	#$0800
 	bne	@b_up
+	; (not executed in the CDL traces)
 	bit	#$0400
 	bne	@b_down
 	bit	#$0100
@@ -921,12 +919,14 @@ move_start_cursors:
 	lda	a:p1_start_y
 	dec	a
 	bpl	@b_up_store
+	; (not executed in the CDL traces)
 	lda	#$0003
 @b_up_store:
 	sta	a:p1_start_y
 	sta	a:p2_start_y
 	rts
 @b_down:
+	; (not executed in the CDL traces)
 	lda	a:p1_start_y
 	inc	a
 	cmp	#$0004
@@ -1014,7 +1014,6 @@ move_start_cursors:
 	lda	a:p1_start_x
 	dec	a
 	bpl	@left_store
-	; (not executed in the CDL traces)
 	lda	#$0003
 @left_store:
 	sta	a:p1_start_x
@@ -1135,7 +1134,6 @@ set_start_points:
 	beq	@one_player
 	dec	a
 	beq	@two_players_a
-	; (not executed in the CDL traces)
 	lda	#$0080
 	sta	a:p1_view_anchor_x
 	sta	a:p2_view_anchor_x

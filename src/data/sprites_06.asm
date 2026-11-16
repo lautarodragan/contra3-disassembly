@@ -3139,7 +3139,7 @@ gfx_06F313:
 gfx_06F68F:
 	; ASSET: compressed graphics (VRAM), $06:F68F-$06:F84B (from its length word), loaded by load_list_05A807
 	.incbin	"gfx/gfx_06F68F.lz"
-	; CDL: not accessed
+	; CDL: read by decompress_continue
 ending_message_easy:
 	; ASSET: compressed graphics (VRAM), $06:F84C-$06:F995 (from its length word), loaded by load_list_05FDA1
 	; BG3 map (VRAM $5C00) of the closing message after stage 6 on EASY:

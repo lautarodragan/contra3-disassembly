@@ -72,13 +72,14 @@ shows a closing message, one BG3 map per difficulty
 | NORMAL | the same | "You're getting better! But this Alien War only gets harder. So if you want to fully test your game play techniques prepare yourself for the ultimate challenge." | the same: stage 1 on HARD (4 continues) |
 | HARD | the brain's last, armoured form chases the helicopter and is shot down | "Way to go! You've conquered the toughest Contra challenge yet. Your heroic deeds have restored peace to a war torn world. The Alien forces have been destroyed by a gaming champion! Your efforts will not be forgotten....." | five pictures over the message, the staff credits over the helicopter, the crowd ("A Peaceful Time Will Come!") and fireworks, FINAL SCORE; Start there goes back to the opening (`GAME_MODE_OPENING`) |
 
-So only a HARD win shows the full ending. The CDL traces never pressed
-Start on the message, so the loop is marked "not executed" there, but
-the emulator plays run every row of this table
-([Emulator tests](emulator.md): `stage6_ending_easy`, `stage6_boss` on
-NORMAL, `stage6_ending_hard`, from stage 6's midpoint; `option_level`,
-`difficulty` and `continues_left` read after the Start press), and the
-same is seen on the real game.
+So only a HARD win shows the full ending. The emulator plays run every
+row of this table ([Emulator tests](emulator.md): `stage6_ending_easy`,
+`stage6_boss` on NORMAL, `stage6_ending_hard`, from stage 6's midpoint;
+`option_level`, `difficulty` and `continues_left` read after the Start
+press), and the same is seen on the real game. The CDL has them too: the
+tracer runs the plays as scenarios (`play_stage6_ending_easy`, ...), so the
+loop, the Start presses and FINAL SCORE's return to the opening are no
+longer marked "not executed".
 
 `title_menu_cursor` values are `TITLE_1_PLAYER`, `TITLE_2_PLAYERS_A`,
 `TITLE_2_PLAYERS_B`, `TITLE_OPTION`; it stays meaningful during play (0 =

@@ -27,7 +27,6 @@ td_update_bomb:
 	beq	@thrown
 	lda	a:$1048,x
 	beq	@remove
-	; (not executed in the CDL traces)
 	dec	a:$1048,x
 	beq	@remove
 	lda	a:$1048,x
@@ -84,7 +83,6 @@ init_topdown_views:
 	bne	@mode_b
 	brl	@two_players_a
 @mode_b:
-	; (not executed in the CDL traces)
 	lda	a:p1_view_x
 	sta	a:td_p1_x
 	stz	a:td_p1_x_frac
@@ -175,7 +173,6 @@ update_topdown_views:
 	bne	@not_split
 	brl	@split
 @not_split:
-	; (not executed in the CDL traces)
 	brl	@shared
 @one_player:
 	lda	a:boss_centered_view
@@ -399,6 +396,7 @@ update_topdown_views:
 @shared:
 	lda	a:boss_centered_view
 	beq	@shared_follow
+	; (not executed in the CDL traces)
 	brl	@shared_boss
 @shared_follow:
 	jsr	a:td_scroll_shared_view_x
@@ -432,6 +430,7 @@ update_topdown_views:
 	stz	a:p1_m7_angle
 	rtl
 @shared_boss:
+	; (not executed in the CDL traces)
 	jsr	a:td_scroll_shared_view_x
 	lda	#$0080
 	sta	a:p1_view_anchor_x
@@ -489,14 +488,12 @@ update_topdown_views:
 	rtl
 
 td_scroll_shared_view_x:
-	; (not executed in the CDL traces)
 	jsr	a:td_shared_view_bounds_x
 	jsr	a:td_shared_view_follow_p1_x
 	jsr	a:td_shared_view_follow_p2_x
 	rts
 
 td_shared_view_follow_p1_x:
-	; (not executed in the CDL traces)
 	lda	a:td_p1_state
 	beq	@return
 	lda	a:td_p1_x
@@ -510,7 +507,6 @@ td_shared_view_follow_p1_x:
 	rts
 
 td_shared_view_follow_p2_x:
-	; (not executed in the CDL traces)
 	lda	a:td_p2_state
 	beq	@return
 	lda	a:td_p2_x
@@ -538,7 +534,6 @@ td_shared_view_push_left:
 	sta	a:p2_view_x
 
 td_shared_view_bounds_x:
-	; (not executed in the CDL traces)
 	lda	a:p1_view_x
 	clc
 	adc	#$0048
@@ -550,14 +545,12 @@ td_shared_view_bounds_x:
 	rts
 
 td_scroll_shared_view_y:
-	; (not executed in the CDL traces)
 	jsr	a:td_shared_view_bounds_y
 	jsr	a:td_shared_view_follow_p1_y
 	jsr	a:td_shared_view_follow_p2_y
 	rts
 
 td_shared_view_follow_p1_y:
-	; (not executed in the CDL traces)
 	lda	a:p1_lives
 	beq	@return
 	lda	a:td_p1_y
@@ -571,7 +564,6 @@ td_shared_view_follow_p1_y:
 	rts
 
 td_shared_view_follow_p2_y:
-	; (not executed in the CDL traces)
 	lda	a:p2_lives
 	beq	@return
 	lda	a:td_p2_y
@@ -597,7 +589,6 @@ td_shared_view_push_up:
 	sta	a:p2_view_y
 
 td_shared_view_bounds_y:
-	; (not executed in the CDL traces)
 	lda	a:p1_view_y
 	clc
 	adc	#$002C
@@ -691,14 +682,12 @@ td_score_kill_2:
 	rts
 
 td_score_enemy_kill:
-	; (not executed in the CDL traces)
 	phx
 	jsr	a:td_score_enemy_kill_2
 	plx
 	rtl
 
 td_score_enemy_kill_2:
-	; (not executed in the CDL traces)
 	jsr	a:td_get_enemy_points
 	tyx
 	jsl	f:add_score
@@ -1292,7 +1281,6 @@ stage5_boss_state_2:
 	bcs	@far
 	brl	stage5_boss_enter_state_6
 @far:
-	; (not executed in the CDL traces)
 	brl	stage5_boss_enter_state_7
 @above_half_hp:
 	lda	#$0058
@@ -1347,7 +1335,6 @@ stage5_boss_enter_state_7:
 stage5_boss_state_7:
 	jsr	a:stage5_boss_check_arm_out
 	bne	@arm_out
-	; (not executed in the CDL traces)
 	brl	stage5_boss_send_arm
 @arm_out:
 	jsl	f:td_select_target_player_long
@@ -2117,7 +2104,6 @@ stage5_boss_arm_base_explode:
 update_stage5_boss_arm_segment:
 	lda	a:td_map_objects+2*OBJ_SIZE+OBJ_TYPE
 	bne	@claw_alive
-	; (not executed in the CDL traces)
 	brl	clear_topdown_slot
 @claw_alive:
 	jsr	a:stage5_boss_arm_pass_damage

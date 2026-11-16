@@ -384,7 +384,6 @@ layout_init_stage1_common:
 	jml	f:queue_sound
 
 layout_init_stage3_checkpoint:
-	; (not executed in the CDL traces)
 	stz	a:bg2_scroll_mode
 	stz	a:bg2_x
 	stz	a:bg2_y
@@ -402,7 +401,6 @@ layout_init_stage3_common:
 	jml	f:queue_sound
 
 layout_init_stage4_checkpoint:
-	; (not executed in the CDL traces)
 	lda	#$0063
 	jsl	f:queue_sound
 	lda	#$000D

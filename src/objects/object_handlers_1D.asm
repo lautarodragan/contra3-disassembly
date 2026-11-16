@@ -1911,8 +1911,6 @@ ending_sequence_state_29:
 	jsr	a:ending_blink_push_start_key
 	bra	ending_sequence_state_2A
 @start_pressed:
-	; (not executed in the CDL traces; run by the emulator plays
-	; stage6_ending_easy and stage6_boss)
 	phx
 	ldx	#.loword(text_push_start_key_blank)
 	lda	#$0400
@@ -3860,7 +3858,6 @@ brain_boss_spawn_orb_clusters:
 	phx
 	lda	difficulty
 	bne	@random_start
-	; (not executed in the CDL traces)
 	ldx	#$0400
 	lda	#$0000
 	bra	@set_start
@@ -3895,7 +3892,6 @@ brain_boss_spawn_orb_clusters:
 	inc	zp_00
 	lda	difficulty
 	bne	@wrap
-	; (not executed in the CDL traces)
 	inc	zp_00
 	inc	zp_00
 @wrap:

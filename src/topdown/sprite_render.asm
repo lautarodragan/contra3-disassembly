@@ -1677,7 +1677,6 @@ draw_topdown_players:
 	beq	@one_view
 	dec	a
 	beq	@one_view
-	; (not executed in the CDL traces)
 	lda	$2C,x
 	beq	@draw
 	brl	@next_slot

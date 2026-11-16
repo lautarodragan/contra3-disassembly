@@ -719,7 +719,6 @@ kill_players_outside:
 kill_player_outside:
 	lda	a:PLAYER_BARRIER,y
 	beq	@check_alive
-	; (not executed in the CDL traces)
 	lda	zp_FC
 	beq	@return
 @check_alive:

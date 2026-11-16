@@ -733,8 +733,9 @@ game_mode_stage_card:
 
 ; GAME_MODE_STAGE_PLAY: run_stage_with_life_transfer until mode_result.
 ; No lives left -> GAME_MODE_GAME_OVER; stage < 6 -> GAME_MODE_STAGE_CLEAR;
-; after stage 6: on HARD -> GAME_MODE_FINAL_SCORE, otherwise (never run)
-; the game restarts at stage 1 one level harder.
+; after stage 6: on HARD -> GAME_MODE_FINAL_SCORE, otherwise (traced by
+; play_stage6_ending_easy and play_stage6_boss) the game restarts at stage 1
+; one level harder.
 game_mode_stage_play:
 	jsl	f:run_stage_with_life_transfer
 	lda	mode_result
@@ -760,8 +761,7 @@ game_mode_stage_play:
 	lda	#GAME_MODE_FINAL_SCORE
 	brl	set_game_mode
 @next_loop:
-	; (not executed in the CDL traces; run by the emulator plays
-	; stage6_ending_easy and stage6_boss: EASY -> NORMAL, NORMAL -> HARD)
+	; EASY -> NORMAL, NORMAL -> HARD (play_stage6_ending_easy, play_stage6_boss)
 	sta	a:option_level
 	sta	difficulty
 	stz	a:stage_gfx_loaded
@@ -1099,7 +1099,6 @@ game_mode_final_score:
 	jsl	f:run_final_score
 	lda	mode_result
 	beq	@return
-	; (not executed in the CDL traces)
 	lda	#GAME_MODE_OPENING
 	bra	set_game_mode
 @return:

@@ -156,7 +156,6 @@ update_object_slots:
 	lda	OBJ_FLAGS,x
 	bit	#OBJF_TARGET
 	beq	@remove_harmful
-	; (not executed in the CDL traces)
 	bit	#OBJF_INVULNERABLE
 	bne	@remove_harmful
 	lda	OBJ_HP,x

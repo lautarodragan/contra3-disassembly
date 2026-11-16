@@ -449,7 +449,6 @@ add_window_off_span:
 
 ; The same, several entries of one line each.
 add_window_off_single_lines:
-	; (not executed in the CDL traces)
 	ldx	zp_1E
 	sep	#$20
 	.a8
@@ -525,7 +524,6 @@ build_window_from_widths:
 	bmi	@empty_line
 	cmp	#$0100
 	bmi	@right_clamped
-	; (not executed in the CDL traces)
 	lda	#$00FF
 @right_clamped:
 	and	#$00FF
@@ -547,8 +545,8 @@ build_window_from_widths:
 ; td_p1_bomb's OBJ_TYPE: 0 (no bomb) turns the window off; 1 (the
 ; growing bomb) draws a circle of radius 2 x timer ($24) at the bomb's
 ; screen position in each view ($38/$3C in player 1's, $3A/$3E in player
-; 2's), with COLDATA brightening with the timer; 2 and up (a flash, not
-; run in the traces) draws the shape of window_widths_05E2F6 at $30/$34
+; 2's), with COLDATA brightening with the timer; 2 and up (a flash; in
+; the traces only the scripted plays reach it, e.g. play_stage2) draws the shape of window_widths_05E2F6 at $30/$34
 ; ($32/$36) with COLDATA from ptrs_bomb_flash_coldata. 1 player and 2-player
 ; mode B draw one shape over lines $18-$E0; in mode A (split screen) the
 ; top half (lines 0-$68, player 1's view) and the bottom half ($78-$E0)
@@ -586,7 +584,6 @@ build_td_p1_bomb_window:
 	.a16
 	rtl
 @flash:
-	; (not executed in the CDL traces)
 	ldy	#$0000
 	lda	a:td_p1_obj+OBJ_ATTR
 	bit	#$2000
@@ -616,6 +613,7 @@ build_td_p1_bomb_window:
 	asl	a
 	cmp	#$0020
 	bcc	@flash_coldata_clamped
+	; (not executed in the CDL traces)
 	lda	#$0020
 @flash_coldata_clamped:
 	tay
@@ -696,11 +694,13 @@ build_td_p1_bomb_window:
 	jsl	f:clip_window_circle
 	bcc	@flash_top_visible
 @flash_top_off:
+	; (not executed in the CDL traces)
 	jsl	f:add_window_off_single_lines
 	bra	@flash_bottom
 @flash_top_visible:
 	lda	#$0000
 	beq	@flash_top_line_0
+	; (not executed in the CDL traces)
 	lda	a:td_p1_obj+$2C
 	ora	a:td_p2_obj+$2C
 	bne	@flash_top_off
@@ -732,6 +732,7 @@ build_td_p1_bomb_window:
 	jsl	f:add_window_off_span
 	bra	@flash_split_end
 @flash_bottom_visible:
+	; (not executed in the CDL traces)
 	lda	#$0000
 	bne	@flash_bottom_draw
 	lda	a:td_p1_obj+$2C
@@ -780,7 +781,6 @@ build_td_p1_bomb_window:
 	bne	@circle_mode_b
 	brl	@circle_split
 @circle_mode_b:
-	; (not executed in the CDL traces)
 	lda	#$3C20
 	sta	zp_1C
 	lda	a:td_p1_bomb+$38
@@ -899,7 +899,6 @@ build_td_p2_bomb_window:
 	.a16
 	rtl
 @flash:
-	; (not executed in the CDL traces)
 	ldy	#$0000
 	lda	a:td_p2_obj+OBJ_ATTR
 	bit	#$2000
@@ -929,6 +928,7 @@ build_td_p2_bomb_window:
 	asl	a
 	cmp	#$0020
 	bcc	@flash_coldata_clamped
+	; (not executed in the CDL traces)
 	lda	#$0020
 @flash_coldata_clamped:
 	tay
@@ -977,6 +977,7 @@ build_td_p2_bomb_window:
 	jsl	f:end_window_hdma_table
 	rtl
 @flash_one_player:
+	; (not executed in the CDL traces)
 	lda	#$3E20
 	sta	zp_1C
 	lda	a:td_p2_bomb+$30
@@ -1018,6 +1019,7 @@ build_td_p2_bomb_window:
 	ora	a:td_p1_obj+$2C
 	bne	@flash_top_off
 @flash_top_line_0:
+	; (not executed in the CDL traces)
 	lda	zp_08
 	bne	@flash_top_draw
 	inc	zp_08
@@ -1047,6 +1049,7 @@ build_td_p2_bomb_window:
 @flash_bottom_visible:
 	lda	#$0002
 	bne	@flash_bottom_draw
+	; (not executed in the CDL traces)
 	lda	a:td_p2_obj+$2C
 	ora	a:td_p1_obj+$2C
 	bne	@flash_bottom_off
@@ -1093,7 +1096,6 @@ build_td_p2_bomb_window:
 	bne	@circle_mode_b
 	brl	@circle_split
 @circle_mode_b:
-	; (not executed in the CDL traces)
 	lda	#$3E20
 	sta	zp_1C
 	lda	a:td_p2_bomb+$38
@@ -1113,6 +1115,7 @@ build_td_p2_bomb_window:
 	jsl	f:end_window_hdma_table
 	rtl
 @circle_one_player:
+	; (not executed in the CDL traces)
 	lda	#$3E20
 	sta	zp_1C
 	lda	a:td_p2_bomb+$38

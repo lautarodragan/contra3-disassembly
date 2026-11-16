@@ -40,7 +40,8 @@ diff docs/disasm_report.md build/disasm/disasm_report.md
 
 The ROM that `make` builds is identical to the original, so
 `build/contra3.sfc` works as the input. With the committed hints and the same
-CDL, the output is identical to `src/` as it was committed in the CDL pass;
+CDL, the output is identical to `src/` as it was committed in the CDL pass
+(with the CDL of that time; the committed CDL has grown since);
 without a CDL it differs (no CDL comments, a few operands that only the CDL
 could resolve stay numbers, a few false pointers come back). As `src/` gets
 edited by hand, the differences grow: they are expected. In particular the
@@ -143,7 +144,8 @@ analysis and the CDL.
 A code/data log (CDL) records, while the game runs in an emulator, which
 ROM bytes were executed as opcodes or read as data, and with which CPU
 state. The tracer (`make trace`: a patched snes9x libretro core that
-plays scripted and random sessions of every stage, difficulty and mode, see
+plays random sessions of every stage, difficulty and mode, plus every
+scripted play of the screenshot suite, including the three endings, see
 [Emulator tests](emulator.md#run-the-tracer)) writes `cdl/contra3.cdl` plus
 a JSON sidecar `cdl/contra3.cdl.json`, format "SNESCDL" version 1 (full
 specification: [CDL format](cdl-format.md)). `tools/cdl.py` reads it; in
@@ -177,7 +179,9 @@ What the generator does with it:
   length;
 - the source gets three kinds of comments:
   - `; (not executed in the CDL traces)` where a stretch of code that never
-    ran starts;
+    ran starts (kept up to date in `src/` when the CDL grows: the markers
+    are where the generator would put them with the committed CDL, data's
+    `; CDL: not accessed` too where the new code reads it);
   - on a direct-page operand of an instruction that ran with D other than 0,
     the address really accessed, e.g. `stz $16 ; $1316 (D=$1300) / $1356
     (D=$1340) / $1F16 (D=$1F00)`;
@@ -189,13 +193,13 @@ What the generator does with it:
 
 The report's "Comparison with the CDL" table has the numbers. In short:
 
-- **Code.** Every byte the game executed (119,225) was already decoded by
+- **Code.** Every byte the game executed (121,256) was already decoded by
   the static analysis, with the same instruction boundaries; none of the
-  decoded code was read as data. The other 14,965 decoded bytes never ran:
+  decoded code was read as data. The other 12,934 decoded bytes never ran:
   unexecuted branches, routines nothing in the traces called, and all 73
   routines found by the unreferenced-routine heuristic. They lie in bytes
   the CDL never touched, so they stay code.
-- **Jump tables.** All 1,261 dynamic jumps go to entries of tables the
+- **Jump tables.** All 1,267 dynamic jumps go to entries of tables the
   static analysis had found; no table turned out to be longer. Some entries
   were never used in the traces.
 - **M/X.** Only 4 instructions were decoded with other widths than they ran

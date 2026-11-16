@@ -3433,7 +3433,6 @@ climb_left_aim_down:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	@fire
-	; (not executed in the CDL traces)
 	jsl	f:start_player_fall_right
 @fire:
 	lda	#$0040

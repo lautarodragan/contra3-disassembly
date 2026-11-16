@@ -843,14 +843,11 @@ final_score_wait_start:
 	ora	joy2_pressed
 	bit	#JOY_START
 	beq	@return
-	; (not executed in the CDL traces; run by the emulator play
-	; stage6_ending_hard)
 	inc	a:mode_step
 @return:
 	rtl
 
 final_score_fade_out:
-	; (not executed in the CDL traces)
 	php
 	rep	#$20
 	lda	a:inidisp_shadow

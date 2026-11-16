@@ -244,7 +244,6 @@ spin_shots_spread_2:
 	bra	spawn_shots_spread_in_slots
 
 spin_shots_spread_1:
-	; (not executed in the CDL traces)
 	jsr	a:find_spread_shot_slots
 	beq	@found_slots
 	rtl
@@ -459,7 +458,6 @@ spin_shot_homing_2:
 	bra	spawn_shot_homing_in_slot
 
 spin_shot_homing_1:
-	; (not executed in the CDL traces)
 	jsl	f:find_free_homing_shot_slot
 	bcc	@found_slot
 	tyx
