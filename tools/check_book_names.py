@@ -17,7 +17,8 @@ things that look like code names, and every code span for paths into the repo:
     hint field names);
   * a name ending in `_` (`sub_`) is a family: some symbol must start with it;
   * paths (`src/main.asm`, `tools/`, `docs/disasm_report.md`) must be tracked
-    files or directories (or files the build makes, see GENERATED); bare file
+    files or directories (or files the build makes, see GENERATED, and the
+    assets it makes in build/assets/); bare file
     names (`bank_00.asm`) must be the name of a tracked file.
 
 Symbols defined in the ca65 sources (src/**/*.asm, *.inc, *.cfg) are:
@@ -51,7 +52,7 @@ IGNORE_FILE = ROOT / "book" / "names-ignore.txt"
 
 # files and directories the build makes, which a fresh checkout doesn't have
 GENERATED = {"build", "build/contra3.sfc", "build/contra3.map", "build/contra3.lbl",
-             "build/main.o", "book/book", "build/assets", "build/assets.mk",
+             "build/main.o", "book/book", "build/assets", "build/assets.mk", "book/src/gallery",
              "build/disasm", "build/disasm/src", "build/disasm/disasm_report.md",
              "build/src", "build/src/snes9x", "build/cores", "build/cores/snes9x_libretro.so",
              "build/cores/bsnes_libretro.so", "out", "out/screens", "out/play"}
@@ -154,9 +155,16 @@ def main():
             return i < len(ordered) and ordered[i].startswith(tok)
         return tok in symbols or tok in tool_names
 
+    def generated_asset(p):
+        # build/assets/<path>.lz or .bin: made from assets/<path>.bin or .png
+        if not p.startswith("build/assets/"):
+            return False
+        stem = p[len("build/assets/"):].rsplit(".", 1)[0]
+        return any((ROOT / "assets" / (stem + ext)).exists() for ext in (".bin", ".png"))
+
     def path_exists(p):
         p = p.rstrip("/")
-        return ("*" in p or p in GENERATED or p in dirs or p in files
+        return ("*" in p or p in GENERATED or p in dirs or p in files or generated_asset(p)
                 or (ROOT / p).exists() and p not in ("",))
 
     problems = []
