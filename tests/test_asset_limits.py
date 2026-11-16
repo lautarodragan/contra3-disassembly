@@ -242,6 +242,7 @@ def test_mode7_characters(source):
 
 def test_td_tiles_fix_the_size(source):
     assert asset_limits.fixed_size(source, "td_sprite_tiles_16")[0] == 0x1800
+    assert asset_limits.fixed_size(source, "td_sprite_tiles_13")[0] == 0x0A00
 
 
 def test_td_tiles_two_sprite_frame(source):

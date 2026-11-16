@@ -115,6 +115,7 @@ gfx/gfx_19EF62                   lz-v2  png=4bpp tiles=167 max=$2000
 gfx/gfx_1AE9C9                   lz-v2  png=4bpp tiles=112 max=$2000
 gfx/gfx_1EEBD0                   lz-v1  max=$1000 tilemap=bg
 gfx/gfx_1FE855                   lz-v2  png=4bpp tiles=256 max=$2000
+gfx/td_sprite_tiles_13           raw    png=4bpp tiles=80
 gfx/td_sprite_tiles_14           raw    png=4bpp tiles=256
 gfx/td_sprite_tiles_16           raw    png=4bpp tiles=192
 sound/spc_sample_dir_boot        raw    dir=sound/spc_samples_common,sound/spc_samples_stage3 max=$0100
