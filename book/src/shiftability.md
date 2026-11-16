@@ -167,9 +167,24 @@ an earlier label (`lda a:sine_table,y` reading `cosine_table`), and with
 ## Status
 
 The default all-bank shift passes the whole suite: `test_screens.py` (13
-tests) and `test_play.py` (16 plays), 29 tests. So do `--amounts alt`,
-`--amounts max`, `--files 8` and `--labels 0.3` with seeds 1 and 2:
-RESULTS_PLACEHOLDER
+tests) and `test_play.py` (16 plays), 29 tests. So do these (each a full
+run of the 29):
+
+```sh
+make shift-test SHIFT=alt
+make shift-test SHIFT=max
+make shift-test SHIFT_FLAGS="--files 8"
+make shift-test SHIFT_FLAGS="--labels 0.3 --seed 1"     # 611 data labels moved
+make shift-test SHIFT_FLAGS="--labels 0.3 --seed 2"     # 628
+make shift-test SHIFT=alt SHIFT_FLAGS="--labels 0.3 --seed 3 --files 4"
+make shift-test SHIFT_FLAGS="--labels 0.5 --seed 4 --files 1"
+```
+
+In the top-down split screen (`stage2_2p`) some checkpoints differ in a
+few pixels and are reported as tolerated (see above). The full banks have
+little free space, so each `--labels` seed moves only some 60 of bank
+`$05`'s 1,000 labels: other seeds may still find a table read past its
+end; `shift_diag.py --fillers` says which.
 
 Converted (about 5,000 label references added in all):
 
