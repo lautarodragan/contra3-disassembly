@@ -14,7 +14,7 @@ run_topdown_stage:
 	rep	#$30
 	lda	stage_number
 	cmp	#$0005
-	beq	loc_028025
+	beq	run_stage5_state
 	lda	a:topdown_state
 	phx
 	asl	a
@@ -30,7 +30,8 @@ tbl_stage2_states:
 	.addr	stage2_state_play
 	.addr	stage2_state_boss_setup
 	.addr	stage2_state_boss
-loc_028025:
+; Stage 5: the same through tbl_stage5_states.
+run_stage5_state:
 	lda	a:topdown_state
 	phx
 	asl	a
@@ -61,10 +62,10 @@ topdown_state_init:
 	sta	pause_disabled
 	ldy	#$0001
 	lda	a:stage_checkpoint
-	beq	loc_028064
+	beq	@set_state
 	; (not executed in the CDL traces)
 	ldy	#$0004
-loc_028064:
+@set_state:
 	sty	a:topdown_state
 	rtl
 
@@ -97,10 +98,10 @@ stage2_state_intro:
 ; target is destroyed, fades out to the boss (check_targets_destroyed).
 stage2_state_play:
 	jsr	a:update_map_view
-	bcc	loc_02809D
+	bcc	@play
 	; (not executed in the CDL traces)
 	rtl
-loc_02809D:
+@play:
 	jsl	f:update_topdown_players
 	jsl	f:td_update_bombs
 	jsl	f:update_map_objects
@@ -125,25 +126,25 @@ loc_02809D:
 check_topdown_game_over:
 	lda	a:p1_lives
 	ora	a:p2_lives
-	bne	loc_028103
+	bne	@return_clc
 	; (not executed in the CDL traces)
 	lda	a:inidisp_shadow
-	beq	loc_0280F7
+	beq	@leave_stage
 	cmp	#$000F
-	bne	loc_028101
+	bne	@return_sec
 	stz	a:fade_target_brightness
 	lda	#$0081
 	jsl	f:queue_sound
-	bra	loc_028101
-loc_0280F7:
+	bra	@return_sec
+@leave_stage:
 	stz	a:topdown_state
 	stz	a:topdown_boss_end_step
 	inc	mode_result
 	stz	nmi_mode
-loc_028101:
+@return_sec:
 	sec
 	rts
-loc_028103:
+@return_clc:
 	clc
 	rts
 
@@ -151,28 +152,28 @@ loc_028103:
 ; at the start), fades out, then moves to the next state (boss setup).
 check_targets_destroyed:
 	lda	a:targets_left_flag
-	bpl	loc_02813C
+	bpl	@return
 	lda	a:topdown_timer
 	cmp	#$0080
-	bne	loc_028119
+	bne	@count_down
 	lda	#$0081
 	jsl	f:queue_sound
-loc_028119:
+@count_down:
 	dec	a:topdown_timer
-	bpl	loc_02813C
+	bpl	@return
 	lda	a:inidisp_shadow
-	beq	loc_028134
+	beq	@next_state
 	cmp	#$000F
-	bne	loc_02813C
+	bne	@return
 	stz	a:fade_target_brightness
 	lda	#$0081
 	jsl	f:queue_sound
-	bra	loc_02813C
-loc_028134:
+	bra	@return
+@next_state:
 	lda	#$0001
 	sta	pause_disabled
 	inc	a:topdown_state
-loc_02813C:
+@return:
 	rts
 
 ; State 4 of stage 2: clears objects and the top-down blocks, loads
@@ -198,7 +199,7 @@ stage2_state_boss_setup:
 stage2_state_boss:
 	lda	a:topdown_boss_end_step
 	cmp	#$0002
-	bcs	loc_028199
+	bcs	@after_updates
 	jsl	f:update_topdown_players
 	jsl	f:td_update_bombs
 	jsl	f:update_map_objects
@@ -208,7 +209,7 @@ stage2_state_boss:
 	jsl	f:animate_topdown_palettes
 	jsl	f:update_topdown_views
 	jsl	f:td_run_collisions
-loc_028199:
+@after_updates:
 	jsr	a:update_topdown_fade
 	jsr	a:check_topdown_game_over
 	bcs	@return
@@ -235,7 +236,7 @@ tbl_stage2_boss_end_steps:
 stage2_boss_wait_defeat:
 	lda	a:td_boss_state
 	cmp	#$0012
-	bne	loc_0281E8
+	bne	stage2_boss_end_return
 	lda	#$0081
 	jsl	f:queue_sound
 	lda	#$0080
@@ -246,20 +247,20 @@ stage2_boss_wait_defeat:
 ; Counts topdown_timer down, then resets the sound queue and fades out.
 stage2_boss_defeat_delay:
 	dec	a:topdown_timer
-	bpl	loc_0281E8
+	bpl	stage2_boss_end_return
 	jsl	f:reset_sound_queue
 	lda	#$0001
 	sta	pause_disabled
 	stz	a:fade_target_brightness
 	inc	a:topdown_boss_end_step
-loc_0281E8:
+stage2_boss_end_return:
 	rts
 
 ; When the screen is black, leaves the stage (next game sub-mode, NMI mode 0).
 stage2_boss_exit:
 	jsr	a:update_topdown_fade
 	lda	a:inidisp_shadow
-	bne	loc_0281E8
+	bne	stage2_boss_end_return
 	jsl	f:reset_sound_queue
 	stz	a:topdown_state
 	stz	a:topdown_boss_end_step
@@ -293,10 +294,10 @@ stage5_state_intro:
 ; State 3 of stage 5 (see stage2_state_play).
 stage5_state_play:
 	jsr	a:update_map_view
-	bcc	loc_028235
+	bcc	@play
 	; (not executed in the CDL traces)
 	rtl
-loc_028235:
+@play:
 	jsl	f:update_topdown_players
 	jsl	f:td_update_bombs
 	jsl	f:update_map_objects
@@ -338,7 +339,7 @@ stage5_state_boss_setup:
 stage5_state_boss:
 	lda	a:topdown_boss_end_step
 	cmp	#$0002
-	bcs	loc_0282D1
+	bcs	@after_updates
 	jsl	f:update_topdown_players
 	jsl	f:td_update_bombs
 	jsl	f:update_stage5_boss_objects
@@ -349,7 +350,7 @@ stage5_state_boss:
 	jsl	f:animate_topdown_palettes
 	jsl	f:update_topdown_views
 	jsl	f:td_run_collisions
-loc_0282D1:
+@after_updates:
 	jsr	a:update_topdown_fade
 	jsr	a:check_topdown_game_over
 	bcs	@return
@@ -376,7 +377,7 @@ tbl_stage5_boss_end_steps:
 stage5_boss_wait_defeat:
 	lda	a:td_boss_state
 	cmp	#$0009
-	bne	loc_028320
+	bne	stage5_boss_end_return
 	lda	#$0081
 	jsl	f:queue_sound
 	lda	#$0040
@@ -387,20 +388,20 @@ stage5_boss_wait_defeat:
 ; Counts topdown_timer down, then resets the sound queue and fades out.
 stage5_boss_defeat_delay:
 	dec	a:topdown_timer
-	bpl	loc_028320
+	bpl	stage5_boss_end_return
 	jsl	f:reset_sound_queue
 	lda	#$0001
 	sta	pause_disabled
 	stz	a:fade_target_brightness
 	inc	a:topdown_boss_end_step
-loc_028320:
+stage5_boss_end_return:
 	rts
 
 ; When the screen is black, leaves the stage.
 stage5_boss_exit:
 	jsr	a:update_topdown_fade
 	lda	a:inidisp_shadow
-	bne	loc_028320
+	bne	stage5_boss_end_return
 	jsl	f:reset_sound_queue
 	stz	a:topdown_state
 	stz	a:topdown_boss_end_step
@@ -429,18 +430,18 @@ tbl_map_view_steps:
 ; Step 0: Select (by a player with lives) saves the brightness and opens the map.
 map_view_check_select:
 	lda	paused
-	bne	loc_02838D
+	bne	@return_clc
 	lda	#$0000
 	ldy	a:p1_lives
-	beq	loc_028362
+	beq	@p2_input
 	ora	joy1_pressed
-loc_028362:
+@p2_input:
 	ldy	a:p2_lives
-	beq	loc_028369
+	beq	@test_select
 	ora	joy2_pressed
-loc_028369:
+@test_select:
 	bit	#$2000
-	beq	loc_02838D
+	beq	@return_clc
 	; (not executed in the CDL traces)
 	lda	a:inidisp_shadow
 	sta	a:map_view_saved_inidisp
@@ -454,7 +455,7 @@ loc_028369:
 	sta	a:map_view_step
 	sec
 	rts
-loc_02838D:
+@return_clc:
 	clc
 	rts
 
@@ -464,22 +465,22 @@ map_view_fade_out:
 	lda	a:inidisp_shadow
 	ora	a:p1_view_brightness
 	ora	a:p2_view_brightness
-	beq	loc_0283B4
+	beq	@black
 	dec	a:inidisp_shadow
-	bpl	loc_0283A2
+	bpl	@fade_p1
 	stz	a:inidisp_shadow
-loc_0283A2:
+@fade_p1:
 	dec	a:p1_view_brightness
-	bpl	loc_0283AA
+	bpl	@fade_p2
 	stz	a:p1_view_brightness
-loc_0283AA:
+@fade_p2:
 	dec	a:p2_view_brightness
-	bpl	loc_0283B2
+	bpl	@return_sec
 	stz	a:p2_view_brightness
-loc_0283B2:
+@return_sec:
 	sec
 	rts
-loc_0283B4:
+@black:
 	inc	a:map_view_step
 	jsr	a:blank_topdown_display
 	sec
@@ -536,13 +537,13 @@ map_view_fade_in:
 	; (not executed in the CDL traces)
 	lda	a:inidisp_shadow
 	cmp	#$000F
-	bcs	loc_02843A
+	bcs	@next_step
 	inc	a:inidisp_shadow
 	inc	a:p1_view_brightness
 	inc	a:p2_view_brightness
 	sec
 	rts
-loc_02843A:
+@next_step:
 	inc	a:map_view_step
 	sec
 	rts
@@ -552,17 +553,17 @@ map_view_wait_select:
 	; (not executed in the CDL traces)
 	lda	#$0000
 	ldy	a:p1_lives
-	beq	loc_028449
+	beq	@p2_input
 	ora	joy1_pressed
-loc_028449:
+@p2_input:
 	ldy	a:p2_lives
-	beq	loc_028450
+	beq	@test_select
 	ora	joy2_pressed
-loc_028450:
+@test_select:
 	bit	#$2000
-	beq	loc_028458
+	beq	@return_sec
 	inc	a:map_view_step
-loc_028458:
+@return_sec:
 	sec
 	rts
 
@@ -570,13 +571,13 @@ loc_028458:
 map_view_fade_out_2:
 	; (not executed in the CDL traces)
 	lda	a:inidisp_shadow
-	beq	loc_02846A
+	beq	@black
 	dec	a:inidisp_shadow
 	dec	a:p1_view_brightness
 	dec	a:p2_view_brightness
 	sec
 	rts
-loc_02846A:
+@black:
 	inc	a:map_view_step
 	lda	#$0080
 	sta	a:inidisp_shadow
@@ -625,21 +626,21 @@ map_view_restore_brightness:
 	; (not executed in the CDL traces)
 	lda	a:inidisp_shadow
 	cmp	a:map_view_saved_inidisp
-	bcs	loc_0284E7
+	bcs	@restore_saved
 	inc	a:inidisp_shadow
 	lda	a:p1_view_brightness
 	cmp	a:map_view_saved_p1_brightness
-	bcs	loc_0284DA
+	bcs	@p2_brightness
 	inc	a:p1_view_brightness
-loc_0284DA:
+@p2_brightness:
 	lda	a:p2_view_brightness
 	cmp	a:map_view_saved_p2_brightness
-	bcs	loc_0284E5
+	bcs	@return_sec
 	inc	a:p2_view_brightness
-loc_0284E5:
+@return_sec:
 	sec
 	rts
-loc_0284E7:
+@restore_saved:
 	lda	a:map_view_saved_inidisp
 	sta	a:inidisp_shadow
 	lda	a:map_view_saved_p1_brightness
@@ -724,13 +725,13 @@ intro_init:
 intro_fade_in:
 	lda	a:inidisp_shadow
 	cmp	#$000F
-	bcs	loc_0285AC
+	bcs	@next_step
 	inc	a:inidisp_shadow
 	inc	a:p1_view_brightness
 	inc	a:p2_view_brightness
 	clc
 	rts
-loc_0285AC:
+@next_step:
 	inc	a:intro_step
 	clc
 	rts
@@ -740,12 +741,12 @@ intro_choose_start:
 	jsr	a:init_intro_views
 	jsr	a:move_start_cursors
 	jsr	a:check_start_points_chosen
-	bcc	loc_0285C7
+	bcc	@return_clc
 	lda	#$0040
 	sta	a:topdown_timer
 	stz	pause_disabled
 	inc	a:intro_step
-loc_0285C7:
+@return_clc:
 	clc
 	rts
 
@@ -759,7 +760,7 @@ check_start_points_chosen:
 ; Step 3: colour fade, then the players' positions from the chosen start points.
 intro_start_chosen:
 	dec	a:topdown_timer
-	bmi	loc_0285E8
+	bmi	@set_positions
 	lda	a:topdown_timer
 	lsr	a
 	ora	#$00E0
@@ -770,7 +771,7 @@ intro_start_chosen:
 	.a16
 	clc
 	rts
-loc_0285E8:
+@set_positions:
 	lda	#$0002
 	sta	a:intro_phase
 	jsr	a:set_start_points
@@ -788,12 +789,12 @@ loc_0285E8:
 	rep	#$20
 	.a16
 	lda	a:title_menu_cursor
-	beq	loc_02861B
+	beq	@set_timer
 	dec	a
-	bne	loc_02861B
+	bne	@set_timer
 	lda	#$0002
 	sta	m7_split_screen
-loc_02861B:
+@set_timer:
 	lda	#$0040
 	sta	a:topdown_timer
 	inc	a:intro_step
@@ -809,7 +810,7 @@ intro_play_music:
 	rep	#$20
 	.a16
 	dec	a:topdown_timer
-	bpl	loc_028646
+	bpl	@return_clc
 	lda	a:topdown_map
 	lsr	a
 	and	#$0002
@@ -817,7 +818,7 @@ intro_play_music:
 	lda	a:topdown_stage_songs,y
 	jsl	f:queue_sound
 	inc	a:intro_step
-loc_028646:
+@return_clc:
 	clc
 	rts
 
@@ -827,9 +828,9 @@ intro_zoom_in:
 	jsr	a:set_intro_scroll
 	lda	a:p1_m7_scale_x
 	cmp	#M7_SCALE_1X
-	bne	loc_028659
+	bne	@return_clc
 	inc	a:intro_step
-loc_028659:
+@return_clc:
 	clc
 	rts
 
@@ -845,9 +846,9 @@ intro_done:
 ; Puts the start cursors at a random column and row (0-3).
 randomize_start_cursors:
 	lda	a:title_menu_cursor
-	beq	loc_028698
+	beq	@p1_cursor
 	dec	a
-	beq	loc_028688
+	beq	@two_players_a
 	; (not executed in the CDL traces)
 	lda	rng_lo
 	and	#$0003
@@ -858,14 +859,14 @@ randomize_start_cursors:
 	sta	a:p1_start_y
 	sta	a:p2_start_y
 	rts
-loc_028688:
+@two_players_a:
 	lda	rng_hi
 	and	#$0003
 	sta	a:p2_start_x
 	lda	zp_EB
 	and	#$0003
 	sta	a:p2_start_y
-loc_028698:
+@p1_cursor:
 	lda	rng_lo
 	and	#$0003
 	sta	a:p1_start_x
@@ -878,13 +879,13 @@ loc_028698:
 ; column, wrapping); Y or Start chooses. Player 2 too in 2P-A.
 move_start_cursors:
 	lda	a:title_menu_cursor
-	bne	loc_0286B1
-	brl	loc_028742
-loc_0286B1:
+	bne	@two_players
+	brl	@p1_cursor
+@two_players:
 	dec	a
-	bne	loc_0286B7
-	brl	loc_02873F
-loc_0286B7:
+	bne	@mode_b
+	brl	@two_players_a
+@mode_b:
 	; (not executed in the CDL traces)
 	lda	a:p1_start_chosen
 	and	a:p2_start_chosen
@@ -892,139 +893,139 @@ loc_0286B7:
 	lda	joy1_pressed
 	ora	joy2_pressed
 	bit	#$5000
-	bne	loc_0286E8
+	bne	@b_chosen
 	bit	#$0F00
-	bne	loc_0286CE
+	bne	@b_move
 @return:
 	rts
-loc_0286CE:
+@b_move:
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
 	bit	#$0800
-	bne	loc_0286F9
+	bne	@b_up
 	bit	#$0400
-	bne	loc_028709
+	bne	@b_down
 	bit	#$0100
-	bne	loc_02872C
-	bra	loc_02871C
-loc_0286E8:
+	bne	@b_right
+	bra	@b_left
+@b_chosen:
 	lda	#$0002
 	jsl	f:queue_sound
 	lda	#$0002
 	sta	a:p1_start_chosen
 	sta	a:p2_start_chosen
 	rts
-loc_0286F9:
+@b_up:
 	lda	a:p1_start_y
 	dec	a
-	bpl	loc_028702
+	bpl	@b_up_store
 	lda	#$0003
-loc_028702:
+@b_up_store:
 	sta	a:p1_start_y
 	sta	a:p2_start_y
 	rts
-loc_028709:
+@b_down:
 	lda	a:p1_start_y
 	inc	a
 	cmp	#$0004
-	bcc	loc_028715
+	bcc	@b_down_store
 	lda	#$0000
-loc_028715:
+@b_down_store:
 	sta	a:p1_start_y
 	sta	a:p2_start_y
 	rts
-loc_02871C:
+@b_left:
 	lda	a:p1_start_x
 	dec	a
-	bpl	loc_028725
+	bpl	@b_left_store
 	lda	#$0003
-loc_028725:
+@b_left_store:
 	sta	a:p1_start_x
 	sta	a:p2_start_x
 	rts
-loc_02872C:
+@b_right:
 	lda	a:p1_start_x
 	inc	a
 	cmp	#$0004
-	bcc	loc_028738
+	bcc	@b_right_store
 	lda	#$0000
-loc_028738:
+@b_right_store:
 	sta	a:p1_start_x
 	sta	a:p2_start_x
 	rts
-loc_02873F:
+@two_players_a:
 	jsr	a:move_p2_start_cursor
-loc_028742:
+@p1_cursor:
 	lda	a:p1_lives
-	beq	@return
+	beq	@return2
 	lda	a:p1_start_chosen
-	bne	@return
+	bne	@return2
 	lda	joy1_pressed
 	bit	#$5000
-	bne	loc_028773
+	bne	@chosen
 	bit	#$0F00
-	bne	loc_028759
-@return:
+	bne	@move
+@return2:
 	rts
-loc_028759:
+@move:
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
 	bit	#$0800
-	bne	loc_02878C
+	bne	@up
 	bit	#$0400
-	bne	loc_028799
+	bne	@down
 	bit	#$0100
-	bne	loc_0287B6
-	bra	loc_0287A9
-loc_028773:
+	bne	@right
+	bra	@left
+@chosen:
 	lda	a:p2_lives
-	bne	loc_02877E
+	bne	@confirm
 	lda	#$0002
 	sta	a:p2_start_chosen
-loc_02877E:
+@confirm:
 	lda	#$0002
 	jsl	f:queue_sound
 	lda	#$0002
 	sta	a:p1_start_chosen
 	rts
-loc_02878C:
+@up:
 	lda	a:p1_start_y
 	dec	a
-	bpl	loc_028795
+	bpl	@up_store
 	lda	#$0003
-loc_028795:
+@up_store:
 	sta	a:p1_start_y
 	rts
-loc_028799:
+@down:
 	lda	a:p1_start_y
 	inc	a
 	cmp	#$0004
-	bcc	loc_0287A5
+	bcc	@down_store
 	; (not executed in the CDL traces)
 	lda	#$0000
-loc_0287A5:
+@down_store:
 	sta	a:p1_start_y
 	rts
-loc_0287A9:
+@left:
 	lda	a:p1_start_x
 	dec	a
-	bpl	loc_0287B2
+	bpl	@left_store
 	; (not executed in the CDL traces)
 	lda	#$0003
-loc_0287B2:
+@left_store:
 	sta	a:p1_start_x
 	rts
-loc_0287B6:
+@right:
 	lda	a:p1_start_x
 	inc	a
 	cmp	#$0004
-	bcc	loc_0287C2
+	bcc	@right_store
 	lda	#$0000
-loc_0287C2:
+@right_store:
 	sta	a:p1_start_x
 	rts
 
@@ -1036,70 +1037,70 @@ move_p2_start_cursor:
 	bne	@return
 	lda	joy2_pressed
 	bit	#$5000
-	bne	loc_0287F7
+	bne	@chosen
 	bit	#$0F00
-	bne	loc_0287DD
+	bne	@move
 @return:
 	rts
-loc_0287DD:
+@move:
 	pha
 	lda	#$0001
 	jsl	f:queue_sound
 	pla
 	bit	#$0800
-	bne	loc_028810
+	bne	@up
 	; (not executed in the CDL traces)
 	bit	#$0400
-	bne	loc_02881D
+	bne	@down
 	bit	#$0100
-	bne	loc_02883A
-	bra	loc_02882D
-loc_0287F7:
+	bne	@right
+	bra	@left
+@chosen:
 	lda	a:p1_lives
-	bne	loc_028802
+	bne	@confirm
 	; (not executed in the CDL traces)
 	lda	#$0002
 	sta	a:p1_start_chosen
-loc_028802:
+@confirm:
 	lda	#$0002
 	jsl	f:queue_sound
 	lda	#$0002
 	sta	a:p2_start_chosen
 	rts
-loc_028810:
+@up:
 	lda	a:p2_start_y
 	dec	a
-	bpl	loc_028819
+	bpl	@up_store
 	; (not executed in the CDL traces)
 	lda	#$0003
-loc_028819:
+@up_store:
 	sta	a:p2_start_y
 	rts
-loc_02881D:
+@down:
 	; (not executed in the CDL traces)
 	lda	a:p2_start_y
 	inc	a
 	cmp	#$0004
-	bcc	loc_028829
+	bcc	@down_store
 	lda	#$0000
-loc_028829:
+@down_store:
 	sta	a:p2_start_y
 	rts
-loc_02882D:
+@left:
 	lda	a:p2_start_x
 	dec	a
-	bpl	loc_028836
+	bpl	@left_store
 	lda	#$0003
-loc_028836:
+@left_store:
 	sta	a:p2_start_x
 	rts
-loc_02883A:
+@right:
 	lda	a:p2_start_x
 	inc	a
 	cmp	#$0004
-	bcc	loc_028846
+	bcc	@right_store
 	lda	#$0000
-loc_028846:
+@right_store:
 	sta	a:p2_start_x
 	rts
 
@@ -1131,9 +1132,9 @@ init_intro_views:
 ; point (start_points_x/y), and p1_start_x/y to the zoom-in target.
 set_start_points:
 	lda	a:title_menu_cursor
-	beq	loc_0288CD
+	beq	@one_player
 	dec	a
-	beq	loc_0288FF
+	beq	@two_players_a
 	; (not executed in the CDL traces)
 	lda	#$0080
 	sta	a:p1_view_anchor_x
@@ -1159,7 +1160,7 @@ set_start_points:
 	sbc	a:p1_view_anchor_y
 	sta	a:p1_start_y
 	rts
-loc_0288CD:
+@one_player:
 	lda	#$0080
 	sta	a:p1_view_anchor_x
 	lda	#$00A0
@@ -1180,7 +1181,7 @@ loc_0288CD:
 	sbc	a:p1_view_anchor_y
 	sta	a:p1_start_y
 	rts
-loc_0288FF:
+@two_players_a:
 	lda	#$0060
 	sta	a:p1_view_anchor_x
 	sta	a:p2_view_anchor_x
@@ -1229,10 +1230,10 @@ get_p1_start_point_index:
 	adc	a:p1_start_x
 	ldy	stage_number
 	cpy	#$0002
-	beq	loc_028973
+	beq	@to_offset
 	clc
 	adc	#$0010
-loc_028973:
+@to_offset:
 	asl	a
 	tay
 	rts
@@ -1246,10 +1247,10 @@ get_p2_start_point_index:
 	adc	a:p2_start_x
 	ldy	stage_number
 	cpy	#$0002
-	beq	loc_02898A
+	beq	@to_offset
 	clc
 	adc	#$0010
-loc_02898A:
+@to_offset:
 	asl	a
 	tay
 	rts
@@ -1257,9 +1258,9 @@ loc_02898A:
 ; Scale -4 per frame (and angle +2 until 1:1), centres towards the start points.
 zoom_in_views:
 	lda	a:title_menu_cursor
-	beq	loc_0289BA
+	beq	@p1_view
 	dec	a
-	bne	loc_0289BA
+	bne	@p1_view
 	lda	a:p2_m7_scale_x
 	sec
 	sbc	#$0004
@@ -1269,13 +1270,13 @@ zoom_in_views:
 	sbc	#$0004
 	sta	a:p2_m7_scale_y
 	cmp	#M7_SCALE_1X
-	bcc	loc_0289B4
+	bcc	@p2_center
 	dec	a:p2_m7_angle
 	dec	a:p2_m7_angle
-loc_0289B4:
+@p2_center:
 	jsr	a:approach_p2_start_x
 	jsr	a:approach_p2_start_y
-loc_0289BA:
+@p1_view:
 	lda	a:p1_m7_scale_x
 	sec
 	sbc	#$0004
@@ -1285,10 +1286,10 @@ loc_0289BA:
 	sbc	#$0004
 	sta	a:p1_m7_scale_y
 	cmp	#M7_SCALE_1X
-	bcc	loc_0289D9
+	bcc	@p1_center
 	inc	a:p1_m7_angle
 	inc	a:p1_m7_angle
-loc_0289D9:
+@p1_center:
 	jsr	a:approach_p1_start_x
 	jsr	a:approach_p1_start_y
 	rts
@@ -1297,69 +1298,69 @@ loc_0289D9:
 approach_p1_start_x:
 	lda	a:p1_m7_center_x
 	cmp	a:p1_start_x
-	beq	loc_0289F9
-	bpl	loc_0289F2
+	beq	@return
+	bpl	@decrease
 	clc
 	adc	#$0002
 	sta	a:p1_m7_center_x
 	rts
-loc_0289F2:
+@decrease:
 	sec
 	sbc	#$0002
 	sta	a:p1_m7_center_x
-loc_0289F9:
+@return:
 	rts
 
 ; Moves p1_m7_center_y 2 pixels towards p1_start_y.
 approach_p1_start_y:
 	lda	a:p1_m7_center_y
 	cmp	a:p1_start_y
-	beq	loc_028A13
-	bpl	loc_028A0C
+	beq	@return
+	bpl	@decrease
 	clc
 	adc	#$0002
 	sta	a:p1_m7_center_y
 	rts
-loc_028A0C:
+@decrease:
 	sec
 	sbc	#$0002
 	sta	a:p1_m7_center_y
-loc_028A13:
+@return:
 	rts
 
 ; Moves p2_m7_center_x 2 pixels towards p2_start_x.
 approach_p2_start_x:
 	lda	a:p2_m7_center_x
 	cmp	a:p2_start_x
-	beq	loc_028A2D
-	bpl	loc_028A26
+	beq	@return
+	bpl	@decrease
 	; (not executed in the CDL traces)
 	clc
 	adc	#$0002
 	sta	a:p2_m7_center_x
 	rts
-loc_028A26:
+@decrease:
 	sec
 	sbc	#$0002
 	sta	a:p2_m7_center_x
-loc_028A2D:
+@return:
 	rts
 
 ; Moves p2_m7_center_y 2 pixels towards p2_start_y.
 approach_p2_start_y:
 	lda	a:p2_m7_center_y
 	cmp	a:p2_start_y
-	beq	loc_028A47
-	bpl	loc_028A40
+	beq	@return
+	bpl	@decrease
 	clc
 	adc	#$0002
 	sta	a:p2_m7_center_y
 	rts
-loc_028A40:
+@decrease:
 	sec
 	sbc	#$0002
 	sta	a:p2_m7_center_y
-loc_028A47:
+@return:
 	rts
 
 ; Scroll = centre - ($80, $70) for both views.
@@ -1425,11 +1426,11 @@ init_topdown_ppu:
 ; BG3 vertical scroll for the status bar, by 1P / 2P mode.
 set_status_bar_scroll:
 	lda	a:title_menu_cursor
-	beq	loc_028AD2
+	beq	@read_table
 	dec	a
 	eor	#$0001
 	asl	a
-loc_028AD2:
+@read_table:
 	tay
 	sep	#$20
 	.a8
@@ -1556,7 +1557,10 @@ init_stage2_vars:
 	stz	a:boss_centered_view
 	lda	#$0004
 	sta	a:targets_left_flag
-loc_028BF3:
+; Shared tail of init_stage2_vars / init_stage5_vars: clears the objects
+; ($0200-$11DF), window effect on, checkpoint 0, no barrier, fade to full
+; brightness.
+init_td_stage_common_vars:
 	rep	#$30
 	phb
 	lda	#$0000
@@ -1589,7 +1593,7 @@ init_stage5_vars:
 	lda	#$0002
 	sta	a:palette_cycle_speed
 	stz	a:palette_cycle_counter
-	bra	loc_028BF3
+	bra	init_td_stage_common_vars
 
 ; Boss of stage 2: clears objects and blocks, topdown_map = 2,
 ; boss_centered_view = 2 (view follows the boss), players at ($200, $280).
@@ -1627,7 +1631,10 @@ init_stage2_boss_vars:
 	lda	#TD_MAP_STAGE2_BOSS
 	sta	a:topdown_map
 	sta	a:boss_centered_view
-loc_028C8D:
+; Shared tail of init_stage2_boss_vars / init_stage5_boss_vars (after
+; topdown_map and boss_centered_view): no targets, window effect on, checkpoint 1, fade to full
+; brightness, both views at ($200, $280).
+init_td_boss_common_vars:
 	stz	a:targets_left_flag
 	lda	#$0001
 	sta	a:topdown_window_update_on
@@ -1678,7 +1685,7 @@ init_stage5_boss_vars:
 	lda	#TD_MAP_STAGE5_BOSS
 	sta	a:topdown_map
 	stz	a:boss_centered_view
-	brl	loc_028C8D
+	brl	init_td_boss_common_vars
 
 ; HDMA channels 2-7 on, display on at brightness 0.
 enable_topdown_display:
@@ -1713,47 +1720,47 @@ blank_topdown_display:
 update_topdown_fade:
 	lda	a:inidisp_shadow
 	cmp	a:fade_target_brightness
-	beq	loc_028D77
-	bcs	loc_028D5D
+	beq	@return2
+	bcs	@darker
 	lda	stage_frame_counter
 	bit	#$0001
-	bne	loc_028D77
+	bne	@return2
 	inc	a:inidisp_shadow
 	lda	a:p1_view_brightness
 	cmp	#$000F
-	bcs	loc_028D51
+	bcs	@p2_brighter
 	inc	a:p1_view_brightness
-loc_028D51:
+@p2_brighter:
 	lda	a:p2_view_brightness
 	cmp	#$000F
 	bcs	@return
 	inc	a:p2_view_brightness
 @return:
 	rts
-loc_028D5D:
+@darker:
 	lda	stage_frame_counter
 	bit	#$0003
-	bne	loc_028D77
+	bne	@return2
 	dec	a:inidisp_shadow
 	lda	a:p1_view_brightness
-	beq	loc_028D6F
+	beq	@p2_darker
 	dec	a:p1_view_brightness
-loc_028D6F:
+@p2_darker:
 	lda	a:p2_view_brightness
-	beq	loc_028D77
+	beq	@return2
 	dec	a:p2_view_brightness
-loc_028D77:
+@return2:
 	rts
 
 ; Spawns stage 2's five targets in the slots from $0AC0 (types chosen by difficulty and random).
 spawn_stage2_targets:
 	lda	difficulty
-	beq	loc_028D85
+	beq	@add_base
 	tay
 	lda	rng_lo
 	and	#$0030
 	ora	a:stage2_target_set_bases,y
-loc_028D85:
+@add_base:
 	clc
 	adc	#.loword(stage2_target_type_sets)
 	sta	zp_FA
@@ -1806,10 +1813,10 @@ spawn_stage2_boss:
 ; Spawns stage 5's five targets.
 spawn_stage5_targets:
 	lda	difficulty
-	beq	loc_028DE7
+	beq	@add_base
 	lda	rng_lo
 	and	#$0070
-loc_028DE7:
+@add_base:
 	clc
 	adc	#.loword(stage5_target_type_sets)
 	sta	zp_FA
