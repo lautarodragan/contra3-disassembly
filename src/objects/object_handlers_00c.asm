@@ -16,23 +16,23 @@
 ; stage_exit_request. Checked in the emulator (o2s1 captures).
 update_stage1_boss_controller:
 	lda	$32,x
-	beq	loc_00F290
+	beq	@no_countdown
 	dec	a
-	bne	loc_00F28A
+	bne	@store_dying_timer
 	dec	a
 	ldy	#$0100
 	sty	a:stage_exit_request
-loc_00F28A:
+@store_dying_timer:
 	sta	$32,x
 	jsl	f:make_players_invulnerable
-loc_00F290:
+@no_countdown:
 	inc	a:boss_work_0
 	ldy	#$0012
 	lda	stage_frame_mod8
 	cmp	#$0005
-	bcs	loc_00F2A0
+	bcs	@set_mosaic
 	ldy	#$0000
-loc_00F2A0:
+@set_mosaic:
 	sty	a:mosaic_shadow
 	lda	$12,x
 	phx
@@ -91,12 +91,12 @@ stage1_boss_controller_state_01:
 
 stage1_boss_controller_state_02:
 	lda	OBJ_TIMER,x
-	bmi	loc_00F322
+	bmi	@wait_song
 	dec	OBJ_TIMER,x
-	bpl	loc_00F34B
-loc_00F322:
+	bpl	@return
+@wait_song:
 	lda	a:song_change_state
-	bne	loc_00F34B
+	bne	@return
 	lda	#$0068
 	jsl	f:queue_sound
 	lda	#$0058
@@ -109,12 +109,12 @@ loc_00F322:
 	lda	#$0020
 	sta	a:boss_work_3
 	sta	a:boss_work_5
-loc_00F34B:
+@return:
 	rtl
 
 stage1_boss_controller_state_03:
 	dec	OBJ_TIMER,x
-	beq	loc_00F362
+	beq	@timer_done
 	phx
 	jsr	a:spawn_stage1_boss_falling_debris
 	plx
@@ -122,8 +122,8 @@ stage1_boss_controller_state_03:
 	lda	#$4018
 	sta	zp_0C
 	lda	#$0040
-	bra	loc_00F383
-loc_00F362:
+	bra	@queue_blocks
+@timer_done:
 	inc	$12,x
 	lda	#$003C
 	sta	$16,x
@@ -137,16 +137,16 @@ loc_00F362:
 	lda	#$4218
 	sta	zp_0C
 	lda	#$0030
-loc_00F383:
+@queue_blocks:
 	sta	zp_08
 	lda	a:bg1_x
 	bit	#$0100
-	beq	loc_00F395
+	beq	@vram_addr_set
 	clc
 	lda	zp_0C
 	adc	#$0400
 	sta	zp_0C
-loc_00F395:
+@vram_addr_set:
 	lda	#$0002
 	sta	zp_02
 	phx
@@ -158,18 +158,18 @@ loc_00F395:
 stage1_boss_controller_state_04:
 	jsr	a:stage1_boss_push_wall
 	lda	$34,x
-	bne	loc_00F3B1
+	bne	@still_pushing
 	inc	$12,x
 	lda	#$0010
 	sta	$24,x
-loc_00F3B1:
+@still_pushing:
 	jsr	a:stage1_boss_place_middle_chunks
 	jsr	a:stage1_boss_set_bg2_scroll
 	rtl
 
 stage1_boss_controller_state_05:
 	dec	OBJ_TIMER,x
-	bne	loc_00F3DF
+	bne	@move_body_up
 	lda	#$0006
 	sta	hdma_preset
 	inc	OBJ_STATE,x
@@ -183,7 +183,7 @@ stage1_boss_controller_state_05:
 	lda	#$0100
 	sta	a:boss_work_1
 	jsr	a:spawn_stage1_boss_parts
-loc_00F3DF:
+@move_body_up:
 	dec	a:obj_slots+4*OBJ_SIZE+OBJ_Y
 	jsr	a:stage1_boss_place_middle_chunks
 	jsr	a:stage1_boss_set_bg2_scroll
@@ -192,67 +192,69 @@ loc_00F3DF:
 stage1_boss_controller_state_06:
 	lda	a:boss_work_3
 	cmp	#$0020
-	bne	loc_00F405
+	bne	@sway
 	lda	$32,x
-	bne	loc_00F3FC
+	bne	@start_slam
 	lda	rng_lo
 	bit	#$003F
-	bne	loc_00F405
-loc_00F3FC:
+	bne	@sway
+@start_slam:
 	lda	#$0003
 	sta	a:boss_work_4
 	inc	$12,x
 	rtl
-loc_00F405:
+@sway:
 	lda	#$2000
 	sta	zp_00
 	stz	zp_02
 	jsr	a:stage1_boss_sway
 	jsr	a:stage1_boss_run_attack
-	brl	loc_00F46D
+	brl	stage1_boss_controller_tail
 
 stage1_boss_controller_state_07:
 	lda	a:boss_work_3
 	cmp	#$0007
-	bcs	loc_00F42D
+	bcs	@move_down
 	lda	#$0056
 	jsl	f:queue_sound
 	lda	#$0004
 	sta	a:shake_timer
 	inc	$12,x
 	rtl
-loc_00F42D:
+@move_down:
 	stz	zp_00
 	lda	#$0002
 	sta	zp_02
 	jsr	a:stage1_boss_move_down
 	jsr	a:stage1_boss_run_attack
-	brl	loc_00F46D
+	brl	stage1_boss_controller_tail
 
 stage1_boss_controller_state_08:
 	lda	a:boss_work_3
 	cmp	#$0020
-	bcc	loc_00F45D
+	bcc	@move_up
 	dec	a:boss_work_4
-	bne	loc_00F45A
+	bne	@back_to_state_07
 	lda	$32,x
-	bne	loc_00F45A
+	bne	@back_to_state_07
 	lda	#$0020
 	sta	a:boss_work_0
 	lda	#$0006
 	sta	OBJ_STATE,x
 	rtl
-loc_00F45A:
+@back_to_state_07:
 	dec	$12,x
 	rtl
-loc_00F45D:
+@move_up:
 	stz	zp_00
 	lda	#$0002
 	sta	zp_02
 	jsr	a:stage1_boss_move_up
 	jsr	a:stage1_boss_run_attack
-	brl	loc_00F46D
-loc_00F46D:
+	brl	stage1_boss_controller_tail
+; Common end of states 6-8: height, BG block, chunks, parts, head HDMA,
+; face tiles, death explosions.
+stage1_boss_controller_tail:
 	jsr	a:stage1_boss_add_height
 	jsl	f:stage1_boss_queue_bg_block
 	jsr	a:stage1_boss_place_middle_chunks
@@ -290,10 +292,10 @@ stage1_boss_death_explosions:
 stage1_boss_queue_face_tiles:
 	ldy	#.loword(vram_blocks_05AB28)
 	lda	$3E,x
-	beq	loc_00F4C3
+	beq	@queue_blocks
 	dec	$3E,x
 	ldy	#.loword(vram_blocks_05AB30)
-loc_00F4C3:
+@queue_blocks:
 	lda	#$0002
 	sta	zp_02
 	lda	#$0040
@@ -311,8 +313,8 @@ stage1_boss_queue_bg_block:
 	lda	#$0020
 	sta	zp_E2
 	lda	#$5E00
-	jml	f:loc_00F4EB
-loc_00F4EB:
+	jml	f:@queue
+@queue:
 	ldy	#$0000
 	sta	a:vram_block_queue,y
 	clc
@@ -371,7 +373,7 @@ spawn_stage1_boss_wall_chunks:
 ; alternately) is thrown, the shake and sound $56; $34 counts the pushes.
 stage1_boss_push_wall:
 	lda	$24,x
-	beq	loc_00F572
+	beq	@chunk_flying
 	dec	$24,x
 	bne	@return
 	lda	$30,x
@@ -379,12 +381,12 @@ stage1_boss_push_wall:
 	sta	$30,x
 	lda	#$0020
 	sta	a:boss_work_7
-	brl	loc_00F5B1
+	brl	@throw_chunk
 @return:
 	rts
-loc_00F572:
+@chunk_flying:
 	dec	a:boss_work_7
-	bpl	@return
+	bpl	@return2
 	lda	#$0020
 	sta	$24,x
 	stz	a:obj_slots+4*OBJ_SIZE+OBJ_X_VEL_SUB
@@ -404,17 +406,17 @@ loc_00F572:
 	lda	#$0056
 	jsl	f:queue_sound
 	dec	$34,x
-@return:
+@return2:
 	rts
-loc_00F5B1:
+@throw_chunk:
 	phx
 	lda	$30,x
-	bne	loc_00F5BB
+	bne	@right_chunk
 	ldx	#$0300
-	bra	loc_00F5BE
-loc_00F5BB:
+	bra	@set_velocity
+@right_chunk:
 	ldx	#$03C0
-loc_00F5BE:
+@set_velocity:
 	lda	#$4000
 	sta	$18,x
 	lda	#$FFFE	; [num]
@@ -435,10 +437,10 @@ stage1_boss_place_middle_chunks:
 	sec
 	lda	a:obj_slots+4*OBJ_SIZE+OBJ_X
 	sbc	a:obj_slots+7*OBJ_SIZE+OBJ_X
-	bpl	loc_00F5E9
+	bpl	@abs_dx
 	eor	#$FFFF
 	inc	zp_00
-loc_00F5E9:
+@abs_dx:
 	and	#$00FF
 	sta	a:WRDIVL
 	sep	#$20
@@ -451,17 +453,17 @@ loc_00F5E9:
 	sec
 	lda	a:obj_slots+4*OBJ_SIZE+OBJ_Y
 	sbc	a:obj_slots+7*OBJ_SIZE+OBJ_Y
-	bpl	loc_00F608
+	bpl	@abs_dy
 	eor	#$FFFF
 	inc	zp_02
-loc_00F608:
+@abs_dy:
 	and	#$00FF
 	pha
 	lda	a:RDDIVL
 	ldy	zp_00
-	bne	loc_00F616
+	bne	@x_step
 	eor	#$FFFF
-loc_00F616:
+@x_step:
 	sta	zp_00
 	clc
 	lda	a:obj_slots+4*OBJ_SIZE+OBJ_X
@@ -490,10 +492,10 @@ loc_00F616:
 	nop
 	lda	a:RDDIVL
 	ldy	zp_02
-	bne	loc_00F64C
+	bne	@y_step
 	; (not executed in the CDL traces)
 	eor	#$FFFF
-loc_00F64C:
+@y_step:
 	sta	zp_02
 	clc
 	lda	a:obj_slots+4*OBJ_SIZE+OBJ_Y
@@ -540,30 +542,30 @@ tbl_stage1_boss_attacks:
 stage1_boss_attack_06:
 	ldy	a:boss_work_5
 	cpy	#$002C
-	bcs	loc_00F69A
-	brl	loc_00F882
-loc_00F69A:
-	brl	loc_00F88A
+	bcs	@dec_bend
+	brl	stage1_boss_inc_bend
+@dec_bend:
+	brl	stage1_boss_dec_bend
 
 stage1_boss_attack_fire:
 	lda	#$0002
 	sta	$3E,x
 	dec	$38,x
-	bne	loc_00F6B6
+	bne	@spawn_fire
 	lda	#$0025
 	jsl	f:queue_sound
 	inc	$36,x
 	ldy	difficulty
 	lda	a:stage1_boss_fire_timers,y
 	sta	$38,x
-loc_00F6B6:
+@spawn_fire:
 	jsr	a:stage1_boss_spawn_fire
 	ldy	a:boss_work_5
 	cpy	#$001C
-	bcs	loc_00F6C4
-	brl	loc_00F882
-loc_00F6C4:
-	brl	loc_00F88A
+	bcs	@dec_bend
+	brl	stage1_boss_inc_bend
+@dec_bend:
+	brl	stage1_boss_dec_bend
 
 stage1_boss_attack_fire_stream:
 	lda	#$0002
@@ -571,177 +573,178 @@ stage1_boss_attack_fire_stream:
 	lda	#$0001
 	sta	a:shake_continuous
 	dec	$38,x
-	bne	loc_00F6DD
+	bne	@spawn_shot
 	stz	$36,x
 	lda	#$0100
 	sta	$38,x
-loc_00F6DD:
+@spawn_shot:
 	jsr	a:stage1_boss_spawn_fire_stream_shot
-	brl	loc_00F828
+	brl	stage1_boss_shift_upper_lines
 
 stage1_boss_attack_falling_shots:
 	lda	stage_frame_mod8
-	bne	loc_00F6EC
+	bne	@count_down
 	lda	#$0004
 	sta	$3E,x
-loc_00F6EC:
+@count_down:
 	dec	$38,x
-	bne	loc_00F6F7
+	bne	@fire
 	stz	$36,x
 	lda	#$0080
 	sta	$38,x
-loc_00F6F7:
+@fire:
 	jsr	a:stage1_boss_fire_falling_shot
 	ldy	a:boss_work_5
 	lda	a:boss_work_0
 	and	#$0010
-	bne	loc_00F710
-loc_00F705:
+	bne	stage1_boss_bend_toward_10
+stage1_boss_bend_toward_30:
 	cpy	#$0030
-	bcs	loc_00F70D
-	brl	loc_00F882
-loc_00F70D:
-	brl	loc_00F88A
-loc_00F710:
+	bcs	@dec_bend
+	brl	stage1_boss_inc_bend
+@dec_bend:
+	brl	stage1_boss_dec_bend
+stage1_boss_bend_toward_10:
 	cpy	#$0010
-	bcc	loc_00F718
-	brl	loc_00F88A
-loc_00F718:
+	bcc	@inc_bend
+	brl	stage1_boss_dec_bend
+@inc_bend:
 	; (not executed in the CDL traces)
-	brl	loc_00F882
+	brl	stage1_boss_inc_bend
 
 stage1_boss_attack_tracking_shots:
 	lda	a:boss_work_0
 	and	#$0040
-	beq	loc_00F728
+	beq	@count_down
 	lda	#$0002
 	sta	$3E,x
-loc_00F728:
+@count_down:
 	dec	$38,x
-	bne	loc_00F733
+	bne	@fire
 	stz	$36,x
 	lda	#$0040
 	sta	$38,x
-loc_00F733:
+@fire:
 	jsr	a:stage1_boss_fire_tracking_shot
 	ldy	a:boss_work_5
 	lda	a:boss_work_0
 	and	#$0020
-	bne	loc_00F74C
+	bne	@toward_10
 	cpy	#$0024
-	bcs	loc_00F749
-	brl	loc_00F882
-loc_00F749:
-	brl	loc_00F88A
-loc_00F74C:
+	bcs	@dec_bend
+	brl	stage1_boss_inc_bend
+@dec_bend:
+	brl	stage1_boss_dec_bend
+@toward_10:
 	cpy	#$0010
-	bcc	loc_00F754
-	brl	loc_00F88A
-loc_00F754:
-	brl	loc_00F882
+	bcc	@inc_bend
+	brl	stage1_boss_dec_bend
+@inc_bend:
+	brl	stage1_boss_inc_bend
 
 stage1_boss_attack_03:
 	lda	stage_frame_counter
 	bit	#$001F
-	bne	loc_00F763
+	bne	@count_down
 	lda	#$0004
 	sta	$3E,x
-loc_00F763:
+@count_down:
 	dec	$38,x
-	bne	loc_00F771
+	bne	@pick_player
 	stz	$36,x
 	lda	#$0080
 	sta	$38,x
 	stz	a:obj_slots+9*OBJ_SIZE+OBJ_TIMER
-loc_00F771:
+@pick_player:
 	ldy	a:boss_work_5
 	lda	$38,x
 	bit	#$0080
-	bne	loc_00F78F
+	bne	@player2
 	lda	a:p1_lives
-	bne	loc_00F783
+	bne	@p1_height
 	; (not executed in the CDL traces)
-	brl	loc_00F797
-loc_00F783:
+	brl	@p2_height
+@p1_height:
 	sec
 	lda	a:player1_obj+OBJ_Y
 	sbc	a:obj_slots+9*OBJ_SIZE+OBJ_Y
-	bcs	loc_00F7A3
-	brl	loc_00F705
-loc_00F78F:
+	bcs	@toward_8
+	brl	stage1_boss_bend_toward_30
+@player2:
 	lda	a:p2_lives
-	bne	loc_00F797
-	brl	loc_00F783
-loc_00F797:
+	bne	@p2_height
+	brl	@p1_height
+@p2_height:
 	; (not executed in the CDL traces)
 	sec
 	lda	a:player2_obj+OBJ_Y
 	sbc	a:obj_slots+9*OBJ_SIZE+OBJ_Y
-	bcs	loc_00F7A3
-	brl	loc_00F705
-loc_00F7A3:
+	bcs	@toward_8
+	brl	stage1_boss_bend_toward_30
+@toward_8:
 	cpy	#$0008
-	bcc	loc_00F7AB
-	brl	loc_00F88A
-loc_00F7AB:
+	bcc	@inc_bend
+	brl	stage1_boss_dec_bend
+@inc_bend:
 	; (not executed in the CDL traces)
-	brl	loc_00F882
+	brl	stage1_boss_inc_bend
 
 stage1_boss_attack_choose:
 	dec	$38,x
-	bne	loc_00F80A
+	bne	@bend
 	lda	rng_lo
 	bit	#$0003
-	beq	loc_00F7DD
+	beq	@fire_or_03
 	bit	#$0001
-	bne	loc_00F7C6
+	bne	@tracking_shots
 	ldy	#$00C0
 	lda	#$0001
-	bra	loc_00F806
-loc_00F7C6:
+	bra	@set_attack
+@tracking_shots:
 	lda	#$0057
 	jsl	f:queue_sound
 	lda	a:obj_slots+10*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0020
-	bne	loc_00F7E2
+	bne	@fire
 	ldy	#$0080
 	lda	#$0002
-	bra	loc_00F806
-loc_00F7DD:
+	bra	@set_attack
+@fire_or_03:
 	bit	#$0008
-	bne	loc_00F7F3
-loc_00F7E2:
+	bne	@attack_03
+@fire:
 	lda	#$0057
 	jsl	f:queue_sound
 	stz	$3A,x
 	ldy	#$0080
 	lda	#$0004
-	bra	loc_00F806
-loc_00F7F3:
+	bra	@set_attack
+@attack_03:
 	lda	#$0057
 	jsl	f:queue_sound
 	lda	#$0001
 	sta	a:obj_slots+9*OBJ_SIZE+OBJ_TIMER
 	ldy	#$0100
 	lda	#$0003
-loc_00F806:
+@set_attack:
 	sta	$36,x
 	sty	$38,x
-loc_00F80A:
+@bend:
 	ldy	a:boss_work_5
 	lda	a:boss_work_0
 	and	#$0010
-	bne	loc_00F820
+	bne	@toward_10
 	cpy	#$0024
-	bcs	loc_00F81D
-	brl	loc_00F882
-loc_00F81D:
-	brl	loc_00F828
-loc_00F820:
+	bcs	@keep_bend
+	brl	stage1_boss_inc_bend
+@keep_bend:
+	brl	stage1_boss_shift_upper_lines
+@toward_10:
 	cpy	#$0010
-	bcc	loc_00F828
-	brl	loc_00F88A
-loc_00F828:
+	bcc	stage1_boss_shift_upper_lines
+	brl	stage1_boss_dec_bend
+; Adds zp_00/zp_02 to the first $10 lines of the HDMA tables, bend unchanged.
+stage1_boss_shift_upper_lines:
 	phx
 	ldx	#$0000
 @loop:
@@ -780,30 +783,35 @@ stage1_boss_move_down:
 	eor	#$FFFF
 	adc	#$0000
 	sta	zp_02
-	bra	loc_00F876
+	bra	stage1_boss_move_down_tail
 
 stage1_boss_move_up:
 	ldy	#$0020
-	bra	loc_00F879
-loc_00F876:
+	bra	stage1_boss_step_lower_lines
+stage1_boss_move_down_tail:
 	ldy	#$0058
-loc_00F879:
+stage1_boss_step_lower_lines:
 	phx
 	ldx	#$0020
 	lda	#$003A
-	bra	loc_00F897
-loc_00F882:
+	bra	stage1_boss_step_hdma_lines
+; Bending the body: boss_work_5 counts the bend; inc/dec step the first $10
+; lines of the HDMA tables at $7E:A046/$7E:A0C6 by stage1_boss_hdma_line_steps
+; (from offset 0 or $38) and add zp_00/zp_02, as stage1_boss_shift_upper_lines
+; does without bending. The attacks bend toward a target value
+; (stage1_boss_bend_toward_30, stage1_boss_bend_toward_10).
+stage1_boss_inc_bend:
 	inc	a:boss_work_5
 	ldy	#$0000
-	bra	loc_00F890
-loc_00F88A:
+	bra	stage1_boss_step_upper_lines
+stage1_boss_dec_bend:
 	dec	a:boss_work_5
 	ldy	#$0038
-loc_00F890:
+stage1_boss_step_upper_lines:
 	phx
 	ldx	#$0000
 	lda	#$0020
-loc_00F897:
+stage1_boss_step_hdma_lines:
 	sta	zp_08
 @loop:
 	clc
@@ -851,7 +859,7 @@ stage1_boss_set_bg2_scroll:
 	lda	#$009C
 	sbc	a:obj_slots+4*OBJ_SIZE+OBJ_Y
 	sta	a:bg2_y
-loc_00F8F6:
+stage1_boss_place_at_body:
 	lda	a:obj_slots+4*OBJ_SIZE+OBJ_X
 	adc	#$FFE0
 	sta	$0A,x
@@ -911,7 +919,7 @@ stage1_boss_build_head_hdma:
 	bcc	@loop
 	lda	a:boss_work_1
 	bit	#$0100
-	beq	loc_00F98C
+	beq	@done
 	and	#$00F8
 	lsr	a
 	lsr	a
@@ -922,7 +930,7 @@ stage1_boss_build_head_hdma:
 	dex
 @loop2:
 	dec	zp_00
-	bmi	loc_00F98C
+	bmi	@done
 	clc
 	adc	#$0008
 	and	#$01F8
@@ -931,7 +939,7 @@ stage1_boss_build_head_hdma:
 	dex
 	dex
 	bra	@loop2
-loc_00F98C:
+@done:
 	plx
 	rts
 
@@ -961,12 +969,12 @@ stage1_boss_place_parts:
 	sta	a:obj_slots+4*OBJ_SIZE+OBJ_Y
 	rep	#$20
 	.a16
-	brl	loc_00F8F6
+	brl	stage1_boss_place_at_body
 
 spawn_stage1_boss_falling_debris:
 	ldy	#$0018
 	ldx	#$0600
-loc_00F9CB:
+@loop:
 	lda	a:stage1_boss_debris_y,y
 	sta	$0E,x
 	lda	#$00D0
@@ -984,24 +992,24 @@ loc_00F9CB:
 	sta	$02,x
 	dey
 	dey
-	bne	loc_00F9F5
+	bne	@next
 	rts
-loc_00F9F5:
+@next:
 	clc
 	txa
 	adc	#$0040
 	tax
-	bra	loc_00F9CB
+	bra	@loop
 
 stage1_boss_fire_tracking_shot:
 	lda	stage_frame_counter
 	bit	#$0040
-	beq	loc_00FA54
+	beq	stage1_boss_shot_return
 	lda	stage_frame_mod8
-	bne	loc_00FA54
+	bne	stage1_boss_shot_return
 	ldy	#$0500
 	jsl	f:find_free_slot_from_y
-	bcs	loc_00FA54
+	bcs	stage1_boss_shot_return
 	phx
 	lda	#OBJT_STAGE1_BOSS_TRACKING_SHOT
 	sta	a:$0010,y
@@ -1026,13 +1034,13 @@ stage1_boss_fire_tracking_shot:
 	lda	#$FFF2	; [num]
 	sta	a:$002A,y
 	plx
-loc_00FA54:
+stage1_boss_shot_return:
 	rts
 
 stage1_boss_fire_falling_shot:
 	lda	stage_frame_counter
 	bit	#$000F
-	bne	loc_00FA54
+	bne	stage1_boss_shot_return
 	ldy	#$0500
 	jsl	f:find_free_slot_from_y
 	bcs	@return
@@ -1076,31 +1084,31 @@ stage1_boss_fire_falling_shot:
 ; (speed stage1_boss_tracking_shot_accels by difficulty).
 update_stage1_boss_tracking_shot:
 	lda	OBJ_HP,x
-	bpl	loc_00FAD3
+	bpl	@alive
 	lda	#$000C
 	jsl	f:queue_sound
 	txy
 	lda	#.loword(anim_05C59A)
 	jml	f:make_effect_object
-loc_00FAD3:
+@alive:
 	lda	rng_temp
 	cmp	#$0002
-	bcc	loc_00FADE
+	bcc	@jitter_up
 	inc	$0E,x
-	bra	loc_00FAE0
-loc_00FADE:
+	bra	@target_player
+@jitter_up:
 	dec	$0E,x
-loc_00FAE0:
+@target_player:
 	ldy	#$0200
 	txa
 	and	#$0040
-	beq	loc_00FAEC
+	beq	@compare_height
 	ldy	#$0240
-loc_00FAEC:
+@compare_height:
 	lda	a:$000E,y
 	ldy	difficulty
 	cmp	$0E,x
-	bpl	loc_00FB05
+	bpl	@accel_down
 	sec
 	lda	$1C,x
 	sbc	a:stage1_boss_tracking_shot_accels,y
@@ -1109,7 +1117,7 @@ loc_00FAEC:
 	sbc	#$0000
 	sta	$1E,x
 	rtl
-loc_00FB05:
+@accel_down:
 	clc
 	lda	$1C,x
 	adc	a:stage1_boss_tracking_shot_accels,y
@@ -1123,26 +1131,26 @@ loc_00FB05:
 ; floor.
 update_stage1_boss_falling_shot:
 	lda	OBJ_HP,x
-	bpl	loc_00FB2A
+	bpl	@alive
 	lda	#$000C
 	jsl	f:queue_sound
 	stz	$04,x
 	txy
 	lda	#.loword(anim_05C59A)
 	jml	f:make_effect_object
-loc_00FB2A:
+@alive:
 	lda	$12,x
-	bne	loc_00FB6B
+	bne	@not_falling
 	stz	zp_00
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
-	beq	loc_00FB44
+	beq	@fall
 	jsl	f:snap_y_up_to_tile
 	inc	$12,x
 	lda	#$FFFE	; [num]
 	sta	$1E,x
 	rtl
-loc_00FB44:
+@fall:
 	clc
 	lda	$1C,x
 	adc	#$1800
@@ -1151,20 +1159,20 @@ loc_00FB44:
 	adc	#$0000
 	sta	$1E,x
 	rtl
-loc_00FB54:
+@bounce:
 	stz	zp_00
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
-	beq	loc_00FB44
+	beq	@fall
 	jsl	f:snap_y_up_to_tile
 	inc	$12,x
 	stz	$1E,x
 	stz	$1C,x
 	stz	$04,x
 	rtl
-loc_00FB6B:
+@not_falling:
 	cmp	#$0001
-	beq	loc_00FB54
+	beq	@bounce
 	rtl
 
 stage1_boss_spawn_fire:
@@ -1219,36 +1227,36 @@ stage1_boss_spawn_fire_stream_shot:
 ; OBJ_TIMER is set).
 update_stage1_boss_head:
 	lda	OBJ_HIT,x
-	bne	loc_00FC0B
+	bne	@hit
 	ldy	#$0130
 	lda	OBJ_TIMER,x
-	bne	loc_00FBF8
+	bne	@move_out
 	ldy	#$0100
 	lda	a:boss_work_1
 	cmp	#$0100
-	bcs	loc_00FC11
-loc_00FBF8:
+	bcs	@move_back
+@move_out:
 	sty	zp_00
 	lda	a:boss_work_1
 	clc
 	adc	#$0004
 	cmp	zp_00
-	bcc	loc_00FC07
+	bcc	@set_out_pos
 	lda	zp_00
-loc_00FC07:
+@set_out_pos:
 	sta	a:boss_work_1
 	rtl
-loc_00FC0B:
+@hit:
 	lda	a:boss_work_1
 	ldy	#$00E0
-loc_00FC11:
+@move_back:
 	sty	zp_00
 	sec
 	sbc	#$000C
 	cmp	zp_00
-	bcs	loc_00FC1D
+	bcs	@set_back_pos
 	lda	zp_00
-loc_00FC1D:
+@set_back_pos:
 	sta	a:boss_work_1
 	rtl
 
@@ -1256,7 +1264,7 @@ loc_00FC1D:
 ; (352); fires at the player every stage1_boss_fire_intervals[difficulty] + rnd frames.
 update_stage1_boss:
 	dec	$34,x
-	bpl	loc_00FC43
+	bpl	@fire_done
 	ldy	difficulty
 	lda	rng_lo
 	and	#$007F
@@ -1269,18 +1277,18 @@ update_stage1_boss:
 	adc	#$0010
 	sta	zp_00
 	jsl	f:fire_bullet_at_player
-loc_00FC43:
+@fire_done:
 	lda	$26,x
-	beq	loc_00FC58
+	beq	@check_hp
 	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$0060
 	sta	cgram_upload_addr
 	lda	#$000F
 	jsl	f:queue_sound
-loc_00FC58:
+@check_hp:
 	lda	$06,x
-	bpl	loc_00FCBD
+	bpl	stage1_boss_play_hit_sound
 	lda	#$0100
 	sta	a:obj_slots+28*OBJ_SIZE+$32
 	lda	#$0110
@@ -1305,12 +1313,12 @@ update_stage1_boss_part:
 	and	#$00FF
 	sta	a:$000E,x
 	lda	OBJ_STATE,x
-	bne	loc_00FCC9
+	bne	stage1_boss_part_exploding
 	lda	a:obj_slots+28*OBJ_SIZE+$32
-	bne	loc_00FCA0
+	bne	@explode
 	lda	OBJ_HP,x
-	bpl	loc_00FCBD
-loc_00FCA0:
+	bpl	stage1_boss_play_hit_sound
+@explode:
 	lda	#$0030
 	jsl	f:queue_sound
 	lda	#$0040
@@ -1321,21 +1329,21 @@ loc_00FCA0:
 	ldy	#$0008
 	lda	#$4D14
 	jml	f:loc_00FE7D
-loc_00FCBD:
+stage1_boss_play_hit_sound:
 	lda	$14,x
 	beq	@return
 	lda	#$000F
 	jml	f:queue_sound
 @return:
 	rtl
-loc_00FCC9:
+stage1_boss_part_exploding:
 	dec	$24,x
-	bne	loc_00FCD2
+	bne	@spawn_debris
 	lda	#$8000	; [num]
 	sta	$16,x
-loc_00FCD2:
+@spawn_debris:
 	lda	stage_frame_mod8
-	bne	loc_00FCBD
+	bne	stage1_boss_play_hit_sound
 	lda	$0A,x
 	sta	zp_00
 	lda	$0E,x
@@ -1367,7 +1375,7 @@ loc_00FCD2:
 ; (slots $0300-$03C0, spawn_stage1_boss_wall_chunks; seen in the emulator).
 update_stage1_boss_wall_chunk:
 	lda	$30,x
-	beq	loc_00FD25
+	beq	@animate
 	clc
 	lda	OBJ_Y_VEL_SUB,x
 	adc	#$1000
@@ -1375,22 +1383,22 @@ update_stage1_boss_wall_chunk:
 	lda	OBJ_Y_VEL,x
 	adc	#$0000
 	sta	OBJ_Y_VEL,x
-loc_00FD25:
+@animate:
 	inc	$24,x
 	ldy	#$0000
 	lda	$24,x
 	and	#$001F
 	cmp	#$0006
-	bcc	loc_00FD37
+	bcc	@which_chunk
 	ldy	#$0002
-loc_00FD37:
+@which_chunk:
 	cpx	#$03C0
-	bne	loc_00FD40
+	bne	@set_sprite
 	iny
 	iny
 	iny
 	iny
-loc_00FD40:
+@set_sprite:
 	lda	a:stage1_boss_wall_chunk_sprites,y
 	sta	$00,x
 	rtl
@@ -1400,13 +1408,13 @@ loc_00FD40:
 update_falling_debris:
 	lda	OBJ_Y,x
 	cmp	#$00C8
-	bcc	loc_00FD5A
+	bcc	@fall
 	lda	#$FFFC	; [num]
 	sta	OBJ_Y_VEL,x
 	txy
 	lda	#.loword(anim_05C69C)
 	jml	f:make_effect_object
-loc_00FD5A:
+@fall:
 	clc
 	lda	$1C,x
 	adc	#$3000
@@ -1420,10 +1428,10 @@ loc_00FD5A:
 ; stage1_boss_spawn_fire).
 update_stage1_boss_fire:
 	dec	OBJ_TIMER,x
-	bne	loc_00FD73
+	bne	@follow_head
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
-loc_00FD73:
+@follow_head:
 	lda	a:obj_slots+9*OBJ_SIZE+OBJ_X
 	sta	$0A,x
 	lda	a:obj_slots+9*OBJ_SIZE+OBJ_Y
