@@ -86,9 +86,17 @@ matching `build/contra3.sfc` (checkout of `main`, `make`).
   stage's midpoint, which reaches its boss), then play with seeded random
   input (advancing with the game's own frames, so that a lag frame does not
   change what the game sees), infinite lives and bombs and the barrier
-  kept on. 15 plays: every stage from its start and from its midpoint (the
-  bosses, the stage transitions, the NORMAL ending of stage 6), 2-player
-  modes A and B (the top-down split screen), HARD; plus the attract
+  kept on. The random moves never press Start (it pauses); the plays press
+  it on the two screens that wait for it, 300 game frames after they
+  appear: the closing message's PUSH START KEY and FINAL SCORE
+  (`plays.waits_for_start`). 17 plays: every stage from its start and
+  from its midpoint (the bosses, the stage transitions), 2-player modes A
+  and B (the top-down split screen), HARD; the three endings from stage
+  6's midpoint: `stage6_boss` (NORMAL: the closing message, then stage 1
+  of the next loop on HARD), `stage6_ending_easy` (EASY: the same, the
+  next loop on NORMAL with its 4 continues) and `stage6_ending_hard` (the
+  last form chasing the helicopter, the closing message, the pictures and
+  the crowd, FINAL SCORE, back to the opening); plus the attract
   sequence. Every 60 game frames (counted by the game's `frame_counter`, so
   a lag frame moves nothing) the screen (15-bit) and the sound command ring
   (`$0100-$01FF`, what `queue_sound` sends) are hashed, and the loudness of

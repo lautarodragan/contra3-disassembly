@@ -120,8 +120,9 @@ original layout):
 - `tests/test_play.py`: scripted plays (`tools/c3emu/plays.py`):
   every stage from its start and from its midpoint (`$1E40` poked, which
   reaches the bosses, the stage clear screens and the next stage), 2-player
-  modes A and B (the top-down split screen), HARD, the NORMAL ending of
-  stage 6 and the attract sequence, about 330,000 frames of seeded random
+  modes A and B (the top-down split screen), HARD, the three endings of
+  stage 6 (EASY and NORMAL into the next loop, HARD to FINAL SCORE) and
+  the attract sequence, about 430,000 frames of seeded random
   play with infinite lives and the barrier on. Every 60 game frames the
   screen and the sound command ring are compared with goldens taken from
   the original ROM, and the loudness of the audio.
