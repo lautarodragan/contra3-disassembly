@@ -299,6 +299,13 @@ damage, the button codes, the debug keys, the 30 lives in OPTION. `make cheat-te
 make cheat-test
 ```
 
+**On real hardware.** A ROM built with
+`make cheats CHEATS="infinite_lives infinite_bombs keep_weapons start_weapon=3 start_weapon2=4 damage_mult=10"`
+(and probably one or two more options) was played from start to end on
+a real SNES with an FXPAK flash cartridge, with no problems. That
+build moves code in bank `$01` and recomputes the header checksum, so
+this also checks a shifted ROM on the console.
+
 Besides those, a ROM with the `god-mode` options and `enemy_hp=0` was
 played with the tracer's random player (no pokes): stages 1, 3, 4 and 6
 were cleared (stage 6 up to the ending text) without losing a life, and the
