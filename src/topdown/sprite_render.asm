@@ -15,15 +15,15 @@ draw_topdown_sprites:
 	.i16
 	rep	#$30
 	lda	a:title_menu_cursor
-	beq	loc_03E18F
+	beq	@player1_view
 	dec	a
-	bne	loc_03E18F
+	bne	@player1_view
 	lda	frame_counter
 	lsr	a
-	bcs	loc_03E193
-loc_03E18F:
+	bcs	@player2_view
+@player1_view:
 	jml	f:draw_p1_view_sprites
-loc_03E193:
+@player2_view:
 	jml	f:draw_p2_view_sprites
 
 ; Rotates the map point (Y = x, A = y) into the view set up by
@@ -43,17 +43,17 @@ tbl_project_quadrants:
 project_quadrant_0:
 	sec
 	sbc	zp_1A
-	bmi	loc_03E201
+	bmi	@above
 	cmp	#$00B8
-	bcs	loc_03E1D8
+	bcs	@far
 	asl	a
 	tax
 	tya
 	sec
 	sbc	zp_18
-	bmi	loc_03E1DA
+	bmi	@left
 	cmp	#$00B8
-	bcs	loc_03E1D8
+	bcs	@far
 	asl	a
 	tay
 	lda	[zp_D4],y
@@ -72,14 +72,14 @@ project_quadrant_0:
 	adc	zp_1E
 	sta	zp_02
 	clc
-loc_03E1D8:
+@far:
 	plx
 	rts
-loc_03E1DA:
+@left:
 	eor	#$FFFF
 	inc	a
 	cmp	#$00B8
-	bcs	loc_03E1D8
+	bcs	@far
 	asl	a
 	tay
 	lda	[zp_D7],y
@@ -100,19 +100,19 @@ loc_03E1DA:
 	clc
 	plx
 	rts
-loc_03E201:
+@above:
 	eor	#$FFFF
 	inc	a
 	cmp	#$00B8
-	bcs	loc_03E236
+	bcs	@far2
 	asl	a
 	tax
 	tya
 	sec
 	sbc	zp_18
-	bmi	loc_03E238
+	bmi	@above_left
 	cmp	#$00B8
-	bcs	loc_03E236
+	bcs	@far2
 	asl	a
 	tay
 	lda	[zp_D4],y
@@ -132,14 +132,14 @@ loc_03E201:
 	adc	zp_1E
 	sta	zp_02
 	clc
-loc_03E236:
+@far2:
 	plx
 	rts
-loc_03E238:
+@above_left:
 	eor	#$FFFF
 	inc	a
 	cmp	#$00B8
-	bcs	loc_03E236
+	bcs	@far2
 	asl	a
 	tay
 	lda	[zp_D7],y
@@ -166,17 +166,17 @@ loc_03E238:
 project_quadrant_1:
 	sec
 	sbc	zp_1A
-	bmi	loc_03E2C1
+	bmi	@above
 	cmp	#$00B8
-	bcs	loc_03E298
+	bcs	@far
 	asl	a
 	tax
 	tya
 	sec
 	sbc	zp_18
-	bmi	loc_03E29A
+	bmi	@left
 	cmp	#$00B8
-	bcs	loc_03E298
+	bcs	@far
 	asl	a
 	tay
 	lda	[zp_D4],y
@@ -196,14 +196,14 @@ project_quadrant_1:
 	adc	zp_1C
 	sta	zp_00
 	clc
-loc_03E298:
+@far:
 	plx
 	rts
-loc_03E29A:
+@left:
 	eor	#$FFFF
 	inc	a
 	cmp	#$00B8
-	bcs	loc_03E298
+	bcs	@far
 	asl	a
 	tay
 	lda	[zp_D7],y
@@ -224,19 +224,19 @@ loc_03E29A:
 	clc
 	plx
 	rts
-loc_03E2C1:
+@above:
 	eor	#$FFFF
 	inc	a
 	cmp	#$00B8
-	bcs	loc_03E2F9
+	bcs	@far2
 	asl	a
 	tax
 	tya
 	sec
 	sbc	zp_18
-	bmi	loc_03E2FB
+	bmi	@above_left
 	cmp	#$00B8
-	bcs	loc_03E2F9
+	bcs	@far2
 	asl	a
 	tay
 	lda	[zp_D4],y
@@ -257,14 +257,14 @@ loc_03E2C1:
 	adc	zp_1C
 	sta	zp_00
 	clc
-loc_03E2F9:
+@far2:
 	plx
 	rts
-loc_03E2FB:
+@above_left:
 	eor	#$FFFF
 	inc	a
 	cmp	#$00B8
-	bcs	loc_03E2F9
+	bcs	@far2
 	asl	a
 	tay
 	lda	[zp_D7],y
@@ -290,17 +290,17 @@ loc_03E2FB:
 project_quadrant_2:
 	sec
 	sbc	zp_1A
-	bmi	loc_03E384
+	bmi	@above
 	cmp	#$00B8
-	bcs	loc_03E358
+	bcs	@far
 	asl	a
 	tax
 	tya
 	sec
 	sbc	zp_18
-	bmi	loc_03E35A
+	bmi	@left
 	cmp	#$00B8
-	bcs	loc_03E358
+	bcs	@far
 	asl	a
 	tay
 	lda	[zp_D4],y
@@ -320,14 +320,14 @@ project_quadrant_2:
 	adc	zp_1E
 	sta	zp_02
 	clc
-loc_03E358:
+@far:
 	plx
 	rts
-loc_03E35A:
+@left:
 	eor	#$FFFF
 	inc	a
 	cmp	#$00B8
-	bcs	loc_03E358
+	bcs	@far
 	asl	a
 	tay
 	lda	[zp_D7],y
@@ -349,19 +349,19 @@ loc_03E35A:
 	clc
 	plx
 	rts
-loc_03E384:
+@above:
 	eor	#$FFFF
 	inc	a
 	cmp	#$00B8
-	bcs	loc_03E3B9
+	bcs	@far2
 	asl	a
 	tax
 	tya
 	sec
 	sbc	zp_18
-	bmi	loc_03E3BB
+	bmi	@above_left
 	cmp	#$00B8
-	bcs	loc_03E3B9
+	bcs	@far2
 	asl	a
 	tay
 	lda	[zp_D4],y
@@ -381,14 +381,14 @@ loc_03E384:
 	adc	zp_1E
 	sta	zp_02
 	clc
-loc_03E3B9:
+@far2:
 	plx
 	rts
-loc_03E3BB:
+@above_left:
 	eor	#$FFFF
 	inc	a
 	cmp	#$00B8
-	bcs	loc_03E3B9
+	bcs	@far2
 	asl	a
 	tay
 	lda	[zp_D7],y
@@ -415,17 +415,17 @@ loc_03E3BB:
 project_quadrant_3:
 	sec
 	sbc	zp_1A
-	bmi	loc_03E444
+	bmi	@above
 	cmp	#$00B8
-	bcs	loc_03E418
+	bcs	@far
 	asl	a
 	tax
 	tya
 	sec
 	sbc	zp_18
-	bmi	loc_03E41A
+	bmi	@left
 	cmp	#$00B8
-	bcs	loc_03E418
+	bcs	@far
 	asl	a
 	tay
 	lda	[zp_D4],y
@@ -444,14 +444,14 @@ project_quadrant_3:
 	adc	zp_1C
 	sta	zp_00
 	clc
-loc_03E418:
+@far:
 	plx
 	rts
-loc_03E41A:
+@left:
 	eor	#$FFFF
 	inc	a
 	cmp	#$00B8
-	bcs	loc_03E418
+	bcs	@far
 	asl	a
 	tay
 	lda	[zp_D7],y
@@ -473,19 +473,19 @@ loc_03E41A:
 	clc
 	plx
 	rts
-loc_03E444:
+@above:
 	eor	#$FFFF
 	inc	a
 	cmp	#$00B8
-	bcs	loc_03E476
+	bcs	@far2
 	asl	a
 	tax
 	tya
 	sec
 	sbc	zp_18
-	bmi	loc_03E478
+	bmi	@above_left
 	cmp	#$00B8
-	bcs	loc_03E476
+	bcs	@far2
 	asl	a
 	tay
 	lda	[zp_D4],y
@@ -504,14 +504,14 @@ loc_03E444:
 	adc	zp_1C
 	sta	zp_00
 	clc
-loc_03E476:
+@far2:
 	plx
 	rts
-loc_03E478:
+@above_left:
 	eor	#$FFFF
 	inc	a
 	cmp	#$00B8
-	bcs	loc_03E476
+	bcs	@far2
 	asl	a
 	tay
 	lda	[zp_D7],y
@@ -543,22 +543,22 @@ draw_map_view_sprites:
 	lda	#$AAAA	; [num]
 	sta	a:oam_hi_table+2
 	lda	a:p1_lives
-	bne	loc_03E4BC
-	brl	loc_03E4C8
-loc_03E4BC:
+	bne	@p1_marker
+	brl	@p2
+@p1_marker:
 	ldx	#$0EC0
 	jsr	a:map_view_player_position
 	jsr	a:map_view_p1_marker
 	jsr	a:write_map_view_p1_marker
-loc_03E4C8:
+@p2:
 	lda	a:p2_lives
-	bne	loc_03E4D0
-	brl	loc_03E4D9
-loc_03E4D0:
+	bne	@p2_marker
+	brl	@write_p2_marker
+@p2_marker:
 	ldx	#$0F00
 	jsr	a:map_view_player_position
 	jsr	a:map_view_p2_marker
-loc_03E4D9:
+@write_p2_marker:
 	jsr	a:write_map_view_p2_marker
 	jsr	a:draw_map_view_targets
 	lda	#$F000	; [num]
@@ -630,13 +630,13 @@ map_view_p1_marker:
 	lda	$0E,x
 	and	#$03FF
 	cmp	#$0200
-	bcs	loc_03E55E
+	bcs	@lower_half
 	lda	#$002A
 	sta	zp_08
 	lda	#$0008
 	sta	zp_0A
 	rts
-loc_03E55E:
+@lower_half:
 	lda	#$0000
 	sta	zp_08
 	lda	#$FFE8	; [num]
@@ -648,13 +648,13 @@ map_view_p2_marker:
 	lda	$0E,x
 	and	#$03FF
 	cmp	#$0200
-	bcs	loc_03E57E
+	bcs	@lower_half
 	lda	#$002C
 	sta	zp_08
 	lda	#$0008
 	sta	zp_0A
 	rts
-loc_03E57E:
+@lower_half:
 	lda	#$0002
 	sta	zp_08
 	lda	#$FFE8	; [num]
@@ -829,14 +829,14 @@ draw_intro_sprites:
 	sta	a:oam_hi_table+6
 	lda	a:intro_phase
 	dec	a
-	beq	loc_03E6A6
-	brl	loc_03E6B2
-loc_03E6A6:
+	beq	@choosing
+	brl	@hide_rest
+@choosing:
 	jsr	a:draw_intro_banner_sprites
 	jsr	a:draw_p1_start_cursor
 	jsr	a:draw_p2_start_cursor
 	jsr	a:draw_intro_target_markers
-loc_03E6B2:
+@hide_rest:
 	lda	#$F000	; [num]
 @loop:
 	sta	a:$0000,y
@@ -851,10 +851,10 @@ loc_03E6B2:
 ; Player 1's start-point cursor (blinks once chosen).
 draw_p1_start_cursor:
 	lda	a:p1_lives
-	bne	loc_03E6CA
+	bne	@has_lives
 	; (not executed in the CDL traces)
-	brl	loc_03E79A
-loc_03E6CA:
+	brl	@return
+@has_lives:
 	phy
 	lda	a:p1_start_x
 	asl	a
@@ -870,12 +870,12 @@ loc_03E6CA:
 	lda	#$3900
 	sta	zp_06
 	lda	a:p1_start_chosen
-	beq	loc_03E6F4
+	beq	@draw
 	lda	stage_frame_counter
 	bit	#$0004
-	beq	loc_03E6F4
-	brl	loc_03E79A
-loc_03E6F4:
+	beq	@draw
+	brl	@return
+@draw:
 	lda	zp_02
 	sec
 	sbc	#$0008
@@ -969,20 +969,20 @@ loc_03E6F4:
 	iny
 	iny
 	iny
-loc_03E79A:
+@return:
 	rts
 
 ; Player 2's start-point cursor.
 draw_p2_start_cursor:
 	lda	a:title_menu_cursor
-	bne	loc_03E7A3
-	brl	loc_03E87B
-loc_03E7A3:
+	bne	@two_players
+	brl	@return
+@two_players:
 	lda	a:p2_lives
-	bne	loc_03E7AB
+	bne	@has_lives
 	; (not executed in the CDL traces)
-	brl	loc_03E87B
-loc_03E7AB:
+	brl	@return
+@has_lives:
 	phy
 	lda	a:p2_start_x
 	asl	a
@@ -998,12 +998,12 @@ loc_03E7AB:
 	lda	#$3B00
 	sta	zp_06
 	lda	a:p2_start_chosen
-	beq	loc_03E7D5
+	beq	@draw
 	lda	stage_frame_counter
 	bit	#$0004
-	bne	loc_03E7D5
-	brl	loc_03E87B
-loc_03E7D5:
+	bne	@draw
+	brl	@return
+@draw:
 	lda	zp_02
 	clc
 	adc	#$0008
@@ -1097,7 +1097,7 @@ loc_03E7D5:
 	iny
 	iny
 	iny
-loc_03E87B:
+@return:
 	rts
 
 draw_intro_banner_sprites:
@@ -1176,16 +1176,16 @@ get_target_marker_attr:
 	ldx	#$0000
 	lda	stage_frame_counter
 	bit	#$0003
-	bne	loc_03E900
+	bne	@pick_stage
 	ldx	#$0002
-loc_03E900:
+@pick_stage:
 	stx	zp_FA
 	lda	#$0000
 	ldx	stage_number
 	cpx	#$0002
-	beq	loc_03E90F
+	beq	@combine
 	lda	#$0004
-loc_03E90F:
+@combine:
 	ora	zp_FA
 	tax
 	lda	a:td_target_marker_attrs,x
@@ -1196,20 +1196,20 @@ draw_p1_view_sprites:
 	rep	#$30
 	lda	a:topdown_map
 	cmp	#TD_MAP_STAGE2_BOSS
-	beq	loc_03E96E
+	beq	@stage2_boss
 	cmp	#TD_MAP_STAGE5_BOSS
-	bne	loc_03E92A
-	brl	loc_03E9A0
-loc_03E92A:
+	bne	@normal_map
+	brl	@stage5_boss
+@normal_map:
 	lda	a:intro_phase
-	beq	loc_03E932
+	beq	@not_intro
 	brl	draw_intro_sprites
-loc_03E932:
+@not_intro:
 	lda	a:map_view_active
-	beq	loc_03E93A
+	beq	@play
 	; (not executed in the CDL traces)
 	brl	draw_map_view_sprites
-loc_03E93A:
+@play:
 	sep	#$20
 	.a8
 	lda	#^sprite_data_07
@@ -1221,10 +1221,10 @@ loc_03E93A:
 	jsr	a:draw_target_arrows
 	jsr	a:start_oam_list
 	jsr	a:is_p1_view_falling
-	bcs	loc_03E956
+	bcs	@end_small
 	jsr	a:draw_small_objects
 	jsr	a:draw_td_items
-loc_03E956:
+@end_small:
 	jsr	a:end_small_sprites
 	jsr	a:draw_enemies
 	jsr	a:draw_topdown_players
@@ -1238,7 +1238,7 @@ loc_03E956:
 	rep	#$20
 	.a16
 	rtl
-loc_03E96E:
+@stage2_boss:
 	sep	#$20
 	.a8
 	lda	#^sprite_data_07
@@ -1265,7 +1265,7 @@ loc_03E96E:
 	rep	#$20
 	.a16
 	rtl
-loc_03E9A0:
+@stage5_boss:
 	sep	#$20
 	.a8
 	lda	#^sprite_data_07
@@ -1277,10 +1277,10 @@ loc_03E9A0:
 	jsr	a:draw_target_arrows
 	jsr	a:start_oam_list
 	jsr	a:is_p1_view_falling
-	bcs	loc_03E9BC
+	bcs	@end_small2
 	jsr	a:draw_small_objects
 	jsr	a:draw_td_items
-loc_03E9BC:
+@end_small2:
 	jsr	a:end_small_sprites
 	jsr	a:project_stage5_boss_objects
 	jsr	a:draw_stage5_boss_claw_section
@@ -1298,15 +1298,15 @@ loc_03E9BC:
 
 is_p1_view_falling:
 	lda	a:title_menu_cursor
-	beq	loc_03E9DF
+	beq	@check_fall
 	dec	a
-	bne	loc_03E9E6
-loc_03E9DF:
+	bne	@return_clc
+@check_fall:
 	lda	a:td_p1_obj+$2C
-	beq	loc_03E9E6
+	beq	@return_clc
 	sec
 	rts
-loc_03E9E6:
+@return_clc:
 	clc
 	rts
 
@@ -1314,10 +1314,10 @@ loc_03E9E6:
 ; quadrant (zp_DA) and the two product tables for the angle (zp_D4, zp_D7).
 setup_p1_view_projection:
 	lda	a:title_menu_cursor
-	beq	loc_03E9F0
+	beq	@full_screen
 	dec	a
-	beq	loc_03EA17
-loc_03E9F0:
+	beq	@top_half
+@full_screen:
 	lda	#$0008
 	sta	a:zp_0C
 	lda	#$00E0
@@ -1332,8 +1332,8 @@ loc_03E9F0:
 	sta	zp_1A
 	lda	a:p1_view_angle
 	sta	zp_16
-	bra	loc_03EA3C
-loc_03EA17:
+	bra	@tables
+@top_half:
 	lda	#$FFF0	; [num]
 	sta	a:zp_0C
 	lda	#$0068
@@ -1348,7 +1348,7 @@ loc_03EA17:
 	sta	zp_1A
 	lda	a:p1_view_angle
 	sta	zp_16
-loc_03EA3C:
+@tables:
 	asl	a
 	asl	a
 	asl	a
@@ -1423,11 +1423,11 @@ start_oam_list:
 ; picked by its angle relative to the view (td_small_object_tiles).
 draw_small_objects:
 	ldx	#$0300
-loc_03EAC2:
+@slot_loop:
 	lda	$10,x
-	beq	loc_03EB39
+	beq	@next_slot
 	lda	$04,x
-	bmi	loc_03EADA
+	bmi	@fixed_tile
 	sec
 	sbc	a:p1_view_angle
 	and	#$00FF
@@ -1435,33 +1435,33 @@ loc_03EAC2:
 	asl	a
 	tay
 	lda	a:td_small_object_tiles,y
-	bra	loc_03EADE
-loc_03EADA:
+	bra	@tile_ready
+@fixed_tile:
 	lda	$00,x
-	beq	loc_03EB39
-loc_03EADE:
+	beq	@next_slot
+@tile_ready:
 	ora	$02,x
 	sta	zp_04
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcs	loc_03EB39
+	bcs	@next_slot
 	ldy	zp_10
 	sec
 	lda	zp_02
 	sbc	$16,x
 	cmp	zp_0C
-	bmi	loc_03EB39
+	bmi	@next_slot
 	cmp	zp_0E
-	bpl	loc_03EB39
+	bpl	@next_slot
 	sta	a:$0001,y
 	sec
 	lda	zp_00
 	sbc	$16,x
 	cmp	#$0100
-	bpl	loc_03EB39
+	bpl	@next_slot
 	cmp	#$FFF0	; [num]
-	bmi	loc_03EB39
+	bmi	@next_slot
 	ror	zp_14
 	sep	#$20
 	.a8
@@ -1478,7 +1478,7 @@ loc_03EADE:
 	lda	$16,x
 	cmp	#$0008
 	ror	zp_14
-	bcc	loc_03EB39
+	bcc	@next_slot
 	ldy	zp_12
 	lda	zp_14
 	sta	a:$0000,y
@@ -1487,14 +1487,14 @@ loc_03EADE:
 	lda	#$8000	; [num]
 	sta	zp_14
 	sty	zp_12
-loc_03EB39:
+@next_slot:
 	txa
 	clc
 	adc	#$0020
 	tax
 	cpx	#$0980
 	bcs	@return
-	brl	loc_03EAC2
+	brl	@slot_loop
 @return:
 	rts
 
@@ -1555,19 +1555,19 @@ draw_enemies:
 	lda	#$8000	; [num]
 	sta	zp_14
 	lda	a:title_menu_cursor
-	beq	loc_03EBA6
+	beq	@check_fall
 	dec	a
-	bne	loc_03EBAE
-loc_03EBA6:
+	bne	@draw
+@check_fall:
 	lda	a:td_p1_obj+$2C
-	beq	loc_03EBAE
-	brl	loc_03EC46
-loc_03EBAE:
+	beq	@draw
+	brl	@hide_rest
+@draw:
 	stz	zp_08
 	ldx	#$0D40
-loc_03EBB3:
+@slot_loop:
 	lda	$00,x
-	beq	loc_03EC34
+	beq	@next_slot
 	asl	a
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
@@ -1577,12 +1577,12 @@ loc_03EBB3:
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03EBD6
+	bcc	@in_range
 	lda	$2E,x
 	and	#$FFFB
 	sta	$2E,x
-	brl	loc_03EC34
-loc_03EBD6:
+	brl	@next_slot
+@in_range:
 	lda	$2E,x
 	ora	#$0004
 	sta	$2E,x
@@ -1622,16 +1622,16 @@ loc_03EBD6:
 	jsr	a:draw_topdown_metasprite
 	plx
 	lda	zp_D0
-	bne	loc_03EC2D
+	bne	@some_drawn
 	lda	$2E,x
 	and	#$FFFE
 	sta	$2E,x
-	bra	loc_03EC34
-loc_03EC2D:
+	bra	@next_slot
+@some_drawn:
 	lda	$2E,x
 	ora	#$0001
 	sta	$2E,x
-loc_03EC34:
+@next_slot:
 	inc	zp_08
 	inc	zp_08
 	txa
@@ -1639,9 +1639,9 @@ loc_03EC34:
 	adc	#$0040
 	tax
 	cpx	#$0EC0
-	bcs	loc_03EC46
-	brl	loc_03EBB3
-loc_03EC46:
+	bcs	@hide_rest
+	brl	@slot_loop
+@hide_rest:
 	lda	zp_14
 @loop:
 	lsr	a
@@ -1672,24 +1672,24 @@ draw_topdown_players:
 	sta	zp_14
 	stz	zp_08
 	ldx	#$0EC0
-loc_03EC77:
+@slot_loop:
 	lda	a:title_menu_cursor
-	beq	loc_03EC86
+	beq	@one_view
 	dec	a
-	beq	loc_03EC86
+	beq	@one_view
 	; (not executed in the CDL traces)
 	lda	$2C,x
-	beq	loc_03EC93
-	brl	loc_03ED04
-loc_03EC86:
+	beq	@draw
+	brl	@next_slot
+@one_view:
 	cpx	#$0EC0
-	beq	loc_03EC93
+	beq	@draw
 	lda	a:td_p1_obj+$2C
 	ora	a:td_p2_obj+$2C
-	bne	loc_03ED04
-loc_03EC93:
+	bne	@next_slot
+@draw:
 	lda	$00,x
-	beq	loc_03ED04
+	beq	@next_slot
 	asl	a
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
@@ -1699,12 +1699,12 @@ loc_03EC93:
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03ECB7
+	bcc	@in_range
 	lda	#$8000	; [num]
 	sta	a:$00B0,x
 	sta	a:$00B4,x
-	bra	loc_03ED04
-loc_03ECB7:
+	bra	@next_slot
+@in_range:
 	lda	zp_00
 	sta	a:$00B0,x
 	lda	zp_02
@@ -1744,7 +1744,7 @@ loc_03ECB7:
 	ply
 	jsr	a:draw_topdown_metasprite
 	plx
-loc_03ED04:
+@next_slot:
 	inc	zp_08
 	inc	zp_08
 	txa
@@ -1752,9 +1752,9 @@ loc_03ED04:
 	adc	#$0040
 	tax
 	cpx	#$0F40
-	bcs	loc_03ED16
-	brl	loc_03EC77
-loc_03ED16:
+	bcs	@hide_rest
+	brl	@slot_loop
+@hide_rest:
 	lda	zp_14
 @loop:
 	lsr	a
@@ -1781,30 +1781,30 @@ draw_stage2_boss_cannon:
 	ldx	#$11D0
 	stx	zp_12
 	lda	#$0000
-	bne	loc_03ED49
+	bne	@keep_hi_bits
 	lda	#$8000	; [num]
 	sta	zp_14
-	bra	loc_03ED54
-loc_03ED49:
+	bra	@cannon
+@keep_hi_bits:
 	; (not executed in the CDL traces)
 	lda	$00,x
 	xba
 	and	#$FF00
 	ora	#$0080
 	sta	zp_14
-loc_03ED54:
+@cannon:
 	ldx	#$0B80
 	lda	$00,x
-	beq	loc_03EDD6
+	beq	@hide_rest
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03ED6D
+	bcc	@in_range
 	lda	$2E,x
 	and	#$FFFB
 	sta	$2E,x
-	bra	loc_03EDD6
-loc_03ED6D:
+	bra	@hide_rest
+@in_range:
 	lda	$2E,x
 	ora	#$0004
 	sta	$2E,x
@@ -1848,16 +1848,16 @@ loc_03ED6D:
 	jsr	a:draw_topdown_metasprite
 	plx
 	lda	zp_D0
-	bne	loc_03EDCF
+	bne	@some_drawn
 	lda	$2E,x
 	and	#$FFFE
 	sta	$2E,x
-	bra	loc_03EDD6
-loc_03EDCF:
+	bra	@hide_rest
+@some_drawn:
 	lda	$2E,x
 	ora	#$0001
 	sta	$2E,x
-loc_03EDD6:
+@hide_rest:
 	lda	zp_14
 @loop:
 	lsr	a
@@ -1888,9 +1888,9 @@ draw_players_stage2_boss:
 	sta	zp_14
 	stz	zp_08
 	ldx	#$0EC0
-loc_03EE0A:
+@slot_loop:
 	lda	$00,x
-	beq	loc_03EE7B
+	beq	@next_slot
 	asl	a
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
@@ -1900,13 +1900,13 @@ loc_03EE0A:
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03EE2E
+	bcc	@in_range
 	; (not executed in the CDL traces)
 	lda	#$8000	; [num]
 	sta	a:$00B0,x
 	sta	a:$00B4,x
-	bra	loc_03EE7B
-loc_03EE2E:
+	bra	@next_slot
+@in_range:
 	lda	zp_00
 	sta	a:$00B0,x
 	lda	zp_02
@@ -1946,7 +1946,7 @@ loc_03EE2E:
 	ply
 	jsr	a:draw_topdown_metasprite
 	plx
-loc_03EE7B:
+@next_slot:
 	inc	zp_08
 	inc	zp_08
 	txa
@@ -1954,9 +1954,9 @@ loc_03EE7B:
 	adc	#$0040
 	tax
 	cpx	#$0F40
-	bcs	loc_03EE8D
-	brl	loc_03EE0A
-loc_03EE8D:
+	bcs	@hide_rest
+	brl	@slot_loop
+@hide_rest:
 	lda	zp_14
 @loop:
 	lsr	a
@@ -1983,18 +1983,18 @@ draw_stage2_boss_arena:
 	ldx	#$11D6
 	stx	zp_12
 	lda	#$0000
-	bne	loc_03EEC0
+	bne	@keep_hi_bits
 	lda	#$8000	; [num]
 	sta	zp_14
-	bra	loc_03EECB
-loc_03EEC0:
+	bra	@rubble
+@keep_hi_bits:
 	; (not executed in the CDL traces)
 	lda	$00,x
 	xba
 	and	#$FF00
 	ora	#$0080
 	sta	zp_14
-loc_03EECB:
+@rubble:
 	lda	#$1028
 	sta	zp_06
 	lda	#$0040
@@ -2025,7 +2025,7 @@ loc_03EECB:
 	sta	zp_C6
 	lda	#$0012
 	sta	zp_08
-loc_03EF11:
+@rubble_loop:
 	ldx	zp_08
 	lda	zp_C4
 	clc
@@ -2035,13 +2035,13 @@ loc_03EF11:
 	clc
 	adc	a:stage2_arena_rubble_y,x
 	jsr	a:project_to_view
-	bcs	loc_03EF2A
+	bcs	@next_rubble
 	ldy	zp_CA
 	jsr	a:draw_topdown_metasprite
-loc_03EF2A:
+@next_rubble:
 	dec	zp_08
 	dec	zp_08
-	bne	loc_03EF11
+	bne	@rubble_loop
 	lda	#$0004
 	sec
 	sbc	zp_16
@@ -2050,9 +2050,9 @@ loc_03EF2A:
 	and	#$003E
 	ldy	#$1024
 	bit	#$0020
-	beq	loc_03EF46
+	beq	@debris
 	ldy	#$D024	; [num]
-loc_03EF46:
+@debris:
 	sty	zp_06
 	tay
 	lda	a:stage2_arena_debris_tile_list,y
@@ -2071,7 +2071,7 @@ loc_03EF46:
 	and	#$FF80
 	sta	zp_C6
 	ldx	#$0032
-loc_03EF73:
+@debris_loop:
 	lda	zp_C4
 	clc
 	adc	a:stage2_arena_debris_x,x
@@ -2080,25 +2080,25 @@ loc_03EF73:
 	clc
 	adc	a:stage2_arena_debris_y,x
 	jsr	a:project_to_view
-	bcs	loc_03EFD5
+	bcs	@next_debris
 	sec
 	lda	zp_02
 	clc
 	adc	a:screen_shake_offset
 	sbc	#$0008
 	cmp	zp_0C
-	bmi	loc_03EFD5
+	bmi	@next_debris
 	cmp	zp_0E
-	bpl	loc_03EFD5
+	bpl	@next_debris
 	ldy	zp_10
 	sta	a:$0001,y
 	sec
 	lda	zp_00
 	sbc	#$0008
 	cmp	#$0100
-	bpl	loc_03EFD5
+	bpl	@next_debris
 	cmp	#$FFF0	; [num]
-	bmi	loc_03EFD5
+	bmi	@next_debris
 	ror	zp_14
 	sep	#$20
 	.a8
@@ -2114,7 +2114,7 @@ loc_03EF73:
 	sty	zp_10
 	sec
 	ror	zp_14
-	bcc	loc_03EFD5
+	bcc	@next_debris
 	ldy	zp_12
 	lda	zp_14
 	sta	a:$0000,y
@@ -2123,10 +2123,10 @@ loc_03EF73:
 	lda	#$8000	; [num]
 	sta	zp_14
 	sty	zp_12
-loc_03EFD5:
+@next_debris:
 	dex
 	dex
-	bne	loc_03EF73
+	bne	@debris_loop
 	lda	zp_14
 @loop:
 	lsr	a
@@ -2160,34 +2160,34 @@ draw_topdown_metasprite:
 	and	#$00FF
 	sta	zp_C8
 	ldx	zp_10
-loc_03F00D:
+@sprite_loop:
 	stz	zp_CD
 	lda	a:$0001,y
-	bpl	loc_03F016
+	bpl	@y_extended
 	dec	zp_CD
-loc_03F016:
+@y_extended:
 	sta	zp_CC
 	clc
 	lda	zp_02
 	adc	zp_CD
 	cmp	zp_0C
-	bmi	loc_03F06C
+	bmi	@next_sprite
 	cmp	zp_0E
-	bpl	loc_03F06C
+	bpl	@next_sprite
 	sta	$01,x
 	stz	zp_CD
 	lda	a:$0000,y
-	bpl	loc_03F030
+	bpl	@x_extended
 	dec	zp_CD
-loc_03F030:
+@x_extended:
 	sta	zp_CC
 	clc
 	lda	zp_00
 	adc	zp_CD
 	cmp	#$0100
-	bpl	loc_03F06C
+	bpl	@next_sprite
 	cmp	#$FFF0	; [num]
-	bmi	loc_03F06C
+	bmi	@next_sprite
 	ror	zp_14
 	sep	#$20
 	.a8
@@ -2204,7 +2204,7 @@ loc_03F030:
 	inx
 	sec
 	ror	zp_14
-	bcc	loc_03F06C
+	bcc	@next_sprite
 	phx
 	ldx	zp_12
 	lda	zp_14
@@ -2215,13 +2215,13 @@ loc_03F030:
 	sta	zp_14
 	stx	zp_12
 	plx
-loc_03F06C:
+@next_sprite:
 	iny
 	iny
 	iny
 	iny
 	dec	zp_C8
-	bne	loc_03F00D
+	bne	@sprite_loop
 	stx	zp_10
 	rts
 
@@ -2234,34 +2234,34 @@ draw_td_item_metasprite:
 	and	#$00FF
 	sta	zp_C8
 	ldx	zp_10
-loc_03F089:
+@sprite_loop:
 	stz	zp_CD
 	lda	a:$0001,y
-	bpl	loc_03F092
+	bpl	@y_extended
 	dec	zp_CD
-loc_03F092:
+@y_extended:
 	sta	zp_CC
 	clc
 	lda	zp_02
 	adc	zp_CD
 	cmp	zp_0C
-	bmi	loc_03F0EC
+	bmi	@next_sprite
 	cmp	zp_0E
-	bpl	loc_03F0EC
+	bpl	@next_sprite
 	sta	$01,x
 	stz	zp_CD
 	lda	a:$0000,y
-	bpl	loc_03F0AC
+	bpl	@x_extended
 	dec	zp_CD
-loc_03F0AC:
+@x_extended:
 	sta	zp_CC
 	clc
 	lda	zp_00
 	adc	zp_CD
 	cmp	#$0100
-	bpl	loc_03F0EC
+	bpl	@next_sprite
 	cmp	#$FFF0	; [num]
-	bmi	loc_03F0EC
+	bmi	@next_sprite
 	ror	zp_14
 	sep	#$20
 	.a8
@@ -2279,7 +2279,7 @@ loc_03F0AC:
 	lda	a:$0004,y
 	lsr	a
 	ror	zp_14
-	bcc	loc_03F0EC
+	bcc	@next_sprite
 	phx
 	ldx	zp_12
 	lda	zp_14
@@ -2290,13 +2290,13 @@ loc_03F0AC:
 	sta	zp_14
 	stx	zp_12
 	plx
-loc_03F0EC:
+@next_sprite:
 	iny
 	iny
 	iny
 	iny
 	dec	zp_C8
-	bne	loc_03F089
+	bne	@sprite_loop
 	stx	zp_10
 	rts
 
@@ -2304,27 +2304,27 @@ loc_03F0EC:
 ; +$2E bit 2 = in projection range, bit 0 = on screen.
 project_map_objects:
 	ldx	#$0AC0
-loc_03F0FA:
+@slot_loop:
 	lda	$10,x
-	beq	loc_03F155
+	beq	@next_slot
 	cpx	#$0D40
-	bcs	loc_03F10A
+	bcs	@enemy_slot
 	cmp	#$0003
-	beq	loc_03F155
-	bra	loc_03F10E
-loc_03F10A:
+	beq	@next_slot
+	bra	@project
+@enemy_slot:
 	lda	$00,x
-	bne	loc_03F155
-loc_03F10E:
+	bne	@next_slot
+@project:
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03F120
+	bcc	@in_range
 	lda	$2E,x
 	and	#$FFFB
 	sta	$2E,x
-	bra	loc_03F14E
-loc_03F120:
+	bra	@off_screen
+@in_range:
 	lda	$2E,x
 	ora	#$0004
 	sta	$2E,x
@@ -2334,118 +2334,118 @@ loc_03F120:
 	sta	$1C,x
 	lda	zp_02
 	cmp	zp_0C
-	bmi	loc_03F14E
+	bmi	@off_screen
 	cmp	zp_0E
-	bpl	loc_03F14E
+	bpl	@off_screen
 	lda	zp_00
 	cmp	#$0100
-	bpl	loc_03F14E
+	bpl	@off_screen
 	cmp	#$FFF0	; [num]
-	bmi	loc_03F14E
+	bmi	@off_screen
 	lda	$2E,x
 	ora	#$0001
 	sta	$2E,x
-	bra	loc_03F155
-loc_03F14E:
+	bra	@next_slot
+@off_screen:
 	lda	$2E,x
 	and	#$FFFE
 	sta	$2E,x
-loc_03F155:
+@next_slot:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0EC0
-	bcc	loc_03F0FA
+	bcc	@slot_loop
 	rts
 
 ; Screen positions (+$38/+$3C) of the smart bombs ($8000 when out of range).
 project_td_bombs:
 	lda	a:td_p1_obj+$2C
-	bne	loc_03F188
+	bne	@check_p2_fall
 	ldx	#$0F40
 	lda	$10,x
 	dec	a
-	bne	loc_03F18D
+	bne	@p2_bomb
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03F180
+	bcc	@p1_in_range
 	lda	#$8000	; [num]
 	sta	$38,x
 	sta	$3C,x
-	bra	loc_03F18D
-loc_03F180:
+	bra	@p2_bomb
+@p1_in_range:
 	lda	zp_00
 	sta	$38,x
 	lda	zp_02
 	sta	$3C,x
-loc_03F188:
+@check_p2_fall:
 	lda	a:td_p2_obj+$2C
-	bne	loc_03F1AF
-loc_03F18D:
+	bne	@return
+@p2_bomb:
 	ldx	#$0F80
 	lda	$10,x
 	dec	a
-	bne	loc_03F1AF
+	bne	@return
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03F1A7
+	bcc	@p2_in_range
 	lda	#$8000	; [num]
 	sta	$38,x
 	sta	$3C,x
-	bra	loc_03F1AF
-loc_03F1A7:
+	bra	@return
+@p2_in_range:
 	lda	zp_00
 	sta	$38,x
 	lda	zp_02
 	sta	$3C,x
-loc_03F1AF:
+@return:
 	rts
 
 project_stage5_boss_objects:
 	ldx	#$0AC0
-loc_03F1B3:
+@slot_loop:
 	lda	$10,x
-	beq	loc_03F1F6
+	beq	@next_slot
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03F1C9
+	bcc	@in_range
 	lda	$2E,x
 	and	#$FFFB
 	sta	$2E,x
-	bra	loc_03F1EF
-loc_03F1C9:
+	bra	@off_screen
+@in_range:
 	lda	$2E,x
 	ora	#$0004
 	sta	$2E,x
 	lda	zp_02
 	cmp	zp_0C
-	bmi	loc_03F1EF
+	bmi	@off_screen
 	cmp	zp_0E
-	bpl	loc_03F1EF
+	bpl	@off_screen
 	lda	zp_00
 	cmp	#$0100
-	bpl	loc_03F1EF
+	bpl	@off_screen
 	cmp	#$FFF0	; [num]
-	bmi	loc_03F1EF
+	bmi	@off_screen
 	lda	$2E,x
 	ora	#$0001
 	sta	$2E,x
-	bra	loc_03F1F6
-loc_03F1EF:
+	bra	@next_slot
+@off_screen:
 	lda	$2E,x
 	and	#$FFFE
 	sta	$2E,x
-loc_03F1F6:
+@next_slot:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0B40
-	bcc	loc_03F1B3
+	bcc	@slot_loop
 	rts
 
 draw_stage5_boss_claw_section:
@@ -2456,9 +2456,9 @@ draw_stage5_boss_claw_section:
 	lda	#$8000	; [num]
 	sta	zp_14
 	jsr	a:is_p1_view_falling_2
-	bcs	loc_03F219
+	bcs	@hide_rest
 	jsr	a:draw_stage5_boss_claw
-loc_03F219:
+@hide_rest:
 	lda	zp_14
 @loop:
 	lsr	a
@@ -2482,9 +2482,9 @@ loc_03F219:
 draw_stage5_boss_claw:
 	stz	zp_08
 	ldx	#$0B40
-loc_03F23B:
+@slot_loop:
 	lda	$00,x
-	beq	loc_03F2BC
+	beq	@next_slot
 	asl	a
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
@@ -2494,12 +2494,12 @@ loc_03F23B:
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03F25E
+	bcc	@in_range
 	lda	$2E,x
 	and	#$FFFB
 	sta	$2E,x
-	brl	loc_03F2BC
-loc_03F25E:
+	brl	@next_slot
+@in_range:
 	lda	$2E,x
 	ora	#$0004
 	sta	$2E,x
@@ -2539,16 +2539,16 @@ loc_03F25E:
 	jsr	a:draw_topdown_metasprite
 	plx
 	lda	zp_D0
-	bne	loc_03F2B5
+	bne	@some_drawn
 	lda	$2E,x
 	and	#$FFFE
 	sta	$2E,x
-	bra	loc_03F2BC
-loc_03F2B5:
+	bra	@next_slot
+@some_drawn:
 	lda	$2E,x
 	ora	#$0001
 	sta	$2E,x
-loc_03F2BC:
+@next_slot:
 	inc	zp_08
 	inc	zp_08
 	txa
@@ -2557,25 +2557,25 @@ loc_03F2BC:
 	tax
 	cpx	#$0BC0
 	bcs	@return
-	brl	loc_03F23B
+	brl	@slot_loop
 @return:
 	rts
 
 is_p1_view_falling_2:
 	lda	a:title_menu_cursor
-	beq	loc_03F2D7
+	beq	@check_fall
 	; (not executed in the CDL traces)
 	dec	a
-	bne	loc_03F2DF
-loc_03F2D7:
+	bne	@return_clc
+@check_fall:
 	lda	a:td_p1_obj+$2C
-	beq	loc_03F2DF
+	beq	@return_clc
 	; (not executed in the CDL traces)
-	brl	loc_03F2E1
-loc_03F2DF:
+	brl	@return_sec
+@return_clc:
 	clc
 	rts
-loc_03F2E1:
+@return_sec:
 	; (not executed in the CDL traces)
 	sec
 	rts
@@ -2586,33 +2586,33 @@ draw_stage5_boss_arm:
 	ldx	#$11D4
 	stx	zp_12
 	lda	#$0000
-	bne	loc_03F2F9
+	bne	@keep_hi_bits
 	lda	#$8000	; [num]
 	sta	zp_14
-	bra	loc_03F304
-loc_03F2F9:
+	bra	@segments
+@keep_hi_bits:
 	; (not executed in the CDL traces)
 	lda	$00,x
 	xba
 	and	#$FF00
 	ora	#$0080
 	sta	zp_14
-loc_03F304:
+@segments:
 	ldx	#$0BC0
-loc_03F307:
+@slot_loop:
 	lda	$00,x
-	beq	loc_03F384
+	beq	@next_slot
 	ora	$02,x
 	sta	zp_04
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03F321
+	bcc	@in_range
 	lda	$2E,x
 	and	#$FFFB
 	sta	$2E,x
-	bra	loc_03F37D
-loc_03F321:
+	bra	@off_screen
+@in_range:
 	lda	$2E,x
 	ora	#$0004
 	sta	$2E,x
@@ -2621,17 +2621,17 @@ loc_03F321:
 	lda	zp_02
 	sbc	#$0008
 	cmp	zp_0C
-	bmi	loc_03F37D
+	bmi	@off_screen
 	cmp	zp_0E
-	bpl	loc_03F37D
+	bpl	@off_screen
 	sta	a:$0001,y
 	sec
 	lda	zp_00
 	sbc	#$0008
 	cmp	#$0100
-	bpl	loc_03F37D
+	bpl	@off_screen
 	cmp	#$FFF0	; [num]
-	bmi	loc_03F37D
+	bmi	@off_screen
 	ror	zp_14
 	sep	#$20
 	.a8
@@ -2647,7 +2647,7 @@ loc_03F321:
 	sty	zp_10
 	sec
 	ror	zp_14
-	bcc	loc_03F374
+	bcc	@on_screen
 	ldy	zp_12
 	lda	zp_14
 	sta	a:$0000,y
@@ -2656,24 +2656,24 @@ loc_03F321:
 	lda	#$8000	; [num]
 	sta	zp_14
 	sty	zp_12
-loc_03F374:
+@on_screen:
 	lda	$2E,x
 	ora	#$0001
 	sta	$2E,x
-	bra	loc_03F384
-loc_03F37D:
+	bra	@next_slot
+@off_screen:
 	lda	$2E,x
 	and	#$FFFE
 	sta	$2E,x
-loc_03F384:
+@next_slot:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0EC0
-	bcs	loc_03F392
-	brl	loc_03F307
-loc_03F392:
+	bcs	@hide_rest
+	brl	@slot_loop
+@hide_rest:
 	lda	zp_14
 @loop:
 	lsr	a
@@ -2699,21 +2699,21 @@ draw_p2_view_sprites:
 	rep	#$30
 	lda	a:topdown_map
 	cmp	#TD_MAP_STAGE2_BOSS
-	beq	loc_03F408
+	beq	@stage2_boss
 	cmp	#TD_MAP_STAGE5_BOSS
-	bne	loc_03F3C4
+	bne	@normal_map
 	; (not executed in the CDL traces)
-	brl	loc_03F43A
-loc_03F3C4:
+	brl	@stage5_boss
+@normal_map:
 	lda	a:intro_phase
-	beq	loc_03F3CC
+	beq	@not_intro
 	brl	draw_intro_sprites
-loc_03F3CC:
+@not_intro:
 	lda	a:map_view_active
-	beq	loc_03F3D4
+	beq	@play
 	; (not executed in the CDL traces)
 	brl	draw_map_view_sprites
-loc_03F3D4:
+@play:
 	sep	#$20
 	.a8
 	lda	#^sprite_data_07
@@ -2725,10 +2725,10 @@ loc_03F3D4:
 	jsr	a:draw_target_arrows_p2
 	jsr	a:start_oam_list_p2
 	jsr	a:is_p2_view_falling
-	bcs	loc_03F3F0
+	bcs	@end_small
 	jsr	a:draw_small_objects_p2
 	jsr	a:draw_td_items_p2
-loc_03F3F0:
+@end_small:
 	jsr	a:end_small_sprites_p2
 	jsr	a:draw_enemies_p2
 	jsr	a:draw_topdown_players_p2
@@ -2742,7 +2742,7 @@ loc_03F3F0:
 	rep	#$20
 	.a16
 	rtl
-loc_03F408:
+@stage2_boss:
 	; (not executed in the CDL traces)
 	sep	#$20
 	.a8
@@ -2770,7 +2770,7 @@ loc_03F408:
 	rep	#$20
 	.a16
 	rtl
-loc_03F43A:
+@stage5_boss:
 	sep	#$20
 	.a8
 	lda	#^sprite_data_07
@@ -2782,10 +2782,10 @@ loc_03F43A:
 	jsr	a:draw_target_arrows_p2
 	jsr	a:start_oam_list_p2
 	jsr	a:is_p2_view_falling
-	bcs	loc_03F456
+	bcs	@end_small2
 	jsr	a:draw_small_objects_p2
 	jsr	a:draw_td_items_p2
-loc_03F456:
+@end_small2:
 	jsr	a:end_small_sprites_p2
 	jsr	a:project_stage5_boss_objects_p2
 	jsr	a:draw_stage5_boss_claw_section_p2
@@ -2803,24 +2803,24 @@ loc_03F456:
 
 is_p2_view_falling:
 	lda	a:title_menu_cursor
-	beq	loc_03F479
+	beq	@check_fall
 	dec	a
-	bne	loc_03F480
-loc_03F479:
+	bne	@return_clc
+@check_fall:
 	lda	a:td_p2_obj+$2C
-	beq	loc_03F480
+	beq	@return_clc
 	sec
 	rts
-loc_03F480:
+@return_clc:
 	clc
 	rts
 
 setup_p2_view_projection:
 	lda	a:title_menu_cursor
-	beq	loc_03F48A
+	beq	@full_screen
 	dec	a
-	beq	loc_03F4B1
-loc_03F48A:
+	beq	@bottom_half
+@full_screen:
 	; (not executed in the CDL traces)
 	lda	#$0008
 	sta	a:zp_0C
@@ -2836,8 +2836,8 @@ loc_03F48A:
 	sta	zp_1A
 	lda	a:p2_view_angle
 	sta	zp_16
-	bra	loc_03F4D6
-loc_03F4B1:
+	bra	@tables
+@bottom_half:
 	lda	#$0068
 	sta	a:zp_0C
 	lda	#$00E0
@@ -2852,7 +2852,7 @@ loc_03F4B1:
 	sta	zp_1A
 	lda	a:p2_view_angle
 	sta	zp_16
-loc_03F4D6:
+@tables:
 	asl	a
 	asl	a
 	asl	a
@@ -2923,11 +2923,11 @@ start_oam_list_p2:
 
 draw_small_objects_p2:
 	ldx	#$0300
-loc_03F55C:
+@slot_loop:
 	lda	$10,x
-	beq	loc_03F5D3
+	beq	@next_slot
 	lda	$04,x
-	bmi	loc_03F574
+	bmi	@fixed_tile
 	sec
 	sbc	a:p2_view_angle
 	and	#$00FF
@@ -2935,33 +2935,33 @@ loc_03F55C:
 	asl	a
 	tay
 	lda	a:td_small_object_tiles,y
-	bra	loc_03F578
-loc_03F574:
+	bra	@tile_ready
+@fixed_tile:
 	lda	$00,x
-	beq	loc_03F5D3
-loc_03F578:
+	beq	@next_slot
+@tile_ready:
 	ora	$02,x
 	sta	zp_04
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcs	loc_03F5D3
+	bcs	@next_slot
 	ldy	zp_10
 	sec
 	lda	zp_02
 	sbc	$16,x
 	cmp	zp_0C
-	bmi	loc_03F5D3
+	bmi	@next_slot
 	cmp	zp_0E
-	bpl	loc_03F5D3
+	bpl	@next_slot
 	sta	a:$0001,y
 	sec
 	lda	zp_00
 	sbc	$16,x
 	cmp	#$0100
-	bpl	loc_03F5D3
+	bpl	@next_slot
 	cmp	#$FFF0	; [num]
-	bmi	loc_03F5D3
+	bmi	@next_slot
 	ror	zp_14
 	sep	#$20
 	.a8
@@ -2978,7 +2978,7 @@ loc_03F578:
 	lda	$16,x
 	cmp	#$0008
 	ror	zp_14
-	bcc	loc_03F5D3
+	bcc	@next_slot
 	ldy	zp_12
 	lda	zp_14
 	sta	a:$0000,y
@@ -2987,14 +2987,14 @@ loc_03F578:
 	lda	#$8000	; [num]
 	sta	zp_14
 	sty	zp_12
-loc_03F5D3:
+@next_slot:
 	txa
 	clc
 	adc	#$0020
 	tax
 	cpx	#$0980
 	bcs	@return
-	brl	loc_03F55C
+	brl	@slot_loop
 @return:
 	rts
 
@@ -3052,19 +3052,19 @@ draw_enemies_p2:
 	lda	#$8000	; [num]
 	sta	zp_14
 	lda	a:title_menu_cursor
-	beq	loc_03F640
+	beq	@check_fall
 	dec	a
-	bne	loc_03F648
-loc_03F640:
+	bne	@draw
+@check_fall:
 	lda	a:td_p2_obj+$2C
-	beq	loc_03F648
-	brl	loc_03F6E0
-loc_03F648:
+	beq	@draw
+	brl	@hide_rest
+@draw:
 	stz	zp_08
 	ldx	#$0D40
-loc_03F64D:
+@slot_loop:
 	lda	$00,x
-	beq	loc_03F6CE
+	beq	@next_slot
 	asl	a
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
@@ -3074,12 +3074,12 @@ loc_03F64D:
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03F670
+	bcc	@in_range
 	lda	$2E,x
 	and	#$FFF7
 	sta	$2E,x
-	brl	loc_03F6CE
-loc_03F670:
+	brl	@next_slot
+@in_range:
 	lda	$2E,x
 	ora	#$0008
 	sta	$2E,x
@@ -3119,16 +3119,16 @@ loc_03F670:
 	jsr	a:draw_topdown_metasprite_p2
 	plx
 	lda	zp_D0
-	bne	loc_03F6C7
+	bne	@some_drawn
 	lda	$2E,x
 	and	#$FFFD
 	sta	$2E,x
-	bra	loc_03F6CE
-loc_03F6C7:
+	bra	@next_slot
+@some_drawn:
 	lda	$2E,x
 	ora	#$0002
 	sta	$2E,x
-loc_03F6CE:
+@next_slot:
 	inc	zp_08
 	inc	zp_08
 	txa
@@ -3136,9 +3136,9 @@ loc_03F6CE:
 	adc	#$0040
 	tax
 	cpx	#$0EC0
-	bcs	loc_03F6E0
-	brl	loc_03F64D
-loc_03F6E0:
+	bcs	@hide_rest
+	brl	@slot_loop
+@hide_rest:
 	lda	zp_14
 @loop:
 	lsr	a
@@ -3168,24 +3168,24 @@ draw_topdown_players_p2:
 	sta	zp_14
 	stz	zp_08
 	ldx	#$0EC0
-loc_03F711:
+@slot_loop:
 	lda	a:title_menu_cursor
-	beq	loc_03F720
+	beq	@one_view
 	dec	a
-	beq	loc_03F720
+	beq	@one_view
 	; (not executed in the CDL traces)
 	lda	$2C,x
-	beq	loc_03F72D
-	brl	loc_03F79E
-loc_03F720:
+	beq	@draw
+	brl	@next_slot
+@one_view:
 	cpx	#$0F00
-	beq	loc_03F72D
+	beq	@draw
 	lda	a:td_p2_obj+$2C
 	ora	a:td_p1_obj+$2C
-	bne	loc_03F79E
-loc_03F72D:
+	bne	@next_slot
+@draw:
 	lda	$00,x
-	beq	loc_03F79E
+	beq	@next_slot
 	asl	a
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
@@ -3195,12 +3195,12 @@ loc_03F72D:
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03F751
+	bcc	@in_range
 	lda	#$8000	; [num]
 	sta	a:$00B2,x
 	sta	a:$00B6,x
-	bra	loc_03F79E
-loc_03F751:
+	bra	@next_slot
+@in_range:
 	lda	zp_00
 	sta	a:$00B2,x
 	lda	zp_02
@@ -3240,7 +3240,7 @@ loc_03F751:
 	ply
 	jsr	a:draw_topdown_metasprite_p2
 	plx
-loc_03F79E:
+@next_slot:
 	inc	zp_08
 	inc	zp_08
 	txa
@@ -3248,9 +3248,9 @@ loc_03F79E:
 	adc	#$0040
 	tax
 	cpx	#$0F40
-	bcs	loc_03F7B0
-	brl	loc_03F711
-loc_03F7B0:
+	bcs	@hide_rest
+	brl	@slot_loop
+@hide_rest:
 	lda	zp_14
 @loop:
 	lsr	a
@@ -3278,29 +3278,29 @@ draw_stage2_boss_cannon_p2:
 	ldx	#$11D0
 	stx	zp_12
 	lda	#$0002
-	bne	loc_03F7E3
+	bne	@keep_hi_bits
 	lda	#$8000	; [num]
 	sta	zp_14
-	bra	loc_03F7EE
-loc_03F7E3:
+	bra	@cannon
+@keep_hi_bits:
 	lda	$00,x
 	xba
 	and	#$FF00
 	ora	#$0080
 	sta	zp_14
-loc_03F7EE:
+@cannon:
 	ldx	#$0B80
 	lda	$00,x
-	beq	loc_03F870
+	beq	@hide_rest
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03F807
+	bcc	@in_range
 	lda	$2E,x
 	and	#$FFF7
 	sta	$2E,x
-	bra	loc_03F870
-loc_03F807:
+	bra	@hide_rest
+@in_range:
 	lda	$2E,x
 	ora	#$0008
 	sta	$2E,x
@@ -3344,16 +3344,16 @@ loc_03F807:
 	jsr	a:draw_topdown_metasprite_p2
 	plx
 	lda	zp_D0
-	bne	loc_03F869
+	bne	@some_drawn
 	lda	$2E,x
 	and	#$FFFD
 	sta	$2E,x
-	bra	loc_03F870
-loc_03F869:
+	bra	@hide_rest
+@some_drawn:
 	lda	$2E,x
 	ora	#$0002
 	sta	$2E,x
-loc_03F870:
+@hide_rest:
 	lda	zp_14
 @loop:
 	lsr	a
@@ -3385,9 +3385,9 @@ draw_players_stage2_boss_p2:
 	sta	zp_14
 	stz	zp_08
 	ldx	#$0EC0
-loc_03F8A4:
+@slot_loop:
 	lda	$00,x
-	beq	loc_03F915
+	beq	@next_slot
 	asl	a
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
@@ -3397,12 +3397,12 @@ loc_03F8A4:
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03F8C8
+	bcc	@in_range
 	lda	#$8000	; [num]
 	sta	a:$00B2,x
 	sta	a:$00B6,x
-	bra	loc_03F915
-loc_03F8C8:
+	bra	@next_slot
+@in_range:
 	lda	zp_00
 	sta	a:$00B2,x
 	lda	zp_02
@@ -3442,7 +3442,7 @@ loc_03F8C8:
 	ply
 	jsr	a:draw_topdown_metasprite_p2
 	plx
-loc_03F915:
+@next_slot:
 	inc	zp_08
 	inc	zp_08
 	txa
@@ -3450,9 +3450,9 @@ loc_03F915:
 	adc	#$0040
 	tax
 	cpx	#$0F40
-	bcs	loc_03F927
-	brl	loc_03F8A4
-loc_03F927:
+	bcs	@hide_rest
+	brl	@slot_loop
+@hide_rest:
 	lda	zp_14
 @loop:
 	lsr	a
@@ -3480,17 +3480,17 @@ draw_stage2_boss_arena_p2:
 	ldx	#$11DA
 	stx	zp_12
 	lda	#$0002
-	bne	loc_03F95A
+	bne	@keep_hi_bits
 	lda	#$8000	; [num]
 	sta	zp_14
-	bra	loc_03F965
-loc_03F95A:
+	bra	@rubble
+@keep_hi_bits:
 	lda	$00,x
 	xba
 	and	#$FF00
 	ora	#$0080
 	sta	zp_14
-loc_03F965:
+@rubble:
 	lda	#$10A8
 	sta	zp_06
 	lda	#$0040
@@ -3521,7 +3521,7 @@ loc_03F965:
 	sta	zp_C6
 	lda	#$0012
 	sta	zp_08
-loc_03F9AB:
+@rubble_loop:
 	ldx	zp_08
 	lda	zp_C4
 	clc
@@ -3531,13 +3531,13 @@ loc_03F9AB:
 	clc
 	adc	a:stage2_arena_rubble_y,x
 	jsr	a:project_to_view
-	bcs	loc_03F9C4
+	bcs	@next_rubble
 	ldy	zp_CA
 	jsr	a:draw_topdown_metasprite_p2
-loc_03F9C4:
+@next_rubble:
 	dec	zp_08
 	dec	zp_08
-	bne	loc_03F9AB
+	bne	@rubble_loop
 	lda	#$0004
 	sec
 	sbc	zp_16
@@ -3546,9 +3546,9 @@ loc_03F9C4:
 	and	#$003E
 	ldy	#$10A4
 	bit	#$0020
-	beq	loc_03F9E0
+	beq	@debris
 	ldy	#$D0A4	; [num]
-loc_03F9E0:
+@debris:
 	sty	zp_06
 	tay
 	lda	a:stage2_arena_debris_tile_list,y
@@ -3567,7 +3567,7 @@ loc_03F9E0:
 	and	#$FF80
 	sta	zp_C6
 	ldx	#$0032
-loc_03FA0D:
+@debris_loop:
 	lda	zp_C4
 	clc
 	adc	a:stage2_arena_debris_x,x
@@ -3576,25 +3576,25 @@ loc_03FA0D:
 	clc
 	adc	a:stage2_arena_debris_y,x
 	jsr	a:project_to_view
-	bcs	loc_03FA6F
+	bcs	@next_debris
 	sec
 	lda	zp_02
 	clc
 	adc	a:screen_shake_offset
 	sbc	#$0008
 	cmp	zp_0C
-	bmi	loc_03FA6F
+	bmi	@next_debris
 	cmp	zp_0E
-	bpl	loc_03FA6F
+	bpl	@next_debris
 	ldy	zp_10
 	sta	a:$0001,y
 	sec
 	lda	zp_00
 	sbc	#$0008
 	cmp	#$0100
-	bpl	loc_03FA6F
+	bpl	@next_debris
 	cmp	#$FFF0	; [num]
-	bmi	loc_03FA6F
+	bmi	@next_debris
 	ror	zp_14
 	sep	#$20
 	.a8
@@ -3610,7 +3610,7 @@ loc_03FA0D:
 	sty	zp_10
 	sec
 	ror	zp_14
-	bcc	loc_03FA6F
+	bcc	@next_debris
 	ldy	zp_12
 	lda	zp_14
 	sta	a:$0000,y
@@ -3619,10 +3619,10 @@ loc_03FA0D:
 	lda	#$8000	; [num]
 	sta	zp_14
 	sty	zp_12
-loc_03FA6F:
+@next_debris:
 	dex
 	dex
-	bne	loc_03FA0D
+	bne	@debris_loop
 	lda	zp_14
 @loop:
 	lsr	a
@@ -3654,34 +3654,34 @@ draw_topdown_metasprite_p2:
 	and	#$00FF
 	sta	zp_C8
 	ldx	zp_10
-loc_03FAA7:
+@sprite_loop:
 	stz	zp_CD
 	lda	a:$0001,y
-	bpl	loc_03FAB0
+	bpl	@y_extended
 	dec	zp_CD
-loc_03FAB0:
+@y_extended:
 	sta	zp_CC
 	clc
 	lda	zp_02
 	adc	zp_CD
 	cmp	zp_0C
-	bmi	loc_03FB06
+	bmi	@next_sprite
 	cmp	zp_0E
-	bpl	loc_03FB06
+	bpl	@next_sprite
 	sta	$01,x
 	stz	zp_CD
 	lda	a:$0000,y
-	bpl	loc_03FACA
+	bpl	@x_extended
 	dec	zp_CD
-loc_03FACA:
+@x_extended:
 	sta	zp_CC
 	clc
 	lda	zp_00
 	adc	zp_CD
 	cmp	#$0100
-	bpl	loc_03FB06
+	bpl	@next_sprite
 	cmp	#$FFF0	; [num]
-	bmi	loc_03FB06
+	bmi	@next_sprite
 	ror	zp_14
 	sep	#$20
 	.a8
@@ -3698,7 +3698,7 @@ loc_03FACA:
 	inx
 	sec
 	ror	zp_14
-	bcc	loc_03FB06
+	bcc	@next_sprite
 	phx
 	ldx	zp_12
 	lda	zp_14
@@ -3709,13 +3709,13 @@ loc_03FACA:
 	sta	zp_14
 	stx	zp_12
 	plx
-loc_03FB06:
+@next_sprite:
 	iny
 	iny
 	iny
 	iny
 	dec	zp_C8
-	bne	loc_03FAA7
+	bne	@sprite_loop
 	stx	zp_10
 	rts
 
@@ -3728,34 +3728,34 @@ draw_td_item_metasprite_p2:
 	and	#$00FF
 	sta	zp_C8
 	ldx	zp_10
-loc_03FB23:
+@sprite_loop:
 	stz	zp_CD
 	lda	a:$0001,y
-	bpl	loc_03FB2C
+	bpl	@y_extended
 	dec	zp_CD
-loc_03FB2C:
+@y_extended:
 	sta	zp_CC
 	clc
 	lda	zp_02
 	adc	zp_CD
 	cmp	zp_0C
-	bmi	loc_03FB86
+	bmi	@next_sprite
 	cmp	zp_0E
-	bpl	loc_03FB86
+	bpl	@next_sprite
 	sta	$01,x
 	stz	zp_CD
 	lda	a:$0000,y
-	bpl	loc_03FB46
+	bpl	@x_extended
 	dec	zp_CD
-loc_03FB46:
+@x_extended:
 	sta	zp_CC
 	clc
 	lda	zp_00
 	adc	zp_CD
 	cmp	#$0100
-	bpl	loc_03FB86
+	bpl	@next_sprite
 	cmp	#$FFF0	; [num]
-	bmi	loc_03FB86
+	bmi	@next_sprite
 	ror	zp_14
 	sep	#$20
 	.a8
@@ -3773,7 +3773,7 @@ loc_03FB46:
 	lda	a:$0004,y
 	lsr	a
 	ror	zp_14
-	bcc	loc_03FB86
+	bcc	@next_sprite
 	phx
 	ldx	zp_12
 	lda	zp_14
@@ -3784,39 +3784,39 @@ loc_03FB46:
 	sta	zp_14
 	stx	zp_12
 	plx
-loc_03FB86:
+@next_sprite:
 	iny
 	iny
 	iny
 	iny
 	dec	zp_C8
-	bne	loc_03FB23
+	bne	@sprite_loop
 	stx	zp_10
 	rts
 
 project_map_objects_p2:
 	ldx	#$0AC0
-loc_03FB94:
+@slot_loop:
 	lda	$10,x
-	beq	loc_03FBEF
+	beq	@next_slot
 	cpx	#$0D40
-	bcs	loc_03FBA4
+	bcs	@enemy_slot
 	cmp	#$0003
-	beq	loc_03FBEF
-	bra	loc_03FBA8
-loc_03FBA4:
+	beq	@next_slot
+	bra	@project
+@enemy_slot:
 	lda	$00,x
-	bne	loc_03FBEF
-loc_03FBA8:
+	bne	@next_slot
+@project:
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03FBBA
+	bcc	@in_range
 	lda	$2E,x
 	and	#$FFF7
 	sta	$2E,x
-	bra	loc_03FBE8
-loc_03FBBA:
+	bra	@off_screen
+@in_range:
 	lda	$2E,x
 	ora	#$0008
 	sta	$2E,x
@@ -3826,119 +3826,119 @@ loc_03FBBA:
 	sta	$1E,x
 	lda	zp_02
 	cmp	zp_0C
-	bmi	loc_03FBE8
+	bmi	@off_screen
 	cmp	zp_0E
-	bpl	loc_03FBE8
+	bpl	@off_screen
 	lda	zp_00
 	cmp	#$0100
-	bpl	loc_03FBE8
+	bpl	@off_screen
 	cmp	#$FFF0	; [num]
-	bmi	loc_03FBE8
+	bmi	@off_screen
 	lda	$2E,x
 	ora	#$0002
 	sta	$2E,x
-	bra	loc_03FBEF
-loc_03FBE8:
+	bra	@next_slot
+@off_screen:
 	lda	$2E,x
 	and	#$FFFD
 	sta	$2E,x
-loc_03FBEF:
+@next_slot:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0EC0
-	bcc	loc_03FB94
+	bcc	@slot_loop
 	rts
 
 project_td_bombs_p2:
 	lda	a:td_p2_obj+$2C
-	bne	loc_03FC22
+	bne	@check_p2_fall
 	ldx	#$0F40
 	lda	$10,x
 	dec	a
-	bne	loc_03FC27
+	bne	@p2_bomb
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03FC1A
+	bcc	@p1_in_range
 	lda	#$8000	; [num]
 	sta	$3A,x
 	sta	$3E,x
-	bra	loc_03FC27
-loc_03FC1A:
+	bra	@p2_bomb
+@p1_in_range:
 	lda	zp_00
 	sta	$3A,x
 	lda	zp_02
 	sta	$3E,x
-loc_03FC22:
+@check_p2_fall:
 	lda	a:td_p1_obj+$2C
-	bne	loc_03FC49
-loc_03FC27:
+	bne	@return
+@p2_bomb:
 	ldx	#$0F80
 	lda	$10,x
 	dec	a
-	bne	loc_03FC49
+	bne	@return
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03FC41
+	bcc	@p2_in_range
 	; (not executed in the CDL traces)
 	lda	#$8000	; [num]
 	sta	$3A,x
 	sta	$3E,x
-	bra	loc_03FC49
-loc_03FC41:
+	bra	@return
+@p2_in_range:
 	lda	zp_00
 	sta	$3A,x
 	lda	zp_02
 	sta	$3E,x
-loc_03FC49:
+@return:
 	rts
 
 project_stage5_boss_objects_p2:
 	; (not executed in the CDL traces)
 	ldx	#$0AC0
-loc_03FC4D:
+@slot_loop:
 	lda	$10,x
-	beq	loc_03FC90
+	beq	@next_slot
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03FC63
+	bcc	@in_range
 	lda	$2E,x
 	and	#$FFF7
 	sta	$2E,x
-	bra	loc_03FC89
-loc_03FC63:
+	bra	@off_screen
+@in_range:
 	lda	$2E,x
 	ora	#$0008
 	sta	$2E,x
 	lda	zp_02
 	cmp	zp_0C
-	bmi	loc_03FC89
+	bmi	@off_screen
 	cmp	zp_0E
-	bpl	loc_03FC89
+	bpl	@off_screen
 	lda	zp_00
 	cmp	#$0100
-	bpl	loc_03FC89
+	bpl	@off_screen
 	cmp	#$FFF0	; [num]
-	bmi	loc_03FC89
+	bmi	@off_screen
 	lda	$2E,x
 	ora	#$0002
 	sta	$2E,x
-	bra	loc_03FC90
-loc_03FC89:
+	bra	@next_slot
+@off_screen:
 	lda	$2E,x
 	and	#$FFFD
 	sta	$2E,x
-loc_03FC90:
+@next_slot:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0B40
-	bcc	loc_03FC4D
+	bcc	@slot_loop
 	rts
 
 draw_stage5_boss_claw_section_p2:
@@ -3950,9 +3950,9 @@ draw_stage5_boss_claw_section_p2:
 	lda	#$8000	; [num]
 	sta	zp_14
 	jsr	a:is_p2_view_falling_2
-	bcs	loc_03FCB3
+	bcs	@hide_rest
 	jsr	a:draw_stage5_boss_claw_p2
-loc_03FCB3:
+@hide_rest:
 	lda	zp_14
 @loop:
 	lsr	a
@@ -3977,9 +3977,9 @@ draw_stage5_boss_claw_p2:
 	; (not executed in the CDL traces)
 	stz	zp_08
 	ldx	#$0B40
-loc_03FCD5:
+@slot_loop:
 	lda	$00,x
-	beq	loc_03FD56
+	beq	@next_slot
 	asl	a
 	tay
 	lda	a:ptrs_td_metasprite_sets,y
@@ -3989,12 +3989,12 @@ loc_03FCD5:
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03FCF8
+	bcc	@in_range
 	lda	$2E,x
 	and	#$FFF7
 	sta	$2E,x
-	brl	loc_03FD56
-loc_03FCF8:
+	brl	@next_slot
+@in_range:
 	lda	$2E,x
 	ora	#$0008
 	sta	$2E,x
@@ -4034,16 +4034,16 @@ loc_03FCF8:
 	jsr	a:draw_topdown_metasprite_p2
 	plx
 	lda	zp_D0
-	bne	loc_03FD4F
+	bne	@some_drawn
 	lda	$2E,x
 	and	#$FFFD
 	sta	$2E,x
-	bra	loc_03FD56
-loc_03FD4F:
+	bra	@next_slot
+@some_drawn:
 	lda	$2E,x
 	ora	#$0002
 	sta	$2E,x
-loc_03FD56:
+@next_slot:
 	inc	zp_08
 	inc	zp_08
 	txa
@@ -4052,24 +4052,24 @@ loc_03FD56:
 	tax
 	cpx	#$0BC0
 	bcs	@return
-	brl	loc_03FCD5
+	brl	@slot_loop
 @return:
 	rts
 
 is_p2_view_falling_2:
 	; (not executed in the CDL traces)
 	lda	a:title_menu_cursor
-	beq	loc_03FD71
+	beq	@check_fall
 	dec	a
-	bne	loc_03FD79
-loc_03FD71:
+	bne	@return_clc
+@check_fall:
 	lda	a:td_p2_obj+$2C
-	beq	loc_03FD79
-	brl	loc_03FD7B
-loc_03FD79:
+	beq	@return_clc
+	brl	@return_sec
+@return_clc:
 	clc
 	rts
-loc_03FD7B:
+@return_sec:
 	sec
 	rts
 
@@ -4080,32 +4080,32 @@ draw_stage5_boss_arm_p2:
 	ldx	#$11D6
 	stx	zp_12
 	lda	#$0002
-	bne	loc_03FD93
+	bne	@keep_hi_bits
 	lda	#$8000	; [num]
 	sta	zp_14
-	bra	loc_03FD9E
-loc_03FD93:
+	bra	@segments
+@keep_hi_bits:
 	lda	$00,x
 	xba
 	and	#$FF00
 	ora	#$0080
 	sta	zp_14
-loc_03FD9E:
+@segments:
 	ldx	#$0BC0
-loc_03FDA1:
+@slot_loop:
 	lda	$00,x
-	beq	loc_03FE1E
+	beq	@next_slot
 	ora	$02,x
 	sta	zp_04
 	ldy	$0A,x
 	lda	$0E,x
 	jsr	a:project_to_view
-	bcc	loc_03FDBB
+	bcc	@in_range
 	lda	$2E,x
 	and	#$FFF7
 	sta	$2E,x
-	bra	loc_03FE17
-loc_03FDBB:
+	bra	@off_screen
+@in_range:
 	lda	$2E,x
 	ora	#$0008
 	sta	$2E,x
@@ -4114,17 +4114,17 @@ loc_03FDBB:
 	lda	zp_02
 	sbc	#$0008
 	cmp	zp_0C
-	bmi	loc_03FE17
+	bmi	@off_screen
 	cmp	zp_0E
-	bpl	loc_03FE17
+	bpl	@off_screen
 	sta	a:$0001,y
 	sec
 	lda	zp_00
 	sbc	#$0008
 	cmp	#$0100
-	bpl	loc_03FE17
+	bpl	@off_screen
 	cmp	#$FFF0	; [num]
-	bmi	loc_03FE17
+	bmi	@off_screen
 	ror	zp_14
 	sep	#$20
 	.a8
@@ -4140,7 +4140,7 @@ loc_03FDBB:
 	sty	zp_10
 	sec
 	ror	zp_14
-	bcc	loc_03FE0E
+	bcc	@on_screen
 	ldy	zp_12
 	lda	zp_14
 	sta	a:$0000,y
@@ -4149,24 +4149,24 @@ loc_03FDBB:
 	lda	#$8000	; [num]
 	sta	zp_14
 	sty	zp_12
-loc_03FE0E:
+@on_screen:
 	lda	$2E,x
 	ora	#$0002
 	sta	$2E,x
-	bra	loc_03FE1E
-loc_03FE17:
+	bra	@next_slot
+@off_screen:
 	lda	$2E,x
 	and	#$FFFD
 	sta	$2E,x
-loc_03FE1E:
+@next_slot:
 	txa
 	clc
 	adc	#$0040
 	tax
 	cpx	#$0EC0
-	bcs	loc_03FE2C
-	brl	loc_03FDA1
-loc_03FE2C:
+	bcs	@hide_rest
+	brl	@slot_loop
+@hide_rest:
 	lda	zp_14
 @loop:
 	lsr	a
