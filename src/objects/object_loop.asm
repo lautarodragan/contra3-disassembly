@@ -15,20 +15,20 @@
 draw_players:
 	ldx	#$0200
 	lda	stage_frame_odd
-	bne	loc_00E96A
+	bne	@draw_first
 	ldx	#$0240
-loc_00E96A:
+@draw_first:
 	ldy	OBJ_SPRITE,x
-	beq	loc_00E971
+	beq	@draw_second
 	jsr	a:draw_metasprite
-loc_00E971:
+@draw_second:
 	txa
 	eor	#$0040
 	tax
 	ldy	OBJ_SPRITE,x
-	beq	loc_00E97D
+	beq	@return
 	jsr	a:draw_metasprite
-loc_00E97D:
+@return:
 	rtl
 
 ; Runs the two slots $0280 and $02C0 like update_objects (called after it,
@@ -37,7 +37,7 @@ update_objects_0280:
 	ldx	#$0280
 	lda	#$0300
 	sta	a:update_objects_stop
-	bra	loc_00E997
+	bra	update_object_slots
 
 ; The main object loop: for each slot from $0300 up to update_objects_stop
 ; ($0AC0) whose OBJ_TYPE is not 0, in this order:
@@ -60,14 +60,16 @@ update_objects:
 	lda	#$0AC0
 	sta	a:update_objects_stop
 	ldx	#$0300
-loc_00E997:
+; The slot loop proper, from slot X up to update_objects_stop (also entered
+; by update_objects_0280).
+update_object_slots:
 	lda	OBJ_TYPE,x
-	bne	loc_00E99E
-	brl	loc_00EAF1
-loc_00E99E:
+	bne	@active
+	brl	@next_slot
+@active:
 	lda	OBJ_FLAGS,x
 	bit	#OBJF_MOVE
-	beq	loc_00E9C9
+	beq	@offscreen_check
 	clc
 	lda	OBJ_X_SUB,x
 	adc	OBJ_X_VEL_SUB,x
@@ -87,27 +89,27 @@ loc_00E99E:
 	sbc	a:bg1_y_delta
 	sta	OBJ_Y,x
 	lda	OBJ_FLAGS,x
-loc_00E9C9:
+@offscreen_check:
 	bit	#OBJF_OFFSCREEN_KILL
-	beq	loc_00E9EE
+	beq	@target_check
 	lda	OBJ_X,x
 	cmp	#$0120
-	bcc	loc_00E9DD
+	bcc	@x_on_screen
 	cmp	#$FFE0	; [num]
-	bcs	loc_00E9DD
-	brl	loc_00EAB0
-loc_00E9DD:
+	bcs	@x_on_screen
+	brl	@free_slot
+@x_on_screen:
 	lda	OBJ_Y,x
 	cmp	#$0120
-	bcc	loc_00E9EC
+	bcc	@on_screen
 	cmp	#$FFE0	; [num]
-	bcs	loc_00E9EC
-	brl	loc_00EAB0
-loc_00E9EC:
+	bcs	@on_screen
+	brl	@free_slot
+@on_screen:
 	lda	OBJ_FLAGS,x
-loc_00E9EE:
+@target_check:
 	bit	#OBJF_TARGET
-	beq	loc_00EA0B
+	beq	@touch_check
 	lda	OBJ_X,x
 	adc	OBJ_HITBOX_W,x
 	sta	OBJ_HITBOX_RIGHT,x
@@ -120,94 +122,94 @@ loc_00E9EE:
 	inc	target_list_end
 	inc	target_list_end
 	lda	OBJ_FLAGS,x
-loc_00EA0B:
+@touch_check:
 	bit	#OBJF_TOUCH
-	beq	loc_00EA76
+	beq	@animate
 	ldy	#$0200
 	lda	stage_frame_odd
-	beq	loc_00EA1A
+	beq	@have_player
 	ldy	#$0240
-loc_00EA1A:
+@have_player:
 	lda	a:OBJ_FLAGS,y
-	beq	loc_00EA76
+	beq	@animate
 	lda	a:PLAYER_HITBOX_RIGHT,y
 	cmp	OBJ_X,x
-	bmi	loc_00EA76
+	bmi	@animate
 	lda	a:PLAYER_HITBOX_TOP,y
 	cmp	OBJ_Y,x
-	bpl	loc_00EA76
+	bpl	@animate
 	lda	OBJ_X,x
 	adc	OBJ_HITBOX_W,x
 	cmp	a:PLAYER_HITBOX_LEFT,y
-	bmi	loc_00EA76
+	bmi	@animate
 	lda	OBJ_Y,x
 	adc	OBJ_HITBOX_H,x
 	cmp	a:PLAYER_HITBOX_BOTTOM,y
-	bpl	loc_00EA76
+	bpl	@animate
 	lda	a:OBJ_FLAGS,y
-	bmi	loc_00EA76
+	bmi	@animate
 	sty	OBJ_TOUCHED_BY,x
 	bit	#PLAYERF_INVULNERABLE
-	bne	loc_00EA76
+	bne	@animate
 	lda	a:PLAYER_BARRIER,y
-	beq	loc_00EA6E
+	beq	@no_barrier
 	lda	OBJ_FLAGS,x
 	bit	#OBJF_TARGET
-	beq	loc_00EA69
+	beq	@remove_harmful
 	; (not executed in the CDL traces)
 	bit	#OBJF_INVULNERABLE
-	bne	loc_00EA69
+	bne	@remove_harmful
 	lda	OBJ_HP,x
-	bmi	loc_00EA67
+	bmi	@hp_negative
 	dec	OBJ_HP,x
 	lda	#$0001
 	sta	OBJ_HIT,x
-loc_00EA67:
+@hp_negative:
 	lda	OBJ_FLAGS,x
-loc_00EA69:
+@remove_harmful:
 	and	#($FFFF ^ OBJF_HARMFUL)
-	bra	loc_00EA70
-loc_00EA6E:
+	bra	@add_contact
+@no_barrier:
 	lda	OBJ_FLAGS,x
-loc_00EA70:
+@add_contact:
 	ora	a:PLAYER_CONTACT,y
 	sta	a:PLAYER_CONTACT,y
-loc_00EA76:
+@animate:
 	ldy	OBJ_ANIM,x
-	beq	loc_00EAA8
+	beq	@call_handler
 	dec	OBJ_ANIM_TIMER,x
-	bmi	loc_00EA91
-	bne	loc_00EAA8
+	bmi	@start_anim
+	bne	@call_handler
 	tya
 	clc
 	adc	#$0006
-loc_00EA85:
+@follow_jump:
 	tay
 	lda	a:$0000,y
-	bmi	loc_00EA85
-	beq	loc_00EA96
+	bmi	@follow_jump
+	beq	@anim_end
 	sty	OBJ_ANIM,x
-	bra	loc_00EA98
-loc_00EA91:
+	bra	@set_timer
+@start_anim:
 	lda	a:$0000,y
-	bne	loc_00EA98
-loc_00EA96:
+	bne	@set_timer
+@anim_end:
 	sta	OBJ_ANIM,x
-loc_00EA98:
+@set_timer:
 	sta	OBJ_ANIM_TIMER,x
 	lda	OBJ_FACING,x
-	beq	loc_00EAA3
+	beq	@first_sprite
 	lda	a:$0004,y
-	bra	loc_00EAA6
-loc_00EAA3:
+	bra	@set_sprite
+@first_sprite:
 	lda	a:$0002,y
-loc_00EAA6:
+@set_sprite:
 	sta	OBJ_SPRITE,x
-loc_00EAA8:
+@call_handler:
 	jsl	f:call_object_handler
 	lda	OBJ_FLAGS,x
-	bpl	loc_00EABE
-loc_00EAB0:
+	bpl	@hit_flash
+@free_slot:
 	phx
 	stz	OBJ_SPRITE,x
 	txy
@@ -215,43 +217,43 @@ loc_00EAB0:
 	lda	#$003E
 	mvn	#^tables_05, #^tables_05
 	plx
-	bra	loc_00EAF1
-loc_00EABE:
+	bra	@next_slot
+@hit_flash:
 	lda	OBJ_SAVED_ATTR,x
-	bne	loc_00EADB
+	bne	@restore_attr
 	lda	OBJ_HIT,x
-	beq	loc_00EAE1
+	beq	@draw
 	lda	OBJ_FLAGS,x
 	bit	#OBJF_INVULNERABLE
-	bne	loc_00EAE1
+	bne	@draw
 	lda	OBJ_ATTR,x
 	sta	OBJ_SAVED_ATTR,x
 	and	#$3000
 	ora	#$0200
 	sta	OBJ_ATTR,x
-	bra	loc_00EAE1
-loc_00EADB:
+	bra	@draw
+@restore_attr:
 	lda	OBJ_SAVED_ATTR,x
 	sta	OBJ_ATTR,x
 	stz	OBJ_SAVED_ATTR,x
-loc_00EAE1:
+@draw:
 	ldy	OBJ_SPRITE,x
-	beq	loc_00EAEF
+	beq	@clear_hit
 	lda	oam_hi_ptr
 	cmp	#$11E0
-	bcs	loc_00EAEF
+	bcs	@clear_hit
 	jsr	a:draw_metasprite
-loc_00EAEF:
+@clear_hit:
 	stz	OBJ_HIT,x
-loc_00EAF1:
+@next_slot:
 	clc
 	txa
 	adc	#$0040
 	tax
 	cmp	a:update_objects_stop
-	bcs	loc_00EAFF
-	brl	loc_00E997
-loc_00EAFF:
+	bcs	@done
+	brl	update_object_slots
+@done:
 	ldx	target_list_end
 	stz	$00,x
 	rtl

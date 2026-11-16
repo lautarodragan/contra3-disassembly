@@ -23,35 +23,35 @@
 ; others ($0300-$047F), by type + 8 (tbl_shot_types).
 update_shots:
 	ldx	#$0AC0
-loc_00E1BB:
+@loop:
 	lda	SHOT_TYPE,x
-	bne	loc_00E1CB
-loc_00E1BF:
+	bne	@active
+@next_shot:
 	clc
 	txa
 	adc	#$0020
 	tax
 	cmp	#$0FC0
-	bcc	loc_00E1BB
+	bcc	@loop
 	rtl
-loc_00E1CB:
+@active:
 	jsl	f:call_shot_handler
 	lda	a:title_menu_cursor
-	beq	loc_00E1E4
+	beq	@draw
 	lda	stage_frame_odd
-	beq	loc_00E1DF
+	beq	@even_frame
 	cpx	#$0D40
-	bcc	loc_00E1E4
-	bcs	loc_00E1ED
-loc_00E1DF:
+	bcc	@draw
+	bcs	@move
+@even_frame:
 	cpx	#$0D40
-	bcc	loc_00E1ED
-loc_00E1E4:
+	bcc	@move
+@draw:
 	lda	SHOT_ATTR,x
-	beq	loc_00E1ED
+	beq	@move
 	ldy	oam_ptr
 	jsr	a:draw_shot
-loc_00E1ED:
+@move:
 	clc
 	lda	OBJ_Y_SUB,x
 	adc	OBJ_Y_VEL_SUB,x
@@ -67,15 +67,15 @@ loc_00E1ED:
 	adc	OBJ_X_VEL,x
 	sta	OBJ_X,x
 	ldy	SHOT_ATTR,x
-	beq	loc_00E1BF
+	beq	@next_shot
 	cmp	#$00F8
-	bcs	loc_00E21C
+	bcs	@free_shot
 	lda	OBJ_Y,x
 	cmp	#$FFC0	; [num]
-	bcs	loc_00E22A
+	bcs	@check_hits
 	cmp	#$00F0
-	bcc	loc_00E22A
-loc_00E21C:
+	bcc	@check_hits
+@free_shot:
 	phx
 	stz	$00,x
 	txy
@@ -83,19 +83,19 @@ loc_00E21C:
 	lda	#$001E
 	mvn	#^tables_05, #^tables_05
 	plx
-	bra	loc_00E1BF
-loc_00E22A:
+	bra	@next_shot
+@check_hits:
 	lda	SHOT_DAMAGE,x
-	beq	loc_00E1BF
+	beq	@next_shot
 	lda	stage_frame_odd
-	bne	loc_00E239
+	bne	@odd_frame
 	cpx	#$0D40
-	bcs	loc_00E23E
-	bcc	loc_00E1BF
-loc_00E239:
+	bcs	@test_targets
+	bcc	@next_shot
+@odd_frame:
 	cpx	#$0D40
-	bcs	loc_00E1BF
-loc_00E23E:
+	bcs	@next_shot
+@test_targets:
 	lda	OBJ_X,x
 	adc	#$000A
 	sta	zp_00
@@ -105,36 +105,36 @@ loc_00E23E:
 	txy
 	ldx	#$159E
 	phx
-loc_00E251:
+@next_target:
 	plx
 	inx
 	inx
 	lda	$00,x
-	beq	loc_00E2C7
+	beq	@shot_done
 	phx
 	tax
 	lda	OBJ_HP,x
-	bmi	loc_00E251
+	bmi	@next_target
 	lda	zp_00
 	cmp	OBJ_X,x
-	bmi	loc_00E251
+	bmi	@next_target
 	lda	a:OBJ_Y,y
 	cmp	OBJ_Y,x
-	bpl	loc_00E251
+	bpl	@next_target
 	lda	zp_02
 	cmp	OBJ_HITBOX_TOP,x
-	bmi	loc_00E251
+	bmi	@next_target
 	lda	a:OBJ_X,y
 	cmp	OBJ_HITBOX_RIGHT,x
-	bpl	loc_00E251
+	bpl	@next_target
 	pla
 	lda	a:SHOT_TYPE,y
 	sta	OBJ_HIT,x
 	lda	OBJ_FLAGS,x
 	bit	#OBJF_TARGET
-	beq	loc_00E2B3
+	beq	@not_destroyed
 	bit	#OBJF_INVULNERABLE
-	bne	loc_00E2B3
+	bne	@not_destroyed
 .if CHEAT_DAMAGE_MULT > 1
 	jsl	f:cheat_shot_damage	; cheat: A = OBJ_HP - n * SHOT_DAMAGE
 .else
@@ -143,7 +143,7 @@ loc_00E251:
 	sbc	a:SHOT_DAMAGE,y
 .endif
 	sta	OBJ_HP,x
-	bpl	loc_00E2B3
+	bpl	@not_destroyed
 	sta	a:SHOT_HIT,y
 	phy
 	lda	OBJ_TYPE,x
@@ -154,46 +154,46 @@ loc_00E251:
 	phx
 	ldx	#$0200
 	cpy	#$0D40
-	bcc	loc_00E2AC
+	bcc	@have_player
 	ldx	#$0240
-loc_00E2AC:
+@have_player:
 	jsl	f:add_score_for_player_obj
 	plx
-	bra	loc_00E2C7
-loc_00E2B3:
+	bra	@shot_done
+@not_destroyed:
 	lda	OBJ_FLAGS,x
 	bit	#OBJF_CLANG
-	beq	loc_00E2C1
+	beq	@set_hit
 	lda	#$0010
 	jsl	f:queue_sound
-loc_00E2C1:
+@set_hit:
 	lda	#$0001
 	sta	a:SHOT_HIT,y
-loc_00E2C7:
+@shot_done:
 	tyx
 	clc
 	txa
 	adc	#$0020
 	tax
 	cmp	#$0FC0
-	bcs	loc_00E2D6
-	brl	loc_00E1BB
-loc_00E2D6:
+	bcs	@return
+	brl	@loop
+@return:
 	rtl
 
 ; Writes one OAM entry for the shot at X from SHOT_ATTR (SHOTA_LARGE: 16x16
 ; at x, y; else 8x8 at x+4, y+4).  In: Y = oam_ptr.
 draw_shot:
 	bit	#SHOTA_LARGE
-	beq	loc_00E320
+	beq	@small
 	lda	OBJ_X,x
 	cmp	#$00FE
-	bcs	loc_00E31F
+	bcs	@return
 	and	#$00FF
 	sta	zp_08
 	lda	OBJ_Y,x
 	cmp	#$00F0
-	bcs	loc_00E31F
+	bcs	@return
 	and	#$00FF
 	xba
 	ora	zp_08
@@ -209,8 +209,8 @@ draw_shot:
 	ror	oam_hi_bits
 	sec
 	ror	oam_hi_bits
-	bcc	loc_00E31D
-loc_00E30C:
+	bcc	@advance_oam
+@flush_hi_bits:
 	phx
 	ldx	oam_hi_ptr
 	lda	oam_hi_bits
@@ -221,21 +221,21 @@ loc_00E30C:
 	sta	oam_hi_bits
 	stx	oam_hi_ptr
 	plx
-loc_00E31D:
+@advance_oam:
 	sty	oam_ptr
-loc_00E31F:
+@return:
 	rts
-loc_00E320:
+@small:
 	lda	OBJ_X,x
 	adc	#$0004
 	cmp	#$00FE
-	bcs	loc_00E31F
+	bcs	@return
 	and	#$00FF
 	sta	zp_08
 	lda	OBJ_Y,x
 	adc	#$0004
 	cmp	#$00F4
-	bcs	loc_00E31F
+	bcs	@return
 	and	#$00FF
 	xba
 	ora	zp_08
@@ -250,8 +250,8 @@ loc_00E320:
 	ror	oam_hi_bits
 	clc
 	ror	oam_hi_bits
-	bcc	loc_00E31D
-	bcs	loc_00E30C
+	bcc	@advance_oam
+	bcs	@flush_hi_bits
 
 ; Jumps (JML) to the handler of shot type A in tbl_shot_types.
 call_shot_handler:

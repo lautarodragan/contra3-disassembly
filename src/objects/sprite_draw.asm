@@ -26,29 +26,29 @@ draw_metasprite:
 	and	#$00FF
 	sta	zp_16
 	iny
-loc_00EB32:
+@loop:
 	lda	a:$0000,y
 	and	#$FF00
-	bpl	loc_00EB3D
+	bpl	@have_dy
 	ora	#$00FF
-loc_00EB3D:
+@have_dy:
 	xba
 	clc
 	adc	zp_0A
 	cmp	#$00E8
-	bcc	loc_00EB4B
+	bcc	@on_screen
 	cmp	#$FFF0	; [num]
-	bcc	loc_00EBA9
-loc_00EB4B:
+	bcc	@next_sprite
+@on_screen:
 	xba
 	and	#$FF00
 	sta	zp_04
 	dey
 	lda	a:$0000,y
 	and	#$FF00
-	bpl	loc_00EB5D
+	bpl	@have_dx
 	ora	#$00FF
-loc_00EB5D:
+@have_dx:
 	xba
 	clc
 	adc	OBJ_X,x
@@ -64,13 +64,13 @@ loc_00EB5D:
 	lda	a:$0002,y
 	sec
 	bit	#$2000
-	bne	loc_00EB79
+	bne	@have_size_bit
 	clc
-loc_00EB79:
+@have_size_bit:
 	ora	OBJ_ATTR,x
 	sta	zp_02
 	ror	oam_hi_bits
-	bcc	loc_00EB97
+	bcc	@store_sprite
 	phx
 	ldx	oam_hi_ptr
 	lda	oam_hi_bits
@@ -79,11 +79,11 @@ loc_00EB79:
 	inx
 	stx	oam_hi_ptr
 	cpx	#$11E0
-	bcs	loc_00EBBA
+	bcs	@oam_hi_full
 	lda	#$8000	; [num]
 	sta	oam_hi_bits
 	plx
-loc_00EB97:
+@store_sprite:
 	phx
 	ldx	oam_ptr
 	lda	zp_08
@@ -96,13 +96,13 @@ loc_00EB97:
 	inx
 	stx	oam_ptr
 	plx
-loc_00EBA9:
+@next_sprite:
 	iny
 	iny
 	iny
 	iny
 	dec	zp_16
-	bne	loc_00EB32
+	bne	@loop
 	sep	#$20
 	.a8
 	lda	#^tables_05
@@ -111,7 +111,7 @@ loc_00EBA9:
 	rep	#$20
 	.a16
 	rts
-loc_00EBBA:
+@oam_hi_full:
 	; (not executed in the CDL traces)
 	plx
 	sep	#$20
