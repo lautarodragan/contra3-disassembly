@@ -68,3 +68,11 @@ build/shift/contra3.sfc
 # placeholder pattern examples in the RAM map (ram-map.md), named since
 wram_13CE
 wram_7EA000
+
+# made-up examples and automatic names of tools/localize.py not used yet (contributing.md)
+@next_slot
+@wait_vblank
+@next_channel
+@return_clc
+@return_sec
+kill_player_tail

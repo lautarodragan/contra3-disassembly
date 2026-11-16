@@ -44,8 +44,12 @@ class Editor:
         self.srcdir = srcdir
         self.m = smap or srcmap.SrcMap.build(srcdir, outdir)
         self.by_addr = {}
+        self.cheap = {}      # addr -> a cheap local (@name) there: only visible in its own span
         for name, v in self.m.labels.items():
-            self.by_addr.setdefault(v, []).append(name)
+            if not name.startswith("@"):
+                self.by_addr.setdefault(v, []).append(name)
+        for name, v in self.m.cheap_labels:
+            self.cheap[v] = name
         self.labels = {}     # addr -> [new names]
         self.ptrs = {}       # addr -> (size, expr)
         self.rows = {}       # addr -> (directive, count)
@@ -76,6 +80,10 @@ class Editor:
         old = self.name_at(addr)
         if old:
             return old
+        if addr in self.cheap:
+            # a new normal label here would end the cheap locals' span
+            raise EditError("$%06X: has a cheap local label (%s); make it a normal label first, "
+                            "checking the other cheap locals of its span" % (addr, self.cheap[addr]))
         path, _ln, la, _size = self.where(addr)
         if la != addr and not self._is_byte_line(path, _ln):
             raise EditError("$%06X: inside an instruction (%s:%d)" % (addr, path, _ln))

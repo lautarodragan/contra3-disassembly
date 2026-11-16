@@ -79,7 +79,8 @@ More rules:
   normal labels, and every `loc_XXXXXX` is a normal label, so a cheap local
   can only replace a `loc_` label when nothing outside that span refers to
   it. When in doubt, give the `loc_` label a normal name instead
-  (`update_players_next`).
+  (`update_players_next`). `tools/localize.py` does the checking; see
+  [Cheap locals](#cheap-locals-toolslocalizepy) below.
 - **Direct-page scratch.** `$00-$0F` (and a few more) are temporaries used
   by many routines with different meanings: leave them as `zp_XX` (or name
   them generically, e.g. `temp0`) instead of giving them the meaning they
@@ -95,6 +96,90 @@ More rules:
 - **Per-player variables.** Player 1's copy at `$1F8x`, player 2's at `$1FCx`
   (stride `$40`); name both (`p1_lives`, `p2_lives`).
 - **English**, everywhere: names, comments, commit messages.
+
+## Cheap locals: `tools/localize.py`
+
+Most `loc_XXXXXX` labels are jump targets inside one routine. Turned into
+cheap locals, they leave the normal labels to the routines (and their
+second entry points), so the structure shows at a glance, and `@loop`,
+`@done` or `@next_slot` say more than an address.
+
+**Scope.** A cheap local is visible from the previous normal symbol
+definition to the next one. In ca65 that is not only a label `name:` but
+also `name = ...`, `name := ...`, `name .set ...`, `.proc`/`.scope`, and a
+macro whose body defines a label. A `.define` or a data directive does not
+end the span. Every `loc_` is a normal label, so converting one merges the
+spans on both sides of it: whether a label can be converted depends on which
+others are converted too, and two `@return` that were apart can end up in
+one span.
+
+**When a label stays normal.** When something outside its span uses it:
+another routine (a branch into the middle of it, a `jmp`/`jml`/`brl` from a
+neighbour: it is a routine entry or a shared tail and deserves a semantic
+name such as `kill_player_tail`), another file, a data table (`.addr`,
+`.word`, `.faraddr`, the macros of `src/data_macros.inc`), an expression
+(`#.loword(...)`, `label+1`, `jmp (label,x)`), the book or a tool. Labels
+inside `.if`/`.else` (the cheat options) also stay normal, so that every
+build assembles.
+
+**Names.** Use the generic names only for what the code shows by its shape,
+and a semantic name when the code shows the purpose:
+
+| name | where |
+|---|---|
+| `@loop` (`@loop2` ...) | the top of a loop: the target of a backward branch that the code from the label can reach (a backward branch to an error exit that returns is not a loop) |
+| `@done` | right after the branch that closes a loop, branched to from inside the loop |
+| `@next` | inside a loop, entered by forward branches from the loop, followed only by the few instructions that advance and test (the "continue" point) |
+| `@return`, `@return_clc`, `@return_sec` | `rts`/`rtl`/`rti`, or `clc`/`sec` and then a return |
+| semantic: `@wait_vblank`, `@next_channel`, `@windows_off`, `@not_visible` | when the code shows what the label is for |
+
+A label that fits none of these stays `loc_` until someone knows what it
+is: a positional name such as `@L1` or `@skip3` says no more than the
+address and loses the address. Several names in one span are numbered in
+source order (`@loop`, `@loop2`), as elsewhere in the source.
+
+**The tool.**
+
+```sh
+python3 tools/localize.py analyze [file|dir ...]              # per file: convertible / must stay, by reason
+python3 tools/localize.py analyze --list src/objects/player.asm   # the decision for every label
+python3 tools/localize.py analyze --entries                   # loc_ labels that look like routine entries
+python3 tools/localize.py suggest src/objects/player.asm > names.txt   # automatic names, as a map to edit
+python3 tools/localize.py apply src/objects/player.asm --map names.txt [--auto] [-n] [--check]
+```
+
+`analyze` reads the whole of `src/`, the book, `README.md` and `tools/*.py`
+(the tools to find names they rely on), and computes the convertible
+labels as a fixpoint: it assumes every candidate is converted and drops,
+until nothing changes, those with a reference outside their span. The
+reasons a label must stay: `entry` (used by another routine), `blocked`
+(used across another `loc_` that must stay; name that one and re-run),
+`other-file`, `expression`, `conditional`, `external` (the book or a tool),
+`no-scope` (before the first label of its file). The `auto` column counts
+what `apply --auto` converts by itself: only labels that match a pattern
+*and* stay reachable while the unnamed labels around them stay `loc_`, so
+naming a few labels by hand often lets more of the automatic ones through.
+
+`apply` takes a map of `loc_XXXXXX @name` lines (and `OLD new_name` lines
+for labels that stay normal, passed to `tools/rename.py`); `--auto` adds the
+automatic names of the given files that the map does not mention. It
+rewrites the definitions, the references and the comments (a comment
+outside the span, or in another file, gets `@name in routine`), and refuses,
+writing nothing, a label that is not convertible, one whose reference
+would end up outside its span because a label in between stays, a name
+that is not `@` + lower-case snake_case (or is a mnemonic or a register),
+and two definitions of one name in a span, existing cheap locals included.
+It does not build unless given `--check` (which runs `make`); either way
+check as for any rename: `make`, `python3 tools/shift.py scan`,
+`make book-check`. Renaming a cheap local afterwards:
+`tools/rename.py --scope routine @old @new`.
+
+Other tools: `tools/datafmt.py label` refuses an address that has a cheap
+local (a normal label there would split the span), and `tools/shift_diag.py`
+looks for `@next_char:` in `src/engine/vram.asm`. `ld65`'s debug file and
+`tools/srcmap.py` list cheap locals by their bare name (`@loop` many times):
+`SrcMap.labels` keeps only one address per name, `SrcMap.cheap_labels`
+lists them all.
 
 ## Files
 

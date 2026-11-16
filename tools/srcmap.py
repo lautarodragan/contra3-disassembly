@@ -11,6 +11,7 @@ Library use (tools/shift.py, tools/label_at.py):
     m.line_at(0x05C59A)   -> (path, lineno, line_start_address, size)
     m.lines[path][lineno] -> [(address, size), ...]
     m.symbols             -> {name: value}
+    m.cheap_labels        -> [(name, address)] of the cheap locals (@name)
 
 Only lines that emit bytes have addresses. Addresses are 24-bit CPU
 addresses ($BB:AAAA, LoROM: bank BB at $8000-$FFFF).
@@ -55,7 +56,8 @@ class SrcMap:
         self.files = {}      # file id -> path
         self.lines = {}      # path -> {lineno: [(addr, size), ...]}
         self.symbols = {}    # name -> value (labels and constants)
-        self.labels = {}     # name -> address (labels only)
+        self.labels = {}     # name -> address (labels only; one of the cheap locals of each @name)
+        self.cheap_labels = []   # (name, address) of every cheap local label (@name)
         self._starts = []    # sorted line start addresses
         self._entries = []   # parallel: (addr, size, path, lineno)
 
@@ -89,6 +91,8 @@ class SrcMap:
                         m.symbols[kv["name"]] = v
                         if kv.get("type") == "lab":
                             m.labels[kv["name"]] = v
+                            if kv["name"].startswith("@"):
+                                m.cheap_labels.append((kv["name"], v))
         entries = []
         for fid, lineno, spanlist in rawlines:
             path = m.files[fid]
