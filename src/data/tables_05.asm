@@ -1261,6 +1261,7 @@ data_059BC8:
 	; CDL: read by scroll_bg1_by_velocity_and_spawn
 	.byte	$27, $09
 data_059BCA:
+	; LAYOUT: read on from data_059BC8 (inside the run of data_059BC8 read on into data_059BCC)
 	; CDL: read by scroll_bg1_by_velocity_and_spawn
 	.byte	$7A, $68
 data_059BCC:
@@ -1636,8 +1637,10 @@ scroll_split_pattern_3:
 	.addr	split_lines_05A340
 	.addr	split_lines_05A350
 split_lines_05A270:
+	; LAYOUT: build_split_line_table searches on past the end of the line table before
 	.byte	$00, $00, $02, $00, $7F, $00, $02, $00
 split_lines_05A278:
+	; LAYOUT: build_split_line_table searches on past the end of the line table before
 	.byte	$00, $01
 	.byte	$00, $00, $70, $01, $00, $00, $78, $01, $00, $1C, $80, $01, $00, $1A, $88, $01
 	.byte	$00, $18, $90, $01, $00, $16, $98, $01, $00, $14, $A0, $01, $00, $12, $A8, $01
@@ -1645,24 +1648,30 @@ split_lines_05A278:
 	.byte	$00, $08, $E0, $01, $00, $06, $E8, $01, $00, $04, $F0, $01, $00, $02, $F8, $01
 	.byte	$00, $04
 split_lines_05A2BC:
+	; LAYOUT: build_split_line_table searches on past the end of the line table before
 	.byte	$00, $02, $00, $06, $08, $02, $00, $08, $10, $02, $00, $0A, $18, $02
 	.byte	$00, $0C, $20, $02, $00, $0E, $8F, $02, $02, $00, $DF, $02, $02, $00, $FF, $7F
 	.byte	$00, $00
 split_lines_05A2DC:
+	; LAYOUT: build_split_line_table searches on past the end of the line table before
 	.byte	$00, $00, $02, $00
 	; CDL: read by build_split_line_table
 	.byte	$7F, $00, $02, $00, $C0, $00, $02, $00, $E0, $00, $02, $00
 split_lines_05A2EC:
+	; LAYOUT: build_split_line_table searches on past the end of the line table before
 	.byte	$00, $01, $00, $0E
 	.byte	$18, $01, $02, $00, $28, $01, $00, $0E, $50, $01, $00, $10, $58, $01, $00, $0C
 	.byte	$60, $01, $00, $0A, $68, $01, $00, $08, $70, $01, $00, $06, $80, $01, $00, $04
 	.byte	$90, $01, $00, $02, $A0, $01, $00, $18, $B0, $01, $00, $16, $FF, $7F, $00, $14
 split_lines_05A320:
+	; LAYOUT: build_split_line_table searches on past the end of the line table before
 	.byte	$20, $00, $00, $04, $39, $00, $00, $06, $60, $00, $00, $08, $80, $00, $00, $04
 	.byte	$99, $00, $00, $06, $C0, $00, $00, $08, $E0, $00, $00, $04, $FF, $00, $00, $06
 split_lines_05A340:
+	; LAYOUT: build_split_line_table searches on past the end of the line table before
 	.byte	$18, $01, $00, $08, $28, $01, $00, $06, $7F, $01, $04, $00, $FF, $01, $04, $00
 split_lines_05A350:
+	; LAYOUT: build_split_line_table searches on past the end of the line table before
 	.byte	$00, $02, $04, $00, $7F, $02, $04, $00, $FF, $7F, $04, $00
 tbl_05A35C:
 	.addr	split_value_from_table

@@ -68,127 +68,177 @@ not marked yet (what they decompress to may hold pointers):
 
 `tools/shift.py build` copies `src/` to `build/shift/src/`, inserts filler
 bytes (`$EA`, NOP, harmless if it ever runs) and assembles
-`build/shift/contra3.sfc`, with the header checksum recomputed:
+`build/shift/contra3.sfc`, with the header checksum recomputed. Where:
 
 - at the start of every bank, a different amount per bank (1-14 bytes; bank
   `$00` has only 14 free bytes before the header). Everything in a bank
   moves, so any reference into it that is still a number points at the
   wrong place; different amounts also catch a label in the wrong bank
   (`lda #.loword(label)` only uses the low 16 bits, so the ROM would match
-  with the label in any bank);
+  with the label in any bank). `--amounts` picks them: `default`, `alt`
+  (another assignment), `max` (each bank by as much as its free space
+  allows, up to 256 bytes: the largest shift), a number, or `05=13,06=6`;
+  `--banks` limits the shift to some banks;
+- with `--files N`, also N bytes between consecutive files of a bank (after
+  each `.include` of `main.asm` but the bank's last), as far as the bank's
+  free space allows: code and data of one bank move relative to each other;
 - with `--labels P --seed S`, also one byte before a fraction of the data
   labels (appended to the `.byte` line before them, so that line numbers
   stay those of `src/`): blocks move relative to each other, which catches
-  tables read past their label into the next one.
+  tables read past their label into the next one. A label followed by a
+  comment with `LAYOUT:` is left alone: the block before it is read on into
+  it on purpose (see below).
 
-`--amounts` picks the banks and amounts (`default`, `alt`, a number, or
-`05=13,06=6`). Then:
+All of these come out of the banks' free space, which is small in the
+full banks (`$00`: 14 bytes, `$05`: 74), so `--labels` moves only some of
+their labels per seed.
 
 ```sh
 make shift-test PRIVATE=../contra3-disassembly-private   # emulator suite on the shifted ROM
 make shift-test SHIFT=05=13                              # only bank $05 moved
+make shift-test SHIFT=max
+make shift-test SHIFT_FLAGS="--labels 0.3 --seed 2 --files 1"
 python3 tools/shift.py diff                              # what relocated, per source line
-python3 tools/shift.py scan                              # hardcoded references of known forms
+python3 tools/shift.py scan                              # hardcoded references
 ```
 
-`make shift-test` runs the screenshot suite of the private repository on
-the shifted ROM: it passes only if the intro, title, demos and stage starts
-look exactly as in the original.
+### The suite
 
-`tools/shift.py scan` needs nothing but the source: it fails on the forms
-that have all been converted (a 16-bit immediate `>= $8000` handed to a
-pointer field or routine such as `OBJ_ANIM`, `OBJ_SPRITE`,
-`make_effect_object`, `start_palette_task`, `draw_text`,
-`load_data_list`, `queue_vram_blocks`...; a literal bank pulled into DB; a
-long operand into a ROM bank), and counts the other 16-bit immediates
-`>= $8000` (mostly negative numbers). CI runs it, builds the shifted ROM
+`make shift-test` runs two test files of the private repository on the
+shifted ROM (not `tests/test_cdl.py`, which checks the reset vector of the
+original layout):
+
+- `tests/test_screens.py`: screenshots of the intro, title, the three
+  attract demos and the first 600 frames of every stage;
+- `tests/test_play.py`: scripted plays (`tools/c3emu/plays.py` there):
+  every stage from its start and from its midpoint (`$1E40` poked, which
+  reaches the bosses, the stage clear screens and the next stage), 2-player
+  modes A and B (the top-down split screen), HARD, the NORMAL ending of
+  stage 6 and the attract sequence, about 330,000 frames of seeded random
+  play with infinite lives and the barrier on. Every 60 game frames the
+  screen and the sound command ring are compared with goldens taken from
+  the original ROM, and the loudness of the audio.
+
+A shifted ROM is not cycle-identical: an indexed read that crosses a page
+takes a cycle more, so moving tables changes the timing by a few cycles,
+and the game can lag on other frames, an IRQ land elsewhere, a sound reach
+the sound CPU some samples later. The plays therefore feed their input
+and take their checkpoints by the game's own frame counter
+(`frame_counter`), accept a checkpoint within 2 game frames, tolerate a
+lone checkpoint that differs in a few pixels (the top-down split screen),
+and compare the audio by loudness, failing only on a difference that
+lasts. A wrong reference shows as a wrong sprite, tile, palette or a
+diverging game, which none of that hides.
+
+### What the tools check
+
+`tools/shift.py scan` needs nothing but the source. It fails on a 16-bit
+immediate `>= $8000` handed to a pointer field or routine (`OBJ_ANIM`,
+`OBJ_SPRITE`, `make_effect_object`, `start_palette_task`, `draw_text`,
+`load_data_list`, `queue_vram_blocks`, `start_dying_soldier_sprite`...),
+a literal bank pulled into DB, a long operand into a ROM bank; and on any
+other 16-bit immediate `>= $8000` that is loaded or compared (`lda`,
+`ldx`, `ldy`, `cmp`, `cpx`, `cpy`) unless its comment has the marker
+`[num]`: a value checked to be a number (negative values, flag words,
+velocities, OAM attributes, colours, WRAM and VRAM addresses...). `scan
+--list` prints the unmarked ones. CI runs it, builds a shifted ROM
 (`--labels 0.3`) and its diff; it cannot run the emulator (that needs the
 ROM-holding private repository).
 
-### Finding what breaks: `tools/shift_diag.py`
-
-The screenshots say *that* something broke, not *what*. `tools/shift_diag.py`
-runs the normal and the shifted build through the same scenario
-(`--scenario attract` or `stageN`) in the patched snes9x of the private
-repository with the CDL tracer on, maps every ROM byte the shifted build
-reads back to its source line (through the two debug files) and stops at
-the first chunk of frames where the shifted build reads data that the
+`tools/shift_diag.py` runs the normal and the shifted build through the
+same scenario (`attract`, `stageN`, or a play name such as `stage2_boss`)
+in the patched snes9x of the private repository with the CDL tracer on,
+maps every ROM byte the shifted build reads back to its source line and
+stops at the first chunk of frames where the shifted build reads data the
 normal build never reads, or that another instruction reads first. It
-prints the reading instruction (as an address of the normal build with the
-nearest label) and the source lines holding the bad pointer's value;
-`-v` dumps the object slots of both runs. A hardcoded pointer reads what
-is now at its old address, so this gives a precise worklist; it is how the
-references below were found after the systematic passes.
+prints the reading instruction and the source lines holding the bad
+pointer's value; `-v` dumps the object slots of both runs. With
+`--fillers` it runs a `--labels` build to the end and lists every filler
+byte read, with the label after it: a table read on into the next block.
+
+`tools/ptrscan.py` follows the value loaded from each data label through
+the routine and lists the tables still written as `.byte` whose entries
+are used as addresses (indirect reads, `OBJ_SPRITE`, `queue_vram_blocks`,
+`load_data_list`, the pointer-taking routines). `tools/layoutcheck.py`
+lists the data labels whose bytes are first read by an instruction naming
+an earlier label (`lda a:sine_table,y` reading `cosine_table`), and with
+`--mark` gives them their `LAYOUT:` comment.
 
 ## Status
 
-Converted so far (about 3,000 label references added):
+The default all-bank shift passes the whole suite: `test_screens.py` (13
+tests) and `test_play.py` (16 plays), 29 tests. So do `--amounts alt`,
+`--amounts max`, `--files 8` and `--labels 0.3` with seeds 1 and 2:
+RESULTS_PLACEHOLDER
 
-- every pointer immediate the scan knows (some 420: animation scripts,
-  metasprites, palettes and palette tasks, text, HDMA tables and lists, song
-  sets, data lists, VRAM block lists, wave parameters, title sprite groups,
-  top-down enemy animations), all data-bank setups and long list reads;
+Converted (about 5,000 label references added in all):
+
+- every pointer immediate (`scan` checks all 1,041 remaining 16-bit
+  immediates `>= $8000` as verified numbers, marked `[num]`), all
+  data-bank setups and long list reads;
 - animation scripts (bank `$05`, 132 scripts, 488 entries, and their
   metasprites in banks `$06`/`$07`) and every table of script pointers found;
 - the 79 + 12 data lists of `load_data_list` and the song sets, with 180
   streams labelled in banks `$06`-`$1F` (130 marked `ASSET`);
 - 46 palette task scripts and the bank `$08` palettes they copy;
-- `player_frames`, 27 metasprite tables, the text tables (and the 39
-  strings, named after their text), the HDMA channel lists, the stage
-  layout tables (palette tasks, DP parameters, load lists, HDMA lists,
-  spawn pages and lists), the demo input pointers, the VRAM block tables.
+- `player_frames`, metasprite tables, the text tables, the HDMA channel
+  lists, the stage layout tables (palette tasks, DP parameters, load lists,
+  HDMA lists, spawn pages and lists), the demo input pointers, the VRAM
+  block tables and the block lists that point into themselves, the scroll
+  split patterns (`ptrs_scroll_split_patterns`), the ending's text lists;
+- bank `$07`: the top-down sprite sets (`ptrs_td_metasprite_sets`,
+  `ptrs_td_tile_lists`): 8 metasprite tables and 9 tile lists by sprite set,
+  915 metasprites and 317 `td_tiles` records (macro) giving each rotated
+  frame's tiles in WRAM or in the raw tile blocks `td_sprite_tiles_13`,
+  `td_sprite_tiles_14`, `td_sprite_tiles_16`.
 
-Shifted alone, banks `$00`, `$01`, `$02`, `$03`, `$04`, `$06` and `$1D`
-show no anomaly in `tools/shift_diag.py` over the attract sequence, and
-with all of them shifted together every screenshot test passes (the CDL
-tracer's own vector check (`tests/test_cdl.py`) fails by design: it expects the reset
-code at `$00:8000`). So do they with a byte also inserted before 186 of
-their data labels:
-
-```sh
-python3 tools/shift.py build --amounts 00=3,01=7,02=11,03=5,04=9,06=6,1D=12 \
-    --banks 00,01,02,03,04,06,1D --labels 0.3 --seed 2
-``` Bank `$05`
-runs the intro, title, the stage 1 demo and part of the stage 2 demo; the
-graphics/sound banks the attract sequence until the top-down sprite
-graphics stream. Not yet shiftable: most of bank `$05`'s other tables,
-bank `$07`, and the graphics bank holding the top-down sprite graphics
-(`$13`).
+Some references the earlier passes had read wrong were found by the plays:
+`$C540` handed to `queue_vram_block` is a WRAM address, not
+`anim_05C540`; `lda a:$FF8A,x` in `td_update_bomb` reads the player's slot
+`$80` below the bomb through the WRAM mirror of the next bank, not
+`data_05FF8A`; four `ldy #$FFxx` are VRAM block lists at the end of bank
+`$05`, not negative numbers.
 
 ## Known fixed references
 
-These are still numbers, or depend on layout, on purpose or for now:
+These are still numbers, or depend on layout, on purpose:
 
 - **Overlapping data.** Some tables share bytes: the weapon capsule
   metasprite table (`data_05B17E`) starts with the jump word of the
   animation script before it, whose value `$B172` is also a metasprite
   (`$06:B172`); its last entry is the first word of the next table. The
   stage card text table (`data_058428`) is indexed from 1, so its entry 0
-  is the end of the string before it. The animation `anim_05CD0B` ends with
-  a frame whose bytes are also read by `update_palette_anim`. Moving one of
-  these blocks alone changes the other; to make them independent the
-  bytes would have to be duplicated, which changes the ROM.
+  is the end of the string before it; likewise the stage graphics table
+  `ptrs_0588E1`, whose entry 0 is the "S" and the end byte of CLEAR BONUS
+  (it was a pointer to `data_05FF4D` and broke that letter on the stage
+  clear screen), and `ptrs_td_tile_lists`, whose entry 0 is entry `$11` of
+  `ptrs_td_metasprite_sets`. The animation `anim_05CD0B` ends with a frame
+  whose bytes are also read by `update_palette_anim`. Moving one of these
+  blocks alone changes the other; to make them independent the bytes
+  would have to be duplicated, which changes the ROM.
+- **Blocks read on from the one before** carry a `LAYOUT:` comment (some
+  140): tables indexed past their label (often a CDL block boundary inside
+  one table), `td_walk_y_int` read on into `td_walk_x_int` (the sine and
+  cosine of the walk vectors), the HDMA tables that `copy_hdma_table`
+  copies with a fixed length, the top-down item metasprites
+  (`draw_td_item_metasprite` reads a fifth byte after the last sprite),
+  labels inside palettes and block lists that the code points into, the
+  last centipede frame (its tiles DMA'd past `td_sprite_tiles_14` into
+  `gfx_14DC62`). `--labels` leaves them in place.
 - **The third word of animation frames** is a metasprite only for objects
   that can face the other way; effects keep an OAM attribute there
   (`update_effect`, `update_destructible_part`) and the bomber's bomb the
   script of its fire trail. Words `>= $8000` were taken as metasprites
-  after checking that `draw_metasprite` reads them; an attribute with the
-  vertical-flip bit set would have been mislabelled the same way and would
-  show up in the shift test.
-- **Top-down sprite graphics**: the tables in bank `$07` that give the
-  ROM address (bank `$13`) of each rotated enemy and player frame for the
-  VRAM stream (`stream_topdown_sprite_gfx`, the lists at `$1780`/`$17C0`)
-  are still `.byte`, as are the top-down map event and spawn tables.
-- **Bank `$05` tables** not converted yet: the 900-odd `data_` blocks
-  include more pointer tables (found so far by the shift diagnostics as
-  they come); `tools/shift.py scan` also counts some 970 16-bit immediates
-  `>= $8000` that are loaded and not checked (mostly negative velocities,
-  offsets and masks).
+  after checking that `draw_metasprite` reads them.
+- **Bank `$05` `data_` blocks** that no tool flags may still hold pointers
+  the plays do not reach (unused data, rare paths); `tools/ptrscan.py`
+  lists the candidates it can see.
 - **One bank of tables.** Most code runs with DB = `^tables_05` and reads
   tables with absolute addresses, and the loaders take 16-bit list pointers
   (`TABLES_05_BASE`): the tables can move inside bank `$05`, not to another
   bank. Likewise metasprites must stay in bank `$06` (top-down ones in
-  `$07`) and palettes in bank `$08`.
+  `$07`), palettes in bank `$08`, and a `td_tiles` record's two halves in
+  one bank.
 - **Streams do not cross banks**: the decompressor reads with a 16-bit
   index, so a stream has to fit in its bank.
 - **The header checksum** (`$00:FFDC`) is the original's; `tools/shift.py`

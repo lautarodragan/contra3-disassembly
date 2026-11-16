@@ -71,6 +71,10 @@ More rules:
   `; [num]`. Put the marker only after checking how the value is used (a
   negative number, a mask, a WRAM or VRAM address, a colour...);
   `scan --list` prints the unmarked ones.
+- **Layout.** When code reads a table past its label into the next block
+  (or points into the middle of a block), put a comment `; LAYOUT: why`
+  right after the next block's label, so that the shift test does not
+  separate them (`tools/layoutcheck.py` finds some of these).
 - **Cheap locals.** In ca65 an `@name` label is only visible between two
   normal labels, and every `loc_XXXXXX` is a normal label, so a cheap local
   can only replace a `loc_` label when nothing outside that span refers to

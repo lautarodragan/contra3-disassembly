@@ -40,8 +40,13 @@ update_players_next
 
 # the comment marker of blocks ready to become binary files (layout.md, shiftability.md)
 ASSET
-# a test of the private repository (shiftability.md)
+# tests and tools of the private repository (shiftability.md)
 tests/test_cdl.py
+tests/test_screens.py
+tests/test_play.py
+tools/c3emu/plays.py
+test_screens.py
+test_play.py
 
 # cheats.md: build outputs of `make cheats` / `make ips`, an option word,
 # a placeholder, the private repository's test file and screenshot names

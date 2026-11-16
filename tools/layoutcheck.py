@@ -9,7 +9,9 @@ For every data label B, takes the instructions that first read B's bytes
 a:sine_table,y`).  If that label A is an earlier label of the same bank
 (and not B itself), the code reads A's table on into B: B must stay right
 after A.  tools/shift.py --labels inserts a byte before data labels, which
-would break that, unless B is followed by a comment with "LAYOUT:".
+would break that, unless B is followed by a comment with "LAYOUT:".  The
+labels between A and B are inside that run too (a table of records with a
+label per field: data_059BC8, data_059BCA, data_059BCC).
 
 --mark adds such a comment after each label found that has none
 ("; LAYOUT: read on from A (by INSTRUCTION)"), so that `--labels` leaves it
@@ -87,6 +89,18 @@ def main(argv):
             if x < b and x >> 16 == b >> 16 and b - x < 0x1000:
                 found.append((name, mm.group(1), op.strip().split(";")[0].strip(), path, ln))
                 break
+    # every label between A and B is inside the run too (records read
+    # through a column label: data_059BC8 / data_059BCA / data_059BCC)
+    names_found = {f[0] for f in found}
+    for name, prev, op, path, ln in list(found):
+        lo, hi = m.labels[prev], m.labels[name]
+        for v, n2 in labels[bisect.bisect_right(starts, lo):bisect.bisect_left(starts, hi)]:
+            if n2 not in names_found and n2 != prev:
+                p2, l2, _t = line_text(v)
+                if p2 is None or "/gfx/" in p2 or "/sound/" in p2:
+                    continue
+                found.append((n2, prev, "inside the run of %s read on into %s" % (prev, name), p2, l2))
+                names_found.add(n2)
     for name, prev, op, path, ln in found:
         lines = texts[path]
         j = next(j for j in range(len(lines)) if lines[j].startswith(name + ":"))
