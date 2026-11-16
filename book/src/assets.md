@@ -261,7 +261,8 @@ The [Graphics gallery](gallery.md) shows all 110.
 
 ## Not graphics, or format not known: still `.bin`
 
-- no sound asset: the sound CPU's driver, `spc_driver`, is SPC700
+- none any more (no `.bin` is left under `assets/`): the sound CPU's
+  driver, `spc_driver`, is SPC700
   assembly and its sound effects are text
   ([Sound driver: the driver's source](sound-driver.md#the-drivers-source));
   the 14 songs are text

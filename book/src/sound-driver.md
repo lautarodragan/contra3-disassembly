@@ -309,3 +309,36 @@ source stops the build otherwise (`.org $3000, but the bytes before it
 reach $30xx: the sound effects must end before the song of the set`).
 There are 596 bytes (`$254`) free; the driver asset as a whole keeps its
 `max=$2E00` (`$0200`-`$2FFF`).
+
+## Editing a sound effect
+
+Edit `spc_sfx.seq` and run `make` (the ROM is then no longer the original:
+`make` reports a `MISMATCH`). `python3 tools/sound_render.py SOUND` plays a
+sound in the emulator (`make cores`): from power-on to the title screen, it
+puts the commands `$84` and SOUND into the game's sound queue, records the
+audio and prints how long the sound lasts, its median zero-crossing rate
+(which follows the pitch: *n* semitones up multiply it by 2^(*n*/12)) and
+its level every 0.1 s; `--wav OUT.wav` writes it, `--against ROM` renders
+the same sound on a second ROM and prints the ratios.
+
+An example, in a throwaway copy: the extra-life sound `$3E`, a fifth higher
+(`transpose $05` to `$0C`, 7 semitones, x1.50), slower (`tempo $7D` to
+`$50`, durations x1.56) and with one more, quieter repeat at the end
+(`channel_volume $02`, `repeat`: 3 bytes more):
+
+```
+$ python3 tools/sound_render.py 3E --rom edited.sfc --against build/contra3.sfc
+sound $3E on edited.sfc: 1.46 s, zero crossings 7584 Hz (median of the loud part)
+  level every 0.1 s: 1941 1845 1711 1615 1533 1493 1408 1318 1230 1198 1149 330 309 302 287
+sound $3E on build/contra3.sfc: 0.92 s, zero crossings 5232 Hz (median of the loud part)
+  level every 0.1 s: 1868 1803 1744 1672 1541 1455 1399 333 320 282
+length x1.59, zero crossings x1.45 (the first ROM against the second)
+```
+
+The 76 headers after it in the file moved by 3 bytes (sound `$43`'s
+header from `$1E21` to `$1E24`, ... `$5C`'s from `$2D86` to `$2D89`) and
+`sound_table` with them; the room before `$3000` went from 596 to 593
+bytes. Rendered on both ROMs, the moved sounds `$43`, `$59` and `$6D` and
+the unmoved `$04` last as long and have the same zero-crossing rate
+(`$6D`'s audio is the same sample for sample; the others' samples differ
+slightly, with the same length and levels: not investigated).
