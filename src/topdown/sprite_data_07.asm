@@ -2946,6 +2946,13 @@ td_tiles_07A3DE:
 	td_tiles	td_sprite_tiles_14 + $1B00, td_sprite_tiles_14 + $1C00
 td_tiles_07A3E4:
 	td_tiles	td_sprite_tiles_14 + $1D00, td_sprite_tiles_14 + $1E00
+; The frames of two 16x16 sprites (td_tiles_07A384, _07A3B4, _07A3BA and this
+; one) are $100 bytes, the top tiles then the bottom ones: the second half
+; starts $80 after the first, and its last $80 bytes land in VRAM tiles that
+; their metasprites do not use (only tiles 0 and 2).  Here those $80 bytes are
+; past the end of td_sprite_tiles_14, in whatever follows it: not shown
+; (checked in the emulator with other bytes there: the sprite VRAM differs,
+; the screen does not).
 td_tiles_07A3EA:
 	td_tiles	td_sprite_tiles_14 + $1F00, td_sprite_tiles_14 + $1F80
 td_metasprites_explosion:

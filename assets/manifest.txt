@@ -86,6 +86,7 @@ gfx/gfx_11EB28                   lz-v2  png=4bpp tiles=128 max=$2000
 gfx/gfx_13CC02                   lz-v1  png=mode7 tiles=256 tail=BC max=$4001  # limit: original size, 1 byte past the end of the Mode 7 characters (book: Assets, Size limits)
 gfx/gfx_148000                   lz-v1  png=mode7 tiles=196 tail=00 max=$4000
 gfx/gfx_14A86D                   lz-v2  png=4bpp tiles=256 tail=00 max=$2001  # limit: original size, 1 byte past gfx_16BE91 (book: Assets, Size limits)
+gfx/gfx_14DC62                   lz-v2  png=4bpp tiles=201 max=$2000
 gfx/gfx_14F0F8                   lz-v2  png=4bpp tiles=101 max=$2000
 gfx/gfx_158000                   lz-v1  png=mode7 tiles=256 tail=2C max=$4001  # limit: original size, 1 byte past the end of the Mode 7 characters (book: Assets, Size limits)
 gfx/gfx_15DCD9                   lz-v2  png=4bpp tiles=208 max=$2000
@@ -114,6 +115,7 @@ gfx/gfx_19EF62                   lz-v2  png=4bpp tiles=167 max=$2000
 gfx/gfx_1AE9C9                   lz-v2  png=4bpp tiles=112 max=$2000
 gfx/gfx_1EEBD0                   lz-v1  max=$1000 tilemap=bg
 gfx/gfx_1FE855                   lz-v2  png=4bpp tiles=256 max=$2000
+gfx/td_sprite_tiles_14           raw    png=4bpp tiles=256
 gfx/td_sprite_tiles_16           raw    png=4bpp tiles=192
 sound/spc_sample_dir_boot        raw    dir=sound/spc_samples_common,sound/spc_samples_stage3 max=$0100
 sound/spc_song_boss              raw    max=$2000 seq=text

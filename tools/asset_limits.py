@@ -60,8 +60,10 @@ Three kinds of asset have a size that is fixed, with no `max=`:
   - an uncompressed sound block (load_spc_raw) with a number as its size
     word: that size (with a symbol, `<label>_size`, the assembler computes
     it from the data, and the block has a max= like a stream);
-  - raw tiles read by td_tiles records (td_sprite_tiles_16): $100 bytes
-    past the record with the largest offset (stream_topdown_sprite_gfx);
+  - raw tiles read by td_tiles records (td_sprite_tiles_13 ...): $100 bytes
+    past the record with the largest offset (stream_topdown_sprite_gfx;
+    $80 for the second half of a frame of two 16x16 sprites, see
+    td_tiles_reads);
   - a palette with `colours=N` in the manifest (gpl=colours: checked by
     tools/snespal.py).
 
@@ -221,19 +223,29 @@ def ram_labels(srcdir):
 
 
 def td_tiles_reads(srcdir):
-    """{label: bytes the td_tiles records read from it} (each half of a
-    record is $100 bytes, stream_topdown_sprite_gfx)."""
+    """{label: bytes of it that the td_tiles records show} (each half of a
+    record is $100 bytes, stream_topdown_sprite_gfx).  A record whose second
+    half starts $80 after its first is a frame of two 16x16 sprites, $100
+    bytes in all: the DMA still reads $100 from the second half, but its last
+    $80 bytes go to tiles the frame does not show, so they need not be part
+    of the block (td_tiles_07A3EA reads them past td_sprite_tiles_14; the
+    td_tiles macro checks that they are in the bank)."""
     out = {}
     for path in _asm_files(srcdir):
         for line in open(path):
             code = line.split(";")[0].strip()
             if not code.startswith("td_tiles"):
                 continue
+            halves = []
             for half in code[len("td_tiles"):].split(","):
                 m = re.fullmatch(r"\s*(\w+)\s*(?:\+\s*(\$[0-9A-Fa-f]+|\d+))?\s*", half)
                 if m:
-                    off = _num(m.group(2)) if m.group(2) else 0
-                    out[m.group(1)] = max(out.get(m.group(1), 0), off + 0x100)
+                    halves.append((m.group(1), _num(m.group(2)) if m.group(2) else 0))
+            compact = (len(halves) == 2 and halves[0][0] == halves[1][0]
+                       and halves[1][1] - halves[0][1] == 0x80)
+            for k, (label, off) in enumerate(halves):
+                end = off + (0x80 if compact and k == 1 else 0x100)
+                out[label] = max(out.get(label, 0), end)
     return out
 
 
@@ -439,7 +451,7 @@ def fixed_size(src, label):
     if label in src.td_reads:
         n = src.td_reads[label]
         return n, (f"the td_tiles records read ${n:04X} bytes of it (the largest offset + $100, "
-                   "stream_topdown_sprite_gfx)")
+                   "or + $80 for a frame of two 16x16 sprites; stream_topdown_sprite_gfx)")
     return None
 
 

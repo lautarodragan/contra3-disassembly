@@ -244,6 +244,12 @@ def test_td_tiles_fix_the_size(source):
     assert asset_limits.fixed_size(source, "td_sprite_tiles_16")[0] == 0x1800
 
 
+def test_td_tiles_two_sprite_frame(source):
+    # td_tiles_07A3EA reads $100 bytes from +$1F80, but a frame of two 16x16
+    # sprites shows only $80 of its second half: the tiles end at $2000
+    assert asset_limits.fixed_size(source, "td_sprite_tiles_14")[0] == 0x2000
+
+
 def test_unknown_capacity(tmp_path):
     # nothing after it but the end of the sound CPU's RAM
     src = tmp_path / "src"

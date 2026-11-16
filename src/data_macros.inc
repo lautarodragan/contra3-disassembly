@@ -139,10 +139,13 @@
 ; where the player's tiles are decompressed, or in a ROM block of raw tiles,
 ; td_sprite_tiles_13 ...) for the top row of tiles, then the bottom row's,
 ; in the same bank.  The record is the address, the bank as a word and the
-; second address.
+; second address.  The DMA address does not carry into the bank byte, so each
+; $100-byte half must end in its bank (a half may run past the block it
+; points into: td_tiles_07A3EA).
 ; ---------------------------------------------------------------------------
 .macro td_tiles top, bottom
 	.assert	^(top) = ^(bottom), error, "td_tiles: both halves must be in one bank"
+	.assert	.loword(top) <= $FF00 && .loword(bottom) <= $FF00, error, "td_tiles: a $100-byte half runs past the end of its bank"
 	.addr	.loword(top)
 	.word	^(top)
 	.addr	.loword(bottom)
