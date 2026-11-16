@@ -112,7 +112,7 @@ def run_reference(private, rom, scenario, frames, q, wram_at=None):
     c.close()
 
 
-def run_shifted(private, rom, scenario, frames, chunk, ref, ref_readers, mapping, q):
+def run_shifted(private, rom, scenario, frames, chunk, ref, ref_readers, mapping, q, harmless=()):
     """Stops at the first chunk with anomalies; returns them with readers."""
     sys.path.insert(0, private)
     from tools.c3emu import retro
@@ -132,6 +132,8 @@ def run_shifted(private, rom, scenario, frames, chunk, ref, ref_readers, mapping
             if a[off] & DATA and not seen[off]:
                 seen[off] = 1
                 orig = mapping.get(off, -1)
+                if rd[off] and (rd[off] - 1) & 0xFFFFFF in harmless:
+                    continue
                 if orig == -1:
                     bad.append((off, None))
                 elif not ref[orig] & DATA:
@@ -141,6 +143,8 @@ def run_shifted(private, rom, scenario, frames, chunk, ref, ref_readers, mapping
                     r = rd[off] - 1
                     ro = mapping.get(lorom_offset(r & 0x7FFFFF), -1)
                     want = int.from_bytes(ref_readers[4 * orig:4 * orig + 4], "little")
+                    if want and (want - 1) & 0xFFFFFF in harmless:
+                        continue
                     if want and ro != -1 and ro != lorom_offset((want - 1) & 0x7FFFFF):
                         bad.append((off, orig))
         if bad:
@@ -150,6 +154,23 @@ def run_shifted(private, rom, scenario, frames, chunk, ref, ref_readers, mapping
             return
     q.put((c.frame_count, [], b""))
     c.close()
+
+
+def harmless_readers(smap, out):
+    """Shifted-build addresses of instructions whose 16-bit read of a block's
+    last byte also touches the byte after it, harmlessly: draw_text reads
+    each character as a word and keeps the low byte."""
+    pcs = set()
+    for path, lines in smap.lines.items():
+        if not path.endswith("engine/vram.asm"):
+            continue
+        text = open(path).read().split("\n")
+        for i, line in enumerate(text):
+            if line.startswith("@next_char:"):
+                for k in range(i + 1, i + 4):
+                    if "lda\ta:$0000,x" in text[k] and k + 1 in lines:
+                        pcs.add(lines[k + 1][0][0])
+    return pcs
 
 
 def run_fillers(private, rom, scenario, frames, q):
@@ -183,13 +204,10 @@ def report_fillers(args, private, mapping):
     reads = q.get()
     p.join()
     found = {}
-    harmless = {v for n, v in shifted.labels.items() if n == "draw_text_common"}
+    harmless = harmless_readers(shifted, args.out)
     for off, rd in reads:
-        if mapping.get(off, -1) != -1:
+        if mapping.get(off, -1) != -1 or (rd and (rd - 1) & 0xFFFFFF in harmless):
             continue
-        r = shifted.line_at((rd - 1) & 0xFFFFFF) if rd else None
-        if r and "lda\ta:$0000,x" in open(r[0]).read().split("\n")[r[1] - 1] and "vram.asm" in r[0]:
-            continue        # draw_text's 16-bit character read
         addr = lorom_addr(off)
         i = bisect.bisect_right(lv, addr)
         after = labs[i][1] if i < len(labs) else "?"
@@ -273,7 +291,10 @@ def main(argv):
     ref, ref_readers = q.get()
     p.join()
     p = ctx.Process(target=run_shifted, args=(private, os.path.abspath(os.path.join(args.out, "contra3.sfc")),
-                                             args.scenario, args.frames, args.chunk, ref, ref_readers, mapping, q))
+                                             args.scenario, args.frames, args.chunk, ref, ref_readers, mapping, q,
+                                             harmless_readers(srcmap.SrcMap.load(os.path.join(args.out, "contra3.dbg")),
+                                                              args.out) |
+                                             harmless_readers(base, args.out)))
     p.start()
     frame, bad, wram_b = q.get()
     p.join()

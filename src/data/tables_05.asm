@@ -2412,10 +2412,13 @@ data_05B036:
 vram_blocks_05B046:
 	.byte	$00, $51, $60, $83, $80, $83, $A0, $83
 vram_blocks_05B04E:
+	; LAYOUT: an entry inside the block list before (queue_vram_blocks reads on)
 	.byte	$C0, $83, $E0, $83
 vram_blocks_05B052:
+	; LAYOUT: an entry inside the block list before (queue_vram_blocks reads on)
 	.byte	$20, $84, $40, $84
 vram_blocks_05B056:
+	; LAYOUT: an entry inside the block list before (queue_vram_blocks reads on)
 	.byte	$00, $51, $00, $84
 ; OBJ_HP of update_wall_hatch by difficulty (easy, normal, hard)
 wall_hatch_hp:
