@@ -903,6 +903,10 @@ vel8_x_sub:
 	.byte	$75, $C4, $9C, $47, $DE, $D8, $4A, $79, $CE, $29, $2D, $EB, $01, $BE, $B9, $A2
 	.byte	$9A, $99, $B9, $A2, $01, $BE, $2D, $EB, $CE, $29, $4A, $79, $DE, $D8, $9C, $47
 	.byte	$75, $C4, $35, $4E, $88, $E3, $FD, $82, $0C, $2B, $16, $DA, $6C, $8E, $51, $46
+; Words: -15 * cos(angle), 256 steps per turn ($00 up, $40 right); circle15_x
+; is the same curve 64 entries later, so this is the y offset and circle15_x
+; the x offset of a point at distance 15 in direction angle. Used by the flame
+; shot and by bank $04 handlers.
 circle15_y:
 	; CDL: read by spawn_shots_flame, sub_04D0EA
 	.byte	$F1, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF
@@ -913,6 +917,8 @@ circle15_y:
 	.byte	$F8, $FF, $F8, $FF, $F9, $FF, $F9, $FF, $F9, $FF, $FA, $FF, $FA, $FF, $FA, $FF
 	.byte	$FB, $FF, $FB, $FF, $FB, $FF, $FC, $FF, $FC, $FF, $FC, $FF, $FD, $FF, $FD, $FF
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $00, $00, $00, $00
+; Words: 15 * sin(angle), 256 steps per turn: x offset at distance 15 (see
+; circle15_y), 320 entries.
 circle15_x:
 	; LAYOUT: read on from circle15_y (lda a:circle15_y,y)
 	; CDL: read by spawn_shots_flame, sub_04D0EA
@@ -964,6 +970,10 @@ palette_05916A:
 palette_05918A:
 	.byte	$00, $00, $42, $08, $C6, $18, $29, $25, $8C, $31, $31, $46, $B5, $56, $18, $63
 	.byte	$9C, $73, $FF, $7F, $06, $00, $6A, $18, $8C, $2C, $12, $31, $B5, $39, $5A, $5A
+; Stage 1 boss: steps added line by line to the HDMA scroll table at $7E:A046
+; (integer part; fraction in stage1_boss_hdma_line_steps_sub, table at
+; $7E:A0C6) when the body moves up or down (stage1_boss_move_up /
+; stage1_boss_move_down, which start at different offsets).
 stage1_boss_hdma_line_steps:
 	; CDL: read by stage1_boss_move_up
 	.byte	$01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $01, $00
@@ -973,6 +983,7 @@ stage1_boss_hdma_line_steps:
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+; Fraction of stage1_boss_hdma_line_steps.
 stage1_boss_hdma_line_steps_sub:
 	; LAYOUT: read on from the table before
 	; CDL: read by stage1_boss_move_up
@@ -1257,13 +1268,21 @@ spawn_list_059B7A:
 	.byte	$00, $00, $00, $00, $00, $FF, $00
 spawn_list_059BC6:
 	.byte	$FF, $00
+; Stage 4 airship spawn list, read by scroll_bg1_by_velocity_and_spawn (called
+; by update_stage4_controller), index wram_168A: entries of 6 bytes, the bg1_x
+; at which the entry spawns (word; spawned when bg1_x is below it), type and y
+; (airship_spawn_type_y), field $3A (airship_spawn_params). The types are the
+; airship's ($7A, $7C, $7D, $7F).
 airship_spawn_x:
 	; CDL: read by scroll_bg1_by_velocity_and_spawn
 	.byte	$27, $09
+; Airship spawn list: OBJ_TYPE (low byte) and y + bg1_y (high byte) of each
+; entry.
 airship_spawn_type_y:
 	; LAYOUT: read on from airship_spawn_x (inside the run of airship_spawn_x read on into airship_spawn_params)
 	; CDL: read by scroll_bg1_by_velocity_and_spawn
 	.byte	$7A, $68
+; Airship spawn list: field $3A of each entry.
 airship_spawn_params:
 	; LAYOUT: read on from airship_spawn_x (lda a:airship_spawn_x,y)
 	; CDL: read by scroll_bg1_by_velocity_and_spawn; partly not accessed
@@ -1348,9 +1367,12 @@ spawn_list_059E36:
 	.byte	$10, $00
 spawn_list_059E40:
 	.byte	$FF, $00
+; update_object_type_55: bg_dma_src of the 4 frames of animated BG tiles ($400
+; bytes to VRAM $3A90), by stage_frame_counter / 8.
 object_type_55_tile_frames:
 	; CDL: read by update_object_type_55
 	.byte	$00, $A0, $00, $A4, $00, $A8, $00, $A4
+; Load lists of update_load_list_trigger (type $07), by field $3A.
 ptrs_trigger_load_lists:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk (+1 more); partly not accessed
 	.addr	load_list_059E79, load_list_059E8C, load_list_059E62, load_list_059E70
@@ -1418,9 +1440,14 @@ load_list_059EFC:
 	load_list	$01, $01
 	load_wram	$7EA000, packed_09E638
 	load_end
+; update_song_change_trigger (type $4D), by field $3A: song_change_mode. Only
+; one entry; the words after it are other data.
 song_change_trigger_modes:
 	; CDL: not accessed
 	.byte	$04, $00
+; update_song_change_trigger, by field $3A: song_change_set.
+; object_type_06_state_04 also reads it at +2/+4 for the x of the bomber's two
+; bombs ($70, $88).
 song_change_trigger_sets:
 	; CDL: read by object_type_06_state_04; partly not accessed
 	.addr	song_set_05F48A
@@ -1436,21 +1463,29 @@ anim_059F12:
 	anim_frame	$0010, metasprite_06B5C0, anim_05C5B8
 	anim_frame	$6000, metasprite_06B5C5, anim_05C516
 	anim_end	metasprite_06B5C5, anim_05C516
+; object_type_06_state_08: bit masks ORed into the BG graphics in WRAM
+; ($7E:A000, 4 frames apart), one step per wram_166C countdown; the pixels
+; fill in a dither pattern.
 object_type_06_dither_masks:
 	; CDL: read by object_type_06_state_08; partly not accessed
 	.byte	$80, $08, $80, $08, $10, $01, $10, $01, $40, $04, $40, $04, $20, $02, $20, $02
 	.byte	$20, $02, $20, $02, $40, $04, $40, $04, $10, $01, $10, $01, $80, $08, $80, $08
 	.byte	$40, $04, $40, $04, $80, $08, $80, $08, $20, $02, $20, $02, $10, $01, $10, $01
 	.byte	$10, $01, $10, $01, $20, $02, $20, $02, $80, $08, $80, $08, $40, $04, $40, $04
+; object_type_06_state_08: byte offset in the tile rows for each step (bytes).
 object_type_06_dither_offsets:
 	; CDL: read by object_type_06_state_08; partly not accessed
 	.byte	$00, $00, $08, $08, $04, $04, $0C, $0C, $02, $02, $0A, $0A, $06, $06, $0E, $0E
 	.byte	$00, $00, $08, $08, $04, $04, $0C, $0C, $02, $02, $0A, $0A, $06, $06, $0E, $0E
 	.byte	$00, $00, $08, $08, $04, $04, $0C, $0C, $02, $02, $0A, $0A, $06, $06, $0E, $0E
 	.byte	$00, $00, $08, $08, $04, $04, $0C, $0C, $02, $02, $0A, $0A, $06, $06, $0E, $0E
+; object_type_06_state_07: bg_dma_src of 4 frames of animated BG tiles ($380
+; bytes to VRAM $2E40).
 object_type_06_tile_frames:
 	; CDL: read by object_type_06_state_07
 	.byte	$00, $A0, $80, $A3, $00, $A7, $80, $AA
+; update_object_type_3C: bg_dma_src of 4 frames of animated BG tiles ($2E0
+; bytes to VRAM $0E80).
 object_type_3C_tile_frames:
 	; CDL: read by update_object_type_3C
 	.byte	$00, $A0, $00, $A3, $00, $A6, $00, $A9
@@ -1483,39 +1518,56 @@ weapon_fire_delays:
 .else
 	.byte	$03, $00, $04, $00, $05, $00, $04, $00, $01, $00, $01, $00
 .endif
+; By direction (shot angle / $10, 8 directions from up): SHOT_ATTR (tile and
+; flips) of the crush shot.
 crush_shot_attrs:
 	; CDL: read by spawn_shot_crush
 	.byte	$2E, $31, $40, $31, $2C, $31, $40, $B1, $2E, $B1, $40, $F1, $2C, $71, $40, $71
+; By direction (angle / $10): x offset added to the muzzle where the flame
+; chain starts (opposite to the shot direction).
 flame_start_x_offsets:
 	; CDL: read by spawn_shots_flame; partly not accessed
 	.byte	$00, $00, $F2, $FF, $F0, $FF, $F2, $FF, $00, $00, $0E, $00, $10, $00, $0E, $00
+; By direction: y offset where the flame chain starts.
 flame_start_y_offsets:
 	; CDL: read by spawn_shots_flame; partly not accessed
 	.byte	$10, $00, $0E, $00, $00, $00, $F2, $FF, $F2, $FF, $F2, $FF, $00, $00, $0E, $00
+; By direction (angle / $10): x distance between the laser's 8 segments (they
+; trail behind the head).
 laser_segment_dx:
 	; CDL: read by spawn_shot_laser; partly not accessed
 	.byte	$00, $00, $F4, $FF, $F0, $FF, $F4, $FF, $00, $00, $0C, $00, $10, $00, $0C, $00
+; By direction: y distance between the laser's segments.
 laser_segment_dy:
 	; CDL: read by spawn_shot_laser; partly not accessed
 	.byte	$10, $00, $0C, $00, $00, $00, $F4, $FF, $F0, $FF, $F4, $FF, $00, $00, $0C, $00
+; By direction: SHOT_ATTR of the laser segments.
 laser_shot_attrs:
 	; CDL: read by spawn_shot_laser; partly not accessed
 	.byte	$44, $31, $46, $31, $42, $31, $46, $71, $44, $31, $46, $31, $42, $31, $46, $71
+; By direction ((angle + 8) / 8): SHOT_ATTR of the homing shot.
 homing_shot_attrs:
 	; CDL: read by update_homing_shot
 	.byte	$2E, $3F, $40, $3F, $2C, $3F, $40, $BF, $2E, $BF, $40, $FF, $2C, $7F, $40, $7F
+; SHOT_ATTR frames of shot type $08 (by field $04); never read in the CDL
+; traces.
 shot_type_08_attrs:
 	; CDL: not accessed
 	.byte	$84, $3F
+; SHOT_ATTR frames of shot type $0C (by stage_frame_mod8).
 shot_type_0C_attrs:
 	; CDL: read by update_shot_type_0C
 	.byte	$82, $3B, $86, $3F, $EC, $3B, $84, $3D
+; SHOT_ATTR frames of the crush shot and its blast (by the countdown in field
+; $14 / $04).
 crush_blast_attrs:
 	; CDL: read by update_crush_shot, update_crush_blast
 	.byte	$C0, $31, $AE, $31, $AC, $31, $86, $33, $84, $33, $86, $33, $84, $33, $00, $00
+; SHOT_ATTR frames of shot type $10 (by field $04).
 shot_type_10_attrs:
 	; CDL: read by update_shot_type_10
 	.byte	$8A, $3D, $8A, $3D, $8E, $31, $8E, $31, $86, $3F, $86, $3F, $84, $3F, $84, $3F
+; SHOT_ATTR frames of the spent shot (shot type $15, by field $04).
 spent_shot_attrs:
 	; CDL: read by update_spent_shot
 	.byte	$8A, $3D, $8A, $3D, $8A, $3F
@@ -2087,30 +2139,39 @@ hdma_table_05AA49:
 	; LAYOUT: read on from the block before (DMA)
 	.byte	$18, $00, $00, $80, $80, $00
 	.byte	$00
+; spawn_stage1_boss_wall_chunks: x of the 4 chunks (slots $0300-$03C0).
 stage1_boss_wall_chunk_x:
 	; CDL: read by spawn_stage1_boss_wall_chunks
 	.byte	$6C, $01, $8C, $01, $8C, $01, $8C, $01
+; y of the 4 wall chunks.
 stage1_boss_wall_chunk_y:
 	; CDL: read by spawn_stage1_boss_wall_chunks
 	.byte	$A4, $00, $B0, $00, $BC, $00, $C8, $00
+; OBJ_TIMER of the 4 wall chunks.
 stage1_boss_wall_chunk_timers:
 	; CDL: read by spawn_stage1_boss_wall_chunks
 	.byte	$0A, $00, $05, $00, $00, $00, $00, $00
+; spawn_stage1_boss_falling_debris: y of each piece (indexes 2-$18; the loop
+; reads on into the next tables).
 stage1_boss_debris_y:
 	; CDL: read by spawn_stage1_boss_falling_debris; DMA / HDMA
 	.byte	$10, $00, $40, $00, $50, $00, $60, $00, $70, $00, $80, $00, $90, $00, $A0, $00
 	.byte	$B0, $00, $C0, $00, $20, $00, $30, $00
+; Metasprite of each falling debris piece.
 stage1_boss_debris_sprites:
 	; LAYOUT: read on from stage1_boss_debris_y (lda a:stage1_boss_debris_y,y)
 	; CDL: read by spawn_stage1_boss_falling_debris
 	.addr	metasprite_06B6F8, metasprite_06B6F8, metasprite_06B6E7, metasprite_06B6E7
 	.addr	metasprite_06B6F8, metasprite_06B6E7, metasprite_06B6F8, metasprite_06B6F8
 	.addr	metasprite_06B6E7, metasprite_06B6F8, metasprite_06B6F8, metasprite_06B6E7
+; x velocity of each falling debris piece.
 stage1_boss_debris_x_vels:
 	; LAYOUT: read on from stage1_boss_debris_sprites (lda a:stage1_boss_debris_sprites,y)
 	; CDL: read by spawn_stage1_boss_falling_debris
 	.byte	$FC, $FF, $FD, $FF, $FD, $FF, $FE, $FF, $FF, $FF, $FD, $FF, $FF, $FF, $FC, $FF
 	.byte	$FD, $FF, $FE, $FF, $FE, $FF, $FF, $FF
+; update_stage1_boss_wall_chunk: metasprites (2 frames; the last chunk, slot
+; $03C0, from +4).
 stage1_boss_wall_chunk_sprites:
 	; CDL: read by update_stage1_boss_wall_chunk, queue_vram_blocks_at_x
 	.addr	metasprite_06B699, metasprite_06B688, metasprite_06B673, metasprite_06B6FD
@@ -2120,22 +2181,29 @@ vram_blocks_05AAB8:
 vram_blocks_05AAC8:
 	.byte	$40, $80, $60, $80, $C0, $80, $E0, $80
 	.byte	$40, $81, $60, $81
+; spawn_stage1_boss_parts, by part (body, head, shell): OBJ_FLAGS.
 stage1_boss_part_flags:
 	; CDL: read by spawn_stage1_boss_parts
 	.byte	$10, $00, $3C, $00, $10, $00
+; By part: OBJ_TYPE ($29 body, $1F head, $20 shell).
 stage1_boss_part_types:
 	; LAYOUT: read on from the block before (DMA)
 	; CDL: read by spawn_stage1_boss_parts
 	.byte	$29, $00, $1F, $00, $20, $00
+; By part: OBJ_HITBOX_W.
 stage1_boss_part_hitbox_w:
 	; CDL: read by spawn_stage1_boss_parts
 	.byte	$1E, $00, $40, $00, $20, $00
+; By part: OBJ_HITBOX_H.
 stage1_boss_part_hitbox_h:
 	; CDL: read by spawn_stage1_boss_parts
 	.byte	$F0, $FF, $E0, $FF, $E0, $FF
+; By part: OBJ_X.
 stage1_boss_part_x:
 	; CDL: read by spawn_stage1_boss_parts
 	.byte	$98, $00, $60, $00, $98, $00
+; Random x velocity fraction of the falling shot (type $27, x velocity -1 +
+; this).
 stage1_boss_falling_shot_x_vel_subs:
 	; CDL: read by update_objects, stage1_boss_fire_falling_shot, queue_vram_blocks_at_x (+1 more); DMA / HDMA
 	.byte	$00, $20, $00, $30, $00, $50, $00, $40
@@ -2162,13 +2230,19 @@ stage1_boss_shell_hp:
 .endif
 	; CDL: read by spawn_stage1_boss_parts; DMA / HDMA
 	.byte	$80, $00, $00, $01, $FF, $7F	; cheats: see cheat_enemy_hp_tables
+; By difficulty: y acceleration of the tracking shot (type $26) towards the
+; player's height.
 stage1_boss_tracking_shot_accels:
 	; LAYOUT: read on from the block before (DMA)
 	; CDL: read by update_stage1_boss_tracking_shot; DMA / HDMA
 	.byte	$00, $04, $00, $06, $00, $08
+; By difficulty: frames between the body's shots (+ rnd & $7F),
+; update_stage1_boss.
 stage1_boss_fire_intervals:
 	; CDL: read by update_stage1_boss; partly not accessed
 	.byte	$00, $01, $C0, $00, $08, $00
+; By difficulty: value reloaded into the timer (field $38) of
+; stage1_boss_attack_fire when it runs out.
 stage1_boss_fire_timers:
 	; CDL: read by stage1_boss_attack_fire; partly not accessed
 	.byte	$40, $00, $80, $00, $00, $01
@@ -2176,19 +2250,27 @@ data_05AB58:
 	; LAYOUT: read on from the block before (DMA)
 	; CDL: read by song_change_state_00; partly not accessed
 	.byte	$00, $00, $00, $00, $80, $00, $00, $00, $03, $00, $04, $00
+; By BG (0: BG1, 2: BG2): address of its scroll state (bg1_x, bg2_x), read by
+; queue_vram_block_at_map_position.
 bg_scroll_state_addrs:
 	; CDL: not accessed
 	.byte	$80, $13, $C0, $13
+; By BG: VRAM word address of its tilemap ($4000, $4800: BG1SC = $41, BG2SC =
+; $49 in the side-view stages).
 bg_tilemap_vram_addrs:
 	; CDL: not accessed
 	.byte	$00, $40, $00, $48
+; By hover bike (field $30): the slot of the player riding it.
 bike_player_slots:
 	; CDL: read by update_player_bike
 	.byte	$00, $02, $40, $02
+; By hover bike (field $30): its OBJ_ATTR (palette 5 or 6, priority 3).
 bike_attrs:
 	; LAYOUT: read on from the block before (DMA)
 	; CDL: read by player_bike_state_00
 	.byte	$00, $3A, $00, $3C
+; By OBJ_FACING: PLAYER_CENTER_X - PLAYER_HITBOX_RIGHT while jumping
+; (set_player_box_jumping).
 jump_center_x_offsets:
 	; LAYOUT: read on from the block before (DMA)
 	; CDL: read by set_player_box_jumping
@@ -2215,63 +2297,88 @@ ptrs_enemy_bullet_speeds:
 	.addr	enemy_bullet_speeds_normal
 	.addr	enemy_bullet_speeds_normal
 	.addr	enemy_bullet_speeds_hard
+; Homing missile acceleration (fraction of a pixel), x and y interleaved: x at
+; [difficulty*2 + field $3A], y at the next word (homing_missile_accel_y).
+; Read with that index, so the difficulty and the flight direction overlap.
 homing_missile_accel_x:
 	; CDL: read by init_homing_missile
 	.byte	$00, $14
+; y acceleration of the homing missile: see homing_missile_accel_x.
 homing_missile_accel_y:
 	; LAYOUT: read on from homing_missile_accel_x (adc a:homing_missile_accel_x,y)
 	; CDL: read by init_homing_missile
 	.byte	$40, $04, $00, $14, $80, $05, $00, $14, $80, $07, $00, $14
+; By field $3A (0 horizontal, 2 vertical): x velocity of the smoke puffs the
+; homing missile trails (negated when it flies right).
 homing_missile_smoke_x_vels:
 	; CDL: read by init_homing_missile
 	.byte	$06, $00, $00, $00
+; By field $3A: y velocity of the smoke puffs (negated when it flies down).
 homing_missile_smoke_y_vels:
 	; CDL: read by init_homing_missile
 	.byte	$00, $00, $06, $00
+; PLAYER_POSE sequence of player_state_ending (by timer / 4).
 ending_poses:
 	; CDL: read by player_state_ending
 	.byte	$10, $01, $11, $01, $12, $01, $10, $01
+; PLAYER_POSE sequence of player_state_ending_wave, 6 entries per player
+; (player 2 from +12).
 ending_wave_poses:
 	; CDL: read by player_state_ending_wave; partly not accessed
 	.byte	$17, $01, $16, $01, $13, $01, $14, $01, $15, $01, $18, $01, $15, $01, $15, $01
 	.byte	$14, $01, $17, $01, $16, $01, $19, $01
+; Bytes: PLAYER_POSE of player_state_spin_stance, by facing and the spin step
+; in field $30.
 spin_stance_poses:
 	; CDL: read by player_state_spin_stance
 	.byte	$C4, $00, $1C, $1A, $CA, $B0, $B4, $B2, $C5, $BA, $BE, $BC
+; By OBJ_FACING, set_player_box_hanging: PLAYER_HITBOX_LEFT - OBJ_X.
 hang_box_left_offsets:
 	; CDL: read by set_player_box_hanging
 	.byte	$02, $00, $04, $00
+; By OBJ_FACING: PLAYER_HITBOX_RIGHT - PLAYER_HITBOX_LEFT while hanging.
 hang_box_widths:
 	; CDL: read by set_player_box_hanging
 	.byte	$08, $00, $08, $00
+; By OBJ_FACING: PLAYER_CENTER_X - PLAYER_HITBOX_RIGHT while hanging.
 hang_center_x_offsets:
 	; CDL: read by set_player_box_hanging
 	.byte	$F4, $FF, $FA, $FF
+; By PLAYER_AIM, on the hover bike (player_state_bike_intro): shot angle for
+; fire_weapon (zp_12).
 bike_aim_angles:
 	; CDL: read by player_state_bike_intro; partly not accessed
 	.byte	$20, $00, $20, $00, $00, $00, $10, $00, $60, $00, $00, $00, $70, $00, $00, $00
 	.byte	$40, $00, $30, $00, $00, $00, $00, $00, $50, $00
+; By PLAYER_AIM, on the hover bike: PLAYER_POSE.
 bike_aim_poses:
 	; CDL: read by player_state_bike_intro; partly not accessed
 	.byte	$F0, $00, $F0, $00, $00, $01, $F8, $00, $F4, $00, $00, $00, $FC, $00, $00, $00
 	.byte	$04, $01, $08, $01, $00, $00, $00, $00, $0C, $01
+; By PLAYER_AIM, on the hover bike: muzzle x offset for fire_weapon (zp_14).
 bike_aim_muzzle_x:
 	; CDL: read by player_state_bike_intro; partly not accessed
 	.byte	$18, $00, $18, $00, $04, $00, $14, $00, $D8, $FF, $00, $00, $EA, $FF, $00, $00
 	.byte	$02, $00, $12, $00, $00, $00, $00, $00, $E2, $FF
+; By PLAYER_AIM, on the hover bike: muzzle y offset for fire_weapon (zp_16).
 bike_aim_muzzle_y:
 	; CDL: read by player_state_bike_intro; partly not accessed
 	.byte	$DC, $FF, $DC, $FF, $BE, $FF, $C8, $FF, $D9, $FF, $00, $00, $CC, $FF, $00, $00
 	.byte	$00, $00, $F0, $FF, $00, $00, $00, $00, $F0, $FF
+; By difficulty: object_type_02_state_07 spawns a falling fragment (type $1C)
+; when stage_frame_counter & this is 0.
 object_type_02_fragment_masks:
 	; CDL: read by object_type_02_state_07
 	.byte	$0F, $00, $07, $00, $03, $00
+; Random (rnd & 7) y velocity of those fragments.
 object_type_02_fragment_y_vels:
 	; CDL: read by object_type_02_state_07
 	.byte	$FA, $FF, $FA, $FF, $F8, $FF, $FC, $FF, $F8, $FF, $FA, $FF, $F8, $FF, $FB, $FF
+; Random x velocity fraction of the fragments.
 object_type_02_fragment_x_vel_subs:
 	; CDL: read by object_type_02_state_07; partly not accessed
 	.byte	$00, $80, $00, $40, $00, $40, $00, $50, $00, $70, $00, $20, $00, $60, $00, $30
+; Random x velocity of the fragments.
 object_type_02_fragment_x_vels:
 	; CDL: read by queue_vram_blocks_at_x, object_type_02_state_07; partly not accessed
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FD, $FF, $FE, $FF, $FD, $FF, $FE, $FF, $FD, $FF
@@ -2333,9 +2440,12 @@ vram_blocks_05AF25:
 	.byte	$C0, $50, $E0, $50
 vram_blocks_05AF2B:
 	.byte	$80, $50, $00, $51, $20, $51
+; player_tank_state_02, by field $34: zp_02 for solid_object_vs_object (flag
+; ORed into field $3E of an object pushed out to the right).
 player_tank_push_flags_right:
 	; CDL: read by player_tank_state_02
 	.byte	$00, $02, $00, $02, $04, $02
+; By field $34: zp_00 for solid_object_vs_object (pushed out to the left).
 player_tank_push_flags_left:
 	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, player_tank_state_02; partly not accessed
 	.byte	$00, $04, $04, $04, $00, $04
@@ -2350,15 +2460,20 @@ vram_blocks_05AF55:
 hdma_list_05AF61:
 	hdma_channel_ind	$4370, $02, $0F, $7E3800, $7E
 	hdma_channels_end	$80
+; object_type_35_state_02: the 6 pieces (type $10, bouncing debris) it breaks
+; into: x offset.
 object_type_35_debris_x_offsets:
 	; CDL: read by setup_stage_hdma, object_type_35_state_02
 	.byte	$02, $00, $0E, $00, $00, $00, $10, $00, $02, $00, $0E, $00
+; y of the debris pieces.
 object_type_35_debris_y:
 	; CDL: read by object_type_35_state_02
 	.byte	$98, $00, $98, $00, $A0, $00, $A0, $00, $A8, $00, $A8, $00
+; x velocity fraction of the debris pieces.
 object_type_35_debris_x_vel_subs:
 	; CDL: read by object_type_35_state_02
 	.byte	$00, $A0, $00, $60, $00, $C0, $00, $40, $00, $E0, $00, $20
+; x velocity of the debris pieces.
 object_type_35_debris_x_vels:
 	; CDL: read by update_objects, queue_vram_blocks_at_x, object_type_35_state_02; partly not accessed
 	.byte	$FF, $FF, $00, $00, $FF, $FF, $00, $00, $FF, $FF, $00, $00
@@ -2376,12 +2491,18 @@ anim_05AFB6:
 vram_blocks_05AFCE:
 	.byte	$40, $55
 	.byte	$C0, $55
+; update_soldier_spawner, by difficulty: frames (+ rnd & $7F) between foot
+; soldiers from the right edge.
 soldier_spawn_delays_right:
 	; CDL: read by update_soldier_spawner
 	.byte	$40, $00, $28, $00, $10, $00
+; By difficulty: frames (+ rnd & $FF) between foot soldiers from the left
+; edge.
 soldier_spawn_delays_left:
 	; CDL: read by update_soldier_spawner
 	.byte	$80, $00, $60, $00, $40, $00
+; By difficulty: a spawned foot soldier gets HP (init_foot_soldier_with_hp)
+; when rnd & 15 is below this, out of 16.
 soldier_hp_odds:
 	; CDL: read by update_soldier_spawner
 	.byte	$02, $00, $04, $00, $0C, $00
@@ -2389,12 +2510,15 @@ soldier_hp_odds:
 soldier_hp:
 	; CDL: read by init_foot_soldier_with_hp
 	.word	ENEMY_HP($0000), ENEMY_HP($0001), ENEMY_HP($0003)
+; object_type_73_state_00, by field: initial y velocity.
 object_type_73_y_vels:
 	; CDL: read by object_type_73_state_00
 	.byte	$F8, $FF, $F9, $FF, $FA, $FF
+; object_type_73_state_00: x position.
 object_type_73_x:
 	; CDL: read by object_type_73_state_00
 	.byte	$40, $00, $60, $00, $80, $00
+; object_type_73_state_03: y at which the falling soldier gets y velocity -3.
 object_type_73_bounce_y:
 	; CDL: read by update_objects, object_type_73_state_03; partly not accessed
 	.byte	$60, $00, $70, $00, $80, $00
@@ -2409,12 +2533,17 @@ anim_05B01A:
 	anim_frame	$0008, metasprite_06C675, metasprite_06C6A4
 	anim_frame	$0008, metasprite_06C686, metasprite_06C6B5
 	anim_goto	anim_05B01A
+; object_type_7E_state_01, by difficulty: frames (+ rnd & $1F) before it
+; spawns another type $7E.
 object_type_7E_spawn_delays:
 	; CDL: read by object_type_7E_state_01
 	.byte	$24, $00, $14, $00, $0C, $00
+; x of that new type $7E, at random (rnd & 6).
 object_type_7E_spawn_x:
 	; CDL: read by object_type_7E_state_01
 	.byte	$18, $00, $58, $00, $98, $00, $D8, $00
+; queue_object_tiles, by field $3A: VRAM address of the BG tiles of a BG-drawn
+; object.
 object_tile_vram_addrs:
 	; CDL: read by queue_vram_blocks_at_x, queue_object_tiles
 	.byte	$9C, $42, $9C, $46, $80, $46, $88, $46, $18, $42, $00, $46, $0C, $42, $18, $42
@@ -2433,21 +2562,30 @@ vram_blocks_05B056:
 wall_hatch_hp:
 	; CDL: read by wall_hatch_state_00; partly not accessed
 	.word	ENEMY_HP($0004), ENEMY_HP($0008), ENEMY_HP($0010)
+; Wall hatch (type $50), state 4: tile block source (zp_00 for
+; queue_vram_block) by OBJ_TIMER / 4 (the last frame read on into
+; wall_hatch_aim_tiles).
 wall_hatch_close_tiles:
 	; CDL: read by wall_hatch_state_02
 	.byte	$80, $69, $A0, $69
+; Wall hatch, state 3: tile block by aim direction (field $30).
 wall_hatch_aim_tiles:
 	; CDL: read by wall_hatch_state_03
 	.byte	$40, $69, $60, $69, $80, $68, $A0, $68, $C0, $68, $E0, $68, $00, $69, $20, $69
+; Wall hatch, state 2: tile block by OBJ_TIMER / 4 (opening).
 wall_hatch_open_tiles:
 	; CDL: read by wall_hatch_state_02
 	.byte	$40, $69, $A0, $69, $80, $69
+; Wall hatch, by aim direction: x offset of the bullet.
 wall_hatch_muzzle_x:
 	; CDL: read by wall_hatch_state_03; partly not accessed
 	.byte	$0C, $00, $18, $00, $1C, $00, $18, $00, $0C, $00, $00, $00, $FC, $FF, $FF, $FF
+; Wall hatch, by aim direction: y offset of the bullet.
 wall_hatch_muzzle_y:
 	; CDL: read by wall_hatch_state_03; partly not accessed
 	.byte	$E4, $FF, $EA, $FF, $F6, $FF, $02, $00, $00, $00, $00, $00, $F6, $FF, $EA, $FF
+; By difficulty: the hatch turns towards the player when stage_frame_counter &
+; this is 0.
 wall_hatch_turn_masks:
 	; CDL: read by queue_vram_blocks_at_x, wall_hatch_state_03; partly not accessed
 	.byte	$03, $00, $01, $00, $00, $00
@@ -2476,23 +2614,28 @@ anim_05B172:
 ; the first word of weapon_capsule_kind_states: the tables overlap. The jump's $B172 is also
 ; a metasprite ($06:B172, drawn in the CDL): a fixed reference, see the book
 ; ("Shiftability").
+; weapon_capsule_set_kind, by kind (field $3A, from 1): metasprite.
 weapon_capsule_kind_sprites:
 	; CDL: read by update_objects, weapon_capsule_set_kind
 	anim_goto	anim_05B172
 	.addr	metasprite_06ADC4, metasprite_06ADED, metasprite_06AE16, metasprite_06AE3F, metasprite_06AE68, metasprite_06B07A
+; By kind (from 1): added to OBJ_STATE.
 weapon_capsule_kind_states:
 	; LAYOUT: read on from weapon_capsule_kind_sprites (lda a:weapon_capsule_kind_sprites,y)
 	; CDL: read by weapon_capsule_set_kind
 	.addr	metasprite_06B0A3
 	.byte	$01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $02, $00, $03, $00
+; object_type_11_state_01: debris pieces (type $10, indexes 2-$A): metasprite.
 object_type_11_debris_sprites:
 	; CDL: read by object_type_11_state_01; partly not accessed
 	.addr	metasprite_06B408
 	.addr	metasprite_06B403, metasprite_06B3FE, metasprite_06B408, metasprite_06B403
 	.addr	metasprite_06B3FE
+; y velocity of those pieces.
 object_type_11_debris_y_vels:
 	; CDL: read by object_type_11_state_01; partly not accessed
 	.byte	$FD, $FF, $FC, $FF, $FA, $FF, $FB, $FF, $FD, $FF, $FC, $FF
+; x velocity of those pieces.
 object_type_11_debris_x_vels:
 	; CDL: read by queue_vram_blocks_at_x, object_type_11_state_01; partly not accessed
 	.byte	$03, $00, $02, $00, $01, $00, $FF, $FF, $FE, $FF, $FD, $FF
@@ -2503,12 +2646,17 @@ vram_blocks_05B1C0:
 object_type_12_hp:
 	; CDL: read by object_type_12_state_00
 	.word	ENEMY_HP($0004), ENEMY_HP($0006), ENEMY_HP($0008)
+; By difficulty: OBJ_TIMER of object_type_12_state_01 (frames before it
+; throws).
 object_type_12_wait_times:
 	; CDL: read by object_type_12_state_01
 	.byte	$60, $00, $40, $00, $10, $00
+; By OBJ_FACING: x offset of the grenade (type $13) it throws.
 object_type_12_grenade_x_offsets:
 	; CDL: read by object_type_12_state_05
 	.byte	$0C, $00, $F8, $FF
+; By distance to the player (zp_1E / 4) and OBJ_FACING: x velocity of the
+; grenade.
 object_type_12_grenade_x_vels:
 	; CDL: read by object_type_12_state_05; partly not accessed
 	.byte	$00, $00, $00, $00, $00, $00, $FF, $FF, $00, $00, $FF, $FF, $00, $00, $FF, $FF
@@ -2517,6 +2665,7 @@ object_type_12_grenade_x_vels:
 	; CDL: not accessed
 	.byte	$03, $00, $FC, $FF, $03, $00, $FC, $FF, $03, $00, $FC, $FF, $03, $00, $FC, $FF
 	.byte	$04, $00, $FB, $FF, $04, $00, $FB, $FF, $04, $00, $FB, $FF, $04, $00, $FB, $FF
+; x velocity fraction of the grenade (same index).
 object_type_12_grenade_x_vel_subs:
 	; CDL: read by object_type_12_state_05; partly not accessed
 	.byte	$00, $00, $00, $00, $00, $40, $00, $C0, $00, $80, $00, $80, $00, $C0, $00, $40
@@ -2525,12 +2674,16 @@ object_type_12_grenade_x_vel_subs:
 	; CDL: not accessed
 	.byte	$00, $00, $00, $00, $00, $40, $00, $C0, $00, $80, $00, $80, $00, $C0, $00, $40
 	.byte	$00, $00, $00, $00, $00, $40, $00, $C0, $00, $80, $00, $80, $00, $C0, $00, $40
+; By OBJ_FACING: metasprite while waiting (states 1-2).
 object_type_12_idle_sprites:
 	; CDL: read by object_type_12_state_01
 	.addr	metasprite_06B1F0, metasprite_06B4AA
+; By OBJ_FACING: metasprite of state 3 (sound $16, 12 frames before the
+; throw).
 object_type_12_windup_sprites:
 	; CDL: read by object_type_12_state_03
 	.addr	metasprite_06B205, metasprite_06B4BF
+; By OBJ_FACING: metasprite when the grenade is thrown (state 5).
 object_type_12_throw_sprites:
 	; CDL: read by update_objects, object_type_12_state_05
 	.addr	metasprite_06B21A, metasprite_06B4D4
@@ -2853,26 +3006,33 @@ player_frames:
 window_sniper_hp:
 	; CDL: read by window_sniper_state_00
 	.word	ENEMY_HP($0004), ENEMY_HP($0006), ENEMY_HP($0008)
+; By difficulty: OBJ_TIMER before the window sniper fires.
 window_sniper_fire_delays:
 	; CDL: read by window_sniper_state_01
 	.byte	$50, $00, $40, $00, $10, $00
+; The two player slots, indexed by the nearer one.
 window_sniper_player_slots:
 	; CDL: read by window_sniper_aim_at_nearest_player
 	.byte	$00, $02, $40, $02
+; By aim direction (field $32): x offset of the bullet.
 window_sniper_muzzle_x:
 	; CDL: read by window_sniper_state_03; partly not accessed
 	.byte	$06, $00, $00, $00, $1A, $00, $1A, $00, $24, $00, $24, $00, $1A, $00, $1A, $00
 	.byte	$02, $00, $06, $00, $EE, $FF, $EE, $FF, $E2, $FF, $E2, $FF, $F0, $FF, $F0, $FF
+; By aim direction: y offset of the bullet.
 window_sniper_muzzle_y:
 	; CDL: read by window_sniper_state_03; partly not accessed
 	.byte	$CA, $FF, $CA, $FF, $D9, $FF, $D9, $FF, $EE, $FF, $EE, $FF, $06, $00, $06, $00
 	.byte	$12, $00, $12, $00, $06, $00, $06, $00, $EF, $FF, $EF, $FF, $DB, $FF, $DB, $FF
+; By aim direction (field $32: direction * 4 + facing): metasprite while
+; aiming.
 window_sniper_aim_sprites:
 	; CDL: read by window_sniper_set_aim_sprite; partly not accessed
 	.addr	metasprite_06B22F, metasprite_06B4E9, metasprite_06B259, metasprite_06B513
 	.addr	metasprite_06B283, metasprite_06B53D, metasprite_06B2AD, metasprite_06B567
 	.addr	metasprite_06B2D7, metasprite_06B591, metasprite_06B2AD, metasprite_06B567
 	.addr	metasprite_06B283, metasprite_06B53D, metasprite_06B259, metasprite_06B513
+; By aim direction: metasprite when firing.
 window_sniper_fire_sprites:
 	; CDL: read by update_objects, window_sniper_set_fire_sprite, update_effect; partly not accessed
 	.addr	metasprite_06B244, metasprite_06B4FE, metasprite_06B26E, metasprite_06B528
@@ -3067,9 +3227,13 @@ data_05C81C:
 data_05C822:
 	; CDL: read by update_object_type_2C
 	.byte	$00, $00, $10, $00, $20, $00
+; Velocities picked at random (rnd & $0E) for explosion debris
+; (shake_and_explode_state, stage 1 boss): integer part; fraction in
+; random_debris_vel_subs.
 random_debris_vels:
 	; CDL: read by shake_and_explode_state
 	.byte	$04, $00, $FF, $FF, $01, $00, $FE, $FF, $02, $00, $FC, $FF, $03, $00, $FD, $FF
+; Fraction of random_debris_vels.
 random_debris_vel_subs:
 	; CDL: read by queue_vram_blocks_at_x, shake_and_explode_state
 	.byte	$00, $20, $00, $40, $00, $60, $00, $80, $00, $A0, $00, $C0, $00, $E0, $00, $80
