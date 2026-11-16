@@ -172,7 +172,9 @@ On the hover bike the aim is data instead of code: `bike_aim_angles`,
 `bike_aim_poses`, `bike_aim_muzzle_x`, `bike_aim_muzzle_y` (by `PLAYER_AIM`).
 The ground states check walls and floor with `check_walls_and_floor`: a
 wall tile 32 pixels above the feet starts climbing, then the tiles under
-the feet are classified as by `check_floor_tiles`.
+the feet are classified as by `check_floor_tiles`. The tiles are words of
+the collision map at `$7E:4000` (`TILE_*` bits: floor, platforms, slopes,
+climbable walls, ceilings, bars); see [Side-view collision map](collision.md).
 
 ### Getting killed
 

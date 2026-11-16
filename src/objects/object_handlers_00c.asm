@@ -64,7 +64,7 @@ stage1_boss_controller_state_00:
 	inc	$12,x
 	lda	#$0040
 	sta	zp_04
-	lda	#$A000	; [num]
+	lda	#TILE_WALL|TILE_NO_DROP
 	sta	zp_02
 	ldy	#$4830
 	lda	#$0018

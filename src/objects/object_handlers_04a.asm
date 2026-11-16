@@ -623,7 +623,7 @@ stage3_robot_cables_state_02:
 	jsr	a:stage3_cables_crush_player
 	lda	#$0040
 	sta	zp_04
-	lda	#$2002
+	lda	#TILE_NO_DROP|TILE_CLIMBABLE
 	sta	zp_02
 	lda	a:bg1_x
 	and	#$0100

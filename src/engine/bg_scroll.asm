@@ -1181,7 +1181,10 @@ clear_bg2_scroll_deltas:
 	rtl
 
 ; Converts the last queued row/column (zp_1A = its entry) into collision
-; words at $7E:4000.
+; words at $7E:4000 (TILE_* in ram.inc): the tile number (bits 0-9) against
+; the stage's ascending thresholds zp_C8-zp_DE picks the class (a threshold
+; of 0 skips its class); the h-flip of the tile (bit 14) becomes
+; TILE_FLIPPED on the slope and sloped bar classes.
 update_bg_collision_map:
 	sep	#$20
 	.a8
@@ -1215,7 +1218,7 @@ update_bg_collision_map:
 	rol	a
 	rol	a
 	rol	a
-	and	#$0001
+	and	#TILE_FLIPPED
 	sta	zp_0C
 	lda	zp_0A
 	and	#$03FF
@@ -1226,60 +1229,60 @@ update_bg_collision_map:
 @class1:
 	cmp	zp_CA
 	bcs	@class2
-	lda	#$2002
+	lda	#TILE_NO_DROP|TILE_CLIMBABLE
 	bra	@store
 @class2:
 	cmp	zp_CC
 	bcs	@class3
-	lda	#$0004
+	lda	#TILE_PLATFORM
 	bra	@store
 @class3:
 	cmp	zp_CE
 	bcs	@class4
-	lda	#$4008
+	lda	#TILE_SLOPE_CLASS|TILE_PLATFORM_SLOPE_UPPER
 	bra	@mirror
 @class4:
 	cmp	zp_D0
 	bcs	@class5
-	lda	#$4010
+	lda	#TILE_SLOPE_CLASS|TILE_PLATFORM_SLOPE_LOWER
 	bra	@mirror
 @class5:
 	cmp	zp_D2
 	bcs	@class6
-	lda	#$6020
+	lda	#TILE_SLOPE_CLASS|TILE_NO_DROP|TILE_SLOPE_UPPER
 	bra	@mirror
 @class6:
 	cmp	zp_D4
 	bcs	@class7
-	lda	#$6040
+	lda	#TILE_SLOPE_CLASS|TILE_NO_DROP|TILE_SLOPE_LOWER
 	bra	@mirror
 @class7:
 	cmp	zp_D6
 	bcs	@class8
-	lda	#$6080
+	lda	#TILE_SLOPE_CLASS|TILE_NO_DROP|TILE_CEILING_SLOPE_LOWER
 	bra	@mirror
 @class8:
 	cmp	zp_D8
 	bcs	@class9
-	lda	#$6100
+	lda	#TILE_SLOPE_CLASS|TILE_NO_DROP|TILE_CEILING_SLOPE_UPPER
 	bra	@mirror
 @class9:
 	cmp	zp_DA
 	bcs	@class10
-	lda	#$1200
+	lda	#TILE_HANG_CLASS|TILE_BAR
 	bra	@store
 @class10:
 	cmp	zp_DC
 	bcs	@class11
-	lda	#$5400
+	lda	#TILE_SLOPE_CLASS|TILE_HANG_CLASS|TILE_BAR_SLOPE_UPPER
 	bra	@mirror
 @class11:
 	cmp	zp_DE
 	bcs	@class12
-	lda	#$5800
+	lda	#TILE_SLOPE_CLASS|TILE_HANG_CLASS|TILE_BAR_SLOPE_LOWER
 	bra	@mirror
 @class12:
-	lda	#$A000	; [num]
+	lda	#TILE_WALL|TILE_NO_DROP
 	bra	@store
 @mirror:
 	eor	zp_0C

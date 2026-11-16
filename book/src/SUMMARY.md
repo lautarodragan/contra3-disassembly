@@ -25,6 +25,7 @@
 - [Game flow](game-flow.md)
 - [Top-down stages](topdown.md)
 - [Objects](objects.md)
+  - [Side-view collision map](collision.md)
   - [Enemies and objects: banks $00, $01](enemies-early.md)
   - [Enemies and bosses: banks $02, $04, $1D](enemies-late.md)
 - [Curiosities: bugs, leftovers and oddities](curiosities.md)

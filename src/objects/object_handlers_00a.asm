@@ -93,7 +93,11 @@ update_object_type_57:
 	rtl
 
 ; Object type $28: the handler is a fill routine (also called directly as a
-; helper); probably never used as a type.
+; helper); probably never used as a type. Stores zp_02 at $7E:Y, A times,
+; Y += zp_04 each time. Its callers write collision words (TILE_*) into the
+; collision map at $7E:4000: a column of TILE_WALL for the stage 1 boss's
+; right wall, a column of TILE_CLIMBABLE for the stage 3 robot's cables
+; (stage3_robot_cables_state_02) and a row for the ending's floor.
 update_object_type_28:
 	phx
 	tax

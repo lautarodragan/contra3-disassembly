@@ -726,7 +726,7 @@ run_player_state:
 	; $32: pass-through flags (high byte) for a few frames (low byte): set
 	; to $010A walking off a floor, $020A leaving a bar, $040A dropping,
 	; $070A jumping; airborne_falling_collision then ignores floor tiles
-	; without bit 13 (flag $0100) and bar tiles (flag $0200).
+	; without TILE_NO_DROP (flag $0100) and bar tiles (flag $0200).
 	lda	$32,x
 	beq	@fire_delays
 	and	#$00FF
@@ -1397,14 +1397,14 @@ animate_hang_move:
 @return:
 	rtl
 
-; Wall tiles (collision bit 1) 32 pixels above the feet at x and x+6: climb
+; Wall tiles (TILE_CLIMBABLE) 32 pixels above the feet at x and x+6: climb
 ; (state 5 / 2) and snap to the tile.
 hang_climb_check_walls:
 	stz	zp_00
 	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$0002
+	bit	#TILE_CLIMBABLE
 	beq	@check_right
 	lda	#$0005
 	sta	OBJ_STATE,x
@@ -1415,7 +1415,7 @@ hang_climb_check_walls:
 	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$0002
+	bit	#TILE_CLIMBABLE
 	beq	check_ceiling_hang_height
 	lda	#$0002
 	sta	OBJ_STATE,x
@@ -1425,7 +1425,9 @@ check_ceiling_hang_height:
 	lda	#$FFD0	; [num]
 
 ; Classifies the collision tiles at y + A (x and x+6) like check_hang_bar
-; but with the solid bits ($0182); sets zp_C4 and snaps (bumping a ceiling).
+; but with the ceiling bits (TILE_CEILING_MASK; slopes TILE_CEILING_SLOPES);
+; sets zp_C4 and snaps (a ceiling to hang from, state $0D). The tree and its
+; label names are those of check_floor_tiles.
 check_ceiling_at_offset:
 	sta	zp_02
 	stz	zp_00
@@ -1436,136 +1438,136 @@ check_ceiling_at_offset:
 	jsl	f:get_bg_tile_at_object
 	sta	zp_06
 	lda	zp_06
-	bit	#$0182
-	beq	loc_01AFAC
-	bit	#$0180
-	beq	loc_01AFDD
-	bit	#$0001
-	bne	loc_01AF9F
-	bit	#$0080
-	beq	loc_01B002
-	bne	loc_01B015
-loc_01AF9F:
-	bit	#$0080
-	bne	loc_01AFA7
-	brl	loc_01B028
-loc_01AFA7:
-	beq	loc_01AFAC
-	brl	loc_01B03B
-loc_01AFAC:
+	bit	#TILE_CEILING_MASK
+	beq	@right_none
+	bit	#TILE_CEILING_SLOPES
+	beq	@right_level
+	bit	#TILE_FLIPPED
+	bne	@right_fall
+	bit	#TILE_CEILING_SLOPE_LOWER
+	beq	@right_rise_upper
+	bne	@right_rise_lower
+@right_fall:
+	bit	#TILE_CEILING_SLOPE_LOWER
+	bne	@to_right_fall_lower
+	brl	@right_fall_upper
+@to_right_fall_lower:
+	beq	@right_none
+	brl	@right_fall_lower
+@right_none:
 	lda	zp_04
-	bit	#$0182
-	bne	loc_01AFB6
-	brl	loc_01B05C
-loc_01AFB6:
-	bit	#$0180
-	bne	loc_01AFBE
-	brl	loc_01B04E
-loc_01AFBE:
-	bit	#$0001
-	beq	loc_01AFD0
+	bit	#TILE_CEILING_MASK
+	bne	@none_left_ceiling
+	brl	@none
+@none_left_ceiling:
+	bit	#TILE_CEILING_SLOPES
+	bne	@none_left_slope
+	brl	@level_partial
+@none_left_slope:
+	bit	#TILE_FLIPPED
+	beq	@none_left_rise
 	; (not executed in the CDL traces)
-	bit	#$0080
-	bne	loc_01AFCB
-	brl	loc_01B05C
-loc_01AFCB:
-	beq	loc_01AFD0
-	brl	loc_01B05C
-loc_01AFD0:
-	bit	#$0080
-	bne	loc_01AFD8
+	bit	#TILE_CEILING_SLOPE_LOWER
+	bne	@none_left_fall_lower
+	brl	@none
+@none_left_fall_lower:
+	beq	@none_left_rise
+	brl	@none
+@none_left_rise:
+	bit	#TILE_CEILING_SLOPE_LOWER
+	bne	@none_left_rise_lower
 	; (not executed in the CDL traces)
-	brl	loc_01B05F
-loc_01AFD8:
-	beq	loc_01AFDD
-	brl	loc_01B067
-loc_01AFDD:
+	brl	@rise_below_high
+@none_left_rise_lower:
+	beq	@right_level
+	brl	@rise
+@right_level:
 	lda	zp_04
-	bit	#$0182
-	bne	loc_01AFE7
-	brl	loc_01B04E
-loc_01AFE7:
-	bit	#$0180
-	bne	loc_01AFEF
-	brl	loc_01B054
-loc_01AFEF:
+	bit	#TILE_CEILING_MASK
+	bne	@level_left_ceiling
+	brl	@level_partial
+@level_left_ceiling:
+	bit	#TILE_CEILING_SLOPES
+	bne	@level_left_slope
+	brl	@level
+@level_left_slope:
 	; (not executed in the CDL traces)
-	bit	#$0001
-	beq	loc_01AFFB
-	bit	#$0080
-	beq	loc_01B054
-	bne	loc_01B05C
-loc_01AFFB:
-	bit	#$0080
-	beq	loc_01B05F
-	bne	loc_01B067
-loc_01B002:
+	bit	#TILE_FLIPPED
+	beq	@level_left_rise
+	bit	#TILE_CEILING_SLOPE_LOWER
+	beq	@level
+	bne	@none
+@level_left_rise:
+	bit	#TILE_CEILING_SLOPE_LOWER
+	beq	@rise_below_high
+	bne	@rise
+@right_rise_upper:
 	lda	zp_04
-	bit	#$0182
-	beq	loc_01B05C
-	bit	#$0180
-	beq	loc_01B054
-	bit	#$0080
-	beq	loc_01B05F
-	bne	loc_01B067
-loc_01B015:
+	bit	#TILE_CEILING_MASK
+	beq	@none
+	bit	#TILE_CEILING_SLOPES
+	beq	@level
+	bit	#TILE_CEILING_SLOPE_LOWER
+	beq	@rise_below_high
+	bne	@rise
+@right_rise_lower:
 	lda	zp_04
-	bit	#$0182
-	beq	loc_01B05C
-	bit	#$0180
-	beq	loc_01B05C
-	bit	#$0080
-	beq	loc_01B05F
-	bne	loc_01B067
-loc_01B028:
+	bit	#TILE_CEILING_MASK
+	beq	@none
+	bit	#TILE_CEILING_SLOPES
+	beq	@none
+	bit	#TILE_CEILING_SLOPE_LOWER
+	beq	@rise_below_high
+	bne	@rise
+@right_fall_upper:
 	lda	zp_04
-	bit	#$0182
-	beq	loc_01B06F
-	bit	#$0180
-	beq	loc_01B06F
-	bit	#$0080
-	beq	loc_01B06F
-	bne	loc_01B06F
-loc_01B03B:
+	bit	#TILE_CEILING_MASK
+	beq	@fall_below_high
+	bit	#TILE_CEILING_SLOPES
+	beq	@fall_below_high
+	bit	#TILE_CEILING_SLOPE_LOWER
+	beq	@fall_below_high
+	bne	@fall_below_high
+@right_fall_lower:
 	lda	zp_04
-	bit	#$0182
-	beq	loc_01B077
-	bit	#$0180
-	beq	loc_01B077
-	bit	#$0080
-	beq	loc_01B077
-	bne	loc_01B077
-loc_01B04E:
+	bit	#TILE_CEILING_MASK
+	beq	@fall
+	bit	#TILE_CEILING_SLOPES
+	beq	@fall
+	bit	#TILE_CEILING_SLOPE_LOWER
+	beq	@fall
+	bne	@fall
+@level_partial:
 	lda	#$8000	; [num]
 	sta	zp_C4
 	rtl
-loc_01B054:
+@level:
 	lda	#$0002
 	sta	zp_C4
 	brl	snap_y_down_to_tile
-loc_01B05C:
+@none:
 	stz	zp_C4
 	rtl
-loc_01B05F:
+@rise_below_high:
 	lda	#$0008
 	sta	zp_C4
 	brl	stop_y_slope_up_right_below_high
-loc_01B067:
+@rise:
 	lda	#$0008
 	sta	zp_C4
 	brl	stop_y_slope_up_right
-loc_01B06F:
+@fall_below_high:
 	lda	#$0010
 	sta	zp_C4
 	brl	stop_y_slope_down_right_below_high
-loc_01B077:
+@fall:
 	lda	#$0010
 	sta	zp_C4
 	brl	stop_y_slope_down_right
 
 ; unused_ceiling_result_*: never reached (no branch or pointer leads here).
 ; Each sets zp_C4 and goes to a snap routine, like the outcomes of
-; check_ceiling_at_offset just above (loc_01B04E-loc_01B077): leftovers of
+; check_ceiling_at_offset just above (@level_partial-@fall): leftovers of
 ; that decision tree.
 ; (no caller found; decoded because it follows the end of a routine)
 unused_ceiling_result_01B07F:

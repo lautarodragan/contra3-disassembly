@@ -3121,12 +3121,12 @@ weapon_item_move:
 	bmi	@rising
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
-	and	#$807E
+	and	#TILE_FLOOR_MASK
 	sta	zp_04
 	lda	#$0010
 	sta	zp_00
 	jsl	f:get_bg_tile_at_object
-	bit	#$807E
+	bit	#TILE_FLOOR_MASK
 	beq	@right_clear
 	lda	zp_04
 	beq	@fall
@@ -3140,12 +3140,12 @@ weapon_item_move:
 	lda	#$FFF0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	and	#$0182
+	and	#TILE_CEILING_MASK
 	sta	zp_04
 	lda	#$0010
 	sta	zp_00
 	jsl	f:get_bg_tile_at_object
-	bit	#$0182
+	bit	#TILE_CEILING_MASK
 	beq	@right_clear2
 	lda	zp_04
 	beq	@fall2
@@ -3698,7 +3698,7 @@ update_grenade:
 	stz	zp_00
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$2000
+	bit	#TILE_NO_DROP
 	beq	@fall
 ; Bug: x + 8 and y - $10 are computed but never stored (the second lda of
 ; each pair was probably meant as sta), so the blast starts at the grenade.

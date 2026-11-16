@@ -543,7 +543,7 @@ ending_sequence_state_21:
 	clc
 	adc	#$4640
 	tay
-	lda	#$2002
+	lda	#TILE_NO_DROP|TILE_CLIMBABLE
 	sta	zp_02
 	lda	#$0002
 	sta	zp_04

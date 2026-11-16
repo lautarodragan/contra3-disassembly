@@ -781,145 +781,160 @@ animate_player_somersault:
 
 ; Classifies the collision tiles under the feet (zp_04 at x, zp_06 at x+6):
 ; floor, slopes; sets zp_C4 and snaps the player onto the floor.
+; The five tile trees (this one, classify_floor_tiles, classify_hang_bar_tiles,
+; check_ceiling_at_offset, object_check_floor_tiles) have the same shape:
+; the right tile (zp_06) is put in one of six classes by the tree's mask (no
+; tile: @right_none; level: @right_level; a slope rising to the right, upper
+; or lower tile of its 16-pixel column: @right_rise_upper/_lower; flipped,
+; falling to the right: @right_fall_upper/_lower), then the left tile
+; (zp_04, nodes @<right class>_left_<test>) picks the outcome. Outcomes are
+; named after the zp_C4 class and the snap routine they end in: @none (0),
+; @level (2), @rise (8: stop_y_slope_up_right...), @fall ($10: ...down_right...),
+; with the snap's suffix (_below, _above, _below_high); _partial ($8000 set
+; in zp_C4) when only one tile is that kind (the other one empty, or level
+; next to a slope). @to_* (and the *_lower stubs among the left nodes) are
+; trampolines: a beq never taken and a brl to a node out of branch range.
+; Here: TILE_FLOOR_MASK, the slopes of TILE_FLOOR_SLOPES.
 check_floor_tiles:
 	lda	zp_06
-	bit	#$807E
-	beq	loc_01859F
-	bit	#$0078
-	beq	loc_0185D0
-	bit	#$0001
-	bne	loc_018592
-	bit	#$0050
-	beq	loc_0185F5
-	bne	loc_018608
-loc_018592:
-	bit	#$0050
-	bne	loc_01859A
-	brl	loc_01861B
-loc_01859A:
-	beq	loc_01859F
-	brl	loc_01862E
-loc_01859F:
+	bit	#TILE_FLOOR_MASK
+	beq	@right_none
+	bit	#TILE_FLOOR_SLOPES
+	beq	@right_level
+	bit	#TILE_FLIPPED
+	bne	@right_fall
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@right_rise_upper
+	bne	@right_rise_lower
+@right_fall:
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	bne	@to_right_fall_lower
+	brl	@right_fall_upper
+@to_right_fall_lower:
+	beq	@right_none
+	brl	@right_fall_lower
+@right_none:
 	lda	zp_04
-	bit	#$807E
-	bne	loc_0185A9
-	brl	loc_01865F
-loc_0185A9:
-	bit	#$0078
-	bne	loc_0185B1
-	brl	loc_018649
-loc_0185B1:
-	bit	#$0001
-	beq	loc_0185C3
-	bit	#$0050
-	bne	loc_0185BE
-	brl	loc_01864F
-loc_0185BE:
+	bit	#TILE_FLOOR_MASK
+	bne	@none_left_floor
+	brl	@none
+@none_left_floor:
+	bit	#TILE_FLOOR_SLOPES
+	bne	@none_left_slope
+	brl	@level_partial
+@none_left_slope:
+	bit	#TILE_FLIPPED
+	beq	@none_left_rise
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	bne	@none_left_fall_lower
+	brl	@fall_below
+@none_left_fall_lower:
 	; (not executed in the CDL traces)
-	beq	loc_0185C3
-	brl	loc_018672
-loc_0185C3:
-	bit	#$0050
-	bne	loc_0185CB
-	brl	loc_018662
-loc_0185CB:
-	beq	loc_0185D0
-	brl	loc_01866A
-loc_0185D0:
+	beq	@none_left_rise
+	brl	@fall
+@none_left_rise:
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	bne	@none_left_rise_lower
+	brl	@rise
+@none_left_rise_lower:
+	beq	@right_level
+	brl	@rise_below_high
+@right_level:
 	lda	zp_04
-	bit	#$807E
-	bne	loc_0185DA
-	brl	loc_018649
-loc_0185DA:
-	bit	#$0078
-	bne	loc_0185E2
-	brl	loc_018641
-loc_0185E2:
-	bit	#$0001
-	beq	loc_0185EE
-	bit	#$0050
-	beq	loc_018649
-	bne	loc_018649
-loc_0185EE:
-	bit	#$0050
-	beq	loc_018649
-	bne	loc_01866A
-loc_0185F5:
+	bit	#TILE_FLOOR_MASK
+	bne	@level_left_floor
+	brl	@level_partial
+@level_left_floor:
+	bit	#TILE_FLOOR_SLOPES
+	bne	@level_left_slope
+	brl	@level
+@level_left_slope:
+	bit	#TILE_FLIPPED
+	beq	@level_left_rise
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@level_partial
+	bne	@level_partial
+@level_left_rise:
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@level_partial
+	bne	@rise_below_high
+@right_rise_upper:
 	lda	zp_04
-	bit	#$807E
-	beq	loc_018657
-	bit	#$0078
-	beq	loc_018649
-	bit	#$0050
-	beq	loc_018662
+	bit	#TILE_FLOOR_MASK
+	beq	@rise_below
+	bit	#TILE_FLOOR_SLOPES
+	beq	@level_partial
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@rise
 	; (not executed in the CDL traces)
-	bne	loc_01866A
-loc_018608:
+	bne	@rise_below_high
+@right_rise_lower:
 	lda	zp_04
-	bit	#$807E
-	beq	loc_018662
-	bit	#$0078
-	beq	loc_018649
-	bit	#$0050
-	beq	loc_018662
-	bne	loc_01866A
-loc_01861B:
+	bit	#TILE_FLOOR_MASK
+	beq	@rise
+	bit	#TILE_FLOOR_SLOPES
+	beq	@level_partial
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@rise
+	bne	@rise_below_high
+@right_fall_upper:
 	lda	zp_04
-	bit	#$807E
-	beq	loc_018672
-	bit	#$0078
-	beq	loc_018649
-	bit	#$0050
-	beq	loc_018672
-	bne	loc_018672
-loc_01862E:
+	bit	#TILE_FLOOR_MASK
+	beq	@fall
+	bit	#TILE_FLOOR_SLOPES
+	beq	@level_partial
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@fall
+	bne	@fall
+@right_fall_lower:
 	lda	zp_04
-	bit	#$807E
-	beq	loc_01867A
-	bit	#$0078
-	beq	loc_01867A
+	bit	#TILE_FLOOR_MASK
+	beq	@fall_below_high
+	bit	#TILE_FLOOR_SLOPES
+	beq	@fall_below_high
 	; (not executed in the CDL traces)
-	bit	#$0050
-	beq	loc_01867A
-	bne	loc_01867A
-loc_018641:
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@fall_below_high
+	bne	@fall_below_high
+@level:
 	lda	#$0002
 	sta	zp_C4
 	brl	snap_y_up_to_tile
-loc_018649:
+@level_partial:
 	lda	#$8002	; [num]
 	sta	zp_C4
 	rtl
-loc_01864F:
+@fall_below:
 	lda	#$0010
 	sta	zp_C4
 	brl	stop_y_slope_down_right_below
-loc_018657:
+@rise_below:
 	lda	#$0008
 	sta	zp_C4
 	brl	stop_y_slope_up_right_below
-loc_01865F:
+@none:
 	stz	zp_C4
 	rtl
-loc_018662:
+@rise:
 	lda	#$0008
 	sta	zp_C4
 	brl	stop_y_slope_up_right
-loc_01866A:
+@rise_below_high:
 	lda	#$0008
 	sta	zp_C4
 	brl	stop_y_slope_up_right_below_high
-loc_018672:
+@fall:
 	lda	#$0010
 	sta	zp_C4
 	brl	stop_y_slope_down_right
-loc_01867A:
+@fall_below_high:
 	lda	#$0010
 	sta	zp_C4
 	brl	stop_y_slope_down_right_below_high
-; Moving up: ceiling and bar (check_ceiling_hang_height), walls 32 and 8
-; pixels above the feet (bit 1: climb, state 2 / 5; bit 15: blocked); a
-; bar above starts hanging (state $0D).
+; Moving up: walls 32 and 8 pixels above the feet (TILE_CLIMBABLE: climb,
+; state 2 / 5; TILE_WALL: blocked); a ceiling 48 pixels above the feet
+; (check_ceiling_hang_height: TILE_CLIMBABLE or a ceiling slope) starts
+; hanging from it (state $0D).
 airborne_rising_collision:
 	jsl	f:check_ceiling_hang_height
 	lda	#$0006
@@ -927,7 +942,7 @@ airborne_rising_collision:
 	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$8002
+	bit	#TILE_WALL_MASK
 	beq	@check_left_wall
 	bmi	@block_right
 	lda	#$0002
@@ -941,7 +956,7 @@ airborne_rising_collision:
 @check_left_wall:
 	stz	zp_00
 	jsl	f:get_bg_tile_at_object
-	bit	#$8002
+	bit	#TILE_WALL_MASK
 	beq	@check_left_low
 	; (not executed in the CDL traces)
 	bmi	@block_left
@@ -955,7 +970,7 @@ airborne_rising_collision:
 	lda	#$FFF8	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$8002
+	bit	#TILE_WALL_MASK
 	beq	@check_right_low
 @block_left:
 	; (not executed in the CDL traces)
@@ -971,7 +986,7 @@ airborne_rising_collision:
 	lda	#$0006
 	sta	zp_00
 	jsl	f:get_bg_tile_at_object
-	bit	#$8002
+	bit	#TILE_WALL_MASK
 	beq	@no_wall
 @block_right:
 	jsl	f:snap_x_left_if_moving_right
@@ -997,7 +1012,7 @@ airborne_kill_player:
 	; (not executed in the CDL traces)
 	jml	f:kill_player
 ; Moving down: lands on an object (PCONTACT_ON_OBJECT) or the BG floor
-; (check_floor_tiles; $32 bit 8 ignores floor tiles without bit 13),
+; (check_floor_tiles; $32 bit 8 ignores floor tiles without TILE_NO_DROP),
 ; walls as above, then a bar 48 pixels up starts hanging (state 1).
 airborne_falling_collision:
 	lda	PLAYER_CONTACT,x
@@ -1015,7 +1030,7 @@ airborne_falling_collision:
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
 	sta	zp_04
-	bit	#$2000
+	bit	#TILE_NO_DROP
 	bne	@check_right_foot
 	lda	$32,x
 	bit	#$0100
@@ -1026,7 +1041,7 @@ airborne_falling_collision:
 	sta	zp_00
 	jsl	f:get_bg_tile_at_object
 	sta	zp_06
-	bit	#$2000
+	bit	#TILE_NO_DROP
 	bne	@classify_floor
 	lda	$32,x
 	bit	#$0100
@@ -1039,7 +1054,7 @@ airborne_falling_collision:
 	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$8002
+	bit	#TILE_WALL_MASK
 	beq	@check_left_wall
 	bmi	@block_right
 	lda	#$0002
@@ -1053,7 +1068,7 @@ airborne_falling_collision:
 @check_left_wall:
 	stz	zp_00
 	jsl	f:get_bg_tile_at_object
-	bit	#$8002
+	bit	#TILE_WALL_MASK
 	beq	@check_left_low
 	bmi	@block_left
 	lda	#$0005
@@ -1068,7 +1083,7 @@ airborne_falling_collision:
 	lda	#$FFF8	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$8002
+	bit	#TILE_WALL_MASK
 	beq	@check_right_low
 @block_left:
 	jsl	f:snap_x_right_if_moving_left
@@ -1083,7 +1098,7 @@ airborne_falling_collision:
 	lda	#$0006
 	sta	zp_00
 	jsl	f:get_bg_tile_at_object
-	bit	#$8002
+	bit	#TILE_WALL_MASK
 	beq	@no_wall
 @block_right:
 	jsl	f:snap_x_left_if_moving_right
@@ -1109,7 +1124,7 @@ airborne_falling_collision:
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	sta	zp_04
-	bit	#$0E00
+	bit	#TILE_BAR_MASK
 	beq	@check_bar_right
 	lda	$32,x
 	bit	#$0200
@@ -1120,7 +1135,7 @@ airborne_falling_collision:
 	sta	zp_00
 	jsl	f:get_bg_tile_at_object
 	sta	zp_06
-	bit	#$0E00
+	bit	#TILE_BAR_MASK
 	beq	@classify_bar
 	lda	$32,x
 	bit	#$0200
@@ -1187,7 +1202,7 @@ player_state_ground:
 	sta	OBJ_Y,x
 	lda	#$8002	; [num]
 	sta	zp_C4
-	lda	#$2000
+	lda	#TILE_NO_DROP
 	sta	zp_12
 	bra	@check_jump
 @check_floor:
@@ -1214,7 +1229,7 @@ player_state_ground:
 	brl	start_player_jump
 @down_jump:
 	lda	zp_12
-	bit	#$2000
+	bit	#TILE_NO_DROP
 	beq	@not_on_platform
 	brl	start_player_jump
 @not_on_platform:
@@ -1911,8 +1926,8 @@ ground_aim_down_left:
 	jml	f:fire_weapon
 
 ; Ground states (player_state_ground, player_state_spin_stance): a wall tile
-; (collision bit 1) 32 pixels above the feet at x starts climbing left
-; (state 5), at x+6 climbing right (state 2), with a snap; bit $8000 there
+; (TILE_CLIMBABLE) 32 pixels above the feet at x starts climbing left
+; (state 5), at x+6 climbing right (state 2), with a snap; TILE_WALL there
 ; only snaps. Then the tiles under the feet (zp_04 at x, zp_06 at x+6, zp_12
 ; both) are classified like check_floor_tiles (sets zp_C4, snaps onto the
 ; floor).
@@ -1921,7 +1936,7 @@ check_walls_and_floor:
 	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$8000
+	bit	#TILE_WALL
 	beq	@check_climb_left
 	; (not executed in the CDL traces)
 	jsl	f:snap_x_right_to_tile
@@ -1938,12 +1953,12 @@ check_walls_and_floor:
 	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$8000
+	bit	#TILE_WALL
 	beq	@check_climb_right
 	jsl	f:snap_x_left_to_tile
 	bra	@check_floor
 @check_climb_right:
-	bit	#$0002
+	bit	#TILE_CLIMBABLE
 	beq	@check_floor
 	lda	#$0002
 	sta	OBJ_STATE,x
@@ -2076,132 +2091,134 @@ check_hang_bar:
 	jsl	f:get_bg_tile_at_object
 	sta	zp_06
 
+; The tree of check_floor_tiles on the bar classes (TILE_BAR_MASK; sloped
+; bars TILE_BAR_SLOPES): zp_04/zp_06 = the tiles at the hands (x, x+6).
 classify_hang_bar_tiles:
 	lda	zp_06
-	bit	#$0E00
-	beq	loc_019050
-	bit	#$0C00
-	beq	loc_019081
-	bit	#$0001
-	bne	loc_019043
-	bit	#$0800
-	beq	loc_0190A6
-	bne	loc_0190B9
-loc_019043:
-	bit	#$0800
-	bne	loc_01904B
-	brl	loc_0190CC
-loc_01904B:
-	beq	loc_019050
-	brl	loc_0190DF
-loc_019050:
+	bit	#TILE_BAR_MASK
+	beq	@right_none
+	bit	#TILE_BAR_SLOPES
+	beq	@right_level
+	bit	#TILE_FLIPPED
+	bne	@right_fall
+	bit	#TILE_BAR_SLOPE_LOWER
+	beq	@right_rise_upper
+	bne	@right_rise_lower
+@right_fall:
+	bit	#TILE_BAR_SLOPE_LOWER
+	bne	@to_right_fall_lower
+	brl	@right_fall_upper
+@to_right_fall_lower:
+	beq	@right_none
+	brl	@right_fall_lower
+@right_none:
 	lda	zp_04
-	bit	#$0E00
-	bne	loc_01905A
-	brl	loc_019102
-loc_01905A:
-	bit	#$0C00
-	bne	loc_019062
-	brl	loc_0190F2
-loc_019062:
-	bit	#$0001
-	beq	loc_019074
-	bit	#$0800
-	bne	loc_01906F
-	brl	loc_019102
-loc_01906F:
+	bit	#TILE_BAR_MASK
+	bne	@none_left_bar
+	brl	@none
+@none_left_bar:
+	bit	#TILE_BAR_SLOPES
+	bne	@none_left_slope
+	brl	@level_partial
+@none_left_slope:
+	bit	#TILE_FLIPPED
+	beq	@none_left_rise
+	bit	#TILE_BAR_SLOPE_LOWER
+	bne	@none_left_fall_lower
+	brl	@none
+@none_left_fall_lower:
 	; (not executed in the CDL traces)
-	beq	loc_019074
-	brl	loc_019102
-loc_019074:
-	bit	#$0800
-	bne	loc_01907C
+	beq	@none_left_rise
+	brl	@none
+@none_left_rise:
+	bit	#TILE_BAR_SLOPE_LOWER
+	bne	@none_left_rise_lower
 	; (not executed in the CDL traces)
-	brl	loc_019105
-loc_01907C:
-	beq	loc_019081
-	brl	loc_01910D
-loc_019081:
+	brl	@rise_below_high
+@none_left_rise_lower:
+	beq	@right_level
+	brl	@rise
+@right_level:
 	lda	zp_04
-	bit	#$0E00
-	bne	loc_01908B
-	brl	loc_0190F2
-loc_01908B:
-	bit	#$0C00
-	bne	loc_019093
-	brl	loc_0190FA
-loc_019093:
-	bit	#$0001
-	beq	loc_01909F
-	bit	#$0800
-	beq	loc_0190FA
-	bne	loc_0190FA
-loc_01909F:
-	bit	#$0800
-	beq	loc_019105
+	bit	#TILE_BAR_MASK
+	bne	@level_left_bar
+	brl	@level_partial
+@level_left_bar:
+	bit	#TILE_BAR_SLOPES
+	bne	@level_left_slope
+	brl	@level
+@level_left_slope:
+	bit	#TILE_FLIPPED
+	beq	@level_left_rise
+	bit	#TILE_BAR_SLOPE_LOWER
+	beq	@level
+	bne	@level
+@level_left_rise:
+	bit	#TILE_BAR_SLOPE_LOWER
+	beq	@rise_below_high
 	; (not executed in the CDL traces)
-	bne	loc_01910D
-loc_0190A6:
+	bne	@rise
+@right_rise_upper:
 	lda	zp_04
-	bit	#$0E00
-	beq	loc_019102
-	bit	#$0C00
-	beq	loc_0190FA
-	bit	#$0800
-	beq	loc_019105
+	bit	#TILE_BAR_MASK
+	beq	@none
+	bit	#TILE_BAR_SLOPES
+	beq	@level
+	bit	#TILE_BAR_SLOPE_LOWER
+	beq	@rise_below_high
 	; (not executed in the CDL traces)
-	bne	loc_01910D
-loc_0190B9:
+	bne	@rise
+@right_rise_lower:
 	lda	zp_04
-	bit	#$0E00
-	beq	loc_019102
-	bit	#$0C00
-	beq	loc_0190FA
-	bit	#$0800
-	beq	loc_019105
-	bne	loc_01910D
-loc_0190CC:
+	bit	#TILE_BAR_MASK
+	beq	@none
+	bit	#TILE_BAR_SLOPES
+	beq	@level
+	bit	#TILE_BAR_SLOPE_LOWER
+	beq	@rise_below_high
+	bne	@rise
+@right_fall_upper:
 	lda	zp_04
-	bit	#$0E00
-	beq	loc_019115
-	bit	#$0C00
-	beq	loc_019115
-	bit	#$0800
-	beq	loc_019115
-	bne	loc_019115
-loc_0190DF:
+	bit	#TILE_BAR_MASK
+	beq	@fall_below_high
+	bit	#TILE_BAR_SLOPES
+	beq	@fall_below_high
+	bit	#TILE_BAR_SLOPE_LOWER
+	beq	@fall_below_high
+	bne	@fall_below_high
+@right_fall_lower:
 	lda	zp_04
-	bit	#$0E00
-	beq	loc_01911D
-	bit	#$0C00
-	beq	loc_01911D
-	bit	#$0800
-	beq	loc_01911D
-	bne	loc_01911D
-loc_0190F2:
+	bit	#TILE_BAR_MASK
+	beq	@fall
+	bit	#TILE_BAR_SLOPES
+	beq	@fall
+	bit	#TILE_BAR_SLOPE_LOWER
+	beq	@fall
+	bne	@fall
+@level_partial:
 	lda	#$8000	; [num]
 	sta	zp_C4
 	brl	snap_y_down_to_tile
-loc_0190FA:
+@level:
 	lda	#$0002
 	sta	zp_C4
 	brl	snap_y_down_to_tile
-loc_019102:
+@none:
 	stz	zp_C4
 	rtl
-loc_019105:
+@rise_below_high:
 	lda	#$0008
 	sta	zp_C4
 	brl	stop_y_slope_up_right_below_high
-loc_01910D:
+@rise:
 	lda	#$0008
 	sta	zp_C4
 	brl	stop_y_slope_up_right
-loc_019115:
+@fall_below_high:
 	lda	#$0010
 	sta	zp_C4
 	brl	stop_y_slope_down_right_below_high
-loc_01911D:
+@fall:
 	lda	#$0010
 	sta	zp_C4
 	brl	stop_y_slope_down_right
@@ -2229,7 +2246,7 @@ player_state_hang_object:
 @aim:
 	brl	run_hang_aim
 
-; State 2, climbing a wall on the right (BG wall bit at x+6): aims and fires
+; State 2, climbing a wall on the right (TILE_CLIMBABLE at x+6): aims and fires
 ; (tbl_climb_right_aim); falls when the wall ends.
 player_state_climb_right:
 	lda	PLAYER_CONTACT,x
@@ -2257,12 +2274,12 @@ player_state_climb_right:
 	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$0002
+	bit	#TILE_CLIMBABLE
 	bne	@on_wall
 	lda	#$FFF8	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$0002
+	bit	#TILE_CLIMBABLE
 	bne	@wall_top
 	; (not executed in the CDL traces)
 	brl	start_player_fall
@@ -2989,208 +3006,210 @@ unused_check_floor_at_feet:
 	sta	zp_06
 	ora	zp_04
 	sta	zp_12
-; The ground states' classification of zp_04/zp_06 (check_walls_and_floor).
+; The ground states' classification of zp_04/zp_06 (check_walls_and_floor):
+; the tree of check_floor_tiles, ending in the snap_y_* routines (they keep the
+; velocity); @fall_left_only and @fall_below_left_only set $8011.
 classify_floor_tiles:
 	lda	zp_06
-	bit	#$807E
-	bne	loc_0196A3
-	brl	loc_0196CA
-loc_0196A3:
-	bit	#$0078
-	bne	loc_0196AB
-	brl	loc_0196FB
-loc_0196AB:
-	bit	#$0001
-	bne	loc_0196BD
-	bit	#$0050
-	bne	loc_0196B8
-	brl	loc_01972C
-loc_0196B8:
-	beq	loc_0196BD
-	brl	loc_01974B
-loc_0196BD:
-	bit	#$0050
-	bne	loc_0196C5
-	brl	loc_01976A
-loc_0196C5:
-	beq	loc_0196CA
-	brl	loc_019789
-loc_0196CA:
+	bit	#TILE_FLOOR_MASK
+	bne	@right_floor
+	brl	@right_none
+@right_floor:
+	bit	#TILE_FLOOR_SLOPES
+	bne	@right_slope
+	brl	@right_level
+@right_slope:
+	bit	#TILE_FLIPPED
+	bne	@right_fall
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	bne	@to_right_rise_lower
+	brl	@right_rise_upper
+@to_right_rise_lower:
+	beq	@right_fall
+	brl	@right_rise_lower
+@right_fall:
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	bne	@to_right_fall_lower
+	brl	@right_fall_upper
+@to_right_fall_lower:
+	beq	@right_none
+	brl	@right_fall_lower
+@right_none:
 	lda	zp_04
-	bit	#$807E
-	bne	loc_0196D4
-	brl	loc_0197A8
-loc_0196D4:
-	bit	#$0078
-	bne	loc_0196DC
-	brl	loc_0197C3
-loc_0196DC:
-	bit	#$0001
-	beq	loc_0196EE
-	bit	#$0050
-	bne	loc_0196E9
-	brl	loc_0197AB
-loc_0196E9:
+	bit	#TILE_FLOOR_MASK
+	bne	@none_left_floor
+	brl	@none
+@none_left_floor:
+	bit	#TILE_FLOOR_SLOPES
+	bne	@none_left_slope
+	brl	@level_partial
+@none_left_slope:
+	bit	#TILE_FLIPPED
+	beq	@none_left_rise
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	bne	@none_left_fall_lower
+	brl	@fall_below_left_only
+@none_left_fall_lower:
 	; (not executed in the CDL traces)
-	beq	loc_0196EE
-	brl	loc_0197B3
-loc_0196EE:
-	bit	#$0050
-	bne	loc_0196F6
-	brl	loc_0197CB
-loc_0196F6:
-	beq	loc_0196FB
-	brl	loc_0197D3
-loc_0196FB:
+	beq	@none_left_rise
+	brl	@fall_left_only
+@none_left_rise:
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	bne	@none_left_rise_lower
+	brl	@rise_partial
+@none_left_rise_lower:
+	beq	@right_level
+	brl	@rise_above_partial
+@right_level:
 	lda	zp_04
-	bit	#$807E
-	bne	loc_019705
-	brl	loc_0197C3
-loc_019705:
-	bit	#$0078
-	bne	loc_01970D
-	brl	loc_0197BB
-loc_01970D:
-	bit	#$0001
-	beq	loc_01971F
-	bit	#$0050
-	bne	loc_01971A
+	bit	#TILE_FLOOR_MASK
+	bne	@level_left_floor
+	brl	@level_partial
+@level_left_floor:
+	bit	#TILE_FLOOR_SLOPES
+	bne	@level_left_slope
+	brl	@level
+@level_left_slope:
+	bit	#TILE_FLIPPED
+	beq	@level_left_rise
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	bne	@level_left_fall_lower
 	; (not executed in the CDL traces)
-	brl	loc_0197C3
-loc_01971A:
-	beq	loc_01971F
-	brl	loc_0197C3
-loc_01971F:
-	bit	#$0050
-	bne	loc_019727
-	brl	loc_0197CB
-loc_019727:
+	brl	@level_partial
+@level_left_fall_lower:
+	beq	@level_left_rise
+	brl	@level_partial
+@level_left_rise:
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	bne	@level_left_rise_lower
+	brl	@rise_partial
+@level_left_rise_lower:
 	; (not executed in the CDL traces)
-	beq	loc_01972C
-	brl	loc_0197D3
-loc_01972C:
+	beq	@right_rise_upper
+	brl	@rise_above_partial
+@right_rise_upper:
 	lda	zp_04
-	bit	#$807E
-	bne	loc_019736
-	brl	loc_0197DB
-loc_019736:
-	bit	#$0078
-	bne	loc_01973E
+	bit	#TILE_FLOOR_MASK
+	bne	@rise_upper_left_floor
+	brl	@rise_below_partial
+@rise_upper_left_floor:
+	bit	#TILE_FLOOR_SLOPES
+	bne	@rise_upper_left_slope
 	; (not executed in the CDL traces)
-	brl	loc_0197C3
-loc_01973E:
-	bit	#$0050
-	bne	loc_019746
-	brl	loc_0197E3
-loc_019746:
+	brl	@level_partial
+@rise_upper_left_slope:
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	bne	@rise_upper_left_lower
+	brl	@rise
+@rise_upper_left_lower:
 	; (not executed in the CDL traces)
-	beq	loc_01974B
-	brl	loc_0197EB
-loc_01974B:
+	beq	@right_rise_lower
+	brl	@rise_above
+@right_rise_lower:
 	lda	zp_04
-	bit	#$807E
-	bne	loc_019755
-	brl	loc_0197CB
-loc_019755:
-	bit	#$0078
-	bne	loc_01975D
-	brl	loc_0197C3
-loc_01975D:
-	bit	#$0050
-	bne	loc_019765
-	brl	loc_0197E3
-loc_019765:
-	beq	loc_01976A
-	brl	loc_0197EB
-loc_01976A:
+	bit	#TILE_FLOOR_MASK
+	bne	@rise_lower_left_floor
+	brl	@rise_partial
+@rise_lower_left_floor:
+	bit	#TILE_FLOOR_SLOPES
+	bne	@rise_lower_left_slope
+	brl	@level_partial
+@rise_lower_left_slope:
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	bne	@rise_lower_left_lower
+	brl	@rise
+@rise_lower_left_lower:
+	beq	@right_fall_upper
+	brl	@rise_above
+@right_fall_upper:
 	lda	zp_04
-	bit	#$807E
-	bne	loc_019774
-	brl	loc_0197F3
-loc_019774:
-	bit	#$0078
-	bne	loc_01977C
-	brl	loc_0197F3
-loc_01977C:
-	bit	#$0050
-	bne	loc_019784
-	brl	loc_0197FB
-loc_019784:
-	beq	loc_019789
-	brl	loc_0197FB
-loc_019789:
+	bit	#TILE_FLOOR_MASK
+	bne	@fall_upper_left_floor
+	brl	@fall_partial
+@fall_upper_left_floor:
+	bit	#TILE_FLOOR_SLOPES
+	bne	@fall_upper_left_slope
+	brl	@fall_partial
+@fall_upper_left_slope:
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	bne	@fall_upper_left_lower
+	brl	@fall
+@fall_upper_left_lower:
+	beq	@right_fall_lower
+	brl	@fall
+@right_fall_lower:
 	lda	zp_04
-	bit	#$807E
-	bne	loc_019793
+	bit	#TILE_FLOOR_MASK
+	bne	@fall_lower_left_floor
 	; (not executed in the CDL traces)
-	brl	loc_019803
-loc_019793:
-	bit	#$0078
-	bne	loc_01979B
+	brl	@fall_above_partial
+@fall_lower_left_floor:
+	bit	#TILE_FLOOR_SLOPES
+	bne	@fall_lower_left_slope
 	; (not executed in the CDL traces)
-	brl	loc_019803
-loc_01979B:
-	bit	#$0050
-	bne	loc_0197A3
+	brl	@fall_above_partial
+@fall_lower_left_slope:
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	bne	@fall_lower_left_lower
 	; (not executed in the CDL traces)
-	brl	loc_01980B
-loc_0197A3:
-	beq	loc_0197A8
-	brl	loc_01980B
-loc_0197A8:
+	brl	@fall_above
+@fall_lower_left_lower:
+	beq	@none
+	brl	@fall_above
+@none:
 	stz	zp_C4
 	rtl
-loc_0197AB:
+@fall_below_left_only:
 	lda	#$8011	; [num]
 	sta	zp_C4
 	brl	snap_y_slope_down_right_below
-loc_0197B3:
+@fall_left_only:
 	; (not executed in the CDL traces)
 	lda	#$8011	; [num]
 	sta	zp_C4
 	brl	snap_y_slope_down_right
-loc_0197BB:
+@level:
 	lda	#$0002
 	sta	zp_C4
 	brl	snap_y_up_to_tile
-loc_0197C3:
+@level_partial:
 	lda	#$8002	; [num]
 	sta	zp_C4
 	brl	snap_y_up_to_tile
-loc_0197CB:
+@rise_partial:
 	lda	#$8008	; [num]
 	sta	zp_C4
 	brl	snap_y_slope_up_right
-loc_0197D3:
+@rise_above_partial:
 	lda	#$8008	; [num]
 	sta	zp_C4
 	brl	snap_y_slope_up_right_above
-loc_0197DB:
+@rise_below_partial:
 	lda	#$8008	; [num]
 	sta	zp_C4
 	brl	snap_y_slope_up_right_below
-loc_0197E3:
+@rise:
 	lda	#$0008
 	sta	zp_C4
 	brl	snap_y_slope_up_right
-loc_0197EB:
+@rise_above:
 	lda	#$0008
 	sta	zp_C4
 	brl	snap_y_slope_up_right_above
-loc_0197F3:
+@fall_partial:
 	lda	#$8010	; [num]
 	sta	zp_C4
 	brl	snap_y_slope_down_right
-loc_0197FB:
+@fall:
 	lda	#$0010
 	sta	zp_C4
 	brl	snap_y_slope_down_right
-loc_019803:
+@fall_above_partial:
 	; (not executed in the CDL traces)
 	lda	#$8010	; [num]
 	sta	zp_C4
 	brl	snap_y_slope_down_right_above
-loc_01980B:
+@fall_above:
 	lda	#$0010
 	sta	zp_C4
 	brl	snap_y_slope_down_right_above
@@ -3221,13 +3240,13 @@ player_state_climb_left:
 	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$0002
+	bit	#TILE_CLIMBABLE
 	bne	@on_wall
 	; (not executed in the CDL traces)
 	lda	#$FFF8	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$0002
+	bit	#TILE_CLIMBABLE
 	bne	@wall_top
 	brl	start_player_fall
 @wall_top:
@@ -3959,13 +3978,13 @@ dying_check_ceiling_walls:
 	lda	#$FFF8	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$8002
+	bit	#TILE_WALL_MASK
 	beq	@check_left
 	brl	snap_x_left_to_tile
 @check_left:
 	stz	zp_00
 	jsl	f:get_bg_tile_at_object
-	bit	#$8002
+	bit	#TILE_WALL_MASK
 	beq	@check_ceiling
 	brl	snap_x_right_to_tile
 @check_ceiling:
@@ -4001,7 +4020,7 @@ dying_check_floor_walls:
 	lda	#$FFF8	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$8002
+	bit	#TILE_WALL_MASK
 	beq	@check_left
 	jsl	f:snap_x_left_to_tile
 	lda	zp_C4
@@ -4013,7 +4032,7 @@ dying_check_floor_walls:
 @check_left:
 	stz	zp_00
 	jsl	f:get_bg_tile_at_object
-	bit	#$8002
+	bit	#TILE_WALL_MASK
 	beq	@no_wall
 	jsl	f:snap_x_right_to_tile
 	lda	zp_C4

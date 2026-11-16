@@ -173,7 +173,7 @@ made of metatiles of 4x4 tiles; when the scroll crosses a tile column or
 row, `draw_bg_column` / `draw_bg_row` queue the tiles that enter the screen,
 and `update_bg_collision_map` turns the same tiles into the collision map
 at `$7E:4000` (one word per tile, the class chosen by tile-number
-thresholds).
+thresholds; see [Side-view collision map](collision.md)).
 
 Every frame the stage code calls `run_bg1_scroll_mode` and
 `run_bg2_scroll_mode`, which dispatch on `bg1_scroll_mode` and

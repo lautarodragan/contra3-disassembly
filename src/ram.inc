@@ -749,6 +749,41 @@ TDA_MAP_OBJECT      = $FC	; part of a map object (target, boss): blocks shots, w
 TDA_TRAP            = $FD	; stage 2: 500 points, then a TDI_BLAST explodes there (td_trigger_trap)
 TDA_BLOCK_ANIM      = $FE	; stage 2: shakes the screen and animates map blocks (td_trigger_block_anim)
 TDA_HOLE            = $FF	; hole: the player falls (td_player_state_falling), an enemy dies
+; Side-view collision map: one word per 8x8 BG1 tile at $7E:4000, laid out
+; like a 64x32 tilemap (get_bg_tile_at_object). update_bg_collision_map
+; classes each tile by its number against the stage's thresholds zp_C8-zp_DE
+; (stage_dp_params_*) and stores one of $0000, $2002, $0004, $4008, $4010,
+; $6020, $6040, $6080, $6100, $1200, $5400, $5800, $A000, with TILE_FLIPPED
+; from the tile's h-flip on the slope and sloped bar classes; the fill helper
+; update_object_type_28 writes words directly (the stage 1 boss wall $A000).
+; A slope rises 8 pixels per 16 (one tile row per 16-pixel column, aligned
+; on the 16-pixel grid of the stage), rising to the right unless flipped;
+; each 16-pixel column of a slope has an upper and a lower tile. See
+; book/src/collision.md for the evidence.
+TILE_FLIPPED        = $0001	; h-flipped tile: its slope falls to the right (else rises)
+TILE_CLIMBABLE      = $0002	; solid: floor (no drop-through), a wall the player climbs, a ceiling the player hangs from
+TILE_PLATFORM       = $0004	; floor only: walls and ceilings ignore it; down + jump drops through it
+TILE_PLATFORM_SLOPE_UPPER = $0008	; platform slope (drop-through), upper tile of a 16-pixel column
+TILE_PLATFORM_SLOPE_LOWER = $0010	; platform slope (drop-through), lower tile
+TILE_SLOPE_UPPER    = $0020	; solid floor slope, upper tile
+TILE_SLOPE_LOWER    = $0040	; solid floor slope, lower tile
+TILE_CEILING_SLOPE_LOWER = $0080	; ceiling slope (hung from like TILE_CLIMBABLE), lower tile
+TILE_CEILING_SLOPE_UPPER = $0100	; ceiling slope, upper tile
+TILE_BAR            = $0200	; level bar the player hangs from (state 1)
+TILE_BAR_SLOPE_UPPER = $0400	; sloped bar, upper tile
+TILE_BAR_SLOPE_LOWER = $0800	; sloped bar, lower tile
+TILE_HANG_CLASS     = $1000	; probably "a bar": set on the three bar classes, never tested
+TILE_NO_DROP        = $2000	; floor that is never passed through: down + jump on it jumps instead of dropping, and it stops a falling player whose $32 flag $0100 (the 10 frames after a jump or a fall start) skips the other floor tiles
+TILE_SLOPE_CLASS    = $4000	; probably "a slope": set on every slope and sloped bar class, never tested
+TILE_WALL           = $8000	; solid but not climbable: floor and a wall that stops the player; not a ceiling (jumped through from below)
+TILE_FLOOR_MASK     = TILE_WALL|TILE_SLOPE_LOWER|TILE_SLOPE_UPPER|TILE_PLATFORM_SLOPE_LOWER|TILE_PLATFORM_SLOPE_UPPER|TILE_PLATFORM|TILE_CLIMBABLE	; $807E: what the feet stand on
+TILE_FLOOR_SLOPES   = TILE_SLOPE_LOWER|TILE_SLOPE_UPPER|TILE_PLATFORM_SLOPE_LOWER|TILE_PLATFORM_SLOPE_UPPER	; $0078
+TILE_FLOOR_SLOPE_LOWER = TILE_SLOPE_LOWER|TILE_PLATFORM_SLOPE_LOWER	; $0050: the lower tile of either kind of floor slope
+TILE_CEILING_MASK   = TILE_CEILING_SLOPE_UPPER|TILE_CEILING_SLOPE_LOWER|TILE_CLIMBABLE	; $0182: what a rising player bumps into or hangs from
+TILE_CEILING_SLOPES = TILE_CEILING_SLOPE_UPPER|TILE_CEILING_SLOPE_LOWER	; $0180
+TILE_BAR_MASK       = TILE_BAR_SLOPE_LOWER|TILE_BAR_SLOPE_UPPER|TILE_BAR	; $0E00
+TILE_BAR_SLOPES     = TILE_BAR_SLOPE_LOWER|TILE_BAR_SLOPE_UPPER	; $0C00
+TILE_WALL_MASK      = TILE_WALL|TILE_CLIMBABLE	; $8002: what stops the player sideways
 ; Top-down sprite graphics stream entry (td_gfx_stream, stream_topdown_sprite_gfx):
 GFXS_SIZE           = $08
 GFXS_SRC            = $00	; source address of the first $100-byte chunk

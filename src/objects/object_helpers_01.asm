@@ -142,7 +142,7 @@ find_free_slot_x_down:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-; A wall tile (collision bit 1) 32 pixels above the object at x: field $38
+; A wall tile (TILE_CLIMBABLE) 32 pixels above the object at x: field $38
 ; = 2 and snap right; at x+16: field $38 = 4 and snap left. Never reached.
 unused_check_walls_above:
 	; (not executed in the CDL traces)
@@ -150,7 +150,7 @@ unused_check_walls_above:
 	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$0002
+	bit	#TILE_CLIMBABLE
 	beq	@check_right
 	lda	#$0002
 	sta	$38,x
@@ -161,7 +161,7 @@ unused_check_walls_above:
 	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$0002
+	bit	#TILE_CLIMBABLE
 	beq	@return
 	lda	#$0004
 	sta	$38,x
@@ -548,6 +548,9 @@ object_follow_floor:
 @return:
 	rtl
 
+; The tree of check_floor_tiles for an object (zp_04/zp_06 at x and x+6
+; after centring x on the hitbox), ending in the snap_y_* routines; zp_FC =
+; 0 when there is no floor (@none), else 1.
 object_check_floor_tiles:
 	lda	#$0001
 	sta	zp_FC
@@ -566,108 +569,108 @@ object_check_floor_tiles:
 	sta	zp_00
 	jsl	f:get_bg_tile_at_object
 	sta	zp_06
-	bit	#$807E
-	beq	loc_01A1CD
-	bit	#$0078
-	beq	loc_01A1F2
-	bit	#$0001
-	bne	loc_01A1C6
-	bit	#$0050
-	beq	loc_01A211
-	bne	loc_01A224
-loc_01A1C6:
-	bit	#$0050
-	beq	loc_01A237
-	bne	loc_01A24A
-loc_01A1CD:
+	bit	#TILE_FLOOR_MASK
+	beq	@right_none
+	bit	#TILE_FLOOR_SLOPES
+	beq	@right_level
+	bit	#TILE_FLIPPED
+	bne	@right_fall
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@right_rise_upper
+	bne	@right_rise_lower
+@right_fall:
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@right_fall_upper
+	bne	@right_fall_lower
+@right_none:
 	lda	zp_04
-	bit	#$807E
-	bne	loc_01A1D7
-	brl	loc_01A25D
-loc_01A1D7:
-	bit	#$0078
-	bne	loc_01A1DF
-	brl	loc_01A263
-loc_01A1DF:
-	bit	#$0001
-	beq	loc_01A1EB
-	bit	#$0050
-	beq	loc_01A260
+	bit	#TILE_FLOOR_MASK
+	bne	@none_left_floor
+	brl	@none
+@none_left_floor:
+	bit	#TILE_FLOOR_SLOPES
+	bne	@none_left_slope
+	brl	@level
+@none_left_slope:
+	bit	#TILE_FLIPPED
+	beq	@none_left_rise
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@fall_below
 	; (not executed in the CDL traces)
-	bne	loc_01A269
-loc_01A1EB:
-	bit	#$0050
-	beq	loc_01A266
-	bne	loc_01A26C
-loc_01A1F2:
+	bne	@fall
+@none_left_rise:
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@rise
+	bne	@rise_above
+@right_level:
 	lda	zp_04
-	bit	#$807E
-	beq	loc_01A263
-	bit	#$0078
-	beq	loc_01A263
-	bit	#$0001
-	beq	loc_01A20A
-	bit	#$0050
-	beq	loc_01A263
-	bne	loc_01A263
-loc_01A20A:
-	bit	#$0050
-	beq	loc_01A266
+	bit	#TILE_FLOOR_MASK
+	beq	@level
+	bit	#TILE_FLOOR_SLOPES
+	beq	@level
+	bit	#TILE_FLIPPED
+	beq	@level_left_rise
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@level
+	bne	@level
+@level_left_rise:
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@rise
 	; (not executed in the CDL traces)
-	bne	loc_01A26C
-loc_01A211:
+	bne	@rise_above
+@right_rise_upper:
 	lda	zp_04
-	bit	#$807E
-	beq	loc_01A26F
-	bit	#$0078
-	beq	loc_01A263
-	bit	#$0050
-	beq	loc_01A266
+	bit	#TILE_FLOOR_MASK
+	beq	@rise_below
+	bit	#TILE_FLOOR_SLOPES
+	beq	@level
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@rise
 	; (not executed in the CDL traces)
-	bne	loc_01A26C
-loc_01A224:
+	bne	@rise_above
+@right_rise_lower:
 	lda	zp_04
-	bit	#$807E
-	beq	loc_01A266
-	bit	#$0078
-	beq	loc_01A263
-	bit	#$0050
-	beq	loc_01A266
-	bne	loc_01A26C
-loc_01A237:
+	bit	#TILE_FLOOR_MASK
+	beq	@rise
+	bit	#TILE_FLOOR_SLOPES
+	beq	@level
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@rise
+	bne	@rise_above
+@right_fall_upper:
 	lda	zp_04
-	bit	#$807E
-	beq	loc_01A269
-	bit	#$0078
-	beq	loc_01A269
-	bit	#$0050
-	beq	loc_01A269
-	bne	loc_01A269
-loc_01A24A:
+	bit	#TILE_FLOOR_MASK
+	beq	@fall
+	bit	#TILE_FLOOR_SLOPES
+	beq	@fall
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@fall
+	bne	@fall
+@right_fall_lower:
 	lda	zp_04
-	bit	#$807E
-	beq	loc_01A272
-	bit	#$0078
-	beq	loc_01A272
-	bit	#$0050
-	beq	loc_01A272
-	bne	loc_01A272
-loc_01A25D:
+	bit	#TILE_FLOOR_MASK
+	beq	@fall_above
+	bit	#TILE_FLOOR_SLOPES
+	beq	@fall_above
+	bit	#TILE_FLOOR_SLOPE_LOWER
+	beq	@fall_above
+	bne	@fall_above
+@none:
 	stz	zp_FC
 	rtl
-loc_01A260:
+@fall_below:
 	brl	snap_y_slope_down_right_below
-loc_01A263:
+@level:
 	brl	snap_y_up_to_tile
-loc_01A266:
+@rise:
 	brl	snap_y_slope_up_right
-loc_01A269:
+@fall:
 	brl	snap_y_slope_down_right
-loc_01A26C:
+@rise_above:
 	brl	snap_y_slope_up_right_above
-loc_01A26F:
+@rise_below:
 	brl	snap_y_slope_up_right_below
-loc_01A272:
+@fall_above:
 	brl	snap_y_slope_down_right_above
 
 ; Object type $53: does nothing (rtl). A hitbox moved by another object

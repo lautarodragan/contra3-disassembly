@@ -1690,9 +1690,9 @@ object_type_48_state_01:
 	lda	#$0008
 	sta	zp_00
 	jsl	f:get_bg_tile_at_object
-	bit	#$0004
+	bit	#TILE_PLATFORM
 	bne	@wall_ahead
-	bit	#$2000
+	bit	#TILE_NO_DROP
 	beq	@jump_toward_target
 @wall_ahead:
 	ldy	$38,x
@@ -1757,9 +1757,9 @@ object_type_48_state_02:
 	stz	zp_00
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$0004
+	bit	#TILE_PLATFORM
 	bne	@landed
-	bit	#$2000
+	bit	#TILE_NO_DROP
 	bne	@landed
 @fall:
 	lda	$1E,x
@@ -2103,7 +2103,7 @@ rolling_mine_check_wall:
 	lda	#$FFF0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$8002
+	bit	#TILE_WALL_MASK
 	beq	@check_left
 	lda	#$0002
 	sta	$04,x
@@ -2114,7 +2114,7 @@ rolling_mine_check_wall:
 @check_left:
 	stz	zp_00
 	jsl	f:get_bg_tile_at_object
-	bit	#$8002
+	bit	#TILE_WALL_MASK
 	beq	@return
 	stz	$04,x
 	lda	#$7800
@@ -3353,7 +3353,7 @@ object_type_56_state_02:
 	stz	zp_00
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$807E
+	bit	#TILE_FLOOR_MASK
 	beq	@return
 	jsr	a:object_type_56_set_velocity
 	stz	$1C,x
@@ -3483,7 +3483,7 @@ drop_object_to_floor:
 	stz	zp_00
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
-	bit	#$807E
+	bit	#TILE_FLOOR_MASK
 	bne	@found
 	lda	zp_05
 	clc

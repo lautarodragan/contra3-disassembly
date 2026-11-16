@@ -172,7 +172,9 @@ and `vram_block_src` (`$1840`); in the top-down stages `td_gfx_stream`
 `m7_patch_vram` and `m7_patch_tiles` (`$1800`, `$1808`, `$1828`: the four
 Mode 7 block patch slots), and `td_switch_events` (`$18B0`, stage 5's
 switch events, `SWEV_*` fields). The tile attribute map at `$7E:4000`
-is also used differently by the two kinds of stage.
+is also used differently by the two kinds of stage: a byte per Mode 7 tile
+(`TDA_*`) in the top-down stages, a word per BG1 tile (`TILE_*`,
+[Side-view collision map](collision.md)) in the side view.
 `$1500-$153F` / `$1540-$157F` are the players' top-down blocks in the
 top-down stages but the players' `PLAYER_*` parallel fields (slot +
 `$1300`) in the side view, where the code writes them
