@@ -19,7 +19,7 @@ update_stage3_boss:
 	.i16
 	lda	OBJ_STATE,x
 	cmp	#$000D
-	bcc	loc_04802A
+	bcc	@dispatch
 	lda	#$0001
 	sta	a:shake_continuous
 	ldy	#$0050
@@ -29,13 +29,13 @@ update_stage3_boss:
 	lsr	a
 	lsr	a
 	bit	#$0002
-	beq	loc_048023
+	beq	@apply_wobble
 	eor	#$FFFF
-loc_048023:
+@apply_wobble:
 	clc
 	adc	#$0100
 	sta	a:bg2_y
-loc_04802A:
+@dispatch:
 	inc	a:boss_work_0
 	jsr	a:stage3_boss_check_hp
 	lda	OBJ_STATE,x
@@ -145,28 +145,28 @@ stage3_robot_state_02:
 	ldy	zp_00
 	lda	OBJ_Y,x
 	cmp	#$00CF
-	bcs	loc_048120
+	bcs	@on_floor
 	lda	OBJ_X,x
 	cmp	#$0070
-	bcc	loc_04810C
+	bcc	@walk_right
 	lda	#$0002
 	sta	OBJ_FACING,x
 	lda	#$FFFF	; [num]
 	sta	OBJ_X_VEL,x
-	bra	loc_048113
-loc_04810C:
+	bra	@start_walk
+@walk_right:
 	; (not executed in the CDL traces)
 	stz	OBJ_FACING,x
 	lda	#$0001
 	sta	OBJ_X_VEL,x
-loc_048113:
+@start_walk:
 	lda	#$0004
 	sta	OBJ_STATE,x
 	lda	#.loword(anim_05E83B)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	rtl
-loc_048120:
+@on_floor:
 	lda	zp_06
 	cmp	#$0070
 	bcc	stage3_robot_jump_or_hop
@@ -190,10 +190,10 @@ stage3_robot_start_jump:
 stage3_robot_jump_or_hop:
 	lda	OBJ_X,x
 	cmp	#$0031
-	bcc	loc_048157
+	bcc	@near_edge
 	cmp	#$00AF
-	bcc	loc_04816E
-loc_048157:
+	bcc	@hop
+@near_edge:
 	lda	a:stage3_robot_facings,y
 	sta	OBJ_FACING,x
 	lda	a:stage3_robot_jump_x_vels,y
@@ -203,7 +203,7 @@ loc_048157:
 	lda	#$FFFB	; [num]
 	sta	$32,x
 	brl	stage3_robot_start_jump
-loc_04816E:
+@hop:
 	lda	a:stage3_robot_facings,y
 	sta	OBJ_FACING,x
 	lda	a:stage3_robot_hop_x_vels,y
@@ -225,17 +225,17 @@ stage3_second_robot_state_02:
 	jsr	a:stage3_robot_pick_direction
 	lda	OBJ_Y,x
 	cmp	#$00CF
-	bcs	loc_0481A8
+	bcs	@on_floor
 	lda	#$0004
 	sta	OBJ_STATE,x
 	lda	#.loword(anim_05E83B)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	rtl
-loc_0481A8:
+@on_floor:
 	lda	zp_04
 	cmp	#$0050
-	bcs	loc_0481C5
+	bcs	@hop
 	lda	zp_00
 	sta	OBJ_FACING,x
 	lda	#$0006
@@ -246,13 +246,13 @@ loc_0481A8:
 	lda	#$00C0
 	sta	$3E,x
 	rtl
-loc_0481C5:
+@hop:
 	ldy	#$0000
 	lda	OBJ_X,x
 	cmp	#$0070
-	bcc	loc_0481D2
+	bcc	@have_side
 	ldy	#$0002
-loc_0481D2:
+@have_side:
 	lda	a:stage3_robot_facings,y
 	sta	OBJ_FACING,x
 	lda	a:stage3_robot_hop_x_vels,y
@@ -265,9 +265,9 @@ loc_0481D2:
 
 stage3_boss_state_06:
 	lda	OBJ_HP,x
-	bmi	loc_048216
+	bmi	@end_shooting
 	dec	$3E,x
-	bpl	loc_04821C
+	bpl	@aim
 	ldy	OBJ_FACING,x
 	lda	OBJ_X,x
 	adc	a:stage3_robot_gun_x_offsets,y
@@ -281,11 +281,11 @@ stage3_boss_state_06:
 	jsl	f:spawn_enemy_bullet
 	lda	a:stage3_robot_bullet_dirs_3,y
 	jsl	f:spawn_enemy_bullet
-loc_048216:
+@end_shooting:
 	lda	#$0002
 	sta	OBJ_STATE,x
 	rtl
-loc_04821C:
+@aim:
 	jsr	a:stage3_robot_pick_direction
 	lda	zp_00
 	sta	OBJ_FACING,x
@@ -293,17 +293,17 @@ loc_04821C:
 
 stage3_second_robot_state_06:
 	lda	OBJ_HP,x
-	bmi	loc_04822C
+	bmi	@end_shooting
 	dec	$3E,x
-	bpl	loc_048239
-loc_04822C:
+	bpl	@spawn_debris
+@end_shooting:
 	lda	#$0002
 	sta	OBJ_STATE,x
 	lda	#.loword(anim_05E829)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	rtl
-loc_048239:
+@spawn_debris:
 	jsr	a:stage3_second_robot_spawn_debris
 	rtl
 
@@ -322,20 +322,20 @@ stage3_robot_state_03:
 stage3_robot_state_04:
 	lda	OBJ_X,x
 	cmp	#$0030
-	bcc	loc_048265
+	bcc	@left_edge
 	cmp	#$00B0
 	bcc	stage3_robot_update_jump
 	lda	OBJ_X_VEL,x
 	bmi	stage3_robot_update_jump
 	lda	#$00B0
 	sta	OBJ_X,x
-	bpl	loc_04826E
-loc_048265:
+	bpl	@stop_x
+@left_edge:
 	lda	OBJ_X_VEL,x
 	bpl	stage3_robot_update_jump
 	lda	#$0030
 	sta	OBJ_X,x
-loc_04826E:
+@stop_x:
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	bra	stage3_robot_update_jump
@@ -343,16 +343,16 @@ loc_04826E:
 stage3_robot_state_05:
 	lda	OBJ_X,x
 	cmp	#$0010
-	bcc	loc_048284
+	bcc	@face_right
 	cmp	#$00D0
 	bcc	stage3_robot_update_jump
 	stz	OBJ_FACING,x
-	bra	loc_048289
-loc_048284:
+	bra	@bump
+@face_right:
 	; (not executed in the CDL traces)
 	lda	#$0001
 	sta	OBJ_FACING,x
-loc_048289:
+@bump:
 	lda	#$0033
 	jsl	f:queue_sound
 	lda	#.loword(anim_05E841)
@@ -361,7 +361,7 @@ loc_048289:
 	bra	stage3_robot_land
 stage3_robot_update_jump:
 	lda	OBJ_Y_VEL,x
-	bpl	loc_0482CA
+	bpl	@falling
 	lda	OBJ_Y,x
 	cmp	#$0090
 	bcs	stage3_robot_apply_gravity
@@ -380,7 +380,7 @@ stage3_robot_update_jump:
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	bra	stage3_robot_stop
-loc_0482CA:
+@falling:
 	lda	OBJ_Y,x
 	cmp	#$00D0
 	bcc	stage3_robot_apply_gravity
@@ -395,11 +395,11 @@ loc_0482CA:
 	lda	OBJ_X,x
 	sbc	#$0030
 	cmp	#$0008
-	bcs	loc_0482F6
+	bcs	@check_right_edge
 	lda	#$0030
 	sta	OBJ_X,x
 	bra	stage3_robot_land
-loc_0482F6:
+@check_right_edge:
 	sec
 	lda	#$00B0
 	sbc	OBJ_X,x
@@ -470,37 +470,37 @@ stage3_robot_explode:
 
 stage3_robot_state_08:
 	lda	stage_frame_mod8
-	bne	loc_048396
+	bne	@clamp_x
 	lda	rng_hi
 	adc	OBJ_X,x
 	bit	#$0001
-	bne	loc_048396
+	bne	@clamp_x
 	lda	OBJ_FACING,x
 	eor	#$0002
 	sta	OBJ_FACING,x
-loc_048396:
+@clamp_x:
 	lda	OBJ_X,x
 	cmp	#$0010
-	bcs	loc_0483A6
+	bcs	@check_right_edge
 	stz	OBJ_FACING,x
 	lda	#$0003
 	sta	OBJ_X_VEL,x
-	bra	loc_0483B5
-loc_0483A6:
+	bra	@accelerate
+@check_right_edge:
 	cmp	#$00D8
-	bcc	loc_0483B5
+	bcc	@accelerate
 	lda	#$0002
 	sta	OBJ_FACING,x
 	lda	#$FFFD	; [num]
 	sta	OBJ_X_VEL,x
-loc_0483B5:
+@accelerate:
 	lda	OBJ_FACING,x
-	beq	loc_0483D3
+	beq	@facing_right
 	lda	OBJ_X_VEL,x
-	bpl	loc_0483C2
+	bpl	@accel_left
 	cmp	#$FFFD	; [num]
-	bcc	loc_0483EB
-loc_0483C2:
+	bcc	@vertical
+@accel_left:
 	sec
 	lda	OBJ_X_VEL_SUB,x
 	sbc	#$2000
@@ -508,13 +508,13 @@ loc_0483C2:
 	lda	OBJ_X_VEL,x
 	sbc	#$0000
 	sta	OBJ_X_VEL,x
-	bra	loc_0483EB
-loc_0483D3:
+	bra	@vertical
+@facing_right:
 	lda	OBJ_X_VEL,x
-	bmi	loc_0483DC
+	bmi	@accel_right
 	cmp	#$0003
-	bcs	loc_0483EB
-loc_0483DC:
+	bcs	@vertical
+@accel_right:
 	clc
 	lda	OBJ_X_VEL_SUB,x
 	adc	#$2000
@@ -522,18 +522,18 @@ loc_0483DC:
 	lda	OBJ_X_VEL,x
 	adc	#$0000
 	sta	OBJ_X_VEL,x
-loc_0483EB:
+@vertical:
 	lda	OBJ_Y_VEL,x
-	bmi	loc_0483F7
+	bmi	@airborne
 	jsl	f:object_follow_floor
 	lda	zp_FC
-	bne	loc_048411
-loc_0483F7:
+	bne	@on_floor
+@airborne:
 	lda	OBJ_Y_VEL,x
-	bmi	loc_048400
+	bmi	@gravity
 	cmp	#$0005
-	bcs	loc_04842D
-loc_048400:
+	bcs	@return
+@gravity:
 	clc
 	lda	OBJ_Y_VEL_SUB,x
 	adc	#$5000
@@ -541,12 +541,12 @@ loc_048400:
 	lda	OBJ_Y_VEL,x
 	adc	#$0000
 	sta	OBJ_Y_VEL,x
-	bra	loc_04842D
-loc_048411:
+	bra	@return
+@on_floor:
 	lda	rng_lo
 	adc	OBJ_X,x
 	and	#$000F
-	bne	loc_04842D
+	bne	@return
 	lda	#.loword(anim_05E86B)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
@@ -554,16 +554,16 @@ loc_048411:
 	sta	OBJ_Y_VEL,x
 	lda	#$0034
 	jsl	f:queue_sound
-loc_04842D:
+@return:
 	rtl
 
 stage3_robot_state_09:
 	dec	OBJ_TIMER,x
-	bpl	loc_048439
+	bpl	@explode
 	inc	OBJ_STATE,x
 	lda	#$0080
 	sta	OBJ_TIMER,x
-loc_048439:
+@explode:
 	brl	stage3_robot_explode
 
 stage3_second_robot_state_0A:
@@ -613,7 +613,7 @@ stage3_robot_cables_state_01:
 
 stage3_robot_cables_state_02:
 	dec	OBJ_TIMER,x
-	bpl	loc_0484B8
+	bpl	@draw_cable
 	lda	#.loword(anim_05E7EB)
 	sta	OBJ_ANIM,x
 	inc	OBJ_STATE,x
@@ -635,7 +635,7 @@ stage3_robot_cables_state_02:
 	tay
 	lda	#$000A
 	jml	f:update_object_type_28
-loc_0484B8:
+@draw_cable:
 	lda	OBJ_TIMER,x
 	bit	#$0007
 	bne	@return
@@ -673,11 +673,11 @@ stage3_robot_cables_state_03:
 
 stage3_robot_cables_state_04:
 	dec	OBJ_TIMER,x
-	bpl	loc_048501
+	bpl	@draw_cable
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	rtl
-loc_048501:
+@draw_cable:
 	lda	OBJ_TIMER,x
 	bit	#$0007
 	bne	@return
@@ -719,26 +719,26 @@ stage3_robot_pick_direction:
 	jsl	f:pick_target_player
 	lda	a:boss_work_0
 	and	#$0300
-	beq	loc_048575
+	beq	@random
 	stz	zp_00
 	sec
 	lda	a:$000A,y
 	sbc	OBJ_X,x
-	bpl	loc_048565
+	bpl	@store_dx
 	eor	#$FFFF
 	inc	zp_00
 	inc	zp_00
-loc_048565:
+@store_dx:
 	sta	zp_04
 	sec
 	lda	a:$000E,y
 	sbc	OBJ_Y,x
-	bpl	loc_048572
+	bpl	@store_dy
 	eor	#$FFFF
-loc_048572:
+@store_dy:
 	sta	zp_06
 	rts
-loc_048575:
+@random:
 	lda	rng_lo
 	and	#$00FF
 	sta	zp_06
@@ -751,10 +751,10 @@ loc_048575:
 
 stage3_second_robot_spawn_debris:
 	lda	stage_frame_mod4
-	bne	loc_048604
+	bne	@return
 	ldy	#$0800
 	jsl	f:find_free_slot_y_down
-	bcc	loc_048604
+	bcc	@return
 	lda	#$0046
 	sta	a:$0010,y
 	lda	#$3800
@@ -782,9 +782,9 @@ stage3_second_robot_spawn_debris:
 	sta	$0A,x
 	lda	stage_frame_counter
 	bit	#$0010
-	beq	loc_0485DC
+	beq	@add_dir
 	eor	#$FFFF
-loc_0485DC:
+@add_dir:
 	and	#$000E
 	clc
 	adc	a:stage3_second_robot_debris_dirs,y
@@ -799,25 +799,25 @@ loc_0485DC:
 	sta	$1A,x
 	plx
 	lda	stage_frame_mod8
-	bne	loc_048604
+	bne	@return
 	lda	#$001A
 	jsl	f:queue_sound
-loc_048604:
+@return:
 	rts
 
 stage3_boss_check_hp:
 	lda	$38,x
-	bne	loc_048631
+	bne	@phase_2
 	lda	OBJ_HP,x
-	bpl	loc_048630
+	bpl	@return
 	lda	OBJ_STATE,x
 	cmp	#$0002
-	bne	loc_048630
+	bne	@return
 	lda	#$0007
 	sta	OBJ_STATE,x
 	lda	#ENEMY_HP($0030)
 	sta	OBJ_HP,x
-loc_04861E:
+@start_explosion:
 	lda	#$0001
 	sta	OBJ_FLAGS,x
 	lda	#$0080
@@ -826,15 +826,15 @@ loc_04861E:
 	stz	$30,x
 	stz	OBJ_FACING,x
 	inc	$38,x
-loc_048630:
+@return:
 	rts
-loc_048631:
+@phase_2:
 	cmp	#$0002
-	bcs	loc_04864D
+	bcs	@phase_3
 	lda	OBJ_HP,x
-	bmi	loc_04863C
-	bpl	loc_048630
-loc_04863C:
+	bmi	@become_skeleton
+	bpl	@return
+@become_skeleton:
 	inc	OBJ_STATE,x
 	lda	#ENEMY_HP($0400)
 	sta	OBJ_HP,x
@@ -842,10 +842,10 @@ loc_04863C:
 	stz	OBJ_X_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
-	bra	loc_04861E
-loc_04864D:
+	bra	@start_explosion
+@phase_3:
 	lda	OBJ_HP,x
-	bpl	loc_048630
+	bpl	@return
 	lda	#$0016
 	sta	OBJ_STATE,x
 	lda	#$0004
@@ -859,16 +859,16 @@ loc_04864D:
 
 toggle_sprite_visible:
 	lda	$30,x
-	beq	loc_048675
+	beq	@hide
 	lda	$30,x
 	sta	OBJ_SPRITE,x
 	stz	$30,x
-	bra	loc_04867B
-loc_048675:
+	bra	@return
+@hide:
 	lda	OBJ_SPRITE,x
 	sta	$30,x
 	stz	OBJ_SPRITE,x
-loc_04867B:
+@return:
 	rts
 
 stage3_boss_state_0A:
@@ -923,14 +923,14 @@ stage3_boss_state_0B:
 
 stage3_boss_state_0C:
 	dec	$30,x
-	bne	loc_04873C
+	bne	@return
 	dec	$32,x
 	dec	$32,x
-	bpl	loc_048704
+	bpl	@draw_step
 	inc	OBJ_STATE,x
 	lda	#$004E
 	jml	f:queue_sound
-loc_048704:
+@draw_step:
 	lda	#$0002
 	sta	zp_02
 	lda	#$0010
@@ -959,20 +959,20 @@ loc_048704:
 	plx
 	lda	#$004D
 	jsl	f:queue_sound
-loc_04873C:
+@return:
 	rtl
 
 stage3_boss_state_0D:
 	jsr	a:stage3_boss_break_wall
 	dec	a:boss_work_4
-	bne	loc_048751
+	bne	@check_palette
 	stz	$34,x
 	stz	$36,x
 	lda	#$4010
 	sta	OBJ_FLAGS,x
 	inc	OBJ_STATE,x
 	rtl
-loc_048751:
+@check_palette:
 	lda	a:boss_work_4
 	cmp	#$0040
 	bcc	@return
@@ -1000,7 +1000,7 @@ stage3_boss_state_18:
 	stz	a:boss_work_2
 	jsr	a:stage3_boss_break_wall
 	lda	a:boss_work_1
-	bne	loc_0487A1
+	bne	@palette
 	lda	#$0083
 	jsl	f:queue_sound
 	inc	OBJ_STATE,x
@@ -1010,7 +1010,7 @@ stage3_boss_state_18:
 	sta	$34,x
 	lda	#$001F
 	sta	$36,x
-loc_0487A1:
+@palette:
 	brl	stage3_boss_maybe_start_palette
 
 stage3_boss_state_19:
@@ -1023,12 +1023,12 @@ stage3_boss_state_1A:
 	stz	a:boss_work_2
 	jsr	a:stage3_boss_break_wall
 	lda	OBJ_Y,x
-	bmi	loc_0487C2
+	bmi	@gravity
 	cmp	#$00D8
-	bcc	loc_0487C2
+	bcc	@gravity
 	lda	#$FFFD	; [num]
 	sta	OBJ_Y_VEL,x
-loc_0487C2:
+@gravity:
 	clc
 	lda	OBJ_Y_VEL_SUB,x
 	adc	#$2000
@@ -1063,25 +1063,25 @@ stage3_boss_state_0E:
 	ldy	$36,x
 	lda	$34,x
 	cmp	a:stage3_boss_state_0E_limits,y
-	bcs	loc_048819
+	bcs	@limit_reached
 	lda	a:stage3_boss_state_0E_steps,y
-	bra	loc_048821
-loc_048819:
+	bra	@step
+@limit_reached:
 	lda	#$0060
 	sta	$3E,x
 	inc	OBJ_STATE,x
 	rtl
-loc_048821:
+@step:
 	clc
 	adc	$34,x
 	sta	$34,x
 	and	#$0020
-	bne	loc_048830
+	bne	@frame_0
 	lda	#$000C
-	bra	loc_048833
-loc_048830:
+	bra	@queue_tiles
+@frame_0:
 	lda	#$0000
-loc_048833:
+@queue_tiles:
 	jsr	a:stage3_boss_queue_tiles
 	rtl
 
@@ -1090,10 +1090,10 @@ stage3_boss_state_0F:
 	lda	#$0000
 	jsr	a:stage3_boss_queue_tiles
 	dec	$3E,x
-	bne	loc_048847
+	bne	@fire_eyes
 	inc	OBJ_STATE,x
 	stz	$36,x
-loc_048847:
+@fire_eyes:
 	lda	$3E,x
 	cmp	#$0040
 	bne	@return
@@ -1107,13 +1107,13 @@ loc_048847:
 stage3_boss_state_11:
 	jsr	a:queue_sound_35_every_32
 	dec	$3E,x
-	bne	loc_04886C
+	bne	@spawn_explosion
 	inc	OBJ_STATE,x
 	stz	$30,x
 	lda	#$003E
 	sta	$32,x
 	rtl
-loc_04886C:
+@spawn_explosion:
 	lda	#$0084
 	sta	zp_02
 	lda	#$0070
@@ -1136,9 +1136,9 @@ stage3_boss_state_12:
 	jsr	a:stage3_boss_spawn_debris_sparks
 	lda	stage_frame_counter
 	and	#$0004
-	beq	loc_0488A3
+	beq	@queue_tiles
 	lda	#$000C
-loc_0488A3:
+@queue_tiles:
 	jsr	a:stage3_boss_queue_tiles
 	lda	$32,x
 	cmp	#$0144
@@ -1155,9 +1155,9 @@ stage3_boss_state_14:
 	stz	$34,x
 	lda	stage_frame_counter
 	and	#$0004
-	beq	loc_0488C6
+	beq	@queue_tiles
 	lda	#$000C
-loc_0488C6:
+@queue_tiles:
 	jsr	a:stage3_boss_queue_tiles
 	dec	$3E,x
 	dec	$3E,x
@@ -1191,7 +1191,7 @@ loc_0488C6:
 
 stage3_boss_state_15:
 	dec	$3E,x
-	bne	loc_048923
+	bne	@break_wall
 	lda	#$00A2
 	sta	a:boss_work_4
 	lda	#$0002
@@ -1200,7 +1200,7 @@ stage3_boss_state_15:
 	sta	OBJ_STATE,x
 	lda	#$004E
 	jml	f:queue_sound
-loc_048923:
+@break_wall:
 	stz	a:boss_work_2
 	jsr	a:stage3_boss_break_wall
 stage3_boss_maybe_start_palette:
@@ -1224,12 +1224,12 @@ stage3_boss_break_wall:
 	tay
 	lda	a:boss_work_3
 	cmp	#$0003
-	bcs	loc_0489A1
+	bcs	@step_timer
 	cpy	#$000E
-	bcc	loc_04895C
+	bcc	@queue_wall
 	cmp	#$0000
-	beq	loc_0489A1
-loc_04895C:
+	beq	@step_timer
+@queue_wall:
 	ldx	#$0001
 	stx	zp_02
 	ldx	#$0020
@@ -1265,26 +1265,26 @@ loc_04895C:
 	lda	zp_FC
 	ldy	zp_FE
 	jsl	f:queue_vram_blocks
-loc_0489A1:
+@step_timer:
 	inc	a:boss_work_3
 	ldy	a:boss_work_2
 	lda	a:boss_work_3
 	cmp	a:stage3_boss_wall_step_delays,y
-	bcc	loc_0489CB
+	bcc	@done
 	stz	a:boss_work_3
 	clc
 	lda	a:boss_work_1
 	adc	a:stage3_boss_wall_step_dirs,y
-	bpl	loc_0489C0
+	bpl	@not_negative
 	stz	a:boss_work_1
-	bra	loc_0489CB
-loc_0489C0:
+	bra	@done
+@not_negative:
 	cmp	#$0008
-	bcc	loc_0489C8
+	bcc	@store_step
 	lda	#$0008
-loc_0489C8:
+@store_step:
 	sta	a:boss_work_1
-loc_0489CB:
+@done:
 	plx
 	rts
 
@@ -1307,7 +1307,7 @@ stage3_boss_spawn_debris_sparks:
 	adc	#$0000
 	sta	$32,x
 	lda	stage_frame_mod4
-	bne	loc_048A5B
+	bne	@return
 	phx
 	lda	$32,x
 	and	#$007E
@@ -1319,7 +1319,7 @@ stage3_boss_spawn_debris_sparks:
 	tax
 	ldy	#$08C0
 	jsl	f:find_free_slot_y_down
-	bcc	loc_048A5A
+	bcc	@no_slot
 	lda	#.loword(anim_05EB37)
 	sta	a:$0020,y
 	lda	#$3E00
@@ -1351,9 +1351,9 @@ stage3_boss_spawn_debris_sparks:
 	sta	a:$000A,y
 	lda	#$0082
 	sta	a:$000E,y
-loc_048A5A:
+@no_slot:
 	plx
-loc_048A5B:
+@return:
 	rts
 
 stage3_boss_queue_tiles:
@@ -1383,7 +1383,7 @@ spawn_countdown_bomb:
 	tax
 	ldy	#$0300
 	jsl	f:find_free_slot_from_y
-	bcs	loc_048ADB
+	bcs	@done
 	lda	a:vel8_y,x
 	sta	a:$001E,y
 	lda	a:vel8_x,x
@@ -1412,7 +1412,7 @@ spawn_countdown_bomb:
 	sta	a:$0016,y
 	lda	#.loword(anim_05EB5A)
 	sta	a:$0020,y
-loc_048ADB:
+@done:
 	plx
 	rts
 
@@ -1420,24 +1420,24 @@ loc_048ADB:
 ; that stick to the walls of the room and explode.
 update_countdown_bomb:
 	lda	OBJ_STATE,x
-	bne	loc_048B25
+	bne	@counting
 	lda	#$FFE8	; [num]
 	sta	zp_02
 	lda	#$0018
 	sta	zp_00
 	jsl	f:get_bg_tile_at_object
-	bne	loc_048B0C
+	bne	@stick
 	stz	zp_00
 	jsl	f:get_bg_tile_at_object
-	bne	loc_048B0C
+	bne	@stick
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
-	bne	loc_048B0C
+	bne	@stick
 	lda	#$0018
 	sta	zp_00
 	jsl	f:get_bg_tile_at_object
-	beq	loc_048B24
-loc_048B0C:
+	beq	@return
+@stick:
 	lda	OBJ_Y,x
 	and	#$FFF8
 	sta	OBJ_Y,x
@@ -1449,39 +1449,39 @@ loc_048B0C:
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	inc	OBJ_STATE,x
-loc_048B24:
+@return:
 	rtl
-loc_048B25:
+@counting:
 	cmp	#$0002
-	beq	loc_048B45
+	beq	@exploding
 	lda	OBJ_SPRITE,x
 	cmp	$34,x
-	beq	loc_048B39
+	beq	@wait_anim
 	sta	$34,x
 	lda	#$0036
 	jsl	f:queue_sound
-loc_048B39:
+@wait_anim:
 	lda	OBJ_ANIM,x
-	bne	@return
+	bne	@return2
 	inc	OBJ_STATE,x
 	lda	#$0040
 	sta	OBJ_TIMER,x
-@return:
+@return2:
 	rtl
-loc_048B45:
+@exploding:
 	dec	OBJ_TIMER,x
-	bne	loc_048B4F
+	bne	@explode
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	rtl
-loc_048B4F:
+@explode:
 	lda	#$0030
 	jsl	f:queue_sound_throttled
 	lda	stage_frame_mod4
-	bne	@return
+	bne	@return3
 	ldy	#$0280
 	jsl	f:find_free_slot_y_to_end
-	bcs	@return
+	bcs	@return3
 	lda	#.loword(anim_05C51C)
 	sta	a:$0020,y
 	lda	#$001D
@@ -1518,7 +1518,7 @@ loc_048B4F:
 	lda	a:vel8_x_sub,x
 	sta	a:$0018,y
 	plx
-@return:
+@return3:
 	rtl
 
 spawn_skeleton_eye_fireball:
@@ -1578,7 +1578,7 @@ skeleton_eye_fireball_state_00:
 
 skeleton_eye_fireball_state_01:
 	lda	OBJ_ANIM,x
-	bne	loc_048C5B
+	bne	@blink
 	inc	OBJ_STATE,x
 	lda	rng_lo
 	adc	OBJ_X,x
@@ -1600,16 +1600,16 @@ skeleton_eye_fireball_state_01:
 	sta	OBJ_X_VEL,x
 	lda	a:skeleton_eye_fireball_y_vels,y
 	sta	OBJ_Y_VEL,x
-loc_048C5B:
+@blink:
 	bra	skeleton_eye_fireball_blink
 
 skeleton_eye_fireball_state_02:
 	dec	OBJ_TIMER,x
-	bpl	loc_048C6A
+	bpl	@move
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	jml	f:delete_trail_chain
-loc_048C6A:
+@move:
 	dec	$36,x
 	bpl	skeleton_eye_fireball_blink
 	dec	OBJ_STATE,x
@@ -1619,11 +1619,11 @@ loc_048C6A:
 	sta	OBJ_ANIM,x
 skeleton_eye_fireball_blink:
 	lda	stage_frame_bit1
-	bne	loc_048C84
+	bne	@trail
 	lda	OBJ_ATTR,x
 	eor	#$0E00
 	sta	OBJ_ATTR,x
-loc_048C84:
+@trail:
 	jml	f:trail_pass_to_next
 
 ; Object type $64. Stage 4: invisible controller present for the whole stage
@@ -1685,15 +1685,15 @@ stage4_controller_state_00:
 
 stage4_controller_state_01:
 	dec	OBJ_TIMER,x
-	bpl	loc_048CFB
+	bpl	@check_rider
 	inc	OBJ_STATE,x
 	lda	#$0063
 	jsl	f:queue_sound
 	stz	OBJ_TIMER,x
-loc_048CFB:
+@check_rider:
 	lda	OBJ_TIMER,x
 	cmp	#$0090
-	bne	loc_048D29
+	bne	@scroll
 	jsr	a:stage4_spawn_passing_rider
 	lda	#$0060
 	sta	a:$000E,y
@@ -1707,7 +1707,7 @@ loc_048CFB:
 	sta	a:$0000,y
 	lda	#$0004
 	sta	a:$001A,y
-loc_048D29:
+@scroll:
 	jsr	a:scroll_bg1_bg2_right_16
 	rtl
 
@@ -1717,11 +1717,11 @@ stage4_controller_state_03:
 
 stage4_controller_state_02:
 	dec	OBJ_TIMER,x
-	bpl	loc_048D3E
+	bpl	@scroll
 	lda	#$00C0
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
-loc_048D3E:
+@scroll:
 	jsr	a:scroll_bg1_bg2_right_16
 	rtl
 
@@ -1767,14 +1767,14 @@ stage4_controller_state_06:
 	clc
 	adc	#$0010
 	and	#$00FF
-	bne	loc_048DB2
+	bne	@store_x
 	inc	OBJ_STATE,x
 	lda	#$4000
 	sta	$34,x
 	lda	#$0080
 	sta	OBJ_TIMER,x
 	lda	#$0100
-loc_048DB2:
+@store_x:
 	sta	a:bg1_x
 	jml	f:wobble_stage4_line_scroll
 
@@ -1793,19 +1793,19 @@ stage4_controller_state_07:
 	adc	#$0080
 	sta	$34,x
 	cmp	#$4300
-	bcc	loc_048DE0
+	bcc	@wobble
 	inc	OBJ_STATE,x
 	stz	a:bg1_x
-loc_048DE0:
+@wobble:
 	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_08:
 	dec	OBJ_TIMER,x
-	bpl	loc_048DEF
+	bpl	@wobble
 	lda	#$0140
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
-loc_048DEF:
+@wobble:
 	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_0A:
@@ -1850,20 +1850,20 @@ stage4_controller_state_0C:
 	ldy	OBJ_TIMER,x
 	lda	a:bg1_x
 	cmp	#$01E0
-	bcs	loc_048E56
+	bcs	@check_waypoint
 	lda	#$0040
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
-loc_048E56:
+@check_waypoint:
 	cmp	a:stage4_scroll_waypoints_x,y
-	bcs	loc_048E5F
+	bcs	@adjust_speed
 	inc	OBJ_TIMER,x
 	inc	OBJ_TIMER,x
-loc_048E5F:
+@adjust_speed:
 	lda	a:bg1_vel_x_sub+1
 	cmp	a:stage4_scroll_target_speeds,y
-	beq	loc_048E91
-	bmi	loc_048E7E
+	beq	@vertical
+	bmi	@speed_up
 	sec
 	lda	a:bg1_vel_x_sub
 	sbc	#$0800
@@ -1871,8 +1871,8 @@ loc_048E5F:
 	lda	a:bg1_vel_x
 	sbc	#$0000
 	sta	a:bg1_vel_x
-	bra	loc_048E91
-loc_048E7E:
+	bra	@vertical
+@speed_up:
 	clc
 	lda	a:bg1_vel_x_sub
 	adc	#$0800
@@ -1880,19 +1880,19 @@ loc_048E7E:
 	lda	a:bg1_vel_x
 	adc	#$0000
 	sta	a:bg1_vel_x
-loc_048E91:
+@vertical:
 	ldy	$36,x
-	bne	loc_048EBE
+	bne	@sink
 	lda	a:bg1_y
 	cmp	#$000C
-	bcs	loc_048E9F
+	bcs	@check_rise_speed
 	inc	$36,x
-loc_048E9F:
+@check_rise_speed:
 	lda	a:bg1_vel_y_sub+1
-	bpl	loc_048EA9
+	bpl	@accel_up
 	cmp	#$FF80	; [num]
-	bcc	loc_048EE7
-loc_048EA9:
+	bcc	@scroll
+@accel_up:
 	sec
 	lda	a:bg1_vel_y_sub
 	sbc	#$0400
@@ -1900,19 +1900,19 @@ loc_048EA9:
 	lda	a:bg1_vel_y
 	sbc	#$0000
 	sta	a:bg1_vel_y
-	bra	loc_048EE7
-loc_048EBE:
+	bra	@scroll
+@sink:
 	lda	a:bg1_y
-	bmi	loc_048ECA
+	bmi	@check_sink_speed
 	cmp	#$0010
-	bcc	loc_048ECA
+	bcc	@check_sink_speed
 	stz	$36,x
-loc_048ECA:
+@check_sink_speed:
 	lda	a:bg1_vel_y_sub+1
-	bmi	loc_048ED4
+	bmi	@accel_down
 	cmp	#$0080
-	bcs	loc_048EE7
-loc_048ED4:
+	bcs	@scroll
+@accel_down:
 	clc
 	lda	a:bg1_vel_y_sub
 	adc	#$0400
@@ -1920,25 +1920,25 @@ loc_048ED4:
 	lda	a:bg1_vel_y
 	adc	#$0000
 	sta	a:bg1_vel_y
-loc_048EE7:
+@scroll:
 	jsl	f:scroll_bg1_by_velocity_and_spawn
 	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_0D:
 	dec	OBJ_TIMER,x
-	bpl	loc_048F01
+	bpl	@wobble
 	lda	#$0079
 	sta	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
 	lda	#$0001
 	sta	a:stage_checkpoint
 	inc	OBJ_STATE,x
-loc_048F01:
+@wobble:
 	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_0E:
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0079
-	beq	loc_048F1D
+	beq	@wobble
 	inc	OBJ_STATE,x
 	lda	#$0100
 	sta	OBJ_TIMER,x
@@ -1946,19 +1946,19 @@ stage4_controller_state_0E:
 	ldx	#.loword(load_list_05ECD0)
 	jsl	f:load_data_list
 	plx
-loc_048F1D:
+@wobble:
 	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_0F:
 	dec	OBJ_TIMER,x
-	bpl	loc_048F35
+	bpl	@spawn_capsule
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
 	lda	#$0084
 	sta	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
 	lda	#$0004
 	sta	a:bg1_scroll_mode
-loc_048F35:
+@spawn_capsule:
 	jsr	a:stage4_spawn_weapon_capsule
 	jml	f:wobble_stage4_line_scroll
 
@@ -1988,31 +1988,31 @@ stage4_controller_state_11:
 	sbc	a:obj_slots+24*OBJ_SIZE+OBJ_X
 	sta	a:bg1_x
 	lda	a:obj_slots+24*OBJ_SIZE+OBJ_X
-	bmi	loc_048F91
+	bmi	@wobble
 	cmp	#$0040
-	bcc	loc_048F91
+	bcc	@wobble
 	stz	a:obj_slots+24*OBJ_SIZE+OBJ_X_VEL
 	inc	OBJ_STATE,x
 	lda	#$0006
 	sta	a:respawn_mode
-loc_048F91:
+@wobble:
 	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_12:
 	lda	a:p1_lives
-	beq	loc_048FA2
+	beq	@check_p2
 	lda	a:player1_state
 	cmp	#$0001
-	bne	loc_048FC7
-loc_048FA2:
+	bne	@line_scroll
+@check_p2:
 	lda	a:title_menu_cursor
-	beq	loc_048FB4
+	beq	@next_state
 	lda	a:p2_lives
-	beq	loc_048FB4
+	beq	@next_state
 	lda	a:player2_state
 	cmp	#$0001
-	bne	loc_048FC7
-loc_048FB4:
+	bne	@line_scroll
+@next_state:
 	inc	OBJ_STATE,x
 	stz	a:obj_slots+24*OBJ_SIZE+OBJ_ANIM
 	stz	a:obj_slots+24*OBJ_SIZE+OBJ_ANIM_TIMER
@@ -2020,7 +2020,7 @@ loc_048FB4:
 	lda	#$000B
 	sta	a:bg2_scroll_mode
 	stz	$30,x
-loc_048FC7:
+@line_scroll:
 	jml	f:update_stage4_line_scroll
 
 stage4_controller_state_13:
@@ -2037,7 +2037,7 @@ stage4_controller_state_14:
 stage4_controller_follow_slot_24:
 	lda	a:bg1_y
 	cmp	#$0010
-	beq	loc_049000
+	beq	@stop
 	lda	#$C000	; [num]
 	sta	a:obj_slots+24*OBJ_SIZE+OBJ_Y_VEL_SUB
 	lda	#$FFFF	; [num]
@@ -2047,7 +2047,7 @@ stage4_controller_follow_slot_24:
 	sbc	a:obj_slots+24*OBJ_SIZE+OBJ_Y
 	sta	a:bg1_y
 	rtl
-loc_049000:
+@stop:
 	stz	a:obj_slots+24*OBJ_SIZE+OBJ_Y_VEL_SUB
 	stz	a:obj_slots+24*OBJ_SIZE+OBJ_Y_VEL
 	rtl
@@ -2128,7 +2128,7 @@ stage4_controller_state_16:
 
 stage4_controller_state_17:
 	lda	a:bg2_screen_drawn
-	beq	loc_0490DE
+	beq	@scroll_bg3
 	inc	OBJ_STATE,x
 	stz	a:bg2_scroll_mode
 	lda	#$0002
@@ -2143,7 +2143,7 @@ stage4_controller_state_17:
 	ldx	#.loword(load_list_05ECD0)
 	jsl	f:load_data_list
 	plx
-loc_0490DE:
+@scroll_bg3:
 	jsr	a:stage4_scroll_bg3_lower
 	rtl
 
@@ -2156,7 +2156,7 @@ stage4_controller_state_18:
 
 stage4_controller_state_19:
 	dec	OBJ_TIMER,x
-	bne	loc_049105
+	bne	@queue_blocks
 	inc	OBJ_STATE,x
 	lda	#$0017
 	sta	a:tm_shadow
@@ -2164,7 +2164,7 @@ stage4_controller_state_19:
 	sta	a:bg2sc_shadow
 	lda	#$0069
 	sta	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
-loc_049105:
+@queue_blocks:
 	lda	#$0004
 	sta	zp_02
 	lda	#$0020
@@ -2208,7 +2208,7 @@ stage4_controller_state_1B:
 stage4_controller_state_1C:
 	lda	#$00E0
 	cmp	a:player1_obj+PLAYER_BOMB_RADIUS
-	bcs	loc_0491DF
+	bcs	@scroll_bg3
 	lda	#$00FE
 	sta	a:player1_obj+PLAYER_BOMB_RADIUS
 	sta	a:player2_obj+PLAYER_BOMB_RADIUS
@@ -2251,17 +2251,17 @@ stage4_controller_state_1C:
 	ldx	#$0240
 	jsr	a:stage4_reposition_player
 	plx
-loc_0491DF:
+@scroll_bg3:
 	jsr	a:stage4_scroll_bg3_lower
 	rtl
 
 stage4_controller_state_1D:
 	dec	OBJ_TIMER,x
-	bpl	loc_0491EE
+	bpl	@hold_bomb
 	inc	OBJ_STATE,x
 	lda	#$0080
 	sta	OBJ_TIMER,x
-loc_0491EE:
+@hold_bomb:
 	lda	#$00FE
 	sta	a:player1_obj+PLAYER_BOMB_RADIUS
 	sta	a:player2_obj+PLAYER_BOMB_RADIUS
@@ -2282,9 +2282,9 @@ stage4_controller_state_1F:
 	sec
 	lda	a:player1_obj+PLAYER_BOMB_RADIUS
 	sbc	#$0004
-	bpl	loc_04921D
+	bpl	@store_radius
 	lda	#$0000
-loc_04921D:
+@store_radius:
 	sta	a:player1_obj+PLAYER_BOMB_RADIUS
 	sta	a:player2_obj+PLAYER_BOMB_RADIUS
 	lda	stage_frame_odd
@@ -2370,11 +2370,11 @@ rideable_missile_state_02:
 	lda	OBJ_Y_VEL,x
 	sbc	#$0000
 	sta	OBJ_Y_VEL,x
-	bne	loc_0492BE
+	bne	@accelerate
 	lda	OBJ_Y_VEL_SUB,x
-	bne	loc_0492BE
+	bne	@accelerate
 	inc	OBJ_STATE,x
-loc_0492BE:
+@accelerate:
 	clc
 	lda	OBJ_X_VEL_SUB,x
 	adc	#$3000
@@ -2395,9 +2395,9 @@ rideable_missile_state_03:
 	sbc	#$0000
 	sta	OBJ_X_VEL,x
 	cmp	#$FFFE	; [num]
-	bne	loc_0492EB
+	bne	@leave
 	inc	OBJ_STATE,x
-loc_0492EB:
+@leave:
 	jsr	a:rideable_missile_helicopter_leaves
 	jsr	a:rideable_missile_set_hdma
 	jsr	a:rideable_missile_exhaust
@@ -2411,37 +2411,37 @@ rideable_missile_state_04:
 rideable_missile_state_01:
 	lda	stage_frame_counter
 	bit	#$003F
-	bne	loc_049329
+	bne	@carry
 	lda	#$0031
 	ldy	stage_number
 	cpy	#$0004
-	beq	loc_049325
+	beq	@play_sound
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 	cmp	#$0017
-	bcc	loc_049322
+	bcc	@sound_5f
 	cmp	#$0025
-	bcc	loc_049329
+	bcc	@carry
 	cmp	#$0029
-	bcs	loc_049329
-loc_049322:
+	bcs	@carry
+@sound_5f:
 	lda	#$005F
-loc_049325:
+@play_sound:
 	jsl	f:queue_sound
-loc_049329:
+@carry:
 	jsr	a:rideable_missile_carry_players
 	inc	$30,x
 	lda	$32,x
 	inc	a
 	and	#$0007
 	cmp	#$0006
-	bne	loc_04933C
+	bne	@store_frame
 	lda	#$0000
-loc_04933C:
+@store_frame:
 	sta	$32,x
 	and	#$0006
 	sta	zp_FC
 	lda	stage_frame_odd
-	bne	loc_04939A
+	bne	@return
 	lda	$30,x
 	and	#$0006
 	tay
@@ -2453,9 +2453,9 @@ loc_04933C:
 	lda	#$4404
 	ldy	stage_number
 	cpy	#$0004
-	beq	loc_049365
+	beq	@have_vram_addr
 	lda	#$4804
-loc_049365:
+@have_vram_addr:
 	ply
 	pha
 	lda	a:ptrs_rideable_missile_anim_blocks,y
@@ -2472,9 +2472,9 @@ loc_049365:
 	lda	#$4480
 	ldy	stage_number
 	cpy	#$0004
-	beq	loc_04938B
+	beq	@have_vram_addr2
 	lda	#$4880
-loc_04938B:
+@have_vram_addr2:
 	ply
 	pha
 	lda	a:ptrs_rideable_missile_anim_blocks_2,y
@@ -2483,7 +2483,7 @@ loc_04938B:
 	ldx	#$0030
 	jsl	f:queue_vram_blocks_at_x
 	plx
-loc_04939A:
+@return:
 	rtl
 
 rideable_missile_state_07:
@@ -2527,20 +2527,20 @@ rideable_missile_state_05:
 	jsr	a:rideable_missile_set_hdma
 	jsr	a:rideable_missile_exhaust
 	lda	a:obj_slots+22*OBJ_SIZE+OBJ_FLAGS
-	beq	loc_0493FD
+	beq	@check_boss
 	clc
 	lda	a:obj_slots+22*OBJ_SIZE+OBJ_X
 	adc	#$FF90
 	cmp	OBJ_X,x
-	bpl	loc_04941A
+	bpl	@return
 	inc	OBJ_STATE,x
 	rtl
-loc_0493FD:
+@check_boss:
 	clc
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_X
 	adc	#$FF90
 	cmp	OBJ_X,x
-	bpl	loc_04941A
+	bpl	@return
 	lda	#$0200
 	sta	a:obj_slots+28*OBJ_SIZE+OBJ_SAVED_ATTR
 	sec
@@ -2548,7 +2548,7 @@ loc_0493FD:
 	sbc	#$0004
 	sta	a:obj_slots+28*OBJ_SIZE+OBJ_HP
 	inc	OBJ_STATE,x
-loc_04941A:
+@return:
 	rtl
 
 rideable_missile_state_06:
@@ -2563,7 +2563,7 @@ rideable_missile_state_06:
 	ldy	#$06C0
 @loop:
 	jsl	f:find_free_slot_y_down
-	bcc	loc_049456
+	bcc	@done
 	lda	#.loword(anim_05C4CE)
 	jsl	f:make_effect_object
 	lda	zp_00
@@ -2577,7 +2577,7 @@ rideable_missile_state_06:
 	dex
 	dex
 	bpl	@loop
-loc_049456:
+@done:
 	plx
 	inc	OBJ_STATE,x
 	lda	#$0030
@@ -2610,10 +2610,10 @@ rideable_missile_state_08:
 ; stage4_boss_shot and stage4_boss_fireball.
 update_stage4_boss:
 	lda	OBJ_FLAGS,x
-	bpl	loc_04949D
+	bpl	@dispatch
 	stz	a:bg2_x
 	rtl
-loc_04949D:
+@dispatch:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -2678,39 +2678,39 @@ stage4_boss_state_01:
 
 stage4_boss_state_02:
 	lda	OBJ_SAVED_ATTR,x
-	beq	loc_04952B
+	beq	@check_hp
 	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$6050
 	sta	cgram_upload_addr
-loc_04952B:
+@check_hp:
 	lda	OBJ_HP,x
-	bpl	loc_04953B
+	bpl	@move
 	lda	#$0001
 	sta	OBJ_FLAGS,x
 	inc	OBJ_STATE,x
 	lda	#$0080
 	sta	OBJ_TIMER,x
-loc_04953B:
+@move:
 	jsr	a:stage4_boss_move
 	lda	a:obj_slots+22*OBJ_SIZE+OBJ_FLAGS
-	beq	loc_0495A1
+	beq	@fire_fireball
 	inc	a:boss_work_1
 	lda	a:boss_work_1
 	cmp	#$0070
-	bcc	loc_0495A0
+	bcc	@return
 	bit	#$0007
-	bne	loc_0495A0
+	bne	@return
 	cmp	#$0090
-	bcc	loc_049564
+	bcc	@fire_shot
 	stz	a:boss_work_1
 	lda	a:boss_work_2
 	eor	#$0002
 	sta	a:boss_work_2
-loc_049564:
+@fire_shot:
 	ldy	#$05C0
 	jsl	f:find_free_slot_y_down
-	bcc	loc_0495A0
+	bcc	@return
 	lda	#OBJT_STAGE4_BOSS_SHOT
 	sta	a:$0010,y
 	lda	rng_hi
@@ -2731,15 +2731,15 @@ loc_049564:
 	lda	OBJ_X,x
 	adc	#$0000
 	sta	a:$000A,y
-loc_0495A0:
+@return:
 	rtl
-loc_0495A1:
+@fire_fireball:
 	lda	stage_frame_counter
 	bit	#$003F
-	bne	@return
+	bne	@return2
 	ldy	#$05C0
 	jsl	f:find_free_slot_y_down
-	bcc	@return
+	bcc	@return2
 	lda	#OBJT_STAGE4_BOSS_FIREBALL
 	sta	a:$0010,y
 	lda	OBJ_X,x
@@ -2748,7 +2748,7 @@ loc_0495A1:
 	lda	OBJ_Y,x
 	adc	#$FFE0
 	sta	a:$000E,y
-@return:
+@return2:
 	rtl
 
 stage4_boss_state_03:
@@ -2769,12 +2769,12 @@ stage4_boss_state_04:
 	ldy	#$0280
 	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
-	bcs	loc_0495FC
+	bcs	@move
 	lda	rng_lo
 	and	#$0003
 	adc	#$FFF5
 	sta	a:$001A,y
-loc_0495FC:
+@move:
 	jsr	a:stage4_boss_move
 	rtl
 
@@ -2782,7 +2782,7 @@ loc_0495FC:
 ; HP each).
 update_stage4_boss_pod:
 	lda	OBJ_HP,x
-	bpl	loc_049633
+	bpl	@alive
 	phx
 	lda	$30,x
 	tax
@@ -2802,7 +2802,7 @@ update_stage4_boss_pod:
 	txy
 	lda	#.loword(anim_05C516)
 	jml	f:make_effect_object
-loc_049633:
+@alive:
 	lda	a:boss_work_2
 	eor	$30,x
 	bne	@return
@@ -2813,10 +2813,10 @@ loc_049633:
 ; Object type $82. Stage 4 boss: spread shots.
 update_stage4_boss_shot:
 	lda	OBJ_TOUCHED_BY,x
-	bne	loc_049646
+	bne	@explode
 	lda	OBJ_HP,x
-	bpl	loc_04965A
-loc_049646:
+	bpl	@alive
+@explode:
 	lda	#$0017
 	jsl	f:queue_sound
 	lda	#$FFF8	; [num]
@@ -2824,9 +2824,9 @@ loc_049646:
 	txy
 	lda	#.loword(anim_05C4CE)
 	jml	f:make_effect_object
-loc_04965A:
+@alive:
 	lda	OBJ_STATE,x
-	bne	loc_049690
+	bne	@fly
 	inc	OBJ_STATE,x
 	lda	#.loword(metasprite_06C83F)
 	sta	OBJ_SPRITE,x
@@ -2848,16 +2848,16 @@ loc_04965A:
 	lda	#$FFFF	; [num]
 	sta	OBJ_X_VEL,x
 	rtl
-loc_049690:
+@fly:
 	dec	OBJ_TIMER,x
-	bmi	loc_049646
+	bmi	@explode
 	lda	OBJ_Y_VEL_SUB,x
-	bne	loc_04969C
+	bne	@decelerate
 	lda	OBJ_Y_VEL,x
-	beq	loc_0496AF
-loc_04969C:
+	beq	@return
+@decelerate:
 	lda	OBJ_Y_VEL,x
-	bpl	loc_0496B0
+	bpl	@decel_falling
 	clc
 	lda	OBJ_Y_VEL_SUB,x
 	adc	#$0800
@@ -2865,9 +2865,9 @@ loc_04969C:
 	lda	OBJ_Y_VEL,x
 	adc	#$0000
 	sta	OBJ_Y_VEL,x
-loc_0496AF:
+@return:
 	rtl
-loc_0496B0:
+@decel_falling:
 	sec
 	lda	OBJ_Y_VEL_SUB,x
 	sbc	#$0800
@@ -2881,11 +2881,11 @@ loc_0496B0:
 ; shot down).
 update_stage4_boss_fireball:
 	lda	OBJ_HP,x
-	bpl	loc_0496CC
+	bpl	@alive
 	txy
 	lda	#.loword(anim_05C516)
 	jml	f:make_effect_object
-loc_0496CC:
+@alive:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -2934,18 +2934,18 @@ stage4_boss_fireball_state_02:
 	ldy	$30,x
 	lda	a:$0012,y
 	cmp	#$0005
-	beq	loc_04972D
+	beq	@follow
 	dec	OBJ_STATE,x
 	bra	stage4_boss_fireball_move
-loc_04972D:
+@follow:
 	clc
 	lda	a:$000E,y
 	adc	#$FFF6
 	cmp	OBJ_Y,x
-	bcc	loc_04973C
+	bcc	@move_up
 	inc	OBJ_Y,x
 	bra	stage4_boss_fireball_move
-loc_04973C:
+@move_up:
 	dec	OBJ_Y,x
 stage4_boss_fireball_move:
 	sec
@@ -2956,10 +2956,10 @@ stage4_boss_fireball_move:
 	sbc	#$0000
 	sta	OBJ_X_VEL,x
 	lda	stage_frame_mod4
-	bne	loc_04976E
+	bne	@check_missiles
 	ldy	#$05C0
 	jsl	f:find_free_slot_y_down
-	bcc	loc_04976E
+	bcc	@check_missiles
 	lda	#.loword(anim_05C558)
 	jsl	f:make_effect_object
 	lda	OBJ_X,x
@@ -2967,37 +2967,37 @@ stage4_boss_fireball_move:
 	sta	a:$000A,y
 	lda	OBJ_Y,x
 	sta	a:$000E,y
-loc_04976E:
+@check_missiles:
 	ldy	#$07C0
-loc_049771:
+@missile_loop:
 	clc
 	lda	a:$000A,y
 	adc	#$0070
 	cmp	OBJ_X,x
-	bmi	loc_04979F
+	bmi	@next_missile
 	lda	a:$000A,y
 	cmp	OBJ_X,x
-	bpl	loc_04979F
+	bpl	@next_missile
 	sec
 	lda	a:$000E,y
 	sbc	OBJ_Y,x
-	bpl	loc_04978E
+	bpl	@abs_dy
 	eor	#$FFFF
-loc_04978E:
+@abs_dy:
 	cmp	#$000A
-	bcs	loc_04979F
+	bcs	@next_missile
 	lda	#$0006
 	sta	a:$0012,y
 	lda	#$FFFF	; [num]
 	sta	OBJ_HP,x
 	rtl
-loc_04979F:
+@next_missile:
 	tya
 	clc
 	adc	#$0040
 	tay
 	cmp	#$08C0
-	bcc	loc_049771
+	bcc	@missile_loop
 	rtl
 
 ; Player slot X (state 1, 3 or 4, above y $E0): x = $10 (player 1) or $30
@@ -3005,20 +3005,20 @@ loc_04979F:
 ; stage4_controller_state_1C after the boss.
 stage4_reposition_player:
 	lda	OBJ_FLAGS,x
-	beq	loc_0497DF
-	bmi	loc_0497DF
+	beq	@return
+	bmi	@return
 	lda	OBJ_STATE,x
 	cmp	#$0001
-	beq	loc_0497C2
+	beq	@check_y
 	; (not executed in the CDL traces)
 	cmp	#$0003
-	beq	loc_0497C2
+	beq	@check_y
 	cmp	#$0004
-	beq	loc_0497C2
-loc_0497C2:
+	beq	@check_y
+@check_y:
 	lda	OBJ_Y,x
 	cmp	#$00E0
-	bcs	loc_0497DF
+	bcs	@return
 	txa
 	and	#$0040
 	lsr	a
@@ -3030,7 +3030,7 @@ loc_0497C2:
 	stz	OBJ_Y_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_FACING,x
-loc_0497DF:
+@return:
 	rts
 
 scroll_bg1_bg2_right_16:
@@ -3148,15 +3148,15 @@ rideable_missile_set_hdma:
 ; destroyed the core is removed and the boss itself becomes the target.
 stage4_boss_move:
 	lda	$30,x
-	bne	loc_0498D3
+	bne	@moving_right
 	lda	$32,x
 	cmp	OBJ_X,x
-	bcs	loc_0498F7
+	bcs	@turn
 	lda	OBJ_X_VEL,x
-	bpl	loc_0498C2
+	bpl	@accel_left
 	cmp	#$FFFE	; [num]
-	bcc	loc_0498FE
-loc_0498C2:
+	bcc	@scroll_bg2
+@accel_left:
 	sec
 	lda	OBJ_X_VEL_SUB,x
 	sbc	#$2000
@@ -3164,18 +3164,18 @@ loc_0498C2:
 	lda	OBJ_X_VEL,x
 	sbc	#$0000
 	sta	OBJ_X_VEL,x
-	bra	loc_0498FE
-loc_0498D3:
+	bra	@scroll_bg2
+@moving_right:
 	clc
 	lda	$32,x
 	adc	#$0008
 	cmp	OBJ_X,x
-	bcc	loc_0498F7
+	bcc	@turn
 	lda	OBJ_X_VEL,x
-	bmi	loc_0498E6
+	bmi	@accel_right
 	cmp	#$0001
-	bcs	loc_0498FE
-loc_0498E6:
+	bcs	@scroll_bg2
+@accel_right:
 	clc
 	lda	OBJ_X_VEL_SUB,x
 	adc	#$1000
@@ -3183,12 +3183,12 @@ loc_0498E6:
 	lda	OBJ_X_VEL,x
 	adc	#$0000
 	sta	OBJ_X_VEL,x
-	bra	loc_0498FE
-loc_0498F7:
+	bra	@scroll_bg2
+@turn:
 	lda	$30,x
 	eor	#$0002
 	sta	$30,x
-loc_0498FE:
+@scroll_bg2:
 	sec
 	lda	#$01A0
 	sbc	OBJ_X,x
@@ -3200,9 +3200,9 @@ loc_0498FE:
 	lsr	a
 	and	#$000F
 	bit	#$0008
-	beq	loc_049918
+	beq	@apply_wobble
 	eor	#$FFFF
-loc_049918:
+@apply_wobble:
 	and	#$0007
 	sta	zp_02
 	clc
@@ -3213,19 +3213,19 @@ loc_049918:
 	sbc	#$0020
 	sta	zp_00
 	lda	a:obj_slots+22*OBJ_SIZE+OBJ_FLAGS
-	beq	loc_049949
+	beq	@return
 	lda	a:obj_slots+20*OBJ_SIZE+OBJ_FLAGS
 	ora	a:obj_slots+21*OBJ_SIZE+OBJ_FLAGS
-	bne	loc_04994A
+	bne	@place_parts
 	lda	#$8000	; [num]
 	sta	a:obj_slots+22*OBJ_SIZE+OBJ_FLAGS
 	lda	#$4011
 	sta	OBJ_FLAGS,x
 	lda	#$00C8
 	sta	$32,x
-loc_049949:
+@return:
 	rts
-loc_04994A:
+@place_parts:
 	lda	zp_00
 	sta	a:obj_slots+22*OBJ_SIZE+OBJ_X
 	sec
@@ -3233,16 +3233,16 @@ loc_04994A:
 	sbc	zp_02
 	sta	a:obj_slots+22*OBJ_SIZE+OBJ_Y
 	lda	a:obj_slots+20*OBJ_SIZE+OBJ_FLAGS
-	beq	loc_04996B
+	beq	@lower_pod
 	lda	zp_00
 	sta	a:obj_slots+20*OBJ_SIZE+OBJ_X
 	sec
 	lda	#$0030
 	sbc	zp_02
 	sta	a:obj_slots+20*OBJ_SIZE+OBJ_Y
-loc_04996B:
+@lower_pod:
 	lda	a:obj_slots+21*OBJ_SIZE+OBJ_FLAGS
-	beq	loc_049949
+	beq	@return
 	lda	zp_00
 	sta	a:obj_slots+21*OBJ_SIZE+OBJ_X
 	sec
@@ -3292,7 +3292,7 @@ rideable_missile_helicopter_leaves:
 	sta	f:hdma_tables+$01
 	sta	f:hdma_tables+$06
 	cmp	#$0200
-	bcc	loc_049A05
+	bcc	@still_leaving
 	inc	OBJ_STATE,x
 	lda	#$4000
 	sta	OBJ_X_VEL_SUB,x
@@ -3313,7 +3313,7 @@ rideable_missile_helicopter_leaves:
 	jsl	f:make_rideable_missile
 	plx
 	rts
-loc_049A05:
+@still_leaving:
 	clc
 	lda	$3E,x
 	adc	#$0C00
@@ -3401,33 +3401,33 @@ stage4_boss_pod_fire:
 ; the emulator).
 stage4_spawn_dropping_soldier:
 	dec	$32,x
-	bpl	loc_049AF4
+	bpl	@return
 	phx
 	ldy	#$0000
 	ldx	#$07C0
 	lda	$10,x
-	beq	loc_049AE2
+	beq	@found
 	iny
 	iny
 	ldx	#$0840
 	lda	$10,x
-	beq	loc_049AE2
+	beq	@found
 	iny
 	iny
 	ldx	#$0880
 	lda	$10,x
-	bne	loc_049AE9
-loc_049AE2:
+	bne	@set_delay
+@found:
 	lda	#$0073
 	sta	$10,x
 	sty	$30,x
-loc_049AE9:
+@set_delay:
 	plx
 	lda	rng_lo
 	and	#$003F
 	adc	#$0048
 	sta	$32,x
-loc_049AF4:
+@return:
 	rts
 
 stage4_spawn_hoverbike_rider:
@@ -3497,10 +3497,10 @@ scroll_with_airship:
 	sbc	a:bg1_moved_x
 	sta	OBJ_X,x
 	cmp	#$0100
-	bcc	loc_049B86
+	bcc	@scroll_y
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
-loc_049B86:
+@scroll_y:
 	sec
 	lda	OBJ_Y,x
 	sbc	a:bg1_moved_y
@@ -3511,16 +3511,16 @@ airship_part_explode:
 	lda	#$0030
 	jsl	f:queue_sound_throttled
 	lda	stage_frame_odd
-	bne	loc_049BD4
+	bne	@return
 	dec	OBJ_TIMER,x
-	bpl	loc_049BA4
+	bpl	@spawn_explosion
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	rtl
-loc_049BA4:
+@spawn_explosion:
 	ldy	#$0580
 	jsl	f:find_free_slot_y_down
-	bcc	loc_049BD4
+	bcc	@return
 	lda	#.loword(anim_05C4CE)
 	jsl	f:make_effect_object
 	lda	rng_lo
@@ -3537,7 +3537,7 @@ loc_049BA4:
 	pla
 	adc	#$FFF8
 	sta	a:$001A,y
-loc_049BD4:
+@return:
 	rtl
 
 stage4_spawn_weapon_capsule:
@@ -3569,20 +3569,20 @@ stage4_spawn_weapon_capsule:
 ; segmented tail. HP by difficulty: 128/160/192 (winged_alien_hp).
 update_winged_alien:
 	ldy	OBJ_SAVED_ATTR,x
-	beq	loc_049C1A
+	beq	@check_hp
 	lda	#$0030
 	sta	cgram_upload_addr
 	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
-loc_049C1A:
+@check_hp:
 	lda	OBJ_HP,x
-	bpl	loc_049C2A
+	bpl	@dispatch
 	lda	#$0006
 	sta	OBJ_STATE,x
 	lda	#$0001
 	sta	OBJ_FLAGS,x
 	stz	OBJ_HP,x
-loc_049C2A:
+@dispatch:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -3612,9 +3612,9 @@ winged_alien_state_00:
 winged_alien_state_01:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
-	beq	loc_049C61
+	beq	@start
 	rtl
-loc_049C61:
+@start:
 	ldy	difficulty
 	lda	a:winged_alien_hp,y
 	sta	OBJ_HP,x
@@ -3630,10 +3630,10 @@ winged_alien_state_02:
 	lda	#$0080
 	sta	OBJ_X,x
 	lda	OBJ_Y,x
-	bmi	loc_049C84
+	bmi	@descend
 	cmp	#$0070
-	bcs	loc_049C95
-loc_049C84:
+	bcs	@slow_down
+@descend:
 	lda	OBJ_Y_VEL_SUB,x
 	clc
 	adc	#$2000
@@ -3641,28 +3641,28 @@ loc_049C84:
 	lda	OBJ_Y_VEL,x
 	adc	#$0000
 	sta	OBJ_Y_VEL,x
-	bra	loc_049CAF
-loc_049C95:
+	bra	@place
+@slow_down:
 	lda	stage_frame_counter
 	bit	#$0007
-	bne	loc_049CA7
+	bne	@halve_speed
 	and	#$0008
 	lsr	a
 	lsr	a
 	lsr	a
 	sta	$30,x
 	jsr	a:winged_alien_queue_tiles
-loc_049CA7:
+@halve_speed:
 	lsr	OBJ_Y_VEL,x
 	ror	OBJ_Y_VEL_SUB,x
 	lda	OBJ_Y_VEL_SUB,x
-	beq	loc_049CB9
-loc_049CAF:
+	beq	@stopped
+@place:
 	inc	a:obj_slots+22*OBJ_SIZE+$38
 	inc	a:obj_slots+22*OBJ_SIZE+$38
 	jsr	a:winged_alien_place_parts
 	rtl
-loc_049CB9:
+@stopped:
 	inc	OBJ_STATE,x
 	lda	#$401D
 	sta	OBJ_FLAGS,x
@@ -3675,38 +3675,38 @@ winged_alien_state_03:
 	lda	OBJ_HP,x
 	ldy	difficulty
 	cmp	a:winged_alien_phase_2_hp,y
-	bcs	loc_049CDA
+	bcs	@check_x
 	lda	#$0004
 	sta	OBJ_STATE,x
 	stz	$3A,x
-loc_049CDA:
+@check_x:
 	lda	OBJ_X,x
-	bmi	loc_049D26
+	bmi	@decelerate
 	cmp	#$00D0
-	bcc	loc_049D26
+	bcc	@decelerate
 	lda	#$0055
 	jsl	f:queue_sound
 	lda	a:player1_obj+OBJ_FLAGS
 	ora	a:player2_obj+OBJ_FLAGS
 	and	#$0001
-	bne	loc_049CFC
+	bne	@aim_player
 	lda	#$0078
 	sta	zp_00
-	bra	loc_049D05
-loc_049CFC:
+	bra	@have_target_y
+@aim_player:
 	jsl	f:pick_random_player
 	lda	a:$000E,y
 	sta	zp_00
-loc_049D05:
+@have_target_y:
 	lda	OBJ_Y,x
-	bmi	loc_049D12
+	bmi	@above_target
 	cmp	zp_00
-	bcc	loc_049D12
+	bcc	@above_target
 	ldy	#$0002
-	bra	loc_049D15
-loc_049D12:
+	bra	@set_swoop
+@above_target:
 	ldy	#$0000
-loc_049D15:
+@set_swoop:
 	lda	a:winged_alien_swoop_y_vel_subs,y
 	sta	OBJ_Y_VEL_SUB,x
 	lda	a:winged_alien_swoop_y_vels,y
@@ -3714,7 +3714,7 @@ loc_049D15:
 	lda	#$FFFA	; [num]
 	sta	OBJ_X_VEL,x
 	stz	OBJ_X_VEL_SUB,x
-loc_049D26:
+@decelerate:
 	lda	OBJ_X_VEL_SUB,x
 	clc
 	adc	#$2000
@@ -3726,34 +3726,34 @@ loc_049D26:
 	eor	#$FFFF
 	and	zp_00
 	bit	#$8000
-	beq	loc_049D4C
+	beq	@flap
 	lda	rng_lo
 	and	#$0001
-	bne	loc_049D4C
+	bne	@flap
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
-loc_049D4C:
+@flap:
 	lda	OBJ_X_VEL,x
-	bmi	loc_049D5E
+	bmi	@flap_slow
 	lda	stage_frame_counter
 	bit	#$0003
-	bne	loc_049D70
+	bne	@place
 	and	#$0004
 	lsr	a
 	lsr	a
-	bra	loc_049D6B
-loc_049D5E:
+	bra	@set_frame
+@flap_slow:
 	lda	stage_frame_counter
 	bit	#$0007
-	bne	loc_049D70
+	bne	@place
 	and	#$0008
 	lsr	a
 	lsr	a
 	lsr	a
-loc_049D6B:
+@set_frame:
 	sta	$30,x
 	jsr	a:winged_alien_queue_tiles
-loc_049D70:
+@place:
 	inc	a:obj_slots+22*OBJ_SIZE+$38
 	inc	a:obj_slots+22*OBJ_SIZE+$38
 	jsr	a:winged_alien_place_parts
@@ -3791,17 +3791,17 @@ winged_alien_state_04_step_0:
 	ldy	#$0280
 	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
-	bcs	loc_049DC2
+	bcs	@next_step
 	lda	#$FFFD	; [num]
 	sta	a:$001E,y
-loc_049DC2:
+@next_step:
 	inc	$3A,x
 
 winged_alien_state_04_step_1:
 	lda	OBJ_X,x
-	bmi	loc_049DDE
+	bmi	@stop
 	cmp	#$0048
-	bcc	loc_049DDE
+	bcc	@stop
 	lda	OBJ_X_VEL_SUB,x
 	clc
 	adc	#$8000
@@ -3809,8 +3809,8 @@ winged_alien_state_04_step_1:
 	lda	OBJ_X_VEL,x
 	adc	#$0000
 	sta	OBJ_X_VEL,x
-	bmi	loc_049DF8
-loc_049DDE:
+	bmi	@place
+@stop:
 	stz	OBJ_X_VEL,x
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
@@ -3822,7 +3822,7 @@ loc_049DDE:
 	inc	OBJ_STATE,x
 	stz	$3A,x
 	stz	OBJ_TIMER,x
-loc_049DF8:
+@place:
 	jsr	a:winged_alien_place_parts
 	rtl
 
@@ -3859,10 +3859,10 @@ winged_alien_ease_tail_params:
 	ldy	#$0000
 	lda	a:obj_slots+22*OBJ_SIZE+$36
 	cmp	#$00D0
-	bne	loc_049E34
+	bne	@step_36
 	iny
-	bra	loc_049E4D
-loc_049E34:
+	bra	@check_38
+@step_36:
 	clc
 	adc	#$0004
 	sta	a:obj_slots+22*OBJ_SIZE+$36
@@ -3870,17 +3870,17 @@ loc_049E34:
 	clc
 	sbc	#$00D0
 	cmp	#$0008
-	bcs	loc_049E4D
+	bcs	@check_38
 	; (not executed in the CDL traces)
 	lda	#$00D0
 	sta	a:obj_slots+22*OBJ_SIZE+$36
-loc_049E4D:
+@check_38:
 	lda	a:obj_slots+22*OBJ_SIZE+$38
 	cmp	#$01F2
-	bne	loc_049E58
+	bne	@step_38
 	iny
-	bra	loc_049E71
-loc_049E58:
+	bra	@check_both
+@step_38:
 	sec
 	sbc	#$0001
 	sta	a:obj_slots+22*OBJ_SIZE+$38
@@ -3888,36 +3888,36 @@ loc_049E58:
 	clc
 	sbc	#$01F2
 	cmp	#$0002
-	bcs	loc_049E71
+	bcs	@check_both
 	lda	#$01F2
 	sta	a:obj_slots+22*OBJ_SIZE+$38
-loc_049E71:
+@check_both:
 	cpy	#$0002
-	beq	loc_049E78
+	beq	@return_sec
 	clc
 	rts
-loc_049E78:
+@return_sec:
 	sec
 	rts
 
 winged_alien_step_0:
 	jsr	a:winged_alien_ease_tail_params
-	bcc	loc_049E8B
+	bcc	@flap
 	stz	OBJ_X_VEL,x
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
 	stz	OBJ_TIMER,x
 	inc	$3A,x
-loc_049E8B:
+@flap:
 	jsr	a:winged_alien_flap_slow
 	rts
 
 winged_alien_step_1:
 	lda	OBJ_X,x
-	bmi	loc_049EC9
+	bmi	@stop
 	cmp	#$0048
-	bcc	loc_049EC9
+	bcc	@stop
 	lda	OBJ_X_VEL_SUB,x
 	sec
 	sbc	#$4000
@@ -3926,9 +3926,9 @@ winged_alien_step_1:
 	sbc	#$0000
 	sta	OBJ_X_VEL,x
 	lda	OBJ_Y,x
-	bmi	loc_049EC5
+	bmi	@flap
 	cmp	#$0010
-	bcc	loc_049EC1
+	bcc	@stop_y
 	lda	OBJ_Y_VEL_SUB,x
 	sec
 	sbc	#$2000
@@ -3936,14 +3936,14 @@ winged_alien_step_1:
 	lda	OBJ_Y_VEL,x
 	sbc	#$0000
 	sta	OBJ_Y_VEL,x
-	bra	loc_049EC5
-loc_049EC1:
+	bra	@flap
+@stop_y:
 	stz	OBJ_Y_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
-loc_049EC5:
+@flap:
 	jsr	a:winged_alien_flap_fast
 	rts
-loc_049EC9:
+@stop:
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
@@ -4002,15 +4002,15 @@ winged_alien_step_6:
 	lda	a:player1_obj+OBJ_FLAGS
 	ora	a:player2_obj+OBJ_FLAGS
 	and	#$0001
-	bne	loc_049F41
+	bne	@aim_player
 	lda	#$0078
 	sta	zp_00
-	bra	loc_049F4A
-loc_049F41:
+	bra	@have_target_y
+@aim_player:
 	jsl	f:pick_random_player
 	lda	a:$000E,y
 	sta	zp_00
-loc_049F4A:
+@have_target_y:
 	lda	rng_lo
 	and	#$000F
 	sta	zp_02
@@ -4049,31 +4049,31 @@ winged_alien_step_8:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	cmp	#$0008
-	bcc	loc_049FC2
+	bcc	@flap
 	jsl	f:pick_random_player
 	lda	OBJ_Y,x
 	clc
 	adc	#$0032
 	cmp	a:$000E,y
-	bcs	loc_049FB4
+	bcs	@swoop
 	lda	#$0090
 	sta	a:obj_slots+22*OBJ_SIZE+$36
-loc_049FB4:
+@swoop:
 	stz	a:obj_slots+22*OBJ_SIZE+$38
 	lda	#$FFFA	; [num]
 	sta	OBJ_X_VEL,x
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_TIMER,x
 	inc	$3A,x
-loc_049FC2:
+@flap:
 	jsr	a:winged_alien_flap_fast
 	rts
 
 winged_alien_step_9:
 	lda	OBJ_X,x
-	bmi	loc_049FE2
+	bmi	@stop
 	cmp	#$0040
-	bcs	loc_049FE2
+	bcs	@stop
 	; (not executed in the CDL traces)
 	lda	OBJ_X_VEL_SUB,x
 	clc
@@ -4084,7 +4084,7 @@ winged_alien_step_9:
 	sta	OBJ_X_VEL,x
 	jsr	a:winged_alien_flap_fast
 	rts
-loc_049FE2:
+@stop:
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	stz	OBJ_TIMER,x
@@ -4132,10 +4132,10 @@ winged_alien_state_06:
 
 winged_alien_state_07:
 	lda	OBJ_Y,x
-	bmi	loc_04A047
+	bmi	@fall
 	cmp	#$0140
-	bcs	loc_04A088
-loc_04A047:
+	bcs	@gone
+@fall:
 	lda	OBJ_Y_VEL_SUB,x
 	clc
 	adc	#$1000
@@ -4157,13 +4157,13 @@ loc_04A047:
 	ldy	#$0280
 	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
-	bcs	loc_04A084
+	bcs	@scroll_bg2
 	lda	#$FFFD	; [num]
 	sta	a:$001E,y
-loc_04A084:
+@scroll_bg2:
 	jsr	a:winged_alien_set_bg2_scroll
 	rtl
-loc_04A088:
+@gone:
 	lda	#$0002
 	sta	a:bg1_scroll_mode
 	lda	#$0049
@@ -4220,7 +4220,7 @@ winged_alien_spawn_tail:
 	lda	#$0780
 	sta	zp_00
 	ldy	#$0000
-loc_04A11F:
+@loop:
 	lda	a:winged_alien_tail_slots,y
 	tax
 	lda	#OBJT_WINGED_ALIEN_TAIL_SEGMENT
@@ -4229,12 +4229,12 @@ loc_04A11F:
 	sta	$16,x
 	stz	$12,x
 	cpy	#$0010
-	bcs	loc_04A139
+	bcs	@small_sprite
 	lda	#.loword(metasprite_06C46D)
-	bra	loc_04A13C
-loc_04A139:
+	bra	@set_sprite
+@small_sprite:
 	lda	#.loword(metasprite_06C472)
-loc_04A13C:
+@set_sprite:
 	sta	$00,x
 	lda	#$3600
 	sta	$02,x
@@ -4253,7 +4253,7 @@ loc_04A13C:
 	iny
 	iny
 	cpy	#$0020
-	bcc	loc_04A11F
+	bcc	@loop
 	plx
 	lda	#$008D
 	sta	a:obj_slots+6*OBJ_SIZE+OBJ_TYPE
@@ -4369,22 +4369,22 @@ winged_alien_tail_segment_state_00:
 	and	#$01FE
 	tax
 	lda	f:circle15_y,x
-	bmi	loc_04A230
+	bmi	@y_negative
 	lsr	a
-	bra	loc_04A232
-loc_04A230:
+	bra	@y_halved
+@y_negative:
 	sec
 	ror	a
-loc_04A232:
+@y_halved:
 	pha
 	lda	f:circle15_x,x
-	bmi	loc_04A23C
+	bmi	@x_negative
 	lsr	a
-	bra	loc_04A23E
-loc_04A23C:
+	bra	@x_halved
+@x_negative:
 	sec
 	ror	a
-loc_04A23E:
+@x_halved:
 	clc
 	adc	a:$000A,y
 	ldx	zp_00
@@ -4586,16 +4586,16 @@ winged_alien_warp_compute_bands:
 	sec
 	sbc	zp_00
 	cmp	#$0002
-	bmi	loc_04A399
-	bcc	loc_04A399
+	bmi	@min_2
+	bcc	@min_2
 	cmp	#$00F0
-	bcc	loc_04A39C
+	bcc	@store_top
 	; (not executed in the CDL traces)
 	lda	#$00F0
-	bra	loc_04A39C
-loc_04A399:
+	bra	@store_top
+@min_2:
 	lda	#$0002
-loc_04A39C:
+@store_top:
 	sta	zp_02
 	lsr	a
 	pha
@@ -4608,18 +4608,18 @@ loc_04A39C:
 	adc	zp_02
 	sta	zp_04
 	cmp	#$00F0
-	bcc	loc_04A3C4
+	bcc	@check_min_height
 	lda	#$00F0
 	sta	zp_04
 	sec
 	sbc	zp_02
-	bra	loc_04A3D0
-loc_04A3C4:
+	bra	@store_middle
+@check_min_height:
 	lda	f:winged_alien_hdma_height
 	cmp	#$0002
-	bcs	loc_04A3D0
+	bcs	@store_middle
 	lda	#$0002
-loc_04A3D0:
+@store_middle:
 	lsr	a
 	pha
 	adc	#$0000
@@ -4629,19 +4629,19 @@ loc_04A3D0:
 	lda	#$00F0
 	sec
 	sbc	zp_04
-	bpl	loc_04A3E9
+	bpl	@check_bottom
 	; (not executed in the CDL traces)
 	lda	#$0000
-loc_04A3E9:
+@check_bottom:
 	cmp	#$0080
-	bcc	loc_04A3FE
+	bcc	@bottom_fits
 	sec
 	sbc	#$007F
 	sta	f:winged_alien_hdma_counts+10
 	lda	#$007F
 	sta	f:winged_alien_hdma_counts+8
 	rts
-loc_04A3FE:
+@bottom_fits:
 	sta	f:winged_alien_hdma_counts+8
 	lda	#$0000
 	sta	f:winged_alien_hdma_counts+10
@@ -4701,9 +4701,9 @@ update_face_boss:
 	lda	#$0030
 	jsl	f:boss_flash_palette
 	lda	OBJ_HP,x
-	bpl	loc_04A4AB
+	bpl	@dispatch
 	brl	face_boss_die
-loc_04A4AB:
+@dispatch:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -4741,9 +4741,9 @@ face_boss_state_00:
 face_boss_state_01:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
-	beq	loc_04A4F5
+	beq	@start
 	rtl
-loc_04A4F5:
+@start:
 	lda	#$0006
 	jsl	f:apply_palette_anim_once
 face_boss_set_state_02:
@@ -4756,26 +4756,26 @@ face_boss_set_state_02:
 
 face_boss_state_02:
 	dec	OBJ_TIMER,x
-	bne	loc_04A518
+	bne	@descend
 	lda	#$0044
 	jsl	f:queue_sound
-loc_04A518:
+@descend:
 	lda	stage_frame_counter
 	lsr	a
-	bcs	loc_04A52A
+	bcs	@shake
 	lda	OBJ_Y,x
 	inc	a
 	sta	OBJ_Y,x
 	cmp	#$0020
-	bpl	loc_04A537
+	bpl	@arrived
 	jsr	a:face_boss_place_parts
-loc_04A52A:
+@shake:
 	lda	#$0004
 	sta	a:shake_timer
 	jsr	a:face_boss_update_eyes
 	jsr	a:face_boss_draw_eyes
 	rtl
-loc_04A537:
+@arrived:
 	lda	#$401D
 	sta	OBJ_FLAGS,x
 	lda	#$0024
@@ -4789,31 +4789,31 @@ loc_04A537:
 face_boss_state_03:
 	lda	a:obj_slots+8*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
-	beq	loc_04A55E
+	beq	@attack
 	lda	a:obj_slots+9*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
-	bne	loc_04A586
-loc_04A55E:
+	bne	@heads_lost
+@attack:
 	dec	OBJ_TIMER,x
-	bpl	loc_04A573
+	bpl	@pick_attack
 	lda	a:obj_slots+8*OBJ_SIZE+$30
 	ora	a:obj_slots+9*OBJ_SIZE+$30
-	bne	loc_04A56D
+	bne	@reset_attack
 	brl	face_boss_set_state_04
-loc_04A56D:
+@reset_attack:
 	stz	OBJ_TIMER,x
 	stz	$38,x
-	bra	loc_04A576
-loc_04A573:
+	bra	@send_heads
+@pick_attack:
 	jsr	a:face_boss_pick_head_attack
-loc_04A576:
+@send_heads:
 	jsr	a:face_boss_send_side_heads
 	jsr	a:face_boss_update_eyes
 	jsr	a:face_boss_draw_eyes
 	lda	#$0002
 	sta	a:shake_timer
 	rtl
-loc_04A586:
+@heads_lost:
 	lda	#$0006
 	sta	OBJ_STATE,x
 
@@ -4822,24 +4822,24 @@ face_boss_state_06:
 	ldy	difficulty
 	lda	stage_frame_counter
 	and	a:face_boss_soldier_spawn_masks,y
-	bne	loc_04A5AC
+	bne	@check_spit
 	lda	rng_lo
 	bit	#$0001
-	bne	loc_04A5A6
+	bne	@right_soldier
 	ldy	#$0300
 	jsr	a:face_boss_spawn_left_soldier
-	bra	loc_04A5AC
-loc_04A5A6:
+	bra	@check_spit
+@right_soldier:
 	ldy	#$0300
 	jsr	a:face_boss_spawn_right_soldier
-loc_04A5AC:
+@check_spit:
 	ldy	difficulty
 	lda	stage_frame_counter
 	and	a:face_boss_larva_spit_masks,y
-	bne	loc_04A5BA
+	bne	@spit
 	lda	#$0030
 	sta	$36,x
-loc_04A5BA:
+@spit:
 	ldy	#$0300
 	jsr	a:face_boss_spit_larva
 	jsr	a:face_boss_draw_mouth
@@ -4854,21 +4854,21 @@ face_boss_set_state_04:
 face_boss_state_04:
 	lda	stage_frame_counter
 	lsr	a
-	bcs	loc_04A5E4
+	bcs	@shake
 	lda	OBJ_Y,x
 	dec	a
 	sta	OBJ_Y,x
 	cmp	#$FFF0	; [num]
-	bmi	loc_04A5F4
+	bmi	@risen
 	jsr	a:face_boss_place_parts
-loc_04A5E4:
+@shake:
 	lda	#$0004
 	sta	a:shake_timer
 	jsr	a:face_boss_update_eyes
 	jsr	a:face_boss_draw_eyes
 	jsr	a:face_boss_make_heads_fire
 	rtl
-loc_04A5F4:
+@risen:
 	ldy	#$0700
 	jsr	a:face_boss_spawn_soldier_at_lost_head
 	lda	#$0030
@@ -4879,9 +4879,9 @@ loc_04A5F4:
 
 face_boss_state_05:
 	dec	OBJ_TIMER,x
-	bpl	loc_04A60D
+	bpl	@spit
 	brl	face_boss_set_state_02
-loc_04A60D:
+@spit:
 	lda	#$0004
 	sta	a:shake_timer
 	jsr	a:face_boss_update_eyes
@@ -4909,7 +4909,7 @@ face_boss_die:
 
 face_boss_state_07:
 	dec	OBJ_TIMER,x
-	bmi	loc_04A681
+	bmi	@explosions_done
 	jsl	f:queue_sound_41_throttled
 	lda	#$0004
 	sta	a:shake_timer
@@ -4929,7 +4929,7 @@ face_boss_state_07:
 	sta	a:$001E,y
 @return:
 	rtl
-loc_04A681:
+@explosions_done:
 	lda	#$0059
 	jsl	f:queue_sound
 	lda	#$0080
@@ -4940,14 +4940,14 @@ loc_04A681:
 
 face_boss_state_08:
 	lda	OBJ_ANIM_TIMER,x
-	beq	loc_04A69D
+	beq	@wait
 	jsr	a:face_boss_death_tiles_step
 	dec	OBJ_ANIM_TIMER,x
-loc_04A69D:
+@wait:
 	dec	OBJ_TIMER,x
-	bmi	loc_04A6A2
+	bmi	@reveal_brain
 	rtl
-loc_04A6A2:
+@reveal_brain:
 	lda	#$0003
 	sta	OBJ_ANIM_TIMER,x
 	inc	OBJ_STATE,x
@@ -4970,9 +4970,9 @@ face_boss_pick_head_attack:
 	lda	rng_lo
 	and	a:face_boss_head_attack_masks,y
 	cmp	#$0008
-	bcc	loc_04A6C7
+	bcc	@store
 	lda	#$0000
-loc_04A6C7:
+@store:
 	sta	$38,x
 	rts
 
@@ -4985,56 +4985,56 @@ face_boss_send_side_heads:
 face_boss_send_left_head:
 	lda	a:obj_slots+8*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
-	bne	loc_04A70C
+	bne	@return
 	lda	a:obj_slots+8*OBJ_SIZE+$30
-	bne	loc_04A70C
+	bne	@return
 	lda	a:obj_slots+9*OBJ_SIZE+$34
-	bne	loc_04A70C
+	bne	@return
 	lda	$38,x
 	bit	#$0001
-	beq	loc_04A70C
+	beq	@return
 	bit	#$0004
-	beq	loc_04A700
+	beq	@left_only
 	lda	a:obj_slots+9*OBJ_SIZE+$30
-	bne	loc_04A70C
+	bne	@return
 	lda	#$0002
 	sta	a:obj_slots+8*OBJ_SIZE+$30
 	stz	a:obj_slots+8*OBJ_SIZE+$32
 	sta	a:obj_slots+8*OBJ_SIZE+$34
 	rts
-loc_04A700:
+@left_only:
 	lda	#$0002
 	sta	a:obj_slots+8*OBJ_SIZE+$30
 	stz	a:obj_slots+8*OBJ_SIZE+$32
 	stz	a:obj_slots+8*OBJ_SIZE+$34
-loc_04A70C:
+@return:
 	rts
 face_boss_send_right_head:
 	lda	a:obj_slots+9*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
-	bne	loc_04A749
+	bne	@return
 	lda	a:obj_slots+9*OBJ_SIZE+$30
-	bne	loc_04A749
+	bne	@return
 	lda	a:obj_slots+8*OBJ_SIZE+$34
-	bne	loc_04A749
+	bne	@return
 	lda	$38,x
 	bit	#$0002
-	beq	loc_04A749
+	beq	@return
 	bit	#$0004
-	beq	loc_04A73D
+	beq	@right_only
 	lda	a:obj_slots+8*OBJ_SIZE+$30
-	bne	loc_04A749
+	bne	@return
 	lda	#$0002
 	sta	a:obj_slots+9*OBJ_SIZE+$30
 	sta	a:obj_slots+9*OBJ_SIZE+$32
 	sta	a:obj_slots+9*OBJ_SIZE+$34
 	rts
-loc_04A73D:
+@right_only:
 	lda	#$0002
 	sta	a:obj_slots+9*OBJ_SIZE+$30
 	sta	a:obj_slots+9*OBJ_SIZE+$32
 	stz	a:obj_slots+9*OBJ_SIZE+$34
-loc_04A749:
+@return:
 	rts
 
 ; The two eyes (slots 6 and 7, type $53, HP face_boss_eye_hp): while alive
@@ -5049,44 +5049,44 @@ face_boss_update_eyes:
 face_boss_update_left_eye:
 	lda	a:obj_slots+6*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0053
-	bne	loc_04A779
+	bne	@return
 	lda	a:obj_slots+6*OBJ_SIZE+OBJ_HP
-	bpl	loc_04A769
+	bpl	@alive
 	lda	#$8006	; [num]
 	sta	$30,x
 	ldy	#$0380
 	jmp	a:face_boss_eye_explode
-loc_04A769:
+@alive:
 	ldy	#$0200
 	lda	a:p1_lives
-	bne	loc_04A774
+	bne	@look
 	; (not executed in the CDL traces)
 	ldy	#$0240
-loc_04A774:
+@look:
 	jsr	a:face_boss_eye_frame_toward_player
 	sta	$30,x
-loc_04A779:
+@return:
 	rts
 
 face_boss_update_right_eye:
 	lda	a:obj_slots+7*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0053
-	bne	loc_04A7A2
+	bne	@return
 	lda	a:obj_slots+7*OBJ_SIZE+OBJ_HP
-	bpl	loc_04A792
+	bpl	@alive
 	lda	#$8006	; [num]
 	sta	$32,x
 	ldy	#$03C0
 	jmp	a:face_boss_eye_explode
-loc_04A792:
+@alive:
 	ldy	#$0240
 	lda	a:p2_lives
-	bne	loc_04A79D
+	bne	@look
 	ldy	#$0200
-loc_04A79D:
+@look:
 	jsr	a:face_boss_eye_frame_toward_player
 	sta	$32,x
-loc_04A7A2:
+@return:
 	rts
 
 ; A = eye frame (face_boss_eye_frames) from the top 3 bits of field $1312,y of
@@ -5117,18 +5117,18 @@ face_boss_eye_explode:
 
 face_boss_spit_larva:
 	lda	$36,x
-	beq	loc_04A7E9
+	beq	@return
 	cmp	#$0020
-	bne	loc_04A7DD
+	bne	@set_mouth_frame
 	jsr	a:spawn_face_boss_larva
-loc_04A7DD:
+@set_mouth_frame:
 	ldy	#$8000	; [num]
 	dec	$36,x
-	beq	loc_04A7E7
+	beq	@store_frame
 	ldy	#$8002	; [num]
-loc_04A7E7:
+@store_frame:
 	sty	$34,x
-loc_04A7E9:
+@return:
 	rts
 
 spawn_face_boss_larva:
@@ -5358,9 +5358,9 @@ face_boss_make_heads_fire:
 face_boss_spawn_soldier_at_lost_head:
 	lda	a:obj_slots+8*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
-	beq	loc_04A9B2
+	beq	@check_right
 	bra	face_boss_spawn_left_soldier
-loc_04A9B2:
+@check_right:
 	lda	a:obj_slots+9*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
 	beq	@return
@@ -5423,18 +5423,18 @@ boss_flash_palette:
 ; floor_mouth_bug. HP by difficulty: 32/40/48 (floor_mouth_hp).
 update_floor_mouth:
 	lda	OBJ_HP,x
-	bpl	loc_04AA24
+	bpl	@flash
 	stz	OBJ_HP,x
 	lda	#$0008
 	sta	OBJ_STATE,x
-loc_04AA24:
+@flash:
 	lda	OBJ_SAVED_ATTR,x
-	beq	loc_04AA32
+	beq	@dispatch
 	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$0050
 	sta	cgram_upload_addr
-loc_04AA32:
+@dispatch:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -5497,17 +5497,17 @@ floor_mouth_state_03:
 floor_mouth_state_02:
 	lda	OBJ_TIMER,x
 	and	#$0007
-	bne	loc_04AAB2
+	bne	@tick
 	lda	OBJ_TIMER,x
 	and	#$0008
-	bne	loc_04AAAC
+	bne	@frame_1
 	lda	#$0000
-	bra	loc_04AAAF
-loc_04AAAC:
+	bra	@set_tiles
+@frame_1:
 	lda	#$0001
-loc_04AAAF:
+@set_tiles:
 	jsr	a:floor_mouth_set_tiles
-loc_04AAB2:
+@tick:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	cmp	#$001E
@@ -5663,10 +5663,10 @@ floor_mouth_set_tiles:
 ; 1/1/2 (floor_mouth_bug_hp).
 update_floor_mouth_bug:
 	lda	OBJ_HP,x
-	bpl	loc_04ABC6
+	bpl	@dispatch
 	lda	#$0007
 	sta	OBJ_STATE,x
-loc_04ABC6:
+@dispatch:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -5795,12 +5795,12 @@ floor_mouth_bug_state_06:
 	inc	$30,x
 	lda	$30,x
 	cmp	#$0004
-	bcc	loc_04ACBA
+	bcc	@again
 	lda	#$0007
-	bra	loc_04ACBD
-loc_04ACBA:
+	bra	@set_state
+@again:
 	lda	#$0002
-loc_04ACBD:
+@set_state:
 	sta	OBJ_STATE,x
 	rtl
 
@@ -5834,13 +5834,13 @@ floor_mouth_bug_state_08:
 update_wall_worm_larva:
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 	cmp	#$0003
-	bcc	loc_04ACF8
+	bcc	@check_hp
 	brl	larva_die
-loc_04ACF8:
+@check_hp:
 	lda	OBJ_HP,x
-	bpl	loc_04ACFF
+	bpl	@dispatch
 	brl	larva_die
-loc_04ACFF:
+@dispatch:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -5884,10 +5884,10 @@ wall_worm_larva_state_00:
 
 wall_worm_larva_state_01:
 	dec	OBJ_TIMER,x
-	bmi	loc_04AD5C
+	bmi	@chase
 	lda	#$0010
 	jml	f:set_velocity_from_angle
-loc_04AD5C:
+@chase:
 	lda	#$0002
 	sta	OBJ_STATE,x
 
@@ -5927,12 +5927,12 @@ larva_turn_toward_player:
 	.a8
 	sec
 	sbc	OBJ_ANGLE,x
-	bmi	loc_04ADA7
+	bmi	@dec_angle
 	inc	OBJ_ANGLE,x
 	rep	#$20
 	.a16
 	rts
-loc_04ADA7:
+@dec_angle:
 	.a8
 	dec	OBJ_ANGLE,x
 	rep	#$20
@@ -5943,33 +5943,33 @@ loc_04ADA7:
 ; slot when both are.
 larva_pick_player:
 	lda	a:p2_lives
-	bne	loc_04ADB5
-loc_04ADB1:
+	bne	@check_p1
+@player1:
 	ldy	#$0200
 	rts
-loc_04ADB5:
+@check_p1:
 	lda	a:p1_lives
-	bne	loc_04ADBE
-loc_04ADBA:
+	bne	@both_alive
+@player2:
 	ldy	#$0240
 	rts
-loc_04ADBE:
+@both_alive:
 	txa
 	bit	#$0040
-	beq	loc_04ADB1
-	bra	loc_04ADBA
+	beq	@player1
+	bra	@player2
 
 ; Object type $21. Stage 6: larva spat by face_boss's central mouth; crawls
 ; toward a player. HP by difficulty: 2/4/8 (face_boss_larva_hp).
 update_face_boss_larva:
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_HP
-	bpl	loc_04ADCE
+	bpl	@check_hp
 	brl	larva_die
-loc_04ADCE:
+@check_hp:
 	lda	OBJ_HP,x
-	bpl	loc_04ADD5
+	bpl	@dispatch
 	brl	larva_die
-loc_04ADD5:
+@dispatch:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -6009,11 +6009,11 @@ face_boss_larva_set_state_01:
 
 face_boss_larva_state_01:
 	dec	OBJ_TIMER,x
-	bmi	loc_04AE2A
+	bmi	@head_back
 	jsr	a:larva_turn_toward_player
 	lda	#$0010
 	jml	f:set_velocity_from_angle
-loc_04AE2A:
+@head_back:
 	lda	#$0001
 	sta	$30,x
 	lda	#$0010
@@ -6052,7 +6052,7 @@ face_boss_larva_turn_toward_boss:
 	.a8
 	sec
 	sbc	OBJ_ANGLE,x
-	bmi	loc_04AE7E
+	bmi	@dec_angle
 	lda	OBJ_ANGLE,x
 	clc
 	adc	zp_00
@@ -6060,7 +6060,7 @@ face_boss_larva_turn_toward_boss:
 	rep	#$20
 	.a16
 	rts
-loc_04AE7E:
+@dec_angle:
 	.a8
 	lda	OBJ_ANGLE,x
 	sec
@@ -6076,13 +6076,13 @@ loc_04AE7E:
 update_enemy_type_68:
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 	cmp	#$0003
-	bcc	loc_04AE93
+	bcc	@check_hp
 	brl	enemy_type_68_die
-loc_04AE93:
+@check_hp:
 	lda	OBJ_HP,x
-	bpl	loc_04AE9A
+	bpl	@dispatch
 	brl	enemy_type_68_die
-loc_04AE9A:
+@dispatch:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -6151,11 +6151,11 @@ enemy_type_68_state_01:
 
 ; Y = 0: carry set at y >= $B8 (floor); else at y <= $48 (ceiling).
 enemy_type_68_check_landed:
-	bne	loc_04AF24
+	bne	@ceiling
 	lda	OBJ_Y,x
 	cmp	#$00B8
 	rts
-loc_04AF24:
+@ceiling:
 	lda	#$0048
 	cmp	OBJ_Y,x
 	rts
@@ -6178,13 +6178,13 @@ enemy_type_68_land:
 
 enemy_type_68_state_02:
 	jsr	a:enemy_type_68_check_player_x
-	bcc	loc_04AF5B
+	bcc	@return
 	lda	$30,x
-	bne	loc_04AF59
+	bne	@drop
 	brl	enemy_type_68_set_state_04
-loc_04AF59:
+@drop:
 	bra	enemy_type_68_set_state_03
-loc_04AF5B:
+@return:
 	rtl
 
 ; Carry set (half of the time, at random) when a living player's
@@ -6192,31 +6192,31 @@ loc_04AF5B:
 ; drops (or jumps) to the other side.
 enemy_type_68_check_player_x:
 	lda	a:p1_lives
-	beq	loc_04AF70
+	beq	@check_p2
 	lda	a:player1_obj+PLAYER_CENTER_X
 	clc
 	adc	#$0020
 	sec
 	sbc	OBJ_X,x
 	cmp	#$0002
-	bcc	loc_04AF86
-loc_04AF70:
+	bcc	@coin_flip
+@check_p2:
 	lda	a:p2_lives
-	beq	loc_04AF84
+	beq	@no
 	lda	a:player2_obj+PLAYER_CENTER_X
 	clc
 	adc	#$0020
 	sec
 	sbc	OBJ_X,x
 	cmp	#$0002
-	bcc	loc_04AF86
-loc_04AF84:
+	bcc	@coin_flip
+@no:
 	clc
 	rts
-loc_04AF86:
+@coin_flip:
 	lda	rng_lo
 	bit	#$0001
-	bne	loc_04AF84
+	bne	@no
 	sec
 	rts
 enemy_type_68_set_state_03:
@@ -6287,22 +6287,22 @@ update_heart_boss:
 	lda	#$0060
 	jsl	f:boss_flash_palette
 	lda	a:boss_hit_sound_timer
-	beq	loc_04B014
+	beq	@check_flash
 	dec	a:boss_hit_sound_timer
-loc_04B014:
+@check_flash:
 	lda	OBJ_SAVED_ATTR,x
-	beq	loc_04B02A
+	beq	@check_hp
 	lda	a:boss_hit_sound_timer
-	bne	loc_04B02A
+	bne	@check_hp
 	lda	#$003C
 	jsl	f:queue_sound
 	lda	#$0004
 	sta	a:boss_hit_sound_timer
-loc_04B02A:
+@check_hp:
 	lda	OBJ_HP,x
-	bpl	loc_04B031
+	bpl	@dispatch
 	brl	heart_boss_die
-loc_04B031:
+@dispatch:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -6340,10 +6340,10 @@ heart_boss_state_00:
 heart_boss_state_01:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
-	beq	loc_04B084
+	beq	@start
 	jsr	a:heart_boss_beat
 	rtl
-loc_04B084:
+@start:
 	inc	OBJ_STATE,x
 
 heart_boss_state_02:
@@ -6364,7 +6364,7 @@ heart_boss_die:
 
 heart_boss_state_03:
 	dec	OBJ_TIMER,x
-	bmi	loc_04B0D8
+	bmi	@explosions_done
 	lda	#$0004
 	sta	a:shake_timer
 	lda	#$0080
@@ -6383,7 +6383,7 @@ heart_boss_state_03:
 	sta	a:$001E,y
 @return:
 	rtl
-loc_04B0D8:
+@explosions_done:
 	lda	#$0003
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
@@ -6391,9 +6391,9 @@ loc_04B0D8:
 heart_boss_state_04:
 	jsr	a:heart_boss_queue_death_tiles
 	dec	OBJ_TIMER,x
-	beq	loc_04B0E7
+	beq	@tiles_done
 	rtl
-loc_04B0E7:
+@tiles_done:
 	lda	#$0081
 	jsl	f:queue_sound
 	phx
@@ -6406,13 +6406,13 @@ loc_04B0E7:
 
 heart_boss_state_05:
 	dec	OBJ_TIMER,x
-	bmi	loc_04B10C
+	bmi	@request_song
 	bne	@return
 	lda	#$0083
 	jsl	f:queue_sound
 @return:
 	rtl
-loc_04B10C:
+@request_song:
 	phx
 	ldx	#.loword(song_set_05F497)
 	jsl	f:request_song_set
@@ -6456,14 +6456,14 @@ heart_boss_beat:
 	lda	OBJ_ANIM_TIMER,x
 	inc	OBJ_ANIM_TIMER,x
 	bit	#$0007
-	bne	loc_04B17B
+	bne	@return
 	ldy	vram_block_queue_end
 	cpy	#$0010
-	bcc	loc_04B15E
+	bcc	@queue_frame
 	; (not executed in the CDL traces)
 	dec	OBJ_ANIM_TIMER,x
 	rts
-loc_04B15E:
+@queue_frame:
 	lsr	a
 	lsr	a
 	and	#$0002
@@ -6478,7 +6478,7 @@ loc_04B15E:
 	phx
 	jsl	f:queue_vram_blocks
 	plx
-loc_04B17B:
+@return:
 	rts
 
 ; The heart's own hitbox and a big type $53 one (not a target) under it, slot
@@ -6516,10 +6516,10 @@ heart_boss_init_hitboxes:
 spawn_heart_boss_bug:
 	phx
 	ldx	#$0008
-loc_04B1C7:
+@loop:
 	ldy	#$03C0
 	jsl	f:find_free_slot_from_y
-	bcs	loc_04B1EE
+	bcs	@next
 	lda	#OBJT_HEART_BOSS_BUG
 	sta	a:$0010,y
 	lda	a:heart_boss_bug_x,x
@@ -6530,10 +6530,10 @@ loc_04B1C7:
 	sta	a:$0030,y
 	lda	a:heart_boss_bug_vram_addrs,x
 	sta	a:$0032,y
-loc_04B1EE:
+@next:
 	dex
 	dex
-	bne	loc_04B1C7
+	bne	@loop
 	plx
 	rts
 
@@ -6542,13 +6542,13 @@ loc_04B1EE:
 update_heart_boss_bug:
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 	cmp	#$0003
-	bcc	loc_04B1FF
+	bcc	@check_hp
 	brl	heart_boss_bug_die
-loc_04B1FF:
+@check_hp:
 	lda	OBJ_HP,x
-	bpl	loc_04B206
+	bpl	@dispatch
 	brl	heart_boss_bug_die
-loc_04B206:
+@dispatch:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -6597,9 +6597,9 @@ heart_boss_bug_start_wait:
 
 heart_boss_bug_state_01:
 	dec	OBJ_TIMER,x
-	bmi	loc_04B260
+	bmi	@start_script
 	rtl
-loc_04B260:
+@start_script:
 	ldy	$30,x
 	lda	a:ptrs_heart_boss_bug_tile_scripts,y
 	sta	$34,x
@@ -6673,45 +6673,45 @@ heart_boss_bug_spawn_crawler:
 ; tile at VRAM field $32 (heart_boss_bug_set_tile).
 heart_boss_bug_run_tile_script:
 	ldy	$34,x
-	beq	loc_04B32A
+	beq	@return
 	lda	$36,x
-	bne	loc_04B300
+	bne	@count_down
 	lda	vram_block_queue_end
 	cmp	#$0040
-	bcs	loc_04B32A
+	bcs	@return
 	lda	a:$0000,y
 	sta	$36,x
 	lda	a:$0002,y
 	bra	heart_boss_bug_set_tile
-loc_04B300:
+@count_down:
 	dec	$36,x
-	bne	loc_04B32A
+	bne	@return
 	lda	vram_block_queue_end
 	cmp	#$0040
-	bcc	loc_04B30E
+	bcc	@next_entry
 	; (not executed in the CDL traces)
 	inc	$36,x
 	rtl
-loc_04B30E:
+@next_entry:
 	iny
 	iny
 	iny
 	iny
 	lda	a:$0000,y
-	beq	loc_04B326
-	bpl	loc_04B31D
+	beq	@end_script
+	bpl	@set_entry
 	; (not executed in the CDL traces)
 	tay
 	lda	a:$0000,y
-loc_04B31D:
+@set_entry:
 	sty	$34,x
 	sta	$36,x
 	lda	a:$0002,y
 	bra	heart_boss_bug_set_tile
-loc_04B326:
+@end_script:
 	sta	$34,x
 	sta	$36,x
-loc_04B32A:
+@return:
 	rtl
 
 heart_boss_bug_set_tile:
@@ -6723,9 +6723,9 @@ heart_boss_bug_set_tile:
 ; start of the stage. HP by difficulty: 64/128/256 (wall_worm_hp).
 update_wall_worm:
 	lda	OBJ_HP,x
-	bpl	loc_04B33A
+	bpl	@dispatch
 	brl	wall_worm_die
-loc_04B33A:
+@dispatch:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -6785,7 +6785,7 @@ wall_worm_die:
 
 wall_worm_state_03:
 	dec	OBJ_TIMER,x
-	bmi	loc_04B3D5
+	bmi	@explosions_done
 	lda	#$0004
 	sta	a:shake_timer
 	lda	OBJ_X,x
@@ -6804,7 +6804,7 @@ wall_worm_state_03:
 	sta	a:$001E,y
 @return:
 	rtl
-loc_04B3D5:
+@explosions_done:
 	lda	#$0004
 	sta	OBJ_TIMER,x
 	lda	#$0004
@@ -6993,20 +6993,20 @@ update_cave_beast:
 	jsr	a:cave_beast_clamp_players_y
 	ldy	#$0840
 	lda	a:$0006,y
-	bpl	loc_04B539
+	bpl	@check_flash
 	lda	#$0026
 	sta	OBJ_STATE,x
-loc_04B539:
+@check_flash:
 	ldy	#$0840
 	lda	a:$0026,y
-	beq	loc_04B552
+	beq	@dispatch
 	lda	#.loword(palette_05912A)
 	sta	cgram_upload_src
 	lda	#$0020
 	sta	cgram_upload_addr
 	lda	#$000F
 	jsl	f:queue_sound
-loc_04B552:
+@dispatch:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -7163,10 +7163,10 @@ cave_beast_update_body:
 cave_beast_state_03:
 	lda	OBJ_TIMER,x
 	bit	#$003F
-	bne	loc_04B6AC
+	bne	@rise
 	lda	#$0053
 	jsl	f:queue_sound
-loc_04B6AC:
+@rise:
 	dec	OBJ_Y,x
 	lda	OBJ_Y,x
 	cmp	#$00B9
@@ -7178,7 +7178,7 @@ cave_beast_drop_rock:
 	lda	#$0003
 	sta	a:shake_timer
 	jsl	f:find_free_slot_y
-	bcs	loc_04B6F1
+	bcs	@next
 	lda	#OBJT_CAVE_ROCK
 	sta	a:$0010,y
 	lda	#$0000
@@ -7195,7 +7195,7 @@ cave_beast_drop_rock:
 	sta	a:$000A,y
 	lda	#$00B8
 	sta	a:$000E,y
-loc_04B6F1:
+@next:
 	inc	OBJ_TIMER,x
 	jmp	a:cave_beast_update_body
 cave_beast_jump_left:
@@ -7217,89 +7217,89 @@ cave_beast_jump_right:
 
 cave_beast_state_06:
 	lda	OBJ_Y_VEL,x
-	bmi	loc_04B72F
+	bmi	@clamp_x
 	lda	stage_frame_counter
 	bit	#$0003
-	bne	loc_04B72F
+	bne	@clamp_x
 	bit	#$0004
-	beq	loc_04B729
+	beq	@frame_0a
 	lda	#$0009
-	bra	loc_04B72C
-loc_04B729:
+	bra	@queue_frame
+@frame_0a:
 	lda	#$000A
-loc_04B72C:
+@queue_frame:
 	jsr	a:cave_beast_queue_frame
-loc_04B72F:
+@clamp_x:
 	lda	OBJ_X,x
 	cmp	#$002D
-	bmi	loc_04B740
+	bmi	@left_wall
 	cmp	#$00AD
-	bcc	loc_04B749
+	bcc	@check_players
 	; (not executed in the CDL traces)
 	lda	#$00AD
-	bra	loc_04B743
-loc_04B740:
+	bra	@store_x
+@left_wall:
 	lda	#$002D
-loc_04B743:
+@store_x:
 	sta	OBJ_X,x
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
-loc_04B749:
+@check_players:
 	stz	zp_00
-loc_04B74B:
+@player_loop:
 	lda	zp_00
 	asl	a
 	tay
 	lda	a:cave_beast_player_slots,y
 	sta	zp_02
 	lda	OBJ_Y_VEL,x
-	bmi	loc_04B7B2
+	bmi	@next_player
 	ldy	zp_02
 	lda	a:$000A,y
 	ldy	#$0800
 	sec
 	sbc	a:$000A,y
 	cmp	#$0080
-	bcs	loc_04B77A
+	bcs	@check_landing
 	ldy	zp_02
 	lda	a:$000E,y
 	ldy	#$0800
 	sec
 	sbc	a:$000E,y
 	cmp	#$0010
-	bcc	loc_04B7A7
-loc_04B77A:
+	bcc	@crush
+@check_landing:
 	ldy	#$0800
 	lda	a:$000E,y
 	cmp	#$0098
-	bcc	loc_04B7B2
+	bcc	@next_player
 	ldy	zp_02
 	lda	a:$000E,y
 	ldy	#$0800
 	sec
 	sbc	a:$000E,y
 	cmp	#$0020
-	bcs	loc_04B7B2
+	bcs	@next_player
 	ldy	zp_02
 	lda	a:$000A,y
 	ldy	#$0800
 	sec
 	sbc	a:$000A,y
 	cmp	#$0080
-	bcs	loc_04B7B2
-loc_04B7A7:
+	bcs	@next_player
+@crush:
 	ldy	zp_02
 	lda	a:$003C,y
 	ora	#$0004
 	sta	a:$003C,y
-loc_04B7B2:
+@next_player:
 	inc	zp_00
 	lda	zp_00
 	cmp	#$0002
-	bcc	loc_04B74B
+	bcc	@player_loop
 	lda	OBJ_Y,x
 	cmp	#$00B8
-	bcc	loc_04B7DD
+	bcc	@gravity
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
@@ -7312,7 +7312,7 @@ loc_04B7B2:
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
 	jmp	a:cave_beast_update_body_jmp
-loc_04B7DD:
+@gravity:
 	lda	OBJ_Y_VEL_SUB,x
 	clc
 	adc	#$1400
@@ -7337,11 +7337,11 @@ cave_beast_state_07:
 
 cave_beast_state_08:
 	lda	a:shake_timer
-	bne	loc_04B816
+	bne	@body
 	stz	$30,x
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
-loc_04B816:
+@body:
 	jmp	a:cave_beast_update_body_jmp
 
 cave_beast_state_09:
@@ -7369,20 +7369,20 @@ cave_beast_set_left_speed:
 
 cave_beast_state_0A:
 	lda	$3A,x
-	bmi	loc_04B855
+	bmi	@moving_left
 	lda	OBJ_X,x
 	cmp	#$00AD
-	bcc	loc_04B87F
+	bcc	@accelerate
 	lda	#$00AD
 	sta	OBJ_X,x
-	bra	loc_04B861
-loc_04B855:
+	bra	@stop
+@moving_left:
 	lda	OBJ_X,x
 	cmp	#$002D
-	bpl	loc_04B87F
+	bpl	@accelerate
 	lda	#$002D
 	sta	OBJ_X,x
-loc_04B861:
+@stop:
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
@@ -7395,7 +7395,7 @@ loc_04B861:
 	jsr	a:cave_beast_queue_frame
 	inc	OBJ_STATE,x
 	jmp	a:cave_beast_update_body
-loc_04B87F:
+@accelerate:
 	lda	OBJ_X_VEL_SUB,x
 	sta	zp_00
 	lda	OBJ_X_VEL,x
@@ -7407,19 +7407,19 @@ loc_04B87F:
 	lda	zp_02
 	adc	$3A,x
 	sta	zp_02
-	bpl	loc_04B89A
+	bpl	@check_max
 	eor	#$FFFF
 	inc	a
-loc_04B89A:
+@check_max:
 	cmp	#$0004
-	bcs	loc_04B8A7
+	bcs	@spawn_rock
 	lda	zp_00
 	sta	OBJ_X_VEL_SUB,x
 	lda	zp_02
 	sta	OBJ_X_VEL,x
-loc_04B8A7:
+@spawn_rock:
 	jsl	f:find_free_slot_y
-	bcs	loc_04B8D6
+	bcs	@animate
 	lda	#OBJT_CAVE_ROCK
 	sta	a:$0010,y
 	lda	#$0000
@@ -7436,19 +7436,19 @@ loc_04B8A7:
 	sta	a:$000A,y
 	lda	#$00B8
 	sta	a:$000E,y
-loc_04B8D6:
+@animate:
 	lda	stage_frame_counter
 	bit	#$0003
-	bne	loc_04B8ED
+	bne	@shake
 	bit	#$0004
-	beq	loc_04B8E7
+	beq	@frame_8
 	lda	#$0007
-	bra	loc_04B8EA
-loc_04B8E7:
+	bra	@queue_frame
+@frame_8:
 	lda	#$0008
-loc_04B8EA:
+@queue_frame:
 	jsr	a:cave_beast_queue_frame
-loc_04B8ED:
+@shake:
 	lda	#$0001
 	sta	a:shake_continuous
 	jmp	a:cave_beast_update_body
@@ -7494,7 +7494,7 @@ cave_beast_state_14:
 	and	#$0007
 	bne	cave_beast_update_body_jmp2
 	jsl	f:find_free_slot_y
-	bcs	loc_04B962
+	bcs	@count
 	lda	#$0070
 	sta	a:$0010,y
 	lda	#$0000
@@ -7505,16 +7505,16 @@ cave_beast_state_14:
 	sta	a:$000A,y
 	lda	OBJ_Y,x
 	sta	a:$000E,y
-loc_04B962:
+@count:
 	inc	$30,x
 	ldy	difficulty
 	lda	a:cave_beast_state_14_counts,y
 	cmp	$30,x
-	bcs	loc_04B973
+	bcs	@body
 	stz	OBJ_TIMER,x
 	stz	$30,x
 	inc	OBJ_STATE,x
-loc_04B973:
+@body:
 	jmp	a:cave_beast_update_body
 
 cave_beast_state_15:
@@ -7527,7 +7527,7 @@ cave_beast_state_17:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	and	#$0007
-	bne	loc_04B9A8
+	bne	@body
 	lda	$30,x
 	asl	a
 	tay
@@ -7542,18 +7542,18 @@ cave_beast_state_17:
 	stz	OBJ_TIMER,x
 	stz	$30,x
 	inc	OBJ_STATE,x
-loc_04B9A8:
+@body:
 	jmp	a:cave_beast_update_body
 
 cave_beast_state_18:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	and	#$0001
-	bne	loc_04B9E4
+	bne	@body
 	lda	$30,x
-	bne	loc_04B9E7
+	bne	@spawn_beam
 	jsl	f:find_free_slot_y
-	bcs	loc_04BA0A
+	bcs	@done
 	lda	#OBJT_CAVE_BEAST_FIREBALL
 	sta	a:$0010,y
 	lda	#$0000
@@ -7570,11 +7570,11 @@ cave_beast_state_18:
 	tya
 	sta	$32,x
 	inc	$30,x
-loc_04B9E4:
+@body:
 	jmp	a:cave_beast_update_body
-loc_04B9E7:
+@spawn_beam:
 	jsl	f:find_free_slot_y
-	bcs	loc_04BA0A
+	bcs	@done
 	lda	$32,x
 	sta	a:$0030,y
 	lda	#OBJT_CAVE_BEAST_BEAM
@@ -7585,8 +7585,8 @@ loc_04B9E7:
 	inc	$30,x
 	lda	$30,x
 	cmp	#$000A
-	bcc	loc_04B9E4
-loc_04BA0A:
+	bcc	@body
+@done:
 	stz	OBJ_TIMER,x
 	stz	$30,x
 	stz	$32,x
@@ -7597,7 +7597,7 @@ cave_beast_state_19:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	and	#$0007
-	bne	loc_04BA43
+	bne	@body
 	lda	$30,x
 	asl	a
 	tay
@@ -7606,7 +7606,7 @@ cave_beast_state_19:
 	inc	$30,x
 	lda	$30,x
 	cmp	#$0004
-	bcc	loc_04BA43
+	bcc	@body
 	ldy	#$0840
 	lda	a:$0016,y
 	ora	#$0020
@@ -7614,20 +7614,20 @@ cave_beast_state_19:
 	stz	OBJ_TIMER,x
 	stz	$30,x
 	inc	OBJ_STATE,x
-loc_04BA43:
+@body:
 	jmp	a:cave_beast_update_body
 
 cave_beast_state_1B:
 	ldy	#$0840
 	lda	a:$0006,y
 	cmp	#$0080
-	bcs	loc_04BA55
+	bcs	@repeat
 	inc	OBJ_STATE,x
-	bra	loc_04BA5A
-loc_04BA55:
+	bra	@reset
+@repeat:
 	lda	#$0005
 	sta	OBJ_STATE,x
-loc_04BA5A:
+@reset:
 	stz	OBJ_TIMER,x
 	stz	$30,x
 	jmp	a:cave_beast_update_body
@@ -7646,36 +7646,36 @@ cave_beast_state_1C:
 cave_beast_state_1D:
 	lda	OBJ_TIMER,x
 	bit	#$003F
-	bne	loc_04BA83
+	bne	@sink
 	lda	#$0053
 	jsl	f:queue_sound
-loc_04BA83:
+@sink:
 	lda	OBJ_Y,x
 	cmp	#$0140
-	bcc	loc_04BA95
+	bcc	@drop_rock
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_TIMER,x
 	stz	$30,x
 	inc	OBJ_STATE,x
 	jmp	a:cave_beast_update_body
-loc_04BA95:
+@drop_rock:
 	jmp	a:cave_beast_drop_rock
 
 cave_beast_state_1E:
 	jsl	f:pick_random_player
 	lda	a:$000A,y
 	cmp	#$0040
-	bcc	loc_04BAAB
+	bcc	@clamp_left
 	cmp	#$00A0
-	bcs	loc_04BAB0
-	bcc	loc_04BAB5
-loc_04BAAB:
+	bcs	@clamp_right
+	bcc	@store_x
+@clamp_left:
 	lda	#$0040
-	bra	loc_04BAB5
-loc_04BAB0:
+	bra	@store_x
+@clamp_right:
 	lda	#$00A0
-	bra	loc_04BAB5
-loc_04BAB5:
+	bra	@store_x
+@store_x:
 	sta	OBJ_X,x
 	inc	OBJ_STATE,x
 	jmp	a:cave_beast_update_body
@@ -7696,9 +7696,9 @@ cave_beast_state_05:
 cave_beast_state_20:
 	lda	OBJ_X,x
 	cmp	#$0080
-	bcc	loc_04BAE3
+	bcc	@jump_right
 	jmp	a:cave_beast_jump_left
-loc_04BAE3:
+@jump_right:
 	jmp	a:cave_beast_jump_right
 
 cave_beast_state_24:
@@ -7748,27 +7748,27 @@ cave_beast_state_27:
 	ldy	#$0280
 	lda	#.loword(anim_05C516)
 	jsl	f:spawn_effect_random_offset
-	bcs	loc_04BB59
+	bcs	@fall
 	lda	#$FFFD	; [num]
 	sta	a:$001E,y
-loc_04BB59:
+@fall:
 	lda	OBJ_Y_VEL,x
-	bmi	loc_04BB62
+	bmi	@accelerate
 	cmp	#$0001
-	bcs	loc_04BB6E
-loc_04BB62:
+	bcs	@check_gone
+@accelerate:
 	lda	OBJ_Y_VEL_SUB,x
 	clc
 	adc	#$2000
 	sta	OBJ_Y_VEL_SUB,x
-	bcc	loc_04BB6E
+	bcc	@check_gone
 	inc	OBJ_Y_VEL,x
-loc_04BB6E:
+@check_gone:
 	lda	OBJ_Y,x
 	cmp	#$0140
-	bcs	loc_04BB78
+	bcs	@gone
 	jmp	a:cave_beast_drop_rock
-loc_04BB78:
+@gone:
 	stz	a:bg1_scroll_mode
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
@@ -7787,10 +7787,10 @@ cave_beast_state_04:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	cmp	#$003C
-	bcc	loc_04BBAA
+	bcc	@body
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
-loc_04BBAA:
+@body:
 	jmp	a:cave_beast_update_body
 
 ; (no caller found; decoded because it follows the end of a routine)
