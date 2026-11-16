@@ -6477,8 +6477,21 @@ ending_crowd_anims:
 ending_crowd_facings:
 	; LAYOUT: read on from ending_crowd_anims (lda a:ending_crowd_anims,y)
 	; CDL: read by spawn_ending_crowd
-	.byte	$00, $00, $04, $F6, $00, $00, $12, $F6, $00, $00, $12, $F6, $02, $00, $20, $F6
-	.byte	$02, $00, $2E, $F6, $00, $00, $50, $F6, $02, $00, $6A, $F6, $02, $00
+	.word	$0000
+	.addr	anim_05F604
+	.word	$0000
+	.addr	anim_05F612
+	.word	$0000
+	.addr	anim_05F612
+	.word	$0002
+	.addr	anim_05F620
+	.word	$0002
+	.addr	anim_05F62E
+	.word	$0000
+	.addr	anim_05F650
+	.word	$0002
+	.addr	anim_05F66A
+	.word	$0002
 ending_crowd_x:
 	; CDL: read by spawn_ending_crowd
 	.byte	$F0, $00
@@ -6498,17 +6511,20 @@ anim_05F604:
 	anim_frame	$0010, metasprite_06D3E9, metasprite_06D3E9
 	anim_frame	$0010, metasprite_06D422, metasprite_06D422
 	anim_goto	anim_05F604
-	.byte	$0C, $00, $63, $D4, $91, $D4, $0E, $00, $74, $D4, $A2, $D4
-	.byte	$12, $F6, $0E, $00, $BF, $D4
-	.byte	$F1, $D4
-	.byte	$10, $00, $D8, $D4
-	.byte	$0A, $D5
-	.byte	$20, $F6
-	.byte	$0E, $00, $23, $D5, $4A, $D5
-	.byte	$0E, $00, $3D, $D5, $64, $D5
-	.byte	$0E, $00, $30, $D5, $57, $D5
+anim_05F612:
+	anim_frame	$000C, metasprite_06D463, metasprite_06D491
+	anim_frame	$000E, metasprite_06D474, metasprite_06D4A2
+	anim_goto	anim_05F612
+anim_05F620:
+	anim_frame	$000E, metasprite_06D4BF, metasprite_06D4F1
+	anim_frame	$0010, metasprite_06D4D8, metasprite_06D50A
+	anim_goto	anim_05F620
+anim_05F62E:
+	anim_frame	$000E, metasprite_06D523, metasprite_06D54A
+	anim_frame	$000E, metasprite_06D53D, metasprite_06D564
+	anim_frame	$000E, metasprite_06D530, metasprite_06D557
 	; CDL: read by update_objects; partly not accessed
-	.byte	$2E, $F6
+	anim_goto	anim_05F62E
 anim_05F642:
 	anim_frame	$0008, metasprite_06D571, metasprite_06D5AA
 	anim_frame	$0008, metasprite_06D57A, metasprite_06D5B3
