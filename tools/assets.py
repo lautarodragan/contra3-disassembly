@@ -323,6 +323,99 @@ def png_palette(path):
     return None
 
 
+VIEWS = os.path.join(ASSETS, "views.txt")
+
+
+def read_views(root=ROOT):
+    """assets/views.txt: ({PNG path: (palette path, first colour)},
+    {tilemap path: {option: value}})."""
+    links, previews = {}, {}
+    path = os.path.join(root, VIEWS)
+    if not os.path.exists(path):
+        return links, previews
+    for n, line in enumerate(open(path), 1):
+        words = line.split("#")[0].split()
+        if not words:
+            continue
+        if words[0] == "palette" and len(words) == 4:
+            links[words[1]] = (words[2], int(words[3]))
+        elif words[0] == "preview" and len(words) > 2:
+            previews[words[1]] = dict(w.split("=", 1) for w in words[2:])
+        else:
+            sys.exit(f"{VIEWS}:{n}: not a palette or preview line")
+    return links, previews
+
+
+def palette_rgb(spec, manifest, root=ROOT):
+    """256 (r, g, b) of a CGRAM image: spec "PALETTE@INDEX,..." (colours
+    not given are black)."""
+    cgram = [(0, 0, 0)] * 256
+    for item in spec.split(","):
+        p, first = item.split("@")
+        words = snespal.read_gpl(os.path.join(root, manifest[p].source))
+        for i, w in enumerate(words):
+            if int(first) + i < 256:
+                cgram[int(first) + i] = snespal.rgb(w)
+    return cgram
+
+
+def linked_palette(asset, links, manifest, root=ROOT):
+    """The viewing colours of a PNG asset from the palette it is linked
+    to (assets/views.txt), or None."""
+    if asset.path not in links:
+        return None
+    p, first = links[asset.path]
+    words = snespal.read_gpl(os.path.join(root, manifest[p].source))
+    n = 1 << snesgfx.FORMATS[asset.png][0]
+    return [snespal.rgb(w) for w in words[first:first + n]]
+
+
+def render_preview(asset, view, manifest, root=ROOT):
+    """(W, H, pixels, palette) of a tilemap drawn with the characters and
+    palettes its preview line gives: chars=ASSET@VRAMWORD,... (the
+    character data as loaded to VRAM), base=VRAMWORD (the BG's character
+    base), bpp=2|4|8, palette=PALETTE@CGRAMINDEX,..."""
+    fmt = asset.tilemap
+    width = int(asset.options.get("width", 0)) or snesmap.FORMATS[fmt][1]
+    data = asset.from_source(root)
+    bpp = int(view.get("bpp", 4))
+    vram = bytearray(0x10000 if fmt == "bg" else 0x8000)
+    for item in view["chars"].split(","):
+        p, addr = item.split("@")
+        d = data_bytes(manifest[p], root)
+        start = int(addr, 16) * (2 if fmt == "bg" else 1)
+        vram[start:start + len(d)] = d[:max(0, len(vram) - start)]
+    if fmt == "mode7":
+        size, tfmt, base = 64, "mode7", 0
+    else:
+        size, tfmt, base = 8 * bpp, f"{bpp}bpp", int(view.get("base", "0"), 16) * 2
+    chars = {}
+    for v in set(snesmap.cells(data, fmt)):
+        t = v if fmt == "mode7" else v & 0x3FF
+        a = (base + t * size) % len(vram)
+        chars[t] = snesgfx.decode_tile(bytes(vram[a:a + size]), tfmt)
+    return snesmap.render(data, fmt, width, chars, bpp,
+                          palette_rgb(view["palette"], manifest, root))
+
+
+def sync_palettes(root=ROOT):
+    """Give each linked PNG of assets/ the colours of its palette (the
+    pixels stay); returns the PNGs changed."""
+    links, _ = read_views(root)
+    manifest = {a.path: a for a in read_manifest(root)}
+    changed = []
+    for path in links:
+        a = manifest[path]
+        colours = linked_palette(a, links, manifest, root)
+        src = os.path.join(root, a.source)
+        W, H, pixels, old = snesgfx.read_png(src)
+        new = colours + list(old[len(colours):])
+        if [tuple(c) for c in old] != new:
+            snesgfx.write_png(src, W, H, pixels, new)
+            changed.append(a.source)
+    return changed
+
+
 def write_manifest(entries, root=ROOT):
     """Rewrite the manifest lines of these assets (keeping the others and
     the comments)."""
@@ -426,7 +519,22 @@ def check():
                   "SNES words (python3 tools/assets.py normalize)")
             inexact += 1
     print(f"{len(pals)} palettes, {len(pals) - inexact} exact")
-    return 1 if bad or inexact else 0
+    links, previews = read_views()
+    manifest = {a.path: a for a in read_manifest()}
+    stale = 0
+    for path in links:
+        a = manifest[path]
+        old = [tuple(c) for c in snesgfx.read_png(a.source)[3]]
+        colours = linked_palette(a, links, manifest)
+        if old[:len(colours)] != colours:
+            print(f"{a.source}: its palette is not that of {links[path][0]} "
+                  "(python3 tools/assets.py sync-palettes)")
+            stale += 1
+    for path, view in previews.items():
+        render_preview(manifest[path], view, manifest)
+    print(f"{len(links)} PNGs linked to a palette, {len(links) - stale} in sync; "
+          f"{len(previews)} tilemap previews")
+    return 1 if bad or inexact or stale else 0
 
 
 def gallery():
@@ -437,7 +545,8 @@ def gallery():
            "build reads it, shown at twice its size: 16 tiles per row, in the colours `tools/gfx_palettes.py`",
            "found on screen (a grey ramp where it found none). Generated by",
            "`python3 tools/assets.py gallery`; the images are copied next to the",
-           "book when it is built (`make book`).", ""]
+           "book when it is built (`make book`). After the graphics: the tilemaps,",
+           "drawn where it is known how the game shows them, and the palettes.", ""]
     groups = {}
     for a in read_manifest():
         if a.png:
@@ -452,16 +561,73 @@ def gallery():
                     f'<img src="gallery/{a.path}.png" alt="{label}" '
                     f'width="{2 * snesgfx.read_png(a.source)[0]}" '
                     'style="image-rendering: pixelated">', ""]
+    links, previews = read_views()
+    tilemaps = [a for a in read_manifest() if a.tilemap]
+    if tilemaps:
+        out += ["## Tilemaps", "",
+                "The tilemap texts (`.tilemap`). Where `assets/views.txt` says how the",
+                "game shows one (the characters its load list puts in VRAM, the colours",
+                "of the palette task of the same screen), it is drawn with those",
+                "assets, so editing the tilemap, the graphics or the palette changes",
+                "the picture.", ""]
+        for a in tilemaps:
+            label = a.path.split("/")[1]
+            width = int(a.options.get("width", 0)) or snesmap.FORMATS[a.tilemap][1]
+            rows = len(data_bytes(a)) // snesmap.FORMATS[a.tilemap][0] // width
+            out += [f"### {label}", "", f"`{a.source}`: {a.tilemap}, {width}x{rows} cells, {a.kind}.", ""]
+            view = previews.get(a.path)
+            if view:
+                chars = ", ".join(f"`{c.split('@')[0].split('/')[-1]}`" for c in view["chars"].split(","))
+                pals = ", ".join(f"`{c.split('@')[0].split('/')[-1]}`" for c in view["palette"].split(","))
+                out += [f"Drawn with {chars} and {pals}.", "",
+                        f'<img src="gallery/{a.path}.png" alt="{label}" '
+                        f'width="{min(512, 8 * width * (2 if width <= 32 else 1))}" '
+                        'style="image-rendering: pixelated">', ""]
+            else:
+                out += ["No preview (see [Assets](assets.md#tilemaps)).", ""]
+    pals = [a for a in read_manifest() if a.gpl]
+    if pals:
+        out += ["## Palettes", "",
+                "The palettes (`.gpl`), 16 colours per row. The graphics above whose",
+                "colours are those of one of them (`assets/views.txt`) take its colours",
+                "(`python3 tools/assets.py sync-palettes`).", ""]
+        users = {}
+        for png, (p, first) in links.items():
+            users.setdefault(p, []).append(f"`{png.split('/')[-1]}`")
+        for a in pals:
+            label = a.path.split("/")[1]
+            n = len(snespal.read_gpl(a.source))
+            used = f" Colours of {', '.join(users[a.path])}." if a.path in users else ""
+            out += [f"### {label}", "",
+                    f"`{a.source}`: {n} colour{'s' if n > 1 else ''} ({a.gpl}).{used}", "",
+                    f'<img src="gallery/{a.path}.png" alt="{label}" '
+                    f'width="{16 * min(n, 16)}" style="image-rendering: pixelated">', ""]
     return "\n".join(out)
 
 
 def gallery_copy(dest):
     import shutil
-    for a in read_manifest():
+    manifest = {a.path: a for a in read_manifest()}
+    _links, previews = read_views()
+    for a in manifest.values():
+        out = os.path.join(dest, "gallery", a.path + ".png")
+        if not (a.png or a.gpl or a.path in previews):
+            continue
+        os.makedirs(os.path.dirname(out), exist_ok=True)
         if a.png:
-            out = os.path.join(dest, "gallery", a.path + ".png")
-            os.makedirs(os.path.dirname(out), exist_ok=True)
             shutil.copyfile(a.source, out)
+        elif a.gpl:
+            # a swatch: 16 colours per row, 8x8 pixels each
+            words = snespal.read_gpl(a.source)
+            W, H = 8 * min(len(words), 16), 8 * ((len(words) + 15) // 16)
+            pixels = bytearray(W * H)
+            for i in range(len(words)):
+                for y in range(8):
+                    p = (i // 16 * 8 + y) * W + i % 16 * 8
+                    pixels[p:p + 8] = bytes([i]) * 8
+            snesgfx.write_png(out, W, H, pixels, [snespal.rgb(w) for w in words])
+        else:
+            snesgfx.write_png(out, *render_preview(a, previews[a.path], manifest))
 
 
 def main(argv):
@@ -480,6 +646,9 @@ def main(argv):
         for a in read_manifest():
             size = len(data_bytes(a))
             print(f"{a.path:32} {a.kind:6} {a.png or '-':6} {size:7}")
+    elif cmd == "sync-palettes":
+        for p in sync_palettes():
+            print(f"{p}: palette updated")
     elif cmd == "normalize":
         for a in read_manifest():
             if a.gpl and snespal.normalize(a.source):

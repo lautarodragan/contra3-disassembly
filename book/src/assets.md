@@ -4,20 +4,23 @@ The graphics, the compressed streams the game decompresses to WRAM and the
 sound CPU data are not `.byte` lines in `src/`: each block is a file under
 `assets/`, included with `.incbin` right after its label. The graphics are
 indexed PNGs that the build converts back to the game's tile format and
-compresses, byte for byte the original. This page gives the layout, the
-formats, how to edit a graphic, and what was left as it was, and why.
+compresses, byte for byte the original; the palettes and the tilemaps are
+text files (GIMP palettes, grids of hex numbers) that it converts the same
+way. This page gives the layout, the formats, how to edit a graphic, a
+palette or a tilemap, and what was left as it was, and why.
 
 ## Layout
 
 ```
 assets/manifest.txt          every asset: its path and how the build makes it
 assets/gfx/<label>.png       graphics (VRAM streams, td_sprite_tiles_16)
-assets/gfx/<label>.bin       tilemaps loaded to VRAM
+assets/gfx/<label>.tilemap   tilemaps loaded to VRAM (text)
 assets/wram/<label>.png      the player's tiles (streams decompressed to WRAM $7F)
 assets/wram/<label>.bin      the other streams decompressed to WRAM
 assets/sound/<label>.bin     sound CPU data
 assets/palettes/<label>.gpl  palettes (GIMP palettes)
-build/assets/<dir>/<label>.bin   the tiles of a PNG, the bytes of a palette, made by the build
+assets/views.txt             how the gallery shows them (viewing only)
+build/assets/<dir>/<label>.bin   the bytes of a PNG, palette or tilemap, made by the build
 build/assets/<dir>/<label>.lz    the compressed streams, made by the build
 ```
 
@@ -30,9 +33,10 @@ gfx_0891DE:
 	.incbin	"gfx/gfx_0891DE.lz"
 ```
 
-A compressed stream is stored **decompressed**: `assets/gfx/gfx_0891DE.bin`
-holds the 512 bytes the game decompresses to VRAM (a tilemap), and the
-build compresses them into `build/assets/gfx/gfx_0891DE.lz` with
+A compressed stream is stored **decompressed**: `assets/gfx/gfx_0891DE.tilemap`
+holds the 512 bytes the game decompresses to VRAM (a tilemap, as text), the
+build converts them back to `build/assets/gfx/gfx_0891DE.bin` and compresses
+them into `build/assets/gfx/gfx_0891DE.lz` with
 `tools/c3lz.py`. The `.lz` file is the whole stream, its length word
 included, so the size of the stream in the ROM is whatever the compressor
 makes of the data. A graphic is stored as a PNG: the build converts
@@ -43,7 +47,7 @@ those.
 `assets/manifest.txt` says how each asset is made, one line per asset:
 
 ```
-gfx/gfx_0891DE                   lz-v2
+gfx/gfx_0891DE                   lz-v2  tilemap=bg
 gfx/gfx_089249                   lz-v1  png=mode7 tiles=118 tail=00
 gfx/gfx_089D7E                   lz-v2  png=2bpp tiles=253
 sound/spc_block_1D8002           raw
@@ -58,7 +62,8 @@ sound/spc_block_1D8002           raw
   is the first `tiles` tiles of `assets/<path>.png` in that format, followed
   by the bytes that `tail` gives in hex (see [Graphics](#graphics-png));
 - with `gpl=LAYOUT`, it is the palette `assets/<path>.gpl` (see
-  [Palettes](#palettes-gimp-gpl)).
+  [Palettes](#palettes-gimp-gpl)); with `tilemap=FORMAT`, the tilemap text
+  `assets/<path>.tilemap` (see [Tilemaps](#tilemaps)).
 
 ca65 looks the included path up in `assets/`, then in `build/assets/`:
 every assembly of `src/` passes `--bin-include-dir assets
@@ -118,6 +123,10 @@ The WRAM streams are moved too although what they decompress to is not
 checked for pointers yet: the compressed bytes cannot hold a label either
 way, so moving them to a file changes nothing for shifting.
 
+Later, by the same rule: 48 palettes (3,908 bytes in the ROM, see
+[Palettes](#palettes-gimp-gpl)), and the 18 tilemaps among the streams
+above became text files (see [Tilemaps](#tilemaps)).
+
 ## What stays inline, and why
 
 - `gfx_07E9FE`: `draw_td_item_metasprite` reads one byte past the last
@@ -131,7 +140,7 @@ way, so moving them to a file changes nothing for shifting.
 - `td_sprite_tiles_13`: the `td_tiles` records only use its first `$A00`
   bytes; the `$1600` bytes after them are not referenced, so where the
   block really ends is not known.
-- Five palette blocks of bank `$08` and the colours in them (see
+- Six palette blocks of bank `$08` (see
   [Palettes](#palettes-gimp-gpl)), and the tables: banks `$05`-`$07` hold
   pointers.
 
@@ -203,16 +212,20 @@ those moments and keep a grey ramp. An asset shown
 with several palettes (a sprite sheet shared by enemies of several
 colours) has the most frequent one.
 
+71 PNGs have colours that are those of exactly one palette asset (an
+aligned or unaligned run of 2, 16 or 256 colours of it); `assets/views.txt`
+links them (a line `palette`, the PNG, the palette, the first colour). `python3 tools/assets.py
+sync-palettes` copies the palette's colours into those PNGs, so after
+editing a palette, run it to see the graphics in the new colours; `make
+assets-check` fails while a linked PNG's colours differ from its
+palette's. The others (14 whose colours are in several palettes, the
+font among them, the Mode 7 graphics, whose 256 colours come from several
+palettes, and the grey ones) keep their colours.
+
 The [Graphics gallery](gallery.md) shows all 97.
 
 ## Not graphics, or format not known: still `.bin`
 
-- the 18 tilemaps loaded to VRAM: `gfx_06EC94`, `gfx_06EF5C`,
-  `gfx_06F184`, `gfx_06F313`, `gfx_06F68F` (BG1/BG2 maps at `$4000`-`$4BFF`),
-  `gfx_06F84C`, `gfx_06F996`, `gfx_07F78E` (the BG3 map at `$5C00`),
-  `gfx_088FD4`, `gfx_0891DE`, `gfx_089225`, `gfx_18AAE3`, `gfx_18D15B`,
-  `gfx_18FAF5`, `gfx_19AB40`, `gfx_19D779`, `gfx_1EEBD0` (screen maps at
-  `$0000`-`$1FFF`) and `gfx_06FADF` (a Mode 7 tilemap, low bytes);
 - the 54 streams decompressed to WRAM bank `$7E`: what they hold
   (tilemaps, metatiles, collision data, graphics copied to VRAM later) is
   not worked out per stream yet;
@@ -220,8 +233,72 @@ The [Graphics gallery](gallery.md) shows all 97.
   directories, the samples and the songs; what each is and where it goes
   in the sound CPU's memory is in [Sound](sound.md#sound-cpu-memory).
 
-Not editable as files yet either: the tilemaps above as images or tables
-of tile numbers.
+## Tilemaps
+
+The 18 tilemaps loaded to VRAM are text files, `assets/gfx/<label>.tilemap`
+(`tilemap=` in the manifest, `tools/snesmap.py`):
+
+| format | assets | what |
+|---|---|---|
+| `bg` | 17 | BG maps (Mode 1): one VRAM word per 8x8 cell, 32 cells per row |
+| `mode7` | 1 (`gfx_06FADF`) | the Mode 7 map of the title logo: one byte per cell, 128x128 |
+
+- `gfx_06EF5C`, `gfx_06EC94` (BG1, `$4000` and `$4400`) and `gfx_06F184`
+  (BG2, `$4800`), loaded by `load_list_05A7DB`, and `gfx_06F313`,
+  `gfx_06F68F` (`load_list_05A807`): the opening's scenes
+  (`ptrs_05A7AF`; `opening_scene_blank` sets BG1SC `$41`, BG2SC `$49`);
+- `gfx_06F84C`, `gfx_06F996`, `gfx_07F78E`: the BG3 map at `$5C00` of the
+  closing message, one per difficulty (`ptrs_ending_message_loads`);
+- `gfx_088FD4` (`$1000`), `gfx_0891DE` (`$0000`, 8 rows) and `gfx_089225`
+  (`$0100`, 8 rows): the Konami logo (`load_list_0587AB`);
+- `gfx_18AAE3`, `gfx_18D15B`, `gfx_18FAF5`, `gfx_19AB40`, `gfx_19D779`: the
+  stage clear pictures; `gfx_1EEBD0`: the FINAL SCORE screen;
+- `gfx_06FADF`: the low bytes of VRAM `$0000`-`$3FFF` (`load_list_058539`,
+  a list of type 3 with flags bit 0 set).
+
+A `bg` cell is the word the PPU reads, `vhopppcc cccccccc`: vertical and
+horizontal flip, priority, palette (0-7) and character (0-1023). A 2,048-byte
+map is one 32x32 screen; the two 512-byte ones are 8 rows of one. The text
+has one line per row, one hex number per cell (four digits, or two for
+`mode7`), and `#` comments (a header that recalls the bits, the row
+number every 8 rows):
+
+```
+# gfx_0891DE
+# bg tilemap, 32x8 cells (tools/snesmap.py)
+...
+# row 0
+0800 0800 0800 0800 ...
+```
+
+Any text editor changes it; the build reads the numbers back (each row
+must have its 32 or 128 cells), so the round trip is exact. To convert
+another `.bin` that is a tilemap: `python3 tools/assets.py tilemap bg
+PATH` (it checks the round trip and records `tilemap=` in the manifest).
+Tiled and similar map editors are not used: their formats have no
+palette or priority bits per cell.
+
+**Previews.** A tilemap is drawn in the [gallery](gallery.md#tilemaps) when
+`assets/views.txt` says which characters and colours the game shows it
+with: the graphics assets its load list puts in VRAM (at their VRAM
+address), the BG's character base, and the palettes its palette task
+copies to CGRAM. 12 have one:
+
+- the five stage clear pictures: characters at `$2000` and `$3000` (the
+  BG12NBA `$22` of the screens), `palette_08882C` (`palette_task_058880`);
+- the FINAL SCORE screen: `gfx_1FE855`, `gfx_1AE9C9`, `palette_088B7A`
+  (`load_list_058976`, `palette_task_05898E`);
+- the five maps of the opening: the characters of `load_list_05A7DB` at
+  `$0000`-`$3FFF` (stage layout), `palette_0889F0`
+  (`palette_task_05A815`, from `opening_cinematic_init`);
+- the title logo (Mode 7): `gfx_089249`, `palette_0880AA`
+  (`load_title_graphics`).
+
+No preview: the Konami logo's three maps (their characters, `gfx_07E9FE`,
+stay inline, see above) and the three BG3 maps of the closing message
+(which colours CGRAM holds then is not worked out). The previews are
+made by `make book` (`gallery-copy`), from the assets: editing a tilemap,
+a graphic or a palette changes them.
 
 ## Palettes (GIMP .gpl)
 
@@ -308,6 +385,22 @@ goes into the ROM, so:
 Then run `make`. To start from a `.bin` that is not a PNG yet, `python3
 tools/assets.py topng FORMAT PATH` converts it and records `png=` in the
 manifest (it checks the round trip first).
+
+## Editing a palette or a tilemap
+
+A palette: open `assets/palettes/<label>.gpl` in GIMP (Windows > Dockable
+Dialogs > Palettes, then the palette editor), Aseprite (Presets > Load
+Palette) or a text editor, change colours, save as a GIMP palette, run
+`make`. Colours are 5 bits per component: a value between two SNES
+colours is rounded down (`make assets-check` names such lines;
+`python3 tools/assets.py normalize` writes them as the exact colours).
+Then `python3 tools/assets.py sync-palettes` gives the linked PNGs the new
+colours (for viewing). To check a palette in the game, `make emu-test`
+(the screenshots that show it will differ from the goldens).
+
+A tilemap: edit the hex numbers of `assets/gfx/<label>.tilemap` (keep 32
+cells per row, or 128 for `gfx_06FADF`, and the number of rows), run
+`make`; `make book` draws the previews again.
 
 ## Editing an asset
 

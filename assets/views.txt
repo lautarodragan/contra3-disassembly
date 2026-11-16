@@ -1,0 +1,107 @@
+# How the gallery shows assets (tools/assets.py, book: Assets).  Only for
+# viewing: nothing here changes the ROM.
+#
+# palette PNG PALETTE FIRST
+#   the viewing palette of the PNG asset is the colours of the palette
+#   asset from FIRST on (2, 16 or 256 of them): `python3 tools/assets.py
+#   sync-palettes` copies them into the PNG, `make assets-check` fails
+#   when they differ.  Listed where the colours tools/gfx_palettes.py found
+#   on screen are those of exactly one palette asset.
+# preview TILEMAP chars=ASSET@VRAMWORD,... [base=VRAMWORD] bpp=N palette=PALETTE@INDEX,...
+#   the gallery draws the tilemap with the characters of those assets,
+#   placed in VRAM where the game's load list puts them (base: the BG's
+#   character base; bpp: 2, 4, or 8 for Mode 7), and the colours of those
+#   palettes at those CGRAM indices (the palette tasks of the same screen).
+
+palette  gfx/gfx_06D6A7           palettes/palette_0889F0 32
+palette  gfx/gfx_08C078           palettes/palette_0889F0 64
+palette  gfx/gfx_08D8AF           palettes/palette_0889F0 64
+palette  gfx/gfx_098000           palettes/palette_088150 80
+palette  gfx/gfx_09998E           palettes/palette_088150 0
+palette  gfx/gfx_09B32D           palettes/palette_088150 0
+palette  gfx/gfx_09CD49           palettes/palette_088150 0
+palette  gfx/gfx_09EBBA           palettes/palette_088150 0
+palette  gfx/gfx_0AA37C           palettes/palette_088150 48
+palette  gfx/gfx_0AE033           palettes/palette_0882F8 48
+palette  gfx/gfx_0AE4A2           palettes/palette_088664 0
+palette  gfx/gfx_0BE86E           palettes/palette_08892E 16
+palette  gfx/gfx_0C8000           palettes/palette_0882F8 64
+palette  gfx/gfx_0C98A2           palettes/palette_0882F8 32
+palette  gfx/gfx_0CAFBF           palettes/palette_0882F8 48
+palette  gfx/gfx_0CC65E           palettes/palette_0882F8 0
+palette  gfx/gfx_0CDB2D           palettes/palette_0882F8 48
+palette  gfx/gfx_0CF4BD           palettes/palette_0882F8 48
+palette  gfx/gfx_0DA728           palettes/palette_088254 32
+palette  gfx/gfx_0DBCEB           palettes/palette_0883BA 0
+palette  gfx/gfx_0DC2FE           palettes/palette_0883BA 0
+palette  gfx/gfx_0DC90C           palettes/palette_088254 32
+palette  gfx/gfx_0DD6D3           palettes/palette_088254 32
+palette  gfx/gfx_0DDC20           palettes/palette_088254 32
+palette  gfx/gfx_0DE218           palettes/palette_08841C 0
+palette  gfx/gfx_0DEF88           palettes/palette_088254 32
+palette  gfx/gfx_0E8000           palettes/palette_088254 32
+palette  gfx/gfx_0E8651           palettes/palette_088602 32
+palette  gfx/gfx_0E8C89           palettes/palette_0883BA 0
+palette  gfx/gfx_0E8F5B           palettes/palette_088602 32
+palette  gfx/gfx_0E9584           palettes/palette_088254 32
+palette  gfx/gfx_0E9F5E           palettes/palette_088254 32
+palette  gfx/gfx_0EB8F7           palettes/palette_0882B6 0
+palette  gfx/gfx_0EC024           palettes/palette_088728 16
+palette  gfx/gfx_0EDA4E           palettes/palette_088254 0
+palette  gfx/gfx_0EDD88           palettes/palette_088254 32
+palette  gfx/gfx_0F8000           palettes/palette_08843E 64
+palette  gfx/gfx_0F9460           palettes/palette_08843E 112
+palette  gfx/gfx_0FAC90           palettes/palette_08843E 80
+palette  gfx/gfx_0FC8E5           palettes/palette_08843E 32
+palette  gfx/gfx_0FD147           palettes/palette_08843E 80
+palette  gfx/gfx_109C17           palettes/palette_088540 64
+palette  gfx/gfx_10B927           palettes/palette_088540 0
+palette  gfx/gfx_10D5A2           palettes/palette_088540 48
+palette  gfx/gfx_119D0E           palettes/palette_088540 64
+palette  gfx/gfx_14A86D           palettes/palette_088254 32
+palette  gfx/gfx_16BE91           palettes/palette_088CE0 48
+palette  gfx/gfx_17B953           palettes/palette_088AF6 0
+palette  gfx/gfx_17CE4D           palettes/palette_0889F0 16
+palette  gfx/gfx_17E599           palettes/palette_088150 80
+palette  gfx/gfx_188000           palettes/palette_08843E 64
+palette  gfx/gfx_1899A4           palettes/palette_08892E 16
+palette  gfx/gfx_18AF20           palettes/palette_08892E 16
+palette  gfx/gfx_18C896           palettes/palette_08892E 16
+palette  gfx/gfx_18D4E3           palettes/palette_088254 0
+palette  gfx/gfx_18E9DF           palettes/palette_08892E 16
+palette  gfx/gfx_198000           palettes/palette_08892E 16
+palette  gfx/gfx_199AB1           palettes/palette_08892E 16
+palette  gfx/gfx_19AF8C           palettes/palette_08892E 16
+palette  gfx/gfx_19CAB9           palettes/palette_08892E 16
+palette  gfx/gfx_19EF62           palettes/palette_0889F0 16
+palette  gfx/gfx_1FE855           palettes/palette_0886C6 0
+palette  wram/packed_0B8000       palettes/palette_088254 0
+palette  wram/packed_0B935C       palettes/palette_088254 0
+palette  wram/packed_0BAA9C       palettes/palette_088254 0
+palette  wram/packed_0BBCFD       palettes/palette_088254 0
+palette  wram/packed_0BC6A1       palettes/palette_0882B6 0
+palette  wram/packed_0BD88C       palettes/palette_088254 0
+palette  wram/packed_11CDEA       palettes/palette_0882B6 0
+palette  wram/packed_11DF75       palettes/palette_0882B6 0
+palette  wram/packed_12CFEE       palettes/palette_088DA4 0
+
+# The stage clear pictures (ptrs_stage_clear_pictures, load_list_058808 to
+# load_list_058868: maps at $0000, characters at $2000 and $3000 for the
+# BG12NBA $22 of the screens) in palette_task_058880's colours
+preview gfx/gfx_18AAE3  chars=gfx/gfx_188000@2000,gfx/gfx_1899A4@3000 base=2000 bpp=4 palette=palettes/palette_08882C@0
+preview gfx/gfx_18D15B  chars=gfx/gfx_18AF20@2000,gfx/gfx_18C896@3000 base=2000 bpp=4 palette=palettes/palette_08882C@0
+preview gfx/gfx_18FAF5  chars=gfx/gfx_18D4E3@2000,gfx/gfx_18E9DF@3000 base=2000 bpp=4 palette=palettes/palette_08882C@0
+preview gfx/gfx_19AB40  chars=gfx/gfx_198000@2000,gfx/gfx_199AB1@3000 base=2000 bpp=4 palette=palettes/palette_08882C@0
+preview gfx/gfx_19D779  chars=gfx/gfx_19AF8C@2000,gfx/gfx_19CAB9@3000 base=2000 bpp=4 palette=palettes/palette_08882C@0
+# The FINAL SCORE screen (load_list_058976, palette_task_05898E)
+preview gfx/gfx_1EEBD0  chars=gfx/gfx_1FE855@2000,gfx/gfx_1AE9C9@3000 base=2000 bpp=4 palette=palettes/palette_088B7A@0
+# The opening's BG1/BG2 maps (load_list_05A7DB, load_list_05A807; the
+# stage layout, characters from $0000) in palette_task_05A815's colours
+preview gfx/gfx_06EF5C  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 base=0000 bpp=4 palette=palettes/palette_0889F0@0
+preview gfx/gfx_06EC94  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 base=0000 bpp=4 palette=palettes/palette_0889F0@0
+preview gfx/gfx_06F184  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 base=0000 bpp=4 palette=palettes/palette_0889F0@0
+preview gfx/gfx_06F313  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 base=0000 bpp=4 palette=palettes/palette_0889F0@0
+preview gfx/gfx_06F68F  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 base=0000 bpp=4 palette=palettes/palette_0889F0@0
+# The title logo, Mode 7 (load_title_graphics: load_list_058527 the
+# characters, load_list_058539 the map; palette_task_05854B)
+preview gfx/gfx_06FADF  chars=gfx/gfx_089249@0000 bpp=8 palette=palettes/palette_0880AA@0
