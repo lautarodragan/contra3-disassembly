@@ -186,6 +186,7 @@ c.hold("right", "y"); c.run(600)
 c.image().save("shot.png")
 c.peek(game.LIVES_P1)
 state = c.save_state(); c.load_state(state)
+c.cgram()                       # CGRAM: 256 words, from the save state (snes9x)
 c.watch(0x1F8A); c.run(1000); print(c.watch_log())   # who writes the lives counter
 log = c.cdl_snapshot(); log.save("out/my.cdl")
 ```

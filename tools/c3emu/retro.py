@@ -325,6 +325,21 @@ class Console:
         base, total = self._mem(MEMORY_VIDEO_RAM)
         return ctypes.string_at(base, total)
 
+    def cgram(self):
+        """CGRAM as the PPU holds it now: 256 BGR555 words.  libretro does
+        not expose it, so it is read from a save state: snes9x's ("#!s9xsnp:")
+        `PPU:` block, whose CGDATA (256 big-endian words) is 64 bytes into
+        the block (snapshot.cpp, SnapPPU: the VMA, BG and mode fields before
+        it).  Other cores: RuntimeError.  The game's palette_buffer
+        ($7E:2200) is what the next NMI copies there, when it does."""
+        state = self.save_state()
+        at = state.find(b"PPU:")
+        if not state.startswith(b"#!s9xsnp:") or at < 0:
+            raise RuntimeError("cgram(): not a snes9x save state")
+        data = at + 11                  # "PPU:" + 6-digit length + ":"
+        raw = state[data + 64:data + 64 + 512]
+        return [raw[i] << 8 | raw[i + 1] for i in range(0, 512, 2)]
+
     # -- video ----------------------------------------------------------------
 
     def image(self):
