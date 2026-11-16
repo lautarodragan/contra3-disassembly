@@ -13,7 +13,7 @@ palette or a tilemap, and what was left as it was, and why.
 
 ```
 assets/manifest.txt          every asset: its path and how the build makes it
-assets/gfx/<label>.png       graphics (VRAM streams, td_sprite_tiles_16)
+assets/gfx/<label>.png       graphics (VRAM streams, td_sprite_tiles_13/14/16)
 assets/gfx/<label>.tilemap   tilemaps loaded to VRAM (text)
 assets/wram/<label>.png      graphics decompressed to WRAM, copied to VRAM later
 assets/wram/<label>.map     the stages' maps, decompressed to WRAM (text)
@@ -65,7 +65,8 @@ sound/spc_sample_dir_stage1      raw    dir=sound/spc_samples_common,sound/spc_s
   data with that version of the game's encoder (it came in two versions,
   see [Compression](compression.md#two-versions));
 - `raw`: the source includes `<path>.bin`, the data as it is (the
-  uncompressed sound blocks and `td_sprite_tiles_16`);
+  uncompressed sound blocks and the raw sprite tiles `td_sprite_tiles_13`,
+  `td_sprite_tiles_14`, `td_sprite_tiles_16`);
 - without `png=`, the data is `assets/<path>.bin`; with `png=FORMAT`, it
   is the first `tiles` tiles of `assets/<path>.png` in that format, followed
   by the bytes that `tail` gives in hex (see [Graphics](#graphics-png));
@@ -117,22 +118,24 @@ reads into it or past it:
 - the end comes from the data: a compressed stream starts with its length
   (the decompressor stops there); an uncompressed sound block has its size
   in its `load_spc_raw` entry; the raw sprite
-  tiles `td_sprite_tiles_16` are `$1800` bytes, the end of the last
-  `td_tiles` record that uses them (`+$1700`, `$100` bytes);
+  tiles (`td_sprite_tiles_13`, `_14`, `_16`) end where the last `td_tiles`
+  record that uses them ends (`td_sprite_tiles_16`: `+$1700`, `$100`
+  bytes, so `$1800`; see [Size limits](#size-limits) for the frames of two
+  16x16 sprites);
 - the block's `.byte` lines hold only those bytes (no code, no other label,
   no `LAYOUT` comment saying that something reads across its bounds).
 
-That is 199 blocks, 709,486 bytes in the ROM:
+That is 203 blocks, 728,408 bytes in the ROM:
 
 | assets | blocks | in the ROM | stored |
 |---|---|---|---|
-| `gfx/`, compressed | 98 | 376,310 | 549,343 decompressed |
-| `gfx/`, `td_sprite_tiles_16` | 1 | 6,144 | 6,144 |
+| `gfx/`, compressed | 100 | 384,480 | 560,895 decompressed |
+| `gfx/`, raw sprite tiles (`td_sprite_tiles_13`, `_14`, `_16`) | 3 | 16,896 | 16,896 |
 | `wram/`, compressed | 70 | 172,344 | 321,032 decompressed |
 | `sound/`, compressed | 11 | 43,951 | 59,454 decompressed |
 | `sound/`, uncompressed | 19 | 110,737 | 110,737 |
 
-Of the 179 streams, 40 need `lz-v1` and 139 are made with `lz-v2` (66 of
+Of the 181 streams, 40 need `lz-v1` and 141 are made with `lz-v2` (66 of
 these come out the same with either).
 
 The two bytes that follow some sound blocks on the same `.byte` line (the
@@ -151,30 +154,57 @@ Later, by the same rule: 48 palettes (3,908 bytes in the ROM, see
 [Palettes](#palettes-gimp-gpl)), and the 18 tilemaps among the streams
 above became text files (see [Tilemaps](#tilemaps)).
 
+## The last four blocks
+
+Four blocks stayed inline longer, for reasons that turned out not to hold:
+
+- `gfx_07E9FE` (the Konami logo's characters): `draw_td_item_metasprite`
+  reads the attributes of each sprite as a word (`lda a:$0004,y`), so for
+  the last sprite of a metasprite it also reads the byte after it, and the
+  byte after `metasprite_07E9ED` is the first byte of this stream's length
+  word. But it only keeps bit 0 of the low byte (`lsr a`: the carry, the
+  sprite's size) and A is reloaded before any other use, so that byte
+  changes nothing. Checked in the emulator: a build with a `$00` or `$FF`
+  byte inserted before each of the 20 item metasprites and before this
+  stream (so that every one of those reads gets another value) gives the
+  same OAM buffer as the original on every game frame of the top-down
+  plays, with every pick-up turned into the laser's
+  (`metasprite_07E9ED`) so that it is drawn (on screen on some 2,400 frames).
+  The 20 `LAYOUT:` comments of the item metasprites are gone with it.
+- `gfx_14DC62` and `td_sprite_tiles_14`: the centipede's last `td_tiles`
+  record (`td_tiles_07A3EA`) DMAs `$100` bytes from `td_sprite_tiles_14 +
+  $1F80`, `$80` of them past its end, from the start of this stream. That
+  record (like `td_tiles_07A384`, `_07A3B4`, `_07A3BA`) is a frame of two
+  16x16 sprites: `$80` bytes of top tiles, `$80` of bottom tiles, and the
+  DMA of its second half puts `$80` more bytes in VRAM tiles that its
+  metasprites (`metasprite_07E1B6`, `metasprite_07E2C6`: tiles 0 and 2
+  only) do not show. Checked in the emulator: with `$80` other bytes
+  inserted before `gfx_14DC62`, the sprite VRAM differs on the frames that
+  use the record (some 1,900 game frames in the plays of stages 2 and 5,
+  2-player included) and the screen is the same on every game frame. So
+  the two blocks are independent; what remains is that those `$80` bytes
+  are in the bank (the DMA address does not carry into the bank byte),
+  which the `td_tiles` macro checks (`.assert`), and the size check counts
+  `$80` for those halves (see [Size limits](#size-limits)).
+- `td_sprite_tiles_13`: the `td_tiles` records (`td_tiles_0790FA` to
+  `td_tiles_079112`) use its first `$A00` bytes; the `$1600` bytes after
+  them, up to `gfx_13CC02`, are all zero, no label or pointer reaches them
+  and the CDL never saw them read. The tiles are the `$A00` bytes (80
+  tiles), the zeros a `.res $1600, $00` after the include.
+
 ## What stays inline, and why
 
-- `gfx_07E9FE`: `draw_td_item_metasprite` reads one byte past the last
-  sprite of the metasprite before, which is the first byte of this
-  stream's length word (its `LAYOUT` comment). Changing the stream's size
-  would change that byte.
-- `gfx_14DC62`: the last `td_tiles` record of the centipede DMAs `$100`
-  bytes from `td_sprite_tiles_14 + $1F80`, `$80` of them from the start of
-  this stream.
-- `td_sprite_tiles_14`: for the same reason (a record reads past its end).
-- `td_sprite_tiles_13`: the `td_tiles` records only use its first `$A00`
-  bytes; the `$1600` bytes after them are not referenced, so where the
-  block really ends is not known.
 - Six palette blocks of bank `$08` (see
   [Palettes](#palettes-gimp-gpl)), and the tables: banks `$05`-`$07` hold
   pointers.
 
 ## Graphics (PNG)
 
-110 assets are graphics whose format is known, stored as indexed PNGs:
+114 assets are graphics whose format is known, stored as indexed PNGs:
 
 | format | assets | what |
 |---|---|---|
-| `4bpp` | 74 VRAM streams, `td_sprite_tiles_16`, 26 WRAM streams | BG1/BG2 characters and sprites: 32 bytes per 8x8 tile, 16 colours |
+| `4bpp` | 76 VRAM streams, `td_sprite_tiles_13`, `_14`, `_16`, 26 WRAM streams | BG1/BG2 characters and sprites: 32 bytes per 8x8 tile, 16 colours |
 | `2bpp` | 1 (`gfx_089D7E`, the font) | BG3 characters: 16 bytes per tile, 4 colours |
 | `mode7` | 5 VRAM streams (`gfx_089249`, `gfx_13CC02`, `gfx_148000`, `gfx_158000`, `gfx_168000`), 3 WRAM streams (`stage1_bomber_m7_chars`, `stage2_boss_m7_chars`, `stage5_boss_m7_chars`) | Mode 7 characters: 64 bytes per tile, one byte per pixel, 256 colours |
 
@@ -205,8 +235,8 @@ How the format of each was worked out, from where it is loaded:
 - the WRAM streams of bank `$7F` (`$7F:0000`-`$7F:FFFF`, two sets of eight
   `$2000`-byte streams, loaded by different lists) are sprite tiles that
   the NMI copies from WRAM to sprite VRAM (the player's frames,
-  `player_frames`): 4bpp; `td_sprite_tiles_16` is DMAd to sprite VRAM:
-  4bpp;
+  `player_frames`): 4bpp; the raw tiles `td_sprite_tiles_13`, `_14`,
+  `_16` are DMAd to sprite VRAM: 4bpp;
 - 13 WRAM streams of bank `$7E` are graphics copied to VRAM later, by
   code that names their WRAM address (see
   [WRAM streams of bank $7E](#wram-streams-of-bank-7e)): the format
@@ -245,9 +275,13 @@ three sets of Mode 7 characters (`stage1_bomber_m7_chars`,
 `stage2_boss_m7_chars`, `stage5_boss_m7_chars`) are not seen by it (the
 bomber is Mode 7 only in an HDMA band, and the bosses' characters were not
 matched), so they have the 256 colours of `palette_buffer` at a frame of
-the scripted play where they are on screen.
+the scripted play where they are on screen. The four blocks moved last
+(see [The last four blocks](#the-last-four-blocks)) got theirs from the
+same tool too: `gfx_07E9FE` has `palette_088022` (linked),
+`td_sprite_tiles_13` and `td_sprite_tiles_14` `palette_088DA4` (linked,
+the colours they were seen with); `gfx_14DC62` was never seen and keeps a grey ramp.
 
-71 PNGs have colours that are those of exactly one palette asset (an
+74 PNGs have colours that are those of exactly one palette asset (an
 aligned or unaligned run of 2, 16 or 256 colours of it); `assets/views.txt`
 links them (a line `palette`, the PNG, the palette, the first colour). `python3 tools/assets.py
 sync-palettes` copies the palette's colours into those PNGs, so after
@@ -257,7 +291,7 @@ palette's. The others (14 whose colours are in several palettes, the
 font among them, the Mode 7 graphics, whose 256 colours come from several
 palettes, and the grey ones) keep their colours.
 
-The [Graphics gallery](gallery.md) shows all 110.
+The [Graphics gallery](gallery.md) shows all 114.
 
 ## Not graphics, or format not known: still `.bin`
 
@@ -324,7 +358,7 @@ palette or priority bits per cell.
 `assets/views.txt` says which characters and colours the game shows it
 with: the graphics assets its load list puts in VRAM (at their VRAM
 address), the BG's character base, and the palettes its palette task
-copies to CGRAM. 15 have one:
+copies to CGRAM. 18 have one:
 
 - the five stage clear pictures: characters at `$2000` and `$3000` (the
   BG12NBA `$22` of the screens), `palette_08882C` (`palette_task_058880`);
@@ -333,6 +367,10 @@ copies to CGRAM. 15 have one:
 - the five maps of the opening: the characters of `load_list_05A7DB` at
   `$0000`-`$3FFF` (stage layout), `palette_0889F0`
   (`palette_task_05A815`, from `opening_cinematic_init`);
+- the Konami logo's three maps (BG1 at `$0000`, BG2 at `$1000`, BG1SC
+  `$01`, BG2SC `$11`): `gfx_07E9FE` at `$2000`, `palette_088022` (palettes
+  0-2) and `palette_088000` (palette 3), as `palette_task_0587C3` copies
+  them (`konami_logo_init`);
 - the title logo (Mode 7): `gfx_089249`, `palette_0880AA`
   (`load_title_graphics`);
 - the three closing messages: the stage's font `gfx_089D7E` at `$5000`
@@ -341,10 +379,8 @@ copies to CGRAM. 15 have one:
   `ending_sequence_state_18`; read from CGRAM in the emulator while the
   message is up, the same on the three difficulties).
 
-No preview: the Konami logo's three maps (their characters, `gfx_07E9FE`,
-stay inline, see above). The previews are
-made by `make book` (`gallery-copy`), from the assets: editing a tilemap,
-a graphic or a palette changes them.
+The previews are made by `make book` (`gallery-copy`), from the assets:
+editing a tilemap, a graphic or a palette changes them.
 
 ## WRAM streams of bank $7E
 
@@ -772,22 +808,27 @@ source shows.
 
 **Recorded in the manifest.** A capacity depends on the original size (which
 blocks of other lists the original covers), which an edited asset no longer
-has, so 242 assets have it recorded as `max=` (hex) on their manifest
-line: the 179 streams, the 44 palette blocks and the 19 uncompressed sound
+has, so 244 assets have it recorded as `max=` (hex) on their manifest
+line: the 181 streams, the 44 palette blocks and the 19 uncompressed sound
 blocks (their size words are `<label>_size`, computed by the assembler). `make assets-check` (`python3 tools/assets.py
 limits --verify`) checks that every `max=` is still what the source gives,
 so a changed data list cannot leave a stale limit behind, that every
 asset a list loads has one, and that a limit the source cannot give (the
-original size above) has its `# limit:` comment. 90 assets have room
+original size above) has its `# limit:` comment. 92 assets have room
 (their limit is larger than their data); the others are full.
 
 Some sizes are fixed rather than limited, and must match exactly:
 
 - a sound block whose `load_spc_raw` entry gives its size as a number
   (none at present): that number (the uploader sends that many bytes);
-- `td_sprite_tiles_16`: `$1800` bytes, `$100` past the `td_tiles` record with
-  the largest offset (`stream_topdown_sprite_gfx` DMAs `$100` bytes from each
-  half of a record);
+- the raw sprite tiles (`td_sprite_tiles_13`: `$A00` bytes, `_14`: `$2000`,
+  `_16`: `$1800`): `$100` past the `td_tiles` record with the largest offset
+  (`stream_topdown_sprite_gfx` DMAs `$100` bytes from each half of a
+  record), or `$80` past the second half of a frame of two 16x16 sprites (a
+  record whose second half starts `$80` after its first): the DMA reads
+  `$100` there too, but the last `$80` go to tiles the frame does not show,
+  so they may be whatever follows in the bank (`td_tiles_07A3EA`; the
+  `td_tiles` macro checks that both halves end in their bank);
 - the 4 palettes with `colours=16` (checked by `tools/snespal.py`);
 - inside the sound driver (`spc_driver`, `max=$2E00`, always that size):
   its code and tables stay at their addresses and its sound effects must end

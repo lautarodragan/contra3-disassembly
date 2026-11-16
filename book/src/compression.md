@@ -92,9 +92,7 @@ blocks of each.
 
 The build compresses every stream from its decompressed data (a PNG or a
 `.bin`, see [Assets](assets.md)), so it needs to know which version made each one:
-`assets/manifest.txt` gives it (`lz-v1` or `lz-v2`) per stream. The two
-streams still inline in the source (`gfx_07E9FE`, `gfx_14DC62`, see
-[Assets](assets.md#what-stays-inline-and-why)) are the ROM's bytes.
+`assets/manifest.txt` gives it (`lz-v1` or `lz-v2`) per stream.
 
 ### Why this is an LZSS.C descendant
 

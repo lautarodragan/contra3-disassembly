@@ -209,7 +209,7 @@ and other routines of the engine that nothing calls.
 
 Many tables in bank `$05` share bytes with their neighbours, or are read
 beyond their label. The source marks the second kind with a `LAYOUT:`
-comment (155 of them; `grep -rn "LAYOUT:" src`), and
+comment (134 of them; `grep -rn "LAYOUT:" src`), and
 [Shiftability](shiftability.md#known-fixed-references) explains why they
 matter for anyone who moves data. By kind:
 
@@ -263,9 +263,7 @@ label is two bytes before its row.
 `stage2_boss_pod_offsets_y` into `stage2_boss_pod_offsets_x`: the x value
 is the y table read a quarter turn further on.
 
-**Records that run into the next one.** `draw_td_item_metasprite` reads a
-fifth byte after the last sprite of a top-down item metasprite, which is
-the next metasprite's count (20 comments); `copy_hdma_table` copies HDMA
+**Records that run into the next one.** `copy_hdma_table` copies HDMA
 tables with a fixed length, past the end of the shorter ones (9);
 `build_split_line_table` searches on past the end of a split line table
 into the next (8); three side-view metasprites share their tail sprites
@@ -274,10 +272,17 @@ that a palette task copies alone; some VRAM block lists start on an entry
 inside the list before, which `queue_vram_blocks` also reaches by reading
 on.
 
-**Read past the end, into something else.** The last top-down centipede
-frame (`td_tiles_07A3EA`) DMAs `$100` bytes from `td_sprite_tiles_14 +
-$1F80`, so half of them come from the compressed graphics after it
-(`gfx_14DC62`): those 128 bytes of sprite graphics are compressed data.
+**Read past the end, to no effect.** `draw_td_item_metasprite` reads the
+attributes of each sprite of a top-down item as a word, so it also reads
+the byte after the last sprite (the next metasprite's count; after the
+laser's, `metasprite_07E9ED`, the first byte of the Konami logo's
+characters, `gfx_07E9FE`), and only keeps bit 0 of the low byte. The last
+top-down centipede frame (`td_tiles_07A3EA`) DMAs `$100` bytes from
+`td_sprite_tiles_14 + $1F80`, so half of them come from the compressed
+graphics after it (`gfx_14DC62`): 128 bytes of compressed data go to
+sprite VRAM, into tiles that frame (two 16x16 sprites, tiles 0 and 2) does
+not show. Both were checked in the emulator with other bytes there
+([Assets](assets.md#the-last-four-blocks)).
 
 **Labels in the middle of a table.** Most of the remaining comments are tables the code indexes beyond their label because the CDL split
 one table into blocks: `brain_boss_attack_4_slots` (two words, `$0400` and

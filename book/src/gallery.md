@@ -15,6 +15,12 @@ drawn where it is known how the game shows them, and the palettes.
 
 <img src="gallery/gfx/gfx_06D6A7.png" alt="gfx_06D6A7" width="256" style="image-rendering: pixelated">
 
+### gfx_07E9FE
+
+`assets/gfx/gfx_07E9FE.png`: 4bpp, 160 tiles, lz-v2.
+
+<img src="gallery/gfx/gfx_07E9FE.png" alt="gfx_07E9FE" width="256" style="image-rendering: pixelated">
+
 ### gfx_089249
 
 `assets/gfx/gfx_089249.png`: mode7, 118 tiles, tail `00`, lz-v1.
@@ -357,6 +363,12 @@ drawn where it is known how the game shows them, and the palettes.
 
 <img src="gallery/gfx/gfx_14A86D.png" alt="gfx_14A86D" width="256" style="image-rendering: pixelated">
 
+### gfx_14DC62
+
+`assets/gfx/gfx_14DC62.png`: 4bpp, 201 tiles, lz-v2.
+
+<img src="gallery/gfx/gfx_14DC62.png" alt="gfx_14DC62" width="256" style="image-rendering: pixelated">
+
 ### gfx_14F0F8
 
 `assets/gfx/gfx_14F0F8.png`: 4bpp, 101 tiles, lz-v2.
@@ -488,6 +500,18 @@ drawn where it is known how the game shows them, and the palettes.
 `assets/gfx/gfx_1FE855.png`: 4bpp, 256 tiles, lz-v2.
 
 <img src="gallery/gfx/gfx_1FE855.png" alt="gfx_1FE855" width="256" style="image-rendering: pixelated">
+
+### td_sprite_tiles_13
+
+`assets/gfx/td_sprite_tiles_13.png`: 4bpp, 80 tiles, raw.
+
+<img src="gallery/gfx/td_sprite_tiles_13.png" alt="td_sprite_tiles_13" width="256" style="image-rendering: pixelated">
+
+### td_sprite_tiles_14
+
+`assets/gfx/td_sprite_tiles_14.png`: 4bpp, 256 tiles, raw.
+
+<img src="gallery/gfx/td_sprite_tiles_14.png" alt="td_sprite_tiles_14" width="256" style="image-rendering: pixelated">
 
 ### td_sprite_tiles_16
 
@@ -755,19 +779,25 @@ Drawn with `gfx_089D7E` and `palette_08F01A`.
 
 `assets/gfx/gfx_088FD4.tilemap`: bg, 32x32 cells, lz-v1.
 
-No preview (see [Assets](assets.md#tilemaps)).
+Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`, `palette_088000`.
+
+<img src="gallery/gfx/gfx_088FD4.png" alt="gfx_088FD4" width="512" style="image-rendering: pixelated">
 
 ### gfx_0891DE
 
 `assets/gfx/gfx_0891DE.tilemap`: bg, 32x8 cells, lz-v2.
 
-No preview (see [Assets](assets.md#tilemaps)).
+Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`, `palette_088000`.
+
+<img src="gallery/gfx/gfx_0891DE.png" alt="gfx_0891DE" width="512" style="image-rendering: pixelated">
 
 ### gfx_089225
 
 `assets/gfx/gfx_089225.tilemap`: bg, 32x8 cells, lz-v2.
 
-No preview (see [Assets](assets.md#tilemaps)).
+Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`, `palette_088000`.
+
+<img src="gallery/gfx/gfx_089225.png" alt="gfx_089225" width="512" style="image-rendering: pixelated">
 
 ### gfx_18AAE3
 
@@ -923,7 +953,7 @@ colours are those of one of them (`assets/views.txt`) take its colours
 
 ### palette_088022
 
-`assets/palettes/palette_088022.gpl`: 16 colours (block).
+`assets/palettes/palette_088022.gpl`: 16 colours (block). Colours of `gfx_07E9FE`.
 
 <img src="gallery/palettes/palette_088022.png" alt="palette_088022" width="256" style="image-rendering: pixelated">
 
@@ -1103,7 +1133,7 @@ colours are those of one of them (`assets/views.txt`) take its colours
 
 ### palette_088DA4
 
-`assets/palettes/palette_088DA4.gpl`: 80 colours (block). Colours of `packed_12CFEE`.
+`assets/palettes/palette_088DA4.gpl`: 80 colours (block). Colours of `td_sprite_tiles_13`, `td_sprite_tiles_14`, `packed_12CFEE`.
 
 <img src="gallery/palettes/palette_088DA4.png" alt="palette_088DA4" width="256" style="image-rendering: pixelated">
 

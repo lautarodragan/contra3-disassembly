@@ -242,15 +242,19 @@ These are still numbers, or depend on layout, on purpose:
   whose bytes are also read by `update_palette_anim`. Moving one of these
   blocks alone changes the other; to make them independent the bytes
   would have to be duplicated, which changes the ROM.
-- **Blocks read on from the one before** carry a `LAYOUT:` comment (some
-  140): tables indexed past their label (often a CDL block boundary inside
-  one table), `td_walk_y_int` read on into `td_walk_x_int` (the sine and
+- **Blocks read on from the one before** carry a `LAYOUT:` comment (134):
+  tables indexed past their label (often a CDL block boundary inside one
+  table), `td_walk_y_int` read on into `td_walk_x_int` (the sine and
   cosine of the walk vectors), the HDMA tables that `copy_hdma_table`
-  copies with a fixed length, the top-down item metasprites
-  (`draw_td_item_metasprite` reads a fifth byte after the last sprite),
-  labels inside palettes and block lists that the code points into, the
-  last centipede frame (its tiles DMA'd past `td_sprite_tiles_14` into
-  `gfx_14DC62`). `--labels` leaves them in place.
+  copies with a fixed length, labels inside palettes and block lists that
+  the code points into. `--labels` leaves them in place. Two reads past an
+  end that turned out to change nothing have no `LAYOUT:` comment (the
+  emulator showed the same with other bytes there, see
+  [Assets](assets.md#the-last-four-blocks)): the byte after each top-down
+  item metasprite (`draw_td_item_metasprite` uses only bit 0 of the word
+  it reads), and the `$80` bytes after `td_sprite_tiles_14` that the last
+  centipede frame DMAs into tiles it does not show (the `td_tiles` macro
+  checks that they are in the bank).
 - **The third word of animation frames** is a metasprite only for objects
   that can face the other way; effects keep an OAM attribute there
   (`update_effect`, `update_destructible_part`) and the bomber's bomb the
