@@ -359,7 +359,7 @@ vram_block_src      = $1840	; side view: source address (bank $7E) of each queue
 block_anim_timer_left= $18AC	; stage 2: frames left of the TDA_BLOCK_ANIM block animation, left half of the map
 block_anim_timer_right= $18AE	; stage 2: same, right half (x >= $200)
 td_switch_events    = $18B0	; stage 5: the three switch events started by td_trigger_switch_event (SWEV_SIZE bytes each, SWEV_* fields; td_update_switch_events)
-stage5_boss_claw_x  = $1900	; stage 5 boss claw: map x saved by stage5_boss_claw_state_1 and written back to the claw every frame after it (loc_02F650)
+stage5_boss_claw_x  = $1900	; stage 5 boss claw: map x saved by stage5_boss_claw_enter_state_2 and copied to the arm base and segments in their state 2 (@follow_claw)
 stage5_boss_claw_y  = $1902	; stage 5 boss claw: saved map y
 wram_1B00           = $1B00	; start of the $1B00-$1BFF clear of clear_ram_1b00_1bff (no caller); $1B00-$1BFF has no other direct access
 mode_work           = $1C00	; start of the work area $1C00-$1CFF of the current game mode, cleared by clear_mode_work; see the aliases below

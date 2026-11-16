@@ -24,23 +24,23 @@ td_update_bombs:
 td_update_bomb:
 	lda	$10,x
 	dec	a
-	beq	loc_02E68E
+	beq	@thrown
 	lda	a:$1048,x
-	beq	loc_02E68B
+	beq	@remove
 	; (not executed in the CDL traces)
 	dec	a:$1048,x
-	beq	loc_02E68B
+	beq	@remove
 	lda	a:$1048,x
 	sta	$06,x
 	lda	#$0002
 	sta	$10,x
 	rts
-loc_02E68B:
+@remove:
 	stz	$10,x
 	rts
-loc_02E68E:
+@thrown:
 	lda	$12,x
-	bne	loc_02E6A9
+	bne	@grow
 	lda	a:.loword($000A - $0080),x	; x of the player (X - $80) that threw the bomb X
 	sta	$0A,x
 	lda	a:.loword($000E - $0080),x	; and its y
@@ -51,14 +51,14 @@ loc_02E68E:
 	stz	$22,x
 	stz	$00,x
 	inc	$12,x
-loc_02E6A9:
+@grow:
 	inc	$24,x
 	lda	$24,x
 	cmp	#$0070
-	bcc	loc_02E6B7
+	bcc	@set_size
 	jsl	f:clear_topdown_slot
 	rts
-loc_02E6B7:
+@set_size:
 	lda	$24,x
 	lsr	a
 	lsr	a
@@ -79,11 +79,11 @@ init_topdown_views:
 	sta	a:p1_m7_scale_y
 	sta	a:p2_m7_scale_y
 	lda	a:title_menu_cursor
-	beq	loc_02E723
+	beq	@one_player
 	dec	a
-	bne	loc_02E6E0
-	brl	loc_02E751
-loc_02E6E0:
+	bne	@mode_b
+	brl	@two_players_a
+@mode_b:
 	; (not executed in the CDL traces)
 	lda	a:p1_view_x
 	sta	a:td_p1_x
@@ -108,7 +108,7 @@ loc_02E6E0:
 	stz	a:td_p1_angle
 	stz	a:td_p2_angle
 	rtl
-loc_02E723:
+@one_player:
 	lda	#$0080
 	sta	a:p1_view_anchor_x
 	lda	#$00A0
@@ -125,7 +125,7 @@ loc_02E723:
 	stz	a:td_p1_state
 	stz	a:td_p1_angle
 	rtl
-loc_02E751:
+@two_players_a:
 	lda	#$0060
 	sta	a:p1_view_anchor_x
 	sta	a:p2_view_anchor_x
@@ -165,23 +165,23 @@ update_topdown_views:
 	rep	#$30
 	lda	a:map_view_active
 	ora	a:intro_phase
-	beq	loc_02E7BA
+	beq	@active
 	; (not executed in the CDL traces)
 	rtl
-loc_02E7BA:
+@active:
 	lda	a:title_menu_cursor
-	beq	loc_02E7C8
+	beq	@one_player
 	dec	a
-	bne	loc_02E7C5
-	brl	loc_02E86D
-loc_02E7C5:
+	bne	@not_split
+	brl	@split
+@not_split:
 	; (not executed in the CDL traces)
-	brl	loc_02E9C9
-loc_02E7C8:
+	brl	@shared
+@one_player:
 	lda	a:boss_centered_view
-	beq	loc_02E7D0
-	brl	loc_02E809
-loc_02E7D0:
+	beq	@one_follow
+	brl	@one_boss
+@one_follow:
 	lda	a:td_p1_x
 	sta	a:p1_view_x
 	sta	a:p1_m7_center_x
@@ -195,26 +195,26 @@ loc_02E7D0:
 	sbc	a:p1_view_anchor_y
 	sta	a:p1_m7_vofs
 	lda	a:p1_view_angle_frozen
-	bne	loc_02E7FB
+	bne	@one_rotate
 	lda	a:td_p1_angle
 	sta	a:p1_view_angle
-loc_02E7FB:
+@one_rotate:
 	lda	a:p1_view_angle
 	eor	#$00FF
 	inc	a
 	and	#$00FF
 	sta	a:p1_m7_angle
 	rtl
-loc_02E809:
+@one_boss:
 	lda	a:td_p1_x
 	sta	a:p1_view_x
 	lda	a:td_p1_y
 	sta	a:p1_view_y
 	lda	a:p1_view_angle_frozen
-	bne	loc_02E820
+	bne	@one_boss_project
 	lda	a:td_p1_angle
 	sta	a:p1_view_angle
-loc_02E820:
+@one_boss_project:
 	lda	a:p1_view_x
 	sta	zp_18
 	lda	a:p1_view_y
@@ -226,13 +226,13 @@ loc_02E820:
 	lda	a:p1_view_anchor_y
 	sta	zp_1E
 	jsl	f:project_around_stage2_boss
-	bcc	loc_02E84D
+	bcc	@one_boss_near
 	lda	#$0200
 	sta	a:p1_m7_hofs
 	sta	a:p1_m7_vofs
 	stz	a:p1_m7_angle
-	bra	loc_02E86C
-loc_02E84D:
+	bra	@return
+@one_boss_near:
 	lda	#$00F0
 	sec
 	sbc	zp_00
@@ -246,14 +246,14 @@ loc_02E84D:
 	sbc	a:p1_view_angle
 	eor	#$0080
 	sta	a:p1_m7_angle
-loc_02E86C:
+@return:
 	rtl
-loc_02E86D:
+@split:
 	lda	a:boss_centered_view
-	beq	loc_02E875
+	beq	@split_follow
 	; (not executed in the CDL traces)
-	brl	loc_02E8F4
-loc_02E875:
+	brl	@split_boss
+@split_follow:
 	lda	a:td_p1_x
 	sta	a:p1_view_x
 	sta	a:p1_m7_center_x
@@ -267,13 +267,13 @@ loc_02E875:
 	sbc	a:p1_view_anchor_y
 	sta	a:p1_m7_vofs
 	lda	a:p1_view_angle_frozen
-	bne	loc_02E8A7
+	bne	@split_p1_rotate
 	lda	a:td_p1_angle
 	sec
 	sbc	a:p1_facing_in_view
 	and	#$00FF
 	sta	a:p1_view_angle
-loc_02E8A7:
+@split_p1_rotate:
 	lda	a:p1_view_angle
 	eor	#$00FF
 	inc	a
@@ -292,33 +292,33 @@ loc_02E8A7:
 	sbc	a:p2_view_anchor_y
 	sta	a:p2_m7_vofs
 	lda	a:p2_view_angle_frozen
-	bne	loc_02E8E6
+	bne	@split_p2_rotate
 	lda	a:td_p2_angle
 	sec
 	sbc	a:p2_facing_in_view
 	and	#$00FF
 	sta	a:p2_view_angle
-loc_02E8E6:
+@split_p2_rotate:
 	lda	a:p2_view_angle
 	eor	#$00FF
 	inc	a
 	and	#$00FF
 	sta	a:p2_m7_angle
 	rtl
-loc_02E8F4:
+@split_boss:
 	; (not executed in the CDL traces)
 	lda	a:td_p1_x
 	sta	a:p1_view_x
 	lda	a:td_p1_y
 	sta	a:p1_view_y
 	lda	a:p1_view_angle_frozen
-	bne	loc_02E912
+	bne	@split_boss_p1_project
 	lda	a:td_p1_angle
 	sec
 	sbc	a:p1_facing_in_view
 	and	#$00FF
 	sta	a:p1_view_angle
-loc_02E912:
+@split_boss_p1_project:
 	lda	a:p1_view_x
 	sta	zp_18
 	lda	a:p1_view_y
@@ -330,13 +330,13 @@ loc_02E912:
 	lda	a:p1_view_anchor_y
 	sta	zp_1E
 	jsl	f:project_around_stage2_boss
-	bcc	loc_02E93F
+	bcc	@split_boss_p1_near
 	lda	#$0200
 	sta	a:p1_m7_hofs
 	sta	a:p1_m7_vofs
 	stz	a:p1_m7_angle
-	bra	loc_02E95E
-loc_02E93F:
+	bra	@split_boss_p2
+@split_boss_p1_near:
 	lda	#$00F0
 	sec
 	sbc	zp_00
@@ -350,19 +350,19 @@ loc_02E93F:
 	sbc	a:p1_view_angle
 	eor	#$0080
 	sta	a:p1_m7_angle
-loc_02E95E:
+@split_boss_p2:
 	lda	a:td_p2_x
 	sta	a:p2_view_x
 	lda	a:td_p2_y
 	sta	a:p2_view_y
 	lda	a:p2_view_angle_frozen
-	bne	loc_02E97C
+	bne	@split_boss_p2_project
 	lda	a:td_p2_angle
 	sec
 	sbc	a:p2_facing_in_view
 	and	#$00FF
 	sta	a:p2_view_angle
-loc_02E97C:
+@split_boss_p2_project:
 	lda	a:p2_view_x
 	sta	zp_18
 	lda	a:p2_view_y
@@ -374,13 +374,13 @@ loc_02E97C:
 	lda	a:p2_view_anchor_y
 	sta	zp_1E
 	jsl	f:project_around_stage2_boss
-	bcc	loc_02E9A9
+	bcc	@split_boss_p2_near
 	lda	#$0200
 	sta	a:p2_m7_hofs
 	sta	a:p2_m7_vofs
 	stz	a:p2_m7_angle
-	bra	loc_02E9C8
-loc_02E9A9:
+	bra	@return2
+@split_boss_p2_near:
 	lda	#$00F0
 	sec
 	sbc	zp_00
@@ -394,13 +394,13 @@ loc_02E9A9:
 	sbc	a:p2_view_angle
 	eor	#$0080
 	sta	a:p2_m7_angle
-loc_02E9C8:
+@return2:
 	rtl
-loc_02E9C9:
+@shared:
 	lda	a:boss_centered_view
-	beq	loc_02E9D1
-	brl	loc_02EA1D
-loc_02E9D1:
+	beq	@shared_follow
+	brl	@shared_boss
+@shared_follow:
 	jsr	a:td_scroll_shared_view_x
 	lda	a:p1_view_x
 	sta	a:p1_m7_center_x
@@ -420,18 +420,18 @@ loc_02E9D1:
 	sta	a:p1_view_anchor_y
 	sta	a:p2_view_anchor_y
 	lda	a:p1_view_angle_frozen
-	bne	loc_02EA0E
+	bne	@shared_p2_facing
 	lda	a:td_p1_angle
 	sta	a:p1_facing_in_view
-loc_02EA0E:
+@shared_p2_facing:
 	lda	a:p2_view_angle_frozen
-	bne	loc_02EA19
+	bne	@shared_no_rotation
 	lda	a:td_p2_angle
 	sta	a:p2_facing_in_view
-loc_02EA19:
+@shared_no_rotation:
 	stz	a:p1_m7_angle
 	rtl
-loc_02EA1D:
+@shared_boss:
 	jsr	a:td_scroll_shared_view_x
 	lda	#$0080
 	sta	a:p1_view_anchor_x
@@ -441,15 +441,15 @@ loc_02EA1D:
 	sta	a:p1_view_anchor_y
 	sta	a:p2_view_anchor_y
 	lda	a:p1_view_angle_frozen
-	bne	loc_02EA40
+	bne	@shared_boss_p2_facing
 	lda	a:td_p1_angle
 	sta	a:p1_facing_in_view
-loc_02EA40:
+@shared_boss_p2_facing:
 	lda	a:p2_view_angle_frozen
-	bne	loc_02EA4B
+	bne	@shared_boss_project
 	lda	a:td_p2_angle
 	sta	a:p2_facing_in_view
-loc_02EA4B:
+@shared_boss_project:
 	lda	a:p1_view_x
 	sta	zp_18
 	lda	a:p1_view_y
@@ -461,15 +461,15 @@ loc_02EA4B:
 	lda	a:p1_view_anchor_y
 	sta	zp_1E
 	jsl	f:project_around_stage2_boss
-	bcc	loc_02EA7E
+	bcc	@shared_boss_near
 	lda	#$0200
 	sta	a:p1_m7_hofs
 	sta	a:p1_m7_vofs
 	sta	a:p1_m7_center_x
 	sta	a:p1_m7_center_y
 	stz	a:p1_m7_angle
-	bra	loc_02EAA3
-loc_02EA7E:
+	bra	@return3
+@shared_boss_near:
 	lda	#$00F0
 	sta	a:p1_m7_center_x
 	sec
@@ -485,7 +485,7 @@ loc_02EA7E:
 	sbc	a:p1_view_angle
 	eor	#$0080
 	sta	a:p1_m7_angle
-loc_02EAA3:
+@return3:
 	rtl
 
 td_scroll_shared_view_x:
@@ -498,37 +498,40 @@ td_scroll_shared_view_x:
 td_shared_view_follow_p1_x:
 	; (not executed in the CDL traces)
 	lda	a:td_p1_state
-	beq	loc_02EAC0
+	beq	@return
 	lda	a:td_p1_x
 	cmp	zp_18
-	beq	loc_02EABC
-	bpl	loc_02EAD4
-loc_02EABC:
+	beq	@check_left
+	bpl	td_shared_view_push_right
+@check_left:
 	cmp	zp_1A
-	bmi	loc_02EAE0
-loc_02EAC0:
+	bmi	td_shared_view_push_left
+@return:
 	rts
 
 td_shared_view_follow_p2_x:
 	; (not executed in the CDL traces)
 	lda	a:td_p2_state
-	beq	loc_02EAD3
+	beq	@return
 	lda	a:td_p2_x
 	cmp	zp_18
-	beq	loc_02EACF
-	bpl	loc_02EAD4
-loc_02EACF:
+	beq	@check_left
+	bpl	td_shared_view_push_right
+@check_left:
 	cmp	zp_1A
-	bmi	loc_02EAE0
-loc_02EAD3:
+	bmi	td_shared_view_push_left
+@return:
 	rts
-loc_02EAD4:
+; Shared tails of td_shared_view_follow_p1_x / _p2_x: the player (A = x)
+; is past the right (left) bound, the shared view moves to keep it $48
+; pixels from the centre; then the new bounds.
+td_shared_view_push_right:
 	sec
 	sbc	#$0048
 	sta	a:p1_view_x
 	sta	a:p2_view_x
 	bra	td_shared_view_bounds_x
-loc_02EAE0:
+td_shared_view_push_left:
 	clc
 	adc	#$0048
 	sta	a:p1_view_x
@@ -556,37 +559,38 @@ td_scroll_shared_view_y:
 td_shared_view_follow_p1_y:
 	; (not executed in the CDL traces)
 	lda	a:p1_lives
-	beq	loc_02EB19
+	beq	@return
 	lda	a:td_p1_y
 	cmp	zp_18
-	beq	loc_02EB15
-	bpl	loc_02EB2D
-loc_02EB15:
+	beq	@check_top
+	bpl	td_shared_view_push_down
+@check_top:
 	cmp	zp_1A
-	bmi	loc_02EB39
-loc_02EB19:
+	bmi	td_shared_view_push_up
+@return:
 	rts
 
 td_shared_view_follow_p2_y:
 	; (not executed in the CDL traces)
 	lda	a:p2_lives
-	beq	loc_02EB2C
+	beq	@return
 	lda	a:td_p2_y
 	cmp	zp_18
-	beq	loc_02EB28
-	bpl	loc_02EB2D
-loc_02EB28:
+	beq	@check_top
+	bpl	td_shared_view_push_down
+@check_top:
 	cmp	zp_1A
-	bmi	loc_02EB39
-loc_02EB2C:
+	bmi	td_shared_view_push_up
+@return:
 	rts
-loc_02EB2D:
+; The same for y (td_shared_view_follow_p1_y / _p2_y), $2C pixels.
+td_shared_view_push_down:
 	sec
 	sbc	#$002C
 	sta	a:p1_view_y
 	sta	a:p2_view_y
 	bra	td_shared_view_bounds_y
-loc_02EB39:
+td_shared_view_push_up:
 	clc
 	adc	#$002C
 	sta	a:p1_view_y
@@ -608,18 +612,18 @@ td_shared_view_bounds_y:
 td_run_collisions:
 	rep	#$30
 	lda	a:title_menu_cursor
-	beq	loc_02EB6B
+	beq	@player1
 	lda	stage_frame_counter
 	lsr	a
-	bcs	loc_02EB6B
+	bcs	@player1
 	lda	a:td_p2_state
-	beq	loc_02EB74
+	beq	@return
 	jml	f:td_run_p2_collisions
-loc_02EB6B:
+@player1:
 	lda	a:td_p1_state
-	beq	loc_02EB74
+	beq	@return
 	jml	f:td_run_p1_collisions
-loc_02EB74:
+@return:
 	; (not executed in the CDL traces)
 	rtl
 
@@ -635,13 +639,13 @@ td_score_shot_kill:
 
 td_score_shot_kill_2:
 	cpx	#$0700
-	bcs	loc_02EB8E
+	bcs	@player2
 	tyx
 	jsr	a:td_get_kill_points
 	ldx	#$1F80
 	jsl	f:add_score
 	rts
-loc_02EB8E:
+@player2:
 	tyx
 	jsr	a:td_get_kill_points
 	ldx	#$1FC0
@@ -659,13 +663,13 @@ td_score_shot_kill_enemy:
 
 td_score_shot_kill_enemy_2:
 	cpx	#$0700
-	bcs	loc_02EBB3
+	bcs	@player2
 	tyx
 	jsr	a:td_get_enemy_points
 	ldx	#$1F80
 	jsl	f:add_score
 	rts
-loc_02EBB3:
+@player2:
 	; (not executed in the CDL traces)
 	tyx
 	jsr	a:td_get_enemy_points
@@ -748,10 +752,10 @@ init_topdown_hdma:
 	sta	f:window_hdma_b+$1E
 	sta	f:window_hdma_a+$1E
 	lda	a:title_menu_cursor
-	beq	loc_02EC34
+	beq	@full_screen_tables
 	dec	a
-	beq	loc_02EC71
-loc_02EC34:
+	beq	@split_tables
+@full_screen_tables:
 	ldx	#.loword(hdma_table_05E496)
 	ldy	#$38E0
 	lda	#$001F
@@ -773,7 +777,7 @@ loc_02EC34:
 	lda	#$001F
 	jsr	a:copy_hdma_table
 	rtl
-loc_02EC71:
+@split_tables:
 	ldx	#.loword(hdma_table_05E4C3)
 	ldy	#$38E0
 	lda	#$001F
@@ -879,10 +883,10 @@ setup_topdown_hdma_channels:
 ; IRQ for the Mode 7 matrix: line 8 (1P, 2P-B) or line 0 with m7_split_screen (2P-A).
 init_topdown_irq:
 	lda	a:title_menu_cursor
-	beq	loc_02ED43
+	beq	@line_8
 	dec	a
-	beq	loc_02ED5D
-loc_02ED43:
+	beq	@split
+@line_8:
 	lda	#$0000
 	sta	a:htime_shadow
 	lda	#$0008
@@ -893,7 +897,7 @@ loc_02ED43:
 	sta	irq_mode
 	stz	m7_split_screen
 	rtl
-loc_02ED5D:
+@split:
 	lda	#$0000
 	sta	a:htime_shadow
 	lda	#$0000
@@ -911,11 +915,11 @@ loc_02ED5D:
 compute_m7_matrix:
 	rep	#$30
 	lda	a:title_menu_cursor
-	beq	loc_02ED85
+	beq	@player1
 	dec	a
-	bne	loc_02ED85
+	bne	@player1
 	jsl	f:compute_p2_m7_matrix
-loc_02ED85:
+@player1:
 	lda	a:p1_m7_angle
 	clc
 	adc	#$0040
@@ -932,10 +936,10 @@ loc_02ED85:
 	jsr	a:multiply_sine_scale
 	asl	a
 	ply
-	bpl	loc_02EDAB
+	bpl	@store_m7a
 	eor	#$FFFF
 	inc	a
-loc_02EDAB:
+@store_m7a:
 	sta	a:p1_m7a
 	lda	a:p1_m7_angle
 	xba
@@ -951,10 +955,10 @@ loc_02EDAB:
 	jsr	a:multiply_sine_scale
 	asl	a
 	ply
-	bpl	loc_02EDD0
+	bpl	@store_m7b
 	eor	#$FFFF
 	inc	a
-loc_02EDD0:
+@store_m7b:
 	sta	a:p1_m7b
 	lda	a:p1_m7_angle
 	xba
@@ -970,10 +974,10 @@ loc_02EDD0:
 	jsr	a:multiply_sine_scale
 	asl	a
 	ply
-	bmi	loc_02EDF5
+	bmi	@store_m7c
 	eor	#$FFFF
 	inc	a
-loc_02EDF5:
+@store_m7c:
 	sta	a:p1_m7c
 	lda	a:p1_m7_angle
 	clc
@@ -991,10 +995,10 @@ loc_02EDF5:
 	jsr	a:multiply_sine_scale
 	asl	a
 	ply
-	bpl	loc_02EE1E
+	bpl	@store_m7d
 	eor	#$FFFF
 	inc	a
-loc_02EE1E:
+@store_m7d:
 	sta	a:p1_m7d
 	lda	a:p1_m7_center_x
 	sta	a:p1_m7x
@@ -1026,10 +1030,10 @@ compute_p2_m7_matrix:
 	jsr	a:multiply_sine_scale
 	asl	a
 	ply
-	bpl	loc_02EE64
+	bpl	@store_m7a
 	eor	#$FFFF
 	inc	a
-loc_02EE64:
+@store_m7a:
 	sta	a:p2_m7a
 	lda	a:p2_m7_angle
 	xba
@@ -1045,10 +1049,10 @@ loc_02EE64:
 	jsr	a:multiply_sine_scale
 	asl	a
 	ply
-	bpl	loc_02EE89
+	bpl	@store_m7b
 	eor	#$FFFF
 	inc	a
-loc_02EE89:
+@store_m7b:
 	sta	a:p2_m7b
 	lda	a:p2_m7_angle
 	xba
@@ -1064,10 +1068,10 @@ loc_02EE89:
 	jsr	a:multiply_sine_scale
 	asl	a
 	ply
-	bmi	loc_02EEAE
+	bmi	@store_m7c
 	eor	#$FFFF
 	inc	a
-loc_02EEAE:
+@store_m7c:
 	sta	a:p2_m7c
 	lda	a:p2_m7_angle
 	clc
@@ -1085,10 +1089,10 @@ loc_02EEAE:
 	jsr	a:multiply_sine_scale
 	asl	a
 	ply
-	bpl	loc_02EED7
+	bpl	@store_m7d
 	eor	#$FFFF
 	inc	a
-loc_02EED7:
+@store_m7d:
 	sta	a:p2_m7d
 	lda	a:p2_m7_center_x
 	sta	a:p2_m7x
@@ -1128,10 +1132,10 @@ multiply_sine_scale:
 	lda	zp_01
 	adc	a:RDMPYL
 	sta	zp_01
-	bcc	loc_02EF24
+	bcc	@no_carry
 	; (not executed in the CDL traces)
 	inc	zp_03
-loc_02EF24:
+@no_carry:
 	sep	#$20
 	.a8
 	lda	zp_0B
@@ -1145,9 +1149,9 @@ loc_02EF24:
 	lda	zp_01
 	adc	a:RDMPYL
 	sta	zp_01
-	bcc	loc_02EF3F
+	bcc	@no_carry2
 	inc	zp_03
-loc_02EF3F:
+@no_carry2:
 	sep	#$20
 	.a8
 	lda	zp_09
@@ -1167,33 +1171,33 @@ loc_02EF3F:
 ; every other frame, decaying when the timer is over.
 update_screen_shake:
 	lda	a:screen_shake_timer
-	beq	loc_02EF6E
+	beq	@decay
 	dec	a:screen_shake_timer
-loc_02EF5C:
+@flip:
 	lda	stage_frame_counter
 	and	#$0001
-	bne	loc_02EF6D
+	bne	@return
 	lda	a:screen_shake_offset
 	eor	#$FFFF
 	inc	a
 	sta	a:screen_shake_offset
-loc_02EF6D:
+@return:
 	rtl
-loc_02EF6E:
+@decay:
 	lda	a:screen_shake_offset
-	beq	loc_02EF6D
-	bmi	loc_02EF81
+	beq	@return
+	bmi	@decay_negative
 	lda	stage_frame_counter
 	bit	#$0003
-	bne	loc_02EF5C
+	bne	@flip
 	dec	a:screen_shake_offset
-	bra	loc_02EF5C
-loc_02EF81:
+	bra	@flip
+@decay_negative:
 	lda	stage_frame_counter
 	bit	#$0003
-	bne	loc_02EF5C
+	bne	@flip
 	inc	a:screen_shake_offset
-	bra	loc_02EF5C
+	bra	@flip
 
 ; TDMT_STAGE5_BOSS ($0AC0): the stage 5 boss, a creature in a sand pit
 ; drawn as the Mode 7 layer. It sends out its arm (stage5_boss_spawn_arm:
@@ -1213,9 +1217,9 @@ update_stage5_boss:
 
 stage5_boss_run_state:
 	lda	$06,x
-	bpl	loc_02EFA9
-	brl	loc_02F09A
-loc_02EFA9:
+	bpl	@alive
+	brl	stage5_boss_start_death
+@alive:
 	lda	$12,x
 	phx
 	asl	a
@@ -1253,7 +1257,8 @@ stage5_boss_state_0:
 	stz	a:stage5_boss_body_step
 	stz	a:stage5_boss_palette_step
 	stz	a:stage5_boss_spit_step
-loc_02EFF1:
+; Spawns the arm (towards a player), waits $40 frames in state 1.
+stage5_boss_send_arm:
 	jsr	a:stage5_boss_spawn_arm
 	lda	#$0040
 	sta	$24,x
@@ -1262,9 +1267,9 @@ loc_02EFF1:
 
 stage5_boss_state_1:
 	dec	$24,x
-	bmi	loc_02F003
+	bmi	@timer_over
 	rtl
-loc_02F003:
+@timer_over:
 	lda	#$0040
 	sta	$24,x
 	lda	#$0002
@@ -1272,24 +1277,24 @@ loc_02F003:
 
 stage5_boss_state_2:
 	dec	$24,x
-	bmi	loc_02F015
+	bmi	@timer_over
 	jsr	a:stage5_boss_target_player
 	rtl
-loc_02F015:
+@timer_over:
 	ldy	difficulty
 	lda	a:stage5_boss_hp,y
 	lsr	a
 	cmp	$06,x
-	bcc	loc_02F031
+	bcc	@above_half_hp
 	jsl	f:td_select_target_player_long
 	lda	a:boss_target_distance
 	cmp	#$4000
-	bcs	loc_02F02E
-	brl	loc_02F060
-loc_02F02E:
+	bcs	@far
+	brl	stage5_boss_enter_state_6
+@far:
 	; (not executed in the CDL traces)
-	brl	loc_02F07D
-loc_02F031:
+	brl	stage5_boss_enter_state_7
+@above_half_hp:
 	lda	#$0058
 	sta	$24,x
 	lda	#$0003
@@ -1297,10 +1302,10 @@ loc_02F031:
 
 stage5_boss_state_3:
 	dec	$24,x
-	bmi	loc_02F043
+	bmi	@timer_over
 	jsr	a:stage5_boss_target_player
 	rtl
-loc_02F043:
+@timer_over:
 	lda	#$0040
 	sta	$24,x
 	lda	#$0004
@@ -1308,50 +1313,51 @@ loc_02F043:
 
 stage5_boss_state_4:
 	dec	$24,x
-	bmi	loc_02F052
+	bmi	@timer_over
 	rtl
-loc_02F052:
+@timer_over:
 	lda	#$0005
 	sta	$12,x
 
 stage5_boss_state_5:
 	jsr	a:stage5_boss_check_arm_out
 	bne	@return
-	brl	loc_02EFF1
+	brl	stage5_boss_send_arm
 @return:
 	rtl
-loc_02F060:
+stage5_boss_enter_state_6:
 	lda	#$0006
 	sta	$12,x
 
 stage5_boss_state_6:
 	jsr	a:stage5_boss_check_arm_out
-	bne	loc_02F06D
-	brl	loc_02EFF1
-loc_02F06D:
+	bne	@arm_out
+	brl	stage5_boss_send_arm
+@arm_out:
 	jsl	f:td_select_target_player_long
 	lda	a:boss_target_distance
 	cmp	#$4000
-	bcs	loc_02F07D
+	bcs	stage5_boss_enter_state_7
 	jsr	a:stage5_boss_target_circle
 	rtl
-loc_02F07D:
+stage5_boss_enter_state_7:
 	lda	#$0007
 	sta	$12,x
 
 stage5_boss_state_7:
 	jsr	a:stage5_boss_check_arm_out
-	bne	loc_02F08A
+	bne	@arm_out
 	; (not executed in the CDL traces)
-	brl	loc_02EFF1
-loc_02F08A:
+	brl	stage5_boss_send_arm
+@arm_out:
 	jsl	f:td_select_target_player_long
 	lda	a:boss_target_distance
 	cmp	#$4000
-	bcc	loc_02F060
+	bcc	stage5_boss_enter_state_6
 	jsr	a:stage5_boss_target_player
 	rtl
-loc_02F09A:
+; HP below 0: state 8, $200 frames of explosions and screen shake.
+stage5_boss_start_death:
 	lda	#$0008
 	cmp	$12,x
 	beq	stage5_boss_state_8
@@ -1366,11 +1372,11 @@ loc_02F09A:
 stage5_boss_state_8:
 	jsl	f:td_play_rumble_sound
 	lda	$24,x
-	beq	loc_02F0EF
+	beq	@dead
 	cmp	#$000C
-	bcc	loc_02F0EC
+	bcc	@count_down
 	and	#$0003
-	bne	loc_02F0EC
+	bne	@count_down
 	lda	rng_hi
 	and	#$003F
 	sec
@@ -1389,10 +1395,10 @@ stage5_boss_state_8:
 	ldx	#$0B00
 	jsl	f:td_spawn_explosion_effect
 	plx
-loc_02F0EC:
+@count_down:
 	dec	$24,x
 	rtl
-loc_02F0EF:
+@dead:
 	stz	$06,x
 	lda	#$0080
 	sta	$24,x
@@ -1402,30 +1408,30 @@ loc_02F0EF:
 stage5_boss_state_9:
 	lda	$24,x
 	and	#$0003
-	bne	loc_02F106
+	bne	@count_down
 	jsl	f:td_spawn_explosion_effect
-loc_02F106:
+@count_down:
 	dec	$24,x
 	rtl
 
 stage5_boss_animate_body:
 	lda	a:td_boss_state
 	cmp	#$0008
-	bcs	loc_02F182
+	bcs	stage5_boss_enter_body_step_3
 	cmp	#$0001
-	beq	loc_02F14F
+	beq	stage5_boss_enter_body_step_1
 	cmp	#$0002
-	beq	loc_02F164
+	beq	stage5_boss_enter_body_step_2
 	cmp	#$0003
-	beq	loc_02F164
+	beq	stage5_boss_enter_body_step_2
 	cmp	#$0004
-	beq	loc_02F164
+	beq	stage5_boss_enter_body_step_2
 	cmp	#$0005
-	beq	loc_02F164
+	beq	stage5_boss_enter_body_step_2
 	cmp	#$0006
-	beq	loc_02F164
+	beq	stage5_boss_enter_body_step_2
 	cmp	#$0007
-	beq	loc_02F164
+	beq	stage5_boss_enter_body_step_2
 	; (not executed in the CDL traces)
 	lda	a:stage5_boss_body_step
 	phx
@@ -1444,36 +1450,36 @@ tbl_stage5_boss_body_steps:
 stage5_boss_body_step_0:
 	; (not executed in the CDL traces)
 	stz	a:boss_anim_frame
-loc_02F14F:
+stage5_boss_enter_body_step_1:
 	lda	#$0001
 	sta	a:stage5_boss_body_step
 
 stage5_boss_body_step_1:
 	lda	a:boss_anim_frame
-	bne	loc_02F160
+	bne	@count_down
 	lda	#$1000
 	sta	$16,x
 	rts
-loc_02F160:
+@count_down:
 	dec	a:boss_anim_frame
 	rts
-loc_02F164:
+stage5_boss_enter_body_step_2:
 	lda	#$0002
 	sta	a:stage5_boss_body_step
 
 stage5_boss_body_step_2:
 	lda	a:boss_anim_frame
 	cmp	#$0017
-	bcc	loc_02F17E
+	bcc	@count_up
 	lda	#$0017
 	sta	a:boss_anim_frame
 	lda	#$B000	; [num]
 	sta	$16,x
 	rts
-loc_02F17E:
+@count_up:
 	inc	a:boss_anim_frame
 	rts
-loc_02F182:
+stage5_boss_enter_body_step_3:
 	lda	#$0003
 	sta	a:stage5_boss_body_step
 
@@ -1528,10 +1534,10 @@ stage5_boss_palette_step_1:
 	lda	a:stage5_boss_hp,y
 	lsr	a
 	cmp	$06,x
-	bcs	loc_02F1EC
+	bcs	@half_hp
 @return:
 	rts
-loc_02F1EC:
+@half_hp:
 	lda	#$0008
 	sta	a:stage5_boss_cycle_pause
 	sta	a:palette_cycle_paused
@@ -1543,16 +1549,16 @@ loc_02F1EC:
 
 stage5_boss_palette_step_2:
 	lda	a:stage5_boss_cycle_pause
-	beq	loc_02F21C
+	beq	@check_death
 	lda	a:palette_cycle_paused
-	bne	loc_02F219
+	bne	@count_pause
 	dec	a:stage5_boss_cycle_pause
 	lda	a:stage5_boss_cycle_pause
 	sta	a:palette_cycle_paused
-	bra	loc_02F21C
-loc_02F219:
+	bra	@check_death
+@count_pause:
 	dec	a:palette_cycle_paused
-loc_02F21C:
+@check_death:
 	lda	a:td_boss_state
 	cmp	#$0008
 	bcs	stage5_boss_palette_step_0
@@ -1585,9 +1591,9 @@ stage5_boss_target_circle:
 
 stage5_boss_update_spit:
 	lda	a:td_boss_hp
-	bpl	loc_02F25F
-	brl	loc_02F306
-loc_02F25F:
+	bpl	@alive
+	brl	stage5_boss_enter_spit_step_4
+@alive:
 	lda	a:stage5_boss_spit_step
 	phx
 	asl	a
@@ -1602,15 +1608,15 @@ tbl_stage5_boss_spit_steps:
 	.addr	stage5_boss_spit_step_2
 	.addr	stage5_boss_spit_step_3
 	.addr	stage5_boss_spit_step_4
-loc_02F279:
+stage5_boss_reset_spit:
 	stz	a:stage5_boss_spit_step
 
 stage5_boss_spit_step_0:
 	lda	a:td_boss_state
 	cmp	#$0006
-	beq	loc_02F285
+	beq	@start
 	rts
-loc_02F285:
+@start:
 	lda	#$003A
 	jsl	f:queue_sound
 	lda	rng_lo
@@ -1626,9 +1632,9 @@ loc_02F285:
 
 stage5_boss_spit_step_1:
 	dec	a:stage5_boss_spit_timer
-	bmi	loc_02F2AF
+	bmi	@timer_over
 	rts
-loc_02F2AF:
+@timer_over:
 	stz	a:stage5_boss_spit_timer
 	lda	#$0002
 	sta	a:stage5_boss_spit_step
@@ -1637,7 +1643,7 @@ stage5_boss_spit_step_2:
 	lda	a:stage5_boss_spit_timer
 	inc	a:stage5_boss_spit_timer
 	cmp	#$0020
-	bcs	loc_02F2DC
+	bcs	@all_spat
 	bit	#$0003
 	bne	@return
 	lsr	a
@@ -1651,7 +1657,7 @@ stage5_boss_spit_step_2:
 	jsr	a:stage5_boss_spawn_spit
 @return:
 	rts
-loc_02F2DC:
+@all_spat:
 	lda	#$0000
 	sta	a:stage5_boss_spit_timer
 	stz	a:td_enemy_shots+$14
@@ -1667,10 +1673,10 @@ loc_02F2DC:
 
 stage5_boss_spit_step_3:
 	dec	a:stage5_boss_spit_timer
-	bmi	loc_02F306
+	bmi	stage5_boss_enter_spit_step_4
 	; (not executed in the CDL traces)
 	rts
-loc_02F306:
+stage5_boss_enter_spit_step_4:
 	lda	#$0020
 	sta	a:stage5_boss_spit_timer
 	lda	#$0002
@@ -1688,7 +1694,7 @@ loc_02F306:
 stage5_boss_spit_step_4:
 	dec	a:stage5_boss_spit_timer
 	bpl	@return
-	brl	loc_02F279
+	brl	stage5_boss_reset_spit
 @return:
 	rts
 
@@ -1729,14 +1735,14 @@ stage5_boss_flash_on_hit:
 	lda	#$0020
 	sta	zp_04
 	lda	$2A,x
-	beq	loc_02F390
+	beq	@check_hit
 	jsr	a:stage5_boss_restore_palette
 	dec	$2A,x
 	lda	$2E,x
 	and	#$FFBF
 	sta	$2E,x
 	rts
-loc_02F390:
+@check_hit:
 	lda	$2E,x
 	bit	#$0040
 	beq	stage5_boss_restore_palette
@@ -1867,32 +1873,32 @@ stage5_boss_spawn_arm:
 ; 32/128/256 (stage5_boss_claw_hp); destroyed, it drops an item.
 update_stage5_boss_claw:
 	lda	a:td_boss_hp
-	bpl	loc_02F4C0
-	brl	loc_02F5B6
-loc_02F4C0:
+	bpl	@alive
+	brl	stage5_boss_claw_enter_state_6
+@alive:
 	jsr	a:stage5_boss_arm_check_dead
-	bcc	loc_02F4C8
-	brl	loc_02F5B6
-loc_02F4C8:
+	bcc	@arm_alive
+	brl	stage5_boss_claw_enter_state_6
+@arm_alive:
 	lda	a:td_boss_state
 	cmp	#$0002
-	beq	loc_02F532
+	beq	stage5_boss_claw_enter_state_2
 	cmp	#$0003
-	bne	loc_02F4D8
-	brl	loc_02F55B
-loc_02F4D8:
+	bne	@boss_not_3
+	brl	stage5_boss_claw_enter_state_3
+@boss_not_3:
 	cmp	#$0004
-	bne	loc_02F4E0
-	brl	loc_02F575
-loc_02F4E0:
+	bne	@boss_not_4
+	brl	stage5_boss_claw_enter_state_4
+@boss_not_4:
 	cmp	#$0005
-	bne	loc_02F4E8
-	brl	loc_02F58B
-loc_02F4E8:
+	bne	@boss_not_5
+	brl	stage5_boss_claw_enter_state_5
+@boss_not_5:
 	cmp	#$0006
-	beq	loc_02F55B
+	beq	stage5_boss_claw_enter_state_3
 	cmp	#$0007
-	beq	loc_02F55B
+	beq	stage5_boss_claw_enter_state_3
 	lda	$12,x
 	phx
 	asl	a
@@ -1930,7 +1936,7 @@ stage5_boss_claw_state_0:
 
 stage5_boss_claw_state_1:
 	rtl
-loc_02F532:
+stage5_boss_claw_enter_state_2:
 	lda	#$0002
 	cmp	$12,x
 	beq	stage5_boss_claw_state_2
@@ -1950,7 +1956,7 @@ stage5_boss_claw_state_2:
 	lda	#$0002
 	jsr	a:stage5_boss_claw_turn_to_target
 	rtl
-loc_02F55B:
+stage5_boss_claw_enter_state_3:
 	lda	#$0003
 	cmp	$12,x
 	beq	stage5_boss_claw_state_3
@@ -1963,7 +1969,7 @@ stage5_boss_claw_state_3:
 	jsl	f:td_move_at_angle
 	jsr	a:stage5_boss_claw_record_trail
 	rtl
-loc_02F575:
+stage5_boss_claw_enter_state_4:
 	lda	#$0004
 	cmp	$12,x
 	beq	stage5_boss_claw_state_4
@@ -1976,7 +1982,7 @@ stage5_boss_claw_state_4:
 	jsl	f:stage5_boss_claw_fire
 @return:
 	rtl
-loc_02F58B:
+stage5_boss_claw_enter_state_5:
 	lda	#$0005
 	cmp	$12,x
 	beq	stage5_boss_claw_state_5
@@ -1998,7 +2004,7 @@ stage5_boss_claw_state_5:
 	brl	clear_topdown_slot
 @return:
 	rtl
-loc_02F5B6:
+stage5_boss_claw_enter_state_6:
 	lda	#$0006
 	cmp	$12,x
 	beq	stage5_boss_claw_state_6
@@ -2018,14 +2024,14 @@ stage5_boss_claw_state_6:
 ; TDT_STAGE5_BOSS_ARM_BASE ($0B80): the end of the stage 5 boss's arm in the pit.
 update_stage5_boss_arm_base:
 	lda	a:td_map_objects+2*OBJ_SIZE+OBJ_TYPE
-	bne	loc_02F5E0
+	bne	@claw_alive
 	brl	clear_topdown_slot
-loc_02F5E0:
+@claw_alive:
 	jsr	a:stage5_boss_arm_pass_damage
 	jsr	a:stage5_boss_arm_check_dead
-	bcc	loc_02F5EB
-	brl	loc_02F675
-loc_02F5EB:
+	bcc	@alive
+	brl	stage5_boss_arm_base_explode
+@alive:
 	lda	$12,x
 	phx
 	asl	a
@@ -2058,10 +2064,10 @@ stage5_boss_arm_base_state_0:
 stage5_boss_arm_base_state_1:
 	lda	$3A,x
 	cmp	#$18E0
-	beq	loc_02F628
+	beq	stage5_boss_arm_base_enter_state_2
 	jsr	a:stage5_boss_arm_follow_trail
 	rtl
-loc_02F628:
+stage5_boss_arm_base_enter_state_2:
 	lda	#$B000	; [num]
 	sta	$16,x
 	lda	#$0011
@@ -2074,14 +2080,14 @@ loc_02F628:
 stage5_boss_arm_base_state_2:
 	lda	$3A,x
 	cmp	#$1900
-	beq	loc_02F660
+	beq	@enter_state_3
 	jsr	a:stage5_boss_arm_follow_trail
 	lda	$3A,x
 	cmp	#$18E0
-	bcs	loc_02F650
+	bcs	@follow_claw
 	; (not executed in the CDL traces)
 	brl	clear_topdown_slot
-loc_02F650:
+@follow_claw:
 	lda	a:stage5_boss_claw_x
 	sta	$0A,x
 	lda	a:stage5_boss_claw_y
@@ -2089,7 +2095,7 @@ loc_02F650:
 	jsr	a:stage5_boss_arm_angle_from_tail
 	sta	$04,x
 	rtl
-loc_02F660:
+@enter_state_3:
 	lda	#$0003
 	sta	$12,x
 
@@ -2097,11 +2103,11 @@ stage5_boss_arm_base_state_3:
 	jsr	a:stage5_boss_arm_follow_trail
 	lda	$3A,x
 	cmp	#$1900
-	bcc	loc_02F628
+	bcc	stage5_boss_arm_base_enter_state_2
 	jsr	a:stage5_boss_arm_angle_from_tail
 	sta	$04,x
 	rtl
-loc_02F675:
+stage5_boss_arm_base_explode:
 	stz	$16,x
 	jsl	f:td_start_explosion
 	rtl
@@ -2110,15 +2116,15 @@ loc_02F675:
 ; arm; follows the claw's trail.
 update_stage5_boss_arm_segment:
 	lda	a:td_map_objects+2*OBJ_SIZE+OBJ_TYPE
-	bne	loc_02F684
+	bne	@claw_alive
 	; (not executed in the CDL traces)
 	brl	clear_topdown_slot
-loc_02F684:
+@claw_alive:
 	jsr	a:stage5_boss_arm_pass_damage
 	jsr	a:stage5_boss_arm_check_dead
-	bcc	loc_02F68F
-	brl	loc_02F719
-loc_02F68F:
+	bcc	@alive
+	brl	stage5_boss_arm_segment_enter_state_4
+@alive:
 	lda	$12,x
 	phx
 	asl	a
@@ -2155,11 +2161,11 @@ stage5_boss_arm_segment_state_1:
 	bcc	@return
 	lda	$3A,x
 	cmp	#$18E0
-	beq	loc_02F6D6
+	beq	stage5_boss_arm_segment_enter_state_2
 	jsr	a:stage5_boss_arm_follow_trail
 @return:
 	rtl
-loc_02F6D6:
+stage5_boss_arm_segment_enter_state_2:
 	lda	#$B000	; [num]
 	sta	$16,x
 	lda	#$018C
@@ -2172,19 +2178,19 @@ loc_02F6D6:
 stage5_boss_arm_segment_state_2:
 	lda	$3A,x
 	cmp	#$1900
-	beq	loc_02F709
+	beq	@enter_state_3
 	jsr	a:stage5_boss_arm_follow_trail
 	lda	$3A,x
 	cmp	#$18E0
-	bcs	loc_02F6FE
+	bcs	@follow_claw
 	brl	clear_topdown_slot
-loc_02F6FE:
+@follow_claw:
 	lda	a:stage5_boss_claw_x
 	sta	$0A,x
 	lda	a:stage5_boss_claw_y
 	sta	$0E,x
 	rtl
-loc_02F709:
+@enter_state_3:
 	lda	#$0003
 	sta	$12,x
 
@@ -2192,9 +2198,9 @@ stage5_boss_arm_segment_state_3:
 	jsr	a:stage5_boss_arm_follow_trail
 	lda	$3A,x
 	cmp	#$1900
-	bcc	loc_02F6D6
+	bcc	stage5_boss_arm_segment_enter_state_2
 	rtl
-loc_02F719:
+stage5_boss_arm_segment_enter_state_4:
 	lda	$12,x
 	cmp	#$0004
 	beq	stage5_boss_arm_segment_state_4
@@ -2207,9 +2213,9 @@ stage5_boss_arm_segment_state_4:
 	inc	$24,x
 	lda	$24,x
 	cmp	#$0010
-	bcc	loc_02F735
+	bcc	@animate
 	brl	clear_topdown_slot
-loc_02F735:
+@animate:
 	lsr	a
 	and	#$0006
 	tay
@@ -2221,12 +2227,12 @@ loc_02F735:
 
 stage5_boss_arm_check_dead:
 	lda	a:td_boss_hp
-	bmi	loc_02F751
+	bmi	@return_sec
 	lda	a:td_boss_core_hp
-	bmi	loc_02F751
+	bmi	@return_sec
 	clc
 	rts
-loc_02F751:
+@return_sec:
 	sec
 	rts
 
@@ -2260,18 +2266,18 @@ stage5_boss_claw_turn_to_target:
 	jsr	a:stage5_boss_claw_angle_to_target
 	sec
 	sbc	$04,x
-	beq	loc_02F7A3
+	beq	@return_sec
 	bit	#$0080
-	bne	loc_02F7A5
+	bne	@decrease
 	lda	$04,x
 	clc
 	adc	zp_FA
 	and	#$00FF
 	sta	$04,x
-loc_02F7A3:
+@return_sec:
 	sec
 	rts
-loc_02F7A5:
+@decrease:
 	lda	$04,x
 	sec
 	sbc	zp_FA
@@ -2319,21 +2325,21 @@ stage5_boss_arm_angle_from_head:
 stage5_boss_claw_record_trail:
 	lda	a:td_map_objects+2*OBJ_SIZE+OBJ_STATE
 	cmp	#$0005
-	beq	loc_02F821
+	beq	@rewind
 	cmp	#$0003
-	beq	loc_02F806
+	beq	@reach
 	; (not executed in the CDL traces)
 	lda	$3A,x
 	clc
 	adc	#$0004
 	sta	$3A,x
 	rts
-loc_02F806:
+@reach:
 	ldy	$3A,x
 	cpy	#$1B00
-	bcc	loc_02F810
+	bcc	@store
 	ldy	#$1900
-loc_02F810:
+@store:
 	lda	$0A,x
 	sta	a:$0000,y
 	iny
@@ -2344,7 +2350,7 @@ loc_02F810:
 	iny
 	sty	$3A,x
 	rts
-loc_02F821:
+@rewind:
 	; (not executed in the CDL traces)
 	ldy	$3A,x
 	dey
@@ -2361,14 +2367,14 @@ loc_02F821:
 stage5_boss_arm_follow_trail:
 	lda	a:td_map_objects+2*OBJ_SIZE+OBJ_STATE
 	cmp	#$0005
-	beq	loc_02F85C
+	beq	@rewind
 	cmp	#$0003
-	bne	loc_02F85B
+	bne	@return
 	ldy	$3A,x
 	cpy	#$1B00
-	bcc	loc_02F84B
+	bcc	@read
 	ldy	#$1900
-loc_02F84B:
+@read:
 	lda	a:$0000,y
 	sta	$0A,x
 	iny
@@ -2378,9 +2384,9 @@ loc_02F84B:
 	iny
 	iny
 	sty	$3A,x
-loc_02F85B:
+@return:
 	rts
-loc_02F85C:
+@rewind:
 	ldy	$3A,x
 	dey
 	dey
@@ -2444,9 +2450,9 @@ stage5_boss_claw_fire:
 ; destroyed, it may drop an item.
 update_td_nest:
 	lda	$06,x
-	bpl	loc_02F8DB
-	brl	loc_02F98A
-loc_02F8DB:
+	bpl	@alive
+	brl	td_nest_explode
+@alive:
 	lda	$12,x
 	phx
 	asl	a
@@ -2470,7 +2476,8 @@ td_nest_state_0:
 	stz	$2E,x
 	stz	$24,x
 	stz	$28,x
-loc_02F903:
+; Closed ($20 = 1), state 1: waits for a player.
+td_nest_close:
 	lda	#$0001
 	sta	$20,x
 	lda	#$8000	; [num]
@@ -2480,18 +2487,18 @@ loc_02F903:
 
 td_nest_state_1:
 	dec	$24,x
-	bmi	loc_02F917
+	bmi	@timer_over
 	rtl
-loc_02F917:
+@timer_over:
 	stz	$24,x
 	lda	$2E,x
 	bit	#$0030
-	bne	loc_02F921
-loc_02F920:
+	bne	@player_near
+@return:
 	rtl
-loc_02F921:
+@player_near:
 	jsl	f:td_get_hatch_enemy_slot
-	bcs	loc_02F920
+	bcs	@return
 	lda	#TDT_NEST_CRAWLER
 	sta	a:$0010,y
 	lda	#$0000
@@ -2509,9 +2516,9 @@ loc_02F921:
 
 td_nest_state_2:
 	dec	$24,x
-	beq	loc_02F950
+	beq	@open
 	rtl
-loc_02F950:
+@open:
 	lda	#$0003
 	sta	$20,x
 	stz	$2A,x
@@ -2523,10 +2530,10 @@ loc_02F950:
 
 td_nest_state_3:
 	dec	$24,x
-	bmi	loc_02F96C
+	bmi	@closing
 	jsl	f:td_nest_flash_on_hit
 	rtl
-loc_02F96C:
+@closing:
 	lda	#$0002
 	sta	$20,x
 	lda	#$8000	; [num]
@@ -2540,10 +2547,11 @@ td_nest_state_4:
 	bpl	@return
 	lda	#$0040
 	sta	$24,x
-	brl	loc_02F903
+	brl	td_nest_close
 @return:
 	rtl
-loc_02F98A:
+; Destroyed: sound $30, explosions for $40 frames (state 5).
+td_nest_explode:
 	lda	#$0030
 	jsl	f:queue_sound
 	stz	$06,x
@@ -2557,28 +2565,28 @@ loc_02F98A:
 
 td_nest_state_5:
 	dec	$24,x
-	bmi	loc_02F9B4
+	bmi	@destroyed
 	lda	$24,x
 	bit	#$0003
-	bne	loc_02F9B3
+	bne	@return
 	jsl	f:td_spawn_explosion_effect
-loc_02F9B3:
+@return:
 	rtl
-loc_02F9B4:
+@destroyed:
 	lda	#$0007
 	sta	$20,x
 	cmp	$28,x
-	bne	loc_02F9B3
+	bne	@return
 	jsl	f:td_spawn_item_drop
-	bcs	loc_02F9B3
+	bcs	@return
 	jml	f:clear_topdown_slot
 
 td_nest_flash_on_hit:
 	lda	$2A,x
-	bne	loc_02F9EA
+	bne	@end_flash
 	lda	$2E,x
 	bit	#$0040
-	beq	loc_02F9F5
+	beq	@return
 	lda	#$0010
 	jsl	f:queue_sound
 	lda	$20,x
@@ -2589,13 +2597,13 @@ td_nest_flash_on_hit:
 	and	#$FFBF
 	sta	$2E,x
 	rtl
-loc_02F9EA:
+@end_flash:
 	sta	$20,x
 	stz	$2A,x
 	lda	$2E,x
 	and	#$FFBF
 	sta	$2E,x
-loc_02F9F5:
+@return:
 	rtl
 
 ; TDMT_GUN_HATCH_AIM, stage 2 target: a hatch in the floor (map blocks $50
@@ -2605,9 +2613,9 @@ loc_02F9F5:
 ; may drop an item. Checked in the emulator.
 update_gun_hatch_aim:
 	lda	$06,x
-	bpl	loc_02F9FD
-	brl	loc_02FAA0
-loc_02F9FD:
+	bpl	@alive
+	brl	gun_hatch_explode
+@alive:
 	lda	$12,x
 	phx
 	asl	a
@@ -2631,7 +2639,8 @@ gun_hatch_state_0:
 	stz	$2E,x
 	stz	$28,x
 	stz	$24,x
-loc_02FA25:
+; Closed (block $50), state 1: waits for a player.
+gun_hatch_close:
 	lda	#$0050
 	sta	$20,x
 	lda	#$8000	; [num]
@@ -2642,19 +2651,19 @@ loc_02FA25:
 
 gun_hatch_aim_state_1:
 	dec	$24,x
-	bmi	loc_02FA3A
+	bmi	@timer_over
 	rtl
-loc_02FA3A:
+@timer_over:
 	stz	$24,x
 	lda	$2E,x
 	bit	#$0030
-	bne	loc_02FA44
-loc_02FA43:
+	bne	@player_near
+@return:
 	rtl
-loc_02FA44:
+@player_near:
 	lda	#TDT_HATCH_TURRET_AIM
 	jsr	a:gun_hatch_spawn_turret
-	bcs	loc_02FA43
+	bcs	@return
 	lda	a:$0004,y
 	eor	#$0080
 	sta	a:$0004,y
@@ -2666,9 +2675,10 @@ loc_02FA44:
 
 gun_hatch_aim_state_2:
 	dec	$24,x
-	beq	loc_02FA66
+	beq	gun_hatch_open
 	rtl
-loc_02FA66:
+; Open (block $59, hittable) for $80 frames (state 3).
+gun_hatch_open:
 	lda	#$0059
 	sta	$20,x
 	stz	$2A,x
@@ -2680,10 +2690,10 @@ loc_02FA66:
 
 gun_hatch_state_3:
 	dec	$24,x
-	bmi	loc_02FA82
+	bmi	@closing
 	jsl	f:gun_hatch_flash_on_hit
 	rtl
-loc_02FA82:
+@closing:
 	lda	#$005B
 	sta	$20,x
 	lda	#$8000	; [num]
@@ -2697,10 +2707,11 @@ gun_hatch_state_4:
 	bpl	@return
 	lda	#$0040
 	sta	$24,x
-	brl	loc_02FA25
+	brl	gun_hatch_close
 @return:
 	rtl
-loc_02FAA0:
+; Destroyed: sound $30, explosions for $40 frames (state 5), block $57.
+gun_hatch_explode:
 	lda	#$0030
 	jsl	f:queue_sound
 	stz	$06,x
@@ -2714,29 +2725,29 @@ loc_02FAA0:
 
 gun_hatch_state_5:
 	dec	$24,x
-	bmi	loc_02FACA
+	bmi	@destroyed
 	lda	$24,x
 	bit	#$0003
-	bne	loc_02FAC9
+	bne	@return
 	jsl	f:td_spawn_explosion_effect
-loc_02FAC9:
+@return:
 	rtl
-loc_02FACA:
+@destroyed:
 	lda	#$0057
 	sta	$20,x
 	cmp	$28,x
-	bne	loc_02FAC9
+	bne	@return
 	jsl	f:td_spawn_item_drop
-	bcs	loc_02FAC9
+	bcs	@return
 	jml	f:clear_topdown_slot
 
 ; TDMT_GUN_HATCH_SPIN, stage 2 target: as TDMT_GUN_HATCH_AIM with a
 ; TDT_HATCH_TURRET_SPIN.
 update_gun_hatch_spin:
 	lda	$06,x
-	bpl	loc_02FAE4
-	brl	loc_02FAA0
-loc_02FAE4:
+	bpl	@alive
+	brl	gun_hatch_explode
+@alive:
 	lda	$12,x
 	phx
 	asl	a
@@ -2755,19 +2766,19 @@ tbl_gun_hatch_spin_states:
 
 gun_hatch_spin_state_1:
 	dec	$24,x
-	bmi	loc_02FB04
+	bmi	@timer_over
 	rtl
-loc_02FB04:
+@timer_over:
 	stz	$24,x
 	lda	$2E,x
 	bit	#$0030
-	bne	loc_02FB0E
-loc_02FB0D:
+	bne	@player_near
+@return:
 	rtl
-loc_02FB0E:
+@player_near:
 	lda	#TDT_HATCH_TURRET_SPIN
 	jsr	a:gun_hatch_spawn_turret
-	bcs	loc_02FB0D
+	bcs	@return
 	lda	a:$0004,y
 	eor	#$0080
 	sta	a:$0004,y
@@ -2780,7 +2791,7 @@ loc_02FB0E:
 gun_hatch_spin_state_2:
 	dec	$24,x
 	bne	@return
-	brl	loc_02FA66
+	brl	gun_hatch_open
 @return:
 	rtl
 
@@ -2788,9 +2799,9 @@ gun_hatch_spin_state_2:
 ; TDT_HATCH_TURRET_SWEEP.
 update_gun_hatch_sweep:
 	lda	$06,x
-	bpl	loc_02FB3A
-	brl	loc_02FAA0
-loc_02FB3A:
+	bpl	@alive
+	brl	gun_hatch_explode
+@alive:
 	lda	$12,x
 	phx
 	asl	a
@@ -2809,19 +2820,19 @@ tbl_gun_hatch_sweep_states:
 
 gun_hatch_sweep_state_1:
 	dec	$24,x
-	bmi	loc_02FB5A
+	bmi	@timer_over
 	rtl
-loc_02FB5A:
+@timer_over:
 	stz	$24,x
 	lda	$2E,x
 	bit	#$0030
-	bne	loc_02FB64
-loc_02FB63:
+	bne	@player_near
+@return:
 	rtl
-loc_02FB64:
+@player_near:
 	lda	#TDT_HATCH_TURRET_SWEEP
 	jsr	a:gun_hatch_spawn_turret
-	bcs	loc_02FB63
+	bcs	@return
 	lda	#$005B
 	sta	$20,x
 	lda	#$0008
@@ -2831,7 +2842,7 @@ loc_02FB64:
 gun_hatch_sweep_state_2:
 	dec	$24,x
 	bne	@return
-	brl	loc_02FA66
+	brl	gun_hatch_open
 @return:
 	rtl
 
@@ -2839,10 +2850,10 @@ gun_hatch_sweep_state_2:
 ; nearest player does not hold Y; stays open gun_hatch_no_fire time.
 update_gun_hatch_no_fire:
 	lda	$06,x
-	bpl	loc_02FB87
+	bpl	@alive
 	; (not executed in the CDL traces)
-	brl	loc_02FAA0
-loc_02FB87:
+	brl	gun_hatch_explode
+@alive:
 	lda	$12,x
 	phx
 	asl	a
@@ -2861,26 +2872,26 @@ tbl_gun_hatch_no_fire_states:
 
 gun_hatch_no_fire_state_1:
 	dec	$24,x
-	bmi	loc_02FBA7
+	bmi	@timer_over
 	; (not executed in the CDL traces)
 	rtl
-loc_02FBA7:
+@timer_over:
 	stz	$24,x
 	lda	$2E,x
 	bit	#$0030
-	bne	loc_02FBB1
-loc_02FBB0:
+	bne	@player_near
+@return:
 	rtl
-loc_02FBB1:
+@player_near:
 	; (not executed in the CDL traces)
 	jsl	f:td_select_target_player_long
 	ldy	a:boss_target_player
 	lda	a:$152C,y
 	bit	#$4000
-	bne	loc_02FBB0
+	bne	@return
 	lda	#TDT_HATCH_TURRET_AIM
 	jsr	a:gun_hatch_spawn_turret
-	bcs	loc_02FBB0
+	bcs	@return
 	lda	#$005B
 	sta	$20,x
 	lda	#$0008
@@ -2891,10 +2902,10 @@ gun_hatch_no_fire_state_2:
 	; (not executed in the CDL traces)
 	dec	$24,x
 	bne	@return
-	brl	loc_02FBDC
+	brl	@open
 @return:
 	rtl
-loc_02FBDC:
+@open:
 	lda	#$0059
 	sta	$20,x
 	stz	$2A,x
@@ -2910,10 +2921,10 @@ loc_02FBDC:
 ; nearest player faces away from it.
 update_gun_hatch_behind:
 	lda	$06,x
-	bpl	loc_02FBFB
+	bpl	@alive
 	; (not executed in the CDL traces)
-	brl	loc_02FAA0
-loc_02FBFB:
+	brl	gun_hatch_explode
+@alive:
 	lda	$12,x
 	phx
 	asl	a
@@ -2932,16 +2943,16 @@ tbl_gun_hatch_behind_states:
 
 gun_hatch_behind_state_1:
 	dec	$24,x
-	bmi	loc_02FC1B
+	bmi	@timer_over
 	rtl
-loc_02FC1B:
+@timer_over:
 	stz	$24,x
 	lda	$2E,x
 	bit	#$0030
-	bne	loc_02FC25
-loc_02FC24:
+	bne	@player_near
+@return:
 	rtl
-loc_02FC25:
+@player_near:
 	jsl	f:td_select_target_player_long
 	jsl	f:td_angle_to_nearest_player
 	ldy	a:boss_target_player
@@ -2950,10 +2961,10 @@ loc_02FC25:
 	clc
 	adc	#$0040
 	bit	#$0080
-	bne	loc_02FC24
+	bne	@return
 	lda	#TDT_HATCH_TURRET_AIM
 	jsr	a:gun_hatch_spawn_turret
-	bcs	loc_02FC24
+	bcs	@return
 	lda	#$005B
 	sta	$20,x
 	lda	#$0008
@@ -2963,10 +2974,10 @@ loc_02FC25:
 gun_hatch_behind_state_2:
 	dec	$24,x
 	bne	@return
-	brl	loc_02FC59
+	brl	@open
 @return:
 	rtl
-loc_02FC59:
+@open:
 	lda	#$0059
 	sta	$20,x
 	stz	$2A,x
@@ -2981,12 +2992,12 @@ loc_02FC59:
 gun_hatch_spawn_turret:
 	pha
 	jsl	f:td_get_hatch_enemy_slot
-	bcc	loc_02FC7B
+	bcc	@spawn
 	; (not executed in the CDL traces)
 	pla
 	sec
 	rts
-loc_02FC7B:
+@spawn:
 	pla
 	sta	a:$0010,y
 	lda	#$0000
@@ -3005,10 +3016,10 @@ loc_02FC7B:
 
 gun_hatch_flash_on_hit:
 	lda	$2A,x
-	bne	loc_02FCBF
+	bne	@end_flash
 	lda	$2E,x
 	bit	#$0040
-	beq	loc_02FCCA
+	beq	@return
 	lda	#$0010
 	jsl	f:queue_sound
 	lda	$20,x
@@ -3019,11 +3030,11 @@ gun_hatch_flash_on_hit:
 	and	#$FFBF
 	sta	$2E,x
 	rtl
-loc_02FCBF:
+@end_flash:
 	sta	$20,x
 	stz	$2A,x
 	lda	$2E,x
 	and	#$FFBF
 	sta	$2E,x
-loc_02FCCA:
+@return:
 	rtl
