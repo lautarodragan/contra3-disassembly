@@ -956,7 +956,7 @@ vel8_x_sub:
 ; the x offset of a point at distance 15 in direction angle. Used by the flame
 ; shot and by bank $04 handlers.
 circle15_y:
-	; CDL: read by spawn_shots_flame, sub_04D0EA
+	; CDL: read by spawn_shots_flame, spiked_mine_follow
 	.byte	$F1, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF
 	.byte	$F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F3, $FF
 	.byte	$F3, $FF, $F3, $FF, $F3, $FF, $F3, $FF, $F3, $FF, $F3, $FF, $F4, $FF, $F4, $FF
@@ -969,7 +969,7 @@ circle15_y:
 ; circle15_y), 320 entries.
 circle15_x:
 	; LAYOUT: read on from circle15_y (lda a:circle15_y,y)
-	; CDL: read by spawn_shots_flame, sub_04D0EA
+	; CDL: read by spawn_shots_flame, spiked_mine_follow
 	.byte	$00, $00, $00, $00, $00, $00, $01, $00, $01, $00, $01, $00, $02, $00, $02, $00
 	.byte	$02, $00, $03, $00, $03, $00, $04, $00, $04, $00, $04, $00, $05, $00, $05, $00
 	.byte	$05, $00, $06, $00, $06, $00, $06, $00, $07, $00, $07, $00, $07, $00, $08, $00
@@ -995,7 +995,7 @@ circle15_x:
 	.byte	$F3, $FF, $F3, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF
 	.byte	$F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF
 	.byte	$F1, $FF
-	; CDL: read by sub_04D0EA; partly not accessed
+	; CDL: read by spiked_mine_follow; partly not accessed
 	.byte	$F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF
 	.byte	$F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F2, $FF, $F3, $FF, $F3, $FF
 	.byte	$F3, $FF, $F3, $FF, $F3, $FF, $F3, $FF, $F3, $FF, $F4, $FF, $F4, $FF, $F4, $FF
@@ -5663,28 +5663,36 @@ load_list_05ECD9:
 winged_alien_hp:
 	; CDL: read by winged_alien_state_01; partly not accessed
 	.word	ENEMY_HP($0080), ENEMY_HP($00A0), ENEMY_HP($00C0)
-data_05ECE8:
+; winged_alien_state_03: below this OBJ_HP (by difficulty) the alien switches
+; to state 4 and its scripted steps.
+winged_alien_phase_2_hp:
 	; CDL: read by winged_alien_state_03; partly not accessed
 	.byte	$40, $00, $50, $00, $60, $00
-data_05ECEE:
+; winged_alien_state_03: vertical velocity of a swoop, down when the alien is
+; above the chosen player, else up.
+winged_alien_swoop_y_vel_subs:
 	; CDL: read by winged_alien_state_03
 	.byte	$00, $00, $00, $00
-data_05ECF2:
+winged_alien_swoop_y_vels:
 	; CDL: read by winged_alien_state_03; partly not accessed
 	.byte	$01, $00, $FF, $FF, $6D, $C4, $72, $C4, $80, $07
-data_05ECFC:
+; winged_alien_spawn_tail: the slots of the 16 tail segments, each following
+; the one before.
+winged_alien_tail_slots:
 	; CDL: read by winged_alien_spawn_tail; partly not accessed
 	.byte	$40, $07, $00, $07, $C0, $06, $80, $06, $40, $06, $00, $06, $C0, $05, $80, $05
 	.byte	$40, $05, $00, $05, $C0, $04, $80, $04, $40, $04, $00, $04, $C0, $03, $80, $03
 	.byte	$40, $03, $00, $03
-data_05ED20:
-	; CDL: read by sub_04A16E
+winged_alien_wing_hitbox_h:
+	; CDL: read by winged_alien_place_parts
 	.byte	$F0, $FF, $C0, $FF
-data_05ED24:
+; winged_alien_tail_tip_state_00: sprite by angle (8 directions).
+winged_alien_tail_tip_sprites:
 	; CDL: read by winged_alien_tail_tip_state_00
 	.addr	metasprite_06C477, metasprite_06C47C, metasprite_06C481, metasprite_06C486
 	.addr	metasprite_06C48B, metasprite_06C490, metasprite_06C495, metasprite_06C49A
-data_05ED34:
+; winged_alien_queue_tiles: the BG blocks of the wing frames 0-2 (VRAM $4D0C).
+ptrs_winged_alien_wing_blocks:
 	; CDL: read by queue_vram_blocks_at_x, winged_alien_queue_tiles
 	.addr	vram_blocks_05ED3A
 	.addr	vram_blocks_05ED46
@@ -5701,29 +5709,33 @@ vram_blocks_05ED52:
 face_boss_hp:
 	; CDL: read by face_boss_state_00; partly not accessed
 	.word	ENEMY_HP($0080), ENEMY_HP($0100), ENEMY_HP($0180)
-data_05ED64:
+; face_boss_state_06 (both heads gone): frame masks by difficulty for spawning
+; a soldier and for opening the mouth to spit a larva
+; (face_boss_larva_spit_masks).
+face_boss_soldier_spawn_masks:
 	; CDL: read by face_boss_state_06; partly not accessed
 	.byte	$7F, $00, $3F, $00, $1F, $00
-data_05ED6A:
+face_boss_larva_spit_masks:
 	; CDL: read by face_boss_state_06; partly not accessed
 	.byte	$FF, $00, $FF, $00, $7F, $00
-data_05ED70:
-	; CDL: read by sub_04A6B8; partly not accessed
+face_boss_head_attack_masks:
+	; CDL: read by face_boss_pick_head_attack; partly not accessed
 	.byte	$FF, $00, $7F, $00, $3F, $00
-data_05ED76:
-	; CDL: read by sub_04A7A3
+face_boss_eye_frames:
+	; CDL: read by face_boss_eye_frame_toward_player
 	.byte	$02, $80, $02, $80, $02, $80, $00, $80, $00, $80, $04, $80, $04, $80, $04, $80
-data_05ED86:
-	; CDL: read by sub_04A810; partly not accessed
+; OBJ_HP of the face boss's eyes (slots 6, 7) by difficulty.
+face_boss_eye_hp:
+	; CDL: read by face_boss_init_parts; partly not accessed
 	.byte	$40, $00, $80, $00, $00, $01
-data_05ED8C:
+face_boss_left_eye_tiles:
 	; CDL: read by face_boss_queue_tiles
 	.byte	$E0, $BF, $E0, $C1, $A0, $C1, $60, $C1
-data_05ED94:
+face_boss_right_eye_tiles:
 	; CDL: read by face_boss_queue_tiles
 	.byte	$00, $C0, $00, $C2, $C0, $C1, $80, $C1
-data_05ED9C:
-	; CDL: read by queue_vram_blocks_at_x, sub_04A93B
+ptrs_face_boss_mouth_blocks:
+	; CDL: read by queue_vram_blocks_at_x, face_boss_draw_mouth
 	.addr	vram_blocks_05EDA0
 	.addr	vram_blocks_05EDA8
 vram_blocks_05EDA0:
@@ -5731,13 +5743,16 @@ vram_blocks_05EDA0:
 vram_blocks_05EDA8:
 	.byte	$E0, $C0, $00, $C1
 	.byte	$20, $C1
-data_05EDAE:
+; face_boss_death_tiles_step: VRAM address and block list by step
+; (OBJ_ANIM_TIMER 4-1); likewise face_boss_reveal_vram_addrs for
+; face_boss_reveal_brain_step (3-1).
+face_boss_death_vram_addrs:
 	; LAYOUT: the block list vram_blocks_05EDA8 goes on into it (queue_vram_blocks)
-	; CDL: read by queue_vram_blocks_at_x, sub_04A95D
+	; CDL: read by queue_vram_blocks_at_x, face_boss_death_tiles_step
 	.byte	$40, $C1, $08, $4C, $88, $4C, $08, $4D
-data_05EDB6:
-	; LAYOUT: read on from data_05EDAE (lda a:data_05EDAE,y)
-	; CDL: read by queue_vram_blocks_at_x, sub_04A95D
+ptrs_face_boss_death_blocks:
+	; LAYOUT: read on from face_boss_death_vram_addrs (lda a:face_boss_death_vram_addrs,y)
+	; CDL: read by queue_vram_blocks_at_x, face_boss_death_tiles_step
 	.byte	$88, $4D
 	.addr	vram_blocks_05EDC0
 	.addr	vram_blocks_05EDC8
@@ -5750,12 +5765,12 @@ vram_blocks_05EDC8:
 	.byte	$00, $B0, $60, $C2, $A0, $BE, $00, $B0
 vram_blocks_05EDD0:
 	.byte	$00, $B0, $00, $B0, $00, $B0
-data_05EDD6:
-	; CDL: read by queue_vram_blocks_at_x, sub_04A97A
+face_boss_reveal_vram_addrs:
+	; CDL: read by queue_vram_blocks_at_x, face_boss_reveal_brain_step
 	.byte	$00, $B0, $00, $4C, $80, $4C
-data_05EDDC:
-	; LAYOUT: read on from data_05EDD6 (lda a:data_05EDD6,y)
-	; CDL: read by queue_vram_blocks_at_x, sub_04A97A
+ptrs_face_boss_reveal_blocks:
+	; LAYOUT: read on from face_boss_reveal_vram_addrs (lda a:face_boss_reveal_vram_addrs,y)
+	; CDL: read by queue_vram_blocks_at_x, face_boss_reveal_brain_step
 	.byte	$00, $4D
 	.addr	vram_blocks_05EDE4
 	.addr	vram_blocks_05EDF4
@@ -5773,8 +5788,8 @@ vram_blocks_05EE04:
 floor_mouth_hp:
 	; CDL: read by floor_mouth_state_00; partly not accessed
 	.word	ENEMY_HP($0020), ENEMY_HP($0028), ENEMY_HP($0030), ENEMY_HP($0038)
-data_05EE1C:
-	; CDL: read by queue_vram_blocks_at_x, sub_04ABA3
+ptrs_floor_mouth_tiles:
+	; CDL: read by queue_vram_blocks_at_x, floor_mouth_set_tiles
 	.addr	vram_blocks_05EE22, vram_blocks_05EE24, vram_blocks_05EE26
 vram_blocks_05EE22:
 	.byte	$A0, $62
@@ -5782,23 +5797,25 @@ vram_blocks_05EE24:
 	.byte	$20, $70
 vram_blocks_05EE26:
 	.byte	$00, $70
-data_05EE28:
+; floor_mouth_state_01: frames before opening, by difficulty.
+floor_mouth_wait_times:
 	; CDL: read by floor_mouth_state_01; partly not accessed
 	.byte	$78, $00, $5A, $00, $3C, $00, $3C, $00
 ; OBJ_HP of floor_mouth_bug by difficulty (easy, normal, hard; a 4th word unused)
 floor_mouth_bug_hp:
 	; CDL: read by floor_mouth_bug_state_00; partly not accessed
 	.word	ENEMY_HP($0001), ENEMY_HP($0001), ENEMY_HP($0002), ENEMY_HP($0003)
-data_05EE38:
+; floor_mouth_bug_state_00: initial velocity by bug (field $30, 0-2).
+floor_mouth_bug_x_vel_subs:
 	; CDL: read by floor_mouth_bug_state_00
 	.byte	$00, $00, $00, $F0, $00, $10
-data_05EE3E:
+floor_mouth_bug_x_vels:
 	; CDL: read by floor_mouth_bug_state_00
 	.byte	$00, $00, $00, $00, $FF, $FF
-data_05EE44:
+floor_mouth_bug_y_vel_subs:
 	; CDL: read by floor_mouth_bug_state_00
 	.byte	$00, $00, $00, $80, $00, $80
-data_05EE4A:
+floor_mouth_bug_y_vels:
 	; CDL: read by update_objects, floor_mouth_bug_state_00; partly not accessed
 	.byte	$01, $00, $FF, $FF, $FF, $FF
 anim_05EE50:
@@ -5809,7 +5826,8 @@ anim_05EE50:
 wall_worm_larva_hp:
 	; CDL: read by wall_worm_larva_state_00
 	.word	ENEMY_HP($0004), ENEMY_HP($0008), ENEMY_HP($0010)
-data_05EE64:
+; wall_worm_larva_state_00: random initial OBJ_ANGLE.
+wall_worm_larva_start_angles:
 	; CDL: read by update_objects, wall_worm_larva_state_00; partly not accessed
 	.byte	$80, $00, $C0, $00
 anim_05EE68:
@@ -5826,29 +5844,33 @@ anim_05EE68:
 face_boss_larva_hp:
 	; CDL: read by face_boss_larva_state_00; partly not accessed
 	.word	ENEMY_HP($0002), ENEMY_HP($0004), ENEMY_HP($0008)
-data_05EEA0:
+; enemy_type_68_state_00: OBJ_HP by difficulty; the start velocity, sprite,
+; gravity (enemy_type_68_gravity) and landing y (on the ceiling y $48 or the
+; floor y $B8) by field $30 (0: going down, 2: going up).
+enemy_type_68_hp:
 	; CDL: read by enemy_type_68_state_00
 	.word	ENEMY_HP($0000), ENEMY_HP($0002), ENEMY_HP($0004)
-data_05EEA6:
+enemy_type_68_start_y_vels:
 	; CDL: read by enemy_type_68_state_00
 	.byte	$FC, $FF, $04, $00
-data_05EEAA:
+enemy_type_68_start_y_vel_subs:
 	; CDL: read by enemy_type_68_state_00
 	.byte	$00, $00, $00, $00
-data_05EEAE:
+enemy_type_68_sprites:
 	; CDL: read by enemy_type_68_state_00
 	.addr	metasprite_06C2FE, metasprite_06C33A
-data_05EEB2:
+enemy_type_68_gravity:
 	; CDL: read by enemy_type_68_state_01
 	.byte	$00, $00, $FF, $FF
-data_05EEB6:
+enemy_type_68_gravity_subs:
 	; CDL: read by enemy_type_68_state_01
 	.byte	$00, $40, $00, $C0
-data_05EEBA:
-	; CDL: read by sub_04AF1C
+enemy_type_68_landing_y:
+	; CDL: read by enemy_type_68_check_landed
 	.byte	$B8, $00, $48, $00
-data_05EEBE:
-	; CDL: read by update_objects, sub_04AF1C; partly not accessed
+; Walking animation on the floor and on the ceiling.
+enemy_type_68_walk_anims:
+	; CDL: read by update_objects, enemy_type_68_check_landed; partly not accessed
 	.addr	anim_05EEC2, anim_05EEDC
 anim_05EEC2:
 	anim_frame	$0004, metasprite_06C307, metasprite_06C307
@@ -5863,19 +5885,19 @@ anim_05EEDC:
 	anim_frame	$0004, metasprite_06C354, metasprite_06C354
 	anim_goto	anim_05EEDC
 	.byte	$00, $00, $F8, $FF
-; OBJ_HP of heart_boss by difficulty (easy, normal; hard = first word of data_05EEFE, $0180)
+; OBJ_HP of heart_boss by difficulty (easy, normal; hard = first word of heart_boss_death_vram_addrs, $0180)
 .if CHEAT_ENEMY_HP = 100
 heart_boss_hp:
 .endif
 	; CDL: read by heart_boss_state_00
 	.byte	$80, $00, $00, $01	; cheats: see cheat_enemy_hp_tables
-data_05EEFE:
+heart_boss_death_vram_addrs:
 	; LAYOUT: read on from heart_boss_hp (lda a:heart_boss_hp,y)
-	; CDL: read by heart_boss_state_00, sub_04B12E
+	; CDL: read by heart_boss_state_00, heart_boss_queue_death_tiles
 	.byte	$80, $01, $90, $4C, $90, $4D
-data_05EF04:
-	; LAYOUT: read on from data_05EEFE (lda a:data_05EEFE,y)
-	; CDL: read by queue_vram_blocks_at_x, sub_04B12E
+ptrs_heart_boss_death_blocks:
+	; LAYOUT: read on from heart_boss_death_vram_addrs (lda a:heart_boss_death_vram_addrs,y)
+	; CDL: read by queue_vram_blocks_at_x, heart_boss_queue_death_tiles
 	.byte	$10, $4E
 	.addr	vram_blocks_05EF0C
 	.addr	vram_blocks_05EF1C
@@ -5889,39 +5911,42 @@ vram_blocks_05EF1C:
 vram_blocks_05EF2C:
 	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0
 	.byte	$60, $BC, $00, $B0, $60, $BC, $00, $B0
-data_05EF3C:
-	; CDL: read by queue_vram_blocks_at_x, sub_04B14B
+ptrs_heart_boss_beat_blocks:
+	; CDL: read by queue_vram_blocks_at_x, heart_boss_beat
 	.addr	vram_blocks_05EF40
 	.addr	vram_blocks_05EF4C
 vram_blocks_05EF40:
 	.byte	$80, $B0, $A0, $B0, $C0, $B0, $00, $BA, $20, $BA, $40, $BA
 vram_blocks_05EF4C:
 	.byte	$A0, $BA, $C0, $BA, $E0, $BA, $20, $BB, $40, $BB
-data_05EF56:
+; spawn_heart_boss_bug: position, kind (field $30) and VRAM address (field
+; $32) of the 4 pods (entries 1-4; each table reads on into the next).
+heart_boss_bug_x:
 	; CDL: read by queue_vram_blocks_at_x, spawn_heart_boss_bug
 	.byte	$60, $BB, $00, $01, $40, $01, $00, $01
-data_05EF5E:
-	; LAYOUT: read on from data_05EF56 (lda a:data_05EF56,x)
+heart_boss_bug_y:
+	; LAYOUT: read on from heart_boss_bug_x (lda a:heart_boss_bug_x,x)
 	; CDL: read by spawn_heart_boss_bug
 	.byte	$40, $01, $40, $00, $40, $00, $C0, $00
-data_05EF66:
-	; LAYOUT: read on from data_05EF5E (lda a:data_05EF5E,x)
+heart_boss_bug_kinds:
+	; LAYOUT: read on from heart_boss_bug_y (lda a:heart_boss_bug_y,x)
 	; CDL: read by spawn_heart_boss_bug
 	.byte	$C0, $00, $02, $00, $02, $00, $00, $00
-data_05EF6E:
-	; LAYOUT: read on from data_05EF66 (lda a:data_05EF66,x)
+heart_boss_bug_vram_addrs:
+	; LAYOUT: read on from heart_boss_bug_kinds (lda a:heart_boss_bug_kinds,x)
 	; CDL: read by spawn_heart_boss_bug
 	.byte	$00, $00, $90, $4C, $98, $4C, $90, $4E, $98, $4E
 ; OBJ_HP of heart_boss_bug by difficulty (easy, normal, hard)
 heart_boss_bug_hp:
 	; CDL: read by heart_boss_bug_state_00
 	.word	ENEMY_HP($0020), ENEMY_HP($0040), ENEMY_HP($0080)
-data_05EF7E:
+; heart_boss_bug_state_00: wait by difficulty and a random 0-3.
+heart_boss_bug_wait_times:
 	; CDL: read by heart_boss_bug_state_00
 	.byte	$80, $00, $A8, $00, $D0, $00, $F8, $00, $40, $00, $52, $00, $64, $00, $76, $00
 	.byte	$02, $00, $14, $00, $26, $00, $38, $00
-data_05EF96:
-	; CDL: read by heart_boss_bug_state_01, sub_04B2E7
+ptrs_heart_boss_bug_tile_scripts:
+	; CDL: read by heart_boss_bug_state_01, heart_boss_bug_run_tile_script
 	.addr	tile_script_05EF9A
 	.addr	tile_script_05EFB0
 tile_script_05EF9A:
@@ -5930,18 +5955,20 @@ tile_script_05EF9A:
 tile_script_05EFB0:
 	.byte	$04, $00, $00, $B1, $04, $00
 	.byte	$20, $B1, $18, $00, $00, $BC, $04, $00, $20, $B1, $04, $00, $00, $B1, $00, $00
-data_05EFC6:
+; heart_boss_bug_state_03: the tile left by a destroyed pod, by kind;
+; heart_boss_bug_crawler_y_offsets: y of the creature it releases.
+heart_boss_bug_dead_tiles:
 	; CDL: read by heart_boss_bug_state_03
 	.byte	$60, $BC, $20, $BC
-data_05EFCA:
-	; CDL: read by sub_04B2C1
+heart_boss_bug_crawler_y_offsets:
+	; CDL: read by heart_boss_bug_spawn_crawler
 	.byte	$F0, $FF, $0C, $00
 ; OBJ_HP of wall_worm by difficulty (easy, normal, hard)
 wall_worm_hp:
 	; CDL: read by wall_worm_state_00
 	.word	ENEMY_HP($0040), ENEMY_HP($0080), ENEMY_HP($0100)
-data_05EFD4:
-	; CDL: read by queue_vram_blocks_at_x, sub_04B403
+ptrs_wall_worm_mouth_blocks:
+	; CDL: read by queue_vram_blocks_at_x, wall_worm_draw_mouth
 	.addr	vram_blocks_05EFE0
 	.addr	vram_blocks_05EFD8
 vram_blocks_05EFD8:
@@ -5949,29 +5976,29 @@ vram_blocks_05EFD8:
 vram_blocks_05EFE0:
 	.byte	$40, $72, $60, $72
 	.byte	$60, $50, $60, $50
-data_05EFE8:
-	; CDL: read by sub_04B403
+wall_worm_mouth_flags:
+	; CDL: read by wall_worm_draw_mouth
 	.byte	$3F, $00, $1F, $00
-data_05EFEC:
-	; CDL: read by sub_04B403
+wall_worm_mouth_hitbox_h:
+	; CDL: read by wall_worm_draw_mouth
 	.byte	$E0, $FF, $D0, $FF
-data_05EFF0:
-	; CDL: read by sub_04B403
+wall_worm_mouth_y:
+	; CDL: read by wall_worm_draw_mouth
 	.byte	$80, $00, $90, $00
-data_05EFF4:
-	; CDL: read by queue_vram_blocks_at_x, sub_04B447
+ptrs_wall_worm_anim_blocks:
+	; CDL: read by queue_vram_blocks_at_x, wall_worm_draw_anim_frame
 	.addr	vram_blocks_05EFF8
-	.addr	data_05EFFA
+	.addr	wall_worm_death_vram_addrs
 vram_blocks_05EFF8:
 	.byte	$80, $72
-data_05EFFA:
-	; CDL: read by queue_vram_blocks_at_x, sub_04B469
+wall_worm_death_vram_addrs:
+	; CDL: read by queue_vram_blocks_at_x, wall_worm_queue_death_tiles
 	.byte	$20, $5A, $90, $44, $10, $45, $90, $45
-; VRAM block lists by OBJ_TIMER (1-4) for sub_04B469; entry 0 is the last
-; word of data_05EFFA.
-data_05F002:
-	; LAYOUT: read on from data_05EFFA (lda a:data_05EFFA,y)
-	; CDL: read by queue_vram_blocks_at_x, sub_04B469
+; VRAM block lists by OBJ_TIMER (1-4) for wall_worm_queue_death_tiles; entry 0 is the last
+; word of wall_worm_death_vram_addrs.
+ptrs_wall_worm_death_blocks:
+	; LAYOUT: read on from wall_worm_death_vram_addrs (lda a:wall_worm_death_vram_addrs,y)
+	; CDL: read by queue_vram_blocks_at_x, wall_worm_queue_death_tiles
 	.byte	$10, $46
 	.addr	vram_blocks_05F00C
 	.addr	vram_blocks_05F012
@@ -5986,38 +6013,39 @@ vram_blocks_05F018:
 vram_blocks_05F01E:
 	.byte	$60, $50, $60, $50
 	.byte	$60, $50
-data_05F024:
+; OBJ_HP of cave_beast_target by difficulty.
+cave_beast_target_hp:
 	; CDL: read by cave_beast_state_02; partly not accessed
 	.byte	$00, $01, $40, $01, $80, $01, $C0, $01
-data_05F02C:
-	; CDL: read by sub_04BDC6
+cave_beast_player_slots:
+	; CDL: read by cave_beast_clamp_players_y
 	.byte	$00, $02, $40, $02
-data_05F030:
+cave_beast_state_13_frames:
 	; CDL: read by cave_beast_state_13
 	.byte	$04, $00, $05, $00
-data_05F034:
+cave_beast_state_14_counts:
 	; CDL: read by cave_beast_state_14; partly not accessed
 	.byte	$09, $00, $0B, $00, $0D, $00, $0F, $00
-data_05F03C:
+cave_beast_state_17_frames:
 	; CDL: read by cave_beast_state_17
 	.byte	$01, $00, $02, $00
-data_05F040:
+cave_beast_state_19_frames:
 	; CDL: read by cave_beast_state_19
 	.byte	$04, $00, $03, $00, $01, $00, $00, $00
-data_05F048:
-	; CDL: read by sub_04BC10
+cave_beast_frame_block_counts:
+	; CDL: read by cave_beast_queue_frame
 	.byte	$01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $02, $00
 	.byte	$02, $00, $02, $00, $02, $00
-data_05F05E:
-	; CDL: read by sub_04BC10
+cave_beast_frame_block_sizes:
+	; CDL: read by cave_beast_queue_frame
 	.byte	$08, $00, $08, $00, $08, $00, $08, $00, $08, $00, $08, $00, $08, $00, $10, $00
 	.byte	$10, $00, $20, $00, $20, $00
-data_05F074:
-	; CDL: read by sub_04BC10
+cave_beast_frame_vram_addrs:
+	; CDL: read by cave_beast_queue_frame
 	.byte	$94, $4D, $94, $4D, $94, $4D, $14, $4E, $14, $4E, $14, $4E, $14, $4E, $90, $4E
 	.byte	$90, $4E, $98, $4E, $98, $4E
-data_05F08A:
-	; CDL: read by queue_vram_blocks_at_x, sub_04BC10
+ptrs_cave_beast_frame_blocks:
+	; CDL: read by queue_vram_blocks_at_x, cave_beast_queue_frame
 	.addr	vram_blocks_05F0A0, vram_blocks_05F0A2, vram_blocks_05F0A4, vram_blocks_05F0A6
 	.addr	vram_blocks_05F0A8, vram_blocks_05F0AA, vram_blocks_05F0AC, vram_blocks_05F0AE
 	.addr	vram_blocks_05F0B2, vram_blocks_05F0B6, vram_blocks_05F0BE
@@ -6044,148 +6072,170 @@ vram_blocks_05F0B6:
 	.byte	$00, $B0, $00, $B0
 vram_blocks_05F0BE:
 	.byte	$80, $B7, $A0, $B7, $C0, $B7, $E0, $B7
-data_05F0C6:
+; update_cave_beast_fireball: sprite by frame counter & 3.
+cave_beast_fireball_sprites:
 	; CDL: read by update_cave_beast_fireball
 	.addr	metasprite_06AF82, metasprite_06AF87, metasprite_06AF8C, metasprite_06AF91
 ; OBJ_HP of face_boss_side_head by difficulty (easy, normal, hard)
 face_boss_side_head_hp:
 	; CDL: read by face_boss_side_head_state_00; partly not accessed
 	.word	ENEMY_HP($0080), ENEMY_HP($00C0), ENEMY_HP($0100)
-data_05F0D4:
+; face_boss_side_head: RAM buffers ($1900, $1A00) where the lunging head
+; records its path, by field $34 * 2 + field $32;
+; face_boss_side_head_lunge_times (by field $34) is the lunge time.
+face_boss_side_head_path_buffers:
 	; CDL: read by face_boss_side_head_state_02
 	.byte	$00, $19, $00, $1A, $00, $19, $00, $19
-data_05F0DC:
+face_boss_side_head_lunge_times:
 	; CDL: read by face_boss_side_head_state_02; partly not accessed
 	.byte	$38, $00, $78, $00, $00, $19, $00, $1A
-data_05F0E4:
+; update_face_boss_neck: slot of the side head (8 or 9) whose death ends the
+; neck, by field $30.
+face_boss_neck_head_slots:
 	; CDL: read by update_face_boss_neck
 	.byte	$00, $04, $40, $04
-data_05F0E8:
+; x offset of the head from the face, by head (field $32).
+face_boss_side_head_x_offsets:
 	; CDL: read by face_boss_side_head_state_02
 	.byte	$97, $FF, $56, $00
-data_05F0EC:
+; OBJ_HP of snake_robot_head by difficulty.
+snake_robot_head_hp:
 	; CDL: read by snake_robot_state_00; partly not accessed
 	.byte	$00, $01, $40, $01, $80, $01, $C0, $01
-data_05F0F4:
+; snake_robot_state_05: x velocities of the two feet for a step, by side of
+; the screen (field $38).
+snake_robot_step_foot_a_x_vel_subs:
 	; CDL: read by snake_robot_state_05
 	.byte	$00, $00, $00, $00
-data_05F0F8:
+snake_robot_step_foot_a_x_vels:
 	; CDL: read by snake_robot_state_05
 	.byte	$FD, $FF, $FB, $FF
-data_05F0FC:
+snake_robot_step_foot_b_x_vel_subs:
 	; CDL: read by snake_robot_state_05
 	.byte	$00, $00, $00, $00
-data_05F100:
+snake_robot_step_foot_b_x_vels:
 	; CDL: read by snake_robot_state_05
 	.byte	$05, $00, $03, $00
-data_05F104:
+; snake_robot_state_06: y velocity of its homing missiles, alternating.
+snake_robot_missile_y_vel_subs:
 	; CDL: read by snake_robot_state_06
 	.byte	$00, $00, $00, $00
-data_05F108:
+snake_robot_missile_y_vels:
 	; CDL: read by snake_robot_state_06
 	.byte	$01, $00, $00, $00
-data_05F10C:
+; snake_robot_state_07: x velocity of both feet, by side of the screen.
+snake_robot_jump_x_vel_subs:
 	; CDL: read by snake_robot_state_07
 	.byte	$00, $80, $00, $80
-data_05F110:
+snake_robot_jump_x_vels:
 	; CDL: read by snake_robot_state_07
 	.byte	$FF, $FF, $00, $00
-data_05F114:
+; snake_robot_state_01: initial angle of every leg segment;
+; snake_robot_leg_fold_angles for snake_robot_state_08.
+snake_robot_leg_start_angles:
 	; CDL: read by snake_robot_state_01
 	.byte	$40, $00, $40, $00, $40, $00, $40, $00, $40, $00, $40, $00, $40, $00, $40, $00
 	.byte	$40, $00, $40, $00, $40, $00, $40, $00, $40, $00, $40, $00, $40, $00, $40, $00
-data_05F134:
+snake_robot_leg_fold_angles:
 	; CDL: read by snake_robot_state_08
 	.byte	$40, $00, $40, $01, $40, $01, $40, $01, $40, $01, $40, $01, $40, $01, $40, $01
 	.byte	$40, $00, $C0, $00, $C0, $00, $C0, $00, $C0, $00, $C0, $00, $C0, $00, $C0, $00
-data_05F154:
+snake_robot_body_slot:
 	; CDL: read by update_snake_robot_head
 	.byte	$00, $09
-data_05F156:
+; The 16 leg segment slots (8 per leg, snake_robot_slots_b the second
+; leg).
+snake_robot_leg_slots:
 	; CDL: read by snake_robot_state_00
 	.byte	$80, $04
-; Object slots of the snake robot: the first group of 8 is data_05F156 (its
-; first slot) and this table; this label, past the first slot, is reached
-; through ptrs_05F17E. All 16 slots are also read through data_05F156,y.
+; Object slots of the snake robot: the first group of 8 is
+; snake_robot_leg_slots (its first slot) and this table; this label, past the
+; first slot, is reached through ptrs_snake_robot_leg_segments. All 16 slots
+; are also read through snake_robot_leg_slots,y.
 snake_robot_slots_a_rest:
-	; LAYOUT: read on from data_05F156 (lda a:data_05F156,y)
+	; LAYOUT: read on from snake_robot_leg_slots (lda a:snake_robot_leg_slots,y)
 	; CDL: read by snake_robot_state_00
 	.byte	$40, $04, $00, $04, $C0, $03, $80, $03, $40, $03, $00, $03, $C0, $04
-; The second group of 8 object slots of the snake robot (through ptrs_05F182,
-; and read on from data_05F156).
+; The second group of 8 object slots of the snake robot (through
+; ptrs_snake_robot_leg_parents, and read on from snake_robot_leg_slots).
 snake_robot_slots_b:
-	; LAYOUT: read on from data_05F156 (lda a:data_05F156,y)
+	; LAYOUT: read on from snake_robot_leg_slots (lda a:snake_robot_leg_slots,y)
 	; CDL: read by snake_robot_state_00
 	.byte	$80, $05
-; The second group past its first slot (through ptrs_05F17E, and read on from
-; data_05F156).
+; The second group past its first slot (through
+; ptrs_snake_robot_leg_segments, and read on from snake_robot_leg_slots).
 snake_robot_slots_b_rest:
-	; LAYOUT: read on from data_05F156 (lda a:data_05F156,y)
+	; LAYOUT: read on from snake_robot_leg_slots (lda a:snake_robot_leg_slots,y)
 	; CDL: read by snake_robot_state_00
 	.byte	$C0, $05, $00, $06, $40, $06, $80, $06, $C0, $06, $00, $07, $40, $05
-data_05F176:
-	; CDL: read by sub_04CB63
+snake_robot_hip_slots:
+	; CDL: read by snake_robot_place_legs_by_angle
 	.byte	$80, $04, $80, $05
-data_05F17A:
-	; CDL: read by sub_04CB63
+snake_robot_hip_x_offsets:
+	; CDL: read by snake_robot_place_legs_by_angle
 	.byte	$10, $00
-data_05F17C:
-	; LAYOUT: read on from data_05F17A (lda a:data_05F17A,y)
-	; CDL: read by sub_04CB63
+snake_robot_hip_x_offset_b:
+	; LAYOUT: read on from snake_robot_hip_x_offsets (lda a:snake_robot_hip_x_offsets,y)
+	; CDL: read by snake_robot_place_legs_by_angle
 	.byte	$08, $00
-ptrs_05F17E:
+ptrs_snake_robot_leg_segments:
 	.addr	snake_robot_slots_a_rest
 	.addr	snake_robot_slots_b_rest
-ptrs_05F182:
-	.addr	data_05F156
+ptrs_snake_robot_leg_parents:
+	.addr	snake_robot_leg_slots
 	.addr	snake_robot_slots_b
-data_05F186:
+; The feet ($0300, $0700); snake_robot_other_foot_slots reads on by one entry.
+snake_robot_foot_slots:
 	; CDL: read by snake_robot_state_00
 	.byte	$00, $03
-data_05F188:
-	; LAYOUT: read on from data_05F186 (lda a:data_05F186,y)
+snake_robot_other_foot_slots:
+	; LAYOUT: read on from snake_robot_foot_slots (lda a:snake_robot_foot_slots,y)
 	; CDL: read by snake_robot_state_00, snake_robot_state_06
 	.byte	$00, $07, $00, $03
-data_05F18C:
-	; CDL: read by sub_04CBE2
+snake_robot_ankle_slots:
+	; CDL: read by snake_robot_place_legs_between
 	.byte	$C0, $04, $40, $05
-data_05F190:
-	; CDL: read by sub_04CBE2
+snake_robot_midpoint_from_a:
+	; CDL: read by snake_robot_place_legs_between
 	.byte	$00, $03, $C0, $03, $C0, $03, $00, $04, $C0, $03, $C0, $03, $C0, $03, $80, $03
 	.byte	$C0, $03, $00, $07, $40, $06, $40, $06, $00, $06, $40, $06, $40, $06, $40, $06
 	.byte	$80, $06, $40, $06
-data_05F1B4:
-	; CDL: read by sub_04CBE2
+snake_robot_midpoint_from_b:
+	; CDL: read by snake_robot_place_legs_between
 	.byte	$80, $04, $80, $04, $00, $04, $80, $04, $40, $04, $00, $03, $80, $03, $00, $03
 	.byte	$40, $03, $80, $05, $80, $05, $00, $06, $80, $05, $C0, $05, $00, $07, $80, $06
 	.byte	$00, $07, $C0, $06
-data_05F1D8:
-	; CDL: read by sub_04CBE2
+snake_robot_midpoint_slots:
+	; CDL: read by snake_robot_place_legs_between
 	.byte	$C0, $03, $00, $04, $00, $04, $40, $04, $00, $04, $80, $03, $80, $03, $40, $03
 	.byte	$80, $03, $40, $06, $00, $06, $00, $06, $C0, $05, $00, $06, $80, $06, $80, $06
 	.byte	$C0, $06, $80, $06
-data_05F1FC:
+; enemy_type_7C_state_00: OBJ_TIMER by field $3A. enemy_type_7C_state_03 aims
+; at a player (3 frames, enemy_type_7C_aim_frames) and fires enemy bullets
+; from the gun offsets (enemy_type_7C_gun_x_offsets,
+; enemy_type_7C_gun_y_offsets): a gun turret.
+enemy_type_7C_delays:
 	; CDL: read by enemy_type_7C_state_00
 	.byte	$60, $00, $40, $00, $80, $00
-data_05F202:
-	; CDL: read by sub_04CE28
+enemy_type_7C_frame_tiles:
+	; CDL: read by enemy_type_7C_draw_frame
 	.byte	$A0, $5A
-data_05F204:
-	; LAYOUT: read on from data_05F202 (lda a:data_05F202,y)
-	; CDL: read by sub_04CE28
+enemy_type_7C_frame_tiles_b:
+	; LAYOUT: read on from enemy_type_7C_frame_tiles (lda a:enemy_type_7C_frame_tiles,y)
+	; CDL: read by enemy_type_7C_draw_frame
 	.byte	$00, $50, $C0, $5A, $00, $50, $E0, $5A, $00, $5B, $20, $5B, $40, $5B, $20, $5B
 	.byte	$40, $5B, $20, $5B, $80, $5B, $20, $5B, $60, $5B, $A0, $5B, $C0, $5B
-data_05F222:
+enemy_type_7C_aim_frames:
 	; CDL: read by enemy_type_7C_state_03
 	.byte	$18, $00, $10, $00, $14, $00
-data_05F228:
+enemy_type_7C_gun_y_offsets:
 	; CDL: read by enemy_type_7C_state_03
 	.byte	$03, $00, $04, $00, $00, $00
-data_05F22E:
+enemy_type_7C_gun_x_offsets:
 	; CDL: read by enemy_type_7C_state_03
 	.byte	$1E, $00, $0C, $00, $00, $00
-data_05F234:
-	; CDL: read by sub_04CE28
+enemy_type_7C_vram_addrs:
+	; CDL: read by enemy_type_7C_draw_frame
 	.byte	$84, $40, $9C, $44, $8C, $40
 data_05F23A:
 	; CDL: read by update_objects; partly not accessed
@@ -6196,7 +6246,8 @@ anim_05F246:
 	anim_frame	$0001, metasprite_06AFD9, metasprite_06C631
 	anim_frame	$0001, metasprite_06AEA5, metasprite_06C646
 	anim_goto	anim_05F246
-data_05F260:
+; update_lightning_pylon: frames between bolts, by field $3A.
+lightning_pylon_fire_delays:
 	; CDL: read by update_lightning_pylon
 	.byte	$78, $00, $60, $00, $68, $00, $5C, $00, $50, $00, $44, $00
 ; OBJ_HP of lightning_pylon by difficulty: easy $40, normal $60; hard reads the next word, $7FFF
@@ -6216,22 +6267,22 @@ load_list_05F286:
 	load_list	$00, $01
 	load_vram	$7000, gfx_0AE4A2
 	load_end
-data_05F28F:
-	; CDL: read by sub_04D6E7
+helicopter_rope_ring_offsets:
+	; CDL: read by helicopter_rope_store_position
 	.byte	$08, $00, $F8, $FF
-data_05F293:
-	; CDL: read by sub_04D70A; partly not accessed
+helicopter_rope_enemy_sprites:
+	; CDL: read by helicopter_rope_enemy_pick_sprite; partly not accessed
 	.addr	metasprite_06C86E, metasprite_06C8D3, metasprite_06C859, metasprite_06C8E4
 	.addr	metasprite_06C894
 	.addr	metasprite_06C8A9, metasprite_06C87F, metasprite_06C8BE, metasprite_06C86E
 	.addr	metasprite_06C8D3, metasprite_06C859, metasprite_06C8E4, metasprite_06C844
 	.addr	metasprite_06C8F9, metasprite_06C859, metasprite_06C8E4
-data_05F2B3:
-	; CDL: read by sub_04D724; partly not accessed
+helicopter_rope_enemy_x_offsets:
+	; CDL: read by helicopter_rope_enemy_offset; partly not accessed
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $08, $00, $06, $00, $08, $00, $06, $00
 	.byte	$F6, $FF, $FC, $FF, $EC, $FF, $EC, $FF, $E8, $FF, $E8, $FF, $00, $00, $00, $00
-data_05F2D3:
-	; CDL: read by sub_04D724; partly not accessed
+helicopter_rope_enemy_y_offsets:
+	; CDL: read by helicopter_rope_enemy_offset; partly not accessed
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $0C, $00, $0E, $00, $17, $00, $12, $00
 	.byte	$16, $00, $14, $00, $12, $00, $14, $00, $0E, $00, $0C, $00, $00, $00, $00, $00
 	; CDL: read by update_objects
@@ -6246,20 +6297,23 @@ anim_05F30B:
 	anim_frame	$0004, metasprite_06CA0C, metasprite_06CABD
 	anim_frame	$0004, metasprite_06CA2D, metasprite_06CADE
 	anim_end	metasprite_06CA56, metasprite_06CB07
-data_05F329:
+; helicopter_rope_state_07: x offset of the rope's end from the enemy, by
+; OBJ_FACING.
+helicopter_rope_jump_x_offsets:
 	; CDL: read by update_objects, helicopter_rope_state_07
 	.byte	$0E, $00, $FE, $FF
 anim_05F32D:
 	anim_frame	$0004, metasprite_06CB72, metasprite_06CB7C
 	anim_frame	$0004, metasprite_06CB77, metasprite_06CB81
 	anim_goto	anim_05F32D
-data_05F33B:
+; update_enemy_type_85: initial x velocity and x acceleration, by OBJ_FACING.
+enemy_type_85_x_vels:
 	; CDL: read by update_enemy_type_85
 	.byte	$07, $00, $F9, $FF
-data_05F33F:
+enemy_type_85_x_accel_subs:
 	; CDL: read by update_enemy_type_85
 	.byte	$00, $C0, $00, $40
-data_05F343:
+enemy_type_85_x_accels:
 	; CDL: read by update_enemy_type_85; partly not accessed
 	.byte	$FF, $FF, $00, $00
 text_sound_check_mode:

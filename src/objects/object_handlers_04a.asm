@@ -3660,7 +3660,7 @@ loc_049CA7:
 loc_049CAF:
 	inc	a:obj_slots+22*OBJ_SIZE+$38
 	inc	a:obj_slots+22*OBJ_SIZE+$38
-	jsr	a:sub_04A16E
+	jsr	a:winged_alien_place_parts
 	rtl
 loc_049CB9:
 	inc	OBJ_STATE,x
@@ -3668,13 +3668,13 @@ loc_049CB9:
 	sta	OBJ_FLAGS,x
 	inc	a:obj_slots+22*OBJ_SIZE+$38
 	inc	a:obj_slots+22*OBJ_SIZE+$38
-	jsr	a:sub_04A16E
+	jsr	a:winged_alien_place_parts
 	rtl
 
 winged_alien_state_03:
 	lda	OBJ_HP,x
 	ldy	difficulty
-	cmp	a:data_05ECE8,y
+	cmp	a:winged_alien_phase_2_hp,y
 	bcs	loc_049CDA
 	lda	#$0004
 	sta	OBJ_STATE,x
@@ -3707,9 +3707,9 @@ loc_049D05:
 loc_049D12:
 	ldy	#$0000
 loc_049D15:
-	lda	a:data_05ECEE,y
+	lda	a:winged_alien_swoop_y_vel_subs,y
 	sta	OBJ_Y_VEL_SUB,x
-	lda	a:data_05ECF2,y
+	lda	a:winged_alien_swoop_y_vels,y
 	sta	OBJ_Y_VEL,x
 	lda	#$FFFA	; [num]
 	sta	OBJ_X_VEL,x
@@ -3756,7 +3756,7 @@ loc_049D6B:
 loc_049D70:
 	inc	a:obj_slots+22*OBJ_SIZE+$38
 	inc	a:obj_slots+22*OBJ_SIZE+$38
-	jsr	a:sub_04A16E
+	jsr	a:winged_alien_place_parts
 	rtl
 
 winged_alien_state_04:
@@ -3823,12 +3823,12 @@ loc_049DDE:
 	stz	$3A,x
 	stz	OBJ_TIMER,x
 loc_049DF8:
-	jsr	a:sub_04A16E
+	jsr	a:winged_alien_place_parts
 	rtl
 
 winged_alien_state_05:
 	jsr	a:winged_alien_run_step
-	jsr	a:sub_04A16E
+	jsr	a:winged_alien_place_parts
 	rtl
 
 ; State 5: runs step field $3A of tbl_winged_alien_steps.
@@ -3853,7 +3853,9 @@ tbl_winged_alien_steps:
 	.addr	winged_alien_step_8
 	.addr	winged_alien_step_9
 
-sub_049E26:
+; Steps fields $36 and $38 of the tail root (slot 22, $0780) towards $D0 and
+; $1F2; carry set when both are there.
+winged_alien_ease_tail_params:
 	ldy	#$0000
 	lda	a:obj_slots+22*OBJ_SIZE+$36
 	cmp	#$00D0
@@ -3899,7 +3901,7 @@ loc_049E78:
 	rts
 
 winged_alien_step_0:
-	jsr	a:sub_049E26
+	jsr	a:winged_alien_ease_tail_params
 	bcc	loc_049E8B
 	stz	OBJ_X_VEL,x
 	stz	OBJ_X_VEL_SUB,x
@@ -3908,7 +3910,7 @@ winged_alien_step_0:
 	stz	OBJ_TIMER,x
 	inc	$3A,x
 loc_049E8B:
-	jsr	a:sub_04A2B2
+	jsr	a:winged_alien_flap_slow
 	rts
 
 winged_alien_step_1:
@@ -3939,7 +3941,7 @@ loc_049EC1:
 	stz	OBJ_Y_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
 loc_049EC5:
-	jsr	a:sub_04A2C5
+	jsr	a:winged_alien_flap_fast
 	rts
 loc_049EC9:
 	stz	OBJ_X_VEL_SUB,x
@@ -3968,7 +3970,7 @@ winged_alien_step_2:
 	rts
 
 winged_alien_step_3:
-	jsr	a:sub_04A2D2
+	jsr	a:winged_alien_warp_out
 	lda	f:wram_7EE823
 	cmp	#$0002
 	bcc	@return
@@ -4030,7 +4032,7 @@ loc_049F4A:
 	rts
 
 winged_alien_step_7:
-	jsr	a:sub_04A2E9
+	jsr	a:winged_alien_warp_in
 	lda	f:wram_7EE823
 	cmp	#$0002
 	bcc	@return
@@ -4039,7 +4041,7 @@ winged_alien_step_7:
 	stz	hdma_preset
 	stz	OBJ_TIMER,x
 	inc	$3A,x
-	jsr	a:sub_04A2B2
+	jsr	a:winged_alien_flap_slow
 @return:
 	rts
 
@@ -4064,7 +4066,7 @@ loc_049FB4:
 	stz	OBJ_TIMER,x
 	inc	$3A,x
 loc_049FC2:
-	jsr	a:sub_04A2C5
+	jsr	a:winged_alien_flap_fast
 	rts
 
 winged_alien_step_9:
@@ -4080,14 +4082,14 @@ winged_alien_step_9:
 	lda	OBJ_X_VEL,x
 	adc	#$0000
 	sta	OBJ_X_VEL,x
-	jsr	a:sub_04A2C5
+	jsr	a:winged_alien_flap_fast
 	rts
 loc_049FE2:
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	stz	OBJ_TIMER,x
 	stz	$3A,x
-	jsr	a:sub_04A2B2
+	jsr	a:winged_alien_flap_slow
 	rts
 
 winged_alien_state_06:
@@ -4101,7 +4103,7 @@ winged_alien_state_06:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05ECFC,y
+	lda	a:winged_alien_tail_slots,y
 	tax
 	lda	#$0001
 	sta	$12,x
@@ -4219,7 +4221,7 @@ winged_alien_spawn_tail:
 	sta	zp_00
 	ldy	#$0000
 loc_04A11F:
-	lda	a:data_05ECFC,y
+	lda	a:winged_alien_tail_slots,y
 	tax
 	lda	#OBJT_WINGED_ALIEN_TAIL_SEGMENT
 	sta	$10,x
@@ -4257,7 +4259,10 @@ loc_04A13C:
 	sta	a:obj_slots+6*OBJ_SIZE+OBJ_TYPE
 	rts
 
-sub_04A16E:
+; Places the winged alien's other hitboxes (slots 4, 5: type $53; slot 22: the
+; tail root) relative to it; the wing hitbox height follows the wing frame
+; (winged_alien_wing_hitbox_h); then winged_alien_set_bg2_scroll.
+winged_alien_place_parts:
 	lda	OBJ_X,x
 	sec
 	sbc	#$0028
@@ -4279,7 +4284,7 @@ sub_04A16E:
 	and	#$0001
 	asl	a
 	tay
-	lda	a:data_05ED20,y
+	lda	a:winged_alien_wing_hitbox_h,y
 	ply
 	sta	a:obj_slots+4*OBJ_SIZE+OBJ_HITBOX_H
 	lda	#$0040
@@ -4348,7 +4353,7 @@ winged_alien_tail_tip_state_00:
 	lsr	a
 	and	#$000E
 	tay
-	lda	a:data_05ED24,y
+	lda	a:winged_alien_tail_tip_sprites,y
 	sta	OBJ_SPRITE,x
 
 winged_alien_tail_segment_state_00:
@@ -4433,7 +4438,7 @@ winged_alien_tail_state_02:
 winged_alien_queue_tiles:
 	asl	a
 	tay
-	lda	a:data_05ED34,y
+	lda	a:ptrs_winged_alien_wing_blocks,y
 	tay
 	lda	#$0003
 	sta	zp_02
@@ -4445,7 +4450,10 @@ winged_alien_queue_tiles:
 	plx
 	rts
 
-sub_04A2B2:
+; Every 8 frames: wing frame (field $30) 0/1, drawn on BG by
+; winged_alien_queue_tiles; winged_alien_flap_fast does the same every 2
+; frames.
+winged_alien_flap_slow:
 	lda	stage_frame_counter
 	bit	#$0007
 	bne	loc_04A2C4
@@ -4459,7 +4467,7 @@ loc_04A2BF:
 loc_04A2C4:
 	rts
 
-sub_04A2C5:
+winged_alien_flap_fast:
 	lda	stage_frame_counter
 	bit	#$0001
 	bne	loc_04A2C4
@@ -4467,45 +4475,50 @@ sub_04A2C5:
 	lsr	a
 	bra	loc_04A2BF
 
-sub_04A2D2:
+; Script steps 2-3: the alien vanishes stretched into vertical lines (seen in
+; the emulator), a per-line BG2 vertical scroll (HDMA preset $0F, table built
+; at $7E:E800) whose visible height (wram_7EE827) shrinks by 4 per frame;
+; winged_alien_warp_in makes it grow back (steps 6-7). wram_7EE823 is the
+; step: start, shrink/grow, done.
+winged_alien_warp_out:
 	lda	f:wram_7EE823
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04A2E3,x
+	lda	f:tbl_winged_alien_warp_out_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04A2E3:
-	.addr	sub_04A300
-	.addr	sub_04A32A
-	.addr	sub_04A349
+tbl_winged_alien_warp_out_steps:
+	.addr	winged_alien_warp_start
+	.addr	winged_alien_warp_shrink
+	.addr	winged_alien_warp_done
 
-sub_04A2E9:
+winged_alien_warp_in:
 	lda	f:wram_7EE823
 	phx
 	asl	a
 	tax
-	lda	f:tbl_04A2FA,x
+	lda	f:tbl_winged_alien_warp_in_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_04A2FA:
-	.addr	sub_04A300
-	.addr	sub_04A313
-	.addr	sub_04A349
+tbl_winged_alien_warp_in_steps:
+	.addr	winged_alien_warp_start
+	.addr	winged_alien_warp_grow
+	.addr	winged_alien_warp_done
 
-sub_04A300:
-	jsr	a:sub_04A34A
-	jsr	a:sub_04A374
+winged_alien_warp_start:
+	jsr	a:winged_alien_warp_fill_lines
+	jsr	a:winged_alien_warp_update_hdma
 	lda	#$0001
 	sta	f:wram_7EE823
 	lda	#$000F
 	sta	hdma_preset
 	rts
 
-sub_04A313:
-	jsr	a:sub_04A374
+winged_alien_warp_grow:
+	jsr	a:winged_alien_warp_update_hdma
 	lda	f:wram_7EE827
 	clc
 	adc	#$0004
@@ -4515,8 +4528,8 @@ sub_04A313:
 	bcs	loc_04A341
 	rts
 
-sub_04A32A:
-	jsr	a:sub_04A374
+winged_alien_warp_shrink:
+	jsr	a:winged_alien_warp_update_hdma
 	lda	f:wram_7EE827
 	sec
 	sbc	#$0004
@@ -4530,11 +4543,13 @@ loc_04A341:
 	sta	f:wram_7EE823
 	rts
 
-sub_04A349:
+winged_alien_warp_done:
 	; (not executed in the CDL traces)
 	rts
 
-sub_04A34A:
+; Fills $7E:E880 with one BG2 vertical scroll value per line, counting down
+; from bg2_y + $F0.
+winged_alien_warp_fill_lines:
 	phx
 	ldx	#$0000
 	lda	#$00F0
@@ -4556,11 +4571,14 @@ sub_04A34A:
 	plx
 	rts
 
-sub_04A374:
-	jsr	a:sub_04A37A
+winged_alien_warp_update_hdma:
+	jsr	a:winged_alien_warp_compute_bands
 	jmp	a:loc_04A40A
 
-sub_04A37A:
+; From the visible height (wram_7EE827) and the alien's y (wram_7EE825): the
+; line counts of the HDMA bands (wram_7EE82B-835);
+; winged_alien_warp_update_hdma writes them into the HDMA table at $7E:E800.
+winged_alien_warp_compute_bands:
 	lda	f:wram_7EE827
 	lsr	a
 	sta	zp_00
@@ -4715,7 +4733,7 @@ face_boss_state_00:
 	stz	$30,x
 	stz	$32,x
 	stz	$34,x
-	jsr	a:sub_04A810
+	jsr	a:face_boss_init_parts
 	jsr	a:face_boss_place_parts
 	lda	#$0001
 	sta	OBJ_STATE,x
@@ -4754,8 +4772,8 @@ loc_04A518:
 loc_04A52A:
 	lda	#$0004
 	sta	a:shake_timer
-	jsr	a:sub_04A74A
-	jsr	a:sub_04A907
+	jsr	a:face_boss_update_eyes
+	jsr	a:face_boss_draw_eyes
 	rtl
 loc_04A537:
 	lda	#$401D
@@ -4787,11 +4805,11 @@ loc_04A56D:
 	stz	$38,x
 	bra	loc_04A576
 loc_04A573:
-	jsr	a:sub_04A6B8
+	jsr	a:face_boss_pick_head_attack
 loc_04A576:
-	jsr	a:sub_04A6CA
-	jsr	a:sub_04A74A
-	jsr	a:sub_04A907
+	jsr	a:face_boss_send_side_heads
+	jsr	a:face_boss_update_eyes
+	jsr	a:face_boss_draw_eyes
 	lda	#$0002
 	sta	a:shake_timer
 	rtl
@@ -4800,32 +4818,32 @@ loc_04A586:
 	sta	OBJ_STATE,x
 
 face_boss_state_06:
-	jsr	a:sub_04A74A
+	jsr	a:face_boss_update_eyes
 	ldy	difficulty
 	lda	stage_frame_counter
-	and	a:data_05ED64,y
+	and	a:face_boss_soldier_spawn_masks,y
 	bne	loc_04A5AC
 	lda	rng_lo
 	bit	#$0001
 	bne	loc_04A5A6
 	ldy	#$0300
-	jsr	a:sub_04A9BD
+	jsr	a:face_boss_spawn_left_soldier
 	bra	loc_04A5AC
 loc_04A5A6:
 	ldy	#$0300
-	jsr	a:sub_04A9E5
+	jsr	a:face_boss_spawn_right_soldier
 loc_04A5AC:
 	ldy	difficulty
 	lda	stage_frame_counter
-	and	a:data_05ED6A,y
+	and	a:face_boss_larva_spit_masks,y
 	bne	loc_04A5BA
 	lda	#$0030
 	sta	$36,x
 loc_04A5BA:
 	ldy	#$0300
 	jsr	a:face_boss_spit_larva
-	jsr	a:sub_04A93B
-	jsr	a:sub_04A907
+	jsr	a:face_boss_draw_mouth
+	jsr	a:face_boss_draw_eyes
 	lda	#$0002
 	sta	a:shake_timer
 	rtl
@@ -4846,13 +4864,13 @@ face_boss_state_04:
 loc_04A5E4:
 	lda	#$0004
 	sta	a:shake_timer
-	jsr	a:sub_04A74A
-	jsr	a:sub_04A907
-	jsr	a:sub_04A997
+	jsr	a:face_boss_update_eyes
+	jsr	a:face_boss_draw_eyes
+	jsr	a:face_boss_make_heads_fire
 	rtl
 loc_04A5F4:
 	ldy	#$0700
-	jsr	a:sub_04A9A8
+	jsr	a:face_boss_spawn_soldier_at_lost_head
 	lda	#$0030
 	sta	$36,x
 	sta	OBJ_TIMER,x
@@ -4866,12 +4884,12 @@ face_boss_state_05:
 loc_04A60D:
 	lda	#$0004
 	sta	a:shake_timer
-	jsr	a:sub_04A74A
+	jsr	a:face_boss_update_eyes
 	ldy	#$0700
 	jsr	a:face_boss_spit_larva
-	jsr	a:sub_04A93B
-	jsr	a:sub_04A907
-	jsr	a:sub_04A997
+	jsr	a:face_boss_draw_mouth
+	jsr	a:face_boss_draw_eyes
+	jsr	a:face_boss_make_heads_fire
 	rtl
 loc_04A626:
 	stz	OBJ_HP,x
@@ -4882,8 +4900,8 @@ loc_04A626:
 	lda	#$FFFF	; [num]
 	sta	a:obj_slots+6*OBJ_SIZE+OBJ_HP
 	sta	a:obj_slots+7*OBJ_SIZE+OBJ_HP
-	jsr	a:sub_04A74A
-	jsr	a:sub_04A907
+	jsr	a:face_boss_update_eyes
+	jsr	a:face_boss_draw_eyes
 	lda	#$0300
 	sta	OBJ_TIMER,x
 	lda	#$0007
@@ -4923,7 +4941,7 @@ loc_04A681:
 face_boss_state_08:
 	lda	OBJ_ANIM_TIMER,x
 	beq	loc_04A69D
-	jsr	a:sub_04A95D
+	jsr	a:face_boss_death_tiles_step
 	dec	OBJ_ANIM_TIMER,x
 loc_04A69D:
 	dec	OBJ_TIMER,x
@@ -4935,7 +4953,7 @@ loc_04A6A2:
 	inc	OBJ_STATE,x
 
 face_boss_state_09:
-	jsr	a:sub_04A97A
+	jsr	a:face_boss_reveal_brain_step
 	dec	OBJ_ANIM_TIMER,x
 	bne	@return
 	lda	#OBJT_BRAIN_BOSS
@@ -4944,10 +4962,13 @@ face_boss_state_09:
 @return:
 	rtl
 
-sub_04A6B8:
+; Random attack bits in field $38 (bit 0: left head, bit 1: right head, bit 2:
+; both), masked by difficulty (face_boss_head_attack_masks); only values below
+; 8 are kept.
+face_boss_pick_head_attack:
 	ldy	difficulty
 	lda	rng_lo
-	and	a:data_05ED70,y
+	and	a:face_boss_head_attack_masks,y
 	cmp	#$0008
 	bcc	loc_04A6C7
 	lda	#$0000
@@ -4955,11 +4976,13 @@ loc_04A6C7:
 	sta	$38,x
 	rts
 
-sub_04A6CA:
-	jsr	a:sub_04A6D0
+; Starts the lunge of the side heads (slots 8, 9: field $30 = 2) chosen in
+; field $38, when they are idle; face_boss_send_left_head does the left one.
+face_boss_send_side_heads:
+	jsr	a:face_boss_send_left_head
 	jmp	a:loc_04A70D
 
-sub_04A6D0:
+face_boss_send_left_head:
 	lda	a:obj_slots+8*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
 	bne	loc_04A70C
@@ -5014,12 +5037,16 @@ loc_04A73D:
 loc_04A749:
 	rts
 
-sub_04A74A:
-	jsr	a:sub_04A751
-	jsr	a:sub_04A77A
+; The two eyes (slots 6 and 7, type $53, HP face_boss_eye_hp): while alive
+; each picks a frame looking towards a player
+; (face_boss_eye_frame_toward_player; left eye player 1, right eye player 2);
+; when shot (HP < 0) the frame becomes $8006 and the slot an explosion.
+face_boss_update_eyes:
+	jsr	a:face_boss_update_left_eye
+	jsr	a:face_boss_update_right_eye
 	rts
 
-sub_04A751:
+face_boss_update_left_eye:
 	lda	a:obj_slots+6*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0053
 	bne	loc_04A779
@@ -5036,12 +5063,12 @@ loc_04A769:
 	; (not executed in the CDL traces)
 	ldy	#$0240
 loc_04A774:
-	jsr	a:sub_04A7A3
+	jsr	a:face_boss_eye_frame_toward_player
 	sta	$30,x
 loc_04A779:
 	rts
 
-sub_04A77A:
+face_boss_update_right_eye:
 	lda	a:obj_slots+7*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0053
 	bne	loc_04A7A2
@@ -5057,12 +5084,15 @@ loc_04A792:
 	bne	loc_04A79D
 	ldy	#$0200
 loc_04A79D:
-	jsr	a:sub_04A7A3
+	jsr	a:face_boss_eye_frame_toward_player
 	sta	$32,x
 loc_04A7A2:
 	rts
 
-sub_04A7A3:
+; A = eye frame (face_boss_eye_frames) from the top 3 bits of field $1312,y of
+; player Y (p1_view_y; compared with object x elsewhere in the side view,
+; apparently the player's x).
+face_boss_eye_frame_toward_player:
 	lda	a:$1312,y
 	asl	a
 	asl	a
@@ -5071,7 +5101,7 @@ sub_04A7A3:
 	xba
 	and	#$000E
 	tay
-	lda	a:data_05ED76,y
+	lda	a:face_boss_eye_frames,y
 	rts
 loc_04A7B3:
 	lda	#$0041
@@ -5119,7 +5149,10 @@ spawn_face_boss_larva:
 @return:
 	rts
 
-sub_04A810:
+; face_boss_state_00: the hitboxes in slots 4 and 5 (type $53, not targets),
+; the eyes (slots 6, 7, HP face_boss_eye_hp by difficulty) and the side heads
+; (slots 8, 9, OBJT_FACE_BOSS_SIDE_HEAD).
+face_boss_init_parts:
 	lda	#$0001
 	sta	OBJ_FLAGS,x
 	lda	#$00FA
@@ -5149,7 +5182,7 @@ sub_04A810:
 	lda	#$0053
 	sta	a:obj_slots+6*OBJ_SIZE+OBJ_TYPE
 	ldy	difficulty
-	lda	a:data_05ED86,y
+	lda	a:face_boss_eye_hp,y
 	sta	a:obj_slots+6*OBJ_SIZE+OBJ_HP
 	lda	#$4011
 	sta	a:obj_slots+6*OBJ_SIZE+OBJ_FLAGS
@@ -5160,7 +5193,7 @@ sub_04A810:
 	lda	#$0053
 	sta	a:obj_slots+7*OBJ_SIZE+OBJ_TYPE
 	ldy	difficulty
-	lda	a:data_05ED86,y
+	lda	a:face_boss_eye_hp,y
 	sta	a:obj_slots+7*OBJ_SIZE+OBJ_HP
 	lda	#$4011
 	sta	a:obj_slots+7*OBJ_SIZE+OBJ_FLAGS
@@ -5218,7 +5251,10 @@ face_boss_place_parts:
 	sta	a:obj_slots+7*OBJ_SIZE+OBJ_Y
 	rts
 
-sub_04A907:
+; face_boss_queue_tiles (left eye, field $30) and the right eye (field $32):
+; when the frame has bit 15 set, one VRAM block from face_boss_left_eye_tiles
+; / face_boss_right_eye_tiles.
+face_boss_draw_eyes:
 	jsr	a:face_boss_queue_tiles
 	jmp	a:loc_04A924
 
@@ -5228,7 +5264,7 @@ face_boss_queue_tiles:
 	and	#$0006
 	sta	$30,x
 	tay
-	lda	a:data_05ED8C,y
+	lda	a:face_boss_left_eye_tiles,y
 	sta	zp_00
 	lda	#$4C8C
 	jsl	f:queue_vram_block
@@ -5240,20 +5276,22 @@ loc_04A924:
 	and	#$0006
 	sta	$32,x
 	tay
-	lda	a:data_05ED94,y
+	lda	a:face_boss_right_eye_tiles,y
 	sta	zp_00
 	lda	#$4C90
 	jsl	f:queue_vram_block
 @return:
 	rts
 
-sub_04A93B:
+; When field $34 has bit 15 set (face_boss_spit_larva): the mouth frame, 2
+; blocks from ptrs_face_boss_mouth_blocks.
+face_boss_draw_mouth:
 	lda	$34,x
 	bpl	@return
 	and	#$0002
 	sta	$34,x
 	tay
-	lda	a:data_05ED9C,y
+	lda	a:ptrs_face_boss_mouth_blocks,y
 	tay
 	lda	#$0002
 	sta	zp_02
@@ -5266,41 +5304,46 @@ sub_04A93B:
 @return:
 	rts
 
-sub_04A95D:
+; face_boss_state_08 (4 steps) and face_boss_reveal_brain_step (state 9, 3
+; steps): BG blocks that erase the face and uncover the brain, whose type then
+; replaces the face (seen in the emulator).
+face_boss_death_tiles_step:
 	lda	OBJ_ANIM_TIMER,x
 	asl	a
 	tay
-	lda	a:data_05EDB6,y
+	lda	a:ptrs_face_boss_death_blocks,y
 	pha
 	lda	#$0004
 	sta	zp_02
 	lda	#$0020
 	sta	zp_08
-	lda	a:data_05EDAE,y
+	lda	a:face_boss_death_vram_addrs,y
 	ply
 	phx
 	jsl	f:queue_vram_blocks
 	plx
 	rts
 
-sub_04A97A:
+face_boss_reveal_brain_step:
 	lda	OBJ_ANIM_TIMER,x
 	asl	a
 	tay
-	lda	a:data_05EDDC,y
+	lda	a:ptrs_face_boss_reveal_blocks,y
 	pha
 	lda	#$0008
 	sta	zp_02
 	lda	#$0040
 	sta	zp_08
-	lda	a:data_05EDD6,y
+	lda	a:face_boss_reveal_vram_addrs,y
 	ply
 	phx
 	jsl	f:queue_vram_blocks
 	plx
 	rts
 
-sub_04A997:
+; Every 32 frames sets field $3A of both side heads to $10; at 8 the head
+; fires (face_boss_side_head_fire).
+face_boss_make_heads_fire:
 	lda	stage_frame_counter
 	bit	#$001F
 	bne	@return
@@ -5310,21 +5353,23 @@ sub_04A997:
 @return:
 	rts
 
-sub_04A9A8:
+; Spawns an alien soldier (type $24) on the side whose head is gone
+; (face_boss_spawn_left_soldier, face_boss_spawn_right_soldier).
+face_boss_spawn_soldier_at_lost_head:
 	lda	a:obj_slots+8*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
 	beq	loc_04A9B2
-	bra	sub_04A9BD
+	bra	face_boss_spawn_left_soldier
 loc_04A9B2:
 	lda	a:obj_slots+9*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
 	beq	@return
 	; (not executed in the CDL traces)
-	bra	sub_04A9E5
+	bra	face_boss_spawn_right_soldier
 @return:
 	rts
 
-sub_04A9BD:
+face_boss_spawn_left_soldier:
 	jsl	f:find_free_slot_from_y
 	bcs	@return
 	lda	#$0024
@@ -5343,7 +5388,7 @@ sub_04A9BD:
 @return:
 	rts
 
-sub_04A9E5:
+face_boss_spawn_right_soldier:
 	jsl	f:find_free_slot_from_y
 	bcs	@return
 	lda	#$0024
@@ -5436,7 +5481,7 @@ floor_mouth_state_01:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	ldy	difficulty
-	cmp	a:data_05EE28,y
+	cmp	a:floor_mouth_wait_times,y
 	bcc	@return
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
@@ -5445,7 +5490,7 @@ floor_mouth_state_01:
 
 floor_mouth_state_03:
 	lda	#$0000
-	jsr	a:sub_04ABA3
+	jsr	a:floor_mouth_set_tiles
 	inc	OBJ_STATE,x
 	rtl
 
@@ -5461,7 +5506,7 @@ floor_mouth_state_02:
 loc_04AAAC:
 	lda	#$0001
 loc_04AAAF:
-	jsr	a:sub_04ABA3
+	jsr	a:floor_mouth_set_tiles
 loc_04AAB2:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
@@ -5518,7 +5563,7 @@ floor_mouth_state_05:
 
 floor_mouth_state_06:
 	lda	#$0001
-	jsr	a:sub_04ABA3
+	jsr	a:floor_mouth_set_tiles
 	inc	OBJ_STATE,x
 	rtl
 
@@ -5529,7 +5574,7 @@ floor_mouth_state_07:
 
 floor_mouth_state_08:
 	lda	#$0002
-	jsr	a:sub_04ABA3
+	jsr	a:floor_mouth_set_tiles
 	lda	#$0030
 	jsl	f:queue_sound
 	lda	#$0003
@@ -5561,7 +5606,9 @@ floor_mouth_state_09:
 @return:
 	rtl
 
-sub_04AB6A:
+; zp_00 = BG1 tilemap VRAM address under the mouth (from its position and the
+; BG1 scroll).
+floor_mouth_tilemap_addr:
 	lda	OBJ_X,x
 	clc
 	adc	#$0010
@@ -5595,16 +5642,18 @@ sub_04AB6A:
 	sta	zp_00
 	rts
 
-sub_04ABA3:
+; A = frame (0 closed, 1 open, 2 destroyed): one 8-byte block from
+; ptrs_floor_mouth_tiles at floor_mouth_tilemap_addr.
+floor_mouth_set_tiles:
 	asl	a
 	tay
 	lda	#$0001
 	sta	zp_02
 	lda	#$0008
 	sta	zp_08
-	lda	a:data_05EE1C,y
+	lda	a:ptrs_floor_mouth_tiles,y
 	tay
-	jsr	a:sub_04AB6A
+	jsr	a:floor_mouth_tilemap_addr
 	phx
 	jsl	f:queue_vram_blocks
 	plx
@@ -5652,13 +5701,13 @@ floor_mouth_bug_state_00:
 	lda	$30,x
 	asl	a
 	tay
-	lda	a:data_05EE38,y
+	lda	a:floor_mouth_bug_x_vel_subs,y
 	sta	OBJ_X_VEL_SUB,x
-	lda	a:data_05EE3E,y
+	lda	a:floor_mouth_bug_x_vels,y
 	sta	OBJ_X_VEL,x
-	lda	a:data_05EE44,y
+	lda	a:floor_mouth_bug_y_vel_subs,y
 	sta	OBJ_Y_VEL_SUB,x
-	lda	a:data_05EE4A,y
+	lda	a:floor_mouth_bug_y_vels,y
 	sta	OBJ_Y_VEL,x
 	stz	OBJ_X_SUB,x
 	stz	OBJ_Y_SUB,x
@@ -5821,7 +5870,7 @@ wall_worm_larva_state_00:
 	lda	rng_lo
 	and	#$0002
 	tay
-	lda	a:data_05EE64,y
+	lda	a:wall_worm_larva_start_angles,y
 	sta	OBJ_FACING,x
 	stz	OBJ_X_SUB,x
 	stz	OBJ_Y_SUB,x
@@ -6023,7 +6072,7 @@ loc_04AE7E:
 
 ; Object type $68. Stage 6, heart_boss: small creatures around the heart's
 ; ceiling pods (not identified exactly). HP by difficulty: 0/2/4
-; (data_05EEA0).
+; (enemy_type_68_hp).
 update_enemy_type_68:
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 	cmp	#$0003
@@ -6056,7 +6105,7 @@ enemy_type_68_state_00:
 	lda	#$3400
 	sta	OBJ_ATTR,x
 	ldy	difficulty
-	lda	a:data_05EEA0,y
+	lda	a:enemy_type_68_hp,y
 	sta	OBJ_HP,x
 	lda	#$0014
 	sta	OBJ_HITBOX_W,x
@@ -6069,9 +6118,9 @@ enemy_type_68_state_00:
 	asl	a
 	sta	$30,x
 	tay
-	lda	a:data_05EEA6,y
+	lda	a:enemy_type_68_start_y_vels,y
 	sta	OBJ_Y_VEL,x
-	lda	a:data_05EEAA,y
+	lda	a:enemy_type_68_start_y_vel_subs,y
 	sta	OBJ_Y_VEL_SUB,x
 	lda	#$FFFF	; [num]
 	sta	OBJ_X_VEL,x
@@ -6081,7 +6130,7 @@ enemy_type_68_state_00:
 	stz	OBJ_X_SUB,x
 	stz	OBJ_Y_SUB,x
 	ldy	$30,x
-	lda	a:data_05EEAE,y
+	lda	a:enemy_type_68_sprites,y
 	sta	OBJ_SPRITE,x
 	stz	OBJ_ANIM,x
 	lda	#$0001
@@ -6089,18 +6138,19 @@ enemy_type_68_state_00:
 
 enemy_type_68_state_01:
 	ldy	$30,x
-	jsr	a:sub_04AF1C
+	jsr	a:enemy_type_68_check_landed
 	bcs	loc_04AF2A
 	clc
 	lda	OBJ_Y_VEL_SUB,x
-	adc	a:data_05EEB6,y
+	adc	a:enemy_type_68_gravity_subs,y
 	sta	OBJ_Y_VEL_SUB,x
 	lda	OBJ_Y_VEL,x
-	adc	a:data_05EEB2,y
+	adc	a:enemy_type_68_gravity,y
 	sta	OBJ_Y_VEL,x
 	rtl
 
-sub_04AF1C:
+; Y = 0: carry set at y >= $B8 (floor); else at y <= $48 (ceiling).
+enemy_type_68_check_landed:
 	bne	loc_04AF24
 	lda	OBJ_Y,x
 	cmp	#$00B8
@@ -6111,7 +6161,7 @@ loc_04AF24:
 	rts
 loc_04AF2A:
 	ldy	$30,x
-	lda	a:data_05EEBA,y
+	lda	a:enemy_type_68_landing_y,y
 	sta	OBJ_Y,x
 	stz	OBJ_Y_SUB,x
 	lda	#$FFFE	; [num]
@@ -6120,14 +6170,14 @@ loc_04AF2A:
 	sta	OBJ_X_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
-	lda	a:data_05EEBE,y
+	lda	a:enemy_type_68_walk_anims,y
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	lda	#$0002
 	sta	OBJ_STATE,x
 
 enemy_type_68_state_02:
-	jsr	a:sub_04AF5C
+	jsr	a:enemy_type_68_check_player_x
 	bcc	loc_04AF5B
 	lda	$30,x
 	bne	loc_04AF59
@@ -6137,7 +6187,10 @@ loc_04AF59:
 loc_04AF5B:
 	rtl
 
-sub_04AF5C:
+; Carry set (half of the time, at random) when a living player's
+; p1_view_y/p2_view_y + $20 is within 2 pixels of the object's x: then it
+; drops (or jumps) to the other side.
+enemy_type_68_check_player_x:
 	lda	a:p1_lives
 	beq	loc_04AF70
 	lda	a:player1_obj+PLAYER_CENTER_X
@@ -6276,7 +6329,7 @@ heart_boss_state_00:
 	lda	#$0080
 	sta	a:bg2_x
 	stz	a:bg2_y
-	jsr	a:sub_04B17C
+	jsr	a:heart_boss_init_hitboxes
 	lda	#$0001
 	sta	a:stage_checkpoint
 	jsr	a:spawn_heart_boss_bug
@@ -6288,13 +6341,13 @@ heart_boss_state_01:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	beq	loc_04B084
-	jsr	a:sub_04B14B
+	jsr	a:heart_boss_beat
 	rtl
 loc_04B084:
 	inc	OBJ_STATE,x
 
 heart_boss_state_02:
-	jsr	a:sub_04B14B
+	jsr	a:heart_boss_beat
 	rtl
 loc_04B08A:
 	lda	#$0052
@@ -6336,7 +6389,7 @@ loc_04B0D8:
 	inc	OBJ_STATE,x
 
 heart_boss_state_04:
-	jsr	a:sub_04B12E
+	jsr	a:heart_boss_queue_death_tiles
 	dec	OBJ_TIMER,x
 	beq	loc_04B0E7
 	rtl
@@ -6378,7 +6431,9 @@ heart_boss_state_06:
 @return:
 	rtl
 
-sub_04B12E:
+; heart_boss_state_04: BG blocks by OBJ_TIMER (3-1); word 0 of
+; heart_boss_death_vram_addrs is the hard HP of heart_boss_hp.
+heart_boss_queue_death_tiles:
 	lda	#$0004
 	sta	zp_02
 	lda	#$0040
@@ -6386,16 +6441,18 @@ sub_04B12E:
 	lda	OBJ_TIMER,x
 	asl	a
 	tay
-	lda	a:data_05EF04,y
+	lda	a:ptrs_heart_boss_death_blocks,y
 	pha
-	lda	a:data_05EEFE,y
+	lda	a:heart_boss_death_vram_addrs,y
 	ply
 	phx
 	jsl	f:queue_vram_blocks
 	plx
 	rts
 
-sub_04B14B:
+; Every 8 frames alternates the two frames of the heart
+; (ptrs_heart_boss_beat_blocks, VRAM $4D90).
+heart_boss_beat:
 	lda	OBJ_ANIM_TIMER,x
 	inc	OBJ_ANIM_TIMER,x
 	bit	#$0007
@@ -6411,7 +6468,7 @@ loc_04B15E:
 	lsr	a
 	and	#$0002
 	tay
-	lda	a:data_05EF3C,y
+	lda	a:ptrs_heart_boss_beat_blocks,y
 	tay
 	lda	#$0003
 	sta	zp_02
@@ -6424,7 +6481,9 @@ loc_04B15E:
 loc_04B17B:
 	rts
 
-sub_04B17C:
+; The heart's own hitbox and a big type $53 one (not a target) under it, slot
+; kept in field $30.
+heart_boss_init_hitboxes:
 	lda	#$001D
 	sta	OBJ_FLAGS,x
 	lda	#$0110
@@ -6463,13 +6522,13 @@ loc_04B1C7:
 	bcs	loc_04B1EE
 	lda	#OBJT_HEART_BOSS_BUG
 	sta	a:$0010,y
-	lda	a:data_05EF56,x
+	lda	a:heart_boss_bug_x,x
 	sta	a:$000A,y
-	lda	a:data_05EF5E,x
+	lda	a:heart_boss_bug_y,x
 	sta	a:$000E,y
-	lda	a:data_05EF66,x
+	lda	a:heart_boss_bug_kinds,x
 	sta	a:$0030,y
-	lda	a:data_05EF6E,x
+	lda	a:heart_boss_bug_vram_addrs,x
 	sta	a:$0032,y
 loc_04B1EE:
 	dex
@@ -6531,7 +6590,7 @@ loc_04B23D:
 	ora	zp_FA
 	asl	a
 	tay
-	lda	a:data_05EF7E,y
+	lda	a:heart_boss_bug_wait_times,y
 	sta	OBJ_TIMER,x
 	lda	#$0001
 	sta	OBJ_STATE,x
@@ -6542,7 +6601,7 @@ heart_boss_bug_state_01:
 	rtl
 loc_04B260:
 	ldy	$30,x
-	lda	a:data_05EF96,y
+	lda	a:ptrs_heart_boss_bug_tile_scripts,y
 	sta	$34,x
 	stz	$36,x
 	lda	#$0030
@@ -6550,13 +6609,13 @@ loc_04B260:
 	inc	OBJ_STATE,x
 
 heart_boss_bug_state_02:
-	jsl	f:sub_04B2E7
+	jsl	f:heart_boss_bug_run_tile_script
 	dec	OBJ_TIMER,x
 	bmi	loc_04B23D
 	lda	OBJ_TIMER,x
 	cmp	#$0020
 	bne	@return
-	jsr	a:sub_04B2C1
+	jsr	a:heart_boss_bug_spawn_crawler
 @return:
 	rtl
 loc_04B283:
@@ -6570,8 +6629,8 @@ heart_boss_bug_state_03:
 	lda	#$0003
 	sta	OBJ_FLAGS,x
 	ldy	$30,x
-	lda	a:data_05EFC6,y
-	jsl	f:sub_04B32B
+	lda	a:heart_boss_bug_dead_tiles,y
+	jsl	f:heart_boss_bug_set_tile
 	lda	OBJ_X,x
 	clc
 	adc	#$000A
@@ -6589,7 +6648,8 @@ heart_boss_bug_state_03:
 	jsl	f:make_effect_object
 	rtl
 
-sub_04B2C1:
+; Spawns a type $68 creature at the pod (enemy_type_68), y offset by kind.
+heart_boss_bug_spawn_crawler:
 	ldy	#$03C0
 	jsl	f:find_free_slot_from_y
 	bcs	@return
@@ -6603,13 +6663,15 @@ sub_04B2C1:
 	ldy	$30,x
 	lda	OBJ_Y,x
 	clc
-	adc	a:data_05EFCA,y
+	adc	a:heart_boss_bug_crawler_y_offsets,y
 	ply
 	sta	a:$000E,y
 @return:
 	rts
 
-sub_04B2E7:
+; Runs the BG tile script at field $34 ({frames, tile} words, 0 ends), one
+; tile at VRAM field $32 (heart_boss_bug_set_tile).
+heart_boss_bug_run_tile_script:
 	ldy	$34,x
 	beq	loc_04B32A
 	lda	$36,x
@@ -6620,7 +6682,7 @@ sub_04B2E7:
 	lda	a:$0000,y
 	sta	$36,x
 	lda	a:$0002,y
-	bra	sub_04B32B
+	bra	heart_boss_bug_set_tile
 loc_04B300:
 	dec	$36,x
 	bne	loc_04B32A
@@ -6645,14 +6707,14 @@ loc_04B31D:
 	sty	$34,x
 	sta	$36,x
 	lda	a:$0002,y
-	bra	sub_04B32B
+	bra	heart_boss_bug_set_tile
 loc_04B326:
 	sta	$34,x
 	sta	$36,x
 loc_04B32A:
 	rtl
 
-sub_04B32B:
+heart_boss_bug_set_tile:
 	sta	zp_00
 	lda	$32,x
 	jml	f:queue_vram_block
@@ -6694,17 +6756,17 @@ wall_worm_state_01:
 loc_04B368:
 	rtl
 loc_04B369:
-	jsr	a:sub_04B486
+	jsr	a:wall_worm_init_hitboxes
 	bcs	loc_04B368
 	inc	OBJ_STATE,x
 
 wall_worm_state_02:
 	jsr	a:wall_worm_flash_palette
-	jsr	a:sub_04B3EF
-	jsr	a:sub_04B434
+	jsr	a:wall_worm_toggle_mouth
+	jsr	a:wall_worm_toggle_anim_frame
 	jsr	a:spawn_wall_worm_larva
-	jsr	a:sub_04B403
-	jsr	a:sub_04B447
+	jsr	a:wall_worm_draw_mouth
+	jsr	a:wall_worm_draw_anim_frame
 	rtl
 loc_04B383:
 	lda	#$0051
@@ -6749,7 +6811,7 @@ loc_04B3D5:
 	sta	OBJ_STATE,x
 
 wall_worm_state_04:
-	jsr	a:sub_04B469
+	jsr	a:wall_worm_queue_death_tiles
 	dec	OBJ_TIMER,x
 	bne	loc_04B368
 	stz	a:bg1_scroll_mode
@@ -6757,7 +6819,11 @@ wall_worm_state_04:
 	sta	OBJ_FLAGS,x
 	rtl
 
-sub_04B3EF:
+; Every 64 frames toggles the mouth (field $34: 0 closed, 2 open, bit 15 =
+; redraw); larvae come only while it is open (spawn_wall_worm_larva).
+; wall_worm_draw_mouth sets the worm's flags, hitbox and y and draws the
+; frame.
+wall_worm_toggle_mouth:
 	lda	stage_frame_counter
 	bit	#$003F
 	bne	@return
@@ -6771,19 +6837,19 @@ sub_04B3EF:
 @return:
 	rts
 
-sub_04B403:
+wall_worm_draw_mouth:
 	lda	$34,x
 	bpl	@return
 	and	#$0002
 	sta	$34,x
 	tay
-	lda	a:data_05EFE8,y
+	lda	a:wall_worm_mouth_flags,y
 	sta	OBJ_FLAGS,x
-	lda	a:data_05EFEC,y
+	lda	a:wall_worm_mouth_hitbox_h,y
 	sta	OBJ_HITBOX_H,x
-	lda	a:data_05EFF0,y
+	lda	a:wall_worm_mouth_y,y
 	sta	OBJ_Y,x
-	lda	a:data_05EFD4,y
+	lda	a:ptrs_wall_worm_mouth_blocks,y
 	tay
 	lda	#$0002
 	sta	zp_02
@@ -6796,7 +6862,9 @@ sub_04B403:
 @return:
 	rts
 
-sub_04B434:
+; Every 8 frames toggles a small BG animation (field $36), drawn by
+; wall_worm_draw_anim_frame (VRAM $4598).
+wall_worm_toggle_anim_frame:
 	lda	stage_frame_counter
 	dec	a
 	bit	#$0007
@@ -6809,13 +6877,13 @@ sub_04B434:
 @return:
 	rts
 
-sub_04B447:
+wall_worm_draw_anim_frame:
 	lda	$36,x
 	bpl	@return
 	and	#$0002
 	sta	$36,x
 	tay
-	lda	a:data_05EFF4,y
+	lda	a:ptrs_wall_worm_anim_blocks,y
 	tay
 	lda	#$0001
 	sta	zp_02
@@ -6828,7 +6896,8 @@ sub_04B447:
 @return:
 	rts
 
-sub_04B469:
+; wall_worm_state_04: BG blocks by OBJ_TIMER (4-1).
+wall_worm_queue_death_tiles:
 	lda	#$0003
 	sta	zp_02
 	lda	#$0018
@@ -6836,16 +6905,18 @@ sub_04B469:
 	lda	OBJ_TIMER,x
 	asl	a
 	tay
-	lda	a:data_05F002,y
+	lda	a:ptrs_wall_worm_death_blocks,y
 	pha
-	lda	a:data_05EFFA,y
+	lda	a:wall_worm_death_vram_addrs,y
 	ply
 	phx
 	jsl	f:queue_vram_blocks
 	plx
 	rts
 
-sub_04B486:
+; The worm's hitbox and two type $53 ones (slots $03C0, $0400) kept in fields
+; $30, $32.
+wall_worm_init_hitboxes:
 	lda	#$003F
 	sta	OBJ_FLAGS,x
 	lda	#$0090
@@ -6919,7 +6990,7 @@ spawn_wall_worm_larva:
 ; (4095 HP, i.e. not killed by shots; slot $0900); spawns cave_rock,
 ; cave_beast_target and its attacks.
 update_cave_beast:
-	jsr	a:sub_04BDC6
+	jsr	a:cave_beast_clamp_players_y
 	ldy	#$0840
 	lda	a:$0006,y
 	bpl	loc_04B539
@@ -7033,7 +7104,7 @@ cave_beast_state_02:
 	lda	#$FFE8	; [num]
 	sta	a:$002A,y
 	ldy	difficulty
-	lda	a:data_05F024,y
+	lda	a:cave_beast_target_hp,y
 	sta	zp_00
 	ldy	#$0840
 	lda	#OBJT_CAVE_BEAST_TARGET
@@ -7072,19 +7143,19 @@ cave_beast_state_02:
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
 loc_04B674:
-	jsr	a:sub_04BBBD
+	jsr	a:cave_beast_place_parts
 	stz	zp_0C
-	jsl	f:sub_04BE03
+	jsl	f:object_solid_vs_players
 	phx
 	ldx	#$0840
 	stz	zp_0C
-	jsl	f:sub_04BE03
+	jsl	f:object_solid_vs_players
 	ldx	#$0800
 	stz	zp_0C
-	jsl	f:sub_04BE03
+	jsl	f:object_solid_vs_players
 	ldx	#$0880
 	stz	zp_0C
-	jsl	f:sub_04BE03
+	jsl	f:object_solid_vs_players
 	plx
 	jsr	a:cave_beast_set_bg2_scroll
 	rtl
@@ -7137,7 +7208,7 @@ loc_04B6FB:
 	lda	#$FFFC	; [num]
 	sta	OBJ_Y_VEL,x
 	lda	#$000A
-	jsr	a:sub_04BC10
+	jsr	a:cave_beast_queue_frame
 	inc	OBJ_STATE,x
 	rtl
 loc_04B710:
@@ -7157,7 +7228,7 @@ cave_beast_state_06:
 loc_04B729:
 	lda	#$000A
 loc_04B72C:
-	jsr	a:sub_04BC10
+	jsr	a:cave_beast_queue_frame
 loc_04B72F:
 	lda	OBJ_X,x
 	cmp	#$002D
@@ -7179,7 +7250,7 @@ loc_04B74B:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05F02C,y
+	lda	a:cave_beast_player_slots,y
 	sta	zp_02
 	lda	OBJ_Y_VEL,x
 	bmi	loc_04B7B2
@@ -7254,7 +7325,7 @@ loc_04B7EC:
 
 cave_beast_state_07:
 	lda	#$0009
-	jsr	a:sub_04BC10
+	jsr	a:cave_beast_queue_frame
 	lda	#$0003
 	sta	a:shake_timer
 	stz	$30,x
@@ -7321,7 +7392,7 @@ loc_04B861:
 	lda	#$0000
 	sta	a:shake_continuous
 	lda	#$0007
-	jsr	a:sub_04BC10
+	jsr	a:cave_beast_queue_frame
 	inc	OBJ_STATE,x
 	jmp	a:loc_04B674
 loc_04B87F:
@@ -7376,7 +7447,7 @@ loc_04B8D6:
 loc_04B8E7:
 	lda	#$0008
 loc_04B8EA:
-	jsr	a:sub_04BC10
+	jsr	a:cave_beast_queue_frame
 loc_04B8ED:
 	lda	#$0001
 	sta	a:shake_continuous
@@ -7401,8 +7472,8 @@ cave_beast_state_13:
 	lda	$30,x
 	asl	a
 	tay
-	lda	a:data_05F030,y
-	jsr	a:sub_04BC10
+	lda	a:cave_beast_state_13_frames,y
+	jsr	a:cave_beast_queue_frame
 	inc	$30,x
 	lda	$30,x
 	cmp	#$0002
@@ -7437,7 +7508,7 @@ cave_beast_state_14:
 loc_04B962:
 	inc	$30,x
 	ldy	difficulty
-	lda	a:data_05F034,y
+	lda	a:cave_beast_state_14_counts,y
 	cmp	$30,x
 	bcs	loc_04B973
 	stz	OBJ_TIMER,x
@@ -7460,8 +7531,8 @@ cave_beast_state_17:
 	lda	$30,x
 	asl	a
 	tay
-	lda	a:data_05F03C,y
-	jsr	a:sub_04BC10
+	lda	a:cave_beast_state_17_frames,y
+	jsr	a:cave_beast_queue_frame
 	inc	$30,x
 	lda	$30,x
 	cmp	#$0002
@@ -7530,8 +7601,8 @@ cave_beast_state_19:
 	lda	$30,x
 	asl	a
 	tay
-	lda	a:data_05F040,y
-	jsr	a:sub_04BC10
+	lda	a:cave_beast_state_19_frames,y
+	jsr	a:cave_beast_queue_frame
 	inc	$30,x
 	lda	$30,x
 	cmp	#$0004
@@ -7658,7 +7729,7 @@ cave_beast_state_26:
 	lda	#$FFFE	; [num]
 	sta	OBJ_Y_VEL,x
 	lda	#$0006
-	jsr	a:sub_04BC10
+	jsr	a:cave_beast_queue_frame
 	inc	OBJ_STATE,x
 	jmp	a:loc_04B674
 
@@ -7723,7 +7794,8 @@ loc_04BBAA:
 	jmp	a:loc_04B674
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_04BBAD:
+; Not called: like cave_beast_state_04 with 120 frames.
+cave_beast_unused_wait_state:
 	; (not executed in the CDL traces)
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
@@ -7734,7 +7806,9 @@ sub_04BBAD:
 loc_04BBBA:
 	jmp	a:loc_04B674
 
-sub_04BBBD:
+; Slots $0800 (type $53), $0840 (cave_beast_target) and $0880 (type $53)
+; follow the beast.
+cave_beast_place_parts:
 	ldy	#$0800
 	lda	OBJ_X,x
 	sec
@@ -7775,16 +7849,19 @@ cave_beast_set_bg2_scroll:
 	sta	a:bg2_y
 	rts
 
-sub_04BC10:
+; A = frame: queues the BG blocks of a frame of the beast
+; (cave_beast_frame_block_counts, cave_beast_frame_block_sizes,
+; cave_beast_frame_vram_addrs, ptrs_cave_beast_frame_blocks).
+cave_beast_queue_frame:
 	asl	a
 	tay
-	lda	a:data_05F048,y
+	lda	a:cave_beast_frame_block_counts,y
 	sta	zp_02
-	lda	a:data_05F05E,y
+	lda	a:cave_beast_frame_block_sizes,y
 	sta	zp_08
-	lda	a:data_05F074,y
+	lda	a:cave_beast_frame_vram_addrs,y
 	pha
-	lda	a:data_05F08A,y
+	lda	a:ptrs_cave_beast_frame_blocks,y
 	tay
 	pla
 	phx
@@ -7793,13 +7870,14 @@ sub_04BC10:
 	rts
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_04BC2C:
+; Not called.
+cave_beast_unused_return_clc:
 	; (not executed in the CDL traces)
 	clc
 	rts
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_04BC2E:
+cave_beast_unused_return_sec:
 	; (not executed in the CDL traces)
 	sec
 	rts
@@ -7978,7 +8056,7 @@ loc_04BD68:
 	and	#$0003
 	asl	a
 	tay
-	lda	a:data_05F0C6,y
+	lda	a:cave_beast_fireball_sprites,y
 	sta	OBJ_SPRITE,x
 	rtl
 
@@ -8021,13 +8099,15 @@ update_cave_beast_beam:
 	inc	OBJ_STATE,x
 	rtl
 
-sub_04BDC6:
+; Keeps the players (cave_beast_player_slots) between y $57 and $B8 in the
+; dark cave.
+cave_beast_clamp_players_y:
 	stz	zp_00
 loc_04BDC8:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05F02C,y
+	lda	a:cave_beast_player_slots,y
 	tay
 	lda	a:$0016,y
 	beq	loc_04BDF9
@@ -8053,7 +8133,8 @@ loc_04BDF9:
 	bcc	loc_04BDC8
 	rts
 
-sub_04BE03:
+; solid_object_vs_player for both players (when alive) against object X.
+object_solid_vs_players:
 	ldy	#$0200
 	lda	a:$0016,y
 	beq	loc_04BE13
@@ -8138,7 +8219,7 @@ face_boss_side_head_state_02:
 	ldy	$32,x
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_X
 	clc
-	adc	a:data_05F0E8,y
+	adc	a:face_boss_side_head_x_offsets,y
 	sta	OBJ_X,x
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_Y
 	clc
@@ -8146,7 +8227,7 @@ face_boss_side_head_state_02:
 	sta	OBJ_Y,x
 	lda	$30,x
 	beq	loc_04BEB5
-	jsr	a:sub_04C137
+	jsr	a:face_boss_side_head_has_neck
 	bcc	loc_04BED0
 loc_04BEB5:
 	ldy	#.loword(metasprite_06C4BC)
@@ -8160,7 +8241,7 @@ loc_04BEC3:
 	sta	$3A,x
 	cmp	#$0008
 	bne	@return
-	jsr	a:sub_04C1DA
+	jsr	a:face_boss_side_head_fire
 @return:
 	rtl
 loc_04BED0:
@@ -8171,7 +8252,7 @@ loc_04BED0:
 	lda	#$3600
 	sta	OBJ_ATTR,x
 	stz	OBJ_SAVED_ATTR,x
-	jsr	a:sub_04BF56
+	jsr	a:face_boss_side_head_pick_player
 	bcs	loc_04BE80
 	sty	$38,x
 	lda	#$0080
@@ -8180,12 +8261,12 @@ loc_04BED0:
 	asl	a
 	ora	$32,x
 	tay
-	lda	a:data_05F0D4,y
+	lda	a:face_boss_side_head_path_buffers,y
 	sta	$36,x
 	ldy	$34,x
-	lda	a:data_05F0DC,y
+	lda	a:face_boss_side_head_lunge_times,y
 	sta	OBJ_TIMER,x
-	jsr	a:sub_04BFC1
+	jsr	a:face_boss_side_head_spawn_neck
 	lda	#$0003
 	sta	OBJ_STATE,x
 
@@ -8234,7 +8315,8 @@ loc_04BF4E:
 	jsl	f:set_velocity_from_angle
 	rtl
 
-sub_04BF56:
+; Y = a random living player's slot (carry clear), carry set if none.
+face_boss_side_head_pick_player:
 	lda	a:p1_lives
 	ora	a:p2_lives
 	bne	loc_04BF60
@@ -8260,9 +8342,9 @@ loc_04BF6F:
 	rts
 loc_04BF79:
 	ldy	$34,x
-	lda	a:data_05F0DC,y
+	lda	a:face_boss_side_head_lunge_times,y
 	sta	OBJ_TIMER,x
-	jsr	a:sub_04C18A
+	jsr	a:face_boss_side_head_retract_neck
 	lda	#$0004
 	sta	OBJ_STATE,x
 
@@ -8300,7 +8382,11 @@ loc_04BFA2:
 face_boss_side_head_state_05:
 	rtl
 
-sub_04BFC1:
+; At the start of a lunge: makes slots 10-14 (left head), 15-19 (right head)
+; or 10-19 (both) OBJT_FACE_BOSS_NECK segments; face_boss_side_head_has_neck
+; (carry set while any is alive) and face_boss_side_head_retract_neck ($36 =
+; 2) control them.
+face_boss_side_head_spawn_neck:
 	lda	$34,x
 	beq	loc_04BFC8
 	brl	loc_04C073
@@ -8436,7 +8522,7 @@ loc_04C0B8:
 	sta	a:obj_slots+19*OBJ_SIZE+$34
 	rts
 
-sub_04C137:
+face_boss_side_head_has_neck:
 	lda	$34,x
 	bne	loc_04C167
 	lda	$32,x
@@ -8477,7 +8563,7 @@ loc_04C167:
 	sec
 	rts
 
-sub_04C18A:
+face_boss_side_head_retract_neck:
 	lda	$34,x
 	bne	loc_04C1B8
 	lda	$32,x
@@ -8511,7 +8597,8 @@ loc_04C1B8:
 	sta	a:obj_slots+19*OBJ_SIZE+$36
 	rts
 
-sub_04C1DA:
+; Three enemy bullets (type $18) from the head: down, down-right, down-left.
+face_boss_side_head_fire:
 	ldy	#$0400
 	jsl	f:find_free_slot_from_y
 	bcc	loc_04C1E6
@@ -8577,7 +8664,7 @@ update_face_boss_neck:
 	brl	loc_04C383
 loc_04C276:
 	ldy	$30,x
-	lda	a:data_05F0E4,y
+	lda	a:face_boss_neck_head_slots,y
 	tay
 	lda	a:$0006,y
 	bpl	loc_04C284
@@ -8629,7 +8716,7 @@ loc_04C2BA:
 	ldy	$30,x
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_X
 	clc
-	adc	a:data_05F0E8,y
+	adc	a:face_boss_side_head_x_offsets,y
 	sta	OBJ_X,x
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_Y
 	clc
@@ -8835,7 +8922,7 @@ snake_robot_state_00:
 	sta	a:$0016,y
 	phy
 	ldy	difficulty
-	lda	a:data_05F0EC,y
+	lda	a:snake_robot_head_hp,y
 	ply
 	sta	a:$0006,y
 	sta	a:$003A,y
@@ -8848,7 +8935,7 @@ snake_robot_state_00:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05F156,y
+	lda	a:snake_robot_leg_slots,y
 	tay
 	lda	#$0053
 	sta	a:$0010,y
@@ -8865,7 +8952,7 @@ snake_robot_state_00:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05F186,y
+	lda	a:snake_robot_foot_slots,y
 	tay
 	lda	#$0053
 	sta	a:$0010,y
@@ -8910,9 +8997,9 @@ snake_robot_state_01:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05F114,y
+	lda	a:snake_robot_leg_start_angles,y
 	pha
-	lda	a:data_05F156,y
+	lda	a:snake_robot_leg_slots,y
 	tay
 	pla
 	sta	a:$0036,y
@@ -8925,7 +9012,7 @@ snake_robot_state_01:
 	stz	$30,x
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
-	jsr	a:sub_04CB63
+	jsr	a:snake_robot_place_legs_by_angle
 	jmp	a:loc_04CD2B
 
 snake_robot_state_02:
@@ -8937,7 +9024,7 @@ snake_robot_state_02:
 	stz	$30,x
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
-	jsr	a:sub_04CB63
+	jsr	a:snake_robot_place_legs_by_angle
 	jmp	a:loc_04CD2B
 loc_04C51D:
 	stz	zp_02
@@ -8945,7 +9032,7 @@ loc_04C51F:
 	lda	zp_02
 	asl	a
 	tay
-	lda	a:ptrs_05F17E,y
+	lda	a:ptrs_snake_robot_leg_segments,y
 	sta	zp_04
 	stz	zp_00
 loc_04C52A:
@@ -8975,7 +9062,7 @@ loc_04C53B:
 	bcc	loc_04C559
 	inc	OBJ_Y_VEL,x
 loc_04C559:
-	jsr	a:sub_04CB63
+	jsr	a:snake_robot_place_legs_by_angle
 	jmp	a:loc_04CD2B
 
 snake_robot_state_03:
@@ -9008,7 +9095,7 @@ loc_04C59C:
 	stz	$38,x
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
-	jsr	a:sub_04CBE2
+	jsr	a:snake_robot_place_legs_between
 	jmp	a:loc_04CD2B
 
 snake_robot_state_04:
@@ -9030,7 +9117,7 @@ loc_04C5C5:
 	bcs	loc_04C5D1
 	dec	OBJ_Y_VEL,x
 loc_04C5D1:
-	jsr	a:sub_04CBE2
+	jsr	a:snake_robot_place_legs_between
 	jmp	a:loc_04CD2B
 loc_04C5D7:
 	ldy	#$0300
@@ -9053,7 +9140,7 @@ loc_04C5D7:
 	stz	OBJ_X_VEL,x
 	stz	OBJ_X_VEL_SUB,x
 	inc	OBJ_STATE,x
-	jsr	a:sub_04CBE2
+	jsr	a:snake_robot_place_legs_between
 	jmp	a:loc_04CD2B
 loc_04C60E:
 	lda	OBJ_Y_VEL_SUB,x
@@ -9063,7 +9150,7 @@ loc_04C60E:
 	bcc	loc_04C61A
 	inc	OBJ_Y_VEL,x
 loc_04C61A:
-	jsr	a:sub_04CBE2
+	jsr	a:snake_robot_place_legs_between
 	jmp	a:loc_04CD2B
 
 snake_robot_state_05:
@@ -9075,7 +9162,7 @@ snake_robot_state_05:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05F156,y
+	lda	a:snake_robot_leg_slots,y
 	tay
 	lda	OBJ_X,x
 	sta	a:$0032,y
@@ -9098,13 +9185,13 @@ loc_04C658:
 	lda	$38,x
 	asl	a
 	tay
-	lda	a:data_05F0F4,y
+	lda	a:snake_robot_step_foot_a_x_vel_subs,y
 	sta	zp_00
-	lda	a:data_05F0F8,y
+	lda	a:snake_robot_step_foot_a_x_vels,y
 	sta	zp_02
-	lda	a:data_05F0FC,y
+	lda	a:snake_robot_step_foot_b_x_vel_subs,y
 	sta	zp_04
-	lda	a:data_05F100,y
+	lda	a:snake_robot_step_foot_b_x_vels,y
 	sta	zp_06
 	ldy	#$0300
 	lda	#$0001
@@ -9127,8 +9214,8 @@ loc_04C658:
 	lda	zp_06
 	sta	a:$001A,y
 	inc	OBJ_STATE,x
-	jsr	a:sub_04CCAC
-	jsr	a:sub_04CBE2
+	jsr	a:snake_robot_walk_body
+	jsr	a:snake_robot_place_legs_between
 	jmp	a:loc_04CD2B
 
 snake_robot_state_06:
@@ -9158,9 +9245,9 @@ loc_04C6E3:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05F17A,y
+	lda	a:snake_robot_hip_x_offsets,y
 	sta	zp_02
-	lda	a:data_05F186,y
+	lda	a:snake_robot_foot_slots,y
 	tay
 	lda	a:$0030,y
 	beq	loc_04C6F8
@@ -9185,13 +9272,13 @@ loc_04C700:
 	lda	$38,x
 	asl	a
 	tay
-	lda	a:data_05F0F4,y
+	lda	a:snake_robot_step_foot_a_x_vel_subs,y
 	sta	zp_04
-	lda	a:data_05F0F8,y
+	lda	a:snake_robot_step_foot_a_x_vels,y
 	sta	zp_06
-	lda	a:data_05F0FC,y
+	lda	a:snake_robot_step_foot_b_x_vel_subs,y
 	sta	zp_08
-	lda	a:data_05F100,y
+	lda	a:snake_robot_step_foot_b_x_vels,y
 	sta	zp_0A
 	ply
 	lda	#$0001
@@ -9207,7 +9294,7 @@ loc_04C700:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05F188,y
+	lda	a:snake_robot_other_foot_slots,y
 	tay
 	lda	#$0000
 	sta	a:$0030,y
@@ -9273,9 +9360,9 @@ loc_04C7C9:
 	and	#$0001
 	asl	a
 	tay
-	lda	a:data_05F104,y
+	lda	a:snake_robot_missile_y_vel_subs,y
 	sta	zp_00
-	lda	a:data_05F108,y
+	lda	a:snake_robot_missile_y_vels,y
 	sta	zp_02
 	ply
 	lda	zp_00
@@ -9283,8 +9370,8 @@ loc_04C7C9:
 	lda	zp_02
 	sta	a:$001E,y
 loc_04C805:
-	jsr	a:sub_04CCAC
-	jsr	a:sub_04CBE2
+	jsr	a:snake_robot_walk_body
+	jsr	a:snake_robot_place_legs_between
 	jmp	a:loc_04CD2B
 loc_04C80E:
 	lda	OBJ_X,x
@@ -9329,8 +9416,8 @@ loc_04C83E:
 	stz	$30,x
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
-	jsr	a:sub_04CCAC
-	jsr	a:sub_04CBE2
+	jsr	a:snake_robot_walk_body
+	jsr	a:snake_robot_place_legs_between
 	jmp	a:loc_04CD2B
 
 snake_robot_state_07:
@@ -9345,9 +9432,9 @@ loc_04C896:
 	lda	$38,x
 	asl	a
 	tay
-	lda	a:data_05F10C,y
+	lda	a:snake_robot_jump_x_vel_subs,y
 	sta	zp_00
-	lda	a:data_05F110,y
+	lda	a:snake_robot_jump_x_vels,y
 	sta	zp_02
 	ldy	#$0700
 	lda	#$FFFF	; [num]
@@ -9379,8 +9466,8 @@ loc_04C896:
 	stz	$38,x
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
-	jsr	a:sub_04CCAC
-	jsr	a:sub_04CBE2
+	jsr	a:snake_robot_walk_body
+	jsr	a:snake_robot_place_legs_between
 	lda	OBJ_X,x
 	sta	zp_00
 	lda	OBJ_Y,x
@@ -9424,7 +9511,7 @@ loc_04C911:
 loc_04C951:
 	lda	OBJ_X,x
 	clc
-	adc	a:data_05F17A
+	adc	a:snake_robot_hip_x_offsets
 	sta	zp_00
 	ldy	#$0300
 	lda	a:$000A,y
@@ -9445,7 +9532,7 @@ loc_04C970:
 loc_04C97B:
 	lda	OBJ_X,x
 	clc
-	adc	a:data_05F17C
+	adc	a:snake_robot_hip_x_offset_b
 	sta	zp_00
 	ldy	#$0700
 	lda	a:$000A,y
@@ -9464,7 +9551,7 @@ loc_04C99A:
 	bmi	loc_04C9A5
 	sta	a:$000A,y
 loc_04C9A5:
-	jsr	a:sub_04CBE2
+	jsr	a:snake_robot_place_legs_between
 	jmp	a:loc_04CD2B
 loc_04C9AB:
 	stz	zp_00
@@ -9472,9 +9559,9 @@ loc_04C9AB:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05F134,y
+	lda	a:snake_robot_leg_fold_angles,y
 	pha
-	lda	a:data_05F156,y
+	lda	a:snake_robot_leg_slots,y
 	tay
 	pla
 	sta	a:$0036,y
@@ -9512,7 +9599,7 @@ snake_robot_state_09:
 	stz	OBJ_TIMER,x
 	lda	#$0003
 	sta	OBJ_STATE,x
-	jsr	a:sub_04CB63
+	jsr	a:snake_robot_place_legs_by_angle
 	jmp	a:loc_04CD2B
 loc_04CA15:
 	stz	zp_02
@@ -9520,7 +9607,7 @@ loc_04CA17:
 	lda	zp_02
 	asl	a
 	tay
-	lda	a:ptrs_05F17E,y
+	lda	a:ptrs_snake_robot_leg_segments,y
 	sta	zp_04
 	stz	zp_00
 loc_04CA22:
@@ -9550,7 +9637,7 @@ loc_04CA35:
 	bcc	loc_04CA53
 	inc	OBJ_Y_VEL,x
 loc_04CA53:
-	jsr	a:sub_04CB63
+	jsr	a:snake_robot_place_legs_by_angle
 	jmp	a:loc_04CD2B
 
 snake_robot_state_10:
@@ -9567,7 +9654,7 @@ snake_robot_state_10:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05F156,y
+	lda	a:snake_robot_leg_slots,y
 	tay
 	lda	#OBJT_SNAKE_ROBOT_DEBRIS
 	sta	a:$0010,y
@@ -9672,7 +9759,13 @@ loc_04CB61:
 	; CDL: not accessed
 	.byte	$6B
 
-sub_04CB63:
+; Places the segments of both legs (ptrs_snake_robot_leg_segments) one after
+; the other on a circle around the previous one
+; (ptrs_snake_robot_leg_parents), adding each segment's angle (field $36); the
+; legs hang from the hips (snake_robot_hip_slots, offsets
+; snake_robot_hip_x_offsets). Seen in the emulator: the robot walks on two
+; segmented legs with feet in slots $0300 and $0700.
+snake_robot_place_legs_by_angle:
 	phx
 	stx	zp_10
 	stz	zp_0A
@@ -9680,9 +9773,9 @@ sub_04CB63:
 	lda	zp_0A
 	asl	a
 	tay
-	lda	a:data_05F17A,y
+	lda	a:snake_robot_hip_x_offsets,y
 	pha
-	lda	a:data_05F176,y
+	lda	a:snake_robot_hip_slots,y
 	tay
 	pla
 	ldx	zp_10
@@ -9696,9 +9789,9 @@ sub_04CB63:
 	lda	zp_0A
 	asl	a
 	tay
-	lda	a:ptrs_05F17E,y
+	lda	a:ptrs_snake_robot_leg_segments,y
 	sta	zp_0C
-	lda	a:ptrs_05F182,y
+	lda	a:ptrs_snake_robot_leg_parents,y
 	sta	zp_0E
 	stz	zp_00
 @loop2:
@@ -9742,15 +9835,19 @@ sub_04CB63:
 	plx
 	rts
 
-sub_04CBE2:
+; Hips at the body; each leg segment at the midpoint of two others
+; (snake_robot_midpoint_from_a, snake_robot_midpoint_from_b into
+; snake_robot_midpoint_slots), bent by the distance between foot and body; the
+; ankles (snake_robot_ankle_slots) at the feet.
+snake_robot_place_legs_between:
 	stz	zp_00
 @loop:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05F17A,y
+	lda	a:snake_robot_hip_x_offsets,y
 	pha
-	lda	a:data_05F176,y
+	lda	a:snake_robot_hip_slots,y
 	tay
 	pla
 	clc
@@ -9769,27 +9866,27 @@ loc_04CC0A:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05F190,y
+	lda	a:snake_robot_midpoint_from_a,y
 	tax
 	lda	$0E,x
 	pha
-	lda	a:data_05F1B4,y
+	lda	a:snake_robot_midpoint_from_b,y
 	tax
 	pla
 	clc
 	adc	$0E,x
 	lsr	a
 	pha
-	lda	a:data_05F1D8,y
+	lda	a:snake_robot_midpoint_slots,y
 	tax
 	pla
 	sta	$0E,x
 	sta	zp_08
-	lda	a:data_05F190,y
+	lda	a:snake_robot_midpoint_from_a,y
 	tax
 	lda	$0A,x
 	pha
-	lda	a:data_05F1B4,y
+	lda	a:snake_robot_midpoint_from_b,y
 	tax
 	pla
 	clc
@@ -9824,7 +9921,7 @@ loc_04CC58:
 	sbc	zp_04
 loc_04CC66:
 	pha
-	lda	a:data_05F1D8,y
+	lda	a:snake_robot_midpoint_slots,y
 	tax
 	pla
 	sta	$0A,x
@@ -9837,7 +9934,7 @@ loc_04CC66:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05F186,y
+	lda	a:snake_robot_foot_slots,y
 	tay
 	lda	a:$000A,y
 	clc
@@ -9850,7 +9947,7 @@ loc_04CC66:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05F18C,y
+	lda	a:snake_robot_ankle_slots,y
 	tay
 	pla
 	sta	a:$000E,y
@@ -9863,25 +9960,27 @@ loc_04CC66:
 	plx
 	rts
 
-sub_04CCAC:
+; Body between the two feet, higher when they are close, through a delay ring
+; of 8 positions kept in fields $32/$34 of the leg slots.
+snake_robot_walk_body:
 	ldy	#$0300
 	lda	a:$000A,y
 	sec
-	sbc	a:data_05F17A
+	sbc	a:snake_robot_hip_x_offsets
 	ldy	#$0700
 	adc	a:$000A,y
 	sec
-	sbc	a:data_05F17C
+	sbc	a:snake_robot_hip_x_offset_b
 	clc
 	lsr	a
 	sta	zp_02
 	ldy	#$0300
 	lda	a:$000A,y
 	sec
-	sbc	a:data_05F17A
+	sbc	a:snake_robot_hip_x_offsets
 	ldy	#$0700
 	clc
-	adc	a:data_05F17C
+	adc	a:snake_robot_hip_x_offset_b
 	sec
 	sbc	a:$000A,y
 	bpl	loc_04CCDF
@@ -9906,7 +10005,7 @@ loc_04CCE7:
 	lda	$36,x
 	asl	a
 	tay
-	lda	a:data_05F156,y
+	lda	a:snake_robot_leg_slots,y
 	tay
 	lda	zp_02
 	sta	a:$0032,y
@@ -9922,7 +10021,7 @@ loc_04CD18:
 	sta	$36,x
 	asl	a
 	tay
-	lda	a:data_05F156,y
+	lda	a:snake_robot_leg_slots,y
 	tay
 	lda	a:$0032,y
 	sta	OBJ_X,x
@@ -9939,7 +10038,7 @@ loc_04CD2B:
 
 ; Object type $81. Stage 4: head of snake_robot (320 HP).
 update_snake_robot_head:
-	lda	a:data_05F154
+	lda	a:snake_robot_body_slot
 	tay
 	lda	a:$0010,y
 	bne	@return
@@ -9956,7 +10055,7 @@ update_enemy_type_7C:
 	bpl	loc_04CD65
 	lda	#$001C
 	sta	$30,x
-	jsr	a:sub_04CE28
+	jsr	a:enemy_type_7C_draw_frame
 	lda	#$0010
 	sta	OBJ_TIMER,x
 	stz	OBJ_FLAGS,x
@@ -9987,7 +10086,7 @@ enemy_type_7C_state_00:
 	lda	#$FFE0	; [num]
 	sta	OBJ_HITBOX_H,x
 	ldy	$3A,x
-	lda	a:data_05F1FC,y
+	lda	a:enemy_type_7C_delays,y
 	sta	OBJ_TIMER,x
 	lda	difficulty
 	asl	a
@@ -10011,7 +10110,7 @@ enemy_type_7C_state_02:
 	lda	OBJ_TIMER,x
 	bit	#$0007
 	bne	@return
-	jsr	a:sub_04CE28
+	jsr	a:enemy_type_7C_draw_frame
 	clc
 	lda	$30,x
 	adc	#$0004
@@ -10050,17 +10149,17 @@ loc_04CDEE:
 	sec
 	sbc	#$0006
 	bpl	@loop
-	lda	a:data_05F222,y
+	lda	a:enemy_type_7C_aim_frames,y
 	sta	$30,x
 	phy
-	jsr	a:sub_04CE28
+	jsr	a:enemy_type_7C_draw_frame
 	ply
 	clc
-	lda	a:data_05F228,y
+	lda	a:enemy_type_7C_gun_y_offsets,y
 	adc	OBJ_Y,x
 	sta	zp_02
 	clc
-	lda	a:data_05F22E,y
+	lda	a:enemy_type_7C_gun_x_offsets,y
 	adc	OBJ_X,x
 	sta	zp_00
 	dec	OBJ_TIMER,x
@@ -10073,14 +10172,16 @@ loc_04CE26:
 	pla
 	rtl
 
-sub_04CE28:
+; Draws frame field $30 (tile pair enemy_type_7C_frame_tiles) at VRAM
+; enemy_type_7C_vram_addrs[field $3A].
+enemy_type_7C_draw_frame:
 	ldy	$30,x
-	lda	a:data_05F202,y
+	lda	a:enemy_type_7C_frame_tiles,y
 	sta	zp_00
-	lda	a:data_05F204,y
+	lda	a:enemy_type_7C_frame_tiles_b,y
 	pha
 	ldy	$3A,x
-	lda	a:data_05F234,y
+	lda	a:enemy_type_7C_vram_addrs,y
 	sta	zp_FC
 	jsl	f:queue_vram_block
 	pla
@@ -10140,7 +10241,7 @@ loc_04CEA7:
 	dec	OBJ_TIMER,x
 	bpl	@return
 	ldy	$3A,x
-	lda	a:data_05F260,y
+	lda	a:lightning_pylon_fire_delays,y
 	sta	OBJ_TIMER,x
 	ldy	#$0580
 	jsl	f:find_free_slot_y_down
@@ -10424,16 +10525,19 @@ loc_04D0BB:
 	rtl
 
 spiked_mine_state_03:
-	jsr	a:sub_04D0EA
-	jsr	a:sub_04D142
+	jsr	a:spiked_mine_follow
+	jsr	a:spiked_mine_pass_position
 	rtl
 
 spiked_mine_state_04:
-	jsr	a:sub_04D0EA
-	jsr	a:sub_04D158
+	jsr	a:spiked_mine_follow
+	jsr	a:spiked_mine_set_position
 	rtl
 
-sub_04D0EA:
+; A chain member: position = the recorded position of the one before (ring
+; buffers at $7E:A000/$7E:A070) plus a point on a circle turning by
+; wram_7EA0E2; explodes when the leader (field $3E) is gone.
+spiked_mine_follow:
 	ldy	$3E,x
 	lda	a:$0010,y
 	cmp	#$007D
@@ -10474,7 +10578,9 @@ loc_04D106:
 	sta	$32,x
 	rts
 
-sub_04D142:
+; Records the position for the next mine of the chain, then
+; spiked_mine_set_position (OBJ_X/OBJ_Y = zp_00/zp_02).
+spiked_mine_pass_position:
 	clc
 	adc	#$0010
 	clc
@@ -10487,7 +10593,7 @@ sub_04D142:
 	sta	f:$7EA000,x
 	plx
 
-sub_04D158:
+spiked_mine_set_position:
 	lda	zp_02
 	sta	OBJ_Y,x
 	lda	zp_00
@@ -10839,18 +10945,21 @@ loc_04D43A:
 	lda	#.loword(metasprite_06CB86)
 loc_04D445:
 	sta	OBJ_SPRITE,x
-	jsr	a:sub_04D686
-	jsr	a:sub_04D6E7
-	jsr	a:sub_04D701
+	jsr	a:helicopter_rope_swing_offset
+	jsr	a:helicopter_rope_store_position
+	jsr	a:helicopter_rope_set_position
 	rtl
 
 helicopter_rope_state_03:
-	jsr	a:sub_04D70A
-	jsr	a:sub_04D7C7
+	jsr	a:helicopter_rope_enemy_pick_sprite
+	jsr	a:helicopter_rope_swing
 
-sub_04D457:
-	jsr	a:sub_04D686
-	jsr	a:sub_04D724
+; The enemy at the end of the rope (slot $0900): helicopter_rope_swing_offset,
+; then its position by sprite frame (helicopter_rope_enemy_offset), then
+; trail_pass_to_next.
+helicopter_rope_place_enemy:
+	jsr	a:helicopter_rope_swing_offset
+	jsr	a:helicopter_rope_enemy_offset
 	jml	f:trail_pass_to_next
 
 helicopter_rope_state_04:
@@ -10882,9 +10991,9 @@ loc_04D488:
 	sta	zp_00
 	lda	OBJ_Y,x
 	sta	zp_02
-	jsr	a:sub_04D6DD
-	jsr	a:sub_04D6E7
-	jsr	a:sub_04D701
+	jsr	a:helicopter_rope_next_ring_index
+	jsr	a:helicopter_rope_store_position
+	jsr	a:helicopter_rope_set_position
 	lda	a:boss_work_2
 	bne	loc_04D4F5
 	ldy	a:boss_work_3
@@ -10920,9 +11029,9 @@ loc_04D4DA:
 loc_04D4F5:
 	rtl
 loc_04D4F6:
-	jsr	a:sub_04D686
-	jsr	a:sub_04D701
-	jsr	a:sub_04D737
+	jsr	a:helicopter_rope_swing_offset
+	jsr	a:helicopter_rope_set_position
+	jsr	a:helicopter_rope_check_missile_contact
 	rtl
 
 helicopter_rope_state_06:
@@ -10959,14 +11068,14 @@ helicopter_rope_state_07:
 	ldy	OBJ_FACING,x
 	clc
 	lda	OBJ_X,x
-	adc	a:data_05F329,y
+	adc	a:helicopter_rope_jump_x_offsets,y
 	sta	zp_00
 	clc
 	lda	OBJ_Y,x
 	adc	#$FFEE
 	sta	zp_02
-	jsr	a:sub_04D6DD
-	jsr	a:sub_04D6E7
+	jsr	a:helicopter_rope_next_ring_index
+	jsr	a:helicopter_rope_store_position
 	lda	a:boss_work_4
 	bne	loc_04D563
 	stz	a:boss_work_5
@@ -11015,7 +11124,7 @@ loc_04D5BB:
 	lda	#$0002
 	sta	OBJ_FACING,x
 loc_04D5C0:
-	brl	sub_04D457
+	brl	helicopter_rope_place_enemy
 
 helicopter_rope_state_0A:
 	dec	OBJ_TIMER,x
@@ -11042,7 +11151,7 @@ loc_04D5D0:
 	adc	#$0000
 	sta	a:$000E,y
 loc_04D5FB:
-	jsl	f:sub_04D457
+	jsl	f:helicopter_rope_place_enemy
 	lda	#$007C
 	sta	OBJ_Y,x
 	jml	f:trail_pass_to_next
@@ -11057,8 +11166,8 @@ helicopter_rope_state_0B:
 	lda	#$0002
 	sta	a:boss_work_2
 loc_04D61C:
-	jsr	a:sub_04D70A
-	brl	sub_04D457
+	jsr	a:helicopter_rope_enemy_pick_sprite
+	brl	helicopter_rope_place_enemy
 
 helicopter_rope_state_0C:
 	lda	OBJ_Y,x
@@ -11107,7 +11216,11 @@ loc_04D638:
 @return:
 	rtl
 
-sub_04D686:
+; zp_00/zp_02 = the recorded position of the segment before (ring buffers
+; $7E:A000/$7E:A070) plus a point on a circle at the swing angle
+; (boss_work_3), halved boss_work_5 + 1 times; then
+; helicopter_rope_next_ring_index.
+helicopter_rope_swing_offset:
 	phx
 	lda	a:boss_work_3
 	and	#$01FE
@@ -11162,7 +11275,7 @@ loc_04D6BF:
 	sta	zp_02
 	plx
 
-sub_04D6DD:
+helicopter_rope_next_ring_index:
 	lda	$32,x
 	inc	a
 	inc	a
@@ -11170,10 +11283,13 @@ sub_04D6DD:
 	sta	$32,x
 	rts
 
-sub_04D6E7:
+; Stores zp_00/zp_02 into the ring buffer for the next segment (offset
+; helicopter_rope_ring_offsets[boss_work_1]); helicopter_rope_set_position
+; sets OBJ_X/OBJ_Y from them.
+helicopter_rope_store_position:
 	ldy	a:boss_work_1
 	clc
-	adc	a:data_05F28F,y
+	adc	a:helicopter_rope_ring_offsets,y
 	clc
 	adc	$34,x
 	phx
@@ -11185,14 +11301,17 @@ sub_04D6E7:
 	plx
 	rts
 
-sub_04D701:
+helicopter_rope_set_position:
 	lda	zp_02
 	sta	OBJ_Y,x
 	lda	zp_00
 	sta	OBJ_X,x
 	rts
 
-sub_04D70A:
+; Sprite of the enemy on the rope by swing angle (boss_work_3) and OBJ_FACING
+; (helicopter_rope_enemy_sprites); the index is kept in field $3A for the
+; offsets (helicopter_rope_enemy_x_offsets, helicopter_rope_enemy_y_offsets).
+helicopter_rope_enemy_pick_sprite:
 	clc
 	lda	a:boss_work_3
 	adc	#$0020
@@ -11205,23 +11324,25 @@ sub_04D70A:
 	adc	OBJ_FACING,x
 	tay
 	sty	$3A,x
-	lda	a:data_05F293,y
+	lda	a:helicopter_rope_enemy_sprites,y
 	sta	OBJ_SPRITE,x
 	rts
 
-sub_04D724:
+helicopter_rope_enemy_offset:
 	ldy	$3A,x
 	clc
-	lda	a:data_05F2B3,y
+	lda	a:helicopter_rope_enemy_x_offsets,y
 	adc	zp_00
 	sta	OBJ_X,x
 	clc
-	lda	a:data_05F2D3,y
+	lda	a:helicopter_rope_enemy_y_offsets,y
 	adc	zp_02
 	sta	OBJ_Y,x
 	rts
 
-sub_04D737:
+; A rope segment touching the missile of slot $0800 (while the enemy is not
+; rising): spark, sound $33, and the enemy (slot $0900) goes to state 3 or 8.
+helicopter_rope_check_missile_contact:
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_Y_VEL
 	bpl	loc_04D73D
 	rts
@@ -11282,7 +11403,10 @@ loc_04D79B:
 loc_04D7C6:
 	rts
 
-sub_04D7C7:
+; Pendulum: the angular speed (boss_work_6/7) is pushed back towards the
+; middle and the direction reverses past $A4/$160; adds it to the angle
+; boss_work_3.
+helicopter_rope_swing:
 	lda	a:boss_work_3
 	ldy	a:boss_work_0
 	beq	loc_04D7F3
@@ -11349,7 +11473,7 @@ update_enemy_type_85:
 	lda	#$FFF8	; [num]
 	sta	OBJ_HITBOX_H,x
 	ldy	OBJ_FACING,x
-	lda	a:data_05F33B,y
+	lda	a:enemy_type_85_x_vels,y
 	sta	OBJ_X_VEL,x
 	lda	#$FFFF	; [num]
 	sta	OBJ_Y_VEL,x
@@ -11360,9 +11484,9 @@ loc_04D866:
 	ldy	OBJ_FACING,x
 	clc
 	lda	OBJ_X_VEL_SUB,x
-	adc	a:data_05F33F,y
+	adc	a:enemy_type_85_x_accel_subs,y
 	sta	OBJ_X_VEL_SUB,x
 	lda	OBJ_X_VEL,x
-	adc	a:data_05F343,y
+	adc	a:enemy_type_85_x_accels,y
 	sta	OBJ_X_VEL,x
 	rtl
