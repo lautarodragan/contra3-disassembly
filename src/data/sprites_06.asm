@@ -1796,10 +1796,12 @@ metasprite_06B172:
 	.byte	$0A
 	.byte	$D8, $71, $01, $02, $D8, $6B, $01, $02, $E0, $08, $21, $FF, $F0, $0A, $21
 metasprite_06B182:
+	; LAYOUT: the sprites of the metasprite before run on into this one (shared tail)
 	.byte	$05
 	.byte	$14, $E0, $60, $01, $04, $D8, $0E, $21, $04, $E8, $22, $21, $0A, $F8, $61, $01
 	.byte	$F4, $EC, $0C, $21
 metasprite_06B197:
+	; LAYOUT: the sprites of the metasprite before run on into this one (shared tail)
 	.byte	$05, $11, $E0, $72, $01, $01, $D8, $26, $21, $0B, $E8, $63
 	.byte	$01, $03, $E8, $62, $01, $00, $F0, $28, $21
 metasprite_06B1AC:
