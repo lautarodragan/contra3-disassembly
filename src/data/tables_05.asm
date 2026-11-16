@@ -5289,16 +5289,21 @@ anim_05E7EB:
 	anim_frame	$0004, metasprite_06BE74, $0000
 	anim_frame	$0002, metasprite_06BE85, $0000
 	anim_end	$0000, $0000
-data_05E809:
+; Stage 3 robots: frames between two moves (OBJ_TIMER of
+; stage3_robot_state_02), by difficulty; stage3_second_robot_wait_times for
+; the second robot.
+stage3_robot_wait_times:
 	; CDL: read by stage3_robot_state_02; partly not accessed
 	.byte	$40, $00, $30, $00, $10, $00
-data_05E80F:
+stage3_second_robot_wait_times:
 	; CDL: read by stage3_second_robot_state_02; partly not accessed
 	.byte	$79, $00, $59, $00, $29, $00
-data_05E815:
+; Stage 3 robots: OBJ_SPRITE and OBJ_ATTR set by stage3_robot_state_00,
+; indexed by field $3A (which robot).
+stage3_robot_sprites:
 	; CDL: read by stage3_robot_state_00
 	.addr	metasprite_06BCFE, metasprite_06C0C8
-data_05E819:
+stage3_robot_attrs:
 	; CDL: read by update_objects, stage3_robot_state_00; partly not accessed
 	.byte	$00, $36, $00, $38
 anim_05E81D:
@@ -5317,16 +5322,22 @@ anim_05E847:
 	anim_frame	$0002, metasprite_06BB95, metasprite_06BEE3
 	anim_frame	$0002, metasprite_06BB40, metasprite_06BE8E
 	anim_goto	anim_05E847
-data_05E855:
+; Stage 3 robots, stage3_robot_state_02: OBJ_X_VEL of a jump by direction
+; (stage3_robot_hop_x_vels 1/-1, stage3_robot_jump_x_vels 2/-2 near the walls)
+; and the OBJ_FACING it sets (stage3_robot_facings).
+stage3_robot_hop_x_vels:
 	; CDL: read by stage3_robot_state_02
 	.byte	$01, $00, $FF, $FF
-data_05E859:
+stage3_robot_jump_x_vels:
 	; CDL: read by stage3_robot_state_02
 	.byte	$02, $00, $FE, $FF
-data_05E85D:
+stage3_robot_facings:
 	; CDL: read by stage3_robot_state_02
 	.byte	$00, $00, $02, $00
-data_05E861:
+; stage3_second_robot_spawn_debris, by OBJ_FACING: sprite of the type $46
+; object, its x offset (stage3_second_robot_debris_x_offsets) and the base
+; direction in the vel8 tables (stage3_second_robot_debris_dirs).
+stage3_second_robot_debris_sprites:
 	; CDL: read by update_objects, stage3_second_robot_spawn_debris; partly not accessed
 	.addr	metasprite_06BD4B, metasprite_06C119
 	.byte	$00, $00, $DA, $BB, $28, $BF
@@ -5342,56 +5353,69 @@ anim_05E88B:
 	anim_frame	$0008, metasprite_06BD50, metasprite_06C11E
 	anim_frame	$0008, metasprite_06BCAD, metasprite_06BFFB
 	anim_goto	anim_05E88B
-data_05E899:
+stage3_second_robot_debris_dirs:
 	; CDL: read by stage3_second_robot_spawn_debris
 	.byte	$20, $00, $50, $00
-data_05E89D:
+stage3_second_robot_debris_x_offsets:
 	; CDL: read by stage3_second_robot_spawn_debris; partly not accessed
 	.byte	$24, $00, $F0, $FF, $00, $02, $00, $04, $00, $08
-data_05E8A7:
+; stage3_boss_state_06: the robot fires three enemy bullets
+; (spawn_enemy_bullet directions, by OBJ_FACING) from x +
+; stage3_robot_gun_x_offsets.
+stage3_robot_bullet_dirs_1:
 	; CDL: read by stage3_boss_state_06
 	.byte	$0A, $00, $2A, $00
-data_05E8AB:
+stage3_robot_bullet_dirs_2:
 	; CDL: read by stage3_boss_state_06
 	.byte	$10, $00, $30, $00
-data_05E8AF:
+stage3_robot_bullet_dirs_3:
 	; CDL: read by stage3_boss_state_06
 	.byte	$16, $00, $36, $00
-data_05E8B3:
+stage3_robot_gun_x_offsets:
 	; CDL: read by stage3_boss_state_06
 	.byte	$1E, $00, $FC, $FF
-data_05E8B7:
+; stage3_boss_state_0C: frames before each step of its VRAM block updates
+; (field $32 counts the steps down by 2) and the BG VRAM address by step
+; parity (stage3_boss_state_0C_vram_addrs).
+stage3_boss_state_0C_delays:
 	; CDL: read by stage3_boss_state_0C
 	.byte	$40, $00, $0B, $00, $40, $00, $0B, $00
-data_05E8BF:
+stage3_boss_state_0C_vram_addrs:
 	; CDL: read by stage3_boss_state_0C
 	.byte	$8C, $41, $0C, $42
-data_05E8C3:
+; skeleton_eye_fireball_state_01: sprite and velocity by the angle to the
+; target player (8 directions); the y velocities start 4 bytes before the x
+; velocities and read on into them.
+skeleton_eye_fireball_sprites:
 	; CDL: read by skeleton_eye_fireball_state_01
 	.addr	metasprite_06AF82, metasprite_06AF87, metasprite_06AF8C, metasprite_06AF91
 	.addr	metasprite_06AF82, metasprite_06AF87, metasprite_06AF8C, metasprite_06AF91
-data_05E8D3:
+skeleton_eye_fireball_y_vels:
 	; CDL: read by skeleton_eye_fireball_state_01
 	.byte	$FD, $FF, $FE, $FF
-data_05E8D7:
-	; LAYOUT: read on from data_05E8D3 (lda a:data_05E8D3,y)
+skeleton_eye_fireball_x_vels:
+	; LAYOUT: read on from skeleton_eye_fireball_y_vels (lda a:skeleton_eye_fireball_y_vels,y)
 	; CDL: read by skeleton_eye_fireball_state_01
 	.byte	$00, $00, $02, $00, $03, $00, $02, $00, $00, $00, $FE, $FF, $FD, $FF, $FE, $FF
-data_05E8E7:
+; stage3_boss_break_wall: frames per step (by boss_work_2) and the step added
+; to boss_work_1 (-1/+1, clamped to 0-8); ptrs_stage3_boss_wall_blocks and the
+; two VRAM address tables (_a: one $20-byte block, _b: one $40-byte block 8
+; bytes further) pick what is redrawn.
+stage3_boss_wall_step_delays:
 	; CDL: read by stage3_boss_break_wall
 	.byte	$04, $00, $10, $00
-data_05E8EB:
+stage3_boss_wall_step_dirs:
 	; CDL: read by stage3_boss_break_wall
 	.byte	$FF, $FF, $01, $00
-data_05E8EF:
+ptrs_stage3_boss_wall_blocks:
 	; CDL: read by stage3_boss_break_wall
 	.addr	vram_blocks_05E901
 	.addr	vram_blocks_05E971
 	.addr	vram_blocks_05EA01
-data_05E8F5:
+stage3_boss_wall_vram_addrs_a:
 	; CDL: read by stage3_boss_break_wall
 	.byte	$0C, $41, $08, $41, $04, $41
-data_05E8FB:
+stage3_boss_wall_vram_addrs_b:
 	; CDL: read by queue_vram_blocks_at_x, stage3_boss_break_wall
 	.byte	$10, $41, $14, $41, $18, $41
 vram_blocks_05E901:
@@ -5425,7 +5449,9 @@ vram_blocks_05EA01:
 	.byte	$40, $7A, $00, $7B, $A0, $81, $20, $7C, $E0, $7C, $40, $82, $20, $65, $80, $7C
 	.byte	$20, $82, $00, $7E, $20, $64, $60, $6F, $20, $60, $E0, $5D, $A0, $75, $00, $70
 	.byte	$40, $63, $40, $75, $C0, $75
-data_05EA91:
+; stage3_boss_queue_tiles: VRAM block lists by field $34 / 16 (an animation of
+; the skeleton robot drawn on BG).
+ptrs_stage3_boss_tile_frames:
 	; CDL: read by stage3_boss_queue_tiles
 	.addr	vram_blocks_05EAD9
 	.addr	vram_blocks_05EAF1
@@ -5435,7 +5461,10 @@ data_05EA91:
 	.addr	vram_blocks_05EAC1
 	.addr	vram_blocks_05EAA9
 	.addr	vram_blocks_05EAC1
-data_05EAA1:
+; stage3_boss_spawn_debris_sparks: x of each type $4B spark by direction / 16;
+; stage3_boss_debris_rates (by difficulty) is added to the fraction counter
+; field $30 that picks the direction.
+stage3_boss_debris_x:
 	; CDL: read by queue_vram_blocks_at_x, stage3_boss_spawn_debris_sparks
 	.byte	$78, $7C, $80, $7C, $78, $74, $70, $74
 vram_blocks_05EAA9:
@@ -5455,7 +5484,7 @@ vram_blocks_05EB09:
 	.byte	$40, $C1, $60, $C1, $C0, $C1, $E0, $C1, $00, $C2, $20, $C2, $40, $C2, $60, $C2
 vram_blocks_05EB21:
 	.byte	$20, $60, $20, $61, $E0, $6F, $E0, $5C, $A0, $62, $40, $75, $A0, $5F, $00, $71
-data_05EB31:
+stage3_boss_debris_rates:
 	; CDL: read by update_objects, stage3_boss_spawn_debris_sparks; partly not accessed
 	.byte	$00, $40, $00, $74, $00, $C8
 anim_05EB37:
@@ -5467,10 +5496,12 @@ load_list_05EB45:
 	load_list	$00, $01
 	load_vram	$7000, gfx_0AE033
 	load_end
-data_05EB4E:
+; stage3_boss_state_0E: field $34 grows by stage3_boss_state_0E_steps[$36]
+; until stage3_boss_state_0E_limits[$36].
+stage3_boss_state_0E_limits:
 	; CDL: read by stage3_boss_state_0E
 	.byte	$00, $01, $40, $01, $00, $06
-data_05EB54:
+stage3_boss_state_0E_steps:
 	; CDL: read by update_objects, stage3_boss_state_0E; partly not accessed
 	.byte	$02, $00, $04, $00, $06, $00
 anim_05EB5A:
@@ -5479,42 +5510,50 @@ anim_05EB5A:
 	anim_frame	$0020, metasprite_06C242, metasprite_06C242
 	anim_frame	$0020, metasprite_06C284, metasprite_06C284
 	anim_end	$0000, $0000
-data_05EB78:
+; skeleton_eye_fireball_state_00: OBJ_TIMER by difficulty.
+skeleton_eye_fireball_delays:
 	; CDL: read by skeleton_eye_fireball_state_00; partly not accessed
 	.byte	$B8, $00, $D0, $00, $20, $01
-data_05EB7E:
+; stage4_controller_state_0C: while bg1_x is below
+; stage4_scroll_waypoints_x[OBJ_TIMER] the index advances; the scroll speed
+; (bg1_vel_x_sub/bg1_vel_x, airship section) is moved towards stage4_scroll_target_speeds[OBJ_TIMER].
+stage4_scroll_waypoints_x:
 	; CDL: read by stage4_controller_state_0C
 	.byte	$90, $09, $D0, $06, $30, $06, $00, $00, $80, $05, $00, $03, $00, $00
-data_05EB8C:
+stage4_scroll_target_speeds:
 	; CDL: read by stage4_controller_state_0C
 	.byte	$80, $FD, $80, $FF, $80, $FE, $00, $00, $80, $FE, $80, $FF, $40, $FC
-data_05EB9A:
+; rideable_missile_state_07: start y (byte, + 0-7) by missile (field $34 / 2),
+; x speed fraction (byte) and base speed by difficulty.
+rideable_missile_start_y:
 	; CDL: read by rideable_missile_state_07
 	.byte	$49, $69, $89, $A9
-data_05EB9E:
-	; LAYOUT: read on from data_05EB9A (lda a:data_05EB9A,y)
+rideable_missile_speed_fracs:
+	; LAYOUT: read on from rideable_missile_start_y (lda a:rideable_missile_start_y,y)
 	; CDL: read by rideable_missile_state_07
 	.byte	$80, $A0, $C0, $E0
-data_05EBA2:
-	; LAYOUT: read on from data_05EB9E (lda a:data_05EB9E,y)
+rideable_missile_base_speeds:
+	; LAYOUT: read on from rideable_missile_speed_fracs (lda a:rideable_missile_speed_fracs,y)
 	; CDL: read by rideable_missile_state_07
 	.byte	$00, $28, $00, $28, $00, $88
-data_05EBA8:
+; update_stage4_boss_pod: the BG blocks drawn when a pod is destroyed, and
+; their VRAM address, by pod.
+ptrs_stage4_boss_pod_wreck_blocks:
 	; CDL: read by queue_vram_blocks_at_x, update_stage4_boss_pod
 	.addr	vram_blocks_05EBAC, vram_blocks_05EBB0
 vram_blocks_05EBAC:
 	.byte	$A0, $B5, $C0, $B5
 vram_blocks_05EBB0:
 	.byte	$00, $B7, $E0, $B5
-data_05EBB4:
+stage4_boss_pod_wreck_vram_addrs:
 	; CDL: read by update_objects, update_stage4_boss_pod; partly not accessed
 	.byte	$10, $4C, $90, $4E
 anim_05EBB8:
 	anim_frame	$0010, $0000, $0000
 	anim_frame	$0010, metasprite_06C770, $0000
 	anim_goto	anim_05EBB8
-data_05EBC6:
-	; CDL: read by update_objects, update_destructible_part, sub_049A54
+stage4_boss_pod_shot_anims:
+	; CDL: read by update_objects, update_destructible_part, stage4_boss_pod_fire
 	.addr	anim_05EBCA, anim_05EBD8
 anim_05EBCA:
 	anim_frame	$0001, metasprite_06AF87, $3200
@@ -5524,8 +5563,8 @@ anim_05EBD8:
 	anim_frame	$0001, metasprite_06AF91, $3200
 	anim_frame	$0001, metasprite_06AF91, $3E00
 	anim_goto	anim_05EBD8
-data_05EBE6:
-	; CDL: read by queue_vram_blocks_at_x, sub_049A54; partly not accessed
+stage4_boss_pod_shot_y_vels:
+	; CDL: read by queue_vram_blocks_at_x, stage4_boss_pod_fire; partly not accessed
 	.byte	$03, $00, $FD, $FF
 	.addr	vram_blocks_05EC02
 	.addr	vram_blocks_05EC0C
@@ -5546,7 +5585,9 @@ vram_blocks_05EC26:
 vram_blocks_05EC34:
 	.byte	$00, $50
 	.byte	$00, $50, $00, $50, $00, $50
-data_05EC3C:
+; rideable_missile_state_01: two BG block animations of the missiles, by field
+; $30 and field $32 (VRAM $4404/$4480 on stage 4, $4804/$4880 in the ending).
+ptrs_rideable_missile_anim_blocks:
 	; CDL: read by queue_vram_blocks_at_x, rideable_missile_state_01
 	.addr	vram_blocks_05EC44, vram_blocks_05EC50, vram_blocks_05EC5C, vram_blocks_05EC68
 vram_blocks_05EC44:
@@ -5559,7 +5600,7 @@ vram_blocks_05EC5C:
 vram_blocks_05EC68:
 	.byte	$00, $50, $E0, $54
 	.byte	$00, $55, $20, $55, $C0, $54, $00, $50
-data_05EC74:
+ptrs_rideable_missile_anim_blocks_2:
 	; CDL: read by queue_vram_blocks_at_x, rideable_missile_state_01
 	.addr	vram_blocks_05EC7A, vram_blocks_05EC7E, vram_blocks_05EC82
 vram_blocks_05EC7A:
@@ -5569,22 +5610,26 @@ vram_blocks_05EC7E:
 vram_blocks_05EC82:
 	.byte	$C0, $55
 	.byte	$E0, $55
-data_05EC86:
+; rideable_missile_set_hdma: offset in the HDMA table at $7E:3800 by missile
+; (field $34).
+rideable_missile_hdma_offsets:
 	; CDL: read by rideable_missile_set_hdma
 	.byte	$06, $00, $0B, $00, $10, $00, $15, $00
-data_05EC8E:
+; stage4_boss_init_part, by Y: type, flags, animation and hitbox of the pods
+; (OBJT_STAGE4_BOSS_POD) and of the core (OBJT_PASSIVE_PART).
+stage4_boss_part_types:
 	; CDL: read by stage4_boss_init_part
 	.byte	$6A, $00, $53, $00
-data_05EC92:
+stage4_boss_part_flags:
 	; CDL: read by stage4_boss_init_part
 	.byte	$11, $40, $3D, $00
-data_05EC96:
+stage4_boss_part_anims:
 	; CDL: read by stage4_boss_init_part
 	.addr	anim_05ECA2, anim_05ECA8
-data_05EC9A:
+stage4_boss_part_hitbox_w:
 	; CDL: read by stage4_boss_init_part
 	.byte	$18, $00, $18, $00
-data_05EC9E:
+stage4_boss_part_hitbox_h:
 	; CDL: read by update_objects, stage4_boss_init_part; partly not accessed
 	.byte	$E8, $FF, $80, $FF
 anim_05ECA2:
@@ -5593,10 +5638,12 @@ anim_05ECA8:
 	anim_frame	$0001, metasprite_06C7A3, $0000
 	anim_frame	$0001, metasprite_06C7C4, $0000
 	anim_goto	anim_05ECA8
-data_05ECB6:
+; rideable_missile_state_06: x velocities of its 4 explosions.
+rideable_missile_explosion_x_vels:
 	; CDL: read by rideable_missile_state_06
 	.byte	$F9, $FF, $FA, $FF, $FB, $FF, $FC, $FF
-data_05ECBE:
+; stage4_spawn_hoverbike_rider: frames to the next rider, by difficulty.
+hoverbike_rider_spawn_delays:
 	; CDL: read by queue_vram_blocks_at_x, stage4_spawn_hoverbike_rider; partly not accessed
 	.byte	$38, $00, $30, $00, $28, $00, $A0, $51
 vram_blocks_05ECC6:

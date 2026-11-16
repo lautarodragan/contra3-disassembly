@@ -103,11 +103,11 @@ tbl_stage3_second_robot_states:
 stage3_robot_state_00:
 	inc	OBJ_STATE,x
 	ldy	$3A,x
-	lda	a:data_05E819,y
+	lda	a:stage3_robot_attrs,y
 	sta	OBJ_ATTR,x
 	lda	#$403D
 	sta	OBJ_FLAGS,x
-	lda	a:data_05E815,y
+	lda	a:stage3_robot_sprites,y
 	sta	OBJ_SPRITE,x
 	lda	#$001A
 	sta	OBJ_HITBOX_W,x
@@ -139,7 +139,7 @@ stage3_robot_state_02:
 	dec	OBJ_TIMER,x
 	bpl	loc_0480E1
 	ldy	difficulty
-	lda	a:data_05E809,y
+	lda	a:stage3_robot_wait_times,y
 	sta	OBJ_TIMER,x
 	jsr	a:stage3_robot_pick_direction
 	ldy	zp_00
@@ -194,9 +194,9 @@ loc_04814B:
 	cmp	#$00AF
 	bcc	loc_04816E
 loc_048157:
-	lda	a:data_05E85D,y
+	lda	a:stage3_robot_facings,y
 	sta	OBJ_FACING,x
-	lda	a:data_05E859,y
+	lda	a:stage3_robot_jump_x_vels,y
 	sta	$34,x
 	lda	#$0005
 	sta	$36,x
@@ -204,9 +204,9 @@ loc_048157:
 	sta	$32,x
 	brl	loc_04813E
 loc_04816E:
-	lda	a:data_05E85D,y
+	lda	a:stage3_robot_facings,y
 	sta	OBJ_FACING,x
-	lda	a:data_05E855,y
+	lda	a:stage3_robot_hop_x_vels,y
 	sta	$34,x
 	lda	#$0004
 	sta	$36,x
@@ -220,7 +220,7 @@ stage3_second_robot_state_02:
 	dec	OBJ_TIMER,x
 	bpl	loc_048185
 	ldy	difficulty
-	lda	a:data_05E80F,y
+	lda	a:stage3_second_robot_wait_times,y
 	sta	OBJ_TIMER,x
 	jsr	a:stage3_robot_pick_direction
 	lda	OBJ_Y,x
@@ -253,9 +253,9 @@ loc_0481C5:
 	bcc	loc_0481D2
 	ldy	#$0002
 loc_0481D2:
-	lda	a:data_05E85D,y
+	lda	a:stage3_robot_facings,y
 	sta	OBJ_FACING,x
-	lda	a:data_05E855,y
+	lda	a:stage3_robot_hop_x_vels,y
 	sta	$34,x
 	lda	#$0004
 	sta	$36,x
@@ -270,16 +270,16 @@ stage3_boss_state_06:
 	bpl	loc_04821C
 	ldy	OBJ_FACING,x
 	lda	OBJ_X,x
-	adc	a:data_05E8B3,y
+	adc	a:stage3_robot_gun_x_offsets,y
 	sta	zp_00
 	lda	OBJ_Y,x
 	adc	#$FFBE
 	sta	zp_02
-	lda	a:data_05E8A7,y
+	lda	a:stage3_robot_bullet_dirs_1,y
 	jsl	f:spawn_enemy_bullet
-	lda	a:data_05E8AB,y
+	lda	a:stage3_robot_bullet_dirs_2,y
 	jsl	f:spawn_enemy_bullet
-	lda	a:data_05E8AF,y
+	lda	a:stage3_robot_bullet_dirs_3,y
 	jsl	f:spawn_enemy_bullet
 loc_048216:
 	lda	#$0002
@@ -774,9 +774,9 @@ stage3_second_robot_spawn_debris:
 	tya
 	ldy	$04,x
 	tax
-	lda	a:data_05E861,y
+	lda	a:stage3_second_robot_debris_sprites,y
 	sta	$00,x
-	lda	a:data_05E89D,y
+	lda	a:stage3_second_robot_debris_x_offsets,y
 	clc
 	adc	zp_00
 	sta	$0A,x
@@ -787,7 +787,7 @@ stage3_second_robot_spawn_debris:
 loc_0485DC:
 	and	#$000E
 	clc
-	adc	a:data_05E899,y
+	adc	a:stage3_second_robot_debris_dirs,y
 	tay
 	lda	a:vel8_y_sub,y
 	sta	$1C,x
@@ -941,7 +941,7 @@ loc_048704:
 	clc
 	adc	#.loword(vram_blocks_05EB21)
 	pha
-	lda	a:data_05E8B7,y
+	lda	a:stage3_boss_state_0C_delays,y
 	sta	$30,x
 	tya
 	lsr	a
@@ -952,7 +952,7 @@ loc_048704:
 	asl	a
 	asl	a
 	clc
-	adc	a:data_05E8BF,y
+	adc	a:stage3_boss_state_0C_vram_addrs,y
 	ply
 	phx
 	jsl	f:queue_vram_blocks
@@ -1062,9 +1062,9 @@ stage3_boss_state_16:
 stage3_boss_state_0E:
 	ldy	$36,x
 	lda	$34,x
-	cmp	a:data_05EB4E,y
+	cmp	a:stage3_boss_state_0E_limits,y
 	bcs	loc_048819
-	lda	a:data_05EB54,y
+	lda	a:stage3_boss_state_0E_steps,y
 	bra	loc_048821
 loc_048819:
 	lda	#$0060
@@ -1241,7 +1241,7 @@ loc_04895C:
 	asl	a
 	asl	a
 	clc
-	adc	a:data_05E8EF,x
+	adc	a:ptrs_stage3_boss_wall_blocks,x
 	tay
 	clc
 	adc	#$0008
@@ -1252,11 +1252,11 @@ loc_04895C:
 	asl	a
 	pha
 	clc
-	adc	a:data_05E8FB,x
+	adc	a:stage3_boss_wall_vram_addrs_b,x
 	sta	zp_FC
 	pla
 	clc
-	adc	a:data_05E8F5,x
+	adc	a:stage3_boss_wall_vram_addrs_a,x
 	jsl	f:queue_vram_blocks
 	ldx	#$0001
 	stx	zp_02
@@ -1269,12 +1269,12 @@ loc_0489A1:
 	inc	a:boss_work_3
 	ldy	a:boss_work_2
 	lda	a:boss_work_3
-	cmp	a:data_05E8E7,y
+	cmp	a:stage3_boss_wall_step_delays,y
 	bcc	loc_0489CB
 	stz	a:boss_work_3
 	clc
 	lda	a:boss_work_1
-	adc	a:data_05E8EB,y
+	adc	a:stage3_boss_wall_step_dirs,y
 	bpl	loc_0489C0
 	stz	a:boss_work_1
 	bra	loc_0489CB
@@ -1301,7 +1301,7 @@ stage3_boss_spawn_debris_sparks:
 	ldy	difficulty
 	clc
 	lda	$30,x
-	adc	a:data_05EB31,y
+	adc	a:stage3_boss_debris_rates,y
 	sta	$30,x
 	lda	$32,x
 	adc	#$0000
@@ -1346,7 +1346,7 @@ stage3_boss_spawn_debris_sparks:
 	lsr	a
 	lsr	a
 	tax
-	lda	a:data_05EAA1,x
+	lda	a:stage3_boss_debris_x,x
 	and	#$00FF
 	sta	a:$000A,y
 	lda	#$0082
@@ -1370,7 +1370,7 @@ stage3_boss_queue_tiles:
 	tay
 	pla
 	clc
-	adc	a:data_05EA91,y
+	adc	a:ptrs_stage3_boss_tile_frames,y
 	tay
 	lda	#$4D0C
 	phx
@@ -1572,7 +1572,7 @@ skeleton_eye_fireball_state_00:
 	lda	#$0074
 	sta	OBJ_Y,x
 	ldy	difficulty
-	lda	a:data_05EB78,y
+	lda	a:skeleton_eye_fireball_delays,y
 	sta	OBJ_TIMER,x
 	rtl
 
@@ -1594,11 +1594,11 @@ skeleton_eye_fireball_state_01:
 	lsr	a
 	and	#$000E
 	tay
-	lda	a:data_05E8C3,y
+	lda	a:skeleton_eye_fireball_sprites,y
 	sta	OBJ_SPRITE,x
-	lda	a:data_05E8D7,y
+	lda	a:skeleton_eye_fireball_x_vels,y
 	sta	OBJ_X_VEL,x
-	lda	a:data_05E8D3,y
+	lda	a:skeleton_eye_fireball_y_vels,y
 	sta	OBJ_Y_VEL,x
 loc_048C5B:
 	bra	loc_048C79
@@ -1694,7 +1694,7 @@ loc_048CFB:
 	lda	OBJ_TIMER,x
 	cmp	#$0090
 	bne	loc_048D29
-	jsr	a:sub_049B36
+	jsr	a:stage4_spawn_passing_rider
 	lda	#$0060
 	sta	a:$000E,y
 	lda	#$3600
@@ -1713,7 +1713,7 @@ loc_048D29:
 
 stage4_controller_state_03:
 	jsr	a:stage4_spawn_weapon_capsule
-	jsr	a:sub_049B32
+	jsr	a:stage4_spawn_passing_rider_every_8
 
 stage4_controller_state_02:
 	dec	OBJ_TIMER,x
@@ -1823,7 +1823,7 @@ stage4_controller_state_09:
 	lda	#$006E
 	sta	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
 loc_048E0D:
-	jsr	a:sub_049AC1
+	jsr	a:stage4_spawn_dropping_soldier
 	jml	f:loc_00D5ED
 
 stage4_controller_state_0B:
@@ -1855,13 +1855,13 @@ stage4_controller_state_0C:
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
 loc_048E56:
-	cmp	a:data_05EB7E,y
+	cmp	a:stage4_scroll_waypoints_x,y
 	bcs	loc_048E5F
 	inc	OBJ_TIMER,x
 	inc	OBJ_TIMER,x
 loc_048E5F:
 	lda	a:bg1_vel_x_sub+1
-	cmp	a:data_05EB8C,y
+	cmp	a:stage4_scroll_target_speeds,y
 	beq	loc_048E91
 	bmi	loc_048E7E
 	sec
@@ -2144,7 +2144,7 @@ stage4_controller_state_17:
 	jsl	f:load_data_list
 	plx
 loc_0490DE:
-	jsr	a:sub_049878
+	jsr	a:stage4_scroll_bg3_lower
 	rtl
 
 stage4_controller_state_18:
@@ -2174,12 +2174,12 @@ loc_049105:
 	phx
 	jsl	f:queue_vram_blocks
 	plx
-	jsr	a:sub_049878
+	jsr	a:stage4_scroll_bg3_lower
 loc_04911E:
 	rtl
 
 stage4_controller_state_1A:
-	jsr	a:sub_049878
+	jsr	a:stage4_scroll_bg3_lower
 	rtl
 
 stage4_controller_state_1B:
@@ -2202,7 +2202,7 @@ stage4_controller_state_1B:
 	lda	#$00FF
 	sta	a:bomb_coldata_mask
 	inc	OBJ_STATE,x
-	jsr	a:sub_049878
+	jsr	a:stage4_scroll_bg3_lower
 	rtl
 
 stage4_controller_state_1C:
@@ -2247,12 +2247,12 @@ stage4_controller_state_1C:
 	sta	a:obj_slots+23*OBJ_SIZE+OBJ_X
 	phx
 	ldx	#$0200
-	jsr	a:sub_0497AB
+	jsr	a:stage4_reposition_player
 	ldx	#$0240
-	jsr	a:sub_0497AB
+	jsr	a:stage4_reposition_player
 	plx
 loc_0491DF:
-	jsr	a:sub_049878
+	jsr	a:stage4_scroll_bg3_lower
 	rtl
 
 stage4_controller_state_1D:
@@ -2398,13 +2398,13 @@ rideable_missile_state_03:
 	bne	loc_0492EB
 	inc	OBJ_STATE,x
 loc_0492EB:
-	jsr	a:sub_0499AB
+	jsr	a:rideable_missile_helicopter_leaves
 	jsr	a:rideable_missile_set_hdma
 	jsr	a:rideable_missile_exhaust
 	bra	rideable_missile_state_01
 
 rideable_missile_state_04:
-	jsr	a:sub_0499AB
+	jsr	a:rideable_missile_helicopter_leaves
 	jsr	a:rideable_missile_set_hdma
 	jsr	a:rideable_missile_exhaust
 
@@ -2458,7 +2458,7 @@ loc_04933C:
 loc_049365:
 	ply
 	pha
-	lda	a:data_05EC3C,y
+	lda	a:ptrs_rideable_missile_anim_blocks,y
 	tay
 	pla
 	phx
@@ -2477,7 +2477,7 @@ loc_049365:
 loc_04938B:
 	ply
 	pha
-	lda	a:data_05EC74,y
+	lda	a:ptrs_rideable_missile_anim_blocks_2,y
 	tay
 	pla
 	ldx	#$0030
@@ -2492,7 +2492,7 @@ rideable_missile_state_07:
 	tay
 	lda	#$FF80	; [num]
 	sta	OBJ_X,x
-	lda	a:data_05EB9A,y
+	lda	a:rideable_missile_start_y,y
 	and	#$00FF
 	sta	zp_00
 	lda	rng_hi
@@ -2505,12 +2505,12 @@ rideable_missile_state_07:
 	adc	$30,x
 	and	#$0003
 	tay
-	lda	a:data_05EB9E,y
+	lda	a:rideable_missile_speed_fracs,y
 	xba
 	and	#$FF00
 	sta	zp_00
 	ldy	difficulty
-	lda	a:data_05EBA2,y
+	lda	a:rideable_missile_base_speeds,y
 	clc
 	adc	zp_00
 	sta	OBJ_X_VEL_SUB,x
@@ -2572,7 +2572,7 @@ rideable_missile_state_06:
 	sta	zp_00
 	lda	zp_02
 	sta	a:$000E,y
-	lda	a:data_05ECB6,x
+	lda	a:rideable_missile_explosion_x_vels,x
 	sta	a:$001A,y
 	dex
 	dex
@@ -2692,7 +2692,7 @@ loc_04952B:
 	lda	#$0080
 	sta	OBJ_TIMER,x
 loc_04953B:
-	jsr	a:sub_0498AF
+	jsr	a:stage4_boss_move
 	lda	a:obj_slots+22*OBJ_SIZE+OBJ_FLAGS
 	beq	loc_0495A1
 	inc	a:boss_work_1
@@ -2775,7 +2775,7 @@ stage4_boss_state_04:
 	adc	#$FFF5
 	sta	a:$001A,y
 loc_0495FC:
-	jsr	a:sub_0498AF
+	jsr	a:stage4_boss_move
 	rtl
 
 ; Object type $6A. Stage 4 boss: the upper and lower pods of stage4_boss (128
@@ -2790,8 +2790,8 @@ update_stage4_boss_pod:
 	sta	zp_02
 	lda	#$0010
 	sta	zp_08
-	ldy	a:data_05EBA8,x
-	lda	a:data_05EBB4,x
+	ldy	a:ptrs_stage4_boss_pod_wreck_blocks,x
+	lda	a:stage4_boss_pod_wreck_vram_addrs,x
 	jsl	f:queue_vram_blocks
 	plx
 	lda	#$0041
@@ -2806,7 +2806,7 @@ loc_049633:
 	lda	a:boss_work_2
 	eor	$30,x
 	bne	@return
-	jsr	a:sub_049A54
+	jsr	a:stage4_boss_pod_fire
 @return:
 	rtl
 
@@ -3000,7 +3000,10 @@ loc_04979F:
 	bcc	loc_049771
 	rtl
 
-sub_0497AB:
+; Player slot X (state 1, 3 or 4, above y $E0): x = $10 (player 1) or $30
+; (player 2), y = $C3, stops its vertical motion. Called for both players by
+; stage4_controller_state_1C after the boss.
+stage4_reposition_player:
 	lda	OBJ_FLAGS,x
 	beq	loc_0497DF
 	bmi	loc_0497DF
@@ -3106,7 +3109,10 @@ stage4_queue_tiles:
 	plx
 	rts
 
-sub_049878:
+; Adds the 16.16 speed wram_140C/wram_140E to wram_1404/wram_7E3824:
+; wram_7E3824 is the BG3 horizontal scroll of the lower band of the HDMA table
+; at $7E:3820 (hdma_preset $0B, set up by stage4_controller_state_16).
+stage4_scroll_bg3_lower:
 	clc
 	lda	a:bg3_x+BG_X_SUB
 	adc	a:bg3_x+BG_X_DELTA_SUB
@@ -3127,7 +3133,7 @@ rideable_missile_set_hdma:
 	lda	#$0040
 	sbc	$0A,x
 	pha
-	lda	a:data_05EC86,y
+	lda	a:rideable_missile_hdma_offsets,y
 	tax
 	pla
 	sta	f:$7E3800,x
@@ -3136,7 +3142,11 @@ rideable_missile_set_hdma:
 	plx
 	rts
 
-sub_0498AF:
+; stage4_boss: moves left and right around field $32, scrolls BG2 with it (the
+; boss is drawn on BG2) with a small vertical wobble, and places its parts
+; (slots $0700, $0740: the pods; $0780: the core); when both pods are
+; destroyed the core is removed and the boss itself becomes the target.
+stage4_boss_move:
 	lda	$30,x
 	bne	loc_0498D3
 	lda	$32,x
@@ -3261,7 +3271,11 @@ rideable_missile_exhaust:
 @return:
 	rts
 
-sub_0499AB:
+; rideable_missile states 3-4 (stage 4 sky): accelerates the BG1 scroll of the
+; top HDMA bands ($7E:3801/3806, $7E:3803/3808) so that the helicopter drawn
+; on BG1 flies away (seen in the emulator); when done, makes the three other
+; missiles (slots $07C0, $0840, $0880).
+rideable_missile_helicopter_leaves:
 	clc
 	lda	$36,x
 	adc	#$0500
@@ -3318,23 +3332,26 @@ loc_049A05:
 	rts
 
 stage4_boss_init_part:
-	lda	a:data_05EC8E,y
+	lda	a:stage4_boss_part_types,y
 	sta	OBJ_TYPE,x
-	lda	a:data_05EC92,y
+	lda	a:stage4_boss_part_flags,y
 	sta	OBJ_FLAGS,x
-	lda	a:data_05EC96,y
+	lda	a:stage4_boss_part_anims,y
 	sta	OBJ_ANIM,x
 	lda	#$0180
 	sta	OBJ_X,x
-	lda	a:data_05EC9A,y
+	lda	a:stage4_boss_part_hitbox_w,y
 	sta	OBJ_HITBOX_W,x
-	lda	a:data_05EC9E,y
+	lda	a:stage4_boss_part_hitbox_h,y
 	sta	OBJ_HITBOX_H,x
 	lda	#$0E00
 	sta	OBJ_ATTR,x
 	rts
 
-sub_049A54:
+; stage4_boss_pod (not on easy, while boss_work_1 is $20-$31, every 8 frames):
+; fires a type $6B shot, moving left and up or down by pod
+; (stage4_boss_pod_shot_y_vels, stage4_boss_pod_shot_anims; field $30 = pod).
+stage4_boss_pod_fire:
 	lda	OBJ_X,x
 	cmp	#$00E0
 	bcs	@return
@@ -3363,9 +3380,9 @@ sub_049A54:
 	sta	a:$002A,y
 	lda	#$FFFD	; [num]
 	sta	a:$001A,y
-	lda	a:data_05EBE6,x
+	lda	a:stage4_boss_pod_shot_y_vels,x
 	sta	a:$001E,y
-	lda	a:data_05EBC6,x
+	lda	a:stage4_boss_pod_shot_anims,x
 	sta	a:$0020,y
 	plx
 	lda	OBJ_X,x
@@ -3379,7 +3396,10 @@ sub_049A54:
 @return:
 	rts
 
-sub_049AC1:
+; stage4_controller states 9-A: every 72-135 frames makes the first free of
+; slots $07C0/$0840/$0880 a type $73 soldier dropping onto the road (seen in
+; the emulator).
+stage4_spawn_dropping_soldier:
 	dec	$32,x
 	bpl	loc_049AF4
 	phx
@@ -3429,7 +3449,7 @@ stage4_spawn_hoverbike_rider:
 	ldy	difficulty
 	lda	rng_hi
 	and	#$001F
-	lda	a:data_05ECBE,y
+	lda	a:hoverbike_rider_spawn_delays,y
 	sta	$32,x
 	dec	$34,x
 	bne	loc_049B31
@@ -3437,11 +3457,16 @@ stage4_spawn_hoverbike_rider:
 loc_049B31:
 	rts
 
-sub_049B32:
+; Every 8 frames: stage4_spawn_passing_rider.
+stage4_spawn_passing_rider_every_8:
 	lda	stage_frame_mod8
 	bne	loc_049B73
 
-sub_049B36:
+; Bike section: makes a type $53 (OBJT_PASSIVE_PART, not a target) hover-bike
+; rider passing in the background from the left at 7-10 pixels per frame (seen
+; in the emulator); stage4_controller_state_01 turns one into a real
+; OBJT_HOVERBIKE_RIDER.
+stage4_spawn_passing_rider:
 	ldy	#$0400
 	jsl	f:find_free_slot_y_down
 	bcc	loc_049B31
