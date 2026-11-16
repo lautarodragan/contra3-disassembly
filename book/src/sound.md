@@ -27,7 +27,8 @@ Everything the game asks of the driver is a one-byte *command* written to
   sound (by its use).
 
 Sound effect and music numbers are listed with the code that queues them;
-the songs are numbered by the tables below.
+the songs are numbered by the tables below. What the driver does with
+each command is in [Sound driver: commands](sound-driver.md#commands).
 
 ## Uploads
 
