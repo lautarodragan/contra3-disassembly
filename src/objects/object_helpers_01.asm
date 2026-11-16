@@ -770,7 +770,7 @@ loc_01A30A:
 
 ; Object type $47: small missile homing on a player (stage 3 and 4, seen in
 ; the emulator; fired by the stage 4 tank, the snake robot...): accelerates
-; towards PLAYER_CENTER_X/Y (data_05ABAB by difficulty), smoke trail,
+; towards PLAYER_CENTER_X/Y (homing_missile_accel_x by difficulty), smoke trail,
 ; explodes after $A0 frames, when it touches a player or is shot.
 update_homing_missile:
 	lda	$12,x
@@ -814,9 +814,9 @@ loc_01A34F:
 	lda	a:$1314,y
 	sta	zp_02
 	ldy	$3A,x
-	lda	a:data_05ABB9,y
+	lda	a:homing_missile_smoke_x_vels,y
 	sta	zp_06
-	lda	a:data_05ABBD,y
+	lda	a:homing_missile_smoke_y_vels,y
 	sta	zp_04
 	cpy	#$0000
 	bne	loc_01A384
@@ -864,7 +864,7 @@ loc_01A3BF:
 	bcc	loc_01A3DD
 	sec
 	lda	$1C,x
-	sbc	a:data_05ABAD,y
+	sbc	a:homing_missile_accel_y,y
 	sta	$1C,x
 	lda	$1E,x
 	sbc	#$0000
@@ -873,7 +873,7 @@ loc_01A3BF:
 loc_01A3DD:
 	clc
 	lda	$1C,x
-	adc	a:data_05ABAD,y
+	adc	a:homing_missile_accel_y,y
 	sta	$1C,x
 	lda	$1E,x
 	adc	#$0000
@@ -884,7 +884,7 @@ loc_01A3EC:
 	bcc	loc_01A402
 	sec
 	lda	$18,x
-	sbc	a:data_05ABAB,y
+	sbc	a:homing_missile_accel_x,y
 	sta	$18,x
 	lda	$1A,x
 	sbc	#$0000
@@ -893,7 +893,7 @@ loc_01A3EC:
 loc_01A402:
 	clc
 	lda	$18,x
-	adc	a:data_05ABAB,y
+	adc	a:homing_missile_accel_x,y
 	sta	$18,x
 	lda	$1A,x
 	adc	#$0000

@@ -107,7 +107,7 @@ queue_vram_block_at_map_position:
 	lsr	a
 	and	#$001C
 	sta	zp_08
-	lda	a:data_05AB64,x
+	lda	a:bg_scroll_state_addrs,x
 	tay
 	lda	a:$0000,y
 	lsr	a
@@ -129,7 +129,7 @@ queue_vram_block_at_map_position:
 	clc
 	adc	zp_06
 	clc
-	adc	a:data_05AB68,x
+	adc	a:bg_tilemap_vram_addrs,x
 	sta	zp_08
 	lda	zp_02
 	asl	a

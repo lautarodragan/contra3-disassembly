@@ -110,7 +110,7 @@ ending_sequence_state_00:
 	stz	a:bg2_screen_drawn
 	lda	#$01F8
 	sta	a:bg2_draw_x
-	stz	a:wram_13F2
+	stz	a:bg2_x+BG_COLUMN_OFFSET
 	rtl
 
 ending_sequence_state_01:
@@ -412,7 +412,7 @@ ending_sequence_state_14:
 	clc
 	adc	#$0100
 	and	#$FF00
-	sta	a:wram_13B0
+	sta	a:bg1_x+BG_PAGE
 	inc	OBJ_STATE,x
 	lda	#$0006
 	sta	a:bg1_scroll_mode
@@ -430,7 +430,7 @@ ending_sequence_state_14:
 	sta	a:boss_work_1
 	jsl	f:ending_sequence_state_15
 	lda	a:bg2_y
-	sta	a:wram_13E2
+	sta	a:bg2_x+BG_VOFS_LATCH
 	rtl
 loc_1DB2BB:
 	jsr	a:sub_1DB685
@@ -502,7 +502,7 @@ ending_sequence_state_20:
 	sta	a:bg1_scroll_mode
 	lda	#$0900
 	sta	a:bg1_map_offset
-	sta	a:wram_13B0
+	sta	a:bg1_x+BG_PAGE
 	jsl	f:spawn_ending_crowd
 loc_1DB360:
 	jsr	a:ending_set_scroll_split
@@ -912,9 +912,9 @@ loc_1DB68F:
 	sta	a:boss_work_3
 loc_1DB6A2:
 	clc
-	lda	a:wram_139C
+	lda	a:bg1_x+BG_Y_SUB
 	adc	a:boss_work_2
-	sta	a:wram_139C
+	sta	a:bg1_x+BG_Y_SUB
 	lda	a:bg1_y
 	adc	a:boss_work_3
 	sta	a:bg1_y

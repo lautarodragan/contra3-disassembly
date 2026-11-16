@@ -932,7 +932,7 @@ loc_01ABFE:
 	rts
 
 ; State $13 (set by the ending sequence for each player still in the game):
-; pose animation (data_05ABC1), then state $14.
+; pose animation (ending_poses), then state $14.
 player_state_ending:
 	dec	$34,x
 	bpl	loc_01AC1A
@@ -952,11 +952,11 @@ loc_01AC1A:
 	lsr	a
 	and	#$0006
 	tay
-	lda	a:data_05ABC1,y
+	lda	a:ending_poses,y
 	sta	PLAYER_POSE,x
 	rtl
 
-; State $14: replays the pose sequence data_05ABC9 while Y is held (probably
+; State $14: replays the pose sequence ending_wave_poses while Y is held (probably
 ; waving).
 player_state_ending_wave:
 	lda	$34,x
@@ -980,7 +980,7 @@ loc_01AC2F:
 	adc	#$000C
 loc_01AC4C:
 	tay
-	lda	a:data_05ABC9,y
+	lda	a:ending_wave_poses,y
 	sta	PLAYER_POSE,x
 loc_01AC52:
 	rtl
@@ -1067,7 +1067,7 @@ loc_01ACD6:
 loc_01ACDF:
 	lsr	a
 	tay
-	lda	a:data_05ABE1,y
+	lda	a:spin_stance_poses,y
 	and	#$00FF
 	sta	PLAYER_POSE,x
 	lda	$30,x
@@ -1615,11 +1615,11 @@ sub_01B0B8:
 set_player_box_hanging:
 	ldy	OBJ_FACING,x
 	lda	OBJ_X,x
-	adc	a:data_05ABED,y
+	adc	a:hang_box_left_offsets,y
 	sta	PLAYER_HITBOX_LEFT,x
-	adc	a:data_05ABF1,y
+	adc	a:hang_box_widths,y
 	sta	PLAYER_HITBOX_RIGHT,x
-	adc	a:data_05ABF5,y
+	adc	a:hang_center_x_offsets,y
 	sta	a:PLAYER_CENTER_X,x
 	lda	OBJ_Y,x
 	adc	#$FFF8
@@ -1648,7 +1648,7 @@ loc_01B0F6:
 	brl	loc_0182FD
 
 ; State $12: on the bike without the kill and jump checks (driving in at the
-; start of stage 4); aims and fires from data_05ABF9...
+; start of stage 4); aims and fires from bike_aim_angles...
 player_state_bike_intro:
 	lda	OBJ_X,x
 	sta	PLAYER_HITBOX_LEFT,x
@@ -1708,15 +1708,15 @@ loc_01B162:
 	lda	PLAYER_AIM,x
 	asl	a
 	tay
-	lda	a:data_05ABF9,y
+	lda	a:bike_aim_angles,y
 	sta	zp_12
-	lda	a:data_05AC13,y
+	lda	a:bike_aim_poses,y
 	sta	PLAYER_POSE,x
 	lda	rng_temp
 	lsr	a
 	sta	a:PLAYER_POSE_ADD,x
-	lda	a:data_05AC2D,y
+	lda	a:bike_aim_muzzle_x,y
 	sta	zp_14
-	lda	a:data_05AC47,y
+	lda	a:bike_aim_muzzle_y,y
 	sta	zp_16
 	jml	f:fire_weapon

@@ -1757,7 +1757,7 @@ stage4_controller_state_05:
 	inc	OBJ_STATE,x
 	lda	#$0010
 	sta	a:bg1_x
-	sta	a:wram_138A
+	sta	a:bg1_x+BG_HOFS_LATCH
 	jml	f:loc_00D5ED
 @return:
 	rtl
@@ -1838,7 +1838,7 @@ stage4_controller_state_0B:
 	lda	#$0005
 	sta	a:bg1_scroll_mode
 	lda	#$0008
-	sta	a:wram_13B2
+	sta	a:bg1_x+BG_COLUMN_OFFSET
 	lda	#$0B80
 	sta	a:bg1_x
 	stz	OBJ_TIMER,x
@@ -2121,9 +2121,9 @@ stage4_controller_state_16:
 	lda	#$0015
 	sta	a:tm_shadow
 	lda	#$2000
-	sta	a:wram_140C
+	sta	a:bg3_x+BG_X_DELTA_SUB
 	lda	#$0001
-	sta	a:wram_140E
+	sta	a:bg3_x+BG_X_DELTA
 	rtl
 
 stage4_controller_state_17:
@@ -3108,11 +3108,11 @@ stage4_queue_tiles:
 
 sub_049878:
 	clc
-	lda	a:wram_1404
-	adc	a:wram_140C
-	sta	a:wram_1404
+	lda	a:bg3_x+BG_X_SUB
+	adc	a:bg3_x+BG_X_DELTA_SUB
+	sta	a:bg3_x+BG_X_SUB
 	lda	f:wram_7E3824
-	adc	a:wram_140E
+	adc	a:bg3_x+BG_X_DELTA
 	sta	f:wram_7E3824
 	rts
 
@@ -3309,12 +3309,12 @@ loc_049A05:
 	sta	f:wram_7E3803
 	sta	f:wram_7E3808
 	clc
-	lda	a:wram_140C
+	lda	a:bg3_x+BG_X_DELTA_SUB
 	adc	#$2000
-	sta	a:wram_140C
-	lda	a:wram_140E
+	sta	a:bg3_x+BG_X_DELTA_SUB
+	lda	a:bg3_x+BG_X_DELTA
 	adc	#$0000
-	sta	a:wram_140E
+	sta	a:bg3_x+BG_X_DELTA
 	rts
 
 stage4_boss_init_part:
@@ -4338,7 +4338,7 @@ winged_alien_tail_segment_state_00:
 	sta	$36,x
 	and	#$01FE
 	tax
-	lda	f:data_058E9A,x
+	lda	f:circle15_y,x
 	bmi	loc_04A230
 	lsr	a
 	bra	loc_04A232
@@ -4347,7 +4347,7 @@ loc_04A230:
 	ror	a
 loc_04A232:
 	pha
-	lda	f:data_058F1A,x
+	lda	f:circle15_x,x
 	bmi	loc_04A23C
 	lsr	a
 	bra	loc_04A23E
@@ -9692,9 +9692,9 @@ sub_04CB63:
 	asl	a
 	phx
 	tax
-	lda	f:data_058E9A,x
+	lda	f:circle15_y,x
 	sta	zp_04
-	lda	f:data_058F1A,x
+	lda	f:circle15_x,x
 	sta	zp_06
 	plx
 	ldy	zp_02
@@ -10435,10 +10435,10 @@ loc_04D106:
 	clc
 	adc	$30,x
 	tax
-	lda	a:data_058F1A,y
+	lda	a:circle15_x,y
 	adc	f:$7EA070,x
 	sta	zp_00
-	lda	a:data_058E9A,y
+	lda	a:circle15_y,y
 	adc	f:$7EA000,x
 	sta	zp_02
 	plx
@@ -11088,14 +11088,14 @@ sub_04D686:
 	and	#$01FE
 	tay
 	clc
-	lda	a:data_058F1A,y
+	lda	a:circle15_x,y
 	bpl	loc_04D695
 	sec
 loc_04D695:
 	ror	a
 	sta	zp_00
 	clc
-	lda	a:data_058E9A,y
+	lda	a:circle15_y,y
 	bpl	loc_04D69F
 	sec
 loc_04D69F:

@@ -348,11 +348,11 @@ spawn_stage1_boss_wall_chunks:
 	lda	#$FFE5	; [num]
 	sta	$2A,x
 	stz	$30,x
-	lda	a:data_05AA50,y
+	lda	a:stage1_boss_wall_chunk_x,y
 	sta	$0A,x
-	lda	a:data_05AA58,y
+	lda	a:stage1_boss_wall_chunk_y,y
 	sta	$0E,x
-	lda	a:data_05AA60,y
+	lda	a:stage1_boss_wall_chunk_timers,y
 	sta	$24,x
 	iny
 	iny
@@ -554,7 +554,7 @@ stage1_boss_attack_fire:
 	jsl	f:queue_sound
 	inc	$36,x
 	ldy	difficulty
-	lda	a:data_05AB52,y
+	lda	a:stage1_boss_fire_timers,y
 	sta	$38,x
 loc_00F6B6:
 	jsr	a:stage1_boss_spawn_fire
@@ -808,10 +808,10 @@ loc_00F897:
 @loop:
 	clc
 	lda	f:$7EA0C6,x
-	adc	a:data_05921A,y
+	adc	a:stage1_boss_hdma_line_steps_sub,y
 	sta	zp_04
 	lda	f:$7EA046,x
-	adc	a:data_0591AA,y
+	adc	a:stage1_boss_hdma_line_steps,y
 	and	#$00FF
 	sta	zp_06
 	clc
@@ -869,15 +869,15 @@ spawn_stage1_boss_parts:
 	ldx	#$0400
 	ldy	#$0000
 @loop:
-	lda	a:data_05AADA,y
+	lda	a:stage1_boss_part_types,y
 	sta	$10,x
-	lda	a:data_05AAD4,y
+	lda	a:stage1_boss_part_flags,y
 	sta	$16,x
-	lda	a:data_05AAE0,y
+	lda	a:stage1_boss_part_hitbox_w,y
 	sta	$28,x
-	lda	a:data_05AAE6,y
+	lda	a:stage1_boss_part_hitbox_h,y
 	sta	$2A,x
-	lda	a:data_05AAEC,y
+	lda	a:stage1_boss_part_x,y
 	sta	$0A,x
 	lda	#$0180
 	sta	$0E,x
@@ -967,7 +967,7 @@ spawn_stage1_boss_falling_debris:
 	ldy	#$0018
 	ldx	#$0600
 loc_00F9CB:
-	lda	a:data_05AA68,y
+	lda	a:stage1_boss_debris_y,y
 	sta	$0E,x
 	lda	#$00D0
 	sta	$0A,x
@@ -975,9 +975,9 @@ loc_00F9CB:
 	sta	$10,x
 	lda	#$0003
 	sta	$16,x
-	lda	a:data_05AA80,y
+	lda	a:stage1_boss_debris_sprites,y
 	sta	$00,x
-	lda	a:data_05AA98,y
+	lda	a:stage1_boss_debris_x_vels,y
 	sta	$1A,x
 	stz	$1E,x
 	lda	#$3800
@@ -1058,7 +1058,7 @@ stage1_boss_fire_falling_shot:
 	and	#$0003
 	asl	a
 	tax
-	lda	a:data_05AAF2,x
+	lda	a:stage1_boss_falling_shot_x_vel_subs,x
 	sta	a:$0018,y
 	lda	#$FFFF	; [num]
 	sta	a:$001A,y
@@ -1073,7 +1073,7 @@ stage1_boss_fire_falling_shot:
 	rts
 
 ; Object type $26: stage 1 boss projectile that follows the player's height
-; (speed data_05AB46 by difficulty).
+; (speed stage1_boss_tracking_shot_accels by difficulty).
 update_stage1_boss_tracking_shot:
 	lda	OBJ_HP,x
 	bpl	loc_00FAD3
@@ -1103,7 +1103,7 @@ loc_00FAEC:
 	bpl	loc_00FB05
 	sec
 	lda	$1C,x
-	sbc	a:data_05AB46,y
+	sbc	a:stage1_boss_tracking_shot_accels,y
 	sta	$1C,x
 	lda	$1E,x
 	sbc	#$0000
@@ -1112,7 +1112,7 @@ loc_00FAEC:
 loc_00FB05:
 	clc
 	lda	$1C,x
-	adc	a:data_05AB46,y
+	adc	a:stage1_boss_tracking_shot_accels,y
 	sta	$1C,x
 	lda	$1E,x
 	adc	#$0000
@@ -1253,14 +1253,14 @@ loc_00FC1D:
 	rtl
 
 ; Object type $29: stage 1 boss (the giant turtle), main body with HP $160
-; (352); fires at the player every data_05AB4C[difficulty] + rnd frames.
+; (352); fires at the player every stage1_boss_fire_intervals[difficulty] + rnd frames.
 update_stage1_boss:
 	dec	$34,x
 	bpl	loc_00FC43
 	ldy	difficulty
 	lda	rng_lo
 	and	#$007F
-	adc	a:data_05AB4C,y
+	adc	a:stage1_boss_fire_intervals,y
 	sta	$34,x
 	lda	OBJ_Y,x
 	adc	#$FFF8
@@ -1353,9 +1353,9 @@ loc_00FCD2:
 	lda	rng_lo
 	and	#$000E
 	tax
-	lda	a:data_05C838,x
+	lda	a:random_debris_vel_subs,x
 	sta	a:$0018,y
-	lda	a:data_05C828,x
+	lda	a:random_debris_vels,x
 	sta	a:$001A,y
 	plx
 	lda	#$FFFE	; [num]
@@ -1391,7 +1391,7 @@ loc_00FD37:
 	iny
 	iny
 loc_00FD40:
-	lda	a:data_05AAB0,y
+	lda	a:stage1_boss_wall_chunk_sprites,y
 	sta	$00,x
 	rtl
 

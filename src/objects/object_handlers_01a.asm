@@ -353,7 +353,7 @@ loc_01B457:
 loc_01B459:
 	ldy	difficulty
 	lda	stage_frame_counter
-	and	a:data_05AC61,y
+	and	a:object_type_02_fragment_masks,y
 	bne	loc_01B4CC
 	jsl	f:find_free_slot_y
 	bcs	loc_01B4CC
@@ -379,7 +379,7 @@ loc_01B459:
 	asl	a
 	sta	zp_00
 	tax
-	lda	a:data_05AC67,x
+	lda	a:object_type_02_fragment_y_vels,x
 	sta	a:$001E,y
 	lda	rng_hi
 	and	#$0007
@@ -388,12 +388,12 @@ loc_01B459:
 	adc	zp_00
 	sta	zp_00
 	tax
-	lda	a:data_05AC77,x
+	lda	a:object_type_02_fragment_x_vel_subs,x
 	sta	a:$0018,y
 	lda	zp_00
 	and	#$000F
 	tax
-	lda	a:data_05AC87,x
+	lda	a:object_type_02_fragment_x_vels,x
 	sta	a:$001A,y
 	plx
 	lda	#$001A
@@ -809,9 +809,9 @@ loc_01B7DD:
 	lda	$34,x
 	asl	a
 	tay
-	lda	a:data_05AF31,y
+	lda	a:player_tank_push_flags_right,y
 	sta	zp_02
-	lda	a:data_05AF37,y
+	lda	a:player_tank_push_flags_left,y
 	sta	zp_00
 	lda	#$0080
 	sta	zp_04
@@ -1494,14 +1494,14 @@ loc_01BCED:
 	sta	a:$0010,y
 	lda	#$0001
 	sta	a:$0016,y
-	lda	a:data_05AF6C,x
+	lda	a:object_type_35_debris_x_offsets,x
 	adc	zp_10
 	sta	a:$000A,y
-	lda	a:data_05AF78,x
+	lda	a:object_type_35_debris_y,x
 	sta	a:$000E,y
-	lda	a:data_05AF90,x
+	lda	a:object_type_35_debris_x_vels,x
 	sta	a:$001A,y
-	lda	a:data_05AF84,x
+	lda	a:object_type_35_debris_x_vel_subs,x
 	sta	a:$0018,y
 	lda	#$0020
 	sta	a:$0024,y
@@ -1590,8 +1590,8 @@ loc_01BDA5:
 	rtl
 
 ; Object type $0B: invisible soldier spawner (stage 1 from the start): every
-; data_05AFD2[difficulty] + rnd frames a foot soldier runs in from the right
-; edge, every data_05AFD8 + rnd frames one from the left, unless a big
+; soldier_spawn_delays_right[difficulty] + rnd frames a foot soldier runs in from the right
+; edge, every soldier_spawn_delays_left + rnd frames one from the left, unless a big
 ; enemy (OBJ_FLAGS bit $0040, slots $0900-$09FF) is near that edge; some
 ; get HP (init_foot_soldier_with_hp), the others die at the first hit.
 update_soldier_spawner:
@@ -1608,7 +1608,7 @@ loc_01BDC4:
 	ldy	difficulty
 	lda	rng_lo
 	and	#$007F
-	adc	a:data_05AFD2,y
+	adc	a:soldier_spawn_delays_right,y
 	sta	$32,x
 	ldy	#$0900
 loc_01BDD7:
@@ -1646,7 +1646,7 @@ loc_01BE16:
 	ldy	difficulty
 	lda	rng_hi
 	and	#$00FF
-	adc	a:data_05AFD8,y
+	adc	a:soldier_spawn_delays_left,y
 	sta	$34,x
 	ldy	#$0900
 loc_01BE29:
@@ -1679,7 +1679,7 @@ loc_01BE60:
 	ldy	difficulty
 	lda	rng_lo
 	and	#$000F
-	cmp	a:data_05AFDE,y
+	cmp	a:soldier_hp_odds,y
 	bcs	loc_01BE72
 	jsl	f:init_foot_soldier_with_hp
 	plx
@@ -1750,9 +1750,9 @@ loc_01BEC4:
 	sta	$0E,x
 	stz	$32,x
 	stz	$34,x
-	lda	a:data_05AFEA,y
+	lda	a:object_type_73_y_vels,y
 	sta	$1E,x
-	lda	a:data_05AFF0,y
+	lda	a:object_type_73_x,y
 	sta	$0A,x
 	lda	#$0015
 	jml	f:queue_sound
@@ -1832,7 +1832,7 @@ loc_01BF80:
 	lda	$32,x
 	bne	loc_01BFA4
 	lda	$0E,x
-	cmp	a:data_05AFF6,y
+	cmp	a:object_type_73_bounce_y,y
 	bcc	loc_01BFA6
 	lda	#$FFFD	; [num]
 	sta	$1E,x
@@ -2049,7 +2049,7 @@ loc_01C12E:
 	ldy	difficulty
 	lda	rng_lo
 	and	#$001F
-	adc	a:data_05B028,y
+	adc	a:object_type_7E_spawn_delays,y
 	sta	$36,x
 	phx
 	ldx	#$06C0
@@ -2063,7 +2063,7 @@ loc_01C12E:
 	lda	rng_lo
 	and	#$0006
 	tay
-	lda	a:data_05B02E,y
+	lda	a:object_type_7E_spawn_x,y
 	sta	$0A,x
 loc_01C161:
 	plx
@@ -2296,14 +2296,14 @@ queue_object_tiles_every_4:
 	bne	loc_01C31B
 
 ; Queues the BG tiles of a BG-drawn object: field $32 = tile data, VRAM
-; address data_05B036[field $3A] (popup turret, type $35).
+; address object_tile_vram_addrs[field $3A] (popup turret, type $35).
 queue_object_tiles:
 	lda	#$0001
 	sta	zp_02
 	lda	#$0010
 	sta	zp_08
 	ldy	$3A,x
-	lda	a:data_05B036,y
+	lda	a:object_tile_vram_addrs,y
 	ldy	$32,x
 	phx
 	jsl	f:queue_vram_blocks
@@ -2441,10 +2441,10 @@ loc_01C404:
 	lda	$12,x
 	cmp	#$0002
 	beq	loc_01C418
-	lda	a:data_05B060,y
+	lda	a:wall_hatch_close_tiles,y
 	bra	loc_01C41B
 loc_01C418:
-	lda	a:data_05B074,y
+	lda	a:wall_hatch_open_tiles,y
 loc_01C41B:
 	sta	zp_00
 	lda	$3A,x
@@ -2476,7 +2476,7 @@ loc_01C441:
 loc_01C44E:
 	ldy	difficulty
 	lda	stage_frame_counter
-	and	a:data_05B09A,y
+	and	a:wall_hatch_turn_masks,y
 	bne	loc_01C48F
 	lda	#$0800
 	jsl	f:pick_target_player
@@ -2516,7 +2516,7 @@ loc_01C48F:
 	lsr	a
 	and	#$000E
 	tay
-	lda	a:data_05B064,y
+	lda	a:wall_hatch_aim_tiles,y
 	sta	zp_00
 	lda	$3A,x
 	sty	zp_FE
@@ -2527,11 +2527,11 @@ loc_01C48F:
 	ldy	zp_FE
 	clc
 	lda	$0A,x
-	adc	a:data_05B07A,y
+	adc	a:wall_hatch_muzzle_x,y
 	sta	zp_00
 	clc
 	lda	$0E,x
-	adc	a:data_05B08A,y
+	adc	a:wall_hatch_muzzle_y,y
 	sta	zp_02
 	lda	$30,x
 	jsl	f:spawn_enemy_bullet
@@ -3163,7 +3163,7 @@ weapon_capsule_check_shot:
 	stz	$18,x
 	stz	$1A,x
 
-; Sprite (data_05B17E) and state offset (data_05B18C) from the kind in field
+; Sprite (weapon_capsule_kind_sprites) and state offset (weapon_capsule_kind_states) from the kind in field
 ; $3A, then flies (y velocity -2).
 weapon_capsule_set_kind:
 	stz	$20,x
@@ -3171,11 +3171,11 @@ weapon_capsule_set_kind:
 	lda	$3A,x
 	asl	a
 	tay
-	lda	a:data_05B17E,y
+	lda	a:weapon_capsule_kind_sprites,y
 	sta	$00,x
 	sta	$38,x
 	clc
-	lda	a:data_05B18C,y
+	lda	a:weapon_capsule_kind_states,y
 	adc	$12,x
 	sta	$12,x
 	cmp	#$0003
@@ -3292,7 +3292,7 @@ loc_01CA85:
 	plx
 	rtl
 loc_01CA92:
-	lda	a:data_05B19C,y
+	lda	a:object_type_11_debris_sprites,y
 	sta	$00,x
 	sta	$32,x
 	lda	#$0003
@@ -3307,10 +3307,10 @@ loc_01CA92:
 	sta	$0A,x
 	lda	zp_02
 	sta	$0E,x
-	lda	a:data_05B1A8,y
+	lda	a:object_type_11_debris_y_vels,y
 	sta	$1E,x
 	sta	$30,x
-	lda	a:data_05B1B4,y
+	lda	a:object_type_11_debris_x_vels,y
 	sta	$1A,x
 	dey
 	dey
@@ -3535,10 +3535,10 @@ object_type_12_state_00:
 
 object_type_12_state_01:
 	ldy	OBJ_FACING,x
-	lda	a:data_05B278,y
+	lda	a:object_type_12_idle_sprites,y
 	sta	OBJ_SPRITE,x
 	ldy	difficulty
-	lda	a:data_05B1CE,y
+	lda	a:object_type_12_wait_times,y
 	sta	OBJ_TIMER,x
 	lda	#$0002
 	sta	OBJ_STATE,x
@@ -3553,7 +3553,7 @@ object_type_12_state_02:
 
 object_type_12_state_03:
 	ldy	OBJ_FACING,x
-	lda	a:data_05B27C,y
+	lda	a:object_type_12_windup_sprites,y
 	sta	OBJ_SPRITE,x
 	lda	#$000C
 	sta	OBJ_TIMER,x
@@ -3571,7 +3571,7 @@ object_type_12_state_05:
 	clc
 	phy
 	ldy	$04,x
-	adc	a:data_05B1D4,y
+	adc	a:object_type_12_grenade_x_offsets,y
 	ply
 	sta	a:$000A,y
 	lda	$04,x
@@ -3588,16 +3588,16 @@ object_type_12_state_05:
 	and	#$003C
 	ora	$04,x
 	tay
-	lda	a:data_05B1D8,y
+	lda	a:object_type_12_grenade_x_vels,y
 	sta	$1A,x
-	lda	a:data_05B228,y
+	lda	a:object_type_12_grenade_x_vel_subs,y
 	sta	$18,x
 	lda	#$FFFA	; [num]
 	sta	$1E,x
 	stz	$1C,x
 	plx
 	ldy	$04,x
-	lda	a:data_05B280,y
+	lda	a:object_type_12_throw_sprites,y
 	sta	$00,x
 	lda	#$0010
 	sta	$24,x
@@ -3607,7 +3607,7 @@ object_type_12_state_05:
 loc_01CD06:
 	; (not executed in the CDL traces)
 	ldy	$04,x
-	lda	a:data_05B278,y
+	lda	a:object_type_12_idle_sprites,y
 	sta	$00,x
 	lda	#$000C
 	sta	$24,x
@@ -3775,7 +3775,7 @@ window_sniper_state_00:
 
 window_sniper_state_01:
 	ldy	difficulty
-	lda	a:data_05C444,y
+	lda	a:window_sniper_fire_delays,y
 	sta	OBJ_TIMER,x
 	lda	#$0002
 	sta	OBJ_STATE,x
@@ -3800,11 +3800,11 @@ window_sniper_state_03:
 	tax
 	lda	zp_18
 	clc
-	adc	a:data_05C44E,x
+	adc	a:window_sniper_muzzle_x,x
 	sta	zp_00
 	lda	zp_1A
 	clc
-	adc	a:data_05C46E,x
+	adc	a:window_sniper_muzzle_y,x
 	sta	zp_02
 	lda	zp_1C
 	clc
@@ -3863,7 +3863,7 @@ loc_01CED8:
 	bcs	loc_01CEDD
 	ldy	#$0002
 loc_01CEDD:
-	lda	a:data_05C44A,y
+	lda	a:window_sniper_player_slots,y
 	sta	$30,x
 	stz	$04,x
 	lda	a:$0018,y
@@ -3895,13 +3895,13 @@ loc_01CF14:
 
 window_sniper_set_aim_sprite:
 	ldy	$32,x
-	lda	a:data_05C48E,y
+	lda	a:window_sniper_aim_sprites,y
 	sta	$00,x
 	rtl
 
 window_sniper_set_fire_sprite:
 	ldy	$32,x
-	lda	a:data_05C4AE,y
+	lda	a:window_sniper_fire_sprites,y
 	sta	$00,x
 	rtl
 

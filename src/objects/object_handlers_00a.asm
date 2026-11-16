@@ -18,8 +18,8 @@ scroll_bg1_by_velocity_and_spawn:
 	sta	a:wram_1694
 	clc
 	lda	a:wram_1690
-	adc	a:wram_139C
-	sta	a:wram_139C
+	adc	a:bg1_x+BG_Y_SUB
+	sta	a:bg1_x+BG_Y_SUB
 	lda	a:bg1_y
 	sta	zp_00
 	adc	a:wram_1692
@@ -28,7 +28,7 @@ scroll_bg1_by_velocity_and_spawn:
 	sbc	zp_00
 	sta	a:wram_1696
 	ldy	a:wram_168A
-	lda	a:data_059BC8,y
+	lda	a:airship_spawn_x,y
 	cmp	a:bg1_x
 	bcc	loc_00CF7D
 	phx
@@ -39,7 +39,7 @@ scroll_bg1_by_velocity_and_spawn:
 	plx
 	rtl
 loc_00CF59:
-	lda	a:data_059BCA,y
+	lda	a:airship_spawn_type_y,y
 	pha
 	and	#$00FF
 	sta	$10,x
@@ -49,7 +49,7 @@ loc_00CF59:
 	sec
 	sbc	a:bg1_y
 	sta	$0E,x
-	lda	a:data_059BCC,y
+	lda	a:airship_spawn_params,y
 	sta	$3A,x
 	stz	$0A,x
 	tya
@@ -72,7 +72,7 @@ update_object_type_55:
 	lsr	a
 	and	#$0006
 	tay
-	lda	a:data_059E42,y
+	lda	a:object_type_55_tile_frames,y
 	sta	bg_dma_src
 	lda	#$0400
 	sta	bg_dma_size
@@ -184,13 +184,13 @@ update_bg1_autoscroll_trigger:
 	rtl
 
 ; Object type $3B: stage trigger: sets bg2_scroll_mode from field $3B (and
-; wram_13F0), then does what type $0E does.
+; bg2_x+BG_PAGE), then does what type $0E does.
 update_scroll_modes_trigger:
 	clc
 	lda	a:bg2_y
 	adc	#$00FF
 	and	#$FF00
-	sta	a:wram_13F0
+	sta	a:bg2_x+BG_PAGE
 	lda	$3B,x
 	and	#$00FF
 	sta	a:bg2_scroll_mode
@@ -217,14 +217,14 @@ update_bg1_scroll_mode_trigger:
 	rtl
 
 ; Object type $07: stage trigger: loads the list
-; data_059E4A[field $3A] with load_data_list and deletes itself.
+; ptrs_trigger_load_lists[field $3A] with load_data_list and deletes itself.
 update_load_list_trigger:
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	lda	$3A,x
 	tay
 	stx	zp_FA
-	ldx	a:data_059E4A,y
+	ldx	a:ptrs_trigger_load_lists,y
 	jsl	f:load_data_list
 	ldx	zp_FA
 	rtl
@@ -248,15 +248,15 @@ update_object_type_42:
 
 ; Object type $4D: stage trigger: starts a song change (update_song_change):
 ; song_change_mode / song_change_set from
-; data_059F06; never run in the CDL traces.
+; song_change_trigger_modes; never run in the CDL traces.
 update_song_change_trigger:
 	; (not executed in the CDL traces)
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	ldy	$3A,x
-	lda	a:data_059F06,y
+	lda	a:song_change_trigger_modes,y
 	sta	a:song_change_mode
-	lda	a:data_059F08,y
+	lda	a:song_change_trigger_sets,y
 	sta	a:song_change_set
 	rtl
 
@@ -512,7 +512,7 @@ loc_00D29A:
 	sta	a:$001E,y
 	lda	#$0038
 	sta	a:$000E,y
-	lda	a:data_059F08,x
+	lda	a:song_change_trigger_sets,x
 	sta	a:$000A,y
 	lda	a:data_059F0C,x
 	sta	a:$0034,y
@@ -635,7 +635,7 @@ object_type_06_state_08:
 	lda	#$0038
 	sta	zp_02
 	ldx	a:wram_166C
-	lda	a:data_059F6A,x
+	lda	a:object_type_06_dither_offsets,x
 	and	#$00FF
 	tay
 	sep	#$20
@@ -649,28 +649,28 @@ object_type_06_state_08:
 @loop:
 	.a8
 	lda	a:$A000,y
-	ora	f:data_059F2A,x
+	ora	f:object_type_06_dither_masks,x
 	sta	a:$A000,y
 	lda	a:$A001,y
-	ora	f:data_059F2A,x
+	ora	f:object_type_06_dither_masks,x
 	sta	a:$A001,y
 	lda	a:$A380,y
-	ora	f:data_059F2A,x
+	ora	f:object_type_06_dither_masks,x
 	sta	a:$A380,y
 	lda	a:$A381,y
-	ora	f:data_059F2A,x
+	ora	f:object_type_06_dither_masks,x
 	sta	a:$A381,y
 	lda	a:$A700,y
-	ora	f:data_059F2A,x
+	ora	f:object_type_06_dither_masks,x
 	sta	a:$A700,y
 	lda	a:$A701,y
-	ora	f:data_059F2A,x
+	ora	f:object_type_06_dither_masks,x
 	sta	a:$A701,y
 	lda	a:$AA80,y
-	ora	f:data_059F2A,x
+	ora	f:object_type_06_dither_masks,x
 	sta	a:$AA80,y
 	lda	a:$AA81,y
-	ora	f:data_059F2A,x
+	ora	f:object_type_06_dither_masks,x
 	sta	a:$AA81,y
 	rep	#$20
 	.a16
@@ -722,7 +722,7 @@ loc_00D48E:
 	asl	a
 	and	#$0006
 	tay
-	lda	a:data_059FAA,y
+	lda	a:object_type_06_tile_frames,y
 	sta	bg_dma_src
 	lda	#$0380
 	sta	bg_dma_size
@@ -827,7 +827,7 @@ update_object_type_3C:
 	lsr	a
 	lsr	a
 	tay
-	lda	a:data_059FB2,y
+	lda	a:object_type_3C_tile_frames,y
 	sta	bg_dma_src
 	lda	#$02E0
 	sta	bg_dma_size
@@ -856,7 +856,7 @@ loc_00D5AA:
 	lda	#$0000
 	sta	zp_04
 	sta	zp_0A
-	lda	a:wram_13D2
+	lda	a:bg2_x+BG_X_MOVED
 
 add_line_scroll_ramp:
 	sta	zp_02

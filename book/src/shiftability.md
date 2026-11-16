@@ -221,7 +221,7 @@ Some references the earlier passes had read wrong were found by the plays:
 These are still numbers, or depend on layout, on purpose:
 
 - **Overlapping data.** Some tables share bytes: the weapon capsule
-  metasprite table (`data_05B17E`) starts with the jump word of the
+  metasprite table (`weapon_capsule_kind_sprites`) starts with the jump word of the
   animation script before it, whose value `$B172` is also a metasprite
   (`$06:B172`); its last entry is the first word of the next table. The
   stage card text table (`data_058428`) is indexed from 1, so its entry 0

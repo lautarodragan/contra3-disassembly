@@ -1200,17 +1200,17 @@ loc_01D868:
 	lda	rng_lo
 	and	#$000E
 	tax
-	lda	a:data_05C838,x
+	lda	a:random_debris_vel_subs,x
 	sta	a:$0018,y
-	lda	a:data_05C828,x
+	lda	a:random_debris_vels,x
 	sta	a:$001E,y
 	lda	rng_hi
 	adc	stage_frame_counter
 	and	#$000E
 	tax
-	lda	a:data_05C838,x
+	lda	a:random_debris_vel_subs,x
 	sta	a:$001C,y
-	lda	a:data_05C828,x
+	lda	a:random_debris_vels,x
 	sta	a:$001A,y
 	plx
 	lda	zp_04

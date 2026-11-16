@@ -429,7 +429,7 @@ fill_bg_screen:
 	sta	a:bg1_scroll_mode
 	lda	#$0005
 	sta	a:bg2_scroll_mode
-	stz	a:wram_13B0
+	stz	a:bg1_x+BG_PAGE
 	rtl
 
 ; Dispatch on bg1_scroll_mode.
@@ -460,7 +460,7 @@ bg1_init_horizontal:
 	lda	#$0080
 	sta	scroll_threshold
 	jsl	f:clear_bg1_scroll_deltas
-	stz	a:wram_13B2
+	stz	a:bg1_x+BG_COLUMN_OFFSET
 	lda	#$0001
 	sta	a:bg1_scroll_mode
 	ldx	#$1380
@@ -478,7 +478,7 @@ bg1_init_horizontal:
 	jsl	f:draw_bg_column
 	jsl	f:update_bg_collision_map
 	lda	#$0002
-	sta	a:wram_13B2
+	sta	a:bg1_x+BG_COLUMN_OFFSET
 	sec
 	lda	a:bg1_x
 	sbc	#$0008
@@ -487,7 +487,7 @@ bg1_init_horizontal:
 	clc
 	adc	#$0010
 	and	#$FF00
-	sta	a:wram_13B0
+	sta	a:bg1_x+BG_PAGE
 	stz	a:spawn_pos_invert
 	lda	#$1380
 	sta	a:spawn_scroll_var
@@ -615,7 +615,7 @@ bg1_init_vertical:
 	clc
 	adc	#$00F0
 	and	#$FF00
-	sta	a:wram_13B0
+	sta	a:bg1_x+BG_PAGE
 	lda	a:bg1_y
 	and	#$FF00
 	sta	a:spawn_last_page
@@ -811,7 +811,7 @@ bg2_draw_screen_step:
 	rtl
 
 bg2_start_draw_screen:
-	stz	a:wram_13F2
+	stz	a:bg2_x+BG_COLUMN_OFFSET
 	stz	a:bg2_y
 	stz	a:bg2_y_sub
 	stz	a:bg2_x
@@ -833,18 +833,18 @@ bg2_scroll_none_3:
 	rtl
 
 bg2_parallax_x_1_8:
-	stz	a:wram_13D2
-	stz	a:wram_13EA
+	stz	a:bg2_x+BG_X_MOVED
+	stz	a:bg2_x+BG_Y_MOVED
 	clc
 	lda	a:bg1_x_delta
-	adc	a:wram_13CE
-	sta	a:wram_13CE
+	adc	a:bg2_x+BG_X_DELTA
+	sta	a:bg2_x+BG_X_DELTA
 	sec
 	sbc	#$0008
 	bmi	@done
-	sta	a:wram_13CE
+	sta	a:bg2_x+BG_X_DELTA
 	inc	a:bg2_x
-	inc	a:wram_13D2
+	inc	a:bg2_x+BG_X_MOVED
 @done:
 	rtl
 
@@ -912,9 +912,9 @@ bg2_scroll_none_8:
 bg2_follow_bg1_x:
 	clc
 	lda	a:bg1_x_delta
-	sta	a:wram_13CE
-	sta	a:wram_13D2
-	stz	a:wram_13EA
+	sta	a:bg2_x+BG_X_DELTA
+	sta	a:bg2_x+BG_X_MOVED
+	stz	a:bg2_x+BG_Y_MOVED
 	clc
 	adc	a:bg2_x
 	sta	a:bg2_x
@@ -1165,7 +1165,7 @@ draw_bg_column:
 	rtl
 
 clear_bg1_scroll_deltas:
-	stz	a:wram_138C
+	stz	a:bg1_x+BG_X_DELTA_SUB
 	stz	a:bg1_x_delta
 	stz	a:bg1_y_sub
 	stz	a:bg1_y_delta
@@ -1174,10 +1174,10 @@ clear_bg1_scroll_deltas:
 ; (no caller found; decoded because it follows the end of a routine)
 clear_bg2_scroll_deltas:
 	; (not executed in the CDL traces)
-	stz	a:wram_13CC
-	stz	a:wram_13CE
-	stz	a:wram_13E4
-	stz	a:wram_13E6
+	stz	a:bg2_x+BG_X_DELTA_SUB
+	stz	a:bg2_x+BG_X_DELTA
+	stz	a:bg2_x+BG_Y_DELTA_SUB
+	stz	a:bg2_x+BG_Y_DELTA
 	rtl
 
 ; Converts the last queued row/column (zp_1A = its entry) into collision

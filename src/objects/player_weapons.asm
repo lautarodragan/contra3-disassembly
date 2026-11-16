@@ -290,12 +290,12 @@ loc_018205:
 	rtl
 
 ; Object type $6D: the hover bike of a player (stage 4), in slot $0280 or
-; $02C0 (field $30 selects the player through data_05AB6C). Follows the
+; $02C0 (field $30 selects the player through bike_player_slots). Follows the
 ; player; when the player falls back to y >= $A4 it puts them back in
 ; PLAYER_STATE_BIKE; deleted when the player's state is 1.
 update_player_bike:
 	ldy	$30,x
-	lda	a:data_05AB6C,y
+	lda	a:bike_player_slots,y
 	tay
 	lda	a:$0012,y
 	cmp	#$0001
@@ -323,7 +323,7 @@ player_bike_state_00:
 	stz	OBJ_TIMER,x
 	lda	#$00B4
 	sta	OBJ_Y,x
-	lda	a:data_05AB70,y
+	lda	a:bike_attrs,y
 	sta	OBJ_ATTR,x
 	inc	OBJ_STATE,x
 	rtl
@@ -1124,7 +1124,7 @@ set_player_box_jumping:
 	sta	PLAYER_HITBOX_LEFT,x
 	adc	#$0006
 	sta	PLAYER_HITBOX_RIGHT,x
-	adc	a:data_05AB74,y
+	adc	a:jump_center_x_offsets,y
 	sta	a:PLAYER_CENTER_X,x
 	lda	OBJ_Y,x
 	adc	#$FFF2

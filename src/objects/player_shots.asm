@@ -413,7 +413,7 @@ loc_00D8E9:
 	lda	a:vel8_y,y
 	sta	OBJ_Y_VEL,x
 	ply
-	lda	a:data_05A014,y
+	lda	a:crush_shot_attrs,y
 	sta	SHOT_ATTR,x
 	ldy	zp_FE
 	clc
@@ -599,12 +599,12 @@ loc_00DA0F:
 	clc
 	lda	OBJ_X,x
 	adc	zp_14
-	adc	a:data_05A024,y
+	adc	a:flame_start_x_offsets,y
 	sta	zp_00
 	clc
 	lda	OBJ_Y,x
 	adc	zp_16
-	adc	a:data_05A034,y
+	adc	a:flame_start_y_offsets,y
 	ply
 	sta	a:OBJ_Y,y
 	lda	zp_00
@@ -722,69 +722,69 @@ loc_00DB40:
 	lda	$F4,x
 	tay
 	clc
-	lda	a:data_058E9A,y
+	lda	a:circle15_y,y
 	adc	$CE,x
 	sta	$EE,x
 	clc
 	adc	#$FFF0
 	sta	a:$012E,x
 	clc
-	lda	a:data_058F1A,y
+	lda	a:circle15_x,y
 	adc	$CA,x
 	sta	$EA,x
 	sta	a:$012A,x
 	lda	$D4,x
 	tay
 	clc
-	lda	a:data_058E9A,y
+	lda	a:circle15_y,y
 	adc	$AE,x
 	sta	$CE,x
 	clc
 	adc	#$FFF4
 	sta	a:$010E,x
 	clc
-	lda	a:data_058F1A,y
+	lda	a:circle15_x,y
 	adc	$AA,x
 	sta	$CA,x
 	sta	a:$010A,x
 	lda	$B4,x
 	tay
 	clc
-	lda	a:data_058E9A,y
+	lda	a:circle15_y,y
 	adc	$8E,x
 	sta	$AE,x
 	clc
-	lda	a:data_058F1A,y
+	lda	a:circle15_x,y
 	adc	$8A,x
 	sta	$AA,x
 	lda	$94,x
 	tay
 	clc
-	lda	a:data_058E9A,y
+	lda	a:circle15_y,y
 	adc	$6E,x
 	sta	$8E,x
 	clc
-	lda	a:data_058F1A,y
+	lda	a:circle15_x,y
 	adc	$6A,x
 	sta	$8A,x
 	lda	$74,x
 	tay
 	clc
-	lda	a:data_058E9A,y
+	lda	a:circle15_y,y
 	adc	$4E,x
 	sta	$6E,x
 	clc
-	lda	a:data_058F1A,y
+	lda	a:circle15_x,y
 	adc	$4A,x
 	sta	$6A,x
 	lda	$54,x
 	tay
 	clc
-	lda	a:data_058E9A,y
+	lda	a:circle15_y,y
 	adc	$2E,x
 	sta	$4E,x
 	clc
-	lda	a:data_058F1A,y
+	lda	a:circle15_x,y
 	adc	$2A,x
 	sta	$4A,x
 	lda	$14,x
@@ -952,11 +952,11 @@ loc_00DC8E:
 	lsr	a
 	lsr	a
 	tay
-	lda	a:data_05A064,y
+	lda	a:laser_shot_attrs,y
 	sta	SHOT_ATTR,x
-	lda	a:data_05A044,y
+	lda	a:laser_segment_dx,y
 	sta	zp_00
-	lda	a:data_05A054,y
+	lda	a:laser_segment_dy,y
 	sta	zp_02
 	lda	#$0004
 	sta	$44,x
@@ -981,7 +981,7 @@ loc_00DC8E:
 	inc	a
 	sta	a:$0104,x
 	sta	$24,x
-	lda	a:data_05A064,y
+	lda	a:laser_shot_attrs,y
 	sta	$54,x
 	sta	$74,x
 	sta	$94,x

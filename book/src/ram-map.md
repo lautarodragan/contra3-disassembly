@@ -169,11 +169,12 @@ in `src/ram.inc`:
 | `palette_tasks` | `$1200` | 8 palette task slots (`TASK_*` fields) |
 | `vram_tasks` | `$1280` | VRAM script task slots |
 | `LOADER_VRAM` / `LOADER_WRAM` | `$1300` / `$1340` | loader contexts (`LDR_*` fields) |
-| `bg1_x` | `$1380` | BG1 scroll state (`BG_*` fields); `bg1_y` at `$1398` |
+| `bg1_x` | `$1380` | BG1 scroll state (`BG_*` fields, e.g. `bg1_x+BG_PAGE`); `bg1_y` at `$1398` |
 | `bg1_x_delta` / `bg1_y_delta` | `$138E` / `$13A6` | BG1 movement of this frame |
 | `bg1_scroll_mode` | `$13BA` | BG1 scroll handler (`tbl_bg1_scroll_modes`) |
 | `bg2_x` | `$13C0` | BG2 scroll state; `bg2_y` at `$13D8` |
 | `bg2_scroll_mode` | `$13FA` | BG2 scroll handler (`tbl_bg2_scroll_modes`) |
+| `bg3_x` | `$1400` | BG3 scroll state (written to the BG3 scroll registers by `write_bg_scroll_regs`) |
 | `spawn_pages` ... | `$1602-$160C` | stage object spawner (`spawn_stage_objects`) |
 | `scroll_split_pattern` | `$1676` | scroll-split HDMA pattern (0 = off), `scroll_split_y` at `$1674` |
 | `hud_buffer` | `$1700` | HUD tilemap buffer, 4 rows of `$20` bytes |

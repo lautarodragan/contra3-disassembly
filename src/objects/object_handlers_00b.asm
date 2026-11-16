@@ -90,7 +90,7 @@ loc_00DE3D:
 	lda	$14,x
 	and	#$000E
 	tay
-	lda	a:data_05A08E,y
+	lda	a:crush_blast_attrs,y
 	sta	$02,x
 	txa
 	clc
@@ -241,7 +241,7 @@ loc_00DF38:
 	lsr	a
 	and	#$00FE
 	tay
-	lda	a:data_05A074,y
+	lda	a:homing_shot_attrs,y
 	sta	$02,x
 	rtl
 
@@ -386,7 +386,7 @@ loc_00E054:
 	lda	$04,x
 	and	#$0006
 	tay
-	lda	a:data_05A084,y
+	lda	a:shot_type_08_attrs,y
 	sta	$02,x
 	rtl
 
@@ -436,7 +436,7 @@ update_shot_type_0C:
 	lda	stage_frame_mod8
 	and	#$0006
 	tay
-	lda	a:data_05A086,y
+	lda	a:shot_type_0C_attrs,y
 	sta	$02,x
 	rtl
 loc_00E0AF:
@@ -461,7 +461,7 @@ loc_00E0C7:
 	lda	$04,x
 	and	#$FFFE
 	tay
-	lda	a:data_05A08E,y
+	lda	a:crush_blast_attrs,y
 	sta	$02,x
 	rtl
 
@@ -487,7 +487,7 @@ update_shot_type_10:
 	lda	$04,x
 	and	#$FFFE
 	tay
-	lda	a:data_05A09E,y
+	lda	a:shot_type_10_attrs,y
 	sta	$02,x
 	rtl
 loc_00E0FC:
@@ -516,7 +516,7 @@ loc_00E116:
 	lda	$04,x
 	and	#$0006
 	tay
-	lda	a:data_05A0AE,y
+	lda	a:spent_shot_attrs,y
 	sta	$02,x
 	rtl
 

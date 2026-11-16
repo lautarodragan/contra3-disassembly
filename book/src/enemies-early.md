@@ -34,11 +34,11 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $04, $54 | `update_object_type_04` | seen in stage 1 (section 4, a red soldier on a building ledge, probably). Not identified with certainty |
 | $05 | `update_bg1_autoscroll_trigger` | stage trigger: turns `bg1_autoscroll` on |
 | $06 | `update_object_type_06` | stage 1 scripted scene (section 9): BG/HDMA effect with 9 states. Not identified |
-| $07 | `update_load_list_trigger` | stage trigger: loads the list `data_059E4A`[field `$3A`] with `load_data_list` |
+| $07 | `update_load_list_trigger` | stage trigger: loads the list `ptrs_trigger_load_lists`[field `$3A`] with `load_data_list` |
 | $08 | `update_object_type_08` | stage trigger (stage 1 section 4): stops `bg1_autoscroll`, `bg1_scroll_mode` = 4 |
 | $09 | `update_player_tank` | the tank the players can drive (stage 1 sections 4-5; seen in the emulator), drawn on BG2: a player landing on its hatch enters it (`PLAYER_STATE_ENTER_TANK`, `PLAYER_STATE_TANK`); damage counter `obj_slots+31*OBJ_SIZE+OBJ_HP` (`$09C6`) |
 | $0A | `update_foot_soldier` | running foot soldier (stage 1; checked in the emulator). Killed: becomes type $1B (dying soldier) |
-| $0B | `update_soldier_spawner` | invisible spawner (stage 1): foot soldiers run in from the left and right edges at random intervals by difficulty (`data_05AFD2`, `data_05AFD8`) |
+| $0B | `update_soldier_spawner` | invisible spawner (stage 1): foot soldiers run in from the left and right edges at random intervals by difficulty (`soldier_spawn_delays_right`, `soldier_spawn_delays_left`) |
 | $0C | `update_bomber_bomb` | bomb dropped by the bomber plane (stage 1 section 10, seen in the emulator); falls with gravity, trailing type $1D fire effects |
 | $0D | `update_popup_turret` | gun turret that rises out of the rubble (stage 1, HP 16; seen in the emulator) |
 | $0E | `update_bg1_scroll_mode_trigger` | stage trigger: sets `bg1_scroll_mode` from field `$3A`, stops `bg1_autoscroll`, rounds the BG1 position |
@@ -63,10 +63,10 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $22 | `update_stage1_boss_wall_chunk` | stage 1 boss: the four chunks of the metal wall it bursts through (slots `$0300-$03C0`; seen in the emulator) |
 | $23 | `update_falling_debris` | falling wall debris (stage 1 boss, the turtle breaking through the wall); explodes at y >= $C8 |
 | $24 | `update_object_type_24` | stage 6 alien soldier (seen in the emulator) |
-| $26 | `update_stage1_boss_tracking_shot` | stage 1 boss projectile that follows the player's height (speed `data_05AB46` by difficulty) |
+| $26 | `update_stage1_boss_tracking_shot` | stage 1 boss projectile that follows the player's height (speed `stage1_boss_tracking_shot_accels` by difficulty) |
 | $27 | `update_stage1_boss_falling_shot` | stage 1 boss projectile that falls, then rolls on the floor |
 | $28 | `update_object_type_28` | the handler is a fill routine (also called directly as a helper); probably never used as a type |
-| $29 | `update_stage1_boss` | stage 1 boss (the giant turtle), main body with HP $160 (352); fires at the player every `data_05AB4C`[difficulty] + rnd frames |
+| $29 | `update_stage1_boss` | stage 1 boss (the giant turtle), main body with HP $160 (352); fires at the player every `stage1_boss_fire_intervals`[difficulty] + rnd frames |
 | $2A | `update_object_type_2A` | advances the state of the type $06 object and deletes the type $2F one. Not identified |
 | $2B | `update_object_type_2B` | stage 1 burning section. Not identified |
 | $2C | `update_object_type_2C` | stage 1 burning section: fire pillar. Not identified exactly |
@@ -96,7 +96,7 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $49 | `update_object_type_49` | stage 3 section 10: green shielded soldiers. Not identified exactly |
 | $4A | `update_rolling_mine` | stage 3: rolling disc (HP 6; seen in the emulator) |
 | $4B | `update_debris_spark` | becomes a type $1D effect flying in a random direction (stage 3 boss) |
-| $4D | `update_song_change_trigger` | stage trigger: starts a song change (`update_song_change`: `song_change_mode` / `song_change_set` from `data_059F06`); never run in the CDL traces |
+| $4D | `update_song_change_trigger` | stage trigger: starts a song change (`update_song_change`: `song_change_mode` / `song_change_set` from `song_change_trigger_modes`); never run in the CDL traces |
 | $4E | `update_object_type_4E` | stage 3 section 7, 27 states (a mid-boss, probably). Not identified |
 | $4F | `update_stage3_winged_bug` | stage 3: winged alien bug (HP 8; seen in the emulator) |
 | $50 | `update_wall_hatch` | stage 3: wall hatch (HP 8; seen in the emulator) |

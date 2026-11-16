@@ -266,7 +266,7 @@ opening_shake_title:
 	tay
 @store_offset:
 	sty	a:bg1_y
-	sty	a:wram_1418
+	sty	a:bg3_x+BG_Y
 	lda	a:title_shake
 	beq	@to_title_menu
 	lda	frame_counter
