@@ -90,7 +90,11 @@ sets (banks `$06`-`$08`, `$13`-`$16`, `$1E`); v2 made most graphics sets
 and the `$7F` streams of banks `$0B` and `$11`-`$13`. `python3 tools/test_compressor.py -v -s v1 -s v2` lists the
 blocks of each.
 
-To rebuild a block, the build will need to know which version made it.
+The build compresses every stream from its decompressed data (see
+[Assets](assets.md)), so it needs to know which version made each one:
+`assets/manifest.txt` gives it (`lz-v1` or `lz-v2`) per stream. The two
+streams still inline in the source (`gfx_07E9FE`, `gfx_14DC62`, see
+[Assets](assets.md#what-stays-inline-and-why)) are the ROM's bytes.
 
 ### Why this is an LZSS.C descendant
 

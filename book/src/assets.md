@@ -8,11 +8,11 @@ the layout, what was moved and what was left inline, and why.
 ## Layout
 
 ```
-assets/gfx/<label>.lz       compressed graphics streams (load_vram lists)
-assets/gfx/<label>.bin      uncompressed graphics (td_sprite_tiles_16)
-assets/wram/<label>.lz      compressed streams decompressed to WRAM (load_wram)
-assets/sound/<label>.lz     compressed sound CPU data (load_spc)
-assets/sound/<label>.bin    uncompressed sound CPU blocks (load_spc_raw)
+assets/manifest.txt         every asset: its path and how the build makes it
+assets/gfx/<label>.bin      graphics (VRAM streams, td_sprite_tiles_16)
+assets/wram/<label>.bin     streams decompressed to WRAM
+assets/sound/<label>.bin    sound CPU data
+build/assets/<dir>/<label>.lz   the compressed streams, made by the build
 ```
 
 The file is named after the label of the block; the label stays in the
@@ -24,18 +24,45 @@ gfx_0891DE:
 	.incbin	"gfx/gfx_0891DE.lz"
 ```
 
-The path is relative to `assets/`: every assembly of `src/` passes
-`--bin-include-dir assets` to ca65 (the `Makefile`, and
-`tools/srcmap.py`, `tools/cheats.py` and `tools/shift.py` through
-`ca65_args` in `tools/assets.py`), and the `Makefile` makes every file
-under `assets/` a dependency of `build/main.o`.
+A compressed stream is stored **decompressed**: `assets/gfx/gfx_0891DE.bin`
+holds the 512 bytes the game decompresses to VRAM, and the build compresses
+them into `build/assets/gfx/gfx_0891DE.lz` with `tools/c3lz.py`. The
+`.lz` file is the whole stream, its length word included, so the size of
+the stream in the ROM is whatever the compressor makes of the data.
+
+`assets/manifest.txt` says which encoder version reproduces each stream
+(the game's encoder came in two versions, see
+[Compression](compression.md#two-versions)), one line per asset:
+
+```
+gfx/gfx_0891DE                   lz-v2
+gfx/gfx_088FD4                   lz-v1
+sound/spc_block_1D8002           raw
+```
+
+- `lz-v1`, `lz-v2`: the source includes `<path>.lz`, compressed from
+  `assets/<path>.bin` with that version;
+- `raw`: the source includes `<path>.bin`, the file as it is (the
+  uncompressed sound blocks and `td_sprite_tiles_16`).
+
+ca65 looks the included path up in `assets/`, then in `build/assets/`:
+every assembly of `src/` passes `--bin-include-dir assets
+--bin-include-dir build/assets`. In the `Makefile`, `build/assets.mk`
+(written by `python3 tools/assets.py makefile` from the manifest) has one
+rule per compressed stream, from its `.bin` and the two tools, and the
+streams (`asset_targets`) are dependencies of `build/main.o`: editing a
+`.bin` recompresses that stream only and reassembles. `make assets` makes
+them alone. The tools that assemble `src/` themselves
+(`tools/srcmap.py`, `tools/cheats.py`, `tools/shift.py`) go through
+`ca65_args` in `tools/assets.py`, which first makes the streams that are
+out of date. Making all 179 takes a few seconds (`make -j` runs them in
+parallel).
 
 Why binary files and not `.inc` files of `.byte` lines: the bytes are the
 data itself, with no labels, pointers or expressions in them, so a text
 form adds nothing but size, and a binary file is what any graphics or
 compression tool reads and writes. `.incbin` is ca65's include for such a
-file. A `.lz` file is a whole stream as the ROM holds it, length word
-included.
+file.
 
 ## What was moved
 
@@ -53,15 +80,18 @@ reads into it or past it:
 - the block's `.byte` lines hold only those bytes (no code, no other label,
   no `LAYOUT` comment saying that something reads across its bounds).
 
-That is 199 blocks, 709,486 bytes:
+That is 199 blocks, 709,486 bytes in the ROM:
 
-| files | blocks | bytes |
-|---|---|---|
-| `assets/gfx/*.lz` | 98 | 376,310 |
-| `assets/gfx/*.bin` | 1 | 6,144 |
-| `assets/wram/*.lz` | 70 | 172,344 |
-| `assets/sound/*.lz` | 11 | 43,951 |
-| `assets/sound/*.bin` | 19 | 110,737 |
+| assets | blocks | in the ROM | stored |
+|---|---|---|---|
+| `gfx/`, compressed | 98 | 376,310 | 549,343 decompressed |
+| `gfx/`, `td_sprite_tiles_16` | 1 | 6,144 | 6,144 |
+| `wram/`, compressed | 70 | 172,344 | 321,032 decompressed |
+| `sound/`, compressed | 11 | 43,951 | 59,454 decompressed |
+| `sound/`, uncompressed | 19 | 110,737 | 110,737 |
+
+Of the 179 streams, 40 need `lz-v1` and 139 are made with `lz-v2` (66 of
+these come out the same with either).
 
 The two bytes that follow some sound blocks on the same `.byte` line (the
 size or address word of the next block) stay inline after the include. A
@@ -96,3 +126,35 @@ source, the file is only its contents. `tools/shift.py build --labels`
 also inserts a filler byte before labels that follow an `.incbin` (through
 a small macro, `shift_incbin_filler`, that it adds to its copy of
 `main.asm`), so assets move relative to each other in the shift test too.
+
+## Editing an asset
+
+Edit the `.bin` (or replace it) and run `make`. The stream is
+recompressed with the version the manifest gives; if it comes out longer
+or shorter, everything after it in its bank moves, which the source
+allows since every reference to it is a label (milestone 3). The ROM is
+then no longer the original, so `make` reports a `MISMATCH` against
+`contra3.sha1` (`make build/contra3.sfc` builds without the check); run it
+in the emulator with `make emu-test` (the screenshots that show the edited
+graphic will differ from the goldens, the plays should pass).
+
+What the build does not check: the decompressed size. The game
+decompresses a stream to the address in its data list until the stream
+ends; a larger asset overwrites whatever follows it in VRAM or WRAM. Keep
+the size unless you know what is there.
+
+An example, done in a throwaway copy of the repository: in the 2bpp font
+`assets/gfx/gfx_089D7E.bin` (loaded at VRAM `$5000` for BG3), tile 73,
+the letter N (bytes `$490`-`$49F`), replaced by a framed box with a
+cross. The stream went from 1,978 to 1,977 bytes, so the 10 labels after it
+in bank `$08` (`gfx_08A538` to the end of the bank) moved down by one
+byte. The ROM built, `tools/shift.py build --labels 0.3 --seed 1` built a
+shifted copy of it, and both run: the title screen of the shifted ROM, with
+the new N in `OPTION` and the copyright lines:
+
+![The title screen with an edited letter N](img/asset-edit-demo.png)
+
+With goldens taken from the edited ROM (`--update-goldens`, in that copy),
+the emulator suite's screenshots and scripted plays (`tests/test_screens.py`,
+`tests/test_play.py`, 29 tests) pass on the shifted copy: moving the bank
+after the edited stream changes nothing on screen.

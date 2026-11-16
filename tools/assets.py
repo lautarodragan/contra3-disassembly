@@ -1,27 +1,182 @@
 #!/usr/bin/env python3
-"""The binary assets: graphics, WRAM streams and sound data in assets/.
+"""The binary assets: graphics, WRAM streams and sound data (book: Assets).
 
-The source includes each one with `.incbin "<dir>/<label>.<ext>"` right after
-its label (book: Assets).  ca65 looks such a path up in the directories
-INCLUDE_DIRS gives (relative to the repository root), so every assembly of
-src/ (the Makefile, tools/srcmap.py, tools/cheats.py, tools/shift.py) passes
-`ca65_args()`.
+The source includes each asset with `.incbin "<dir>/<label>.<ext>"` right
+after its label.  assets/manifest.txt lists them, one per line:
 
-    assets/gfx/<label>.lz     compressed VRAM graphics (as in the ROM)
-    assets/gfx/<label>.bin    uncompressed graphics
-    assets/wram/<label>.lz    compressed streams decompressed to WRAM
-    assets/sound/<label>.lz   compressed sound CPU data
-    assets/sound/<label>.bin  uncompressed sound CPU data
+    gfx/gfx_088FD4    lz-v1
+    sound/spc_block_1D8002  raw
+
+  lz-v1, lz-v2  the source includes <path>.lz, a stream compressed with that
+                version of the game's encoder (tools/c3lz.py), which the
+                build makes in build/assets/ from the decompressed data
+                assets/<path>.bin;
+  raw           the source includes <path>.bin, assets/<path>.bin as it is.
+
+ca65 looks the included paths up in INCLUDE_DIRS (assets/, then
+build/assets/), so every assembly of src/ (the Makefile, tools/srcmap.py,
+tools/cheats.py, tools/shift.py) first builds what is out of date and passes
+`ca65_args()`.  The Makefile includes build/assets.mk, the rules this tool
+writes (`makefile`), so that editing an asset rebuilds what depends on it.
+
+    python3 tools/assets.py makefile > build/assets.mk
+    python3 tools/assets.py build [TARGET ...]   # all out-of-date targets, or these
+    python3 tools/assets.py list                 # path, kind, sizes
 """
 import os
+import sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INCLUDE_DIRS = ["assets"]
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import c3lz  # noqa: E402
+
+ROOT = os.path.dirname(HERE)
+ASSETS = "assets"
+BUILD = os.path.join("build", "assets")
+MANIFEST = os.path.join(ASSETS, "manifest.txt")
+INCLUDE_DIRS = [ASSETS, BUILD]
+KINDS = ("raw", "lz-v1", "lz-v2")
+# the tools a generated file depends on
+TOOLS = ["tools/assets.py", "tools/c3lz.py"]
+
+
+class Asset:
+    def __init__(self, path, kind, options):
+        self.path = path            # e.g. "gfx/gfx_088FD4", relative to assets/
+        self.kind = kind
+        self.options = options      # {key: value} after the kind
+
+    @property
+    def compressed(self):
+        return self.kind.startswith("lz-")
+
+    @property
+    def version(self):
+        return self.kind[3:]
+
+    @property
+    def included(self):
+        """The file the source includes, relative to an include dir."""
+        return self.path + (".lz" if self.compressed else ".bin")
+
+    @property
+    def source(self):
+        """The file in the repository that holds the data."""
+        return os.path.join(ASSETS, self.path + ".bin")
+
+    @property
+    def target(self):
+        """The file the build makes (None: the source is included as is)."""
+        if self.compressed:
+            return os.path.join(BUILD, self.path + ".lz")
+        return None
+
+    def prerequisites(self):
+        return [self.source]
+
+
+def read_manifest(root=ROOT):
+    out = []
+    for n, line in enumerate(open(os.path.join(root, MANIFEST)), 1):
+        line = line.split("#")[0].split()
+        if not line:
+            continue
+        path, kind, *rest = line
+        if kind not in KINDS:
+            sys.exit(f"{MANIFEST}:{n}: unknown kind {kind}")
+        options = dict(item.split("=", 1) for item in rest)
+        out.append(Asset(path, kind, options))
+    return out
+
+
+def make_target(asset, root=ROOT):
+    """Write asset.target from its source."""
+    data = open(os.path.join(root, asset.source), "rb").read()
+    stream = c3lz.compress(data, asset.version)
+    out = os.path.join(root, asset.target)
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    tmp = out + ".tmp"
+    open(tmp, "wb").write(stream)
+    os.replace(tmp, out)
+
+
+def _mtime(path):
+    try:
+        return os.stat(path).st_mtime
+    except FileNotFoundError:
+        return None
+
+
+def out_of_date(asset, root=ROOT):
+    t = _mtime(os.path.join(root, asset.target))
+    if t is None:
+        return True
+    deps = asset.prerequisites() + TOOLS
+    return any((_mtime(os.path.join(root, d)) or 0) > t for d in deps)
+
+
+def build(root=ROOT, targets=None, quiet=True):
+    """Make every out-of-date target (or the given ones); returns how many."""
+    n = 0
+    for a in read_manifest(root):
+        if a.target is None:
+            continue
+        if targets is not None:
+            if a.target not in targets:
+                continue
+        elif not out_of_date(a, root):
+            continue
+        make_target(a, root)
+        n += 1
+        if not quiet:
+            print(f"{a.target}: {a.kind} from {a.source}")
+    return n
 
 
 def ca65_args(root=ROOT):
-    """The ca65 options that let `.incbin` find the assets."""
+    """Build the out-of-date assets; the ca65 options that let `.incbin`
+    find them."""
+    build(root)
     args = []
     for d in INCLUDE_DIRS:
         args += ["--bin-include-dir", os.path.join(root, d)]
     return args
+
+
+def makefile(root=ROOT):
+    lines = ["# Generated by tools/assets.py from assets/manifest.txt: do not edit.",
+             ""]
+    targets = []
+    for a in read_manifest(root):
+        if a.target is None:
+            continue
+        targets.append(a.target)
+        lines.append(f"{a.target}: {' '.join(a.prerequisites())} {' '.join(TOOLS)}")
+        lines.append(f"\t$(PYTHON) tools/assets.py build $@")
+    lines[1:1] = ["asset_targets := \\"] + [f"\t{t} \\" for t in targets] + ["", ""]
+    return "\n".join(lines) + "\n"
+
+
+def main(argv):
+    os.chdir(ROOT)
+    cmd = argv[1] if len(argv) > 1 else "build"
+    if cmd == "makefile":
+        sys.stdout.write(makefile())
+    elif cmd == "build":
+        targets = set(argv[2:]) or None
+        if targets:
+            known = {a.target for a in read_manifest()}
+            for t in targets - known:
+                sys.exit(f"{t}: not a target of {MANIFEST}")
+        build(targets=targets, quiet=False)
+    elif cmd == "list":
+        for a in read_manifest():
+            size = os.path.getsize(a.source)
+            print(f"{a.path:32} {a.kind:6} {size:7}")
+    else:
+        sys.exit(__doc__)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

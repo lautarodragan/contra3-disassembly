@@ -7,27 +7,37 @@ CA65   ?= ca65
 LD65   ?= ld65
 PYTHON ?= python3
 
-CA65FLAGS := --cpu 65816 -I src --bin-include-dir assets
+CA65FLAGS := --cpu 65816 -I src --bin-include-dir assets --bin-include-dir build/assets
 LD65FLAGS := -C src/contra3.cfg
 
 # src/main.asm includes every bank file, so it is the only translation unit;
-# any file under src/ is a dependency, and so is every binary asset under
-# assets/ (included with .incbin; see tools/assets.py and the book's Assets
-# page).
+# any file under src/ is a dependency, and so is every asset: the files of
+# assets/ (included with .incbin) and the ones the build makes from them in
+# build/assets/ (asset_targets, the compressed streams).  build/assets.mk has
+# a rule per made file, written by tools/assets.py from assets/manifest.txt
+# (book: Assets).
 src_files := $(shell find src -name '*.asm' -o -name '*.inc' -o -name '*.bin')
 asset_files := $(shell find assets -type f)
+
+.DEFAULT_GOAL := all
+include build/assets.mk
+
+build/assets.mk: assets/manifest.txt tools/assets.py | build
+	$(PYTHON) tools/assets.py makefile > $@.tmp && mv $@.tmp $@
 
 # A failed link must not leave a partial ROM behind that looks up to date.
 .DELETE_ON_ERROR:
 
-.PHONY: all compare clean disasm cores bsnes emu-test goldens trace shift-build shift-test book book-check cheats ips cheat-test compress-test
+assets: $(asset_targets)
+
+.PHONY: all assets compare clean disasm cores bsnes emu-test goldens trace shift-build shift-test book book-check cheats ips cheat-test compress-test
 
 all: compare
 
 $(rom): build/main.o src/contra3.cfg
 	$(LD65) $(LD65FLAGS) -m build/contra3.map -Ln build/contra3.lbl -o $@ build/main.o
 
-build/main.o: $(src_files) $(asset_files) | build
+build/main.o: $(src_files) $(asset_files) $(asset_targets) | build
 	$(CA65) $(CA65FLAGS) -o $@ src/main.asm
 
 build:
@@ -43,6 +53,7 @@ compare: $(rom)
 
 clean:
 	rm -f build/main.o build/contra3.sfc build/contra3.map build/contra3.lbl
+	rm -rf build/assets build/assets.mk
 	rm -rf build/shift build/dbg build/cheats build/patches
 	rm -f build/contra3-*.sfc
 

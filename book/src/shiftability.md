@@ -64,7 +64,10 @@ are labelled but not marked (what they decompress to is not checked for
 pointers yet): `; Compressed data for WRAM ...`. Both are binary files in
 `assets/` now, included with `.incbin` right after their label (see
 [Assets](assets.md)); the label stays in the source, so they move with
-their bank.
+their bank. The compressed streams are stored decompressed and compressed
+by the build, so an edited graphic that compresses to another size simply
+moves what follows it in its bank (the Assets page has an example, run in
+the emulator on a shifted build).
 
 ## The shift test
 

@@ -5,8 +5,9 @@
 - GNU make.
 - [cc65](https://cc65.github.io/) 2.19 or newer, for `ca65` and `ld65`.
   On Debian/Ubuntu `sudo apt install cc65` is enough.
-- Python 3, only for the tools (the disassembler and the book's names
-  check), not for building the ROM.
+- Python 3 (standard library only): the build compresses the graphics
+  and data streams from `assets/` with `tools/c3lz.py` (see
+  [Assets](assets.md)); the other tools use it too.
 
 ## make
 
@@ -16,14 +17,17 @@ make compare    # the same
 make clean      # removes what the build made in build/
 ```
 
-The build is two steps:
+The build is three steps:
 
-1. `ca65 --cpu 65816 -I src --bin-include-dir assets -o build/main.o src/main.asm`.
+1. `tools/assets.py` compresses each stream of `assets/` that the
+   manifest marks `lz-v1` or `lz-v2` into `build/assets/` (one make rule
+   per stream, in the generated `build/assets.mk`; see [Assets](assets.md)).
+2. `ca65 --cpu 65816 -I src --bin-include-dir assets --bin-include-dir build/assets -o build/main.o src/main.asm`.
    `src/main.asm` includes every bank file, so it is the only translation
-   unit. Every file in `src/` and every asset file in `assets/` (included
-   with `.incbin`, see [Assets](assets.md)) is a dependency of
+   unit. Every file in `src/`, every file in `assets/` and every stream
+   made in `build/assets/` (included with `.incbin`) is a dependency of
    `build/main.o`.
-2. `ld65 -C src/contra3.cfg -m build/contra3.map -Ln build/contra3.lbl -o build/contra3.sfc build/main.o`.
+3. `ld65 -C src/contra3.cfg -m build/contra3.map -Ln build/contra3.lbl -o build/contra3.sfc build/main.o`.
    The linker config `src/contra3.cfg` has one memory area per bank
    (`ROM00` to `ROM1F`, `$8000` bytes each at `$XX:8000`, filled with `$FF`)
    and one segment per bank (`BANK00` to `BANK1F`). `src/main.asm` opens

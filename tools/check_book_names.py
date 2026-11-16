@@ -51,7 +51,7 @@ IGNORE_FILE = ROOT / "book" / "names-ignore.txt"
 
 # files and directories the build makes, which a fresh checkout doesn't have
 GENERATED = {"build", "build/contra3.sfc", "build/contra3.map", "build/contra3.lbl",
-             "build/main.o", "book/book",
+             "build/main.o", "book/book", "build/assets", "build/assets.mk",
              "build/disasm", "build/disasm/src", "build/disasm/disasm_report.md",
              "build/src", "build/src/snes9x", "build/cores", "build/cores/snes9x_libretro.so",
              "build/cores/bsnes_libretro.so", "out", "out/screens", "out/play"}
