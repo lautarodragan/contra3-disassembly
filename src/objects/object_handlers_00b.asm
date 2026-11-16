@@ -17,30 +17,30 @@
 ; Shot type $02: spread gun bullet, first frame (then type $01).
 update_spread_shot:
 	lda	$04,x
-	bmi	loc_00DDEB
-	bne	loc_00DDE9
+	bmi	default_shot_check_hit
+	bne	default_shot_dec_timer
 	lda	#$3E1C
 	sta	$02,x
 	lda	#$0001
 	sta	$10,x
 	lda	#$0008
 	sta	$04,x
-	bra	loc_00DDEB
+	bra	default_shot_check_hit
 
 ; Shot type $01: bullet of the default gun (also the spread shots after their
 ; first frame); on a hit it bounces back as type $15.
 update_default_shot:
 	lda	$04,x
-	bmi	loc_00DDEB
-	bne	loc_00DDE9
+	bmi	default_shot_check_hit
+	bne	default_shot_dec_timer
 	lda	$14,x
 	sta	$02,x
-loc_00DDE9:
+default_shot_dec_timer:
 	dec	$04,x
-loc_00DDEB:
+default_shot_check_hit:
 	lda	$16,x
-	beq	loc_00DE17
-loc_00DDEF:
+	beq	bounce_shot_return
+bounce_shot_back:
 	lda	$18,x
 	eor	#$FFFF
 	sta	$18,x
@@ -58,35 +58,35 @@ loc_00DDEF:
 	sta	$10,x
 	lda	#$0007
 	sta	$04,x
-loc_00DE17:
+bounce_shot_return:
 	rtl
-loc_00DE18:
+update_crush_shot_flight:
 	lda	$16,x
-	bne	loc_00DE20
+	bne	@stop
 	dec	$04,x
-	bne	loc_00DE2C
-loc_00DE20:
+	bne	@return
+@stop:
 	stz	$04,x
 	stz	$18,x
 	stz	$1A,x
 	stz	$1C,x
 	stz	$1E,x
 	stz	$06,x
-loc_00DE2C:
+@return:
 	rtl
 
 ; Shot type $03: crush missile; once its field $04 is 0 it explodes into type
 ; $0D blast shots around it, one per frame for field $14 frames.
 update_crush_shot:
 	lda	$04,x
-	bne	loc_00DE18
+	bne	update_crush_shot_flight
 	dec	$14,x
-	bne	loc_00DE3D
+	bne	@spawn_blast
 	stz	$06,x
 	lda	#$8000	; [num]
 	sta	$0A,x
 	rtl
-loc_00DE3D:
+@spawn_blast:
 	lda	$14,x
 	and	#$000E
 	tay
@@ -100,7 +100,7 @@ loc_00DE3D:
 	sta	zp_00
 @loop:
 	lda	a:$0010,y
-	beq	loc_00DE63
+	beq	@slot_found
 	tya
 	clc
 	adc	#$0020
@@ -108,7 +108,7 @@ loc_00DE3D:
 	cmp	zp_00
 	bcc	@loop
 	rtl
-loc_00DE63:
+@slot_found:
 	lda	rng_lo
 	and	#$001F
 	sec
@@ -138,53 +138,53 @@ loc_00DE63:
 ; (round robin from homing_target_slot) by 6 units of direction per frame.
 update_homing_shot:
 	lda	$16,x
-	beq	loc_00DEA3
-	brl	loc_00DDEF
-loc_00DEA3:
+	beq	@not_hit
+	brl	bounce_shot_back
+@not_hit:
 	lda	stage_frame_odd
-	bne	loc_00DEAE
+	bne	@odd_frame
 	txa
 	bit	#$0020
-	beq	loc_00DEB5
+	beq	@steer
 	; (not executed in the CDL traces)
 	rtl
-loc_00DEAE:
+@odd_frame:
 	txa
 	bit	#$0020
-	bne	loc_00DEB5
+	bne	@steer
 	rtl
-loc_00DEB5:
+@steer:
 	ldy	a:homing_target_slot
 	lda	#$0021
 	sta	zp_00
-loc_00DEBD:
+@target_loop:
 	lda	a:$0016,y
 	bit	#$0010
-	beq	loc_00DECA
+	beq	@next_target
 	lda	a:$0006,y
-	bpl	loc_00DEE3
-loc_00DECA:
+	bpl	@target_found
+@next_target:
 	tya
 	clc
 	adc	#$0040
 	cmp	#$0AC0
-	bcc	loc_00DED7
+	bcc	@no_wrap
 	lda	#$0280
-loc_00DED7:
+@no_wrap:
 	tay
 	dec	zp_00
-	bpl	loc_00DEBD
+	bpl	@target_loop
 	sty	a:homing_target_slot
 	lda	$04,x
-	bra	loc_00DF38
-loc_00DEE3:
+	bra	@set_velocity
+@target_found:
 	tya
 	clc
 	adc	#$0040
 	cmp	#$0AC0
-	bcc	loc_00DEF0
+	bcc	@store_next_target
 	lda	#$0280
-loc_00DEF0:
+@store_next_target:
 	sta	a:homing_target_slot
 	lda	a:$0028,y
 	lsr	a
@@ -204,25 +204,25 @@ loc_00DEF0:
 	sec
 	lda	$04,x
 	sbc	zp_0A
-	bpl	loc_00DF28
+	bpl	@diff_positive
 	cmp	#$FFC0	; [num]
-	bcc	loc_00DF2D
-loc_00DF20:
+	bcc	@dec_angle
+@inc_angle:
 	clc
 	lda	$04,x
 	adc	#$0006
-	bra	loc_00DF33
-loc_00DF28:
+	bra	@store_angle
+@diff_positive:
 	cmp	#$0040
-	bcs	loc_00DF20
-loc_00DF2D:
+	bcs	@inc_angle
+@dec_angle:
 	sec
 	lda	$04,x
 	sbc	#$0006
-loc_00DF33:
+@store_angle:
 	and	#$007E
 	sta	$04,x
-loc_00DF38:
+@set_velocity:
 	tay
 	lda	a:vel8_x_sub,y
 	sta	$18,x
@@ -258,7 +258,7 @@ update_shot_type_05:
 
 update_shot_type_06:
 	dec	$00,x
-	bpl	loc_00DF89
+	bpl	@animate
 	stz	$06,x
 	lda	#$0007
 	sta	$04,x
@@ -267,27 +267,27 @@ update_shot_type_06:
 	lda	#$FFFC	; [num]
 	sta	$1E,x
 	rtl
-loc_00DF89:
+@animate:
 	lda	stage_frame_bit1
-	bne	loc_00DF92
+	bne	@flip_h
 	lda	$04,x
 	sta	$02,x
 	rtl
-loc_00DF92:
+@flip_h:
 	lda	$04,x
 	ora	#$4000
 	sta	$02,x
 	rtl
-loc_00DF9A:
+spawn_shot_type_07_blasts:
 	; (not executed in the CDL traces)
 	dec	$14,x
-	bpl	loc_00DFA9
+	bpl	@spawn_blast
 	lda	#$3E00
 	sta	$02,x
 	lda	#$8000	; [num]
 	sta	$0A,x
 	rtl
-loc_00DFA9:
+@spawn_blast:
 	stz	$18,x
 	stz	$1A,x
 	stz	$02,x
@@ -299,7 +299,7 @@ loc_00DFA9:
 	sta	zp_00
 @loop:
 	lda	a:$0010,y
-	beq	loc_00DFCA
+	beq	@slot_found
 	tya
 	clc
 	adc	#$0020
@@ -307,7 +307,7 @@ loc_00DFA9:
 	cmp	zp_00
 	bcc	@loop
 	rtl
-loc_00DFCA:
+@slot_found:
 	lda	rng_lo
 	and	#$001F
 	sec
@@ -330,7 +330,7 @@ loc_00DFCA:
 
 update_shot_type_07:
 	lda	$16,x
-	bpl	loc_00DF9A
+	bpl	spawn_shot_type_07_blasts
 	clc
 	lda	$18,x
 	adc	#$2000
@@ -339,7 +339,7 @@ update_shot_type_07:
 	adc	#$0000
 	sta	$1A,x
 	lda	stage_frame_odd
-	beq	loc_00E049
+	beq	@return
 	txy
 	phx
 	txa
@@ -348,7 +348,7 @@ update_shot_type_07:
 	sta	zp_00
 @loop:
 	lda	$30,x
-	beq	loc_00E029
+	beq	@slot_found
 	txa
 	clc
 	adc	#$0020
@@ -357,7 +357,7 @@ update_shot_type_07:
 	bcc	@loop
 	plx
 	rtl
-loc_00E029:
+@slot_found:
 	lda	#$0012
 	sta	$30,x
 	lda	a:$000E,y
@@ -372,16 +372,16 @@ loc_00E029:
 	lda	#$0010
 	sta	$24,x
 	plx
-loc_00E049:
+@return:
 	rtl
 
 update_shot_type_08:
 	dec	$04,x
-	bne	loc_00E054
+	bne	@animate
 	lda	#$8000	; [num]
 	sta	$0A,x
 	rtl
-loc_00E054:
+@animate:
 	; (not executed in the CDL traces)
 	lda	$04,x
 	and	#$0006
@@ -406,7 +406,7 @@ update_laser_shot:
 
 update_shot_type_09:
 	lda	$16,x
-	bmi	loc_00E08B
+	bmi	@flicker
 	lda	#$0008
 	sta	$10,x
 	stz	$06,x
@@ -417,14 +417,14 @@ update_shot_type_09:
 	lda	#$0001
 	sta	$04,x
 	rtl
-loc_00E08B:
+@flicker:
 	lda	stage_frame_bit1
-	beq	loc_00E097
+	beq	@palette_1
 	lda	$02,x
 	and	#$F1FF
 	sta	$02,x
 	rtl
-loc_00E097:
+@palette_1:
 	lda	$02,x
 	ora	#$0200
 	sta	$02,x
@@ -432,14 +432,14 @@ loc_00E097:
 
 update_shot_type_0C:
 	dec	$04,x
-	beq	loc_00E0AF
+	beq	@expire
 	lda	stage_frame_mod8
 	and	#$0006
 	tay
 	lda	a:shot_type_0C_attrs,y
 	sta	$02,x
 	rtl
-loc_00E0AF:
+@expire:
 	lda	#$8000	; [num]
 	sta	$0A,x
 	rtl
@@ -448,16 +448,16 @@ loc_00E0AF:
 ; $07), frees itself when field $04 runs out.
 update_crush_blast:
 	lda	$16,x
-	beq	loc_00E0BB
+	beq	@tick
 	stz	$06,x
-loc_00E0BB:
+@tick:
 	dec	$04,x
-	bpl	loc_00E0C7
+	bpl	@animate
 	stz	$06,x
 	lda	#$8000	; [num]
 	sta	$0A,x
 	rtl
-loc_00E0C7:
+@animate:
 	lda	$04,x
 	and	#$FFFE
 	tay
@@ -483,14 +483,14 @@ update_shot_type_10:
 	adc	#$FFFF
 	sta	$1A,x
 	dec	$04,x
-	beq	loc_00E0FC
+	beq	@expire
 	lda	$04,x
 	and	#$FFFE
 	tay
 	lda	a:shot_type_10_attrs,y
 	sta	$02,x
 	rtl
-loc_00E0FC:
+@expire:
 	lda	#$8000	; [num]
 	sta	$0A,x
 	rtl
@@ -508,11 +508,11 @@ update_shot_type_13:
 ; with damage 0 until field $04 runs out.
 update_spent_shot:
 	dec	$04,x
-	bne	loc_00E116
+	bne	@animate
 	lda	#$8000	; [num]
 	sta	$0A,x
 	rtl
-loc_00E116:
+@animate:
 	lda	$04,x
 	and	#$0006
 	tay
@@ -524,7 +524,7 @@ loc_00E116:
 ; carry set when there is none.
 find_free_shot_slot_up_to:
 	lda	$10,x
-	beq	loc_00E132
+	beq	@found
 	txa
 	clc
 	adc	#$0020
@@ -533,7 +533,7 @@ find_free_shot_slot_up_to:
 	bne	find_free_shot_slot_up_to
 	sec
 	rtl
-loc_00E132:
+@found:
 	clc
 	rtl
 
@@ -543,37 +543,37 @@ find_free_homing_shot_slot:
 	adc	#$0080
 	tax
 	lda	$10,x
-	beq	loc_00E168
+	beq	@found
 	txa
 	sec
 	sbc	#$0040
 	tax
 	lda	$10,x
-	beq	loc_00E168
+	beq	@found
 	txa
 	clc
 	adc	#$0080
 	tax
 	lda	$10,x
-	beq	loc_00E168
+	beq	@found
 	txa
 	sec
 	sbc	#$00C0
 	tax
 	lda	$10,x
-	beq	loc_00E168
+	beq	@found
 	txa
 	clc
 	adc	#$0100
 	tax
 	lda	$10,x
-	beq	loc_00E168
+	beq	@found
 	sec
 	rtl
-loc_00E168:
+@found:
 	clc
 	rtl
-loc_00E16A:
+return_no_bg_tile:
 	lda	#$0000
 	rtl
 
@@ -585,7 +585,7 @@ get_bg_tile_at_object:
 	lda	$0E,x
 	adc	zp_02
 	cmp	#$00E0
-	bcs	loc_00E16A
+	bcs	return_no_bg_tile
 	clc
 	adc	a:bg1_y
 	and	#$00FF

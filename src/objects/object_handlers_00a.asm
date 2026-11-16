@@ -30,15 +30,15 @@ scroll_bg1_by_velocity_and_spawn:
 	ldy	a:airship_spawn_index
 	lda	a:airship_spawn_x,y
 	cmp	a:bg1_x
-	bcc	loc_00CF7D
+	bcc	@return
 	phx
 	ldx	#$0600
 	jsl	f:find_free_slot_from_x
-	bcc	loc_00CF59
+	bcc	@slot_found
 	; (not executed in the CDL traces)
 	plx
 	rtl
-loc_00CF59:
+@slot_found:
 	lda	a:airship_spawn_type_y,y
 	pha
 	and	#$00FF
@@ -57,7 +57,7 @@ loc_00CF59:
 	adc	#$0006
 	sta	a:airship_spawn_index
 	plx
-loc_00CF7D:
+@return:
 	rtl
 
 ; Object type $55: stage 6: palette cycling (cgram_upload_*). Not identified
@@ -155,7 +155,7 @@ update_object_type_89:
 ; nibble of field $3A) and deletes itself.
 update_bg2_scroll_mode_trigger:
 	lda	OBJ_STATE,x
-	bne	loc_00D019
+	bne	@wait_drawn
 	lda	#$0001
 	sta	a:bg2_scroll_mode
 	lda	$3A,x
@@ -164,7 +164,7 @@ update_bg2_scroll_mode_trigger:
 	inc	OBJ_STATE,x
 	stz	a:bg2_screen_drawn
 	rtl
-loc_00D019:
+@wait_drawn:
 	lda	a:bg2_screen_drawn
 	beq	@return
 	lda	$3A,x
@@ -317,7 +317,7 @@ object_type_06_state_02:
 	.a16
 	ldy	a:obj06_vram_offset
 	jsl	f:begin_vram_transfer
-loc_00D11D:
+@block_loop:
 	lda	a:obj06_map_ptr
 	tay
 	lda	a:$0000,y
@@ -348,13 +348,13 @@ loc_00D11D:
 	inc	a:obj06_map_ptr
 	lda	a:obj06_map_ptr
 	and	#$000F
-	bne	loc_00D196
+	bne	@next_block
 	clc
 	lda	a:obj06_map_ptr
 	adc	#$0070
 	sta	a:obj06_map_ptr
 	cmp	#$F500	; [num]
-	bcc	loc_00D196
+	bcc	@next_block
 	sec
 	sbc	#$0200
 	sta	a:obj06_map_ptr
@@ -362,20 +362,20 @@ loc_00D11D:
 	lda	a:obj06_block_column
 	adc	#$0008
 	cmp	#$0020
-	bcc	loc_00D187
+	bcc	@store_column
 	lda	#$0000
-loc_00D187:
+@store_column:
 	sta	a:obj06_block_column
-	bne	loc_00D196
+	bne	@next_block
 	clc
 	lda	a:obj06_map_ptr
 	adc	#$0010
 	sta	a:obj06_map_ptr
-loc_00D196:
+@next_block:
 	dec	zp_08
-	beq	loc_00D19D
-	brl	loc_00D11D
-loc_00D19D:
+	beq	@done
+	brl	@block_loop
+@done:
 	jsl	f:end_vram_transfer
 	sep	#$20
 	.a8
@@ -477,15 +477,15 @@ object_type_06_state_03:
 	jsl	f:queue_sound
 	lda	#$0080
 	sta	a:bg1_vel_y
-loc_00D28F:
+object_type_06_return:
 	rtl
 
 object_type_06_state_04:
 	lda	a:bg1_vel_y
-	bmi	loc_00D29A
+	bmi	@check_zoom
 	dec	a:bg1_vel_y
-	bpl	loc_00D28F
-loc_00D29A:
+	bpl	object_type_06_return
+@check_zoom:
 	lda	a:m7d_shadow
 	cmp	#$0280
 	bcs	object_type_06_state_05
@@ -532,7 +532,7 @@ object_type_06_state_05:
 	sta	a:m7a_shadow
 	sta	a:m7d_shadow
 	cmp	#$002A
-	bcs	loc_00D323
+	bcs	@still_zooming
 	lda	#$0047
 	jsl	f:queue_sound
 	inc	$12,x
@@ -543,14 +543,14 @@ object_type_06_state_05:
 	jsl	f:load_data_list
 	ldx	zp_FC
 	rtl
-loc_00D323:
+@still_zooming:
 	cmp	#$01D0
-	bcs	loc_00D332
+	bcs	@skip_rotate
 	lda	stage_frame_odd
-	bne	loc_00D332
+	bne	@skip_rotate
 	dec	a:m7b_shadow
 	dec	a:m7c_shadow
-loc_00D332:
+@skip_rotate:
 	clc
 	lda	$1C,x
 	adc	#$0700
@@ -572,7 +572,7 @@ loc_00D332:
 	sta	f:hdma_tables+$27
 	lda	f:hdma_tables+$42
 	cmp	#$47
-	bcs	loc_00D37B
+	bcs	@return
 	sec
 	lda	$38,x
 	sbc	$1C,x
@@ -581,7 +581,7 @@ loc_00D332:
 	sbc	$1E,x
 	sta	f:hdma_tables+$42
 	sta	f:hdma_tables+$23
-loc_00D37B:
+@return:
 	rep	#$20
 	.a16
 	rtl
@@ -592,11 +592,11 @@ object_type_06_state_06:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	cmp	#$0100
-	bcs	loc_00D394
+	bcs	@shake_done
 	cmp	#$00D8
-	bne	loc_00D3C0
-	bra	loc_00D3C0
-loc_00D394:
+	bne	@spawn_debris
+	bra	@spawn_debris
+@shake_done:
 	inc	$12,x
 	lda	#$0001
 	sta	a:bg1_scroll_mode
@@ -612,7 +612,7 @@ loc_00D394:
 	lda	#$0000
 	sta	f:hdma_tables+$29
 	rtl
-loc_00D3C0:
+@spawn_debris:
 	lda	#$0008
 	sta	zp_00
 	lda	#$00D0
@@ -693,16 +693,16 @@ object_type_06_state_08:
 	.a16
 	plx
 	lda	stage_frame_odd
-	bne	loc_00D47E
+	bne	@not_done
 	dec	a:obj06_dither_step
-	bne	loc_00D47E
+	bne	@not_done
 	lda	#$8000	; [num]
 	sta	$16,x
 	stz	hdma_preset
 	stz	a:respawn_mode
 	rtl
-loc_00D47E:
-	bra	loc_00D48E
+@not_done:
+	bra	update_object_type_06_bg
 
 object_type_06_state_07:
 	lda	#$00C0
@@ -710,7 +710,7 @@ object_type_06_state_07:
 	stz	zp_02
 	lda	#$0000
 	jsl	f:kill_players_outside
-loc_00D48E:
+update_object_type_06_bg:
 	lda	a:bg2_x
 	sta	f:hdma_tables+$21
 	sta	f:hdma_tables+$24
@@ -737,7 +737,7 @@ update_object_type_2A:
 @loop:
 	lda	a:$0010,y
 	cmp	#$0006
-	beq	loc_00D4D2
+	beq	@found_type_06
 	; (not executed in the CDL traces)
 	tya
 	clc
@@ -745,21 +745,21 @@ update_object_type_2A:
 	tay
 	cmp	#$0AC0
 	bcc	@loop
-loc_00D4D2:
+@found_type_06:
 	lda	a:$0012,y
 	inc	a
 	sta	a:$0012,y
 	lda	#$8000	; [num]
 	sta	$16,x
 	ldy	#$0280
-@loop:
+@loop2:
 	lda	a:$0010,y
 	cmp	#$002F
-	beq	loc_00D4EE
+	beq	@found_type_2f
 	; (not executed in the CDL traces)
 	ldy	#$02C0
-	bra	@loop
-loc_00D4EE:
+	bra	@loop2
+@found_type_2f:
 	lda	#$8000	; [num]
 	sta	a:$0016,y
 	rtl
@@ -768,13 +768,13 @@ loc_00D4EE:
 ; seen in the emulator); falls with gravity, trailing type $1D fire effects.
 update_bomber_bomb:
 	lda	stage_frame_odd
-	bne	loc_00D530
+	bne	@fall
 	ldy	OBJ_ANIM,x
 	lda	a:$0004,y
 	sta	zp_00
 	ldy	#$0840
 	jsl	f:find_free_slot_y_down
-	bcc	loc_00D530
+	bcc	@fall
 	lda	zp_00
 	sta	a:$0020,y
 	lda	$0E,x
@@ -789,7 +789,7 @@ update_bomber_bomb:
 	sta	a:$0016,y
 	lda	#OBJT_EFFECT
 	sta	a:$0010,y
-loc_00D530:
+@fall:
 	sec
 	lda	$1C,x
 	sbc	#$0900
@@ -798,7 +798,7 @@ loc_00D530:
 	sbc	#$0000
 	sta	$1E,x
 	lda	$34,x
-	bpl	loc_00D553
+	bpl	@drift_right
 	sec
 	lda	$18,x
 	sbc	#$1400
@@ -807,7 +807,7 @@ loc_00D530:
 	sbc	#$0000
 	sta	$1A,x
 	rtl
-loc_00D553:
+@drift_right:
 	clc
 	lda	$18,x
 	adc	#$1400
@@ -822,7 +822,7 @@ loc_00D553:
 update_object_type_3C:
 	lda	stage_frame_counter
 	bit	#$0007
-	bne	loc_00D57F
+	bne	@scroll_split
 	and	#$0018
 	lsr	a
 	lsr	a
@@ -833,7 +833,7 @@ update_object_type_3C:
 	sta	bg_dma_size
 	lda	#$0E80
 	sta	bg_dma_vram_addr
-loc_00D57F:
+@scroll_split:
 	lda	#$0001
 	sta	a:scroll_split_pattern
 	clc
@@ -841,18 +841,18 @@ loc_00D57F:
 	adc	#$0200
 	sta	a:scroll_split_y
 	cmp	#$0090
-	bcs	loc_00D5A2
+	bcs	@not_done
 	lda	#$8000	; [num]
 	sta	$16,x
 	stz	a:scroll_split_pattern
 	stz	a:scroll_split_y
 	stz	hdma_preset
 	rtl
-loc_00D5A2:
+@not_done:
 	ldy	#$001E
 	lda	#$0800
 	sta	zp_08
-loc_00D5AA:
+add_bg2_line_scroll_ramp:
 	lda	#$0000
 	sta	zp_04
 	sta	zp_0A
@@ -895,16 +895,16 @@ add_line_scroll_ramp:
 	rep	#$20
 	.a16
 	rtl
-loc_00D5ED:
+wobble_stage4_line_scroll:
 	lda	stage_frame_counter
 	lsr	a
 	lsr	a
 	lsr	a
 	and	#$0007
 	bit	#$0004
-	beq	loc_00D5FD
+	beq	@apply_wobble
 	eor	#$FFFF
-loc_00D5FD:
+@apply_wobble:
 	and	#$0003
 	pha
 	clc
@@ -923,13 +923,13 @@ update_stage4_line_scroll:
 	adc	#$0100
 	sta	a:scroll_split_y
 	cmp	#$0002
-	bcs	loc_00D630
+	bcs	@not_done
 	inc	OBJ_STATE,x
 	stz	a:scroll_split_pattern
 	stz	a:scroll_split_y
 	stz	hdma_preset
 	rtl
-loc_00D630:
+@not_done:
 	ldy	#$001A
 	lda	#$0012
 	sta	zp_04
@@ -942,8 +942,8 @@ loc_00D630:
 	ldy	#$0012
 	lda	#$6000
 	sta	zp_08
-	brl	loc_00D5AA
+	brl	add_bg2_line_scroll_ramp
 	; CDL: not accessed
 	.byte	$6B
-loc_00D655:
+spin_fire_return:
 	rtl

@@ -14,7 +14,7 @@
 ; $36).  In: X = player, zp_14/zp_16 = muzzle offset.
 spin_fire_weapon_1:
 	lda	PLAYER_FIRE_DELAY_1,x
-	bne	loc_00D655
+	bne	spin_fire_return
 	lda	a:PLAYER_WEAPON_1,x
 	pha
 	asl	a
@@ -51,7 +51,7 @@ tbl_spin_fire_1:
 ; turn).
 spin_fire_weapon_2:
 	lda	PLAYER_FIRE_DELAY_2,x
-	bne	loc_00D655
+	bne	spin_fire_return
 	lda	a:PLAYER_WEAPON_2,x
 	pha
 	asl	a

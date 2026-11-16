@@ -9,9 +9,9 @@
 spawn_ending_firework:
 	lda	stage_frame_counter
 	and	#$007F
-	bne	loc_02FD09
+	bne	@return
 	jsr	a:find_free_shot_slot
-	bcs	loc_02FD09
+	bcs	@return
 	lda	stage_frame_counter
 	and	#$0180
 	asl	a
@@ -32,7 +32,7 @@ spawn_ending_firework:
 	and	#$001F
 	adc	#$0020
 	sta	a:$000E,y
-loc_02FD09:
+@return:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
@@ -44,22 +44,22 @@ find_free_shot_slot_long:
 find_free_shot_slot:
 	phx
 	ldx	#$0000
-loc_02FD12:
+@loop:
 	txa
 	asl	a
 	tay
 	lda	a:shot_slot_addresses,y
 	tay
 	lda	a:$0010,y
-	beq	loc_02FD27
+	beq	@found
 	inx
 	cpx	#$0028
-	bcc	loc_02FD12
+	bcc	@loop
 	; (not executed in the CDL traces)
 	sec
 	plx
 	rts
-loc_02FD27:
+@found:
 	clc
 	plx
 	rts
@@ -99,25 +99,25 @@ ending_firework_state_01:
 	inc	$00,x
 	lda	$00,x
 	cmp	#$000F
-	bcc	loc_02FD73
+	bcc	@return
 	jsr	a:spawn_firework_sparks
 	stx	zp_00
 	lda	#$0000
 	ldy	#$0000
-loc_02FD6A:
+@clear_loop:
 	sta	(zp_00),y
 	iny
 	iny
 	cpy	#$0020
-	bcc	loc_02FD6A
-loc_02FD73:
+	bcc	@clear_loop
+@return:
 	rtl
 
 spawn_firework_sparks:
 	stz	zp_00
-loc_02FD76:
+@loop:
 	jsr	a:find_free_shot_slot
-	bcs	loc_02FDB5
+	bcs	@next
 	sty	zp_02
 	lda	$14,x
 	and	#$0003
@@ -142,7 +142,7 @@ loc_02FD76:
 	sta	a:$001C,y
 	lda	$1E,x
 	sta	a:$001E,y
-loc_02FDB5:
+@next:
 	inc	zp_00
 	lda	$14,x
 	and	#$0003
@@ -150,7 +150,7 @@ loc_02FDB5:
 	tay
 	lda	a:firework_spark_counts,y
 	cmp	zp_00
-	bcs	loc_02FD76
+	bcs	@loop
 	rts
 
 apply_spark_gravity:
@@ -158,9 +158,9 @@ apply_spark_gravity:
 	clc
 	adc	#$0400
 	sta	$1C,x
-	bcc	loc_02FDD2
+	bcc	@return
 	inc	$1E,x
-loc_02FDD2:
+@return:
 	rts
 
 ; Shot type $17, $1A (tbl_shot_types). Ending firework spark with a random
@@ -203,36 +203,36 @@ spark_random_state_01:
 	inc	$00,x
 	lda	$00,x
 	cmp	#$001E
-	bcc	loc_02FE18
+	bcc	@return
 	stz	$00,x
 	inc	$12,x
-loc_02FE18:
+@return:
 	rtl
 
 spark_random_state_02:
 	lda	$00,x
 	bit	#$0002
-	bne	loc_02FE25
+	bne	@alt_palette
 	lda	#$3E5E
-	bra	loc_02FE28
-loc_02FE25:
+	bra	@set_palette
+@alt_palette:
 	lda	#$3E4F
-loc_02FE28:
+@set_palette:
 	sta	$02,x
 	inc	$00,x
 	lda	$00,x
 	cmp	#$003C
-	bcc	loc_02FE44
+	bcc	@return
 	stx	zp_00
 	lda	#$0000
 	ldy	#$0000
-loc_02FE3B:
+@clear_loop:
 	sta	(zp_00),y
 	iny
 	iny
 	cpy	#$0020
-	bcc	loc_02FE3B
-loc_02FE44:
+	bcc	@clear_loop
+@return:
 	rtl
 
 ; Shot type $18 (tbl_shot_types). Ending firework spark thrown in one of 16
@@ -275,37 +275,37 @@ spark_radial_state_01:
 	inc	$00,x
 	lda	$00,x
 	cmp	#$0032
-	bcc	loc_02FE8A
+	bcc	@return
 	stz	$00,x
 	inc	$12,x
-loc_02FE8A:
+@return:
 	rtl
 
 spark_radial_state_02:
 	lda	$00,x
 	bit	#$0002
-	bne	loc_02FE97
+	bne	@alt_palette
 	lda	#$3C4F
-	bra	loc_02FE9A
-loc_02FE97:
+	bra	@set_palette
+@alt_palette:
 	lda	#$3E4F
-loc_02FE9A:
+@set_palette:
 	sta	$02,x
 	inc	$00,x
 	lda	$00,x
 	cmp	#$0046
-	bcc	loc_02FEB6
-loc_02FEA5:
+	bcc	spark_radial_return
+clear_spark_slot:
 	stx	zp_00
 	lda	#$0000
 	ldy	#$0000
-loc_02FEAD:
+@loop:
 	sta	(zp_00),y
 	iny
 	iny
 	cpy	#$0020
-	bcc	loc_02FEAD
-loc_02FEB6:
+	bcc	@loop
+spark_radial_return:
 	rtl
 
 ; Shot type $19 (tbl_shot_types). As spark_radial at twice the speed, other
@@ -353,18 +353,18 @@ spark_radial_fast_state_01:
 spark_radial_fast_state_02:
 	lda	$00,x
 	bit	#$0002
-	bne	loc_02FF06
+	bne	@alt_palette
 	lda	#$324F
-	bra	loc_02FF09
-loc_02FF06:
+	bra	@set_palette
+@alt_palette:
 	lda	#$384F
-loc_02FF09:
+@set_palette:
 	sta	$02,x
 	inc	$00,x
 	lda	$00,x
 	cmp	#$0046
-	bcc	loc_02FEB6
-	jmp	a:loc_02FEA5
+	bcc	spark_radial_return
+	jmp	a:clear_spark_slot
 
 random_spark_velocity:
 	lda	rng_lo
@@ -374,7 +374,7 @@ random_spark_velocity:
 	sta	zp_0A
 	adc	zp_E9
 	sta	rng_lo
-	bra	loc_02FF4B
+	bra	scale_spark_velocity
 
 radial_spark_velocity:
 	lda	$04,x
@@ -398,14 +398,14 @@ radial_spark_velocity:
 	and	#$00FF
 	sta	zp_00
 	jsl	f:polar_to_xy
-loc_02FF4B:
+scale_spark_velocity:
 	lda	zp_08
-	bmi	loc_02FF54
+	bmi	@x_negative
 	lda	#$0000
-	bra	loc_02FF57
-loc_02FF54:
+	bra	@store_x_sign
+@x_negative:
 	lda	#$FFFF	; [num]
-loc_02FF57:
+@store_x_sign:
 	sta	zp_00
 	lda	zp_08
 	asl	a
@@ -417,12 +417,12 @@ loc_02FF57:
 	asl	a
 	sta	zp_08
 	lda	zp_0A
-	bmi	loc_02FF6D
+	bmi	@y_negative
 	lda	#$0000
-	bra	loc_02FF70
-loc_02FF6D:
+	bra	@store_y_sign
+@y_negative:
 	lda	#$FFFF	; [num]
-loc_02FF70:
+@store_y_sign:
 	sta	zp_02
 	lda	zp_0A
 	asl	a

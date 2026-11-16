@@ -10,7 +10,7 @@ spawn_ending_crowd:
 	phx
 	phy
 	stz	zp_00
-loc_04E222:
+@loop:
 	lda	zp_00
 	asl	a
 	tay
@@ -48,7 +48,7 @@ loc_04E222:
 	lda	zp_00
 	ldy	difficulty
 	cmp	a:ending_crowd_counts,y
-	bcc	loc_04E222
+	bcc	@loop
 	ply
 	plx
 	pla
@@ -80,55 +80,55 @@ ending_crowd_walker_a_state_00:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	cmp	#$00B4
-	bcs	loc_04E2BC
+	bcs	ending_crowd_walker_a_next_state
 	lda	OBJ_FACING,x
-	bne	loc_04E2AD
+	bne	@walk_left
 	lda	OBJ_X,x
 	inc	a
 	and	#$00FF
 	cmp	#$0030
-	bcs	loc_04E2C4
+	bcs	ending_crowd_walker_a_turn_around
 	sta	OBJ_X,x
-	bra	loc_04E2C0
-loc_04E2AD:
+	bra	ending_crowd_walker_a_place
+@walk_left:
 	lda	OBJ_X,x
 	dec	a
 	and	#$00FF
 	cmp	#$0008
-	bcc	loc_04E2C4
+	bcc	ending_crowd_walker_a_turn_around
 	sta	OBJ_X,x
-	bra	loc_04E2C0
-loc_04E2BC:
+	bra	ending_crowd_walker_a_place
+ending_crowd_walker_a_next_state:
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
-loc_04E2C0:
+ending_crowd_walker_a_place:
 	jsr	a:place_ending_crowd_member
 	rtl
-loc_04E2C4:
+ending_crowd_walker_a_turn_around:
 	lda	OBJ_FACING,x
 	eor	#$0002
 	and	#$0002
 	sta	OBJ_FACING,x
-	bra	loc_04E2C0
+	bra	ending_crowd_walker_a_place
 
 ending_crowd_walker_a_state_01:
 	lda	OBJ_FACING,x
 	lda	#.loword(anim_05F642)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
-	bra	loc_04E2BC
+	bra	ending_crowd_walker_a_next_state
 
 ending_crowd_walker_a_state_02:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	cmp	#$00B4
-	bcc	loc_04E2C0
+	bcc	ending_crowd_walker_a_place
 	lda	#.loword(anim_05F650)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	stz	OBJ_TIMER,x
 	stz	OBJ_STATE,x
-	bra	loc_04E2C0
+	bra	ending_crowd_walker_a_place
 
 ; Object type $9F. Ending: another crowd member walking back and forth.
 update_ending_crowd_walker_b:
@@ -151,11 +151,11 @@ ending_crowd_walker_b_state_00:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	cmp	#$00F0
-	bcc	loc_04E317
-loc_04E313:
+	bcc	ending_crowd_walker_b_place
+ending_crowd_walker_b_next_state:
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
-loc_04E317:
+ending_crowd_walker_b_place:
 	jsr	a:place_ending_crowd_member
 	rtl
 
@@ -164,58 +164,58 @@ ending_crowd_walker_b_state_01:
 	lda	#.loword(anim_05F678)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
-	bra	loc_04E313
+	bra	ending_crowd_walker_b_next_state
 
 ending_crowd_walker_b_state_02:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	cmp	#$00B4
-	bcc	loc_04E317
-	bcs	loc_04E313
+	bcc	ending_crowd_walker_b_place
+	bcs	ending_crowd_walker_b_next_state
 
 ending_crowd_walker_b_state_03:
 	lda	OBJ_FACING,x
 	lda	#.loword(anim_05F680)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
-	bra	loc_04E313
+	bra	ending_crowd_walker_b_next_state
 
 ending_crowd_walker_b_state_04:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	cmp	#$00B4
-	bcs	loc_04E372
+	bcs	@stop_walking
 	lda	OBJ_FACING,x
-	bne	loc_04E359
+	bne	@walk_left
 	lda	OBJ_X,x
 	inc	a
 	inc	a
 	and	#$00FF
 	cmp	#$00E8
-	bcs	loc_04E366
+	bcs	@turn_around
 	sta	OBJ_X,x
-	bra	loc_04E317
-loc_04E359:
+	bra	ending_crowd_walker_b_place
+@walk_left:
 	lda	OBJ_X,x
 	dec	a
 	dec	a
 	cmp	#$00C0
-	bcc	loc_04E366
+	bcc	@turn_around
 	sta	OBJ_X,x
-	bra	loc_04E317
-loc_04E366:
+	bra	ending_crowd_walker_b_place
+@turn_around:
 	lda	OBJ_FACING,x
 	eor	#$0002
 	and	#$0002
 	sta	OBJ_FACING,x
-	bra	loc_04E317
-loc_04E372:
+	bra	ending_crowd_walker_b_place
+@stop_walking:
 	lda	#.loword(anim_05F66A)
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	stz	OBJ_TIMER,x
 	stz	OBJ_STATE,x
-	bra	loc_04E317
+	bra	ending_crowd_walker_b_place
 
 place_ending_crowd_member:
 	lda	#$0100

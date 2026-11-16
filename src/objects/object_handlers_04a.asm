@@ -1758,7 +1758,7 @@ stage4_controller_state_05:
 	lda	#$0010
 	sta	a:bg1_x
 	sta	a:bg1_x+BG_HOFS_LATCH
-	jml	f:loc_00D5ED
+	jml	f:wobble_stage4_line_scroll
 @return:
 	rtl
 
@@ -1776,7 +1776,7 @@ stage4_controller_state_06:
 	lda	#$0100
 loc_048DB2:
 	sta	a:bg1_x
-	jml	f:loc_00D5ED
+	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_07:
 	lda	#$0008
@@ -1797,7 +1797,7 @@ stage4_controller_state_07:
 	inc	OBJ_STATE,x
 	stz	a:bg1_x
 loc_048DE0:
-	jml	f:loc_00D5ED
+	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_08:
 	dec	OBJ_TIMER,x
@@ -1806,7 +1806,7 @@ stage4_controller_state_08:
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
 loc_048DEF:
-	jml	f:loc_00D5ED
+	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_0A:
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
@@ -1824,7 +1824,7 @@ stage4_controller_state_09:
 	sta	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
 loc_048E0D:
 	jsr	a:stage4_spawn_dropping_soldier
-	jml	f:loc_00D5ED
+	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_0B:
 	phx
@@ -1844,7 +1844,7 @@ stage4_controller_state_0B:
 	stz	OBJ_TIMER,x
 	stz	$36,x
 	inc	OBJ_STATE,x
-	jml	f:loc_00D5ED
+	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_0C:
 	ldy	OBJ_TIMER,x
@@ -1922,7 +1922,7 @@ loc_048ED4:
 	sta	a:bg1_vel_y
 loc_048EE7:
 	jsl	f:scroll_bg1_by_velocity_and_spawn
-	jml	f:loc_00D5ED
+	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_0D:
 	dec	OBJ_TIMER,x
@@ -1933,7 +1933,7 @@ stage4_controller_state_0D:
 	sta	a:stage_checkpoint
 	inc	OBJ_STATE,x
 loc_048F01:
-	jml	f:loc_00D5ED
+	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_0E:
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
@@ -1947,7 +1947,7 @@ stage4_controller_state_0E:
 	jsl	f:load_data_list
 	plx
 loc_048F1D:
-	jml	f:loc_00D5ED
+	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_0F:
 	dec	OBJ_TIMER,x
@@ -1960,7 +1960,7 @@ stage4_controller_state_0F:
 	sta	a:bg1_scroll_mode
 loc_048F35:
 	jsr	a:stage4_spawn_weapon_capsule
-	jml	f:loc_00D5ED
+	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_10:
 	inc	OBJ_STATE,x
@@ -1996,7 +1996,7 @@ stage4_controller_state_11:
 	lda	#$0006
 	sta	a:respawn_mode
 loc_048F91:
-	jml	f:loc_00D5ED
+	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_12:
 	lda	a:p1_lives
