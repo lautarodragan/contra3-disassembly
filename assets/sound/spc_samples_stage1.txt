@@ -1,0 +1,9 @@
+# The samples of the stage1 song sets: the block spc_samples_stage1, uploaded to ARAM
+# at the address of `at` (book: Sound). One line per sound source: its
+# number, the sample (assets/sound/samples/), the loop start in bytes
+# from the sample's start (a multiple of 9); `-`: no sample ($FFFF).
+at $B08E
+20  stage1-20.brr    0
+21  stage1-21.brr    1224
+22  opening-22.brr   0
+23  stage1-23.brr    4032

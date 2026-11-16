@@ -139,3 +139,69 @@ Three lists of type 0 that nothing uses (`unused_load_list_05D0C3` ...)
 point at song streams with VRAM address `$3000`: probably song sets whose
 type byte was changed.
 
+
+## Samples
+
+The DSP plays *BRR* samples: blocks of 9 bytes, a header byte (bits 4-7
+shift, bits 2-3 filter, bit 1 loop, bit 0 end) and 16 samples of 4 bits.
+A voice plays a *sound source*: entry *n* of the sample directory (at
+DIR x `$100` = `$5000`) is two words, the address of the sample and the
+address its loop starts at; at the block with the end bit the voice jumps
+to the loop address if the loop bit is set, else it stops.
+
+Contra III uses 24 sources: 0-19 are the samples of
+`spc_samples_common`, uploaded once at boot, and 20-23 the four samples
+of the current stage (the `$B08E` block of the stage's song set). Each
+directory holds the same entries 0-19 and its stage's 20-23; entries 24-63
+are zeros; stages 2 and 4 have no source 23 (`$FFFF`, `$FFFF`). In both
+blocks the samples follow each other in source order with no gap, each
+ending at its block with the end bit, so the directory gives every
+sample's bounds.
+
+The 16 blocks of samples and directories are made by the build from 30
+files, one per sample: `assets/sound/samples/<bank>-<source>.brr`,
+the BRR bytes of the sample as they are in ARAM (no header). A sample
+used by several blocks is stored once, under the first bank and source
+that has it (`common-00.brr` is also source 20 of stage 6 and source 21 of
+the opening and of stage 3). A *sample list*,
+`assets/sound/spc_samples_<bank>.txt`, gives a block's samples:
+
+```
+at $B08E
+20  opening-20.brr   0
+21  stage2-21.brr    2025
+22  stage2-22.brr    4707
+23  -
+```
+
+`at` is the address the block is uploaded to (the address of its
+`load_spc_raw` entry), then one line per source: its number, the sample,
+and where its loop starts, in bytes from the sample's start (a multiple of
+9; 0 for the samples that do not loop). The manifest makes each block from
+its list (`brr=list`) and each directory from the common list and the
+stage's (`dir=sound/spc_samples_common,sound/spc_samples_stage1`;
+`spc_sample_dir_boot` from the common list and stage 3's). The upload
+lists give the size of a block as `<label>_size`, set after its include
+(as is the size word the ROM keeps before each uncompressed block), so a
+block may change size.
+
+`tools/brr.py` builds them (`split` is how the files were cut from the
+blocks), and `make assets-check` runs `python3 tools/brr.py check`: the
+blocks and directories the build makes, cut again, give the same files and
+lists. With the ROM's hash check, that is a round trip in both directions.
+
+**Listening.** The [Sound samples](sound-samples.md) page has every
+sample as a WAV, decoded as the DSP decodes it (`python3 tools/brr.py wav
+DIR` writes them; `make book` does it for the book).
+
+**Editing a sample.** Replace its `.brr` file with BRR data and run
+`make`. There is no WAV to BRR encoder here: BRR encoding is lossy (an
+encoder chooses a filter and a shift for each block), so a WAV cannot be
+turned back into the bytes it came from, and an edited sound must be
+encoded with a BRR encoder such as BRRtools (`brr_encoder`). The file
+must be a whole number of blocks, with the end bit in the last block only,
+and the loop bit there if it loops; set its loop start in the lists that
+use it. A sample that grows moves the samples after it, and their
+directory entries follow. What the build does not check: that the common
+samples still end before `$B08E` (where the stage samples start), and
+that the stage samples end before the echo buffer at the top of ARAM.

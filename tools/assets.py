@@ -26,7 +26,10 @@ tilemap=FORMAT the tilemap text assets/<path>.tilemap (tools/snesmap.py: bg,
 mode7; `width`: cells per row).  The build converts both to
 build/assets/<path>.bin.  `max` is the largest the data may be, in bytes
 (hex): what fits where the game decompresses it (tools/asset_limits.py;
-`limits`).
+`limits`).  With brr=list the data is the BRR samples that the sample list
+assets/<path>.txt names (assets/sound/samples/*.brr, one after the other);
+with dir=PATH,PATH... a sound CPU sample directory made from those sample
+lists (assets/PATH.txt each; tools/brr.py).
 
 ca65 looks the included paths up in INCLUDE_DIRS (assets/, then
 build/assets/), so every assembly of src/ (the Makefile, tools/srcmap.py,
@@ -62,6 +65,7 @@ import c3lz  # noqa: E402
 import snesgfx  # noqa: E402
 import snesmap  # noqa: E402
 import snespal  # noqa: E402
+import brr  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
 ASSETS = "assets"
@@ -110,14 +114,26 @@ class Asset:
         return self.options.get("tilemap")
 
     @property
+    def samples(self):
+        """The sample lists the data is made from (brr=list: this asset's
+        own list; dir=PATH,...: those of a directory), or None."""
+        if self.options.get("brr") == "list":
+            return [self.path]
+        if "dir" in self.options:
+            return self.options["dir"].split(",")
+        return None
+
+    @property
     def converted(self):
         """True if the build converts the source to the data."""
-        return bool(self.png or self.gpl or self.tilemap)
+        return bool(self.png or self.gpl or self.tilemap or self.samples)
 
     @property
     def source(self):
         """The file in the repository that holds the data."""
         ext = ".png" if self.png else ".gpl" if self.gpl else ".tilemap" if self.tilemap else ".bin"
+        if self.samples:
+            return os.path.join(ASSETS, self.samples[-1] + ".txt")
         return os.path.join(ASSETS, self.path + ext)
 
     @property
@@ -147,6 +163,8 @@ class Asset:
     def prerequisites(self, target=None):
         """What a target is made from (default: the last one)."""
         target = target or self.target
+        if target == self.data_source and self.samples:
+            return brr.sources(",".join(self.samples)) + ["tools/brr.py"]
         if target == self.data_source and self.converted:
             return [self.source]
         return [self.data_source]
@@ -167,6 +185,10 @@ class Asset:
                 raise ValueError(f"{self.source}: {len(words)} colours, the game reads "
                                  f"{self.options['colours']}")
             return snespal.to_bytes(words, self.gpl)
+        if self.samples:
+            if "dir" in self.options:
+                return brr.build_dir(self.samples, root)
+            return brr.build_block(self.path, root)
         if self.tilemap:
             return snesmap.read_text(src, self.tilemap, int(self.options.get("width", 0)) or None)
         return open(src, "rb").read()

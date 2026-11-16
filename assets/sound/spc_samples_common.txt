@@ -1,0 +1,25 @@
+# The samples shared by every song set: the block spc_samples_common, uploaded to ARAM
+# at the address of `at` (book: Sound). One line per sound source: its
+# number, the sample (assets/sound/samples/), the loop start in bytes
+# from the sample's start (a multiple of 9); `-`: no sample ($FFFF).
+at $5100
+0   common-00.brr    63
+1   common-01.brr    81
+2   common-02.brr    72
+3   common-03.brr    72
+4   common-04.brr    72
+5   common-05.brr    72
+6   common-06.brr    27
+7   common-07.brr    27
+8   common-08.brr    27
+9   common-09.brr    27
+10  common-10.brr    27
+11  common-11.brr    27
+12  common-12.brr    0
+13  common-13.brr    1629
+14  common-14.brr    0
+15  common-15.brr    0
+16  common-16.brr    1881
+17  common-17.brr    2232
+18  common-18.brr    2259
+19  common-19.brr    621

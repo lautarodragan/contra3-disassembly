@@ -6343,75 +6343,75 @@ song_start_commands:
 	.byte	$79, $00, $74, $00
 song_set_opening:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_sample_dir_opening, $0100
-	load_spc_raw	$B08E, spc_samples_opening, $1E96
+	load_spc_raw	$5000, spc_sample_dir_opening, spc_sample_dir_opening_size
+	load_spc_raw	$B08E, spc_samples_opening, spc_samples_opening_size
 	load_spc	$3000, spc_song_opening
 	load_end
 song_set_stage3:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_sample_dir_stage3, $0100
-	load_spc_raw	$B08E, spc_samples_stage3, $2637
+	load_spc_raw	$5000, spc_sample_dir_stage3, spc_sample_dir_stage3_size
+	load_spc_raw	$B08E, spc_samples_stage3, spc_samples_stage3_size
 	load_spc	$3000, spc_song_stage3
 	load_end
 song_set_stage2:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_sample_dir_stage2, $0100
-	load_spc_raw	$B08E, spc_samples_stage2, $26FD
+	load_spc_raw	$5000, spc_sample_dir_stage2, spc_sample_dir_stage2_size
+	load_spc_raw	$B08E, spc_samples_stage2, spc_samples_stage2_size
 	load_spc	$3000, spc_song_stage2
 	load_end
 song_set_stage1:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_sample_dir_stage1, $0100
-	load_spc_raw	$B08E, spc_samples_stage1, $2544
+	load_spc_raw	$5000, spc_sample_dir_stage1, spc_sample_dir_stage1_size
+	load_spc_raw	$B08E, spc_samples_stage1, spc_samples_stage1_size
 	load_spc	$3000, spc_song_stage1
 	load_end
 song_set_stage4:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_sample_dir_stage4, $0100
-	load_spc_raw	$B08E, spc_samples_stage4, $2178
+	load_spc_raw	$5000, spc_sample_dir_stage4, spc_sample_dir_stage4_size
+	load_spc_raw	$B08E, spc_samples_stage4, spc_samples_stage4_size
 	load_spc	$3000, spc_song_stage4
 	load_end
 song_set_stage5:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_sample_dir_stage5, $0100
-	load_spc_raw	$B08E, spc_samples_stage5, $2193
+	load_spc_raw	$5000, spc_sample_dir_stage5, spc_sample_dir_stage5_size
+	load_spc_raw	$B08E, spc_samples_stage5, spc_samples_stage5_size
 	load_spc	$3000, spc_song_stage5
 	load_end
 song_set_stage6:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_sample_dir_stage6, $0100
-	load_spc_raw	$B08E, spc_samples_stage6, $2490
+	load_spc_raw	$5000, spc_sample_dir_stage6, spc_sample_dir_stage6_size
+	load_spc_raw	$B08E, spc_samples_stage6, spc_samples_stage6_size
 	load_spc	$3000, spc_song_stage6
 	load_end
 song_set_boss_full:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_sample_dir_stage6, $0100
-	load_spc_raw	$B08E, spc_samples_stage6, $2490
-	load_spc_raw	$3000, spc_song_boss, $12D8
+	load_spc_raw	$5000, spc_sample_dir_stage6, spc_sample_dir_stage6_size
+	load_spc_raw	$B08E, spc_samples_stage6, spc_samples_stage6_size
+	load_spc_raw	$3000, spc_song_boss, spc_song_boss_size
 	load_end
 song_set_boss:
 	load_list	$02, $00
-	load_spc_raw	$3000, spc_song_boss, $12D8
+	load_spc_raw	$3000, spc_song_boss, spc_song_boss_size
 	load_end
 song_set_heart_boss:
 	load_list	$02, $00
-	load_spc_raw	$3000, spc_song_heart_boss, $1FA6
+	load_spc_raw	$3000, spc_song_heart_boss, spc_song_heart_boss_size
 	load_end
 song_set_heart_boss_full:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_sample_dir_stage6, $0100
-	load_spc_raw	$B08E, spc_samples_stage6, $2490
-	load_spc_raw	$3000, spc_song_heart_boss, $1FA6
+	load_spc_raw	$5000, spc_sample_dir_stage6, spc_sample_dir_stage6_size
+	load_spc_raw	$B08E, spc_samples_stage6, spc_samples_stage6_size
+	load_spc_raw	$3000, spc_song_heart_boss, spc_song_heart_boss_size
 	load_end
 song_set_ending:
 	load_list	$02, $00
-	load_spc_raw	$3000, spc_song_ending, $1DDC
+	load_spc_raw	$3000, spc_song_ending, spc_song_ending_size
 	load_end
 song_set_ending_full:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_sample_dir_stage6, $0100
-	load_spc_raw	$B08E, spc_samples_stage6, $2490
-	load_spc_raw	$3000, spc_song_ending, $1DDC
+	load_spc_raw	$5000, spc_sample_dir_stage6, spc_sample_dir_stage6_size
+	load_spc_raw	$B08E, spc_samples_stage6, spc_samples_stage6_size
+	load_spc_raw	$3000, spc_song_ending, spc_song_ending_size
 	load_end
 song_set_stage_clear:
 	load_list	$02, $00
@@ -6419,8 +6419,8 @@ song_set_stage_clear:
 	load_end
 song_set_stage_clear_full:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_sample_dir_stage3, $0100
-	load_spc_raw	$B08E, spc_samples_stage3, $2637
+	load_spc_raw	$5000, spc_sample_dir_stage3, spc_sample_dir_stage3_size
+	load_spc_raw	$B08E, spc_samples_stage3, spc_samples_stage3_size
 	load_spc	$3000, spc_song_stage_clear
 	load_end
 song_set_game_over:
@@ -6429,8 +6429,8 @@ song_set_game_over:
 	load_end
 song_set_game_over_full:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_sample_dir_stage3, $0100
-	load_spc_raw	$B08E, spc_samples_stage3, $2637
+	load_spc_raw	$5000, spc_sample_dir_stage3, spc_sample_dir_stage3_size
+	load_spc_raw	$B08E, spc_samples_stage3, spc_samples_stage3_size
 	load_spc	$3000, spc_song_game_over
 	load_end
 song_set_konami_logo:
@@ -6439,15 +6439,15 @@ song_set_konami_logo:
 	load_end
 song_set_konami_logo_full:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_sample_dir_stage3, $0100
-	load_spc_raw	$B08E, spc_samples_stage3, $2637
+	load_spc_raw	$5000, spc_sample_dir_stage3, spc_sample_dir_stage3_size
+	load_spc_raw	$B08E, spc_samples_stage3, spc_samples_stage3_size
 	load_spc	$3000, spc_song_konami_logo
 	load_end
 song_set_boot:
 	; CDL: read by load_data_list, load_spc_list, upload_ring_to_spc (+5 more)
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_sample_dir_boot, $0100
-	load_spc_raw	$5100, spc_samples_common, $5F8E
+	load_spc_raw	$5000, spc_sample_dir_boot, spc_sample_dir_boot_size
+	load_spc_raw	$5100, spc_samples_common, spc_samples_common_size
 	load_spc	$0200, spc_driver
 	load_end
 palette_task_05F576:

@@ -22,7 +22,7 @@ asset_files := $(shell find assets -type f)
 .DEFAULT_GOAL := all
 include build/assets.mk
 
-build/assets.mk: assets/manifest.txt tools/assets.py | build
+build/assets.mk: assets/manifest.txt tools/assets.py $(wildcard assets/sound/*.txt) | build
 	$(PYTHON) tools/assets.py makefile > $@.tmp && mv $@.tmp $@
 
 # A failed link must not leave a partial ROM behind that looks up to date.
@@ -150,9 +150,12 @@ book-check:
 	$(PYTHON) tools/check_book_names.py
 	$(PYTHON) tools/assets.py gallery | diff -u book/src/gallery.md - \
 	    || { echo 'book/src/gallery.md is out of date: python3 tools/assets.py gallery > book/src/gallery.md'; exit 1; }
+	$(PYTHON) tools/brr.py page | diff -u book/src/sound-samples.md - \
+	    || { echo 'book/src/sound-samples.md is out of date: python3 tools/brr.py page > book/src/sound-samples.md'; exit 1; }
 
 book: book-check
 	$(PYTHON) tools/assets.py gallery-copy book/src
+	$(PYTHON) tools/brr.py wav book/src/samples
 	$(MDBOOK) build book
 
 # Cheats (milestone 4): optional changes chosen at build time, defined in
@@ -199,3 +202,4 @@ compress-test: compare
 assets-check:
 	$(PYTHON) tools/assets.py check
 	$(PYTHON) tools/assets.py limits --verify
+	$(PYTHON) tools/brr.py check

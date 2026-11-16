@@ -22,3 +22,4 @@ __pycache__/
 
 # failure artefacts of the emulator tests (actual frames, diffs)
 /out/
+/book/src/samples/

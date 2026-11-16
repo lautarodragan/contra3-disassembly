@@ -8,6 +8,8 @@
 # in hex (tools/snesgfx.py); with gpl=LAYOUT (block, colours) the palette
 # <path>.gpl (tools/snespal.py); with tilemap=FORMAT (bg, mode7) the tilemap
 # text <path>.tilemap (tools/snesmap.py).
+# With brr=list, the BRR samples that the sample list <path>.txt names; with
+# dir=PATH,... the sample directory of those sample lists (tools/brr.py).
 # max=$NNNN: the most bytes the data may have (decompressed), what fits where
 # the game loads it (tools/asset_limits.py; `python3 tools/assets.py limits
 # --list` says where each comes from).  Book: Assets, Size limits.
@@ -110,25 +112,25 @@ gfx/gfx_1AE9C9                   lz-v2  png=4bpp tiles=112 max=$2000
 gfx/gfx_1EEBD0                   lz-v1  max=$1000 tilemap=bg
 gfx/gfx_1FE855                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/td_sprite_tiles_16           raw    png=4bpp tiles=192
-sound/spc_sample_dir_boot        raw
+sound/spc_sample_dir_boot        raw    dir=sound/spc_samples_common,sound/spc_samples_stage3
 sound/spc_song_boss              raw
 sound/spc_song_heart_boss        raw
-sound/spc_samples_common         raw
+sound/spc_samples_common         raw    brr=list
 sound/spc_song_ending            raw
-sound/spc_sample_dir_opening     raw
-sound/spc_sample_dir_stage3      raw
-sound/spc_sample_dir_stage2      raw
-sound/spc_sample_dir_stage1      raw
-sound/spc_sample_dir_stage4      raw
-sound/spc_sample_dir_stage5      raw
-sound/spc_sample_dir_stage6      raw
-sound/spc_samples_stage6         raw
-sound/spc_samples_opening        raw
-sound/spc_samples_stage3         raw
-sound/spc_samples_stage2         raw
-sound/spc_samples_stage1         raw
-sound/spc_samples_stage4         raw
-sound/spc_samples_stage5         raw
+sound/spc_sample_dir_opening     raw    dir=sound/spc_samples_common,sound/spc_samples_opening
+sound/spc_sample_dir_stage3      raw    dir=sound/spc_samples_common,sound/spc_samples_stage3
+sound/spc_sample_dir_stage2      raw    dir=sound/spc_samples_common,sound/spc_samples_stage2
+sound/spc_sample_dir_stage1      raw    dir=sound/spc_samples_common,sound/spc_samples_stage1
+sound/spc_sample_dir_stage4      raw    dir=sound/spc_samples_common,sound/spc_samples_stage4
+sound/spc_sample_dir_stage5      raw    dir=sound/spc_samples_common,sound/spc_samples_stage5
+sound/spc_sample_dir_stage6      raw    dir=sound/spc_samples_common,sound/spc_samples_stage6
+sound/spc_samples_stage6         raw    brr=list
+sound/spc_samples_opening        raw    brr=list
+sound/spc_samples_stage3         raw    brr=list
+sound/spc_samples_stage2         raw    brr=list
+sound/spc_samples_stage1         raw    brr=list
+sound/spc_samples_stage4         raw    brr=list
+sound/spc_samples_stage5         raw    brr=list
 sound/spc_driver                 lz-v1  max=$2E00
 sound/spc_song_konami_logo       lz-v1  max=$2000
 sound/spc_song_stage_clear       lz-v2  max=$2000

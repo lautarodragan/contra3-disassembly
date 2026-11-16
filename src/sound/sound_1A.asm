@@ -20,16 +20,18 @@ spc_song_konami_logo:
 	; ASSET: compressed sound CPU data, $1A:A5EE-$1A:A8C7 (from its length word), loaded by song_set_konami_logo
 	; ARAM $3000-$4FFF: song (sequence data) (book: Sound)
 	.incbin	"sound/spc_song_konami_logo.lz"
-	.byte	$00, $01
+	.word	spc_sample_dir_boot_size
 spc_sample_dir_boot:
 	; ASSET: sound CPU data (uncompressed), $1A:A8CA-$1A:A9C9, uploaded by song_set_boot
 	; ARAM $5000-$50FF: sample directory (boot) (book: Sound)
 	.incbin	"sound/spc_sample_dir_boot.bin"
-	.byte	$D8, $12
+spc_sample_dir_boot_size = * - spc_sample_dir_boot
+	.word	spc_song_boss_size
 spc_song_boss:
 	; ASSET: sound CPU data (uncompressed), $1A:A9CC-$1A:BCA3, uploaded by song_set_boss_full
 	; ARAM $3000-$42D7: song (sequence data) (book: Sound)
 	.incbin	"sound/spc_song_boss.bin"
+spc_song_boss_size = * - spc_song_boss
 	.byte	$32, $02
 spc_song_stage_clear:
 	; ASSET: compressed sound CPU data, $1A:BCA6-$1A:BE81 (from its length word), loaded by song_set_stage_clear
@@ -45,12 +47,13 @@ spc_song_opening:
 	; ASSET: compressed sound CPU data, $1A:C08D-$1A:CA20 (from its length word), loaded by song_set_opening
 	; ARAM $3000-$3A1F: song (sequence data) (book: Sound)
 	.incbin	"sound/spc_song_opening.lz"
-	.byte	$A6, $1F
+	.word	spc_song_heart_boss_size
 	; CDL: read by upload_spc_raw_block
 spc_song_heart_boss:
 	; ASSET: sound CPU data (uncompressed), $1A:CA23-$1A:E9C8, uploaded by song_set_heart_boss_full
 	; ARAM $3000-$4FA5: song (sequence data) (book: Sound)
 	.incbin	"sound/spc_song_heart_boss.bin"
+spc_song_heart_boss_size = * - spc_song_heart_boss
 	; CDL: read by decompress_chunk
 gfx_1AE9C9:
 	; ASSET: compressed graphics (VRAM), $1A:E9C9-$1A:F381 (from its length word), loaded by load_list_058976

@@ -17,7 +17,9 @@ assets/gfx/<label>.png       graphics (VRAM streams, td_sprite_tiles_16)
 assets/gfx/<label>.tilemap   tilemaps loaded to VRAM (text)
 assets/wram/<label>.png      graphics decompressed to WRAM, copied to VRAM later
 assets/wram/<label>.bin      the other streams decompressed to WRAM (maps, metatiles)
-assets/sound/<label>.bin     sound CPU data
+assets/sound/<label>.bin     sound CPU data (the driver, the songs)
+assets/sound/spc_samples_<bank>.txt  sample lists: the samples of a block, their loops
+assets/sound/samples/<name>.brr      the sound samples (BRR), one per file
 assets/palettes/<label>.gpl  palettes (GIMP palettes)
 assets/views.txt             how the gallery shows them (viewing only)
 build/assets/<dir>/<label>.bin   the bytes of a PNG, palette or tilemap, made by the build
@@ -50,7 +52,9 @@ those.
 gfx/gfx_0891DE                   lz-v2  tilemap=bg
 gfx/gfx_089249                   lz-v1  png=mode7 tiles=118 tail=00
 gfx/gfx_089D7E                   lz-v2  png=2bpp tiles=253
-sound/spc_block_1D8002           raw
+sound/spc_song_ending            raw
+sound/spc_samples_stage1         raw    brr=list
+sound/spc_sample_dir_stage1      raw    dir=sound/spc_samples_common,sound/spc_samples_stage1
 ```
 
 - `lz-v1`, `lz-v2`: the source includes `<path>.lz`, compressed from the
@@ -63,7 +67,11 @@ sound/spc_block_1D8002           raw
   by the bytes that `tail` gives in hex (see [Graphics](#graphics-png));
 - with `gpl=LAYOUT`, it is the palette `assets/<path>.gpl` (see
   [Palettes](#palettes-gimp-gpl)); with `tilemap=FORMAT`, the tilemap text
-  `assets/<path>.tilemap` (see [Tilemaps](#tilemaps)).
+  `assets/<path>.tilemap` (see [Tilemaps](#tilemaps));
+- with `brr=list`, it is the BRR samples that the sample list
+  `assets/<path>.txt` names, one after the other; with `dir=PATH,...`, the
+  sound CPU's sample directory made from those sample lists (see
+  [Sound: samples](sound.md#samples)).
 
 ca65 looks the included path up in `assets/`, then in `build/assets/`:
 every assembly of `src/` passes `--bin-include-dir assets
@@ -115,7 +123,10 @@ Of the 179 streams, 40 need `lz-v1` and 139 are made with `lz-v2` (66 of
 these come out the same with either).
 
 The two bytes that follow some sound blocks on the same `.byte` line (the
-size or address word of the next block) stay inline after the include. A
+size or address word of the next block) stay inline after the include;
+for an uncompressed sound block, that word and the size in its
+`load_spc_raw` entries are now `<label>_size`, set after its include, so
+it may change size. A
 CDL comment that fell inside a block is kept above the include with its
 offset (`; from +$1600: CDL: not accessed`).
 
@@ -241,9 +252,11 @@ The [Graphics gallery](gallery.md) shows all 110.
   metatiles of the side-view stages and the block maps and block
   definitions of the top-down ones (see
   [WRAM streams of bank $7E](#wram-streams-of-bank-7e));
-- the 30 sound CPU blocks (11 compressed, 19 not): the driver, the sample
-  directories, the samples and the songs; what each is and where it goes
-  in the sound CPU's memory is in [Sound](sound.md#sound-cpu-memory).
+- the sound CPU's driver and its 14 songs (11 compressed, 3 not); what
+  each block is and where it goes in the sound CPU's memory is in
+  [Sound](sound.md#sound-cpu-memory). The other 16 sound blocks, the
+  samples and their directories, are made from one BRR file per sample
+  and the sample lists ([Sound: samples](sound.md#samples)).
 
 ## Tilemaps
 
