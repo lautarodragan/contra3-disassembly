@@ -24,9 +24,9 @@ spin_fire_weapon_1:
 	txy
 	lda	#$0AC0
 	cpy	#$0200
-	beq	loc_00D671
+	beq	@have_slot_base
 	lda	#$0D40
-loc_00D671:
+@have_slot_base:
 	tax
 	clc
 	adc	#$0140
@@ -61,9 +61,9 @@ spin_fire_weapon_2:
 	txy
 	lda	#$0C00
 	cpy	#$0200
-	beq	loc_00D6AD
+	beq	@have_slot_base
 	lda	#$0E80
-loc_00D6AD:
+@have_slot_base:
 	tax
 	clc
 	adc	#$0140
@@ -83,13 +83,15 @@ tbl_spin_fire_2:
 	.addr	spin_shot_homing_2
 	.addr	spin_shots_flame_2
 	.addr	spin_shot_laser_2
-loc_00D6CE:
+; From the walking poses (ground_aim_*): fire_weapon, but a shot also
+; sets PLAYER_POSE_ADD to $0E.
+fire_weapon_walking:
 	lda	PLAYER_JOY_HELD,x
 	bit	button_fire
-	beq	loc_00D740
+	beq	fire_weapon_return
 	lda	#$000E
 	sta	a:PLAYER_POSE_ADD,x
-	bra	loc_00D6E2
+	bra	fire_active_weapon
 
 ; If button_fire is held: fires the weapon of the active slot
 ; (PLAYER_WEAPON_SLOT = 2: PLAYER_WEAPON_1 into the player's first 10 shot
@@ -101,12 +103,13 @@ loc_00D6CE:
 fire_weapon:
 	lda	PLAYER_JOY_HELD,x
 	bit	button_fire
-	beq	loc_00D740
-loc_00D6E2:
+	beq	fire_weapon_return
+; fire_weapon past the button check.
+fire_active_weapon:
 	lda	a:PLAYER_WEAPON_SLOT,x
-	beq	loc_00D723
+	beq	fire_weapon_2
 	lda	PLAYER_FIRE_DELAY_1,x
-	bne	loc_00D740
+	bne	fire_weapon_return
 	lda	a:PLAYER_WEAPON_1,x
 	pha
 	asl	a
@@ -116,9 +119,10 @@ loc_00D6E2:
 	txy
 	lda	#$0AC0
 	cpy	#$0200
-	beq	loc_00D702
+	beq	dispatch_fire_weapon
 	lda	#$0D40
-loc_00D702:
+; In: X = the weapon's first shot slot, weapon number on the stack.
+dispatch_fire_weapon:
 	tax
 	clc
 	adc	#$0140
@@ -138,9 +142,10 @@ tbl_fire_weapon:
 	.addr	spawn_shot_homing
 	.addr	spawn_shots_flame
 	.addr	spawn_shot_laser
-loc_00D723:
+; PLAYER_WEAPON_SLOT = 0: fire PLAYER_WEAPON_2.
+fire_weapon_2:
 	lda	PLAYER_FIRE_DELAY_2,x
-	bne	loc_00D740
+	bne	fire_weapon_return
 	lda	a:PLAYER_WEAPON_2,x
 	pha
 	asl	a
@@ -150,10 +155,10 @@ loc_00D723:
 	txy
 	lda	#$0C00
 	cpy	#$0200
-	beq	loc_00D702
+	beq	dispatch_fire_weapon
 	lda	#$0E80
-	bra	loc_00D702
-loc_00D740:
+	bra	dispatch_fire_weapon
+fire_weapon_return:
 	rtl
 
 spin_shot_default_2:
@@ -175,14 +180,14 @@ spin_shot_default_1:
 	sta	a:PLAYER_SPIN_ANGLE_1,y
 	sta	zp_12
 	bra	spawn_shot_default
-loc_00D769:
+spawn_shot_default_no_slot:
 	tyx
 	rtl
 
 ; WEAPON_DEFAULT: one shot (shot type 1, damage 2) at angle zp_12; sound 4.
 spawn_shot_default:
 	jsl	f:find_free_shot_slot_up_to
-	bcs	loc_00D769
+	bcs	spawn_shot_default_no_slot
 	lda	#$0001
 	sta	SHOT_TYPE,x
 	sta	$04,x
@@ -194,9 +199,9 @@ spawn_shot_default:
 	phy
 	ldy	#$3F82
 	lda	stage_frame_odd
-	bne	loc_00D78F
+	bne	@set_attr
 	ldy	#$3FEC
-loc_00D78F:
+@set_attr:
 	sty	SHOT_ATTR,x
 	ldy	zp_12
 	lda	a:vel8_x_sub,y
@@ -225,9 +230,9 @@ loc_00D78F:
 
 spin_shots_spread_2:
 	jsr	a:find_spread_shot_slots
-	beq	loc_00D7CC
+	beq	@found_slots
 	rtl
-loc_00D7CC:
+@found_slots:
 	clc
 	lda	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0020
@@ -236,21 +241,21 @@ loc_00D7CC:
 	adc	#$0040
 	and	#$007E
 	sta	zp_12
-	bra	loc_00D820
+	bra	spawn_shots_spread_in_slots
 
 spin_shots_spread_1:
 	; (not executed in the CDL traces)
 	jsr	a:find_spread_shot_slots
-	beq	loc_00D7E9
+	beq	@found_slots
 	rtl
-loc_00D7E9:
+@found_slots:
 	clc
 	lda	a:PLAYER_SPIN_ANGLE_1,y
 	adc	#$0020
 	and	#$007E
 	sta	a:PLAYER_SPIN_ANGLE_1,y
 	sta	zp_12
-	bra	loc_00D820
+	bra	spawn_shots_spread_in_slots
 
 ; Returns Z set and X = the first of 5 free shot slots (tries X and X+$A0),
 ; else Z clear and X = Y (the player).
@@ -260,7 +265,7 @@ find_spread_shot_slots:
 	ora	$50,x
 	ora	$70,x
 	ora	$90,x
-	beq	loc_00D819
+	beq	@return
 	txa
 	clc
 	adc	#$00A0
@@ -270,18 +275,19 @@ find_spread_shot_slots:
 	ora	$50,x
 	ora	$70,x
 	ora	$90,x
-	beq	loc_00D819
+	beq	@return
 	tyx
-loc_00D819:
+@return:
 	rts
 
 ; WEAPON_SPREAD: five shots (type 2, damage 2) fanned around zp_12, in five
 ; consecutive free slots (find_spread_shot_slots); sound 9.
 spawn_shots_spread:
 	jsr	a:find_spread_shot_slots
-	beq	loc_00D820
+	beq	spawn_shots_spread_in_slots
 	rtl
-loc_00D820:
+; Also entered by the spin spawners with X = the free slots, zp_12 = angle.
+spawn_shots_spread_in_slots:
 	lda	#$0005
 	sta	zp_10
 	sec
@@ -289,7 +295,7 @@ loc_00D820:
 	sbc	#$000C
 	and	#$007E
 	sta	zp_12
-loc_00D830:
+@loop:
 	lda	#$0002
 	sta	SHOT_TYPE,x
 	lda	#$3F84
@@ -329,7 +335,7 @@ loc_00D830:
 	adc	#$0020
 	tax
 	dec	zp_10
-	bne	loc_00D830
+	bne	@loop
 	tyx
 	lda	#$0001
 	sta	PLAYER_SHOT_POSE,x
@@ -339,9 +345,9 @@ loc_00D830:
 
 spin_shot_crush_2:
 	jsr	a:find_crush_shot_slot
-	beq	loc_00D89B
+	beq	@found_slot
 	rtl
-loc_00D89B:
+@found_slot:
 	clc
 	lda	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0010
@@ -350,48 +356,49 @@ loc_00D89B:
 	adc	#$0040
 	and	#$007E
 	sta	zp_12
-	bra	loc_00D8E9
+	bra	spawn_shot_crush_in_slot
 
 spin_shot_crush_1:
 	jsr	a:find_crush_shot_slot
-	beq	loc_00D8B8
+	beq	@found_slot
 	rtl
-loc_00D8B8:
+@found_slot:
 	clc
 	lda	a:PLAYER_SPIN_ANGLE_1,y
 	adc	#$0010
 	and	#$007E
 	sta	a:PLAYER_SPIN_ANGLE_1,y
 	sta	zp_12
-	bra	loc_00D8E9
+	bra	spawn_shot_crush_in_slot
 
 ; Returns Z set and X = a free slot among X, X+$60, X+$C0, else Z clear and
 ; X = Y.
 find_crush_shot_slot:
 	lda	SHOT_TYPE,x
-	beq	loc_00D8E2
+	beq	@return
 	txa
 	clc
 	adc	#$0060
 	tax
 	lda	SHOT_TYPE,x
-	beq	loc_00D8E2
+	beq	@return
 	txa
 	clc
 	adc	#$0060
 	tax
 	lda	SHOT_TYPE,x
-	beq	loc_00D8E2
+	beq	@return
 	tyx
-loc_00D8E2:
+@return:
 	rts
 
 ; WEAPON_CRUSH: a missile (types 3 / 13) at angle zp_12.
 spawn_shot_crush:
 	jsr	a:find_crush_shot_slot
-	beq	loc_00D8E9
+	beq	spawn_shot_crush_in_slot
 	rtl
-loc_00D8E9:
+; Also entered by the spin spawners with X = the free slot, zp_12 = angle.
+spawn_shot_crush_in_slot:
 	lda	#$0003
 	sta	SHOT_TYPE,x
 	lda	#$0004
@@ -437,10 +444,10 @@ loc_00D8E9:
 
 spin_shot_homing_2:
 	jsl	f:find_free_homing_shot_slot
-	bcc	loc_00D94A
+	bcc	@found_slot
 	tyx
 	rtl
-loc_00D94A:
+@found_slot:
 	clc
 	lda	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0010
@@ -449,31 +456,32 @@ loc_00D94A:
 	adc	#$0040
 	and	#$007E
 	sta	zp_12
-	bra	loc_00D982
+	bra	spawn_shot_homing_in_slot
 
 spin_shot_homing_1:
 	; (not executed in the CDL traces)
 	jsl	f:find_free_homing_shot_slot
-	bcc	loc_00D969
+	bcc	@found_slot
 	tyx
 	rtl
-loc_00D969:
+@found_slot:
 	clc
 	lda	a:PLAYER_SPIN_ANGLE_1,y
 	adc	#$0010
 	and	#$007E
 	sta	a:PLAYER_SPIN_ANGLE_1,y
 	sta	zp_12
-	bra	loc_00D982
+	bra	spawn_shot_homing_in_slot
 
 ; WEAPON_HOMING: a homing missile (type 4, damage 2) in a slot found by
 ; find_free_homing_shot_slot; sound 8.
 spawn_shot_homing:
 	jsl	f:find_free_homing_shot_slot
-	bcc	loc_00D982
+	bcc	spawn_shot_homing_in_slot
 	tyx
 	rtl
-loc_00D982:
+; Also entered by the spin spawners with X = the free slot, zp_12 = angle.
+spawn_shot_homing_in_slot:
 	lda	#$0004
 	sta	SHOT_TYPE,x
 	lda	#$0002
@@ -541,7 +549,7 @@ spin_shots_flame_1:
 	sta	a:PLAYER_SPIN_ANGLE_1,y
 	sta	zp_12
 	bra	spawn_shots_flame
-loc_00DA06:
+spawn_shots_flame_no_slots:
 	tyx
 	rtl
 
@@ -549,9 +557,9 @@ loc_00DA06:
 ; weapon; the chain's head keeps state in the first slot's OBJ_STATE.
 spawn_shots_flame:
 	lda	$12,x
-	beq	loc_00DA0F
-	brl	loc_00DA80
-loc_00DA0F:
+	beq	@start_chain
+	brl	@update_chain
+@start_chain:
 	lda	SHOT_TYPE,x
 	ora	$30,x
 	ora	$50,x
@@ -562,7 +570,7 @@ loc_00DA0F:
 	ora	$F0,x
 	ora	a:$0110,x
 	ora	a:$0130,x
-	bne	loc_00DA06
+	bne	spawn_shots_flame_no_slots
 	inc	$12,x
 	stz	OBJ_X_VEL,x
 	stz	OBJ_X_VEL_SUB,x
@@ -610,13 +618,13 @@ loc_00DA0F:
 	lda	zp_00
 	sta	a:OBJ_X,y
 	rtl
-loc_00DA80:
+@update_chain:
 	lda	stage_frame_counter
 	bit	#$000F
-	bne	loc_00DA8E
+	bne	@shift_angles
 	lda	#$000A
 	jsl	f:queue_sound
-loc_00DA8E:
+@shift_angles:
 	lda	$D4,x
 	sta	$F4,x
 	lda	$B4,x
@@ -639,22 +647,22 @@ loc_00DA8E:
 	lda	OBJ_X,x
 	sbc	zp_00
 	cmp	#$0005
-	bcc	loc_00DAD3
+	bcc	@snap_x
 	cmp	#$FFFB	; [num]
-	bcs	loc_00DAD3
-	bmi	loc_00DACB
+	bcs	@snap_x
+	bmi	@step_right
 	sec
 	lda	OBJ_X,x
 	sbc	#$0005
-	bra	loc_00DAD5
-loc_00DACB:
+	bra	@set_x
+@step_right:
 	clc
 	lda	OBJ_X,x
 	adc	#$0005
-	bra	loc_00DAD5
-loc_00DAD3:
+	bra	@set_x
+@snap_x:
 	lda	zp_00
-loc_00DAD5:
+@set_x:
 	sta	OBJ_X,x
 	clc
 	lda	a:OBJ_Y,y
@@ -664,22 +672,22 @@ loc_00DAD5:
 	lda	OBJ_Y,x
 	sbc	zp_00
 	cmp	#$0005
-	bcc	loc_00DB00
+	bcc	@snap_y
 	cmp	#$FFFB	; [num]
-	bcs	loc_00DB00
-	bmi	loc_00DAF8
+	bcs	@snap_y
+	bmi	@step_down
 	sec
 	lda	OBJ_Y,x
 	sbc	#$0005
-	bra	loc_00DB02
-loc_00DAF8:
+	bra	@set_y
+@step_down:
 	clc
 	lda	OBJ_Y,x
 	adc	#$0005
-	bra	loc_00DB02
-loc_00DB00:
+	bra	@set_y
+@snap_y:
 	lda	zp_00
-loc_00DB02:
+@set_y:
 	sta	OBJ_Y,x
 	phy
 	lda	zp_12
@@ -690,34 +698,34 @@ loc_00DB02:
 	sec
 	lda	zp_06
 	sbc	$14,x
-	beq	loc_00DB17
-	bmi	loc_00DB1B
-	bpl	loc_00DB2D
-loc_00DB17:
+	beq	@reached_angle
+	bmi	@diff_negative
+	bpl	@diff_positive
+@reached_angle:
 	lda	zp_06
-	bra	loc_00DB40
-loc_00DB1B:
+	bra	@set_angle
+@diff_negative:
 	cmp	#$FF00	; [num]
-	bcc	loc_00DB37
+	bcc	@turn_cw
 	cmp	#$FFF0	; [num]
-	bcs	loc_00DB17
-loc_00DB25:
+	bcs	@reached_angle
+@turn_ccw:
 	sec
 	lda	$14,x
 	sbc	#$0010
-	bra	loc_00DB3D
-loc_00DB2D:
+	bra	@wrap_angle
+@diff_positive:
 	cmp	#$0100
-	bcs	loc_00DB25
+	bcs	@turn_ccw
 	cmp	#$0010
-	bcc	loc_00DB17
-loc_00DB37:
+	bcc	@reached_angle
+@turn_cw:
 	clc
 	lda	$14,x
 	adc	#$0010
-loc_00DB3D:
+@wrap_angle:
 	and	#$01FF
-loc_00DB40:
+@set_angle:
 	sta	$14,x
 	lda	$F4,x
 	tay
@@ -848,9 +856,9 @@ loc_00DB40:
 
 spin_shot_laser_2:
 	jsr	a:check_laser_shot_slots
-	beq	loc_00DC43
+	beq	@found_slots
 	rtl
-loc_00DC43:
+@found_slots:
 	clc
 	lda	a:PLAYER_SPIN_ANGLE_2,y
 	adc	#$0010
@@ -859,20 +867,20 @@ loc_00DC43:
 	adc	#$0040
 	and	#$007E
 	sta	zp_12
-	bra	loc_00DC8E
+	bra	spawn_shot_laser_in_slots
 
 spin_shot_laser_1:
 	jsr	a:check_laser_shot_slots
-	beq	loc_00DC60
+	beq	@found_slots
 	rtl
-loc_00DC60:
+@found_slots:
 	clc
 	lda	a:PLAYER_SPIN_ANGLE_1,y
 	adc	#$0010
 	and	#$007E
 	sta	a:PLAYER_SPIN_ANGLE_1,y
 	sta	zp_12
-	bra	loc_00DC8E
+	bra	spawn_shot_laser_in_slots
 
 ; Returns Z set when the 9 shot slots from X are free, else Z clear and X =
 ; Y.
@@ -886,18 +894,19 @@ check_laser_shot_slots:
 	ora	$D0,x
 	ora	$F0,x
 	ora	a:$0110,x
-	beq	loc_00DC87
+	beq	@return
 	tyx
-loc_00DC87:
+@return:
 	rts
 
 ; WEAPON_LASER: a laser beam (several shot slots, find via
 ; check_laser_shot_slots).
 spawn_shot_laser:
 	jsr	a:check_laser_shot_slots
-	beq	loc_00DC8E
+	beq	spawn_shot_laser_in_slots
 	rtl
-loc_00DC8E:
+; Also entered by the spin spawners with X = the free slots, zp_12 = angle.
+spawn_shot_laser_in_slots:
 	lda	#$000C
 	sta	$30,x
 	lda	#$000B

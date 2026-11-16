@@ -1276,7 +1276,7 @@ loc_018959:
 	sta	zp_14
 	lda	#$FFDD	; [num]
 	sta	zp_16
-	jml	f:loc_00D6CE
+	jml	f:fire_weapon_walking
 loc_018971:
 	ldy	PLAYER_LOCKED,x
 	beq	loc_0189A4
@@ -1483,7 +1483,7 @@ loc_018B37:
 	sta	zp_14
 	lda	#$FFDD	; [num]
 	sta	zp_16
-	jml	f:loc_00D6CE
+	jml	f:fire_weapon_walking
 loc_018B4F:
 	ldy	PLAYER_LOCKED,x
 	beq	loc_018B82
