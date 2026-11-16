@@ -18,22 +18,22 @@ update_player_window:
 	asl	a
 	tay
 	lda	a:p2_lives
-	beq	loc_00E80C
+	beq	@player1
 	lda	a:p1_lives
-	beq	loc_00E805
+	beq	@player2
 	lda	a:window_player_by_frame,y
 	tax
 	sta	zp_FE
-	bra	loc_00E811
-loc_00E805:
+	bra	@have_player
+@player2:
 	; (not executed in the CDL traces)
 	ldx	#$0240
 	stx	zp_FE
-	bra	loc_00E811
-loc_00E80C:
+	bra	@have_player
+@player1:
 	ldx	#$0200
 	stx	zp_FE
-loc_00E811:
+@have_player:
 	lda	a:coldata_hdma_buffers,y
 	sta	zp_C6
 	lda	a:window_hdma_buffers,y
@@ -43,29 +43,29 @@ loc_00E811:
 	adc	#$0020
 	sta	zp_1C
 	lda	a:PLAYER_BOMB_RADIUS,x
-	bne	loc_00E855
+	bne	@bomb
 	lda	a:PLAYER_BARRIER,x
-	bne	loc_00E839
-loc_00E82D:
+	bne	@barrier
+@windows_off:
 	stz	zp_9E
 	stz	zp_C6
 	jsl	f:end_window_hdma_table
 	stz	a:coldata_shadow
 	rtl
-loc_00E839:
+@barrier:
 	jsr	a:setup_barrier_window
 	jsl	f:clip_window_circle
-	bcs	loc_00E82D
+	bcs	@windows_off
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_from_widths
 	jsr	a:copy_window_hdma_lines
 	jsr	a:wobble_barrier_window
 	jsl	f:end_window_hdma_table
 	rtl
-loc_00E855:
+@bomb:
 	jsr	a:setup_bomb_window
 	jsl	f:clip_window_circle
-	bcs	loc_00E82D
+	bcs	@windows_off
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
 	jsl	f:end_window_hdma_table
@@ -145,7 +145,7 @@ copy_window_hdma_lines:
 	.a8
 	lda	a:$0001,x
 	cmp	#$1E
-	bne	loc_00E8FF
+	bne	@found
 	inx
 	inx
 	inx
@@ -160,7 +160,7 @@ copy_window_hdma_lines:
 	.a16
 	rep	#$20
 	rts
-loc_00E8FF:
+@found:
 	.a8
 	rep	#$20
 	.a16
@@ -187,9 +187,9 @@ wobble_barrier_window:
 	ldy	#$8F40	; [num]
 	lda	a:PLAYER_BARRIER,x
 	cmp	#$0060
-	bcs	loc_00E927
+	bcs	@store_colour
 	ldy	#$0F20
-loc_00E927:
+@store_colour:
 	sty	zp_00
 	lda	stage_frame_counter
 	asl	a

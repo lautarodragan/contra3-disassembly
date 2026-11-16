@@ -10,13 +10,13 @@
 swap_topdown_window_buffer:
 	lda	frame_counter
 	lsr	a
-	bcs	loc_02DDCE
-	brl	loc_02DDD5
-loc_02DDCE:
+	bcs	@odd_frame
+	brl	@even_frame
+@odd_frame:
 	lda	#$3C00
 	sta	a:A1T2L
 	rtl
-loc_02DDD5:
+@even_frame:
 	lda	#$3E00
 	sta	a:A1T2L
 loc_02DDDB:
@@ -29,9 +29,9 @@ update_topdown_window:
 	beq	loc_02DDDB
 	lda	frame_counter
 	lsr	a
-	bcc	loc_02DDEA
+	bcc	@even_frame
 	jml	f:loc_02E0FD
-loc_02DDEA:
+@even_frame:
 	jml	f:loc_02E3AE
 
 ; In: zp_10 = radius, zp_14/zp_16 = centre, zp_18/zp_1A = first/last
@@ -45,31 +45,31 @@ clip_window_circle:
 	lda	zp_14
 	clc
 	adc	zp_10
-	bmi	loc_02DE04
-	beq	loc_02DE04
+	bmi	@not_visible
+	beq	@not_visible
 	sec
 	sbc	zp_06
 	cmp	#$0100
-	bmi	loc_02DE06
-loc_02DE04:
+	bmi	@clip_top
+@not_visible:
 	sec
 	rtl
-loc_02DE06:
+@clip_top:
 	lda	zp_16
 	sec
 	sbc	zp_10
 	cmp	zp_18
-	bmi	loc_02DE15
+	bmi	@top_clipped
 	sta	zp_08
 	stz	zp_0C
-	bra	loc_02DE2D
-loc_02DE15:
+	bra	@clip_bottom
+@top_clipped:
 	tay
 	clc
 	adc	zp_06
 	cmp	zp_18
-	bmi	loc_02DE04
-	beq	loc_02DE04
+	bmi	@not_visible
+	beq	@not_visible
 	lda	zp_18
 	sta	zp_08
 	tya
@@ -78,18 +78,18 @@ loc_02DE15:
 	eor	#$FFFF
 	inc	a
 	sta	zp_0C
-loc_02DE2D:
+@clip_bottom:
 	lda	zp_16
 	clc
 	adc	zp_10
 	cmp	zp_1A
-	bmi	loc_02DE3F
+	bmi	@set_last_line
 	sec
 	sbc	zp_06
 	cmp	zp_1A
-	bpl	loc_02DE04
+	bpl	@not_visible
 	lda	zp_1A
-loc_02DE3F:
+@set_last_line:
 	sta	zp_0A
 	lda	zp_0A
 	sec
@@ -118,11 +118,11 @@ build_window_circle:
 	lda	zp_0C
 	sta	zp_00
 	cmp	zp_10
-	bcc	loc_02DE69
-	brl	loc_02DED5
-loc_02DE69:
+	bcc	@upper_half
+	brl	@lower_half
+@upper_half:
 	sep	#$20
-loc_02DE6B:
+@upper_loop:
 	.a8
 	lda	zp_00
 	sta	a:WRDIVH
@@ -152,28 +152,28 @@ loc_02DE6B:
 	eor	#$FFFF
 	sec
 	adc	zp_14
-	bpl	loc_02DEA1
+	bpl	@upper_left_clamped
 	lda	#$0000
-loc_02DEA1:
+@upper_left_clamped:
 	cmp	#$0100
-	bcc	loc_02DEAB
-loc_02DEA6:
+	bcc	@upper_left_on_screen
+@upper_empty_line:
 	lda	#$0001
-	bra	loc_02DEC1
-loc_02DEAB:
+	bra	@upper_store_line
+@upper_left_on_screen:
 	sta	zp_04
 	tya
 	clc
 	adc	zp_14
-	bmi	loc_02DEA6
+	bmi	@upper_empty_line
 	cmp	#$0100
-	bmi	loc_02DEBB
+	bmi	@upper_right_clamped
 	lda	#$00FF
-loc_02DEBB:
+@upper_right_clamped:
 	and	#$00FF
 	xba
 	ora	zp_04
-loc_02DEC1:
+@upper_store_line:
 	sta	f:$7E0000,x
 	sep	#$20
 	.a8
@@ -181,11 +181,11 @@ loc_02DEC1:
 	inx
 	inx
 	dec	zp_02
-	beq	loc_02DF44
+	beq	@done
 	lda	zp_00
 	cmp	zp_10
-	bcc	loc_02DE6B
-loc_02DED5:
+	bcc	@upper_loop
+@lower_half:
 	.a16
 	rep	#$20
 	lda	zp_06
@@ -193,7 +193,7 @@ loc_02DED5:
 	sbc	zp_00
 	sta	zp_00
 	sep	#$20
-loc_02DEE0:
+@lower_loop:
 	.a8
 	lda	zp_00
 	sta	a:WRDIVH
@@ -223,28 +223,28 @@ loc_02DEE0:
 	eor	#$FFFF
 	sec
 	adc	zp_14
-	bpl	loc_02DF16
+	bpl	@lower_left_clamped
 	lda	#$0000
-loc_02DF16:
+@lower_left_clamped:
 	cmp	#$0100
-	bcc	loc_02DF20
-loc_02DF1B:
+	bcc	@lower_left_on_screen
+@lower_empty_line:
 	lda	#$0001
-	bra	loc_02DF36
-loc_02DF20:
+	bra	@lower_store_line
+@lower_left_on_screen:
 	sta	zp_04
 	tya
 	clc
 	adc	zp_14
-	bmi	loc_02DF1B
+	bmi	@lower_empty_line
 	cmp	#$0100
-	bmi	loc_02DF30
+	bmi	@lower_right_clamped
 	lda	#$00FF
-loc_02DF30:
+@lower_right_clamped:
 	and	#$00FF
 	xba
 	ora	zp_04
-loc_02DF36:
+@lower_store_line:
 	sta	f:$7E0000,x
 	sep	#$20
 	.a8
@@ -252,8 +252,8 @@ loc_02DF36:
 	inx
 	inx
 	dec	zp_02
-	bne	loc_02DEE0
-loc_02DF44:
+	bne	@lower_loop
+@done:
 	stx	zp_1C
 	rep	#$30
 	.a16
@@ -272,9 +272,9 @@ build_window_hdma_lines:
 	lda	zp_08
 	sec
 	sbc	zp_18
-	beq	loc_02DF8B
+	beq	@circle
 	cmp	#$0080
-	bcc	loc_02DF79
+	bcc	@above_entry
 	sec
 	sbc	#$007F
 	pha
@@ -290,7 +290,7 @@ build_window_hdma_lines:
 	inx
 	inx
 	pla
-loc_02DF79:
+@above_entry:
 	sep	#$20
 	.a8
 	sta	f:$7E0000,x
@@ -301,11 +301,11 @@ loc_02DF79:
 	sta	f:$7E0000,x
 	inx
 	inx
-loc_02DF8B:
+@circle:
 	lda	zp_0E
-	beq	loc_02DFC6
+	beq	@below
 	cmp	#$0080
-	bcc	loc_02DFB3
+	bcc	@circle_entry
 	sec
 	sbc	#$007F
 	pha
@@ -324,7 +324,7 @@ loc_02DF8B:
 	inx
 	inx
 	pla
-loc_02DFB3:
+@circle_entry:
 	sep	#$20
 	.a8
 	ora	#$80
@@ -336,13 +336,13 @@ loc_02DFB3:
 	sta	f:$7E0000,x
 	inx
 	inx
-loc_02DFC6:
+@below:
 	lda	zp_1A
 	sec
 	sbc	zp_0A
-	beq	loc_02DFFE
+	beq	@done
 	cmp	#$0080
-	bcc	loc_02DFEC
+	bcc	@below_entry
 	sec
 	sbc	#$007F
 	pha
@@ -358,7 +358,7 @@ loc_02DFC6:
 	inx
 	inx
 	pla
-loc_02DFEC:
+@below_entry:
 	sep	#$20
 	.a8
 	sta	f:$7E0000,x
@@ -369,7 +369,7 @@ loc_02DFEC:
 	sta	f:$7E0000,x
 	inx
 	inx
-loc_02DFFE:
+@done:
 	stx	zp_1E
 	rep	#$30
 	rtl
@@ -504,41 +504,41 @@ build_window_from_widths:
 	clc
 	adc	zp_1C
 	tax
-loc_02E0C3:
+@loop:
 	lda	zp_14
 	sec
 	sbc	(zp_12),y
-	bpl	loc_02E0CD
+	bpl	@left_clamped
 	lda	#$0000
-loc_02E0CD:
+@left_clamped:
 	cmp	#$0100
-	bcc	loc_02E0D7
-loc_02E0D2:
+	bcc	@left_on_screen
+@empty_line:
 	; (not executed in the CDL traces)
 	lda	#$0001
-	bra	loc_02E0EE
-loc_02E0D7:
+	bra	@store_line
+@left_on_screen:
 	sta	zp_04
 	lda	zp_14
 	clc
 	adc	(zp_12),y
-	bmi	loc_02E0D2
+	bmi	@empty_line
 	cmp	#$0100
-	bmi	loc_02E0E8
+	bmi	@right_clamped
 	; (not executed in the CDL traces)
 	lda	#$00FF
-loc_02E0E8:
+@right_clamped:
 	and	#$00FF
 	xba
 	ora	zp_04
-loc_02E0EE:
+@store_line:
 	sta	f:$7E0000,x
 	iny
 	iny
 	inx
 	inx
 	dec	zp_02
-	bne	loc_02E0C3
+	bne	@loop
 	stx	zp_1C
 	rtl
 loc_02E0FD:
