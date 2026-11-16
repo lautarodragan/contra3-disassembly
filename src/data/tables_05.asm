@@ -3203,7 +3203,8 @@ anim_05CB11:
 	anim_goto	anim_05CB11
 data_05CB19:
 	; CDL: read by update_object_type_56
-	.byte	$E9, $C2, $58, $C4
+	.addr	metasprite_06C2E9
+	.addr	metasprite_06C458
 data_05CB1D:
 	; CDL: read by spawn_alien_soldier_right
 	.byte	$40, $00, $28, $00, $10, $00

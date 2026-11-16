@@ -37,7 +37,7 @@ import srcmap  # noqa: E402
 LINE_RE = re.compile(r"^(?:(@?[A-Za-z_][A-Za-z0-9_]*):)?\s*(?:([a-z]{3})\b)?\s*([^;]*?)\s*(?:;.*)?$")
 READ_RE = re.compile(r"^(?:a:|f:)?([A-Za-z_][A-Za-z0-9_]*)(?:\s*\+\s*\$?[0-9A-Fa-f]+)?(?:,([xy]))?$")
 SMALL_ABS = re.compile(r"^a:\$00[0-9A-F]{2},([xy])$")
-CONSUMERS_A = re.compile(r"^(make_effect_object|spawn_effect\w*|start_palette_task\w*|draw_text\w*"
+CONSUMERS_A = re.compile(r"^(make_effect_object|spawn_effect\w*|start_palette_task\w*|draw_text\w*|start_dying_soldier_\w+"
                          r"|load_song_set|copy_hdma_table|build_wave_table|setup_hdma_from_list)$")
 WINDOW = 40
 
