@@ -135,7 +135,8 @@ once (`OBJF_DELETE`): `$03`, `$05`, `$07`, `$08`, `$0E`, `$3B`, `$42`, `$4D`.
   places it at a random offset.
 - **Killed soldiers**: soldier handlers jump to `start_dying_soldier` (or
   `start_dying_soldier_sprite`, `start_dying_soldier_sound_0D`,
-  `start_dying_soldier_sound_0E`), which turn the object into type `$1B`
+  `start_dying_soldier_sound_0E`; all end in `start_dying_soldier_common`),
+  which turn the object into type `$1B`
   (`update_dying_soldier`): thrown up and back, then an explosion.
 - `get_bg_tile_at_object` reads the BG map entry under an object (plus an
   offset): floor and wall collision of grenades, debris and bouncing objects.

@@ -79,6 +79,8 @@ they share:
 | `make_effect_object` | `$01:CF66` | turns the slot in Y into an effect playing animation A |
 | `spawn_effect` / `spawn_effect_random_offset` | `$01:CF25` / `$01:CF3C` | allocate an effect (at a random offset) |
 | `start_dying_soldier` ... | `$01:D201`... | a killed soldier becomes type `$1B` (thrown back, explodes) |
+| `kill_foot_soldier` | `$01:BAF4` | a foot soldier (or type `$35`) becomes a dying soldier |
+| `spawn_explosion_near_object` | `$01:D83E` | one explosion at random around the object (fields `$34`/`$36`), with debris velocity every other frame; body of `shake_and_explode_state`, also used by the brain boss and the stage 3 boss |
 | `start_grenade_blast` | `$01:D2A1` | an object becomes a grenade blast (type `$1A`) |
 | `get_bg_tile_at_object` | `$00:E16E` | BG map entry under an object: floor/wall collision |
 | `find_free_shot_slot_up_to` | `$00:E122` | free player shot slot from X up to `zp_06` |
