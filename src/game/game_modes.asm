@@ -48,7 +48,7 @@ tbl_game_modes:
 game_mode_konami_logo:
 	lda	game_submode
 	bne	@running
-	ldx	#.loword(song_set_05F537)
+	ldx	#.loword(song_set_konami_logo)
 	jsl	f:load_song_set
 	stz	a:konami_logo_step
 	stz	a:konami_logo_done
@@ -825,7 +825,7 @@ game_over_init:
 	ldx	#.loword(text_game_over)
 	lda	#$2400
 	jsl	f:draw_text_attr
-	ldx	#.loword(song_set_05F513)
+	ldx	#.loword(song_set_game_over)
 	jsl	f:load_song_set
 	brl	next_submode
 

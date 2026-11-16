@@ -1504,7 +1504,7 @@ song_change_trigger_modes:
 ; bombs ($70, $88).
 song_change_trigger_sets:
 	; CDL: read by bomber_raid_state_04; partly not accessed
-	.addr	song_set_05F48A
+	.addr	song_set_boss
 	.byte	$70, $00
 ; bomber_raid_state_04 reads it as data_059F0C,x with x = 4, 2 (the
 ; bomber's two bombs): the words at +4/+2 ($0000, $FFFF) become field $34, the
@@ -4038,15 +4038,15 @@ palette_task_05D0AA:
 ; stream each (sound data, so probably leftovers).
 unused_load_list_05D0C3:
 	load_list	$00, $01
-	load_vram	$3000, spc_data_1C977B
+	load_vram	$3000, spc_song_stage2
 	load_end
 unused_load_list_05D0CC:
 	load_list	$00, $01
-	load_vram	$3000, spc_block_1AA9CC
+	load_vram	$3000, spc_song_boss
 	load_end
 unused_load_list_05D0D5:
 	load_list	$00, $01
-	load_vram	$3000, spc_data_1ABCA6
+	load_vram	$3000, spc_song_stage_clear
 	load_end
 start_points_x:
 	; CDL: read by set_start_points, respawn_at_start_point_stage2; partly not accessed
@@ -6327,13 +6327,13 @@ text_sound_2:
 	.byte	$4C, $5A, $4D, $4A, $4F, $49, $3F, $FF
 song_lists:
 	; CDL: not accessed
-	.addr	song_set_05F3C9
+	.addr	song_set_stage3
 	; CDL: read by load_stage_music; partly not accessed
-	.addr	song_set_05F3AE, song_set_05F3FF, song_set_05F3E4
-	.addr	song_set_05F3C9, song_set_05F41A, song_set_05F435, song_set_05F450
-	.addr	song_set_05F46B, song_set_05F4A4, song_set_05F4F8, song_set_05F51C
-	.addr	song_set_05F3C9, song_set_05F3C9, song_set_05F3C9, song_set_05F3E4
-	.addr	song_set_05F3C9, song_set_05F4D0, song_set_05F540
+	.addr	song_set_opening, song_set_stage1, song_set_stage2
+	.addr	song_set_stage3, song_set_stage4, song_set_stage5, song_set_stage6
+	.addr	song_set_boss_full, song_set_heart_boss_full, song_set_stage_clear_full, song_set_game_over_full
+	.addr	song_set_stage3, song_set_stage3, song_set_stage3, song_set_stage2
+	.addr	song_set_stage3, song_set_ending_full, song_set_konami_logo_full
 song_start_commands:
 	; CDL: not accessed
 	.byte	$74, $00
@@ -6341,114 +6341,114 @@ song_start_commands:
 	.byte	$7A, $00, $76, $00, $75, $00, $74, $00, $77, $00, $78, $00, $79, $00, $74, $00
 	.byte	$79, $00, $74, $00, $74, $00, $74, $00, $74, $00, $74, $00, $74, $00, $74, $00
 	.byte	$79, $00, $74, $00
-song_set_05F3AE:
+song_set_opening:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_block_1D8002, $0100
-	load_spc_raw	$B08E, spc_block_1E8002, $1E96
-	load_spc	$3000, spc_data_1AC08D
+	load_spc_raw	$5000, spc_sample_dir_opening, $0100
+	load_spc_raw	$B08E, spc_samples_opening, $1E96
+	load_spc	$3000, spc_song_opening
 	load_end
-song_set_05F3C9:
+song_set_stage3:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_block_1D8104, $0100
-	load_spc_raw	$B08E, spc_block_1E9E9A, $2637
-	load_spc	$3000, spc_data_1C8002
+	load_spc_raw	$5000, spc_sample_dir_stage3, $0100
+	load_spc_raw	$B08E, spc_samples_stage3, $2637
+	load_spc	$3000, spc_song_stage3
 	load_end
-song_set_05F3E4:
+song_set_stage2:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_block_1D8206, $0100
-	load_spc_raw	$B08E, spc_block_1EC4D3, $26FD
-	load_spc	$3000, spc_data_1C977B
+	load_spc_raw	$5000, spc_sample_dir_stage2, $0100
+	load_spc_raw	$B08E, spc_samples_stage2, $26FD
+	load_spc	$3000, spc_song_stage2
 	load_end
-song_set_05F3FF:
+song_set_stage1:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_block_1D8308, $0100
-	load_spc_raw	$B08E, spc_block_1F8002, $2544
-	load_spc	$3000, spc_data_1CB13C
+	load_spc_raw	$5000, spc_sample_dir_stage1, $0100
+	load_spc_raw	$B08E, spc_samples_stage1, $2544
+	load_spc	$3000, spc_song_stage1
 	load_end
-song_set_05F41A:
+song_set_stage4:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_block_1D840A, $0100
-	load_spc_raw	$B08E, spc_block_1FA548, $2178
-	load_spc	$3000, spc_data_1CBDE7
+	load_spc_raw	$5000, spc_sample_dir_stage4, $0100
+	load_spc_raw	$B08E, spc_samples_stage4, $2178
+	load_spc	$3000, spc_song_stage4
 	load_end
-song_set_05F435:
+song_set_stage5:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_block_1D850C, $0100
-	load_spc_raw	$B08E, spc_block_1FC6C2, $2193
-	load_spc	$3000, spc_data_1CD15E
+	load_spc_raw	$5000, spc_sample_dir_stage5, $0100
+	load_spc_raw	$B08E, spc_samples_stage5, $2193
+	load_spc	$3000, spc_song_stage5
 	load_end
-song_set_05F450:
+song_set_stage6:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_block_1D860E, $0100
-	load_spc_raw	$B08E, spc_block_1D8710, $2490
-	load_spc	$3000, spc_data_1CE6BD
+	load_spc_raw	$5000, spc_sample_dir_stage6, $0100
+	load_spc_raw	$B08E, spc_samples_stage6, $2490
+	load_spc	$3000, spc_song_stage6
 	load_end
-song_set_05F46B:
+song_set_boss_full:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_block_1D860E, $0100
-	load_spc_raw	$B08E, spc_block_1D8710, $2490
-	load_spc_raw	$3000, spc_block_1AA9CC, $12D8
+	load_spc_raw	$5000, spc_sample_dir_stage6, $0100
+	load_spc_raw	$B08E, spc_samples_stage6, $2490
+	load_spc_raw	$3000, spc_song_boss, $12D8
 	load_end
-song_set_05F48A:
+song_set_boss:
 	load_list	$02, $00
-	load_spc_raw	$3000, spc_block_1AA9CC, $12D8
+	load_spc_raw	$3000, spc_song_boss, $12D8
 	load_end
-song_set_05F497:
+song_set_heart_boss:
 	load_list	$02, $00
-	load_spc_raw	$3000, spc_block_1ACA23, $1FA6
+	load_spc_raw	$3000, spc_song_heart_boss, $1FA6
 	load_end
-song_set_05F4A4:
+song_set_heart_boss_full:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_block_1D860E, $0100
-	load_spc_raw	$B08E, spc_block_1D8710, $2490
-	load_spc_raw	$3000, spc_block_1ACA23, $1FA6
+	load_spc_raw	$5000, spc_sample_dir_stage6, $0100
+	load_spc_raw	$B08E, spc_samples_stage6, $2490
+	load_spc_raw	$3000, spc_song_heart_boss, $1FA6
 	load_end
-song_set_05F4C3:
+song_set_ending:
 	load_list	$02, $00
-	load_spc_raw	$3000, spc_block_1BDF92, $1DDC
+	load_spc_raw	$3000, spc_song_ending, $1DDC
 	load_end
-song_set_05F4D0:
+song_set_ending_full:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_block_1D860E, $0100
-	load_spc_raw	$B08E, spc_block_1D8710, $2490
-	load_spc_raw	$3000, spc_block_1BDF92, $1DDC
+	load_spc_raw	$5000, spc_sample_dir_stage6, $0100
+	load_spc_raw	$B08E, spc_samples_stage6, $2490
+	load_spc_raw	$3000, spc_song_ending, $1DDC
 	load_end
-song_set_05F4EF:
+song_set_stage_clear:
 	load_list	$02, $00
-	load_spc	$3000, spc_data_1ABCA6
+	load_spc	$3000, spc_song_stage_clear
 	load_end
-song_set_05F4F8:
+song_set_stage_clear_full:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_block_1D8104, $0100
-	load_spc_raw	$B08E, spc_block_1E9E9A, $2637
-	load_spc	$3000, spc_data_1ABCA6
+	load_spc_raw	$5000, spc_sample_dir_stage3, $0100
+	load_spc_raw	$B08E, spc_samples_stage3, $2637
+	load_spc	$3000, spc_song_stage_clear
 	load_end
-song_set_05F513:
+song_set_game_over:
 	load_list	$02, $00
-	load_spc	$3000, spc_data_1ABE84
+	load_spc	$3000, spc_song_game_over
 	load_end
-song_set_05F51C:
+song_set_game_over_full:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_block_1D8104, $0100
-	load_spc_raw	$B08E, spc_block_1E9E9A, $2637
-	load_spc	$3000, spc_data_1ABE84
+	load_spc_raw	$5000, spc_sample_dir_stage3, $0100
+	load_spc_raw	$B08E, spc_samples_stage3, $2637
+	load_spc	$3000, spc_song_game_over
 	load_end
-song_set_05F537:
+song_set_konami_logo:
 	load_list	$02, $00
-	load_spc	$3000, spc_data_1AA5EE
+	load_spc	$3000, spc_song_konami_logo
 	load_end
-song_set_05F540:
+song_set_konami_logo_full:
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_block_1D8104, $0100
-	load_spc_raw	$B08E, spc_block_1E9E9A, $2637
-	load_spc	$3000, spc_data_1AA5EE
+	load_spc_raw	$5000, spc_sample_dir_stage3, $0100
+	load_spc_raw	$B08E, spc_samples_stage3, $2637
+	load_spc	$3000, spc_song_konami_logo
 	load_end
-song_set_05F55B:
+song_set_boot:
 	; CDL: read by load_data_list, load_spc_list, upload_ring_to_spc (+5 more)
 	load_list	$02, $00
-	load_spc_raw	$5000, spc_block_1AA8CA, $0100
-	load_spc_raw	$5100, spc_block_1B8002, $5F8E
-	load_spc	$0200, spc_data_1A8002
+	load_spc_raw	$5000, spc_sample_dir_boot, $0100
+	load_spc_raw	$5100, spc_samples_common, $5F8E
+	load_spc	$0200, spc_driver
 	load_end
 palette_task_05F576:
 	palette_fade_out	$08, palette_088D62, $228A

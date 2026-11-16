@@ -32,9 +32,9 @@ tested, how far it has got and what is still fixed.
   otherwise after their kind and address: `anim_05C4CE` (animation script),
   `td_anim_` (top-down enemy animation), `metasprite_06AEA0`,
   `palette_task_`, `palette_088F92` (a palette in bank `$08`), `text_`,
-  `load_list_`, `song_set_` (a type-2 list), `gfx_` / `packed_` /
-  `spc_data_` / `spc_block_` (the streams of the lists: VRAM, WRAM, sound
-  CPU, uncompressed sound block), `hdma_list_`, `hdma_table_`,
+  `load_list_`, `song_set_` (a type-2 list), `gfx_` / `packed_` (the
+  streams of the lists: VRAM, WRAM; the sound CPU blocks are named after what
+  they hold, `spc_song_stage1` ...), `hdma_list_`, `hdma_table_`,
   `vram_blocks_` (lists for `queue_vram_blocks`), `spawn_pages_` /
   `spawn_list_`. Like the `data_` placeholders they mean "not named yet", but say
   what the data is.

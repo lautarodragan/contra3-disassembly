@@ -56,7 +56,7 @@ tbl_stage1_boss_controller_states:
 stage1_boss_controller_state_00:
 	lda	#$0002
 	jsl	f:start_palette_anim
-	lda	#.loword(song_set_05F48A)
+	lda	#.loword(song_set_boss)
 	sta	a:song_change_set
 	lda	#$0004
 	sta	a:song_change_mode

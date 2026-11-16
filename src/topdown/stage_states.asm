@@ -1527,7 +1527,7 @@ load_stage5_assets:
 
 ; Loads the stage 2 boss graphics and palettes.
 load_stage2_boss_assets:
-	ldx	#.loword(song_set_05F46B)
+	ldx	#.loword(song_set_boss_full)
 	jsl	f:load_song_set
 	ldx	#.loword(load_list_05CFCF)
 	jsl	f:load_data_list
@@ -1540,7 +1540,7 @@ load_stage2_boss_assets:
 
 ; Loads the stage 5 boss graphics and palettes.
 load_stage5_boss_assets:
-	ldx	#.loword(song_set_05F46B)
+	ldx	#.loword(song_set_boss_full)
 	jsl	f:load_song_set
 	ldx	#.loword(load_list_05D073)
 	jsl	f:load_data_list

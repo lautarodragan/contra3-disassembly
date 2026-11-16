@@ -11,18 +11,21 @@
 ; Other blocks start at a CDL comment.
 
 	.byte	$96, $1E
-spc_block_1E8002:
-	; ASSET: sound CPU data (uncompressed), $1E:8002-$1E:9E97, uploaded by song_set_05F3AE
-	.incbin	"sound/spc_block_1E8002.bin"
+spc_samples_opening:
+	; ASSET: sound CPU data (uncompressed), $1E:8002-$1E:9E97, uploaded by song_set_opening
+	; ARAM $B08E-$CF23: BRR samples of opening (sources 20-23) (book: Sound)
+	.incbin	"sound/spc_samples_opening.bin"
 	.byte	$37, $26
-spc_block_1E9E9A:
-	; ASSET: sound CPU data (uncompressed), $1E:9E9A-$1E:C4D0, uploaded by song_set_05F3C9, song_set_05F4F8, song_set_05F51C (+1 more)
-	.incbin	"sound/spc_block_1E9E9A.bin"
+spc_samples_stage3:
+	; ASSET: sound CPU data (uncompressed), $1E:9E9A-$1E:C4D0, uploaded by song_set_stage3, song_set_stage_clear_full, song_set_game_over_full (+1 more)
+	; ARAM $B08E-$D6C4: BRR samples of stage 3 (sources 20-23) (book: Sound)
+	.incbin	"sound/spc_samples_stage3.bin"
 	.byte	$FD, $26
 	; CDL: read by upload_spc_raw_block
-spc_block_1EC4D3:
-	; ASSET: sound CPU data (uncompressed), $1E:C4D3-$1E:EBCF, uploaded by song_set_05F3E4
-	.incbin	"sound/spc_block_1EC4D3.bin"
+spc_samples_stage2:
+	; ASSET: sound CPU data (uncompressed), $1E:C4D3-$1E:EBCF, uploaded by song_set_stage2
+	; ARAM $B08E-$D78A: BRR samples of stage 2 (sources 20-23) (book: Sound)
+	.incbin	"sound/spc_samples_stage2.bin"
 	; CDL: read by decompress_chunk
 gfx_1EEBD0:
 	; ASSET: compressed graphics (VRAM), $1E:EBD0-$1E:EFA4 (from its length word), loaded by load_list_058976

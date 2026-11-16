@@ -12,12 +12,14 @@
 
 	; CDL: read by upload_spc_raw_block; partly not accessed
 	.byte	$8E, $5F
-spc_block_1B8002:
-	; ASSET: sound CPU data (uncompressed), $1B:8002-$1B:DF8F, uploaded by song_set_05F55B
-	.incbin	"sound/spc_block_1B8002.bin"
+spc_samples_common:
+	; ASSET: sound CPU data (uncompressed), $1B:8002-$1B:DF8F, uploaded by song_set_boot
+	; ARAM $5100-$B08D: BRR samples shared by every set (sources 0-19) (book: Sound)
+	.incbin	"sound/spc_samples_common.bin"
 	.byte	$DC, $1D
 	; CDL: read by upload_spc_raw_block
-spc_block_1BDF92:
-	; ASSET: sound CPU data (uncompressed), $1B:DF92-$1B:FD6D, uploaded by song_set_05F4C3
-	.incbin	"sound/spc_block_1BDF92.bin"
+spc_song_ending:
+	; ASSET: sound CPU data (uncompressed), $1B:DF92-$1B:FD6D, uploaded by song_set_ending
+	; ARAM $3000-$4DDB: song (sequence data) (book: Sound)
+	.incbin	"sound/spc_song_ending.bin"
 	; The rest of the bank is free: filled with $FF by the linker (contra3.cfg).

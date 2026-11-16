@@ -41,7 +41,7 @@ stage_clear_init:
 	plp
 	lda	#$0001
 	sta	a:tm_shadow
-	ldx	#.loword(song_set_05F4EF)
+	ldx	#.loword(song_set_stage_clear)
 	jsl	f:load_song_set
 	lda	stage_number
 	asl	a

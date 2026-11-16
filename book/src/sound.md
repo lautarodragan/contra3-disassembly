@@ -2,8 +2,10 @@
 
 The music and sound effects are played by a program running on the sound
 CPU (SPC700), uploaded at boot. This page describes what the main CPU does
-to talk to it (`src/sound/`); the driver itself and the music data (banks
-`$1A`, `$1B`, `$1D`, `$1E`, `$1F`) are not disassembled yet.
+to talk to it (`src/sound/`) and what it uploads where in the sound CPU's
+memory (ARAM); the driver's own code is not disassembled into `src/` (it
+is the asset `assets/sound/spc_driver.bin`; `tools/spc700.py` disassembles
+it).
 
 ## Commands
 
@@ -63,3 +65,77 @@ implement a second protocol on `APUIO2/3` (a `$AABB` / `$A0B0` handshake, an
 address, then bytes tagged with a 7-bit counter) to send data to the driver
 while it plays, with a request/status scheme in the `LOADER_SPC` context
 (`LDR_SPC_STREAM_STATUS`, `LDR_SPC_STREAM_ON`), `sound_stream_check_index` and `sound_cmd_override`.
+
+## Sound CPU memory
+
+What the upload lists put where (the `load_spc` / `load_spc_raw` entries
+of the `song_set_` lists in `src/data/tables_05.asm`), checked in the
+emulator: the sound CPU's 64 KiB, read from a save state of the snes9x
+core (its `SND:` block starts with them), held each uploaded block at its
+address at the start of every stage, and the driver at `$0200` after boot.
+
+| ARAM | what |
+|---|---|
+| `$0000`-`$00EF` | the driver's variables (direct page) |
+| `$00F0`-`$00FF` | the sound CPU's I/O registers (DSP address/data, timers, ports) |
+| `$0100`-`$01CF` | variables (`$0100`-`$018E`) and the stack (from `$01CF` down) |
+| `$0200`-`$2FFF` | the driver, `spc_driver` (uploaded at boot); `$2DAC`-`$2FFF` are zeros |
+| `$3000`-`$4FFF` | the song of the current song set (`spc_song_`), at most `$2000` bytes |
+| `$5000`-`$50FF` | the sample directory (`spc_sample_dir_`), DSP register DIR = `$50` |
+| `$5100`-`$B08D` | the samples every set shares, sources 0-19 (`spc_samples_common`, uploaded at boot) |
+| `$B08E`-`$D78A` | the samples of the current stage, sources 20-23 (`spc_samples_` of the stage) |
+| top of ARAM | the echo buffer: the driver sets ESA to `$10000` - EDL x `$800` |
+
+Inside the driver (`spc_driver`, loaded at `$0200`): `$0200` jumps to the
+start-up code at `$0896`; `$0203`-`$03E5` are variables (zeros in the
+file, cleared again at start-up); `$03E6`-`$0895` are tables (sounds,
+instruments); `$0896`-`$1B36` is code with a few tables in it; `$1B37`-`$2DAB`
+are the sequences of the sound effects and of the songs that live in the
+driver.
+
+### The blocks
+
+Every song set is a list of type 2; the game loads one with
+`load_song_set` or `request_song_set` (see [Uploads](#uploads)). At boot,
+`reset` loads `song_set_boot`: the driver, the boot directory and the
+common samples. The stage song sets replace the directory, the stage
+samples and the song; the others replace only the song (the stage's
+directory and samples stay):
+
+| list | `$5000` directory | `$B08E` samples | `$3000` song | used by |
+|---|---|---|---|---|
+| `song_set_boot` | `spc_sample_dir_boot` | (`$5100`: `spc_samples_common`) | (`$0200`: `spc_driver`) | `reset` |
+| `song_set_opening` | `spc_sample_dir_opening` | `spc_samples_opening` | `spc_song_opening` | stage 0 (the opening cinematic) |
+| `song_set_stage1` | `spc_sample_dir_stage1` | `spc_samples_stage1` | `spc_song_stage1` | stage 1 |
+| `song_set_stage2` | `spc_sample_dir_stage2` | `spc_samples_stage2` | `spc_song_stage2` | stage 2 |
+| `song_set_stage3` | `spc_sample_dir_stage3` | `spc_samples_stage3` | `spc_song_stage3` | stage 3 |
+| `song_set_stage4` | `spc_sample_dir_stage4` | `spc_samples_stage4` | `spc_song_stage4` | stage 4 |
+| `song_set_stage5` | `spc_sample_dir_stage5` | `spc_samples_stage5` | `spc_song_stage5` | stage 5 |
+| `song_set_stage6` | `spc_sample_dir_stage6` | `spc_samples_stage6` | `spc_song_stage6` | stage 6 |
+| `song_set_boss` | | | `spc_song_boss` | the bosses of stages 1 and 3 |
+| `song_set_boss_full` | `spc_sample_dir_stage6` | `spc_samples_stage6` | `spc_song_boss` | the stage 2 boss (`load_stage2_boss_assets`); sound check |
+| `song_set_heart_boss` | | | `spc_song_heart_boss` | `heart_boss_state_05` |
+| `song_set_heart_boss_full` | `spc_sample_dir_stage6` | `spc_samples_stage6` | `spc_song_heart_boss` | sound check |
+| `song_set_ending` | | | `spc_song_ending` | `ending_sequence_state_18` |
+| `song_set_ending_full` | `spc_sample_dir_stage6` | `spc_samples_stage6` | `spc_song_ending` | sound check |
+| `song_set_stage_clear` | | | `spc_song_stage_clear` | the stage clear screen |
+| `song_set_stage_clear_full` | `spc_sample_dir_stage3` | `spc_samples_stage3` | `spc_song_stage_clear` | sound check |
+| `song_set_game_over` | | | `spc_song_game_over` | the game over screen |
+| `song_set_game_over_full` | `spc_sample_dir_stage3` | `spc_samples_stage3` | `spc_song_game_over` | sound check |
+| `song_set_konami_logo` | | | `spc_song_konami_logo` | the Konami logo (`game_mode_konami_logo`) |
+| `song_set_konami_logo_full` | `spc_sample_dir_stage3` | `spc_samples_stage3` | `spc_song_konami_logo` | sound check |
+
+The stage of a stage set is its place in `song_lists`
+(`load_stage_music` uses entry `stage_number` + 1), checked in the
+emulator (ARAM at the start of each stage). The `_full` sets also load
+a directory and samples; only the sound check (and the stage 2 boss) use
+them, to have samples that suit the song whatever was loaded before.
+`spc_sample_dir_boot` is the same 256 bytes as `spc_sample_dir_stage3`.
+The songs of stages 2 and 5 end with the same `$2CB` bytes (from `$4B00`):
+a second song, the top-down stages' intro (sound `$6F`, queued by
+`intro_init`).
+
+Three lists of type 0 that nothing uses (`unused_load_list_05D0C3` ...)
+point at song streams with VRAM address `$3000`: probably song sets whose
+type byte was changed.
+

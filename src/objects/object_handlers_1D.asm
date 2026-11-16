@@ -1532,7 +1532,7 @@ ending_sequence_state_18:
 	inc	OBJ_STATE,x
 @load:
 	phx
-	ldx	#.loword(song_set_05F4C3)
+	ldx	#.loword(song_set_ending)
 	jsl	f:load_song_set
 	lda	#$0071
 	jsl	f:queue_sound

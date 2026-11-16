@@ -876,7 +876,7 @@ stage3_boss_state_0A:
 	bne	stage3_boss_return
 	dec	OBJ_TIMER,x
 	bne	stage3_boss_return
-	lda	#.loword(song_set_05F48A)
+	lda	#.loword(song_set_boss)
 	sta	a:song_change_set
 	lda	#$0004
 	sta	a:song_change_mode
@@ -6414,7 +6414,7 @@ heart_boss_state_05:
 	rtl
 @request_song:
 	phx
-	ldx	#.loword(song_set_05F497)
+	ldx	#.loword(song_set_heart_boss)
 	jsl	f:request_song_set
 	plx
 	inc	OBJ_STATE,x

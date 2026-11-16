@@ -213,7 +213,9 @@ The [Graphics gallery](gallery.md) shows all 97.
 - the 54 streams decompressed to WRAM bank `$7E`: what they hold
   (tilemaps, metatiles, collision data, graphics copied to VRAM later) is
   not worked out per stream yet;
-- the 30 sound CPU blocks (11 compressed, 19 not).
+- the 30 sound CPU blocks (11 compressed, 19 not): the driver, the sample
+  directories, the samples and the songs; what each is and where it goes
+  in the sound CPU's memory is in [Sound](sound.md#sound-cpu-memory).
 
 Not editable as files yet either: the palettes (`.byte` lines in bank `$08`
 and in the tables, where some palettes overlap) and the tilemaps above as
