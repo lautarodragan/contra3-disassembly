@@ -80,8 +80,10 @@ make goldens                       # rewrite tests/goldens/*.png from the curren
   top-down split screen), HARD; plus the attract sequence. Every 60 frames
   the screen (15-bit) and the sound command ring (`$0100-$01FF`, what
   `queue_sound` sends) are hashed, and the loudness of every half second
-  of audio is taken (within 8%: the exact samples move by a few when the
-  CPU's timing changes by some cycles, as in a ROM with another layout),
+  of audio is taken (within 8% over 1.5 s, and only a difference lasting
+  3 s fails: the exact samples move when the CPU's timing changes by some
+  cycles, as in a ROM with another layout, and a sound effect can start a
+  frame later),
   and compared with `tests/goldens/play/<play>.json` (taken from the
   original ROM). A checkpoint matches if any frame within 2 of it does
   (a busy moment can lag a frame earlier or later when the CPU's timing

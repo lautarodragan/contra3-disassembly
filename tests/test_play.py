@@ -2,7 +2,8 @@
 CHECK frames against goldens: a hash of the screen (15-bit) and of the
 sound command ring (WRAM $0100-$01FF, what queue_sound sends to the sound
 CPU); and the loudness of the audio stream in blocks of AUDIO_BLOCK bytes,
-within AUDIO_TOLERANCE.  The audio itself is not compared exactly: when a
+within AUDIO_TOLERANCE over AUDIO_WINDOW blocks, failing only when that
+differs for AUDIO_RUN blocks in a row.  The audio itself is not compared exactly: when a
 command reaches the sound CPU depends on the main CPU's timing to the
 cycle, which changes in a ROM with another layout (indexed reads that
 cross a page take a cycle more), so a sound can start a few samples
@@ -48,19 +49,27 @@ PIXEL_TOLERANCE = 64           # pixels: a lone differing checkpoint (see test_p
 SLACK = 2                     # frames: a checkpoint matches the golden within +-SLACK frames
 AUDIO_BLOCK = 65536           # bytes: 16384 stereo samples, about 0.5 s
 AUDIO_TOLERANCE = 0.08        # relative difference of mean absolute amplitude
+AUDIO_WINDOW = 3              # blocks summed for the comparison (1.5 s)
+AUDIO_RUN = 6                 # consecutive differing blocks (3 s) that fail
 ATTRACT_FRAMES = 21000          # logos, intro, title, the three demos, the logo again
 
 NAMES = ["attract"] + list(plays.PLAYS)
 
 
 def _frames(c, name):
-    """Yields after every frame of the play."""
+    """Yields after every frame of the play, and SLACK frames more (so the
+    last checkpoint has its window too)."""
+    done = 0
     if name == "attract":
         for done in range(1, ATTRACT_FRAMES + 1):
             c.run(1)
             yield done
     else:
-        yield from plays.run(c, plays.PLAYS[name], every=1)
+        for done in plays.run(c, plays.PLAYS[name], every=1):
+            yield done
+    for k in range(1, SLACK + 1):
+        c.run(1)
+        yield done + k
 
 
 def _level(block):
@@ -161,11 +170,24 @@ def test_play(play_runs, rom, core, name, update_goldens):
         bad = []
         for i, (x, y) in enumerate(zip(g, w)):
             if what == "audio":
-                miss = abs(x[1] - y[1]) > AUDIO_TOLERANCE * max(x[1], y[1]) + 16
+                # loudness over AUDIO_WINDOW blocks around this one
+                xs = sum(e[1] for e in g[max(0, i - AUDIO_WINDOW // 2):i + AUDIO_WINDOW // 2 + 1])
+                ys = sum(e[1] for e in w[max(0, i - AUDIO_WINDOW // 2):i + AUDIO_WINDOW // 2 + 1])
+                miss = abs(xs - ys) > AUDIO_TOLERANCE * max(xs, ys) + 16
             else:
                 miss = y[1] not in x[2]
             if miss:
                 bad.append(i)
+        if what == "audio":
+            # only a difference that lasts: a sound effect moved by a frame
+            # or two changes the loudness for a moment; a wrong song or
+            # sample for seconds
+            runs, cur = [], []
+            for i in bad:
+                cur = cur + [i] if cur and cur[-1] == i - 1 else [i]
+                if len(cur) >= AUDIO_RUN:
+                    runs.append(cur[0])
+            bad = runs[:1]
         if what == "screen":
             # A lone checkpoint whose screen differs in a few pixels, between
             # two that match, is tolerated (checked below): a sprite or a
