@@ -19,20 +19,20 @@ swap_topdown_window_buffer:
 @even_frame:
 	lda	#$3E00
 	sta	a:A1T2L
-loc_02DDDB:
+topdown_window_return:
 	rtl
 
 ; NMI (top-down): while topdown_window_update_on, builds the window table
-; for the next frame into the other buffer (loc_02E0FD / loc_02E3AE).
+; for the next frame into the other buffer (build_td_p1_bomb_window / build_td_p2_bomb_window).
 update_topdown_window:
 	lda	a:topdown_window_update_on
-	beq	loc_02DDDB
+	beq	topdown_window_return
 	lda	frame_counter
 	lsr	a
 	bcc	@even_frame
-	jml	f:loc_02E0FD
+	jml	f:build_td_p1_bomb_window
 @even_frame:
-	jml	f:loc_02E3AE
+	jml	f:build_td_p2_bomb_window
 
 ; In: zp_10 = radius, zp_14/zp_16 = centre, zp_18/zp_1A = first/last
 ; line.  Clips the circle to those lines: carry set if nothing is visible,
@@ -541,14 +541,30 @@ build_window_from_widths:
 	bne	@loop
 	stx	zp_1C
 	rtl
-loc_02E0FD:
+
+; NMI (top-down), odd frames: player 1's smart bomb window, built into the
+; table at $7E:3C00 (colour window 1, WOBJSEL $20: the bomb's light). By
+; td_p1_bomb's OBJ_TYPE: 0 (no bomb) turns the window off; 1 (the
+; growing bomb) draws a circle of radius 2 x timer ($24) at the bomb's
+; screen position in each view ($38/$3C in player 1's, $3A/$3E in player
+; 2's), with COLDATA brightening with the timer; 2 and up (a flash, not
+; run in the traces) draws the shape of window_widths_05E2F6 at $30/$34
+; ($32/$36) with COLDATA from ptrs_bomb_flash_coldata. 1 player and 2-player
+; mode B draw one shape over lines $18-$E0; in mode A (split screen) the
+; top half (lines 0-$68, player 1's view) and the bottom half ($78-$E0)
+; are clipped separately. A view whose player is falling ($2C of the
+; player object) gets no shape. In the flash's split-screen code a
+; constant player number (`lda #$0000`, `#$0002` for player 2, then
+; beq/bne) skips that test in the thrower's own half: the code was made
+; from one template for both players.
+build_td_p1_bomb_window:
 	rep	#$30
 	lda	a:td_p1_bomb+OBJ_TYPE
 	dec	a
-	bne	loc_02E108
-	brl	loc_02E291
-loc_02E108:
-	bpl	loc_02E133
+	bne	@not_circle
+	brl	@circle
+@not_circle:
+	bpl	@flash
 	sep	#$20
 	.a8
 	lda	#$01
@@ -569,14 +585,14 @@ loc_02E108:
 	rep	#$20
 	.a16
 	rtl
-loc_02E133:
+@flash:
 	; (not executed in the CDL traces)
 	ldy	#$0000
 	lda	a:td_p1_obj+OBJ_ATTR
 	bit	#$2000
-	bne	loc_02E141
+	bne	@flash_colors
 	ldy	#$0002
-loc_02E141:
+@flash_colors:
 	sep	#$20
 	.a8
 	lda	a:bomb_flash_cgadsub_p1,y
@@ -599,9 +615,9 @@ loc_02E141:
 	lsr	a
 	asl	a
 	cmp	#$0020
-	bcc	loc_02E173
+	bcc	@flash_coldata_clamped
 	lda	#$0020
-loc_02E173:
+@flash_coldata_clamped:
 	tay
 	lda	a:ptrs_bomb_flash_coldata,y
 	sta	zp_04
@@ -622,11 +638,11 @@ loc_02E173:
 	lda	#.loword(window_widths_05E2F6)
 	sta	zp_12
 	lda	a:title_menu_cursor
-	beq	loc_02E1D8
+	beq	@flash_one_player
 	dec	a
-	bne	loc_02E1A3
-	brl	loc_02E208
-loc_02E1A3:
+	bne	@flash_mode_b
+	brl	@flash_split
+@flash_mode_b:
 	lda	#$3C20
 	sta	zp_1C
 	lda	a:td_p1_bomb+$30
@@ -639,15 +655,15 @@ loc_02E1A3:
 	sta	zp_1A
 	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
-	bcs	loc_02E1D3
+	bcs	@flash_mode_b_end
 	lda	a:td_p1_obj+$2C
-	bne	loc_02E1D3
+	bne	@flash_mode_b_end
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_from_widths
-loc_02E1D3:
+@flash_mode_b_end:
 	jsl	f:end_window_hdma_table
 	rtl
-loc_02E1D8:
+@flash_one_player:
 	lda	#$3C20
 	sta	zp_1C
 	lda	a:td_p1_bomb+$30
@@ -660,13 +676,13 @@ loc_02E1D8:
 	sta	zp_1A
 	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
-	bcs	loc_02E203
+	bcs	@flash_one_player_end
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_from_widths
-loc_02E203:
+@flash_one_player_end:
 	jsl	f:end_window_hdma_table
 	rtl
-loc_02E208:
+@flash_split:
 	lda	#$3C20
 	sta	zp_1C
 	lda	a:td_p1_bomb+$30
@@ -678,27 +694,27 @@ loc_02E208:
 	lda	#$0068
 	sta	zp_1A
 	jsl	f:clip_window_circle
-	bcc	loc_02E22D
-loc_02E227:
+	bcc	@flash_top_visible
+@flash_top_off:
 	jsl	f:add_window_off_single_lines
-	bra	loc_02E24E
-loc_02E22D:
+	bra	@flash_bottom
+@flash_top_visible:
 	lda	#$0000
-	beq	loc_02E23A
+	beq	@flash_top_line_0
 	lda	a:td_p1_obj+$2C
 	ora	a:td_p2_obj+$2C
-	bne	loc_02E227
-loc_02E23A:
+	bne	@flash_top_off
+@flash_top_line_0:
 	lda	zp_08
-	bne	loc_02E246
+	bne	@flash_top_draw
 	inc	zp_08
 	inc	zp_0C
 	dec	zp_0E
-	beq	loc_02E227
-loc_02E246:
+	beq	@flash_top_off
+@flash_top_draw:
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_from_widths
-loc_02E24E:
+@flash_bottom:
 	jsl	f:add_window_off_16_lines
 	lda	#$3C20
 	sta	zp_1C
@@ -711,23 +727,23 @@ loc_02E24E:
 	lda	#$00E0
 	sta	zp_1A
 	jsl	f:clip_window_circle
-	bcc	loc_02E277
-loc_02E271:
+	bcc	@flash_bottom_visible
+@flash_bottom_off:
 	jsl	f:add_window_off_span
-	bra	loc_02E28C
-loc_02E277:
+	bra	@flash_split_end
+@flash_bottom_visible:
 	lda	#$0000
-	bne	loc_02E284
+	bne	@flash_bottom_draw
 	lda	a:td_p1_obj+$2C
 	ora	a:td_p2_obj+$2C
-	bne	loc_02E271
-loc_02E284:
+	bne	@flash_bottom_off
+@flash_bottom_draw:
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_from_widths
-loc_02E28C:
+@flash_split_end:
 	jsl	f:end_window_hdma_table
 	rtl
-loc_02E291:
+@circle:
 	sep	#$20
 	.a8
 	lda	#$13
@@ -759,11 +775,11 @@ loc_02E291:
 	and	#$00FF
 	sta	zp_10
 	lda	a:title_menu_cursor
-	beq	loc_02E30C
+	beq	@circle_one_player
 	dec	a
-	bne	loc_02E2DC
-	brl	loc_02E341
-loc_02E2DC:
+	bne	@circle_mode_b
+	brl	@circle_split
+@circle_mode_b:
 	; (not executed in the CDL traces)
 	lda	#$3C20
 	sta	zp_1C
@@ -777,13 +793,13 @@ loc_02E2DC:
 	sta	zp_1A
 	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
-	bcs	loc_02E307
+	bcs	@circle_mode_b_end
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
-loc_02E307:
+@circle_mode_b_end:
 	jsl	f:end_window_hdma_table
 	rtl
-loc_02E30C:
+@circle_one_player:
 	lda	#$3C20
 	sta	zp_1C
 	lda	a:td_p1_bomb+$38
@@ -796,15 +812,15 @@ loc_02E30C:
 	sta	zp_1A
 	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
-	bcs	loc_02E33C
+	bcs	@circle_one_player_end
 	lda	a:td_p1_obj+$2C
-	bne	loc_02E33C
+	bne	@circle_one_player_end
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
-loc_02E33C:
+@circle_one_player_end:
 	jsl	f:end_window_hdma_table
 	rtl
-loc_02E341:
+@circle_split:
 	lda	#$3C20
 	sta	zp_1C
 	lda	a:td_p1_bomb+$38
@@ -816,16 +832,16 @@ loc_02E341:
 	lda	#$0068
 	sta	zp_1A
 	jsl	f:clip_window_circle
-	bcc	loc_02E366
-loc_02E360:
+	bcc	@circle_top_visible
+@circle_top_off:
 	jsl	f:add_window_off_span
-	bra	loc_02E373
-loc_02E366:
+	bra	@circle_bottom
+@circle_top_visible:
 	lda	a:td_p1_obj+$2C
-	bne	loc_02E360
+	bne	@circle_top_off
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
-loc_02E373:
+@circle_bottom:
 	jsl	f:add_window_off_16_lines
 	lda	#$3C20
 	sta	zp_1C
@@ -838,26 +854,30 @@ loc_02E373:
 	lda	#$00E0
 	sta	zp_1A
 	jsl	f:clip_window_circle
-	bcc	loc_02E39C
-loc_02E396:
+	bcc	@circle_bottom_visible
+@circle_bottom_off:
 	jsl	f:add_window_off_span
-	bra	loc_02E3A9
-loc_02E39C:
+	bra	@circle_split_end
+@circle_bottom_visible:
 	lda	a:td_p2_obj+$2C
-	bne	loc_02E396
+	bne	@circle_bottom_off
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
-loc_02E3A9:
+@circle_split_end:
 	jsl	f:end_window_hdma_table
 	rtl
-loc_02E3AE:
+
+; NMI (top-down), even frames: the same for player 2's smart bomb
+; (td_p2_bomb), into the table at $7E:3E00. The two bombs thus share the
+; window on alternate frames.
+build_td_p2_bomb_window:
 	rep	#$30
 	lda	a:td_p2_bomb+OBJ_TYPE
 	dec	a
-	bne	loc_02E3B9
-	brl	loc_02E542
-loc_02E3B9:
-	bpl	loc_02E3E4
+	bne	@not_circle
+	brl	@circle
+@not_circle:
+	bpl	@flash
 	sep	#$20
 	.a8
 	lda	#$01
@@ -878,14 +898,14 @@ loc_02E3B9:
 	rep	#$20
 	.a16
 	rtl
-loc_02E3E4:
+@flash:
 	; (not executed in the CDL traces)
 	ldy	#$0000
 	lda	a:td_p2_obj+OBJ_ATTR
 	bit	#$2000
-	bne	loc_02E3F2
+	bne	@flash_colors
 	ldy	#$0002
-loc_02E3F2:
+@flash_colors:
 	sep	#$20
 	.a8
 	lda	a:bomb_flash_cgadsub_p2,y
@@ -908,9 +928,9 @@ loc_02E3F2:
 	lsr	a
 	asl	a
 	cmp	#$0020
-	bcc	loc_02E424
+	bcc	@flash_coldata_clamped
 	lda	#$0020
-loc_02E424:
+@flash_coldata_clamped:
 	tay
 	lda	a:ptrs_bomb_flash_coldata,y
 	sta	zp_04
@@ -931,11 +951,11 @@ loc_02E424:
 	lda	#.loword(window_widths_05E2F6)
 	sta	zp_12
 	lda	a:title_menu_cursor
-	beq	loc_02E489
+	beq	@flash_one_player
 	dec	a
-	bne	loc_02E454
-	brl	loc_02E4B9
-loc_02E454:
+	bne	@flash_mode_b
+	brl	@flash_split
+@flash_mode_b:
 	lda	#$3E20
 	sta	zp_1C
 	lda	a:td_p2_bomb+$30
@@ -948,15 +968,15 @@ loc_02E454:
 	sta	zp_1A
 	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
-	bcs	loc_02E484
+	bcs	@flash_mode_b_end
 	lda	a:td_p2_obj+$2C
-	bne	loc_02E484
+	bne	@flash_mode_b_end
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_from_widths
-loc_02E484:
+@flash_mode_b_end:
 	jsl	f:end_window_hdma_table
 	rtl
-loc_02E489:
+@flash_one_player:
 	lda	#$3E20
 	sta	zp_1C
 	lda	a:td_p2_bomb+$30
@@ -969,13 +989,13 @@ loc_02E489:
 	sta	zp_1A
 	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
-	bcs	loc_02E4B4
+	bcs	@flash_one_player_end
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_from_widths
-loc_02E4B4:
+@flash_one_player_end:
 	jsl	f:end_window_hdma_table
 	rtl
-loc_02E4B9:
+@flash_split:
 	lda	#$3E20
 	sta	zp_1C
 	lda	a:td_p2_bomb+$30
@@ -987,27 +1007,27 @@ loc_02E4B9:
 	lda	#$0068
 	sta	zp_1A
 	jsl	f:clip_window_circle
-	bcc	loc_02E4DE
-loc_02E4D8:
+	bcc	@flash_top_visible
+@flash_top_off:
 	jsl	f:add_window_off_single_lines
-	bra	loc_02E4FF
-loc_02E4DE:
+	bra	@flash_bottom
+@flash_top_visible:
 	lda	#$0002
-	beq	loc_02E4EB
+	beq	@flash_top_line_0
 	lda	a:td_p2_obj+$2C
 	ora	a:td_p1_obj+$2C
-	bne	loc_02E4D8
-loc_02E4EB:
+	bne	@flash_top_off
+@flash_top_line_0:
 	lda	zp_08
-	bne	loc_02E4F7
+	bne	@flash_top_draw
 	inc	zp_08
 	inc	zp_0C
 	dec	zp_0E
-	beq	loc_02E4D8
-loc_02E4F7:
+	beq	@flash_top_off
+@flash_top_draw:
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_from_widths
-loc_02E4FF:
+@flash_bottom:
 	jsl	f:add_window_off_16_lines
 	lda	#$3E20
 	sta	zp_1C
@@ -1020,23 +1040,23 @@ loc_02E4FF:
 	lda	#$00E0
 	sta	zp_1A
 	jsl	f:clip_window_circle
-	bcc	loc_02E528
-loc_02E522:
+	bcc	@flash_bottom_visible
+@flash_bottom_off:
 	jsl	f:add_window_off_span
-	bra	loc_02E53D
-loc_02E528:
+	bra	@flash_split_end
+@flash_bottom_visible:
 	lda	#$0002
-	bne	loc_02E535
+	bne	@flash_bottom_draw
 	lda	a:td_p2_obj+$2C
 	ora	a:td_p1_obj+$2C
-	bne	loc_02E522
-loc_02E535:
+	bne	@flash_bottom_off
+@flash_bottom_draw:
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_from_widths
-loc_02E53D:
+@flash_split_end:
 	jsl	f:end_window_hdma_table
 	rtl
-loc_02E542:
+@circle:
 	sep	#$20
 	.a8
 	lda	#$13
@@ -1068,11 +1088,11 @@ loc_02E542:
 	and	#$00FF
 	sta	zp_10
 	lda	a:title_menu_cursor
-	beq	loc_02E5BD
+	beq	@circle_one_player
 	dec	a
-	bne	loc_02E58D
-	brl	loc_02E5F2
-loc_02E58D:
+	bne	@circle_mode_b
+	brl	@circle_split
+@circle_mode_b:
 	; (not executed in the CDL traces)
 	lda	#$3E20
 	sta	zp_1C
@@ -1086,13 +1106,13 @@ loc_02E58D:
 	sta	zp_1A
 	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
-	bcs	loc_02E5B8
+	bcs	@circle_mode_b_end
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
-loc_02E5B8:
+@circle_mode_b_end:
 	jsl	f:end_window_hdma_table
 	rtl
-loc_02E5BD:
+@circle_one_player:
 	lda	#$3E20
 	sta	zp_1C
 	lda	a:td_p2_bomb+$38
@@ -1105,15 +1125,15 @@ loc_02E5BD:
 	sta	zp_1A
 	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
-	bcs	loc_02E5ED
+	bcs	@circle_one_player_end
 	lda	a:td_p2_obj+$2C
-	bne	loc_02E5ED
+	bne	@circle_one_player_end
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
-loc_02E5ED:
+@circle_one_player_end:
 	jsl	f:end_window_hdma_table
 	rtl
-loc_02E5F2:
+@circle_split:
 	lda	#$3E20
 	sta	zp_1C
 	lda	a:td_p2_bomb+$38
@@ -1125,16 +1145,16 @@ loc_02E5F2:
 	lda	#$0068
 	sta	zp_1A
 	jsl	f:clip_window_circle
-	bcc	loc_02E617
-loc_02E611:
+	bcc	@circle_top_visible
+@circle_top_off:
 	jsl	f:add_window_off_span
-	bra	loc_02E624
-loc_02E617:
+	bra	@circle_bottom
+@circle_top_visible:
 	lda	a:td_p1_obj+$2C
-	bne	loc_02E611
+	bne	@circle_top_off
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
-loc_02E624:
+@circle_bottom:
 	jsl	f:add_window_off_16_lines
 	lda	#$3E20
 	sta	zp_1C
@@ -1147,15 +1167,15 @@ loc_02E624:
 	lda	#$00E0
 	sta	zp_1A
 	jsl	f:clip_window_circle
-	bcc	loc_02E64D
-loc_02E647:
+	bcc	@circle_bottom_visible
+@circle_bottom_off:
 	jsl	f:add_window_off_span
-	bra	loc_02E65A
-loc_02E64D:
+	bra	@circle_split_end
+@circle_bottom_visible:
 	lda	a:td_p2_obj+$2C
-	bne	loc_02E647
+	bne	@circle_bottom_off
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
-loc_02E65A:
+@circle_split_end:
 	jsl	f:end_window_hdma_table
 	rtl
