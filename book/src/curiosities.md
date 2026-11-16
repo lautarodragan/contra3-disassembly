@@ -155,14 +155,6 @@ attract demo record both pads to SRAM (`demo_record_p1`, `demo_record_p2`)
 instead of playing them back: probably the tool the demos were made with
 ([Game flow](game-flow.md#the-attract-demo)).
 
-**A second loop?** After stage 6 on EASY or NORMAL, `game_mode_stage_play`
-restarts the game at stage 1 one difficulty level higher, with that
-level's continues; only HARD goes on to the final score. That code never
-ran in the traces, and an emulator play of the NORMAL ending stayed in the
-stage mode until it ran out, so it is not known yet whether a normal game
-ever gets there or whether it is an abandoned feature
-([Game flow](game-flow.md)).
-
 **SPC streaming.** `unused_spc_stream_list` ... `unused_check_spc_busy` are
 a second protocol for streaming data to the sound CPU, never used
 ([Sound driver interface](sound.md#unused-streaming-code)).

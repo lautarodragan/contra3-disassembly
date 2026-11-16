@@ -135,7 +135,7 @@ when it is read from a table indexed by `difficulty`.
 
 | type | handler | what | HP |
 |---|---|---|---|
-| `$95` | `update_ending_sequence` | the escape: helicopter, players on the missile, the lair exploding; on HARD a last creature chases the helicopter | 384 (hard) |
+| `$95` | `update_ending_sequence` | the escape: helicopter, players on the missile, the lair exploding; on HARD a last creature (the brain's final, armoured form) chases the helicopter; on EASY and NORMAL the game loops to stage 1 instead ([Game flow](game-flow.md)) | 384 (hard) |
 | `$96` | `update_ending_creature_claw_segment` | (hard) segments of the claws of that creature (`ending_creature_spawn_claw`; seen in the emulator) | |
 | `$98` | `update_ending_explosion` | explosions along the floor of the lair | |
 | `$9A-$9D` | `update_ending_crowd_member` | the crowd cheering under the helicopter (one handler, four types) | |

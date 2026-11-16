@@ -51,8 +51,14 @@ next stage → ... When both players are out of lives the stage ends and
 `game_mode_stage_play` goes to game over; with `continues_left` the
 continue menu restarts the same stage (from `stage_checkpoint`) after
 `init_players`. After stage 6, on HARD the game goes to the final score;
-on EASY and NORMAL the code (never run in the traces) restarts at stage 1
-with `option_level` one step harder and the continues of that level.
+on EASY and NORMAL the game restarts at stage 1 with `option_level` one
+step harder and the continues of that level. This path never ran in the
+emulator traces, but it is confirmed in play: after beating the game on
+EASY or NORMAL a "congratulations, but the battle has just begun" screen
+appears and the next loop starts at stage 1 on the next difficulty. The
+brain's last form, which chases the helicopter during the escape, only
+appears on HARD ([Enemies and bosses](enemies-late.md)), so only a HARD
+win shows the full ending.
 
 `title_menu_cursor` values are `TITLE_1_PLAYER`, `TITLE_2_PLAYERS_A`,
 `TITLE_2_PLAYERS_B`, `TITLE_OPTION`; it stays meaningful during play (0 =
