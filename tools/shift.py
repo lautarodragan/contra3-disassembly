@@ -6,7 +6,7 @@ goes through a label, so that inserting or removing bytes anywhere keeps the
 game working.  This tool builds a perturbed copy of the source to check that:
 
     python3 tools/shift.py build [--out build/shift] [--amounts SPEC]
-                                 [--labels P] [--seed S] [--banks LIST]
+                                 [--labels P] [--seed S] [--banks LIST] [--files N]
 
 copies src/ to OUT/src, inserts filler bytes there and assembles
 OUT/contra3.sfc (plus .dbg/.map/.lbl).  The filler is $EA (NOP), harmless if
@@ -18,6 +18,10 @@ it ever runs.  Insertion points:
     the wrong bank (only its low 16 bits used, e.g. `lda #label`) is caught
     too.  SPEC: "default", "alt" (another assignment), a number for every
     bank, or "BB=N,BB=N" (others 0).  --banks limits shifting to some banks.
+  * --files N: also N bytes between consecutive files of a bank (after
+    each .include of main.asm but the bank's last), as far as the bank's
+    free space allows: the code and data of one bank move relative to each
+    other, not only relative to other banks.
   * --labels P: also one byte before a fraction P of the data labels (a
     label whose next statement is data, after a .byte line), chosen with
     --seed, within each bank's free space.  This moves data blocks relative to each other: it
@@ -86,8 +90,11 @@ def bank_free(m):
     return free
 
 
-def parse_amounts(spec, banks):
-    if spec in ("default", "alt"):
+def parse_amounts(spec, banks, free=None):
+    if spec == "max":
+        # as much as each bank's free space allows (keeping 2 bytes), up to $100
+        amounts = {b: max(0, min(0x100, free[b] - 2)) for b in range(32)}
+    elif spec in ("default", "alt"):
         table = DEFAULT_AMOUNTS if spec == "default" else ALT_AMOUNTS
         amounts = {b: default_amount(table, b) for b in range(32)}
     elif re.fullmatch(r"\d+", spec):
@@ -155,7 +162,7 @@ def fix_checksum(rom_path):
 def cmd_build(args):
     base = srcmap.SrcMap.build("src", os.path.join(args.out, "base"))
     free = bank_free(base)
-    amounts = parse_amounts(args.amounts, args.banks)
+    amounts = parse_amounts(args.amounts, args.banks, free)
     for b, n in amounts.items():
         if n > free[b]:
             sys.exit("bank $%02X: %d bytes to insert but only %d free" % (b, n, free[b]))
@@ -163,22 +170,38 @@ def cmd_build(args):
     shutil.rmtree(dst, ignore_errors=True)
     shutil.copytree("src", dst)
 
-    # bank starts
+    # bank starts, and with --files between the files of a bank
     main = os.path.join(dst, "main.asm")
     out = []
-    for line in open(main):
+    bank = None
+    files_moved = 0
+    budget_left = {b: free[b] - amounts[b] for b in amounts}
+    lines = open(main).read().split("\n")
+    for k, line in enumerate(lines):
         out.append(line)
         m = re.match(r'\.segment\s+"BANK([0-9A-F]{2})"', line)
-        if m and amounts[int(m.group(1), 16)]:
-            out.append("\t.res\t%d, $%02X\t; shift test\n" % (amounts[int(m.group(1), 16)], FILLER))
-    open(main, "w").write("".join(out))
+        if m:
+            bank = int(m.group(1), 16)
+            if amounts[bank]:
+                out.append("\t.res\t%d, $%02X\t; shift test" % (amounts[bank], FILLER))
+            continue
+        if re.match(r"\.segment", line):
+            bank = None
+            continue
+        nxt = lines[k + 1] if k + 1 < len(lines) else ""
+        if args.files and bank is not None and line.startswith(".include") and nxt.startswith(".include") \
+                and (not args.banks or amounts[bank]) and budget_left[bank] >= args.files:
+            out.append("\t.res\t%d, $%02X\t; shift test (between files)" % (args.files, FILLER))
+            budget_left[bank] -= args.files
+            files_moved += 1
+    open(main, "w").write("\n".join(out))
 
     # data labels
     moved = 0
     if args.labels:
         rng = random.Random(args.seed)
         for bank, files in sorted(bank_files(main).items()):
-            budget = free[bank] - amounts[bank]
+            budget = budget_left[bank]
             if args.banks and amounts[bank] == 0:
                 continue
             cands = [(f, i) for f in files for i in data_labels(os.path.join(dst, f))]
@@ -207,8 +230,9 @@ def cmd_build(args):
                 open(os.path.join(dst, f), "w").write("\n".join(texts[f]))
     rom, _dbg = srcmap.assemble(dst, args.out)
     fix_checksum(rom)
-    print("%s: banks shifted by %s; %d data labels moved by one byte"
-          % (rom, " ".join("%02X:%d" % (b, n) for b, n in sorted(amounts.items()) if n), moved))
+    print("%s: banks shifted by %s; %d file boundaries moved by %d; %d data labels moved by one byte"
+          % (rom, " ".join("%02X:%d" % (b, n) for b, n in sorted(amounts.items()) if n),
+             files_moved, args.files, moved))
     return 0
 
 
@@ -342,6 +366,8 @@ def main(argv):
     p.add_argument("--banks", default="")
     p.add_argument("--labels", type=float, default=0.0)
     p.add_argument("--seed", type=int, default=1)
+    p.add_argument("--files", type=int, default=0,
+                   help="also insert this many bytes between the files of a bank (main.asm .include lines)")
     p = sub.add_parser("diff")
     p.add_argument("--out", default="build/shift")
     p.add_argument("-v", "--verbose", action="store_true")
