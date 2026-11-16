@@ -144,7 +144,10 @@ python3 -m tools.c3emu.cdl report cdl/contra3.cdl
 
 Each scenario boots the game in its own process with the CDL on and returns
 its log; logs are OR-merged into `cdl/contra3.cdl` (coverage only grows).
-Inputs are random but seeded, so runs are reproducible. Scenarios:
+Inputs are random but seeded, so runs are reproducible (re-running a
+scenario adds nothing to the merged CDL). The whole set, about 3 million
+frames, takes some 13 minutes on 4 cores (`-j`, default the CPU count; the
+longest scenarios are the 400,000-frame top-down runs). Scenarios:
 
 * `attract`: 42000 frames of attract mode (intro, title, demos of stages 1, 2, 4).
 * `title_menu`: menu cursor, OPTION screen.
@@ -159,6 +162,14 @@ Inputs are random but seeded, so runs are reproducible. Scenarios:
 * `stageN_2p`, `stage1_2pb`, `stage3_2pb`: two-player modes A and B, both pads random.
 * `gameover`: no cheats: game over, CONTINUE, game over, END.
 * `pause`: pause/unpause.
+* `play_<name>`: every scripted play of `tools/c3emu/plays.py` (the
+  screenshot suite's, `test_play.py` above) run through
+  `plays.run` with the CDL on. They reach what the random scenarios never
+  do: they press Start where the game waits for it, so `play_stage6_boss`,
+  `play_stage6_ending_easy` and `play_stage6_ending_hard` go through the
+  closing message's PUSH START KEY, the HARD ending's last form, pictures,
+  credits and crowd, and FINAL SCORE, into stage 1 of the next loop or the
+  opening.
 
 Add scenarios in `tools/trace.py` (`SCENARIOS`). Set `C3_TRACE_SHOTS=dir` to
 get a screenshot of stage scenarios every 4000 frames (to see where the

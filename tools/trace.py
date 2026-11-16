@@ -10,6 +10,14 @@ Each scenario runs in its own process (cores are process-wide singletons),
 starts from power-on, and returns its own CDL; the results are OR-merged into
 the committed one, so coverage only ever grows. Everything is deterministic:
 random inputs come from a seeded generator.
+
+Besides its own scenarios, the tracer runs every scripted play of
+tools/c3emu/plays.py (the screenshot suite's) as a scenario named
+play_<name> (play_stage6_boss, play_stage6_ending_easy,
+play_stage6_ending_hard, ...), through plays.run with the CDL on.  The plays reach what the random scenarios do
+not: they start at the stages' checkpoints and press Start where the game
+waits for it, so they go through the closing message's PUSH START KEY and
+FINAL SCORE into the next loop (EASY, NORMAL) or the opening (HARD).
 """
 import argparse
 import multiprocessing
@@ -19,7 +27,7 @@ import sys
 import time
 
 from tools.c3emu import cdl as C
-from tools.c3emu import game, retro
+from tools.c3emu import game, plays, retro
 from tools.c3emu.rom import rom_path
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -204,6 +212,21 @@ SCENARIOS["stage1_2pb"] = _stage(1, 301, frames=20000, ports=(0, 1), menu=2)
 SCENARIOS["stage3_2pb"] = _stage(3, 303, frames=20000, ports=(0, 1), menu=2)
 
 
+def _play(play):
+    def run(c):
+        for _ in plays.run(c, play, every=1000):
+            pass
+        return "stage %d at the end" % c.peek(game.STAGE)
+    run.__name__ = "play_" + play.name
+    run.__doc__ = "Scripted play %s (tools/c3emu/plays.py), %d game frames" % (
+        play.name, play.frames)
+    return run
+
+
+for _p in plays.PLAYS.values():
+    SCENARIOS["play_" + _p.name] = _play(_p)
+
+
 def run_scenario(name, rom=None):
     t = time.time()
     c = retro.Console(rom or rom_path())
@@ -233,7 +256,7 @@ def main(argv):
     args = ap.parse_args(argv)
     if args.list:
         for k, f in SCENARIOS.items():
-            print("%-12s %s" % (k, (f.__doc__ or "").strip().splitlines()[0]))
+            print("%-24s %s" % (k, (f.__doc__ or "").strip().splitlines()[0]))
         return 0
     names = args.scenarios or list(SCENARIOS)
     for n in names:
@@ -251,7 +274,7 @@ def main(argv):
             gain = "" if before is None else " (+%d code, +%d data bytes)" % (
                 after["code"] + after["both"] - before["code"] - before["both"],
                 after["data"] + after["both"] - before["data"] - before["both"])
-            print("%-12s %7d frames %6.1fs%s %s" % (name, frames, dt, gain, info), flush=True)
+            print("%-24s %7d frames %6.1fs%s %s" % (name, frames, dt, gain, info), flush=True)
     os.makedirs(os.path.dirname(args.out), exist_ok=True)
     merged.save(args.out)
     print(merged.report())
