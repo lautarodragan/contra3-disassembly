@@ -17,21 +17,21 @@ queue_sound_41_throttled:
 queue_sound_30_throttled:
 	lda	#$0030
 
-; Queues sound A (queue_sound) only when the countdown wram_16B0 has run
+; Queues sound A (queue_sound) only when the countdown sound_throttle_timer has run
 ; out, then restarts it at 12-19 frames: for repeated sounds (queue_sound_6E_throttled,
 ; queue_sound_41_throttled, queue_sound_30_throttled are this with sounds $6E, $41, $30).
 queue_sound_throttled:
-	ldy	a:wram_16B0
+	ldy	a:sound_throttle_timer
 	bpl	loc_00FDB0
 	pha
 	lda	rng_lo
 	and	#$0007
 	adc	#$000C
-	sta	a:wram_16B0
+	sta	a:sound_throttle_timer
 	pla
 	jsl	f:queue_sound
 loc_00FDB0:
-	dec	a:wram_16B0
+	dec	a:sound_throttle_timer
 	rtl
 
 update_song_change:

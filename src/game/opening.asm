@@ -397,9 +397,9 @@ opening_beam_start_flash:
 	stz	a:opening_flash_accum
 	stz	a:opening_flash_speed_lo
 	stz	a:opening_flash_speed_hi
-	stz	a:wram_16AC
+	stz	a:bomb_coldata_bits
 	lda	#$FFFF	; [num]
-	sta	a:wram_16AA
+	sta	a:bomb_coldata_mask
 	lda	#$0080
 	sta	a:player1_obj+PLAYER_BOMB_Y
 	sta	a:player1_obj+PLAYER_BOMB_X

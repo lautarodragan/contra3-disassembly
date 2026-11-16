@@ -92,12 +92,12 @@ setup_barrier_window:
 	sta	zp_1A
 	rts
 
-; In: A = radius.  Colour math window (colour from wram_16AA/wram_16AC)
+; In: A = radius.  Colour math window (colour from bomb_coldata_mask/bomb_coldata_bits)
 ; around the bomb centre of the player at X.
 setup_bomb_window:
 	sta	zp_10
-	and	a:wram_16AA
-	ora	a:wram_16AC
+	and	a:bomb_coldata_mask
+	ora	a:bomb_coldata_bits
 	sta	a:coldata_shadow
 	lda	#$0023
 	sta	a:w12sel_shadow

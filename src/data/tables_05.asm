@@ -698,7 +698,7 @@ stage_bg2_map_offsets:
 	; CDL: read by stage_init; partly not accessed
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $00, $01, $00, $00
 	.byte	$00, $00, $00, $00
-; Respawn mode (wram_1672, read by the player's state $0F through
+; Respawn mode (respawn_mode, read by the player's state $0F through
 ; tbl_respawn_placement) set at the start of each stage, by stage_layout_base
 ; (stage_init).
 stage_respawn_modes:
@@ -1323,7 +1323,7 @@ spawn_list_059B7A:
 spawn_list_059BC6:
 	.byte	$FF, $00
 ; Stage 4 airship spawn list, read by scroll_bg1_by_velocity_and_spawn (called
-; by update_stage4_controller), index wram_168A: entries of 6 bytes, the bg1_x
+; by update_stage4_controller), index airship_spawn_index: entries of 6 bytes, the bg1_x
 ; at which the entry spawns (word; spawned when bg1_x is below it), type and y
 ; (airship_spawn_type_y), field $3A (airship_spawn_params). The types are the
 ; airship's ($7A, $7C, $7D, $7F).
@@ -1506,6 +1506,11 @@ song_change_trigger_sets:
 	; CDL: read by object_type_06_state_04; partly not accessed
 	.addr	song_set_05F48A
 	.byte	$70, $00
+; object_type_06_state_04 reads it as data_059F0C,x with x = 4, 2 (the
+; bomber's two bombs): the words at +4/+2 ($0000, $FFFF) become field $34, the
+; bomb's horizontal direction (negative: drifts left, update_bomber_bomb);
+; their x comes from song_change_trigger_sets,x. Kept as a number: the label
+; does not start a table of its own.
 data_059F0C:
 	; LAYOUT: read on from song_change_trigger_sets (lda a:song_change_trigger_sets,x)
 	; CDL: read by object_type_06_state_04, update_bomber_bomb, update_objects; partly not accessed
@@ -1518,7 +1523,7 @@ anim_059F12:
 	anim_frame	$6000, metasprite_06B5C5, anim_05C516
 	anim_end	metasprite_06B5C5, anim_05C516
 ; object_type_06_state_08: bit masks ORed into the BG graphics in WRAM
-; ($7E:A000, 4 frames apart), one step per wram_166C countdown; the pixels
+; ($7E:A000, 4 frames apart), one step per obj06_dither_step countdown; the pixels
 ; fill in a dither pattern.
 object_type_06_dither_masks:
 	; CDL: read by object_type_06_state_08; partly not accessed
@@ -2369,7 +2374,7 @@ jump_center_x_offsets:
 	; LAYOUT: read on from the block before (DMA)
 	; CDL: read by set_player_box_jumping
 	.byte	$FF, $FF, $FC, $FF
-; By respawn mode (wram_1672): the player state, pose and y velocity after
+; By respawn mode (respawn_mode): the player state, pose and y velocity after
 ; respawning (respawn_player).
 respawn_states:
 	; LAYOUT: read on from the block before (DMA)
@@ -3650,11 +3655,16 @@ anim_05CC0B:
 	anim_frame	$0002, metasprite_06B9E0, metasprite_06B9BE
 	anim_frame	$0002, metasprite_06B9E5, metasprite_06B9CF
 	anim_goto	anim_05CC0B
-data_05CC19:
+; stage3_spiked_climber_state_0A: field $3A of the same 10 slots, the x
+; acceleration fraction that update_object_type_5A adds to OBJ_X_VEL_SUB each
+; frame.
+stage3_spiked_climber_segment_x_accel_subs:
 	; CDL: read by stage3_spiked_climber_state_0A
 	.byte	$00, $1C, $00, $1B, $00, $17, $00, $10, $00, $08, $00, $02, $00, $02, $00, $01
 	.byte	$00, $00, $00, $00
-data_05CC2D:
+; Field $3E of those slots: the x acceleration, integer part (added to
+; OBJ_X_VEL).
+stage3_spiked_climber_segment_x_accels:
 	; CDL: read by stage3_spiked_climber_state_0A
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00
@@ -3720,7 +3730,9 @@ stage3_spiked_climber_x_accel_subs:
 stage3_spiked_climber_x_accels:
 	; CDL: read by stage3_spiked_climber_state_10
 	.byte	$00, $00, $FF, $FF
-data_05CCCF:
+; stage3_spiked_climber_state_10: picked at random (rnd & 6) into boss_work_6,
+; the x at which the climber turns back.
+stage3_spiked_climber_turn_x:
 	; CDL: read by stage3_spiked_climber_state_10
 	.byte	$FF, $00, $5A, $00, $42, $00, $FF, $00
 ; stage3_spiked_climber_state_10, by difficulty: at x >= this it stops

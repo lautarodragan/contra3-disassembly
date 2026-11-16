@@ -2,8 +2,8 @@
 ; Bank $00, $00:8986-$00:8B18. Included by main.asm in segment BANK00.
 ;
 ; Helpers the CDL traces never ran: a Mode 7 matrix calculation
-; (unused_calc_mode7_matrix), sub_0089E4 (about A * X / $8000, done with two
-; hardware divisions), sub_008A58, clear_object_slot and multiply_16x16.
+; (unused_calc_mode7_matrix), multiply_scaled_approx (about A * X / $8000,
+; done with two hardware divisions; only called by unused_calc_mode7_matrix), unused_subtract_shifted_difference, clear_object_slot and multiply_16x16.
 
 ; (no caller found; decoded because it follows the end of a routine)
 ; (No caller.) Mode 7 matrix shadows m7a-m7d from the angle at $1F98 (sine
@@ -36,7 +36,7 @@ unused_calc_mode7_matrix:
 	tax
 	lda	f:half_turn_sine,x
 	ldx	a:$1F94,y
-	jsl	f:sub_0089E4
+	jsl	f:multiply_scaled_approx
 	pla
 	cmp	#$0100
 	bcc	@positive
@@ -62,7 +62,7 @@ unused_calc_mode7_matrix:
 ; (Not run in the traces.) A, X 16-bit: computes about A * X / $8000 in zp_00
 ; as (A / 2) / ($8000 / X), with the hardware 16/8 divider, scaling the
 ; divisors down to 8 bits. Uses zp_00-zp_04.
-sub_0089E4:
+multiply_scaled_approx:
 	; (not executed in the CDL traces)
 	rep	#$30
 	sta	zp_00
@@ -140,7 +140,7 @@ sub_0089E4:
 ; (no caller found; decoded because it follows the end of a routine)
 ; (No caller.) zp_08:zp_0A = (zp_00 - zp_02) shifted left by Y (right if Y
 ; is negative); zp_00:zp_02 = zp_04:zp_06 - zp_08:zp_0A.
-sub_008A58:
+unused_subtract_shifted_difference:
 	; (not executed in the CDL traces)
 	rep	#$20
 	rep	#$10

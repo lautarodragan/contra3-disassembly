@@ -4,7 +4,9 @@
 ; Handlers of object types dispatched through tbl_object_types and their helpers.
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01CF8B:
+; Adds fields $30/$32 to the y velocity (a gravity of its own), then falls
+; into update_debris_explosion. Never reached.
+unused_debris_explosion_with_gravity:
 	; (not executed in the CDL traces)
 	clc
 	lda	$1C,x
@@ -547,7 +549,10 @@ loc_01D302:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01D354:
+; The hit flash as update_objects does it: while OBJ_HIT, OBJ_ATTR saved in
+; OBJ_SAVED_ATTR and set to palette 1 (priority kept); restored the next
+; frame. Never reached.
+unused_apply_hit_flash:
 	; (not executed in the CDL traces)
 	lda	$26,x
 	bne	loc_01D369
@@ -1227,7 +1232,8 @@ loc_01D868:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01D8AA:
+; REP #$30, then falls into update_swing_pivot. Never reached.
+unused_swing_pivot_entry:
 	; (not executed in the CDL traces)
 	rep	#$20
 	rep	#$10
@@ -2738,7 +2744,9 @@ loc_01E3AB:
 	rts
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01E3AC:
+; build_bg2_slant_table from x Y (line 0) to x -A (line $100). Never
+; reached.
+unused_build_bg2_slant_full_height:
 	; (not executed in the CDL traces)
 	phx
 	eor	#$FFFF
@@ -2767,7 +2775,9 @@ object_type_4E_keep_in_range:
 	bra	loc_01E3E7
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01E3DD:
+; x velocity -0.5, then the end of object_type_4E_keep_in_range. Never
+; reached.
+unused_object_type_4E_drift_left:
 	; (not executed in the CDL traces)
 	lda	#$8000	; [num]
 	sta	$18,x
@@ -2907,7 +2917,7 @@ loc_01E4DB:
 ; Object type $4F: stage 3: winged alien bug (HP 8; seen in the emulator).
 update_stage3_winged_bug:
 	inc	$32,x
-	lda	a:wram_1688
+	lda	a:clear_enemies_timer
 	bne	loc_01E4FE
 	lda	OBJ_HP,x
 	bpl	loc_01E52D
@@ -3564,7 +3574,8 @@ object_type_24_state_01:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01E9D8:
+; REP #$30, then falls into update_stage3_spiked_climber. Never reached.
+unused_spiked_climber_entry:
 	; (not executed in the CDL traces)
 	rep	#$20
 	rep	#$10
@@ -3607,7 +3618,7 @@ stage3_spiked_climber_state_01:
 	lda	#$0060
 	sta	OBJ_TIMER,x
 	lda	#$0002
-	sta	a:wram_1688
+	sta	a:clear_enemies_timer
 	rtl
 
 stage3_spiked_climber_state_02:
@@ -3747,7 +3758,7 @@ stage3_spiked_climber_state_06:
 	bcs	@return
 	inc	OBJ_STATE,x
 	lda	#$0002
-	sta	a:wram_1672
+	sta	a:respawn_mode
 	lda	#$0001
 	sta	a:obj_slots+5*OBJ_SIZE+OBJ_FLAGS
 	lda	#$FFFB	; [num]
@@ -3977,7 +3988,7 @@ spiked_climber_check_fallen:
 	stz	a:obj_slots+5*OBJ_SIZE+OBJ_SPRITE
 	lda	#$0001
 	sta	a:bg1_autoscroll
-	sta	a:wram_1666
+	sta	a:clamp_player_top
 	lda	#$0002
 	sta	a:bg1_scroll_mode
 	sta	a:bg1_autoscroll_speed
@@ -4195,9 +4206,9 @@ loc_01EEE0:
 	sta	$18,x
 	lda	a:stage3_spiked_climber_segment_x_vels,y
 	sta	$1A,x
-	lda	a:data_05CC19,y
+	lda	a:stage3_spiked_climber_segment_x_accel_subs,y
 	sta	$3A,x
-	lda	a:data_05CC2D,y
+	lda	a:stage3_spiked_climber_segment_x_accels,y
 	sta	$3E,x
 	txa
 	clc
@@ -4550,7 +4561,7 @@ loc_01F1B2:
 	lda	rng_lo
 	and	#$0006
 	tay
-	lda	a:data_05CCCF,y
+	lda	a:stage3_spiked_climber_turn_x,y
 	sta	a:boss_work_6
 	bra	loc_01F1DD
 loc_01F1CE:

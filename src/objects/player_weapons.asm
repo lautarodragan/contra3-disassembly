@@ -60,7 +60,9 @@ check_bomb_button:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01804E:
+; While Y ($4000) is held, mosaic_shadow alternates $12 / 0 every frame.
+; Never reached (a leftover test, probably).
+unused_mosaic_flicker_on_y:
 	; (not executed in the CDL traces)
 	lda	PLAYER_JOY_HELD,x
 	bit	#$4000
@@ -138,7 +140,7 @@ debug_color_math_off:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-; No caller (debug): pad 2 sets color math (CGADSUB, COLDATA via wram_1612).
+; No caller (debug): pad 2 sets color math (CGADSUB, COLDATA via debug_coldata).
 debug_color_math_keys:
 	; (not executed in the CDL traces)
 	lda	hdma_preset
@@ -163,17 +165,17 @@ loc_0180F9:
 	and	#$0012
 	sta	a:cgadsub_shadow
 loc_01810A:
-	lda	a:wram_1612
+	lda	a:debug_coldata
 	sta	a:coldata_shadow
 	lda	joy2_pressed
 	bit	#$0080
 	beq	loc_01811B
-	inc	a:wram_1612
+	inc	a:debug_coldata
 	rtl
 loc_01811B:
 	bit	#$8000
 	beq	@return
-	dec	a:wram_1612
+	dec	a:debug_coldata
 @return:
 	rtl
 
@@ -185,11 +187,11 @@ debug_window_keys:
 	lda	joy1_pressed
 	bit	#$2000
 	beq	loc_018134
-	lda	a:wram_162C
+	lda	a:debug_window_test
 	eor	#$0001
-	sta	a:wram_162C
+	sta	a:debug_window_test
 loc_018134:
-	lda	a:wram_162C
+	lda	a:debug_window_test
 	bne	loc_01813C
 	brl	loc_0181E1
 loc_01813C:
@@ -1173,7 +1175,7 @@ loc_018870:
 	sta	zp_12
 	bra	loc_0188C2
 loc_0188A4:
-	jsl	f:sub_018EF5
+	jsl	f:check_walls_and_floor
 	lda	OBJ_STATE,x
 	bne	loc_01885D
 	lda	zp_C4
@@ -1892,7 +1894,13 @@ loc_018EDD:
 	sta	zp_16
 	jml	f:fire_weapon
 
-sub_018EF5:
+; Ground states (player_state_ground, player_state_spin_stance): a wall tile
+; (collision bit 1) 32 pixels above the feet at x starts climbing left
+; (state 5), at x+6 climbing right (state 2), with a snap; bit $8000 there
+; only snaps. Then the tiles under the feet (zp_04 at x, zp_06 at x+6, zp_12
+; both) are classified like check_floor_tiles (sets zp_C4, snaps onto the
+; floor).
+check_walls_and_floor:
 	stz	zp_00
 	lda	#$FFE0	; [num]
 	sta	zp_02
@@ -2927,7 +2935,9 @@ loc_019651:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_019680:
+; The second half of check_walls_and_floor alone: reads the tiles under the
+; feet and classifies them. Never reached.
+unused_check_floor_at_feet:
 	; (not executed in the CDL traces)
 	stz	zp_00
 	stz	zp_02
@@ -3648,10 +3658,10 @@ player_state_out:
 @return:
 	rtl
 
-; State $0F: places the player by wram_1672 (tbl_respawn_placement) and
+; State $0F: places the player by respawn_mode (tbl_respawn_placement) and
 ; calls respawn_player.
 player_state_respawn:
-	lda	a:wram_1672
+	lda	a:respawn_mode
 	phx
 	asl	a
 	tax
@@ -3979,11 +3989,11 @@ loc_019E06:
 @return:
 	rtl
 
-; Sets the state, y velocity and pose of respawn mode wram_1672
+; Sets the state, y velocity and pose of respawn mode respawn_mode
 ; (respawn_states/93/81), 96 frames of PLAYER_INVULN_TIMER, OBJ_FLAGS = 3
 ; (present + PLAYERF_INVULNERABLE).
 respawn_player:
-	ldy	a:wram_1672
+	ldy	a:respawn_mode
 	lda	a:respawn_states,y
 	and	#$00FF
 	sta	OBJ_STATE,x

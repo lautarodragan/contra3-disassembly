@@ -147,7 +147,7 @@ by `run_player_state`). Identified so far (`PLAYER_STATE_*` in
 | `$0C` | `PLAYER_STATE_SPIN_JUMP` | `player_state_jump` | spin jump, both weapons fire around |
 | `$0D` | `PLAYER_STATE_HANG_CLIMB` | `player_state_hang_climb` | hanging; a wall at the side starts climbing (seen in stage 6) |
 | `$0E` | `PLAYER_STATE_OUT` | `player_state_out` | waiting to respawn |
-| `$0F` | `PLAYER_STATE_RESPAWN` | `player_state_respawn` | placed by the respawn mode (`wram_1672`) |
+| `$0F` | `PLAYER_STATE_RESPAWN` | `player_state_respawn` | placed according to `respawn_mode` |
 | `$10` | `PLAYER_STATE_HANG_OBJECT` | `player_state_hang_object` | hanging from a swing (types `$39`/`$3A`, stage 3) |
 | `$11` | `PLAYER_STATE_BIKE` | `player_state_bike` | stage 4: riding the hover bike (type `$6D` in slot `$0280`/`$02C0`) |
 | `$12` | `PLAYER_STATE_BIKE_INTRO` | `player_state_bike_intro` | stage 4: driving in on the bike |
@@ -156,7 +156,7 @@ by `run_player_state`). Identified so far (`PLAYER_STATE_*` in
 
 States 9-`$12` were seen in the emulator (player 1's state logged every 4
 frames by the random player, with a screenshot at the first frame of each),
-`$13`/`$14` are set by the ending sequence. The respawn mode `wram_1672`
+`$13`/`$14` are set by the ending sequence. The respawn mode (`respawn_mode`)
 selects a placement in `tbl_respawn_placement` (`respawn_on_floor`,
 `respawn_on_right_wall`, `respawn_on_bike`, `respawn_on_missile`...) and the
 state from `respawn_states`. Each state recomputes the body

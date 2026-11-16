@@ -135,7 +135,7 @@ loc_00DE63:
 	rtl
 
 ; Shot type $04: homing missile: steers towards the next OBJF_TARGET object
-; (round robin from wram_1646) by 6 units of direction per frame.
+; (round robin from homing_target_slot) by 6 units of direction per frame.
 update_homing_shot:
 	lda	$16,x
 	beq	loc_00DEA3
@@ -154,7 +154,7 @@ loc_00DEAE:
 	bne	loc_00DEB5
 	rtl
 loc_00DEB5:
-	ldy	a:wram_1646
+	ldy	a:homing_target_slot
 	lda	#$0021
 	sta	zp_00
 loc_00DEBD:
@@ -174,7 +174,7 @@ loc_00DED7:
 	tay
 	dec	zp_00
 	bpl	loc_00DEBD
-	sty	a:wram_1646
+	sty	a:homing_target_slot
 	lda	$04,x
 	bra	loc_00DF38
 loc_00DEE3:
@@ -185,7 +185,7 @@ loc_00DEE3:
 	bcc	loc_00DEF0
 	lda	#$0280
 loc_00DEF0:
-	sta	a:wram_1646
+	sta	a:homing_target_slot
 	lda	a:$0028,y
 	lsr	a
 	adc	a:$000A,y

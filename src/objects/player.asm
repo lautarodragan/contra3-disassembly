@@ -339,7 +339,7 @@ input_hang_object:
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	lda	PLAYER_JOY_HELD,x
-	bit	a:wram_1628
+	bit	a:hang_lock_buttons
 	beq	loc_01A7C6
 	inc	PLAYER_LOCKED,x
 loc_01A7C6:
@@ -432,10 +432,10 @@ input_tank:
 	beq	loc_01A8A9
 	dec	a:obj_slots+31*OBJ_SIZE+OBJ_STATE
 loc_01A86F:
-	stz	a:wram_16AE
+	stz	a:tank_moving
 	lda	#$001F
 	jsl	f:queue_sound
-	stz	a:wram_165C
+	stz	a:tank_move_dx
 	stz	a:obj_slots+31*OBJ_SIZE+OBJ_X_VEL
 	stz	a:obj_slots+31*OBJ_SIZE+OBJ_X_VEL_SUB
 	lda	#$0041
@@ -473,16 +473,16 @@ loc_01A8C1:
 	lda	#$97FF	; [num]
 loc_01A8CE:
 	sta	OBJ_X_VEL_SUB,x
-	lda	a:wram_16AE
+	lda	a:tank_moving
 	bne	loc_01A8F0
-	inc	a:wram_16AE
+	inc	a:tank_moving
 	lda	#$001E
 	jsl	f:queue_sound
 	bra	loc_01A8F0
 loc_01A8E1:
-	lda	a:wram_16AE
+	lda	a:tank_moving
 	beq	loc_01A8F0
-	stz	a:wram_16AE
+	stz	a:tank_moving
 	lda	#$001F
 	jsl	f:queue_sound
 loc_01A8F0:
@@ -504,12 +504,12 @@ loc_01A8F0:
 	sec
 	lda	#$000A
 	sbc	zp_00
-	sta	a:wram_165C
+	sta	a:tank_move_dx
 	brl	move_player
 loc_01A919:
 	sec
 	sbc	zp_00
-	sta	a:wram_165C
+	sta	a:tank_move_dx
 	bne	loc_01A924
 	brl	move_player
 loc_01A924:
@@ -523,9 +523,9 @@ loc_01A92F:
 	brl	move_player
 
 ; Hanging (states 1, $0D): like input_ground, but fire also stops the
-; player (wram_1628 = fire | stand still).
+; player (hang_lock_buttons = fire | stand still).
 input_hang:
-	lda	a:wram_1628
+	lda	a:hang_lock_buttons
 	bra	loc_01A93F
 
 ; On the ground (state 0): button_stand_still sets PLAYER_LOCKED; left/right
@@ -625,7 +625,7 @@ loc_01A9D5:
 	sta	PLAYER_AIM,x
 loc_01A9EB:
 	lda	PLAYER_JOY_HELD,x
-	bit	a:wram_1628
+	bit	a:hang_lock_buttons
 	beq	loc_01A9F8
 	inc	PLAYER_LOCKED,x
 loc_01A9F4:
@@ -656,7 +656,7 @@ move_player_unless_locked:
 	stz	OBJ_X_VEL,x
 
 ; Adds the velocity to the position, clamps x to 10..240 (and y to 49 and
-; more while wram_1666 is set) and stores the movement of the frame in
+; more while clamp_player_top is set) and stores the movement of the frame in
 ; PLAYER_DX / PLAYER_DY.  In: X = player.  Returns with RTL.
 move_player:
 	clc
@@ -686,7 +686,7 @@ loc_01AA3F:
 	lda	OBJ_Y,x
 	sta	zp_00
 	adc	OBJ_Y_VEL,x
-	ldy	a:wram_1666
+	ldy	a:clamp_player_top
 	beq	loc_01AA61
 	cmp	#$0031
 	bcs	loc_01AA61
@@ -1031,7 +1031,7 @@ loc_01ACA2:
 	; (not executed in the CDL traces)
 	rtl
 loc_01ACA3:
-	jsl	f:sub_018EF5
+	jsl	f:check_walls_and_floor
 	lda	OBJ_STATE,x
 	cmp	#$000B
 	bne	loc_01ACA2
@@ -1549,63 +1549,67 @@ loc_01B077:
 	sta	zp_C4
 	brl	loc_019565
 
+; unused_ceiling_result_*: never reached (no branch or pointer leads here).
+; Each sets zp_C4 and goes to a snap routine, like the outcomes of
+; check_ceiling_at_offset just above (loc_01B04E-loc_01B077): leftovers of
+; that decision tree.
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01B07F:
+unused_ceiling_result_01B07F:
 	; (not executed in the CDL traces)
 	lda	#$8000	; [num]
 	sta	zp_C4
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01B085:
+unused_ceiling_result_01B085:
 	; (not executed in the CDL traces)
 	lda	#$0002
 	sta	zp_C4
 	brl	snap_y_down_to_tile
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01B08D:
+unused_ceiling_result_01B08D:
 	; (not executed in the CDL traces)
 	lda	#$0010
 	sta	zp_C4
 	brl	loc_01961D
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01B095:
+unused_ceiling_result_01B095:
 	; (not executed in the CDL traces)
 	lda	#$0008
 	sta	zp_C4
 	brl	loc_019502
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01B09D:
+unused_ceiling_result_01B09D:
 	; (not executed in the CDL traces)
 	stz	zp_C4
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01B0A0:
+unused_ceiling_result_01B0A0:
 	; (not executed in the CDL traces)
 	lda	#$0008
 	sta	zp_C4
 	brl	loc_019450
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01B0A8:
+unused_ceiling_result_01B0A8:
 	; (not executed in the CDL traces)
 	lda	#$0008
 	sta	zp_C4
 	brl	loc_0194AB
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01B0B0:
+unused_ceiling_result_01B0B0:
 	; (not executed in the CDL traces)
 	lda	#$0010
 	sta	zp_C4
 	brl	loc_019565
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_01B0B8:
+unused_ceiling_result_01B0B8:
 	; (not executed in the CDL traces)
 	lda	#$0010
 	sta	zp_C4

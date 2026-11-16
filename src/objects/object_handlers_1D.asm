@@ -32,7 +32,7 @@ loc_1DAF46:
 	lda	#$0001
 	sta	OBJ_FLAGS,x
 	lda	#$0002
-	sta	a:wram_1688
+	sta	a:clear_enemies_timer
 	stz	OBJ_Y_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
 	lda	#$000F
@@ -100,7 +100,7 @@ tbl_ending_sequence_states:
 ending_sequence_state_00:
 	inc	OBJ_STATE,x
 	lda	#$0002
-	sta	a:wram_16B6
+	sta	a:spawn_disabled
 	lda	#$8000	; [num]
 	sta	a:obj_slots+27*OBJ_SIZE+OBJ_FLAGS
 	lda	#$0002
@@ -148,7 +148,7 @@ ending_sequence_state_01:
 	lda	#$0011
 	sta	hdma_preset
 	lda	#$0007
-	sta	a:wram_1672
+	sta	a:respawn_mode
 @return:
 	rtl
 
@@ -162,7 +162,7 @@ ending_sequence_state_02:
 	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
 	lda	#$0001
 	sta	a:player_autopilot_mode
-	stz	a:wram_1666
+	stz	a:clamp_player_top
 @return:
 	rtl
 
@@ -302,7 +302,7 @@ ending_sequence_state_09:
 	inc	OBJ_STATE,x
 	jsr	a:ending_start_vertical_autoscroll
 	lda	#$0002
-	sta	a:wram_16B6
+	sta	a:spawn_disabled
 @return:
 	rtl
 
@@ -332,19 +332,19 @@ ending_sequence_state_0B:
 loc_1DB1D0:
 	lda	stage_frame_odd
 	bne	loc_1DB1F2
-	lda	a:wram_16A2
+	lda	a:ending_arm_lengths
 	cmp	#$000A
 	bcs	loc_1DB1E3
 	inc	a
-	sta	a:wram_16A2
-	sta	a:wram_16A4
+	sta	a:ending_arm_lengths
+	sta	a:ending_arm_lengths+2
 loc_1DB1E3:
-	lda	a:wram_16A6
+	lda	a:ending_arm_lengths+4
 	cmp	#$000C
 	bcs	loc_1DB1F2
 	inc	a
-	sta	a:wram_16A6
-	sta	a:wram_16A8
+	sta	a:ending_arm_lengths+4
+	sta	a:ending_arm_lengths+6
 loc_1DB1F2:
 	lda	#$0004
 	sta	a:shake_timer
@@ -748,11 +748,11 @@ loc_1DB556:
 	cmp	#$0020
 	bcs	loc_1DB575
 loc_1DB55B:
-	lda	a:$16A2,y
+	lda	a:ending_arm_lengths,y
 	cmp	#$0001
 	bcc	@return
 	dec	a
-	sta	a:$16A2,y
+	sta	a:ending_arm_lengths,y
 	clc
 	lda	a:$163E,y
 	adc	a:data_05F898,y
@@ -776,24 +776,24 @@ loc_1DB582:
 	and	#$00FF
 	sta	a:$163E,y
 loc_1DB594:
-	lda	a:$16A2,y
+	lda	a:ending_arm_lengths,y
 	cmp	#$0020
 	bcs	@return
 	inc	a
 	inc	a
-	sta	a:$16A2,y
+	sta	a:ending_arm_lengths,y
 @return:
 	rts
 
 ending_creature_extend_arms:
 	lda	stage_frame_odd
 	bne	@return
-	lda	a:wram_16A2
+	lda	a:ending_arm_lengths
 	cmp	#$000A
 	bcs	@return
 	inc	a
-	sta	a:wram_16A2
-	sta	a:wram_16A4
+	sta	a:ending_arm_lengths
+	sta	a:ending_arm_lengths+2
 @return:
 	rts
 
@@ -847,7 +847,7 @@ ending_creature_feed_arms:
 	rts
 
 ending_creature_feed_arm:
-	lda	a:$16A2,y
+	lda	a:ending_arm_lengths,y
 	sta	$30,x
 	clc
 	lda	$32,x
@@ -1187,7 +1187,7 @@ sub_1DB85C:
 ; Object type $96. Ending on HARD: segments of the claws of the creature that
 ; rises behind the brain (not identified exactly).
 update_enemy_type_96:
-	lda	a:wram_1688
+	lda	a:clear_enemies_timer
 	beq	loc_1DB8CB
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
@@ -1940,20 +1940,20 @@ loc_1DBE80:
 	sta	cgram_upload_src
 	lda	#$0030
 	sta	cgram_upload_addr
-	lda	a:wram_16BA
+	lda	a:boss_hit_sound_timer
 	bmi	loc_1DBE98
-	dec	a:wram_16BA
+	dec	a:boss_hit_sound_timer
 	bra	loc_1DBEA5
 loc_1DBE98:
 	lda	#$003C
 	jsl	f:queue_sound
 	lda	#$0004
-	sta	a:wram_16BA
+	sta	a:boss_hit_sound_timer
 loc_1DBEA5:
 	lda	OBJ_HP,x
 	bpl	loc_1DBED8
 	lda	#$0002
-	sta	a:wram_1688
+	sta	a:clear_enemies_timer
 	lda	#$0002
 	sta	a:boss_work_1
 	lda	#$0008
@@ -2033,7 +2033,7 @@ brain_boss_state_00:
 	jsl	f:load_data_list
 	plx
 	stz	a:boss_work_6
-	stz	a:wram_16BA
+	stz	a:boss_hit_sound_timer
 	jml	f:init_line_hdma_table
 
 brain_boss_state_01:
@@ -2958,7 +2958,7 @@ loc_1DC64B:
 ; Object type $8B. Stage 6, brain_boss (hard): a ring of 16 orbs that bursts
 ; out of the brain.
 update_brain_boss_orb_ring:
-	lda	a:wram_1688
+	lda	a:clear_enemies_timer
 	bne	loc_1DC65C
 	lda	a:boss_work_7
 	bmi	loc_1DC65C
@@ -3002,7 +3002,7 @@ loc_1DC687:
 ; Object type $8C. Stage 6, brain_boss: chain of red links swung from the
 ; brain.
 update_brain_boss_chain:
-	lda	a:wram_1688
+	lda	a:clear_enemies_timer
 	beq	loc_1DC6AF
 	brl	loc_1DC7C9
 loc_1DC6AF:
@@ -3183,7 +3183,7 @@ loc_1DC7F1:
 ; Object type $8F. Stage 6, brain_boss: glowing orbs thrown by the brain (not
 ; identified exactly).
 update_enemy_type_8F:
-	lda	a:wram_1688
+	lda	a:clear_enemies_timer
 	bne	loc_1DC835
 	lda	a:boss_work_3
 	cmp	#$00F0
@@ -3239,7 +3239,7 @@ loc_1DC855:
 update_brain_boss_eyeball:
 	lda	OBJ_HP,x
 	bmi	loc_1DC87B
-	lda	a:wram_1688
+	lda	a:clear_enemies_timer
 	bne	loc_1DC87B
 	lda	a:boss_work_7
 	bpl	loc_1DC88A
@@ -3321,7 +3321,7 @@ loc_1DC902:
 
 ; Object type $91. Stage 6, brain_boss: eye pods rolling on the floor.
 update_brain_boss_rolling_eye:
-	lda	a:wram_1688
+	lda	a:clear_enemies_timer
 	bne	loc_1DC91C
 	lda	a:boss_work_7
 	bpl	loc_1DC924
@@ -3384,7 +3384,7 @@ loc_1DC960:
 ; Object type $92. Stage 6, brain_boss: arch of blue orbs forming arms around
 ; the brain.
 update_brain_boss_orb_arch:
-	lda	a:wram_1688
+	lda	a:clear_enemies_timer
 	bne	loc_1DC98D
 	lda	a:boss_work_7
 	bpl	loc_1DC995
@@ -3450,7 +3450,7 @@ loc_1DC9DC:
 update_brain_boss_orb:
 	lda	a:boss_work_7
 	bmi	loc_1DCA0A
-	lda	a:wram_1688
+	lda	a:clear_enemies_timer
 	beq	loc_1DCA19
 loc_1DCA0A:
 	lda	#$0030

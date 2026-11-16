@@ -142,7 +142,9 @@ loc_019EE4:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
-sub_019EE6:
+; A wall tile (collision bit 1) 32 pixels above the object at x: field $38
+; = 2 and snap right; at x+16: field $38 = 4 and snap left. Never reached.
+unused_check_walls_above:
 	; (not executed in the CDL traces)
 	stz	zp_00
 	lda	#$FFE0	; [num]

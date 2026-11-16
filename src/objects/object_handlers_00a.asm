@@ -6,28 +6,28 @@
 
 scroll_bg1_by_velocity_and_spawn:
 	clc
-	lda	a:wram_168C
+	lda	a:bg1_vel_x_sub
 	adc	a:bg1_x_sub
 	sta	a:bg1_x_sub
 	lda	a:bg1_x
 	sta	zp_00
-	adc	a:wram_168E
+	adc	a:bg1_vel_x
 	sta	a:bg1_x
 	sec
 	sbc	zp_00
-	sta	a:wram_1694
+	sta	a:bg1_moved_x
 	clc
-	lda	a:wram_1690
+	lda	a:bg1_vel_y_sub
 	adc	a:bg1_x+BG_Y_SUB
 	sta	a:bg1_x+BG_Y_SUB
 	lda	a:bg1_y
 	sta	zp_00
-	adc	a:wram_1692
+	adc	a:bg1_vel_y
 	sta	a:bg1_y
 	sec
 	sbc	zp_00
-	sta	a:wram_1696
-	ldy	a:wram_168A
+	sta	a:bg1_moved_y
+	ldy	a:airship_spawn_index
 	lda	a:airship_spawn_x,y
 	cmp	a:bg1_x
 	bcc	loc_00CF7D
@@ -55,7 +55,7 @@ loc_00CF59:
 	tya
 	clc
 	adc	#$0006
-	sta	a:wram_168A
+	sta	a:airship_spawn_index
 	plx
 loc_00CF7D:
 	rtl
@@ -230,16 +230,16 @@ update_load_list_trigger:
 	rtl
 
 ; Object type $42: invisible stage trigger: copies fields $3A/$3B into
-; wram_1666 / wram_1672.
+; clamp_player_top / respawn_mode.
 update_object_type_42:
 	sep	#$20
 	.a8
-	stz	a:wram_1673
+	stz	a:respawn_mode+1
 	lda	$3B,x
-	sta	a:wram_1672
-	stz	a:wram_1667
+	sta	a:respawn_mode
+	stz	a:clamp_player_top+1
 	lda	$3A,x
-	sta	a:wram_1666
+	sta	a:clamp_player_top
 	rep	#$20
 	.a16
 	lda	#$8000	; [num]
@@ -292,13 +292,13 @@ object_type_06_state_00:
 
 object_type_06_state_01:
 	lda	#$003F
-	sta	a:wram_166C
+	sta	a:obj06_dither_step
 	lda	#$A000	; [num]
-	sta	a:wram_161E
+	sta	a:obj06_attr_ptr
 	lda	#$F300	; [num]
-	sta	a:wram_161C
-	stz	a:wram_1620
-	stz	a:wram_1622
+	sta	a:obj06_map_ptr
+	stz	a:obj06_vram_offset
+	stz	a:obj06_block_column
 	inc	OBJ_STATE,x
 	lda	#$0005
 	sta	a:bg2_scroll_mode
@@ -315,21 +315,21 @@ object_type_06_state_02:
 	plb
 	rep	#$20
 	.a16
-	ldy	a:wram_1620
+	ldy	a:obj06_vram_offset
 	jsl	f:begin_vram_transfer
 loc_00D11D:
-	lda	a:wram_161C
+	lda	a:obj06_map_ptr
 	tay
 	lda	a:$0000,y
 	and	#$3FFF
 	clc
-	adc	a:wram_1622
+	adc	a:obj06_block_column
 	tay
 @loop:
 	lda	a:$5000,y
 	and	#$00FF
 	sta	zp_0A
-	ldx	a:wram_161E
+	ldx	a:obj06_attr_ptr
 	lda	a:$0000,x
 	and	#$00FF
 	xba
@@ -338,39 +338,39 @@ loc_00D11D:
 	sta	a:$0000,x
 	inc	vram_queue_data_ptr
 	inc	vram_queue_data_ptr
-	inc	a:wram_161E
+	inc	a:obj06_attr_ptr
 	iny
 	iny
 	tya
 	and	#$0007
 	bne	@loop
-	inc	a:wram_161C
-	inc	a:wram_161C
-	lda	a:wram_161C
+	inc	a:obj06_map_ptr
+	inc	a:obj06_map_ptr
+	lda	a:obj06_map_ptr
 	and	#$000F
 	bne	loc_00D196
 	clc
-	lda	a:wram_161C
+	lda	a:obj06_map_ptr
 	adc	#$0070
-	sta	a:wram_161C
+	sta	a:obj06_map_ptr
 	cmp	#$F500	; [num]
 	bcc	loc_00D196
 	sec
 	sbc	#$0200
-	sta	a:wram_161C
+	sta	a:obj06_map_ptr
 	clc
-	lda	a:wram_1622
+	lda	a:obj06_block_column
 	adc	#$0008
 	cmp	#$0020
 	bcc	loc_00D187
 	lda	#$0000
 loc_00D187:
-	sta	a:wram_1622
+	sta	a:obj06_block_column
 	bne	loc_00D196
 	clc
-	lda	a:wram_161C
+	lda	a:obj06_map_ptr
 	adc	#$0010
-	sta	a:wram_161C
+	sta	a:obj06_map_ptr
 loc_00D196:
 	dec	zp_08
 	beq	loc_00D19D
@@ -386,9 +386,9 @@ loc_00D19D:
 	.a16
 	ldx	zp_FE
 	clc
-	lda	a:wram_1620
+	lda	a:obj06_vram_offset
 	adc	#$0020
-	sta	a:wram_1620
+	sta	a:obj06_vram_offset
 	cmp	#$1000
 	bcc	@return
 	inc	$12,x
@@ -472,18 +472,18 @@ object_type_06_state_03:
 	lda	#$00C1
 	sta	a:m7sel_shadow
 	lda	#$0001
-	sta	a:wram_1672
+	sta	a:respawn_mode
 	lda	#$0045
 	jsl	f:queue_sound
 	lda	#$0080
-	sta	a:wram_1692
+	sta	a:bg1_vel_y
 loc_00D28F:
 	rtl
 
 object_type_06_state_04:
-	lda	a:wram_1692
+	lda	a:bg1_vel_y
 	bmi	loc_00D29A
-	dec	a:wram_1692
+	dec	a:bg1_vel_y
 	bpl	loc_00D28F
 loc_00D29A:
 	lda	a:m7d_shadow
@@ -634,7 +634,7 @@ object_type_06_state_08:
 	phx
 	lda	#$0038
 	sta	zp_02
-	ldx	a:wram_166C
+	ldx	a:obj06_dither_step
 	lda	a:object_type_06_dither_offsets,x
 	and	#$00FF
 	tay
@@ -694,12 +694,12 @@ object_type_06_state_08:
 	plx
 	lda	stage_frame_odd
 	bne	loc_00D47E
-	dec	a:wram_166C
+	dec	a:obj06_dither_step
 	bne	loc_00D47E
 	lda	#$8000	; [num]
 	sta	$16,x
 	stz	hdma_preset
-	stz	a:wram_1672
+	stz	a:respawn_mode
 	rtl
 loc_00D47E:
 	bra	loc_00D48E

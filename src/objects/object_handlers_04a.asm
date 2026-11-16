@@ -1676,7 +1676,7 @@ stage4_controller_state_00:
 	lda	#$0100
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
-	stz	a:wram_1688
+	stz	a:clear_enemies_timer
 	lda	#$0018
 	sta	$34,x
 	lda	#$0080
@@ -1812,7 +1812,7 @@ stage4_controller_state_0A:
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
 	bne	loc_048E0D
 	lda	#$0002
-	sta	a:wram_1688
+	sta	a:clear_enemies_timer
 	inc	OBJ_STATE,x
 	rtl
 
@@ -1832,9 +1832,9 @@ stage4_controller_state_0B:
 	jsl	f:load_data_list
 	plx
 	lda	#$FFFC	; [num]
-	sta	a:wram_168E
+	sta	a:bg1_vel_x
 	lda	#$8000	; [num]
-	sta	a:wram_168C
+	sta	a:bg1_vel_x_sub
 	lda	#$0005
 	sta	a:bg1_scroll_mode
 	lda	#$0008
@@ -1860,26 +1860,26 @@ loc_048E56:
 	inc	OBJ_TIMER,x
 	inc	OBJ_TIMER,x
 loc_048E5F:
-	lda	a:wram_168D
+	lda	a:bg1_vel_x_sub+1
 	cmp	a:data_05EB8C,y
 	beq	loc_048E91
 	bmi	loc_048E7E
 	sec
-	lda	a:wram_168C
+	lda	a:bg1_vel_x_sub
 	sbc	#$0800
-	sta	a:wram_168C
-	lda	a:wram_168E
+	sta	a:bg1_vel_x_sub
+	lda	a:bg1_vel_x
 	sbc	#$0000
-	sta	a:wram_168E
+	sta	a:bg1_vel_x
 	bra	loc_048E91
 loc_048E7E:
 	clc
-	lda	a:wram_168C
+	lda	a:bg1_vel_x_sub
 	adc	#$0800
-	sta	a:wram_168C
-	lda	a:wram_168E
+	sta	a:bg1_vel_x_sub
+	lda	a:bg1_vel_x
 	adc	#$0000
-	sta	a:wram_168E
+	sta	a:bg1_vel_x
 loc_048E91:
 	ldy	$36,x
 	bne	loc_048EBE
@@ -1888,18 +1888,18 @@ loc_048E91:
 	bcs	loc_048E9F
 	inc	$36,x
 loc_048E9F:
-	lda	a:wram_1691
+	lda	a:bg1_vel_y_sub+1
 	bpl	loc_048EA9
 	cmp	#$FF80	; [num]
 	bcc	loc_048EE7
 loc_048EA9:
 	sec
-	lda	a:wram_1690
+	lda	a:bg1_vel_y_sub
 	sbc	#$0400
-	sta	a:wram_1690
-	lda	a:wram_1692
+	sta	a:bg1_vel_y_sub
+	lda	a:bg1_vel_y
 	sbc	#$0000
-	sta	a:wram_1692
+	sta	a:bg1_vel_y
 	bra	loc_048EE7
 loc_048EBE:
 	lda	a:bg1_y
@@ -1908,18 +1908,18 @@ loc_048EBE:
 	bcc	loc_048ECA
 	stz	$36,x
 loc_048ECA:
-	lda	a:wram_1691
+	lda	a:bg1_vel_y_sub+1
 	bmi	loc_048ED4
 	cmp	#$0080
 	bcs	loc_048EE7
 loc_048ED4:
 	clc
-	lda	a:wram_1690
+	lda	a:bg1_vel_y_sub
 	adc	#$0400
-	sta	a:wram_1690
-	lda	a:wram_1692
+	sta	a:bg1_vel_y_sub
+	lda	a:bg1_vel_y
 	adc	#$0000
-	sta	a:wram_1692
+	sta	a:bg1_vel_y
 loc_048EE7:
 	jsl	f:scroll_bg1_by_velocity_and_spawn
 	jml	f:loc_00D5ED
@@ -1994,7 +1994,7 @@ stage4_controller_state_11:
 	stz	a:obj_slots+24*OBJ_SIZE+OBJ_X_VEL
 	inc	OBJ_STATE,x
 	lda	#$0006
-	sta	a:wram_1672
+	sta	a:respawn_mode
 loc_048F91:
 	jml	f:loc_00D5ED
 
@@ -2198,9 +2198,9 @@ stage4_controller_state_1B:
 	sta	a:player1_obj+PLAYER_BOMB_Y
 	sta	a:player2_obj+PLAYER_BOMB_Y
 	lda	#$001F
-	sta	a:wram_16AC
+	sta	a:bomb_coldata_bits
 	lda	#$00FF
-	sta	a:wram_16AA
+	sta	a:bomb_coldata_mask
 	inc	OBJ_STATE,x
 	jsr	a:sub_049878
 	rtl
@@ -3469,7 +3469,7 @@ loc_049B73:
 scroll_with_airship:
 	sec
 	lda	OBJ_X,x
-	sbc	a:wram_1694
+	sbc	a:bg1_moved_x
 	sta	OBJ_X,x
 	cmp	#$0100
 	bcc	loc_049B86
@@ -3478,7 +3478,7 @@ scroll_with_airship:
 loc_049B86:
 	sec
 	lda	OBJ_Y,x
-	sbc	a:wram_1696
+	sbc	a:bg1_moved_y
 	sta	OBJ_Y,x
 	rts
 
@@ -6208,18 +6208,18 @@ enemy_type_68_state_05:
 update_heart_boss:
 	lda	#$0060
 	jsl	f:boss_flash_palette
-	lda	a:wram_16BA
+	lda	a:boss_hit_sound_timer
 	beq	loc_04B014
-	dec	a:wram_16BA
+	dec	a:boss_hit_sound_timer
 loc_04B014:
 	lda	OBJ_SAVED_ATTR,x
 	beq	loc_04B02A
-	lda	a:wram_16BA
+	lda	a:boss_hit_sound_timer
 	bne	loc_04B02A
 	lda	#$003C
 	jsl	f:queue_sound
 	lda	#$0004
-	sta	a:wram_16BA
+	sta	a:boss_hit_sound_timer
 loc_04B02A:
 	lda	OBJ_HP,x
 	bpl	loc_04B031
@@ -6971,7 +6971,7 @@ cave_beast_state_00:
 	lda	#$0006
 	jsl	f:start_palette_anim
 	lda	#$0008
-	sta	a:wram_1672
+	sta	a:respawn_mode
 	lda	#$004A
 	sta	a:bg2sc_shadow
 	stz	a:bg2_x
@@ -7682,7 +7682,7 @@ loc_04BB78:
 	sta	a:$0016,y
 	ldy	#$0880
 	sta	a:$0016,y
-	stz	a:wram_1672
+	stz	a:respawn_mode
 	lda	#$0082
 	jsl	f:queue_sound
 	rtl

@@ -65,7 +65,7 @@ stage_init:
 	ldx	a:ptrs_stage_dp_params,y
 	jsl	f:load_stage_dp_params
 	lda	a:stage_respawn_modes,y
-	sta	a:wram_1672
+	sta	a:respawn_mode
 	stz	shake_bg1_y
 	stz	shake_bg2_y
 	stz	a:shake_continuous
@@ -74,9 +74,9 @@ stage_init:
 	lda	#$000E
 	sta	a:player1_state
 	sta	a:player2_state
-	stz	a:wram_1688
+	stz	a:clear_enemies_timer
 	stz	a:player_autopilot_mode
-	stz	a:wram_16B6
+	stz	a:spawn_disabled
 	stz	a:palette_anim_id
 	stz	a:palette_anim_timer
 	stz	a:life_transfer_disabled
@@ -87,11 +87,11 @@ stage_init:
 	jsl	f:start_palette_task_at
 	lda	button_fire
 	ora	button_stand_still
-	sta	a:wram_1628
+	sta	a:hang_lock_buttons
 	lda	#$005F
-	sta	a:wram_16AA
+	sta	a:bomb_coldata_mask
 	lda	#$0020
-	sta	a:wram_16AC
+	sta	a:bomb_coldata_bits
 	lda	#$0001
 	sta	f:wram_7E3C1E
 	sta	f:wram_7E3E1E
@@ -118,7 +118,7 @@ stage_init:
 	stz	a:player1_obj+PLAYER_BOMB_RADIUS
 	stz	a:player2_obj+PLAYER_BOMB_RADIUS
 	lda	#$0280
-	sta	a:wram_1646
+	sta	a:homing_target_slot
 	stz	a:trail_buffers_used
 	stz	a:scroll_split_pattern
 	stz	a:song_change_wait
@@ -179,7 +179,7 @@ stage_setup_video:
 @not_stage4:
 	jsl	f:init_hud
 	jsl	f:stage_layout_init
-	stz	a:wram_168A
+	stz	a:airship_spawn_index
 	jsl	f:init_stage_spawns
 	stz	a:inidisp_shadow
 	stz	a:stage_exit_request
@@ -266,9 +266,9 @@ stage_frame:
 	lda	#STAGE_STATE_EXIT
 	sta	a:stage_state
 @check_timer_1688:
-	lda	a:wram_1688
+	lda	a:clear_enemies_timer
 	beq	@frame
-	dec	a:wram_1688
+	dec	a:clear_enemies_timer
 @frame:
 	lda	#$0FC0
 	sta	oam_ptr
@@ -284,7 +284,7 @@ stage_frame:
 	stz	a:player2_obj+PLAYER_CONTACT
 	stz	a:player1_obj+PLAYER_PLATFORM
 	stz	a:player2_obj+PLAYER_PLATFORM
-	lda	a:wram_16B6
+	lda	a:spawn_disabled
 	bne	@objects
 	jsl	f:spawn_stage_objects
 @objects:
@@ -379,7 +379,7 @@ layout_init_stage1:
 layout_init_stage1_common:
 	lda	#$00C1
 	sta	a:m7sel_shadow
-	stz	a:wram_1666
+	stz	a:clamp_player_top
 	lda	#$0064
 	jml	f:queue_sound
 
@@ -422,7 +422,7 @@ layout_init_stage4:
 	sta	a:bg1sc_shadow
 layout_init_stage4_common:
 	lda	#$0002
-	sta	a:wram_16B6
+	sta	a:spawn_disabled
 	lda	#$0064
 	sta	a:obj_slots+29*OBJ_SIZE+OBJ_TYPE
 	lda	#$00A0

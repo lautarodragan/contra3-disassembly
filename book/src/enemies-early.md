@@ -88,7 +88,7 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $3E | `update_object_type_3E` | does nothing (rtl); stage 3 spiked climber's arm |
 | $3F | `update_object_type_3F` | stage 3 spiked climber, spike arm |
 | $40 | `update_stage3_spiked_climber_core` | stage 3 spiked climber, its weak point (HP 80) |
-| $42 | `update_object_type_42` | invisible stage trigger: copies OBJ_+$3A/$3B into `wram_1666` / `wram_1672` |
+| $42 | `update_object_type_42` | invisible stage trigger: copies OBJ_+$3A/$3B into `clamp_player_top` / `respawn_mode` |
 | $43 | `update_object_type_43` | stage 3 section 9, HP 64. Not identified |
 | $46 | `update_debris_explosion` | becomes an explosion effect (type $1D) where there is a solid BG tile (stage 3 boss) |
 | $47 | `update_homing_missile` | small missile homing on a player (stages 3, 4; seen in the emulator), fired by the stage 4 tank, the snake robot and the spiked climber (`spawn_homing_missile`) |
@@ -202,8 +202,8 @@ invulnerable.
 
 ## Open questions
 
-- Types `$08` and `$42` (`wram_1666`, `wram_1672`) are stage triggers whose
-  variables are not named yet.
+- Type `$08` is a stage trigger whose variables are not named yet; type
+  `$42` sets `clamp_player_top` and `respawn_mode`.
 - Type `$06` is a scripted scene (BG/HDMA) of stage 1; type `$4E` (27
   states, stage 3 section 7) is drawn on BG2 and leans towards a player
   (`build_bg2_slant_table`), probably a mid-boss.

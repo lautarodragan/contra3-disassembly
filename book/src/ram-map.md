@@ -135,6 +135,21 @@ variables of the big scripted object of the moment: stage 1 boss, spiked
 climber, ending...), `tank_driver` (stage 1 tank) and `trail_buffers_used`
 (which `$7E:E000` ring buffers trail chains use).
 
+Other side-view stage variables: `respawn_mode` (how player state `$0F`
+places a player, from `stage_respawn_modes` and changed by triggers),
+`clamp_player_top` (keeps the players below the top in vertical
+autoscroll), `clear_enemies_timer` (frames during which enemies destroy
+themselves when a boss appears or dies), `spawn_disabled` (stops
+`spawn_stage_objects`), `homing_target_slot` (round robin of the homing
+missile), `hang_lock_buttons`, `bomb_coldata_mask` / `bomb_coldata_bits`
+(colour of the bomb window), `sound_throttle_timer`
+(`queue_sound_throttled`), `boss_hit_sound_timer`; the stage 1 tank's
+`tank_moving` / `tank_move_dx`; the stage 4 airship section's
+`bg1_vel_x` ... `bg1_moved_y` and `airship_spawn_index`; the ending's
+`ending_arm_lengths`; the work variables of object type `$06`
+(`obj06_map_ptr` ...); and the debug leftovers `debug_coldata`,
+`debug_window_test`.
+
 ## Top-down stage variables
 
 The Mode 7 view of each player (`p1_m7_center_x` ... `p1_view_brightness`,

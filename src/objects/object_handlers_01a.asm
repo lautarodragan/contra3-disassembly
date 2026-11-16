@@ -750,7 +750,7 @@ tbl_player_tank_states:
 	.addr	player_tank_state_04
 
 player_tank_state_00:
-	stz	a:wram_16AE
+	stz	a:tank_moving
 	lda	#$0041
 	sta	OBJ_FLAGS,x
 	lda	#$FFDA	; [num]
@@ -767,7 +767,7 @@ player_tank_state_00:
 	lda	#$0200
 	sta	a:tank_driver
 	stz	a:wram_165A
-	stz	a:wram_165C
+	stz	a:tank_move_dx
 	rtl
 
 player_tank_state_01:
@@ -863,7 +863,7 @@ loc_01B849:
 	lda	#$0168
 	sbc	$0A,x
 	sta	f:wram_7E3807
-	lda	a:wram_165C
+	lda	a:tank_move_dx
 	bne	loc_01B85E
 	lda	a:wram_165A
 	bne	loc_01B861
@@ -1693,7 +1693,7 @@ loc_01BE72:
 ; Object type $73: stage 4: soldier dropping onto the road (HP 6); dies as
 ; type $1B.
 update_object_type_73:
-	lda	a:wram_1688
+	lda	a:clear_enemies_timer
 	bne	loc_01BE83
 	lda	OBJ_HP,x
 	bpl	loc_01BE98
@@ -1918,7 +1918,7 @@ loc_01C03B:
 
 ; Object type $7E: stage 4: soldier (HP 128); dies as type $1B.
 update_object_type_7E:
-	lda	a:wram_1688
+	lda	a:clear_enemies_timer
 	bne	loc_01C045
 	lda	OBJ_HP,x
 	bpl	loc_01C061
@@ -1926,7 +1926,7 @@ loc_01C045:
 	lda	$34,x
 	beq	loc_01C055
 	lda	#$0004
-	sta	a:wram_1688
+	sta	a:clear_enemies_timer
 	inc	a:obj_slots+29*OBJ_SIZE+OBJ_TIMER
 	inc	a:obj_slots+29*OBJ_SIZE+OBJ_TIMER
 loc_01C055:
@@ -3198,7 +3198,7 @@ loc_01C9D8:
 	bcs	loc_01C9E2
 	brl	loc_01C98D
 loc_01C9E2:
-	lda	a:wram_1672
+	lda	a:respawn_mode
 	cmp	#$0005
 	bcs	loc_01C9ED
 	; (not executed in the CDL traces)
