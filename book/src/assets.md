@@ -267,7 +267,8 @@ asset was written into its PNG (`--apply`); palettes that are all black (a
 faded-out screen) do not count. 90 of the 97 got a palette this way; the
 other 7 (`gfx_0E8307`, `gfx_11C386`, `gfx_148000`, `gfx_15DCD9`,
 `gfx_168000`, `gfx_17D20E`, `gfx_1AE9C9`) were never seen on screen at
-those moments and keep a grey ramp. An asset shown
+those moments and kept a grey ramp (`gfx_148000`, `gfx_168000` and
+`gfx_1AE9C9` have colours now, linked below). An asset shown
 with several palettes (a sprite sheet shared by enemies of several
 colours) has the most frequent one. The 13 WRAM graphics of bank `$7E` came
 later: 10 got their palette from the same tool (run every 60 frames); the
@@ -281,15 +282,36 @@ same tool too: `gfx_07E9FE` has `palette_088022` (linked),
 `td_sprite_tiles_13` and `td_sprite_tiles_14` `palette_088DA4` (linked,
 the colours they were seen with); `gfx_14DC62` was never seen and keeps a grey ramp.
 
-74 PNGs have colours that are those of exactly one palette asset (an
-aligned or unaligned run of 2, 16 or 256 colours of it); `assets/views.txt`
-links them (a line `palette`, the PNG, the palette, the first colour). `python3 tools/assets.py
-sync-palettes` copies the palette's colours into those PNGs, so after
-editing a palette, run it to see the graphics in the new colours; `make
-assets-check` fails while a linked PNG's colours differ from its
-palette's. The others (14 whose colours are in several palettes, the
-font among them, the Mode 7 graphics, whose 256 colours come from several
-palettes, and the grey ones) keep their colours.
+81 PNGs have their colours from palette assets, linked in
+`assets/views.txt` (a line `palette`, the PNG, the palette, the first
+colour): 74 whose colours were those of exactly one palette asset (an
+aligned or unaligned run of 2, 16 or 256 colours of it), and 7 more.
+These were linked, or linked again, from the screen that shows them, with
+the palette its preview has (checked in the emulator, see
+[Tilemaps](#tilemaps) and the level previews below):
+
+- the stage clear pictures' characters (`gfx_188000` ... `gfx_19CAB9`)
+  and FINAL SCORE's (`gfx_1FE855`, `gfx_1AE9C9`): the colours of the
+  row their map draws them with, in `palette_08882C` and `palette_088B7A`.
+  `tools/gfx_palettes.py` had given the pictures `palette_08892E`, the
+  darker copy that `palette_task_058889` puts in CGRAM while the scores
+  are drawn over the picture (the moment most often on screen), and
+  `gfx_1FE855` colours of stage 6;
+- the Mode 7 characters of the top-down maps (`gfx_13CC02`, `gfx_148000`,
+  `stage2_boss_m7_chars`, `gfx_158000`, `gfx_168000`,
+  `stage5_boss_m7_chars`): `level:NAME`, the 256 colours of that level
+  preview, through EXTBG (a pixel 129-255 shows colour pixel & `$7F`,
+  see [Editing a level](#editing-a-level)). Their colours from
+  `palette_buffer` were those of the sprites for every pixel from 128
+  up, which the game never shows on the map: the stage 2 boss came out
+  orange and teal instead of dark metal.
+
+`python3 tools/assets.py sync-palettes` copies the palette's colours into
+those PNGs, so after editing a palette, run it to see the graphics in the
+new colours; `make assets-check` fails while a linked PNG's colours differ
+from its palette's. The others (14 whose colours are in several palettes,
+the font among them, the other Mode 7 graphics, and the grey ones) keep
+their colours.
 
 The [Graphics gallery](gallery.md) shows all 114.
 

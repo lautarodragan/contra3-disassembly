@@ -1039,7 +1039,7 @@ colours are those of one of them (`assets/views.txt`) take its colours
 
 ### palette_088254
 
-`assets/palettes/palette_088254.gpl`: 48 colours (block). Colours of `gfx_0DA728`, `gfx_0DC90C`, `gfx_0DD6D3`, `gfx_0DDC20`, `gfx_0DEF88`, `gfx_0E8000`, `gfx_0E9584`, `gfx_0E9F5E`, `gfx_0EDA4E`, `gfx_0EDD88`, `gfx_14A86D`, `gfx_18D4E3`, `packed_0B8000`, `packed_0B935C`, `packed_0BAA9C`, `packed_0BBCFD`, `packed_0BD88C`.
+`assets/palettes/palette_088254.gpl`: 48 colours (block). Colours of `gfx_0DA728`, `gfx_0DC90C`, `gfx_0DD6D3`, `gfx_0DDC20`, `gfx_0DEF88`, `gfx_0E8000`, `gfx_0E9584`, `gfx_0E9F5E`, `gfx_0EDA4E`, `gfx_0EDD88`, `gfx_14A86D`, `packed_0B8000`, `packed_0B935C`, `packed_0BAA9C`, `packed_0BBCFD`, `packed_0BD88C`.
 
 <img src="gallery/palettes/palette_088254.png" alt="palette_088254" width="256" style="image-rendering: pixelated">
 
@@ -1069,7 +1069,7 @@ colours are those of one of them (`assets/views.txt`) take its colours
 
 ### palette_08843E
 
-`assets/palettes/palette_08843E.gpl`: 128 colours (block). Colours of `gfx_0F8000`, `gfx_0F9460`, `gfx_0FAC90`, `gfx_0FC8E5`, `gfx_0FD147`, `gfx_188000`.
+`assets/palettes/palette_08843E.gpl`: 128 colours (block). Colours of `gfx_0F8000`, `gfx_0F9460`, `gfx_0FAC90`, `gfx_0FC8E5`, `gfx_0FD147`.
 
 <img src="gallery/palettes/palette_08843E.png" alt="palette_08843E" width="256" style="image-rendering: pixelated">
 
@@ -1093,7 +1093,7 @@ colours are those of one of them (`assets/views.txt`) take its colours
 
 ### palette_0886C6
 
-`assets/palettes/palette_0886C6.gpl`: 48 colours (block). Colours of `gfx_1FE855`.
+`assets/palettes/palette_0886C6.gpl`: 48 colours (block).
 
 <img src="gallery/palettes/palette_0886C6.png" alt="palette_0886C6" width="256" style="image-rendering: pixelated">
 
@@ -1111,13 +1111,13 @@ colours are those of one of them (`assets/views.txt`) take its colours
 
 ### palette_08882C
 
-`assets/palettes/palette_08882C.gpl`: 128 colours (block).
+`assets/palettes/palette_08882C.gpl`: 128 colours (block). Colours of `gfx_188000`, `gfx_1899A4`, `gfx_18AF20`, `gfx_18C896`, `gfx_18D4E3`, `gfx_18E9DF`, `gfx_198000`, `gfx_199AB1`, `gfx_19AF8C`, `gfx_19CAB9`.
 
 <img src="gallery/palettes/palette_08882C.png" alt="palette_08882C" width="256" style="image-rendering: pixelated">
 
 ### palette_08892E
 
-`assets/palettes/palette_08892E.gpl`: 96 colours (block). Colours of `gfx_0BE86E`, `gfx_1899A4`, `gfx_18AF20`, `gfx_18C896`, `gfx_18E9DF`, `gfx_198000`, `gfx_199AB1`, `gfx_19AF8C`, `gfx_19CAB9`.
+`assets/palettes/palette_08892E.gpl`: 96 colours (block). Colours of `gfx_0BE86E`.
 
 <img src="gallery/palettes/palette_08892E.png" alt="palette_08892E" width="256" style="image-rendering: pixelated">
 
@@ -1147,7 +1147,7 @@ colours are those of one of them (`assets/views.txt`) take its colours
 
 ### palette_088B7A
 
-`assets/palettes/palette_088B7A.gpl`: 80 colours (block).
+`assets/palettes/palette_088B7A.gpl`: 80 colours (block). Colours of `gfx_1FE855`, `gfx_1AE9C9`.
 
 <img src="gallery/palettes/palette_088B7A.png" alt="palette_088B7A" width="256" style="image-rendering: pixelated">
 

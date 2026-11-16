@@ -82,18 +82,18 @@ palette  gfx/gfx_16BE91           palettes/palette_088CE0 48
 palette  gfx/gfx_17B953           palettes/palette_088AF6 0
 palette  gfx/gfx_17CE4D           palettes/palette_0889F0 16
 palette  gfx/gfx_17E599           palettes/palette_088150 80
-palette  gfx/gfx_188000           palettes/palette_08843E 64
-palette  gfx/gfx_1899A4           palettes/palette_08892E 16
-palette  gfx/gfx_18AF20           palettes/palette_08892E 16
-palette  gfx/gfx_18C896           palettes/palette_08892E 16
-palette  gfx/gfx_18D4E3           palettes/palette_088254 0
-palette  gfx/gfx_18E9DF           palettes/palette_08892E 16
-palette  gfx/gfx_198000           palettes/palette_08892E 16
-palette  gfx/gfx_199AB1           palettes/palette_08892E 16
-palette  gfx/gfx_19AF8C           palettes/palette_08892E 16
-palette  gfx/gfx_19CAB9           palettes/palette_08892E 16
+palette  gfx/gfx_188000           palettes/palette_08882C 48
+palette  gfx/gfx_1899A4           palettes/palette_08882C 48
+palette  gfx/gfx_18AF20           palettes/palette_08882C 48
+palette  gfx/gfx_18C896           palettes/palette_08882C 48
+palette  gfx/gfx_18D4E3           palettes/palette_08882C 96
+palette  gfx/gfx_18E9DF           palettes/palette_08882C 48
+palette  gfx/gfx_198000           palettes/palette_08882C 48
+palette  gfx/gfx_199AB1           palettes/palette_08882C 48
+palette  gfx/gfx_19AF8C           palettes/palette_08882C 48
+palette  gfx/gfx_19CAB9           palettes/palette_08882C 48
 palette  gfx/gfx_19EF62           palettes/palette_0889F0 16
-palette  gfx/gfx_1FE855           palettes/palette_0886C6 0
+palette  gfx/gfx_1FE855           palettes/palette_088B7A 48
 palette  gfx/td_sprite_tiles_13 palettes/palette_088DA4 0
 palette  gfx/td_sprite_tiles_14 palettes/palette_088DA4 0
 palette  wram/packed_0B8000       palettes/palette_088254 0
@@ -105,6 +105,16 @@ palette  wram/packed_0BD88C       palettes/palette_088254 0
 palette  wram/packed_11CDEA       palettes/palette_0882B6 0
 palette  wram/packed_11DF75       palettes/palette_0882B6 0
 palette  wram/packed_12CFEE       palettes/palette_088DA4 0
+palette  gfx/gfx_1AE9C9           palettes/palette_088B7A 48
+# The Mode 7 characters of the top-down maps: the colours they show with
+# (EXTBG: a pixel 129-255 shows colour pixel & $7F), from the level line's
+# palette (level:NAME)
+palette  gfx/gfx_13CC02           level:stage2 0
+palette  gfx/gfx_148000           level:stage2_boss 0
+palette  wram/stage2_boss_m7_chars level:stage2_boss 0
+palette  gfx/gfx_158000           level:stage5 0
+palette  gfx/gfx_168000           level:stage5_boss 0
+palette  wram/stage5_boss_m7_chars level:stage5_boss 0
 
 # The stage clear pictures (ptrs_stage_clear_pictures, load_list_058808 to
 # load_list_058868: maps at $0000, characters at $2000 and $3000 for the
