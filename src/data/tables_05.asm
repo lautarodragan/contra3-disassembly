@@ -6237,7 +6237,9 @@ enemy_type_7C_gun_x_offsets:
 enemy_type_7C_vram_addrs:
 	; CDL: read by enemy_type_7C_draw_frame
 	.byte	$84, $40, $9C, $44, $8C, $40
-data_05F23A:
+; update_lightning_pylon: VRAM address of the pylon's BG tiles by field $3A,
+; cleared when it is destroyed (not seen: the pylons are hard to destroy).
+lightning_pylon_vram_addrs:
 	; CDL: read by update_objects; partly not accessed
 	.byte	$04, $45, $1C, $41, $14, $45, $0C, $45, $04, $45, $1C, $41
 anim_05F246:

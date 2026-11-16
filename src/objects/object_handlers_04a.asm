@@ -8846,6 +8846,8 @@ face_boss_neck_state_06:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
+; Not called and not executed: stores 0 into OBJ_HP of slot $0500 (the slot of
+; snake_robot_head, which follows); probably a leftover, kept unnamed.
 sub_04C3A2:
 	; (not executed in the CDL traces)
 	ldy	#$0500
@@ -10208,7 +10210,7 @@ update_lightning_pylon:
 	sta	OBJ_TIMER,x
 	lda	#$59C0
 	sta	zp_00
-	lda	a:data_05F23A,y
+	lda	a:lightning_pylon_vram_addrs,y
 	sta	zp_FC
 	jsl	f:queue_vram_block
 	lda	#$5000

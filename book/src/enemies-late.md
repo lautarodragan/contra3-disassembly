@@ -80,12 +80,12 @@ when it is read from a table indexed by `difficulty`.
 |---|---|---|---|
 | `$64` | `update_stage4_controller` | invisible controller of the whole stage (32 states): bike scenes, airship, helicopter, boss | |
 | `$65` | `update_rideable_missile` | the missiles the players stand on in the sky; also the missile under the helicopter in the ending (slot `$0280`) | |
-| `$79` | `update_snake_robot` | body of the segmented snake robot rising from the road | `$0FFF` |
+| `$79` | `update_snake_robot` | body of the segmented snake robot rising from the road; it walks on two segmented legs (feet in slots `$0300`, `$0700`, 256 HP each) | `$0FFF` |
 | `$81` | `update_snake_robot_head` | its head, the target | 320 |
 | `$88` | `update_snake_robot_debris` | its 16 pieces when destroyed | |
 | `$7A` | `update_lightning_pylon` | alien airship: hanging emitters of lightning | 64/96/`$7FFF` |
 | `$7B` | `update_lightning_bolt` | the lightning bolts and their sparks | |
-| `$7C` | `update_enemy_type_7C` | airship: small parts under it (not identified exactly) | 20 |
+| `$7C` | `update_enemy_type_7C` | airship: small parts under it; the code aims them at a player (3 frames drawn on BG) and fires enemy bullets, so probably gun turrets | 20 |
 | `$7D` | `update_spiked_mine` | airship: clusters of spiked mines | |
 | `$7F` | `update_airship_gun_arm` | airship: hanging cannon arms | 128 |
 | `$80` | `update_enemy_type_80` | airship: seen briefly at its end (not identified exactly) | |
@@ -105,8 +105,8 @@ when it is read from a table indexed by `difficulty`.
 | `$61` | `update_floor_mouth` | toothed mouths in the floor | 32/40/48 |
 | `$62` | `update_floor_mouth_bug` | bugs they release | 1/1/2 |
 | `$58` | `update_heart_boss` | the giant heart with tendrils | 128/256/384 |
-| `$67` | `update_heart_boss_bug` | crawling bugs around it | 32/64/128 |
-| `$68` | `update_enemy_type_68` | small creatures at the heart's ceiling pods (not identified exactly) | 0/2/4 |
+| `$67` | `update_heart_boss_bug` | crawling bugs around it, drawn on BG (tile scripts); they release type `$68` | 32/64/128 |
+| `$68` | `update_enemy_type_68` | small creatures released by the heart's bugs; they walk on the ceiling (y `$48`) or the floor (y `$B8`) and drop or jump to the other side when level with a player | 0/2/4 |
 | `$5D` | `update_cave_beast` | dark cave: controller of the hunched beast | `$0FFF` |
 | `$A0` | `update_cave_beast_target` | the part of the beast that takes damage (handler: a bare `rtl`) | 320 |
 | `$66` | `update_cave_rock` | rocks piling up on the floor | |
@@ -170,7 +170,29 @@ bursts into 16 sparks (`spawn_firework_sparks`) of one of the types
   every frame (attacks 4 and 5 are step sequences,
   `tbl_brain_boss_attack_4_steps`, `tbl_brain_boss_attack_5_steps`).
 - The winged alien runs a script of steps (`winged_alien_run_step`,
-  `tbl_winged_alien_steps`).
+  `tbl_winged_alien_steps`). It vanishes and reappears stretched into
+  vertical lines (`winged_alien_warp_out`, `winged_alien_warp_in`): a
+  per-line BG2 vertical scroll table for HDMA (preset `$0F`) whose height
+  shrinks or grows by 4 lines per frame.
+- The face boss has more parts than its heads: two eyes (slots 6, 7, type
+  `$53`, HP `face_boss_eye_hp` 64/128/256) that look towards the players
+  (`face_boss_update_eyes`), and once both heads are gone it spawns alien
+  soldiers (type `$24`) on their sides (`face_boss_spawn_soldier_at_lost_head`).
+  When it dies, BG blocks erase the face and uncover the brain
+  (`face_boss_death_tiles_step`, `face_boss_reveal_brain_step`).
+- The side heads lunge at a player recording their path in RAM buffers
+  (`face_boss_side_head_path_buffers`, `$1900`/`$1A00`), pull their neck
+  segments after them (`face_boss_side_head_spawn_neck`) and return along
+  the path; every 32 frames the face makes them fire three bullets
+  (`face_boss_make_heads_fire`, `face_boss_side_head_fire`).
+- The snake robot's legs are placed either by angles around the hips
+  (`snake_robot_place_legs_by_angle`) or as midpoints between hip and foot
+  (`snake_robot_place_legs_between`); the body follows the feet
+  (`snake_robot_walk_body`).
+- Stage 4's opening shows hover-bike riders passing in the background:
+  type `$53` objects that do nothing (`stage4_spawn_passing_rider`); after
+  the missile is dropped, BG1 HDMA bands fly the helicopter away
+  (`rideable_missile_helicopter_leaves`).
 
 ## HP and difficulty
 
@@ -195,10 +217,10 @@ Oddities:
 
 ## Open questions
 
-- The exact role of `update_enemy_type_68`, `update_enemy_type_70`, `update_enemy_type_7C`,
+- The exact role of `update_enemy_type_70`, `update_enemy_type_7C`,
   `update_enemy_type_80`, `update_enemy_type_85`, `update_enemy_type_8E`, `update_enemy_type_8F` and
   `update_enemy_type_96`; types `$6F`, `$97` and `$99` were never seen.
-- Most helpers of these handlers still have their address names (sub_04xxxx,
-  sub_1Dxxxx), as do the many animation-script and metasprite pointers they
-  load as immediates (`lda #$E83B` / `sta OBJ_ANIM,x`): those are bank `$05`
-  and `$06` addresses that a later milestone has to turn into labels.
+- The helpers and tables of these handlers are named, except `sub_04C3A2`
+  (never called). Many names of BG block tables say what the code does with
+  them (`stage3_boss_state_0C_delays`, `ptrs_rideable_missile_anim_blocks`)
+  but not what the blocks show.
