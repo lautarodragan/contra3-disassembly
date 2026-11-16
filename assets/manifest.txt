@@ -143,33 +143,33 @@ sound/spc_song_stage1            lz-v2  max=$2000 seq=text
 sound/spc_song_stage4            lz-v1  max=$2000 seq=text
 sound/spc_song_stage5            lz-v1  max=$2000 seq=text
 sound/spc_song_stage6            lz-v2  max=$2000 seq=text
-wram/opening_bg1_map             lz-v1  max=$1000
+wram/opening_bg1_map             lz-v1  level=bgmap max=$1000
 wram/stage1_bomber_m7_chars      lz-v1  png=mode7 tiles=63 tail=50 max=$1000
-wram/stage6_bg1_metatiles_2      lz-v2  max=$1000
+wram/stage6_bg1_metatiles_2      lz-v2  level=metatiles first=100 max=$1000
 wram/stage1_bomber_fire_tiles    lz-v2  png=4bpp tiles=112 max=$1000
-wram/stage1_bg1_metatiles        lz-v2  max=$2000
-wram/stage1_bg2_metatiles        lz-v1  max=$3000
-wram/stage1_bg1_metatiles_2      lz-v2  max=$2000
-wram/stage1_bg1_map              lz-v1  max=$1000
-wram/stage1_bg2_map              lz-v1  max=$0800
+wram/stage1_bg1_metatiles        lz-v2  level=metatiles max=$2000
+wram/stage1_bg2_metatiles        lz-v1  level=metatiles max=$3000
+wram/stage1_bg1_metatiles_2      lz-v2  level=metatiles first=100 max=$2000
+wram/stage1_bg1_map              lz-v1  level=bgmap max=$1000
+wram/stage1_bg2_map              lz-v1  level=bgmap max=$0800
 wram/packed_0B8000               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_0B935C               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_0BAA9C               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_0BBCFD               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_0BC6A1               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_0BD88C               lz-v2  png=4bpp tiles=256 max=$2000
-wram/stage3_bg2_metatiles        lz-v1  max=$3000
-wram/stage3_bg1_metatiles        lz-v1  max=$2000
-wram/stage3_bg1_metatiles_2      lz-v1  max=$2000
-wram/stage3_bg2_map              lz-v1  max=$0800
+wram/stage3_bg2_metatiles        lz-v1  level=metatiles max=$3000
+wram/stage3_bg1_metatiles        lz-v1  level=metatiles max=$2000
+wram/stage3_bg1_metatiles_2      lz-v1  level=metatiles first=100 max=$2000
+wram/stage3_bg2_map              lz-v1  level=bgmap max=$0800
 wram/stage3_funnel_cloud_tiles   lz-v2  png=4bpp tiles=96 max=$1000
-wram/stage4_bg1_map              lz-v1  max=$1000
-wram/stage3_bg1_map              lz-v1  max=$1000
-wram/stage4_bg1_metatiles        lz-v1  max=$2000
-wram/stage4_bg2_metatiles        lz-v1  max=$1000
-wram/stage4_bg2_map              lz-v1  max=$0800
-wram/stage6_bg1_map              lz-v1  max=$1000
-wram/stage6_bg2_map              lz-v1  max=$0800
+wram/stage4_bg1_map              lz-v1  level=bgmap max=$1000
+wram/stage3_bg1_map              lz-v1  level=bgmap max=$1000
+wram/stage4_bg1_metatiles        lz-v1  level=metatiles max=$2000
+wram/stage4_bg2_metatiles        lz-v1  level=metatiles max=$1000
+wram/stage4_bg2_map              lz-v1  level=bgmap max=$0800
+wram/stage6_bg1_map              lz-v1  level=bgmap max=$1000
+wram/stage6_bg2_map              lz-v1  level=bgmap max=$0800
 wram/stage6_bg_anim_tiles        lz-v2  png=4bpp tiles=96 tail=F1 max=$1000
 wram/packed_11CDEA               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_11DF75               lz-v2  png=4bpp tiles=256 max=$2000
@@ -181,38 +181,38 @@ wram/packed_12CFEE               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_12E60A               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_138000               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_139567               lz-v2  png=4bpp tiles=256 max=$2000
-wram/stage2_m7_blocks            lz-v1  max=$2000  # limit: original size, 4,096 bytes past stage2_block_map_0 (book: Assets, Size limits)
-wram/stage2_block_map_0          lz-v2  max=$0400
-wram/stage2_block_map_1          lz-v2  max=$0400
-wram/stage2_block_map_2          lz-v2  max=$0400
-wram/stage2_block_map_3          lz-v2  max=$0400
-wram/stage2_boss_m7_blocks       lz-v1  max=$1000
-wram/stage2_boss_block_map_0     lz-v2  max=$0400
-wram/stage2_boss_block_map_1     lz-v2  max=$0400
-wram/stage2_boss_block_map_2     lz-v2  max=$0400
-wram/stage2_boss_block_map_3     lz-v2  max=$0400
+wram/stage2_m7_blocks            lz-v1  level=blocks max=$2000  # limit: original size, 4,096 bytes past stage2_block_map_0 (book: Assets, Size limits)
+wram/stage2_block_map_0          lz-v2  level=blockmap max=$0400
+wram/stage2_block_map_1          lz-v2  level=blockmap max=$0400
+wram/stage2_block_map_2          lz-v2  level=blockmap max=$0400
+wram/stage2_block_map_3          lz-v2  level=blockmap max=$0400
+wram/stage2_boss_m7_blocks       lz-v1  level=blocks max=$1000
+wram/stage2_boss_block_map_0     lz-v2  level=blockmap max=$0400
+wram/stage2_boss_block_map_1     lz-v2  level=blockmap max=$0400
+wram/stage2_boss_block_map_2     lz-v2  level=blockmap max=$0400
+wram/stage2_boss_block_map_3     lz-v2  level=blockmap max=$0400
 wram/stage2_boss_m7_chars        lz-v1  png=mode7 tiles=72 tail=00 max=$2000
 wram/stage2_boss_sprite_tiles    lz-v2  png=4bpp tiles=172 tail=00 max=$2000
-wram/stage5_m7_blocks            lz-v2  max=$1000
-wram/stage5_block_map_0          lz-v2  max=$0400
-wram/stage5_block_map_1          lz-v2  max=$0400
-wram/stage5_block_map_2          lz-v2  max=$0400
-wram/stage5_block_map_3          lz-v2  max=$0400
+wram/stage5_m7_blocks            lz-v2  level=blocks max=$1000
+wram/stage5_block_map_0          lz-v2  level=blockmap max=$0400
+wram/stage5_block_map_1          lz-v2  level=blockmap max=$0400
+wram/stage5_block_map_2          lz-v2  level=blockmap max=$0400
+wram/stage5_block_map_3          lz-v2  level=blockmap max=$0400
 wram/stage5_sprite_tiles_1       lz-v2  png=4bpp tiles=256 max=$2000
 wram/stage5_sprite_tiles_2       lz-v2  png=4bpp tiles=256 max=$2000
-wram/opening_bg1_metatiles       lz-v1  max=$2000
-wram/stage5_boss_m7_blocks       lz-v2  max=$1000
-wram/stage5_boss_block_map_0     lz-v1  max=$0400
-wram/stage5_boss_block_map_1     lz-v2  max=$0400
-wram/stage5_boss_block_map_2     lz-v2  max=$0400
-wram/stage5_boss_block_map_3     lz-v1  max=$0400
+wram/opening_bg1_metatiles       lz-v1  level=metatiles max=$2000
+wram/stage5_boss_m7_blocks       lz-v2  level=blocks max=$1000
+wram/stage5_boss_block_map_0     lz-v1  level=blockmap max=$0400
+wram/stage5_boss_block_map_1     lz-v2  level=blockmap tail=00 max=$0400
+wram/stage5_boss_block_map_2     lz-v2  level=blockmap tail=00 max=$0400
+wram/stage5_boss_block_map_3     lz-v1  level=blockmap max=$0400
 wram/stage5_boss_m7_chars        lz-v2  png=mode7 tiles=40 tail=00 max=$2000
 wram/stage5_boss_sprite_tiles    lz-v2  png=4bpp tiles=100 max=$1000
-wram/stage6_bg2_metatiles        lz-v1  max=$3000
+wram/stage6_bg2_metatiles        lz-v1  level=metatiles max=$3000
 wram/stage2_sprite_tiles_1       lz-v2  png=4bpp tiles=256 max=$2000
 wram/stage2_sprite_tiles_2       lz-v2  png=4bpp tiles=256 max=$2000
 wram/stage2_sprite_tiles_3       lz-v2  png=4bpp tiles=112 max=$1000
-wram/stage6_bg1_metatiles        lz-v2  max=$2000
+wram/stage6_bg1_metatiles        lz-v2  level=metatiles max=$2000
 palettes/palette_088000          raw    gpl=block max=$0022
 palettes/palette_088022          raw    gpl=block max=$0022
 palettes/palette_088044          raw    gpl=block max=$0022

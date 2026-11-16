@@ -811,6 +811,98 @@ Drawn with `gfx_1FE855`, `gfx_1AE9C9` and `palette_088B7A`.
 
 <img src="gallery/gfx/gfx_1EEBD0.png" alt="gfx_1EEBD0" width="512" style="image-rendering: pixelated">
 
+## Levels
+
+The stages' maps, drawn from the level texts (`.map`, `.metatiles`,
+`.blocks`; see [Assets](assets.md#editing-a-level)) with the characters
+the stage's load list puts in VRAM and the colours of its palette task
+(`level` lines of `assets/views.txt`), so editing a map, a metatile, a
+graphic or a palette changes the picture. A side-view map is drawn
+page by page in the order of its pages, 8 pages (2,048 pixels) per
+row: a horizontal stretch reads left to right, a vertical one (which
+the stage climbs page after page) is cut into its pages. A top-down
+map is the 128x128-tile Mode 7 map `build_m7_tilemap` makes.
+
+### stage1_bg1
+
+32 pages: `assets/wram/stage1_bg1_map.map`, `assets/wram/stage1_bg1_metatiles.metatiles`, `assets/wram/stage1_bg1_metatiles_2.metatiles`. Drawn with `gfx_098000`, `gfx_09998E`, `gfx_09B32D`, `gfx_09CD49` and `palette_088150`, `palette_088F92`.
+
+<img src="gallery/levels/stage1_bg1.png" alt="stage1_bg1" width="1024" style="image-rendering: pixelated">
+
+### stage1_bg2
+
+16 pages: `assets/wram/stage1_bg2_map.map`, `assets/wram/stage1_bg2_metatiles.metatiles`. Drawn with `gfx_098000`, `gfx_09998E`, `gfx_09B32D`, `gfx_09CD49` and `palette_088150`, `palette_088F92`.
+
+Cells naming a metatile past those defined (drawn as zero words): page 6: `143`; page 7: `143`, `160`, `161`, `162`, `163`, `164`, `165`, `166`, `167`, `168`, `169`, `16A`, `16B`; page 8: `143`; page 9: `143`.
+
+<img src="gallery/levels/stage1_bg2.png" alt="stage1_bg2" width="1024" style="image-rendering: pixelated">
+
+### stage3_bg1
+
+32 pages: `assets/wram/stage3_bg1_map.map`, `assets/wram/stage3_bg1_metatiles.metatiles`, `assets/wram/stage3_bg1_metatiles_2.metatiles`. Drawn with `gfx_0C8000`, `gfx_0C98A2`, `gfx_0CAFBF`, `gfx_0CC65E` and `palette_0882F8`, `palette_088F92`.
+
+<img src="gallery/levels/stage3_bg1.png" alt="stage3_bg1" width="1024" style="image-rendering: pixelated">
+
+### stage3_bg2
+
+16 pages: `assets/wram/stage3_bg2_map.map`, `assets/wram/stage3_bg2_metatiles.metatiles`. Drawn with `gfx_0C8000`, `gfx_0C98A2`, `gfx_0CAFBF`, `gfx_0CC65E` and `palette_0882F8`, `palette_088F92`.
+
+<img src="gallery/levels/stage3_bg2.png" alt="stage3_bg2" width="1024" style="image-rendering: pixelated">
+
+### stage4_bg1
+
+32 pages: `assets/wram/stage4_bg1_map.map`, `assets/wram/stage4_bg1_metatiles.metatiles`. Drawn with `gfx_0F8000`, `gfx_0F9460`, `gfx_0FAC90`, `gfx_0FC8E5` and `palette_08843E`.
+
+<img src="gallery/levels/stage4_bg1.png" alt="stage4_bg1" width="1024" style="image-rendering: pixelated">
+
+### stage4_bg2
+
+16 pages: `assets/wram/stage4_bg2_map.map`, `assets/wram/stage4_bg2_metatiles.metatiles`. Drawn with `gfx_0F8000`, `gfx_0F9460`, `gfx_0FAC90`, `gfx_0FC8E5` and `palette_08843E`.
+
+<img src="gallery/levels/stage4_bg2.png" alt="stage4_bg2" width="1024" style="image-rendering: pixelated">
+
+### stage6_bg1
+
+32 pages: `assets/wram/stage6_bg1_map.map`, `assets/wram/stage6_bg1_metatiles.metatiles`, `assets/wram/stage6_bg1_metatiles_2.metatiles`. Drawn with `gfx_108000`, `gfx_109C17`, `gfx_10B927`, `gfx_10D5A2` and `palette_088540`, `palette_088F92`.
+
+<img src="gallery/levels/stage6_bg1.png" alt="stage6_bg1" width="1024" style="image-rendering: pixelated">
+
+### stage6_bg2
+
+16 pages: `assets/wram/stage6_bg2_map.map`, `assets/wram/stage6_bg2_metatiles.metatiles`. Drawn with `gfx_108000`, `gfx_109C17`, `gfx_10B927`, `gfx_10D5A2` and `palette_088540`, `palette_088F92`.
+
+<img src="gallery/levels/stage6_bg2.png" alt="stage6_bg2" width="1024" style="image-rendering: pixelated">
+
+### opening_bg1
+
+32 pages: `assets/wram/opening_bg1_map.map`, `assets/wram/opening_bg1_metatiles.metatiles`. Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0889F0`, `palette_0882B6`, `palette_088254`, `palette_088AF6`.
+
+<img src="gallery/levels/opening_bg1.png" alt="opening_bg1" width="1024" style="image-rendering: pixelated">
+
+### stage2
+
+Mode 7 map, 128x128 tiles: `assets/wram/stage2_block_map_0.map`, `assets/wram/stage2_block_map_1.map`, `assets/wram/stage2_block_map_2.map`, `assets/wram/stage2_block_map_3.map`, `assets/wram/stage2_m7_blocks.blocks`. Drawn with `gfx_13CC02` and `palette_088C3E`, `palette_088F92`, `palette_088F50`, `palette_088F2E`, `palette_088F0C`, `palette_088CE0`.
+
+<img src="gallery/levels/stage2.png" alt="stage2" width="1024" style="image-rendering: pixelated">
+
+### stage2_boss
+
+Mode 7 map, 128x128 tiles: `assets/wram/stage2_boss_block_map_0.map`, `assets/wram/stage2_boss_block_map_1.map`, `assets/wram/stage2_boss_block_map_2.map`, `assets/wram/stage2_boss_block_map_3.map`, `assets/wram/stage2_boss_m7_blocks.blocks`. Drawn with `gfx_148000`, `stage2_boss_m7_chars` and `palette_088C3E`, `palette_088F92`, `palette_088D82`, `palette_088F0C`, `palette_088CE0`.
+
+<img src="gallery/levels/stage2_boss.png" alt="stage2_boss" width="1024" style="image-rendering: pixelated">
+
+### stage5
+
+Mode 7 map, 128x128 tiles: `assets/wram/stage5_block_map_0.map`, `assets/wram/stage5_block_map_1.map`, `assets/wram/stage5_block_map_2.map`, `assets/wram/stage5_block_map_3.map`, `assets/wram/stage5_m7_blocks.blocks`. Drawn with `gfx_158000` and `palette_088DA4`, `palette_088F92`, `palette_088ECA`, `palette_088F2E`, `palette_088F0C`, `palette_088CE0`.
+
+<img src="gallery/levels/stage5.png" alt="stage5" width="1024" style="image-rendering: pixelated">
+
+### stage5_boss
+
+Mode 7 map, 128x128 tiles: `assets/wram/stage5_boss_block_map_0.map`, `assets/wram/stage5_boss_block_map_1.map`, `assets/wram/stage5_boss_block_map_2.map`, `assets/wram/stage5_boss_block_map_3.map`, `assets/wram/stage5_boss_m7_blocks.blocks`. Drawn with `gfx_168000`, `stage5_boss_m7_chars` and `palette_088DA4`, `palette_088F92`, `palette_088E46`, `palette_088F0C`, `palette_088CE0`.
+
+<img src="gallery/levels/stage5_boss.png" alt="stage5_boss" width="1024" style="image-rendering: pixelated">
+
 ## Palettes
 
 The palettes (`.gpl`), 16 colours per row. The graphics above whose

@@ -13,6 +13,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import asset_limits  # noqa: E402
 import assets  # noqa: E402
+import levelmap  # noqa: E402
 import snesgfx  # noqa: E402
 
 SRC = os.path.join(ROOT, "src")
@@ -132,15 +133,37 @@ def test_png_must_be_whole_tiles(tmp_path):
 # ---------------------------------------------------------------- other kinds
 
 def test_bin_too_big_is_rejected(tmp_path, manifest):
-    # a WRAM stream: $7E:9400, the same list loads stage2_block_map_2 at $7E:9800
-    root, a = scratch(tmp_path, manifest, "wram/stage2_block_map_1")
+    # a WRAM stream as a raw .bin: $7E:9400, the same list loads
+    # stage2_block_map_2 at $7E:9800
+    a = manifest["wram/stage2_block_map_1"]
     assert a.options["max"] == "$0400"
-    data = open(os.path.join(root, a.source), "rb").read()
-    open(os.path.join(root, a.source), "wb").write(data + bytes(0x400 - len(data)))
+    root = str(tmp_path)
+    os.makedirs(os.path.join(root, "assets", "wram"))
+    with open(os.path.join(root, assets.MANIFEST), "w") as f:
+        f.write(f"wram/stage2_block_map_1 {a.kind} max=$0400\n")
+    path = os.path.join(root, "assets", "wram", "stage2_block_map_1.bin")
+    open(path, "wb").write(bytes(0x400))
     assert errors(root) == []
-    open(os.path.join(root, a.source), "ab").write(b"\x01")
+    open(path, "ab").write(b"\x01")
     errs = errors(root)
     assert len(errs) == 1 and "1,025 bytes" in errs[0] and "stage2_block_map_2" in errs[0]
+
+
+def _add_pages(path, n):
+    """Append n pages of metatile 001 to a side-view map text."""
+    with open(path, "a") as f:
+        f.write(("001 " * 8 + "\n") * 8 * n)
+
+
+def test_level_map_too_big_is_rejected(tmp_path, manifest):
+    # stage 1's BG2 map at $7E:F000 is 16 pages; debug_window_hdma_a is at $7E:F800
+    root, a = scratch(tmp_path, manifest, "wram/stage1_bg2_map")
+    assert a.options["max"] == "$0800"
+    assert errors(root) == []
+    _add_pages(os.path.join(root, a.source), 1)
+    errs = errors(root)
+    assert len(errs) == 1 and "2,176 bytes (17 pages)" in errs[0] and "(16 pages)" in errs[0]
+    assert "debug_window_hdma_a" in errs[0]
 
 
 def test_raw_sound_block_must_match_its_size_word(tmp_path):
@@ -179,7 +202,8 @@ def test_raw_song_too_big_is_rejected(tmp_path, manifest):
 def test_stream_larger_than_a_bank_is_rejected(tmp_path, manifest):
     root, a = scratch(tmp_path, manifest, "wram/stage1_bg1_metatiles", {"max": "$FFFF"})
     rnd = random.Random(1)
-    open(os.path.join(root, a.source), "wb").write(bytes(rnd.randrange(256) for _ in range(0x8000)))
+    levelmap.write_text(os.path.join(root, a.source),
+                        bytes(rnd.randrange(256) for _ in range(0x8000)), "metatiles")
     errs = errors(root)
     assert any("more than a bank" in e for e in errs)
 
@@ -254,14 +278,14 @@ def test_palette_block_too_big_is_rejected(tmp_path, manifest):
 
 def test_limit_set_by_hand(tmp_path, manifest):
     # a max= raised by hand needs its reason in a "# limit:" comment
-    root, a = scratch(tmp_path, manifest, "wram/stage2_block_map_1", {"max": "$0500"})
+    root, a = scratch(tmp_path, manifest, "wram/stage1_bg2_map", {"max": "$0900"})
     assets.build(root)
     found = assets.read_manifest(root)
     assert asset_limits.verify(found, root, SRC)       # not what the source gives
     path = os.path.join(root, assets.MANIFEST)
     line = open(path).read().rstrip("\n")
-    open(path, "w").write(line + "  # limit: tested, the space up to $7E:9900 is free\n")
+    open(path, "w").write(line + "  # limit: tested, the space up to $7E:F900 is free\n")
     assert asset_limits.verify(found, root, SRC) == []
-    open(os.path.join(root, a.source), "ab").write(bytes(0x500))
+    _add_pages(os.path.join(root, a.source), 3)
     errs = errors(root)
     assert len(errs) == 1 and "set by hand: tested" in errs[0]

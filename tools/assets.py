@@ -31,6 +31,10 @@ assets/<path>.txt names (assets/sound/samples/*.brr, one after the other);
 with dir=PATH,PATH... a sound CPU sample directory made from those sample
 lists (assets/PATH.txt each; tools/brr.py).  With seq=text the data is the
 sound driver's sequences in the text assets/<path>.seq (tools/spcseq.py).
+With level=FORMAT the data is a level map or its metatiles as text,
+assets/<path>.metatiles, .blocks or .map (tools/levelmap.py: metatiles,
+blocks, bgmap, blockmap; `first`: the number of the first metatile, hex;
+`tail`: bytes after the text's, hex).
 
 ca65 looks the included paths up in INCLUDE_DIRS (assets/, then
 build/assets/), so every assembly of src/ (the Makefile, tools/srcmap.py,
@@ -45,6 +49,8 @@ writes (`makefile`), so that editing an asset rebuilds what depends on it.
                                                  # assets/PATH.bin -> .png (sets png=)
     python3 tools/assets.py tilemap FORMAT PATH ... [--width N]
                                                  # assets/PATH.bin -> .tilemap (sets tilemap=)
+    python3 tools/assets.py level FORMAT PATH ... [--first N]
+                                                 # assets/PATH.bin -> level text (sets level=)
     python3 tools/assets.py check                # every PNG converts back exactly;
                                                  # palettes exact, PNG viewing palettes in sync
     python3 tools/assets.py sync-palettes        # PNG viewing palettes from assets/views.txt
@@ -68,6 +74,7 @@ import snesmap  # noqa: E402
 import snespal  # noqa: E402
 import brr  # noqa: E402
 import spcseq  # noqa: E402
+import levelmap  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
 ASSETS = "assets"
@@ -77,7 +84,7 @@ INCLUDE_DIRS = [ASSETS, BUILD]
 KINDS = ("raw", "lz-v1", "lz-v2")
 # the tools a generated file depends on
 TOOLS = ["tools/assets.py", "tools/c3lz.py", "tools/snesgfx.py", "tools/snespal.py",
-         "tools/snesmap.py"]
+         "tools/snesmap.py", "tools/levelmap.py"]
 SRC = "src"
 
 
@@ -116,6 +123,12 @@ class Asset:
         return self.options.get("tilemap")
 
     @property
+    def level(self):
+        """The format of the level text (tools/levelmap.py) that holds the
+        data, or None."""
+        return self.options.get("level")
+
+    @property
     def samples(self):
         """The sample lists the data is made from (brr=list: this asset's
         own list; dir=PATH,...: those of a directory), or None."""
@@ -128,7 +141,8 @@ class Asset:
     @property
     def converted(self):
         """True if the build converts the source to the data."""
-        return bool(self.png or self.gpl or self.tilemap or self.samples or self.seq)
+        return bool(self.png or self.gpl or self.tilemap or self.samples or self.seq
+                    or self.level)
 
     @property
     def seq(self):
@@ -143,6 +157,8 @@ class Asset:
             return os.path.join(ASSETS, self.samples[-1] + ".txt")
         if self.seq:
             return os.path.join(ASSETS, self.path + ".seq")
+        if self.level:
+            return os.path.join(ASSETS, self.path + levelmap.FORMATS[self.level][0])
         return os.path.join(ASSETS, self.path + ext)
 
     @property
@@ -204,6 +220,9 @@ class Asset:
             return brr.build_block(self.path, root)
         if self.tilemap:
             return snesmap.read_text(src, self.tilemap, int(self.options.get("width", 0)) or None)
+        if self.level:
+            return (levelmap.read_text(src, self.level, int(self.options.get("first", "0"), 16))
+                    + bytes.fromhex(self.options.get("tail", "")))
         return open(src, "rb").read()
 
 
@@ -376,18 +395,64 @@ def read_views(root=ROOT):
             links[words[1]] = (words[2], int(words[3]))
         elif words[0] == "preview" and len(words) > 2:
             previews[words[1]] = dict(w.split("=", 1) for w in words[2:])
+        elif words[0] == "level":
+            pass                # read_levels()
         else:
             sys.exit(f"{VIEWS}:{n}: not a palette or preview line")
     return links, previews
 
 
+def read_levels(root=ROOT):
+    """The `level` lines of assets/views.txt: [(name, {option: value})] in
+    order (the level previews of the gallery)."""
+    out = []
+    path = os.path.join(root, VIEWS)
+    if not os.path.exists(path):
+        return out
+    for n, line in enumerate(open(path), 1):
+        words = line.split("#")[0].split()
+        if words and words[0] == "level":
+            if len(words) < 3:
+                sys.exit(f"{VIEWS}:{n}: a level line needs a name and options")
+            out.append((words[1], dict(w.split("=", 1) for w in words[2:])))
+    return out
+
+
+def asm_palette(label, root=ROOT):
+    """The colours of a palette block that stays inline in src/ (`.byte`
+    lines after its label: a size-1 word, then the colours)."""
+    import glob
+    import re
+    for f in sorted(glob.glob(os.path.join(root, SRC, "**", "*.asm"), recursive=True)):
+        lines = open(f).read().splitlines()
+        if f"{label}:" not in lines:
+            continue
+        data = bytearray()
+        for line in lines[lines.index(f"{label}:") + 1:]:
+            code = line.split(";")[0].strip()
+            if not code or re.fullmatch(r"[A-Za-z_]\w*:", code):
+                continue
+            if not code.startswith(".byte"):
+                break
+            data += bytes(int(v.strip().lstrip("$"), 16) for v in code[5:].split(","))
+            if len(data) >= 2 and len(data) >= 3 + (data[0] | data[1] << 8):
+                size = (data[0] | data[1] << 8) + 1
+                return [data[i] | data[i + 1] << 8 for i in range(2, 2 + size - 1, 2)]
+        sys.exit(f"{label}: not a palette block of .byte lines in {f}")
+    sys.exit(f"{label}: no such label in {SRC}/")
+
+
 def palette_rgb(spec, manifest, root=ROOT):
     """256 (r, g, b) of a CGRAM image: spec "PALETTE@INDEX,..." (colours
-    not given are black)."""
+    not given are black); PALETTE is a palette asset, or asm:LABEL for a
+    palette block left inline in src/."""
     cgram = [(0, 0, 0)] * 256
     for item in spec.split(","):
         p, first = item.split("@")
-        words = snespal.read_gpl(os.path.join(root, manifest[p].source))
+        if p.startswith("asm:"):
+            words = asm_palette(p[4:], root)
+        else:
+            words = snespal.read_gpl(os.path.join(root, manifest[p].source))
         for i, w in enumerate(words):
             if int(first) + i < 256:
                 cgram[int(first) + i] = snespal.rgb(w)
@@ -431,6 +496,83 @@ def render_preview(asset, view, manifest, root=ROOT):
         chars[t] = snesgfx.decode_tile(bytes(vram[a:a + size]), tfmt)
     return snesmap.render(data, fmt, width, chars, bpp,
                           palette_rgb(view["palette"], manifest, root))
+
+
+def vram_chars(spec, manifest, mode7, root=ROOT):
+    """VRAM as the load lists leave it, for a preview: spec
+    "ASSET@VRAMWORD[:LENGTH],..." (LENGTH in hex bytes: only the start of
+    the asset, e.g. one frame).  Two bytes a word, or for Mode 7 the high
+    bytes (one a word)."""
+    vram = bytearray(0x8000 if mode7 else 0x10000)
+    for item in spec.split(","):
+        p, addr = item.split("@")
+        addr, _, length = addr.partition(":")
+        d = data_bytes(manifest[p], root)
+        if length:
+            d = d[:int(length, 16)]
+        start = int(addr, 16) * (1 if mode7 else 2)
+        vram[start:start + len(d)] = d[:max(0, len(vram) - start)]
+    return vram
+
+
+def level_cells(view, manifest, root=ROOT):
+    """(cells, width, mode7) of a level preview: the map (or the four block
+    map streams) expanded through its definitions (tools/levelmap.py)."""
+    maps = [manifest[p] for p in view["map"].split(",")]
+    defs = [manifest[p] for p in view["defs"].split(",")]
+    if maps[0].level == "blockmap":
+        return (*levelmap.m7_tilemap([data_bytes(a, root) for a in maps],
+                                     data_bytes(defs[0], root)), True)
+    wram = bytearray(0x4000)
+    for a in defs:
+        start = int(a.options.get("first", "0"), 16) * 0x20
+        d = data_bytes(a, root)[:max(0, 0x4000 - start)]
+        wram[start:start + len(d)] = d
+    cells, width = levelmap.side_tilemap(data_bytes(maps[0], root), wram,
+                                         int(view.get("pages", 8)))
+    return cells, width, False
+
+
+def level_undefined(view, manifest, root=ROOT):
+    """{page: sorted metatile numbers} of a side-view map's cells that name
+    a metatile past the definitions the view loads with it."""
+    maps = [manifest[p] for p in view["map"].split(",")]
+    if maps[0].level != "bgmap":
+        return {}
+    have = set()
+    for p in view["defs"].split(","):
+        a = manifest[p]
+        first = int(a.options.get("first", "0"), 16)
+        have |= set(range(first, first + len(data_bytes(a, root)) // 0x20))
+    data = data_bytes(maps[0], root)
+    out = {}
+    for i in range(0, len(data), 2):
+        n = (data[i] | data[i + 1] << 8) & 0x3FFF
+        if n >> 5 not in have:
+            out.setdefault(i // levelmap.PAGE, set()).add(n >> 5)
+    return {k: sorted(v) for k, v in sorted(out.items())}
+
+
+def render_level(view, manifest, root=ROOT):
+    """(W, H, pixels, palette) of a level preview line of assets/views.txt:
+    map=MAP[,MAP...] (a side-view map, or the four block map streams)
+    defs=DEFS[,...] (its metatiles, or the block definitions)
+    chars=ASSET@VRAMWORD[:LENGTH],... [base=VRAMWORD] bpp=4|8
+    palette=PALETTE@CGRAMINDEX,... [pages=N] (pages per row)."""
+    cells, width, mode7 = level_cells(view, manifest, root)
+    bpp = 8 if mode7 else int(view.get("bpp", 4))
+    vram = vram_chars(view["chars"], manifest, mode7, root)
+    size = 64 if mode7 else 8 * bpp
+    base = 0 if mode7 else int(view.get("base", "0"), 16) * 2
+    chars = {}
+    for v in set(cells):
+        t = v if mode7 else v & 0x3FF
+        if t not in chars:
+            a = (base + t * size) % len(vram)
+            chars[t] = snesgfx.decode_tile(bytes(vram[a:a + size]),
+                                           "mode7" if mode7 else f"{bpp}bpp")
+    return levelmap.render(cells, width, chars, bpp,
+                           palette_rgb(view["palette"], manifest, root), mode7)
 
 
 def sync_palettes(root=ROOT):
@@ -525,6 +667,43 @@ def totilemap(paths, fmt, width=None):
     return done
 
 
+def tolevel(paths, fmt, first=0):
+    """Turn assets/PATH.bin into the level text (tools/levelmap.py format
+    fmt), checking the round trip, and record it in the manifest.  A block
+    map stream longer than $200 bytes keeps the rest as tail=."""
+    manifest = {a.path: a for a in read_manifest()}
+    done = []
+    for path in paths:
+        a = manifest[path]
+        if a.converted:
+            sys.exit(f"{path}: already converted ({a.source})")
+        bin_path = a.source
+        data = open(bin_path, "rb").read()
+        body, tail = data, b""
+        if fmt == "blockmap":
+            body, tail = data[:levelmap.BLOCKMAP], data[levelmap.BLOCKMAP:]
+        try:
+            levelmap.check_bytes(body, fmt)
+        except ValueError as e:
+            sys.exit(f"{path}: {e}")
+        opts = {"level": fmt}
+        if first:
+            opts["first"] = f"{first:03X}"
+        if tail:
+            opts["tail"] = tail.hex().upper()
+        a.options = {**opts, **{k: v for k, v in a.options.items() if k not in opts}}
+        if "max" in a.options:
+            a.options["max"] = a.options.pop("max")     # last, as written
+        levelmap.write_text(a.source, body, fmt, path.split("/")[-1], first)
+        if a.from_source() != data:
+            os.remove(a.source)
+            sys.exit(f"{path}: the text does not convert back to the same bytes")
+        os.remove(bin_path)
+        done.append(a)
+    write_manifest(done)
+    return done
+
+
 def check():
     """Every PNG asset: its tiles, drawn again, give the same PNG pixels
     (so the PNG holds nothing that the build would drop)."""
@@ -569,8 +748,11 @@ def check():
             stale += 1
     for path, view in previews.items():
         render_preview(manifest[path], view, manifest)
+    levels = read_levels()
+    for _name, view in levels:
+        render_level(view, manifest)
     print(f"{len(links)} PNGs linked to a palette, {len(links) - stale} in sync; "
-          f"{len(previews)} tilemap previews")
+          f"{len(previews)} tilemap previews, {len(levels)} level previews")
     return 1 if bad or inexact or stale else 0
 
 
@@ -622,6 +804,37 @@ def gallery():
                         'style="image-rendering: pixelated">', ""]
             else:
                 out += ["No preview (see [Assets](assets.md#tilemaps)).", ""]
+    levels = read_levels()
+    if levels:
+        manifest = {a.path: a for a in read_manifest()}
+        out += ["## Levels", "",
+                "The stages' maps, drawn from the level texts (`.map`, `.metatiles`,",
+                "`.blocks`; see [Assets](assets.md#editing-a-level)) with the characters",
+                "the stage's load list puts in VRAM and the colours of its palette task",
+                "(`level` lines of `assets/views.txt`), so editing a map, a metatile, a",
+                "graphic or a palette changes the picture. A side-view map is drawn",
+                "page by page in the order of its pages, 8 pages (2,048 pixels) per",
+                "row: a horizontal stretch reads left to right, a vertical one (which",
+                "the stage climbs page after page) is cut into its pages. A top-down",
+                "map is the 128x128-tile Mode 7 map `build_m7_tilemap` makes.", ""]
+        for name, view in levels:
+            maps = view["map"].split(",")
+            defs = view["defs"].split(",")
+            files = ", ".join(f"`{manifest[p].source}`" for p in maps + defs)
+            chars = ", ".join(f"`{c.split('@')[0].split('/')[-1]}`" for c in view["chars"].split(","))
+            pals = ", ".join(f"`{c.split('@')[0].split('/')[-1].replace('asm:', '')}`"
+                             for c in view["palette"].split(","))
+            cells, width, mode7 = level_cells(view, manifest)
+            what = ("Mode 7 map, 128x128 tiles" if mode7 else
+                    f"{len(data_bytes(manifest[maps[0]])) // levelmap.PAGE} pages")
+            out += [f"### {name}", "", f"{what}: {files}. Drawn with {chars} and {pals}.", ""]
+            missing = level_undefined(view, manifest)
+            if missing:
+                where = "; ".join(f"page {pg}: " + ", ".join(f"`{n:03X}`" for n in ns)
+                                  for pg, ns in missing.items())
+                out += [f"Cells naming a metatile past those defined (drawn as zero words): {where}.", ""]
+            out += [f'<img src="gallery/levels/{name}.png" alt="{name}" '
+                    f'width="{min(1024, 8 * width)}" style="image-rendering: pixelated">', ""]
     pals = [a for a in read_manifest() if a.gpl]
     if pals:
         out += ["## Palettes", "",
@@ -665,6 +878,10 @@ def gallery_copy(dest):
             snesgfx.write_png(out, W, H, pixels, [snespal.rgb(w) for w in words])
         else:
             snesgfx.write_png(out, *render_preview(a, previews[a.path], manifest))
+    for name, view in read_levels():
+        out = os.path.join(dest, "gallery", "levels", name + ".png")
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        snesgfx.write_png(out, *render_level(view, manifest))
 
 
 def main(argv):
@@ -699,6 +916,15 @@ def main(argv):
         args = ap.parse_args(argv[2:])
         for a in totilemap(args.paths, args.format, args.width):
             print(f"{a.source}: {a.tilemap}")
+    elif cmd == "level":
+        import argparse
+        ap = argparse.ArgumentParser(prog="assets.py level")
+        ap.add_argument("format", choices=list(levelmap.FORMATS))
+        ap.add_argument("paths", nargs="+")
+        ap.add_argument("--first", type=lambda v: int(v, 16), default=0)
+        args = ap.parse_args(argv[2:])
+        for a in tolevel(args.paths, args.format, args.first):
+            print(f"{a.source}: {a.level}")
     elif cmd == "check":
         return check()
     elif cmd == "limits":

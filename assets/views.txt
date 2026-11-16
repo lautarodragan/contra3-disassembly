@@ -105,3 +105,38 @@ preview gfx/gfx_06F68F  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08
 # The title logo, Mode 7 (load_title_graphics: load_list_058527 the
 # characters, load_list_058539 the map; palette_task_05854B)
 preview gfx/gfx_06FADF  chars=gfx/gfx_089249@0000 bpp=8 palette=palettes/palette_0880AA@0
+# level NAME map=MAP[,MAP...] defs=DEFS[,...] chars=ASSET@VRAMWORD[:LENGTH],... [base=VRAMWORD] bpp=N palette=PALETTE@INDEX,... [pages=N]
+#   a level preview in the gallery (book: Assets, Editing a level): the
+#   side-view map MAP drawn through its metatiles DEFS (each placed by its
+#   first= number), N pages per row (default 8), or the top-down map from
+#   its four block map streams and block definitions; the characters and
+#   colours as for `preview` (LENGTH: only that many bytes of the asset,
+#   hex; asm:LABEL: a palette block left inline in src/).
+
+# The side-view stages: the stage's BG characters (ptrs_stage_load_lists,
+# first layout; BG12NBA $00: characters from $0000) and palette task
+# (ptrs_stage_palette_tasks); the maps and metatiles of its load_wram list
+# (ptrs_0588ED).  Stage 1: load_list_058B08, palette_task_058B4C.
+level stage1_bg1  map=wram/stage1_bg1_map defs=wram/stage1_bg1_metatiles,wram/stage1_bg1_metatiles_2 chars=gfx/gfx_098000@0000,gfx/gfx_09998E@1000,gfx/gfx_09B32D@2000,gfx/gfx_09CD49@3000 bpp=4 palette=palettes/palette_088150@32,palettes/palette_088F92@0
+level stage1_bg2  map=wram/stage1_bg2_map defs=wram/stage1_bg2_metatiles chars=gfx/gfx_098000@0000,gfx/gfx_09998E@1000,gfx/gfx_09B32D@2000,gfx/gfx_09CD49@3000 bpp=4 palette=palettes/palette_088150@32,palettes/palette_088F92@0
+# Stage 3: load_list_058B85, palette_task_058BE7
+level stage3_bg1  map=wram/stage3_bg1_map defs=wram/stage3_bg1_metatiles,wram/stage3_bg1_metatiles_2 chars=gfx/gfx_0C8000@0000,gfx/gfx_0C98A2@1000,gfx/gfx_0CAFBF@2000,gfx/gfx_0CC65E@3000 bpp=4 palette=palettes/palette_0882F8@32,palettes/palette_088F92@0
+level stage3_bg2  map=wram/stage3_bg2_map defs=wram/stage3_bg2_metatiles chars=gfx/gfx_0C8000@0000,gfx/gfx_0C98A2@1000,gfx/gfx_0CAFBF@2000,gfx/gfx_0CC65E@3000 bpp=4 palette=palettes/palette_0882F8@32,palettes/palette_088F92@0
+# Stage 4: load_list_058C14, palette_task_058C62
+level stage4_bg1  map=wram/stage4_bg1_map defs=wram/stage4_bg1_metatiles chars=gfx/gfx_0F8000@0000,gfx/gfx_0F9460@1000,gfx/gfx_0FAC90@2000,gfx/gfx_0FC8E5@3000 bpp=4 palette=palettes/palette_08843E@0
+level stage4_bg2  map=wram/stage4_bg2_map defs=wram/stage4_bg2_metatiles chars=gfx/gfx_0F8000@0000,gfx/gfx_0F9460@1000,gfx/gfx_0FAC90@2000,gfx/gfx_0FC8E5@3000 bpp=4 palette=palettes/palette_08843E@0
+# Stage 6: load_list_058C97, palette_task_058CCD
+level stage6_bg1  map=wram/stage6_bg1_map defs=wram/stage6_bg1_metatiles,wram/stage6_bg1_metatiles_2 chars=gfx/gfx_108000@0000,gfx/gfx_109C17@1000,gfx/gfx_10B927@2000,gfx/gfx_10D5A2@3000 bpp=4 palette=palettes/palette_088540@32,palettes/palette_088F92@0
+level stage6_bg2  map=wram/stage6_bg2_map defs=wram/stage6_bg2_metatiles chars=gfx/gfx_108000@0000,gfx/gfx_109C17@1000,gfx/gfx_10B927@2000,gfx/gfx_10D5A2@3000 bpp=4 palette=palettes/palette_088540@32,palettes/palette_088F92@0
+# The opening (stage 0): load_list_05A84B's map and metatiles, the
+# characters of load_list_05A7DB, palette_task_05A815
+level opening_bg1 map=wram/opening_bg1_map defs=wram/opening_bg1_metatiles chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 bpp=4 palette=palettes/palette_0889F0@0,palettes/palette_0882B6@128,palettes/palette_088254@208,palettes/palette_088AF6@192
+# The top-down maps (Mode 7): the characters of the type-3 list
+# (load_list_05CF2A, load_list_05CFCF, load_list_05D01F, load_list_05D073:
+# high bytes from VRAM $0000) and the map's palette task; on the boss maps
+# the first frame of the boss's characters (stage2_boss_m7_chars, $600
+# bytes to VRAM $0040; stage5_boss_m7_chars, $280 bytes to VRAM $3200).
+level stage2      map=wram/stage2_block_map_0,wram/stage2_block_map_1,wram/stage2_block_map_2,wram/stage2_block_map_3 defs=wram/stage2_m7_blocks chars=gfx/gfx_13CC02@0000 bpp=8 palette=asm:palette_088C3E@32,palettes/palette_088F92@0,palettes/palette_088F50@128,palettes/palette_088F2E@160,palettes/palette_088F0C@176,palettes/palette_088CE0@192
+level stage2_boss map=wram/stage2_boss_block_map_0,wram/stage2_boss_block_map_1,wram/stage2_boss_block_map_2,wram/stage2_boss_block_map_3 defs=wram/stage2_boss_m7_blocks chars=gfx/gfx_148000@0000,wram/stage2_boss_m7_chars@0040:600 bpp=8 palette=asm:palette_088C3E@32,palettes/palette_088F92@0,palettes/palette_088D82@128,palettes/palette_088F0C@176,palettes/palette_088CE0@192
+level stage5      map=wram/stage5_block_map_0,wram/stage5_block_map_1,wram/stage5_block_map_2,wram/stage5_block_map_3 defs=wram/stage5_m7_blocks chars=gfx/gfx_158000@0000 bpp=8 palette=palettes/palette_088DA4@32,palettes/palette_088F92@0,asm:palette_088ECA@128,palettes/palette_088F2E@160,palettes/palette_088F0C@176,palettes/palette_088CE0@192
+level stage5_boss map=wram/stage5_boss_block_map_0,wram/stage5_boss_block_map_1,wram/stage5_boss_block_map_2,wram/stage5_boss_block_map_3 defs=wram/stage5_boss_m7_blocks chars=gfx/gfx_168000@0000,wram/stage5_boss_m7_chars@3200:280 bpp=8 palette=palettes/palette_088DA4@32,palettes/palette_088F92@0,palettes/palette_088E46@128,palettes/palette_088F0C@176,palettes/palette_088CE0@192

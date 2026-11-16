@@ -464,7 +464,15 @@ def _plural(n, word):
 
 
 def _tiles_note(asset, n):
-    """' (N tiles of FMT + T bytes)' for a PNG asset."""
+    """' (N tiles of FMT + T bytes)' for a PNG asset; ' (N metatiles)',
+    ' (N pages)' ... for a level text (tools/levelmap.py)."""
+    if getattr(asset, "level", None):
+        import levelmap
+        unit, name = levelmap.FORMATS[asset.level][1:]
+        tail = len(bytes.fromhex(asset.options.get("tail", "")))
+        whole, rest = divmod(n - tail, unit)
+        extra = (f" + {rest} bytes" if rest else "") + (f" + {tail} tail" if tail else "")
+        return f" ({_plural(whole, name)}{extra})"
     if not asset.png:
         return ""
     import snesgfx
