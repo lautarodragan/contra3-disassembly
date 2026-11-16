@@ -163,12 +163,16 @@ def test_raw_sound_block_must_match_its_size_word(tmp_path):
 def test_raw_song_too_big_is_rejected(tmp_path, manifest):
     # an uncompressed song (its size word is <label>_size, computed): the
     # song area is $3000-$4FFF, the sample directory is at $5000
-    root, a = scratch(tmp_path, manifest, "sound/spc_song_boss")
-    assert a.options["max"] == "$2000"
-    open(os.path.join(root, a.source), "wb").write(bytes(0x2000))
-    assert errors(root) == []
-    open(os.path.join(root, a.source), "ab").write(b"\x00")
-    errs = errors(root)
+    assert manifest["sound/spc_song_boss"].options["max"] == "$2000"
+    root = tmp_path / "root"
+    (root / "assets" / "sound").mkdir(parents=True)
+    (root / "assets" / "manifest.txt").write_text("sound/spc_song_boss raw max=$2000\n")
+    data = root / "assets" / "sound" / "spc_song_boss.bin"
+    found = assets.read_manifest(str(root))
+    data.write_bytes(bytes(0x2000))
+    assert asset_limits.check(found, str(root), SRC) == []
+    data.write_bytes(bytes(0x2001))
+    errs = asset_limits.check(found, str(root), SRC)
     assert len(errs) == 1 and "8,193 bytes" in errs[0] and "$5000" in errs[0]
 
 
