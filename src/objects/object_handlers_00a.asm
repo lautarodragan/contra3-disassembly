@@ -95,13 +95,14 @@ update_bg2_screen_size_trigger:
 	sta	OBJ_FLAGS,x
 	rtl
 
-; Object type $28: the handler is a fill routine (also called directly as a
-; helper); probably never used as a type. Stores zp_02 at $7E:Y, A times,
+; Object type $28's entry in tbl_object_types points at this fill routine,
+; but nothing creates a type $28 (no spawn list entry, no code writes it):
+; it is only called directly, as a helper. Stores zp_02 at $7E:Y, A times,
 ; Y += zp_04 each time. Its callers write collision words (TILE_*) into the
 ; collision map at $7E:4000: a column of TILE_WALL for the stage 1 boss's
 ; right wall, a column of TILE_CLIMBABLE for the stage 3 robot's cables
 ; (stage3_robot_cables_state_02) and a row for the ending's floor.
-update_object_type_28:
+fill_wram_words:
 	phx
 	tax
 	sep	#$20
@@ -130,9 +131,14 @@ update_object_type_28:
 	plx
 	rtl
 
-; Object type $08: invisible stage trigger (stage 1 section 4): stops
-; bg1_autoscroll, sets bg1_scroll_mode = 4 and adjusts the scroll target.
-update_object_type_08:
+; Object type $08: invisible stage trigger (spawn lists of stages 1, 3 and
+; 6, in front of the mid-bosses and bosses): stops the BG1 scroll
+; (bg1_autoscroll off, bg1_scroll_mode = 4, bg1_scroll_stop) and rounds the
+; scroll position (bg1_x or bg1_y, through spawn_scroll_var) to the nearest
+; 256-pixel page, which becomes spawn_last_page. Objects of those places
+; wait for bg1_scroll_mode = 4 (among others the barricade, the mid-boss
+; tank, the bomber raid and the spiked climber).
+update_scroll_stop_trigger:
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	stz	a:bg1_autoscroll
@@ -269,29 +275,36 @@ update_song_change_trigger:
 	sta	a:song_change_set
 	rtl
 
-; Object type $06: stage 1 scripted scene (section 9): BG/HDMA effect with 9
-; states. Not identified.
-update_object_type_06:
+; Object type $06: the bomber raid of stage 1 (section 9, slot $09C0; seen
+; in the emulator). Waits for the scroll stop (state 0), redraws the BG
+; through the VRAM queue (states 1-2), sets up Mode 7 and HDMA (state 3);
+; a bomber plane drawn in Mode 7 flies in and grows (m7a/m7d, states 4-5),
+; drops two bombs (type $0C) and the street blows up (state 6: shake,
+; explosions); then the street burns (state 7: bomber_raid_animate_fire,
+; kill_players_outside kills players who fall into the fire) through the
+; fire section, until type $2A sets state 8, which dissolves the fire band
+; (a dither of the tilemap at $7E:A000) and deletes the object.
+update_bomber_raid:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_06_states,x
+	lda	f:tbl_bomber_raid_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_06_states:
-	.addr	object_type_06_state_00
-	.addr	object_type_06_state_01
-	.addr	object_type_06_state_02
-	.addr	object_type_06_state_03
-	.addr	object_type_06_state_04
-	.addr	object_type_06_state_05
-	.addr	object_type_06_state_06
-	.addr	object_type_06_state_07
-	.addr	object_type_06_state_08
+tbl_bomber_raid_states:
+	.addr	bomber_raid_state_00
+	.addr	bomber_raid_state_01
+	.addr	bomber_raid_state_02
+	.addr	bomber_raid_state_03
+	.addr	bomber_raid_state_04
+	.addr	bomber_raid_state_05
+	.addr	bomber_raid_state_06
+	.addr	bomber_raid_state_07
+	.addr	bomber_raid_state_08
 
-object_type_06_state_00:
+bomber_raid_state_00:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	@return
@@ -299,21 +312,21 @@ object_type_06_state_00:
 @return:
 	rtl
 
-object_type_06_state_01:
+bomber_raid_state_01:
 	lda	#$003F
-	sta	a:obj06_dither_step
+	sta	a:bomber_raid_dither_step
 	lda	#$A000	; [num]
-	sta	a:obj06_attr_ptr
+	sta	a:bomber_raid_attr_ptr
 	lda	#$F300	; [num]
-	sta	a:obj06_map_ptr
-	stz	a:obj06_vram_offset
-	stz	a:obj06_block_column
+	sta	a:bomber_raid_map_ptr
+	stz	a:bomber_raid_vram_offset
+	stz	a:bomber_raid_block_column
 	inc	OBJ_STATE,x
 	lda	#$0005
 	sta	a:bg2_scroll_mode
 	rtl
 
-object_type_06_state_02:
+bomber_raid_state_02:
 	lda	#$0008
 	sta	zp_08
 	stx	zp_FE
@@ -324,21 +337,21 @@ object_type_06_state_02:
 	plb
 	rep	#$20
 	.a16
-	ldy	a:obj06_vram_offset
+	ldy	a:bomber_raid_vram_offset
 	jsl	f:begin_vram_transfer
 @block_loop:
-	lda	a:obj06_map_ptr
+	lda	a:bomber_raid_map_ptr
 	tay
 	lda	a:$0000,y
 	and	#$3FFF
 	clc
-	adc	a:obj06_block_column
+	adc	a:bomber_raid_block_column
 	tay
 @loop:
 	lda	a:$5000,y
 	and	#$00FF
 	sta	zp_0A
-	ldx	a:obj06_attr_ptr
+	ldx	a:bomber_raid_attr_ptr
 	lda	a:$0000,x
 	and	#$00FF
 	xba
@@ -347,39 +360,39 @@ object_type_06_state_02:
 	sta	a:$0000,x
 	inc	vram_queue_data_ptr
 	inc	vram_queue_data_ptr
-	inc	a:obj06_attr_ptr
+	inc	a:bomber_raid_attr_ptr
 	iny
 	iny
 	tya
 	and	#$0007
 	bne	@loop
-	inc	a:obj06_map_ptr
-	inc	a:obj06_map_ptr
-	lda	a:obj06_map_ptr
+	inc	a:bomber_raid_map_ptr
+	inc	a:bomber_raid_map_ptr
+	lda	a:bomber_raid_map_ptr
 	and	#$000F
 	bne	@next_block
 	clc
-	lda	a:obj06_map_ptr
+	lda	a:bomber_raid_map_ptr
 	adc	#$0070
-	sta	a:obj06_map_ptr
+	sta	a:bomber_raid_map_ptr
 	cmp	#$F500	; [num]
 	bcc	@next_block
 	sec
 	sbc	#$0200
-	sta	a:obj06_map_ptr
+	sta	a:bomber_raid_map_ptr
 	clc
-	lda	a:obj06_block_column
+	lda	a:bomber_raid_block_column
 	adc	#$0008
 	cmp	#$0020
 	bcc	@store_column
 	lda	#$0000
 @store_column:
-	sta	a:obj06_block_column
+	sta	a:bomber_raid_block_column
 	bne	@next_block
 	clc
-	lda	a:obj06_map_ptr
+	lda	a:bomber_raid_map_ptr
 	adc	#$0010
-	sta	a:obj06_map_ptr
+	sta	a:bomber_raid_map_ptr
 @next_block:
 	dec	zp_08
 	beq	@done
@@ -395,16 +408,16 @@ object_type_06_state_02:
 	.a16
 	ldx	zp_FE
 	clc
-	lda	a:obj06_vram_offset
+	lda	a:bomber_raid_vram_offset
 	adc	#$0020
-	sta	a:obj06_vram_offset
+	sta	a:bomber_raid_vram_offset
 	cmp	#$1000
 	bcc	@return
 	inc	$12,x
 @return:
 	rtl
 
-object_type_06_state_03:
+bomber_raid_state_03:
 	stx	zp_FC
 	lda	#$0005
 	sta	hdma_preset
@@ -486,23 +499,23 @@ object_type_06_state_03:
 	jsl	f:queue_sound
 	lda	#$0080
 	sta	a:bg1_vel_y
-object_type_06_return:
+bomber_raid_return:
 	rtl
 
-object_type_06_state_04:
+bomber_raid_state_04:
 	lda	a:bg1_vel_y
 	bmi	@check_zoom
 	dec	a:bg1_vel_y
-	bpl	object_type_06_return
+	bpl	bomber_raid_return
 @check_zoom:
 	lda	a:m7d_shadow
 	cmp	#$0280
-	bcs	object_type_06_state_05
+	bcs	bomber_raid_state_05
 	lda	#$0046
 	jsl	f:queue_sound
 	inc	$12,x
 	lda	a:obj_slots+2*OBJ_SIZE+OBJ_TYPE
-	bne	object_type_06_state_05
+	bne	bomber_raid_state_05
 	phx
 	ldy	#$0300
 	ldx	#$0004
@@ -534,7 +547,7 @@ object_type_06_state_04:
 	bne	@loop
 	plx
 
-object_type_06_state_05:
+bomber_raid_state_05:
 	sec
 	lda	a:m7a_shadow
 	sbc	#$0008
@@ -595,7 +608,7 @@ object_type_06_state_05:
 	.a16
 	rtl
 
-object_type_06_state_06:
+bomber_raid_state_06:
 	lda	#$0003
 	sta	a:shake_timer
 	inc	OBJ_TIMER,x
@@ -639,12 +652,12 @@ object_type_06_state_06:
 @return:
 	rtl
 
-object_type_06_state_08:
+bomber_raid_state_08:
 	phx
 	lda	#$0038
 	sta	zp_02
-	ldx	a:obj06_dither_step
-	lda	a:object_type_06_dither_offsets,x
+	ldx	a:bomber_raid_dither_step
+	lda	a:bomber_raid_dither_offsets,x
 	and	#$00FF
 	tay
 	sep	#$20
@@ -658,28 +671,28 @@ object_type_06_state_08:
 @loop:
 	.a8
 	lda	a:$A000,y
-	ora	f:object_type_06_dither_masks,x
+	ora	f:bomber_raid_dither_masks,x
 	sta	a:$A000,y
 	lda	a:$A001,y
-	ora	f:object_type_06_dither_masks,x
+	ora	f:bomber_raid_dither_masks,x
 	sta	a:$A001,y
 	lda	a:$A380,y
-	ora	f:object_type_06_dither_masks,x
+	ora	f:bomber_raid_dither_masks,x
 	sta	a:$A380,y
 	lda	a:$A381,y
-	ora	f:object_type_06_dither_masks,x
+	ora	f:bomber_raid_dither_masks,x
 	sta	a:$A381,y
 	lda	a:$A700,y
-	ora	f:object_type_06_dither_masks,x
+	ora	f:bomber_raid_dither_masks,x
 	sta	a:$A700,y
 	lda	a:$A701,y
-	ora	f:object_type_06_dither_masks,x
+	ora	f:bomber_raid_dither_masks,x
 	sta	a:$A701,y
 	lda	a:$AA80,y
-	ora	f:object_type_06_dither_masks,x
+	ora	f:bomber_raid_dither_masks,x
 	sta	a:$AA80,y
 	lda	a:$AA81,y
-	ora	f:object_type_06_dither_masks,x
+	ora	f:bomber_raid_dither_masks,x
 	sta	a:$AA81,y
 	rep	#$20
 	.a16
@@ -703,7 +716,7 @@ object_type_06_state_08:
 	plx
 	lda	stage_frame_odd
 	bne	@not_done
-	dec	a:obj06_dither_step
+	dec	a:bomber_raid_dither_step
 	bne	@not_done
 	lda	#$8000	; [num]
 	sta	$16,x
@@ -711,15 +724,15 @@ object_type_06_state_08:
 	stz	a:respawn_mode
 	rtl
 @not_done:
-	bra	update_object_type_06_bg
+	bra	bomber_raid_animate_fire
 
-object_type_06_state_07:
+bomber_raid_state_07:
 	lda	#$00C0
 	sta	zp_00
 	stz	zp_02
 	lda	#$0000
 	jsl	f:kill_players_outside
-update_object_type_06_bg:
+bomber_raid_animate_fire:
 	lda	a:bg2_x
 	sta	f:hdma_tables+$21
 	sta	f:hdma_tables+$24
@@ -731,7 +744,7 @@ update_object_type_06_bg:
 	asl	a
 	and	#$0006
 	tay
-	lda	a:object_type_06_tile_frames,y
+	lda	a:bomber_raid_fire_tile_frames,y
 	sta	bg_dma_src
 	lda	#$0380
 	sta	bg_dma_size
@@ -739,13 +752,15 @@ update_object_type_06_bg:
 	sta	bg_dma_vram_addr
 	rtl
 
-; Object type $2A: advances the state of the type $06 object and deletes the
-; type $2F one. Not identified.
-update_object_type_2A:
+; Object type $2A: invisible stage trigger at the end of stage 1's fire
+; section (spawn list page 25; seen in the emulator): moves the bomber raid
+; (type $06) from state 7 (burning) to state 8 (the fire dissolves) and
+; deletes the fire jet (type $2F) in slot $0280 or $02C0.
+update_bomber_raid_end_trigger:
 	ldy	#$09C0
 @loop:
 	lda	a:$0010,y
-	cmp	#$0006
+	cmp	#OBJT_BOMBER_RAID
 	beq	@found_type_06
 	; (not executed in the CDL traces)
 	tya
@@ -763,7 +778,7 @@ update_object_type_2A:
 	ldy	#$0280
 @loop2:
 	lda	a:$0010,y
-	cmp	#$002F
+	cmp	#OBJT_FIRE_JET
 	beq	@found_type_2f
 	; (not executed in the CDL traces)
 	ldy	#$02C0
@@ -826,9 +841,13 @@ update_bomber_bomb:
 	sta	$1A,x
 	rtl
 
-; Object type $3C: stage 3 BG effect (palette cycling, line scroll table at
-; $7E:E000). Not identified.
-update_object_type_3C:
+; Object type $3C: put in slot 27 by layout_init_stage3 (seen in the
+; emulator at the start of stage 3): every 8 frames DMAs one of 4 tile
+; frames (stage3_funnel_cloud_tile_frames) to VRAM $0E80, which makes the
+; funnel clouds hanging from the sky twist; also sets a scroll split at
+; bg2_y + $200 with a line-scroll ramp on BG2 ($7E:E000) until that falls
+; below $90, then clears it and deletes itself.
+update_stage3_funnel_clouds:
 	lda	stage_frame_counter
 	bit	#$0007
 	bne	@scroll_split
@@ -836,7 +855,7 @@ update_object_type_3C:
 	lsr	a
 	lsr	a
 	tay
-	lda	a:object_type_3C_tile_frames,y
+	lda	a:stage3_funnel_cloud_tile_frames,y
 	sta	bg_dma_src
 	lda	#$02E0
 	sta	bg_dma_size

@@ -634,7 +634,7 @@ stage3_robot_cables_state_02:
 	adc	#$4402
 	tay
 	lda	#$000A
-	jml	f:update_object_type_28
+	jml	f:fill_wram_words
 @draw_cable:
 	lda	OBJ_TIMER,x
 	bit	#$0007
@@ -5372,7 +5372,7 @@ face_boss_spawn_soldier_at_lost_head:
 face_boss_spawn_left_soldier:
 	jsl	f:find_free_slot_from_y
 	bcs	@return
-	lda	#$0024
+	lda	#OBJT_FACE_BOSS_SOLDIER
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -5391,7 +5391,7 @@ face_boss_spawn_left_soldier:
 face_boss_spawn_right_soldier:
 	jsl	f:find_free_slot_from_y
 	bcs	@return
-	lda	#$0024
+	lda	#OBJT_FACE_BOSS_SOLDIER
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y

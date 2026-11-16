@@ -427,9 +427,10 @@ dying_soldier_state_01:
 	sta	$1E,x
 	rtl
 
-; Object type $19: plays an animation and deletes itself; never run in the
-; CDL traces.
-update_object_type_19:
+; Object type $19: nothing creates it (no spawn list entry, no code writes
+; it; never run in the CDL traces). Plays anim_05C7A6 and deletes itself;
+; spawned by hand in the emulator: a smoke puff, then a small burst.
+update_unused_puff_effect:
 	; (not executed in the CDL traces)
 	lda	OBJ_STATE,x
 	bne	@wait_anim
@@ -572,9 +573,11 @@ unused_apply_hit_flash:
 	stz	$26,x
 	rtl
 
-; Object type $2F: stage 1 burning section: spawns type $30 (falling fire).
-; Not identified exactly.
-update_object_type_2F:
+; Object type $2F: invisible fire jet in stage 1's fire section (seen in
+; the emulator): every fire_jet_delays[difficulty] frames (sound $22, the
+; screen shaking) spews $24 flames (type $30), one every 4 frames, in an
+; arc up and to the right. Deleted by type $2A.
+update_fire_jet:
 	lda	OBJ_STATE,x
 	bne	@active
 	lda	#$0004
@@ -603,7 +606,7 @@ update_object_type_2F:
 	ldy	difficulty
 	lda	#$0024
 	sta	$32,x
-	lda	a:object_type_2F_delays,y
+	lda	a:fire_jet_delays,y
 	sta	$24,x
 	lda	#$0022
 	jsl	f:queue_sound
@@ -616,7 +619,7 @@ update_object_type_2F:
 	jsl	f:find_free_slot_y_down
 	bcc	@return
 	dec	$32,x
-	lda	#$0030
+	lda	#OBJT_FIRE_JET_FLAME
 	sta	a:$0010,y
 	lda	#$8000	; [num]
 	sta	a:$0018,y
@@ -626,8 +629,11 @@ update_object_type_2F:
 	sta	a:$001E,y
 	bra	place_fire_object
 
-; Object type $2B: stage 1 burning section. Not identified.
-update_object_type_2B:
+; Object type $2B: fireball hopping out of stage 1's fire (seen in the
+; emulator): small hops, and a big jump (sound $23) every field $3A
+; landings; not a target, but leaves a trail of harmful falling flames
+; (type $2E).
+update_hopping_fireball:
 	lda	OBJ_STATE,x
 	bne	@active
 	lda	$3A,x
@@ -670,7 +676,7 @@ update_object_type_2B:
 	ldy	#$08C0
 	jsl	f:find_free_slot_y_down
 	bcc	place_fire_object_return
-	lda	#$002E
+	lda	#OBJT_FALLING_FLAME
 	sta	a:$0010,y
 	lda	#$0004
 	sta	a:$001E,y
@@ -694,9 +700,9 @@ place_fire_object:
 place_fire_object_return:
 	rtl
 
-; Object type $30: stage 1 burning section: falling fire. Not identified
-; exactly.
-update_object_type_30:
+; Object type $30: flame of the fire jet (type $2F; seen in the emulator):
+; gravity, then as type $2E.
+update_fire_jet_flame:
 	clc
 	lda	OBJ_Y_VEL_SUB,x
 	adc	#$3000
@@ -705,9 +711,10 @@ update_object_type_30:
 	adc	#$0000
 	sta	OBJ_Y_VEL,x
 
-; Object type $2E: stage 1 burning section: fireball. Not identified
-; exactly.
-update_object_type_2E:
+; Object type $2E: harmful flame left by the hopping fireball (type $2B):
+; falls back into the fire; at y >= $B8 it vanishes (even slots) or bursts
+; into an effect (odd slots). Also the end of type $30.
+update_falling_flame:
 	lda	OBJ_Y,x
 	cmp	#$00B8
 	bcc	@return
@@ -741,9 +748,10 @@ update_object_type_2E:
 @return:
 	rtl
 
-; Object type $31: stage 1 burning section: flying fireball enemy, HP 64.
-; Not identified exactly.
-update_object_type_31:
+; Object type $31: fireball leaping out of stage 1's fire (HP 64; seen in
+; the emulator): burns in the fire for field $3A frames, jumps up with
+; y speed field $3B trailing flames, falls back and bursts, again.
+update_leaping_fireball:
 	lda	OBJ_STATE,x
 	bne	@active
 	ldy	difficulty
@@ -757,7 +765,7 @@ update_object_type_31:
 	lda	#$0004
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
-	lda	a:object_type_31_hp,y
+	lda	a:leaping_fireball_hp,y
 	sta	OBJ_HP,x
 	lda	#$0010
 	sta	OBJ_HITBOX_W,x
@@ -855,8 +863,9 @@ update_object_type_31:
 @return2:
 	rtl
 
-; Object type $32: stage 1 section 10: fireballs. Not identified exactly.
-update_object_type_32:
+; Object type $32: fireball thrown up by the fire eruption (type $33; seen
+; in the emulator): falls with gravity and bursts on the floor or when shot.
+update_eruption_fireball:
 	lda	OBJ_HP,x
 	bmi	@explode
 	clc
@@ -882,8 +891,12 @@ update_object_type_32:
 @return:
 	rtl
 
-; Object type $33: stage 1 section 10. Not identified.
-update_object_type_33:
+; Object type $33: invisible fire eruption at the start of stage 1's fire
+; section (section 10; seen in the emulator): with the screen shaking,
+; throws fireballs (type $32) and explosion effects up, in alternating
+; weak and strong 256-frame phases (sound $24), until it scrolls off to
+; the left.
+update_fire_eruption:
 	lda	OBJ_FLAGS,x
 	bne	@active
 	lda	#$0003
@@ -933,7 +946,7 @@ update_object_type_33:
 	sta	a:$0020,y
 	bra	@place
 @fireball:
-	lda	#$0032
+	lda	#OBJT_ERUPTION_FIREBALL
 	sta	a:$0010,y
 	lda	#.loword(anim_05C802)
 	sta	a:$0020,y
@@ -972,15 +985,17 @@ update_object_type_33:
 	plx
 	rtl
 
-; Object type $2C: stage 1 burning section: fire pillar. Not identified
-; exactly.
-update_object_type_2C:
+; Object type $2C: invisible flame geyser in the floor (stage 1 section 7,
+; before the mid-boss tank; seen in the emulator): every field $3A -
+; flame_geyser_delay_cuts[difficulty] frames (sound $21) it shoots flames
+; (type $2D) up, faster then slower.
+update_flame_geyser:
 	lda	OBJ_STATE,x
 	bne	@active
 	ldy	difficulty
 	sec
 	lda	$3A,x
-	sbc	a:object_type_2C_delay_cuts,y
+	sbc	a:flame_geyser_delay_cuts,y
 	sta	$30,x
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
@@ -1038,7 +1053,7 @@ update_object_type_2C:
 	sta	a:$000E,y
 	lda	$0A,x
 	sta	a:$000A,y
-	lda	#$002D
+	lda	#OBJT_FLAME_GEYSER_FLAME
 	sta	a:$0010,y
 	lda	#$180F
 	sta	a:$0016,y
@@ -1055,8 +1070,11 @@ update_object_type_2C:
 @return:
 	rtl
 
-; Object type $2D: stage 1 burning section: fire. Not identified exactly.
-update_object_type_2D:
+; Object type $2D: harmful flame of a flame geyser (type $2C): rises and
+; falls with gravity, animated by update_effect. One touching the player
+; tank destroys it at once (player_tank_push_and_damage; never happened in
+; the CDL traces).
+update_flame_geyser_flame:
 	clc
 	lda	OBJ_Y_VEL_SUB,x
 	adc	#$C000
@@ -1066,25 +1084,29 @@ update_object_type_2D:
 	sta	OBJ_Y_VEL,x
 	jml	f:update_effect
 
-; Object type $34: stage 1 section 2. Not identified.
-update_object_type_34:
+; Object type $34: the sniper's bunker on the girders of stage 1 (section
+; 2; seen in the emulator), invisible: while the window sniper (type $17,
+; slot $0900) lives it sends foot soldiers out at random intervals; when
+; the sniper dies, the bunker's tiles are replaced and it blows up
+; (shake_and_explode_state, explosions).
+update_sniper_bunker:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_34_states,x
+	lda	f:tbl_sniper_bunker_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_34_states:
-	.addr	object_type_34_state_00
-	.addr	object_type_34_state_01
-	.addr	object_type_34_state_02
-	.addr	object_type_34_state_02
+tbl_sniper_bunker_states:
+	.addr	sniper_bunker_state_00
+	.addr	sniper_bunker_state_01
+	.addr	sniper_bunker_state_02
+	.addr	sniper_bunker_state_02
 	.addr	shake_and_explode_state
-	.addr	object_type_34_state_05
+	.addr	sniper_bunker_state_05
 
-object_type_34_state_00:
+sniper_bunker_state_00:
 	inc	OBJ_STATE,x
 	lda	#$0003
 	sta	OBJ_FLAGS,x
@@ -1095,9 +1117,9 @@ object_type_34_state_00:
 	sta	$36,x
 	rtl
 
-object_type_34_state_01:
+sniper_bunker_state_01:
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
-	cmp	#$0017
+	cmp	#OBJT_WINDOW_SNIPER
 	bne	@return
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_HP
 	bpl	@spawn_soldiers
@@ -1132,7 +1154,7 @@ object_type_34_state_01:
 @return2:
 	rtl
 
-object_type_34_state_02:
+sniper_bunker_state_02:
 	lda	stage_frame_mod4
 	cmp	#$0002
 	bne	@return
@@ -1153,7 +1175,7 @@ object_type_34_state_02:
 @return:
 	rtl
 
-object_type_34_state_05:
+sniper_bunker_state_05:
 	lda	stage_frame_mod8
 	bne	@return
 	lda	OBJ_X,x
@@ -3513,8 +3535,11 @@ drop_object_to_floor:
 	sta	a:$000E,y
 	rts
 
-; Object type $24: stage 6 alien soldier (seen in the emulator).
-update_object_type_24:
+; Object type $24: alien soldier dropped by the face boss (stage 6) where
+; one of its side heads was (face_boss_spawn_soldier_at_lost_head; seen in
+; the emulator): falls to the floor, then walks like type $56 (its HP and
+; state 2 are type $56's).
+update_face_boss_soldier:
 	lda	OBJ_HP,x
 	bpl	@dispatch
 	stz	OBJ_HP,x
@@ -3527,16 +3552,16 @@ update_object_type_24:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_24_states,x
+	lda	f:tbl_face_boss_soldier_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_24_states:
-	.addr	object_type_24_state_00
-	.addr	object_type_24_state_01
+tbl_face_boss_soldier_states:
+	.addr	face_boss_soldier_state_00
+	.addr	face_boss_soldier_state_01
 	.addr	alien_soldier_state_02
 
-object_type_24_state_00:
+face_boss_soldier_state_00:
 	ldy	difficulty
 	lda	#$001F
 	sta	OBJ_FLAGS,x
@@ -3573,7 +3598,7 @@ object_type_24_state_00:
 	inc	$12,x
 	rtl
 
-object_type_24_state_01:
+face_boss_soldier_state_01:
 	jsl	f:object_follow_floor
 	lda	zp_FC
 	bne	@return
@@ -3809,8 +3834,11 @@ stage3_spiked_climber_state_07:
 	sta	a:obj_slots+5*OBJ_SIZE+OBJ_X_VEL
 	rtl
 
-; Object type $3E: does nothing (rtl); stage 3 spiked climber's arm.
-update_object_type_3E:
+; Object type $3E: the spiked climber's spiked body (slot $0340, made by
+; spiked_climber_init_part; seen in the emulator): harmful, invulnerable;
+; the handler does nothing (spiked_climber_place_parts moves it). State 8
+; of the climber turns the slot into type $5A.
+update_stage3_spiked_climber_body:
 	rtl
 
 ; Object type $40: stage 3 spiked climber, its weak point (HP 80).
@@ -3835,15 +3863,18 @@ update_stage3_spiked_climber_core:
 	sty	a:obj_slots+6*OBJ_SIZE+OBJ_ATTR
 	rtl
 
-; Object type $3F: stage 3 spiked climber, spike arm.
-update_object_type_3F:
+; Object type $3F: the spike the spiked climber thrusts up from its top
+; (slot $0380; seen in the emulator): extends and retracts
+; (stage3_spiked_climber_move_spike, boss_work_0 = its y offset), always
+; retracted on EASY and once the core is destroyed.
+update_stage3_spiked_climber_spike:
 	ldy	#.loword(metasprite_06B8B6)
 	lda	stage_frame_bit1
 	bne	@set_sprite
 	ldy	#.loword(metasprite_06B8C3)
 @set_sprite:
 	sty	$00,x
-	jsr	a:object_type_3F_move_spikes
+	jsr	a:stage3_spiked_climber_move_spike
 	rtl
 
 spiked_climber_init_part:
@@ -3912,7 +3943,7 @@ spiked_climber_place_parts:
 	sta	a:obj_slots+6*OBJ_SIZE+OBJ_Y
 	rts
 
-object_type_3F_move_spikes:
+stage3_spiked_climber_move_spike:
 	lda	a:boss_work_6
 	bne	@retract
 	inc	$24,x

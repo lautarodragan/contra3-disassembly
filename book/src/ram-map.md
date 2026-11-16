@@ -146,8 +146,8 @@ missile), `hang_lock_buttons`, `bomb_coldata_mask` / `bomb_coldata_bits`
 (`queue_sound_throttled`), `boss_hit_sound_timer`; the stage 1 tank's
 `tank_moving` / `tank_move_dx`; the stage 4 airship section's
 `bg1_vel_x` ... `bg1_moved_y` and `airship_spawn_index`; the ending's
-`ending_arm_lengths`; the work variables of object type `$06`
-(`obj06_map_ptr` ...); and the debug leftovers `debug_coldata`,
+`ending_arm_lengths`; the work variables of the bomber raid (object type `$06`,
+`bomber_raid_map_ptr` ...); and the debug leftovers `debug_coldata`,
 `debug_window_test`.
 
 ## Top-down stage variables

@@ -68,7 +68,7 @@ stage1_boss_controller_state_00:
 	sta	zp_02
 	ldy	#$4830
 	lda	#$0018
-	jml	f:update_object_type_28
+	jml	f:fill_wram_words
 
 stage1_boss_controller_state_01:
 	lda	a:bg1_scroll_mode

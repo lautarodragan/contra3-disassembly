@@ -45,7 +45,7 @@ top of the BG tile range. For the slope classes the tile's horizontal flip
 Stage 4 (`stage_dp_params_058A5F`, first threshold `$400`) has no BG
 collision at all: the hover bikes and the missiles are objects. A few
 objects also write words directly with the fill helper
-`update_object_type_28`: a column of `$A000` at the right edge of the stage
+`fill_wram_words`: a column of `$A000` at the right edge of the stage
 1 boss arena (`stage1_boss_controller_state_00`), a column of `$2002` for the
 stage 3 robot's cables, a row of `$2002` in the ending.
 

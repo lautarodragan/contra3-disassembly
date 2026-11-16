@@ -548,7 +548,7 @@ ending_sequence_state_21:
 	lda	#$0002
 	sta	zp_04
 	lda	#$0020
-	jsl	f:update_object_type_28
+	jsl	f:fill_wram_words
 	lda	#$0060
 	sta	OBJ_TIMER,x
 	lda	#$0002

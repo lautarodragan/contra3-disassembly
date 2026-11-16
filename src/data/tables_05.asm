@@ -1500,20 +1500,20 @@ song_change_trigger_modes:
 	; CDL: not accessed
 	.byte	$04, $00
 ; update_song_change_trigger, by field $3A: song_change_set.
-; object_type_06_state_04 also reads it at +2/+4 for the x of the bomber's two
+; bomber_raid_state_04 also reads it at +2/+4 for the x of the bomber's two
 ; bombs ($70, $88).
 song_change_trigger_sets:
-	; CDL: read by object_type_06_state_04; partly not accessed
+	; CDL: read by bomber_raid_state_04; partly not accessed
 	.addr	song_set_05F48A
 	.byte	$70, $00
-; object_type_06_state_04 reads it as data_059F0C,x with x = 4, 2 (the
+; bomber_raid_state_04 reads it as data_059F0C,x with x = 4, 2 (the
 ; bomber's two bombs): the words at +4/+2 ($0000, $FFFF) become field $34, the
 ; bomb's horizontal direction (negative: drifts left, update_bomber_bomb);
 ; their x comes from song_change_trigger_sets,x. Kept as a number: the label
 ; does not start a table of its own.
 data_059F0C:
 	; LAYOUT: read on from song_change_trigger_sets (lda a:song_change_trigger_sets,x)
-	; CDL: read by object_type_06_state_04, update_bomber_bomb, update_objects; partly not accessed
+	; CDL: read by bomber_raid_state_04, update_bomber_bomb, update_objects; partly not accessed
 	.byte	$88, $00, $FF, $FF, $00, $00
 ; The bomber's bomb (update_bomber_bomb) keeps in the third word the script
 ; of the fire effects it trails, not a metasprite.
@@ -1522,31 +1522,31 @@ anim_059F12:
 	anim_frame	$0010, metasprite_06B5C0, anim_05C5B8
 	anim_frame	$6000, metasprite_06B5C5, anim_05C516
 	anim_end	metasprite_06B5C5, anim_05C516
-; object_type_06_state_08: bit masks ORed into the BG graphics in WRAM
-; ($7E:A000, 4 frames apart), one step per obj06_dither_step countdown; the pixels
+; bomber_raid_state_08: bit masks ORed into the BG graphics in WRAM
+; ($7E:A000, 4 frames apart), one step per bomber_raid_dither_step countdown; the pixels
 ; fill in a dither pattern.
-object_type_06_dither_masks:
-	; CDL: read by object_type_06_state_08; partly not accessed
+bomber_raid_dither_masks:
+	; CDL: read by bomber_raid_state_08; partly not accessed
 	.byte	$80, $08, $80, $08, $10, $01, $10, $01, $40, $04, $40, $04, $20, $02, $20, $02
 	.byte	$20, $02, $20, $02, $40, $04, $40, $04, $10, $01, $10, $01, $80, $08, $80, $08
 	.byte	$40, $04, $40, $04, $80, $08, $80, $08, $20, $02, $20, $02, $10, $01, $10, $01
 	.byte	$10, $01, $10, $01, $20, $02, $20, $02, $80, $08, $80, $08, $40, $04, $40, $04
-; object_type_06_state_08: byte offset in the tile rows for each step (bytes).
-object_type_06_dither_offsets:
-	; CDL: read by object_type_06_state_08; partly not accessed
+; bomber_raid_state_08: byte offset in the tile rows for each step (bytes).
+bomber_raid_dither_offsets:
+	; CDL: read by bomber_raid_state_08; partly not accessed
 	.byte	$00, $00, $08, $08, $04, $04, $0C, $0C, $02, $02, $0A, $0A, $06, $06, $0E, $0E
 	.byte	$00, $00, $08, $08, $04, $04, $0C, $0C, $02, $02, $0A, $0A, $06, $06, $0E, $0E
 	.byte	$00, $00, $08, $08, $04, $04, $0C, $0C, $02, $02, $0A, $0A, $06, $06, $0E, $0E
 	.byte	$00, $00, $08, $08, $04, $04, $0C, $0C, $02, $02, $0A, $0A, $06, $06, $0E, $0E
-; object_type_06_state_07: bg_dma_src of 4 frames of animated BG tiles ($380
+; bomber_raid_state_07: bg_dma_src of 4 frames of animated BG tiles ($380
 ; bytes to VRAM $2E40).
-object_type_06_tile_frames:
-	; CDL: read by object_type_06_state_07
+bomber_raid_fire_tile_frames:
+	; CDL: read by bomber_raid_state_07
 	.byte	$00, $A0, $80, $A3, $00, $A7, $80, $AA
-; update_object_type_3C: bg_dma_src of 4 frames of animated BG tiles ($2E0
+; update_stage3_funnel_clouds: bg_dma_src of 4 frames of animated BG tiles ($2E0
 ; bytes to VRAM $0E80).
-object_type_3C_tile_frames:
-	; CDL: read by update_object_type_3C
+stage3_funnel_cloud_tile_frames:
+	; CDL: read by update_stage3_funnel_clouds
 	.byte	$00, $A0, $00, $A3, $00, $A6, $00, $A9
 load_list_059FBA:
 	; CDL: read by load_data_list, init_loader_context, decompress_chunk (+1 more); DMA / HDMA; partly not accessed
@@ -1848,13 +1848,13 @@ barrier_wobble_offsets:
 tbl_object_types:
 	.faraddr	$000000
 	.faraddr	update_stage1_boss_controller
-	.faraddr	update_object_type_02
+	.faraddr	update_midboss_tank
 	.faraddr	update_bg2_scroll_mode_trigger
-	.faraddr	update_object_type_04
+	.faraddr	update_barricade
 	.faraddr	update_bg1_autoscroll_trigger
-	.faraddr	update_object_type_06
+	.faraddr	update_bomber_raid
 	.faraddr	update_load_list_trigger
-	.faraddr	update_object_type_08
+	.faraddr	update_scroll_stop_trigger
 	.faraddr	update_player_tank
 	.faraddr	update_foot_soldier
 	.faraddr	update_soldier_spawner
@@ -1863,18 +1863,18 @@ tbl_object_types:
 	.faraddr	update_bg1_scroll_mode_trigger
 	.faraddr	update_weapon_capsule
 	.faraddr	update_bouncing_debris
-	.faraddr	update_object_type_11
-	.faraddr	update_object_type_12
+	.faraddr	update_wrecked_car
+	.faraddr	update_grenade_soldier
 	.faraddr	update_grenade
-	.faraddr	update_object_type_14
-	.faraddr	update_object_type_15
-	.faraddr	update_object_type_16
+	.faraddr	update_barricade_core
+	.faraddr	update_barricade_cannon
+	.faraddr	update_barricade_cannonball
 	.faraddr	update_window_sniper
 	.faraddr	update_enemy_bullet
-	.faraddr	update_object_type_19
+	.faraddr	update_unused_puff_effect
 	.faraddr	update_grenade_blast
 	.faraddr	update_dying_soldier
-	.faraddr	update_object_type_1C
+	.faraddr	update_midboss_tank_shell
 	.faraddr	update_effect
 	.faraddr	update_alien_dog
 	.faraddr	update_stage1_boss_head
@@ -1882,34 +1882,34 @@ tbl_object_types:
 	.faraddr	update_face_boss_larva
 	.faraddr	update_stage1_boss_wall_chunk
 	.faraddr	update_falling_debris
-	.faraddr	update_object_type_24
+	.faraddr	update_face_boss_soldier
 	.faraddr	update_winged_alien_tail_segment
 	.faraddr	update_stage1_boss_tracking_shot
 	.faraddr	update_stage1_boss_falling_shot
-	.faraddr	update_object_type_28
+	.faraddr	fill_wram_words
 	.faraddr	update_stage1_boss
-	.faraddr	update_object_type_2A
-	.faraddr	update_object_type_2B
-	.faraddr	update_object_type_2C
-	.faraddr	update_object_type_2D
-	.faraddr	update_object_type_2E
-	.faraddr	update_object_type_2F
-	.faraddr	update_object_type_30
-	.faraddr	update_object_type_31
-	.faraddr	update_object_type_32
-	.faraddr	update_object_type_33
-	.faraddr	update_object_type_34
-	.faraddr	update_object_type_35
+	.faraddr	update_bomber_raid_end_trigger
+	.faraddr	update_hopping_fireball
+	.faraddr	update_flame_geyser
+	.faraddr	update_flame_geyser_flame
+	.faraddr	update_falling_flame
+	.faraddr	update_fire_jet
+	.faraddr	update_fire_jet_flame
+	.faraddr	update_leaping_fireball
+	.faraddr	update_eruption_fireball
+	.faraddr	update_fire_eruption
+	.faraddr	update_sniper_bunker
+	.faraddr	update_window_jumper
 	.faraddr	delete_self_and_linked
 	.faraddr	stage_exit
 	.faraddr	update_stage1_boss_fire
 	.faraddr	update_swing_pivot
 	.faraddr	update_swing_handle
 	.faraddr	update_scroll_modes_trigger
-	.faraddr	update_object_type_3C
+	.faraddr	update_stage3_funnel_clouds
 	.faraddr	update_stage3_spiked_climber
-	.faraddr	update_object_type_3E
-	.faraddr	update_object_type_3F
+	.faraddr	update_stage3_spiked_climber_body
+	.faraddr	update_stage3_spiked_climber_spike
 	.faraddr	update_stage3_spiked_climber_core
 	.faraddr	update_stage3_boss
 	.faraddr	update_respawn_clamp_trigger
@@ -1930,7 +1930,7 @@ tbl_object_types:
 	.faraddr	update_jumping_soldier
 	.faraddr	stage3_spiked_climber_state_0B
 	.faraddr	update_passive_part
-	.faraddr	update_object_type_04
+	.faraddr	update_barricade
 	.faraddr	update_stage6_bg_tile_animator
 	.faraddr	update_alien_soldier
 	.faraddr	update_bg2_screen_size_trigger
@@ -2466,22 +2466,22 @@ bike_aim_muzzle_y:
 	; CDL: read by player_state_bike_intro; partly not accessed
 	.byte	$DC, $FF, $DC, $FF, $BE, $FF, $C8, $FF, $D9, $FF, $00, $00, $CC, $FF, $00, $00
 	.byte	$00, $00, $F0, $FF, $00, $00, $00, $00, $F0, $FF
-; By difficulty: object_type_02_state_07 spawns a falling fragment (type $1C)
+; By difficulty: midboss_tank_state_07 spawns a shell (type $1C)
 ; when stage_frame_counter & this is 0.
-object_type_02_fragment_masks:
-	; CDL: read by object_type_02_state_07
+midboss_tank_shell_masks:
+	; CDL: read by midboss_tank_state_07
 	.byte	$0F, $00, $07, $00, $03, $00
-; Random (rnd & 7) y velocity of those fragments.
-object_type_02_fragment_y_vels:
-	; CDL: read by object_type_02_state_07
+; Random (rnd & 7) y velocity of those shells.
+midboss_tank_shell_y_vels:
+	; CDL: read by midboss_tank_state_07
 	.byte	$FA, $FF, $FA, $FF, $F8, $FF, $FC, $FF, $F8, $FF, $FA, $FF, $F8, $FF, $FB, $FF
-; Random x velocity fraction of the fragments.
-object_type_02_fragment_x_vel_subs:
-	; CDL: read by object_type_02_state_07; partly not accessed
+; Random x velocity fraction of the shells.
+midboss_tank_shell_x_vel_subs:
+	; CDL: read by midboss_tank_state_07; partly not accessed
 	.byte	$00, $80, $00, $40, $00, $40, $00, $50, $00, $70, $00, $20, $00, $60, $00, $30
-; Random x velocity of the fragments.
-object_type_02_fragment_x_vels:
-	; CDL: read by queue_vram_blocks_at_x, object_type_02_state_07; partly not accessed
+; Random x velocity of the shells.
+midboss_tank_shell_x_vels:
+	; CDL: read by queue_vram_blocks_at_x, midboss_tank_state_07; partly not accessed
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FD, $FF, $FE, $FF, $FD, $FF, $FE, $FF, $FD, $FF
 vram_blocks_05AC97:
 	.byte	$00, $B7, $20, $B7, $40, $B7, $60, $B7, $80, $B7, $A0, $B7, $C0, $B7, $E0, $B7
@@ -2561,22 +2561,22 @@ vram_blocks_05AF55:
 hdma_list_05AF61:
 	hdma_channel_ind	$4370, $02, $0F, $7E3800, $7E
 	hdma_channels_end	$80
-; object_type_35_state_02: the 6 pieces (type $10, bouncing debris) it breaks
+; window_jumper_state_02: the 6 pieces (type $10, bouncing debris) it breaks
 ; into: x offset.
-object_type_35_debris_x_offsets:
-	; CDL: read by setup_stage_hdma, object_type_35_state_02
+window_jumper_glass_x_offsets:
+	; CDL: read by setup_stage_hdma, window_jumper_state_02
 	.byte	$02, $00, $0E, $00, $00, $00, $10, $00, $02, $00, $0E, $00
 ; y of the debris pieces.
-object_type_35_debris_y:
-	; CDL: read by object_type_35_state_02
+window_jumper_glass_y:
+	; CDL: read by window_jumper_state_02
 	.byte	$98, $00, $98, $00, $A0, $00, $A0, $00, $A8, $00, $A8, $00
 ; x velocity fraction of the debris pieces.
-object_type_35_debris_x_vel_subs:
-	; CDL: read by object_type_35_state_02
+window_jumper_glass_x_vel_subs:
+	; CDL: read by window_jumper_state_02
 	.byte	$00, $A0, $00, $60, $00, $C0, $00, $40, $00, $E0, $00, $20
 ; x velocity of the debris pieces.
-object_type_35_debris_x_vels:
-	; CDL: read by update_objects, queue_vram_blocks_at_x, object_type_35_state_02; partly not accessed
+window_jumper_glass_x_vels:
+	; CDL: read by update_objects, queue_vram_blocks_at_x, window_jumper_state_02; partly not accessed
 	.byte	$FF, $FF, $00, $00, $FF, $FF, $00, $00, $FF, $FF, $00, $00
 anim_05AF9C:
 	anim_frame	$0006, metasprite_06B158, metasprite_06B412
@@ -2726,40 +2726,40 @@ weapon_capsule_kind_states:
 	; CDL: read by weapon_capsule_set_kind
 	.addr	metasprite_06B0A3
 	.byte	$01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $02, $00, $03, $00
-; object_type_11_state_01: debris pieces (type $10, indexes 2-$A): metasprite.
-object_type_11_debris_sprites:
-	; CDL: read by object_type_11_state_01; partly not accessed
+; wrecked_car_state_01: debris pieces (type $10, indexes 2-$A): metasprite.
+wrecked_car_debris_sprites:
+	; CDL: read by wrecked_car_state_01; partly not accessed
 	.addr	metasprite_06B408
 	.addr	metasprite_06B403, metasprite_06B3FE, metasprite_06B408, metasprite_06B403
 	.addr	metasprite_06B3FE
 ; y velocity of those pieces.
-object_type_11_debris_y_vels:
-	; CDL: read by object_type_11_state_01; partly not accessed
+wrecked_car_debris_y_vels:
+	; CDL: read by wrecked_car_state_01; partly not accessed
 	.byte	$FD, $FF, $FC, $FF, $FA, $FF, $FB, $FF, $FD, $FF, $FC, $FF
 ; x velocity of those pieces.
-object_type_11_debris_x_vels:
-	; CDL: read by queue_vram_blocks_at_x, object_type_11_state_01; partly not accessed
+wrecked_car_debris_x_vels:
+	; CDL: read by queue_vram_blocks_at_x, wrecked_car_state_01; partly not accessed
 	.byte	$03, $00, $02, $00, $01, $00, $FF, $FF, $FE, $FF, $FD, $FF
 vram_blocks_05B1C0:
 	.byte	$A0, $63, $60, $63
 	.byte	$E0, $63, $80, $65
-; OBJ_HP of update_object_type_12 by difficulty (easy, normal, hard)
-object_type_12_hp:
-	; CDL: read by object_type_12_state_00
+; OBJ_HP of update_grenade_soldier by difficulty (easy, normal, hard)
+grenade_soldier_hp:
+	; CDL: read by grenade_soldier_state_00
 	.word	ENEMY_HP($0004), ENEMY_HP($0006), ENEMY_HP($0008)
-; By difficulty: OBJ_TIMER of object_type_12_state_01 (frames before it
+; By difficulty: OBJ_TIMER of grenade_soldier_state_01 (frames before it
 ; throws).
-object_type_12_wait_times:
-	; CDL: read by object_type_12_state_01
+grenade_soldier_wait_times:
+	; CDL: read by grenade_soldier_state_01
 	.byte	$60, $00, $40, $00, $10, $00
 ; By OBJ_FACING: x offset of the grenade (type $13) it throws.
-object_type_12_grenade_x_offsets:
-	; CDL: read by object_type_12_state_05
+grenade_soldier_grenade_x_offsets:
+	; CDL: read by grenade_soldier_state_05
 	.byte	$0C, $00, $F8, $FF
 ; By distance to the player (zp_1E / 4) and OBJ_FACING: x velocity of the
 ; grenade.
-object_type_12_grenade_x_vels:
-	; CDL: read by object_type_12_state_05; partly not accessed
+grenade_soldier_grenade_x_vels:
+	; CDL: read by grenade_soldier_state_05; partly not accessed
 	.byte	$00, $00, $00, $00, $00, $00, $FF, $FF, $00, $00, $FF, $FF, $00, $00, $FF, $FF
 	.byte	$01, $00, $FE, $FF, $01, $00, $FE, $FF, $01, $00, $FE, $FF, $01, $00, $FE, $FF
 	.byte	$02, $00, $FD, $FF, $02, $00, $FD, $FF, $02, $00, $FD, $FF, $02, $00, $FD, $FF
@@ -2767,8 +2767,8 @@ object_type_12_grenade_x_vels:
 	.byte	$03, $00, $FC, $FF, $03, $00, $FC, $FF, $03, $00, $FC, $FF, $03, $00, $FC, $FF
 	.byte	$04, $00, $FB, $FF, $04, $00, $FB, $FF, $04, $00, $FB, $FF, $04, $00, $FB, $FF
 ; x velocity fraction of the grenade (same index).
-object_type_12_grenade_x_vel_subs:
-	; CDL: read by object_type_12_state_05; partly not accessed
+grenade_soldier_grenade_x_vel_subs:
+	; CDL: read by grenade_soldier_state_05; partly not accessed
 	.byte	$00, $00, $00, $00, $00, $40, $00, $C0, $00, $80, $00, $80, $00, $C0, $00, $40
 	.byte	$00, $00, $00, $00, $00, $40, $00, $C0, $00, $80, $00, $80, $00, $C0, $00, $40
 	.byte	$00, $00, $00, $00, $00, $40, $00, $C0, $00, $80, $00, $80, $00, $C0, $00, $40
@@ -2776,17 +2776,17 @@ object_type_12_grenade_x_vel_subs:
 	.byte	$00, $00, $00, $00, $00, $40, $00, $C0, $00, $80, $00, $80, $00, $C0, $00, $40
 	.byte	$00, $00, $00, $00, $00, $40, $00, $C0, $00, $80, $00, $80, $00, $C0, $00, $40
 ; By OBJ_FACING: metasprite while waiting (states 1-2).
-object_type_12_idle_sprites:
-	; CDL: read by object_type_12_state_01
+grenade_soldier_idle_sprites:
+	; CDL: read by grenade_soldier_state_01
 	.addr	metasprite_06B1F0, metasprite_06B4AA
 ; By OBJ_FACING: metasprite of state 3 (sound $16, 12 frames before the
 ; throw).
-object_type_12_windup_sprites:
-	; CDL: read by object_type_12_state_03
+grenade_soldier_windup_sprites:
+	; CDL: read by grenade_soldier_state_03
 	.addr	metasprite_06B205, metasprite_06B4BF
 ; By OBJ_FACING: metasprite when the grenade is thrown (state 5).
-object_type_12_throw_sprites:
-	; CDL: read by update_objects, object_type_12_state_05
+grenade_soldier_throw_sprites:
+	; CDL: read by update_objects, grenade_soldier_state_05
 	.addr	metasprite_06B21A, metasprite_06B4D4
 anim_05B284:
 	anim_frame	$0006, metasprite_06AE91, metasprite_06AE91
@@ -3313,10 +3313,10 @@ anim_05C7A6:
 	.byte	$02, $00, $C5, $AE
 	.byte	$C5, $AE, $02, $00, $CA, $AE, $CA, $AE, $02, $00, $33, $AF, $33, $AF, $02, $00
 	.byte	$E5, $AE, $E5, $AE, $02, $00, $F6, $AE, $F6, $AE, $00, $00, $00, $00, $00, $00
-; update_object_type_2F, by difficulty: reload of its timer (OBJ_TIMER)
+; update_fire_jet, by difficulty: reload of its timer (OBJ_TIMER)
 ; between bursts.
-object_type_2F_delays:
-	; CDL: read by update_objects, update_object_type_2F; partly not accessed
+fire_jet_delays:
+	; CDL: read by update_objects, update_fire_jet; partly not accessed
 	.byte	$80, $00, $70, $00, $60, $00
 anim_05C7E8:
 	anim_frame	$0006, metasprite_06B5D6, metasprite_06B61A
@@ -3330,14 +3330,14 @@ anim_05C802:
 	anim_frame	$0002, metasprite_06B668, metasprite_06B63C
 	anim_frame	$0002, metasprite_06B66D, metasprite_06B64D
 	anim_goto	anim_05C802
-; OBJ_HP of update_object_type_31 by difficulty (easy, normal, hard).
-object_type_31_hp:
-	; CDL: read by update_object_type_31
+; OBJ_HP of update_leaping_fireball by difficulty (easy, normal, hard).
+leaping_fireball_hp:
+	; CDL: read by update_leaping_fireball
 	.word	ENEMY_HP($0010), ENEMY_HP($0040), ENEMY_HP($7FFF)
-; update_object_type_2C, by difficulty: subtracted from field $3A for its
+; update_flame_geyser, by difficulty: subtracted from field $3A for its
 ; first timer (field $30, OBJ_TIMER).
-object_type_2C_delay_cuts:
-	; CDL: read by update_object_type_2C
+flame_geyser_delay_cuts:
+	; CDL: read by update_flame_geyser
 	.byte	$00, $00, $10, $00, $20, $00
 ; Velocities picked at random (rnd & $0E) for explosion debris
 ; (shake_and_explode_state, stage 1 boss): integer part; fraction in
@@ -3593,7 +3593,7 @@ spiked_climber_move_x_accels:
 ; core).
 spiked_climber_part_types:
 	; CDL: read by spiked_climber_init_part
-	.byte	$3E, $00, $3F, $00, $40, $00
+	.word	OBJT_STAGE3_SPIKED_CLIMBER_BODY, OBJT_STAGE3_SPIKED_CLIMBER_SPIKE, OBJT_STAGE3_SPIKED_CLIMBER_CORE
 ; spiked_climber_init_part: OBJ_HITBOX_W of the parts.
 spiked_climber_part_hitbox_w:
 	; CDL: read by spiked_climber_init_part

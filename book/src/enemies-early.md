@@ -29,13 +29,13 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | type | handler | what it is |
 |---|---|---|
 | $01 | `update_stage1_boss_controller` | the stage 1 boss (the giant turtle bursting through the wall), invisible controller in slot `$0900`: boss music (`song_change_set`), graphics (`load_list_05AA1F`), the wall breaking (types `$22`, `$23`), then spawns the parts (`spawn_stage1_boss_parts`) and runs the attacks (`tbl_stage1_boss_attacks`) and the slam; the turtle itself is drawn on BG2 and bent by HDMA. Checked in the emulator |
-| $02 | `update_object_type_02` | seen once in stage 1 (section 8); sets `OBJ_HP` to $100 in state 0 and runs 11 states. Not identified |
+| $02 | `update_midboss_tank` | stage 1 mid-boss (section 8, slot `$0900`; seen in the emulator): a tank that crashes down through a building, drawn on BG2, HP 256; drives left and right throwing shells (type `$1C`); destroyed, it resumes the scroll and sets `stage_checkpoint` |
 | $03 | `update_bg2_scroll_mode_trigger` | stage trigger: sets `bg2_map_offset` from field `$3A`, waits for `bg2_screen_drawn`, then sets `bg2_scroll_mode` |
-| $04, $54 | `update_object_type_04` | seen in stage 1 (section 4, a red soldier on a building ledge, probably). Not identified with certainty |
+| $04, $54 | `update_barricade` | the armored barricade blocking the street (stage 1 section 4, twice; seen in the emulator), solid; once the scroll stops it makes its core (type `$14`) and two cannons (type `$15`), and collapses when the core is destroyed. Nothing creates a type `$54` |
 | $05 | `update_bg1_autoscroll_trigger` | stage trigger: turns `bg1_autoscroll` on |
-| $06 | `update_object_type_06` | stage 1 scripted scene (section 9): BG/HDMA effect with 9 states. Not identified |
+| $06 | `update_bomber_raid` | the bomber raid (stage 1 section 9, slot `$09C0`; seen in the emulator): a bomber plane in Mode 7 flies in, drops two bombs (type `$0C`), the street blows up and burns (`bomber_raid_animate_fire`; players falling into the fire die) through the fire section, until type `$2A` makes the fire dissolve |
 | $07 | `update_load_list_trigger` | stage trigger: loads the list `ptrs_trigger_load_lists`[field `$3A`] with `load_data_list` |
-| $08 | `update_object_type_08` | stage trigger (stage 1 section 4): stops `bg1_autoscroll`, `bg1_scroll_mode` = 4 |
+| $08 | `update_scroll_stop_trigger` | stage trigger (stages 1, 3, 6, before mid-bosses and bosses): stops the BG1 scroll (`bg1_scroll_mode` = 4) and rounds the scroll position to a 256-pixel page |
 | $09 | `update_player_tank` | the tank the players can drive (stage 1 sections 4-5; seen in the emulator), drawn on BG2: a player landing on its hatch enters it (`PLAYER_STATE_ENTER_TANK`, `PLAYER_STATE_TANK`); damage counter `obj_slots+31*OBJ_SIZE+OBJ_HP` (`$09C6`) |
 | $0A | `update_foot_soldier` | running foot soldier (stage 1; checked in the emulator). Killed: becomes type $1B (dying soldier) |
 | $0B | `update_soldier_spawner` | invisible spawner (stage 1): foot soldiers run in from the left and right edges at random intervals by difficulty (`soldier_spawn_delays_right`, `soldier_spawn_delays_left`) |
@@ -44,49 +44,49 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $0E | `update_bg1_scroll_mode_trigger` | stage trigger: sets `bg1_scroll_mode` from field `$3A`, stops `bg1_autoscroll`, rounds the BG1 position |
 | $0F | `update_weapon_capsule` | flying weapon capsule: shot down, it drops a falcon weapon item (all side-view stages; seen in the emulator) |
 | $10 | `update_bouncing_debris` | debris that falls, bounces off the floor (`get_bg_tile_at_object`) and blinks out (stage 1, the wrecked car) |
-| $11 | `update_object_type_11` | stage 1, HP 16. Not identified |
-| $12 | `update_object_type_12` | stage 1 soldier variant, HP 6 (seen in the emulator). Not identified exactly |
+| $11 | `update_wrecked_car` | the wrecked car at the start of stage 1 (HP 16; seen in the emulator): solid; destroyed, it explodes into debris (type `$10`) and keeps burning |
+| $12 | `update_grenade_soldier` | stage 1 soldier throwing grenades (type `$13`) at the nearest player (HP 6; seen in the emulator) |
 | $13 | `update_grenade` | grenade/shell thrown by soldiers: explodes into type $1A when it touches a player or a solid BG tile (bit $2000) |
-| $14 | `update_object_type_14` | stage 1 section 4: part of the wall structure, HP 64 (flashes its palette when hit). Not identified exactly |
-| $15 | `update_object_type_15` | stage 1 section 4: destructible wall gun, HP 40; destroyed: a burst of explosions. Not identified exactly |
-| $16 | `update_object_type_16` | falls with gravity and explodes on the floor or on contact (stage 1 section 4) |
+| $14 | `update_barricade_core` | the barricade's red core (slot 27, HP 64; seen in the emulator); flashes its palette when hit |
+| $15 | `update_barricade_cannon` | cannon on the barricade (slots 25-26, HP 40; seen in the emulator): lobs cannonballs (type `$16`); destroyed: a burst of explosions |
+| $16 | `update_barricade_cannonball` | ball lobbed by a barricade cannon (seen in the emulator); explodes on the floor or on contact |
 | $17 | `update_window_sniper` | sniper in a window (stage 1 and 3, HP 6; seen in the emulator) |
 | $18 | `update_enemy_bullet` | enemy bullet (`spawn_enemy_bullet` allocates them); deleted when it touches a player |
-| $19 | `update_object_type_19` | plays an animation and deletes itself; never run in the CDL traces |
+| $19 | `update_unused_puff_effect` | never created (no spawn, never run in the CDL traces); spawned by hand in the emulator: a smoke puff, then a small burst, then it deletes itself |
 | $1A | `update_grenade_blast` | explosion of a grenade (type $13): harmful for $20 frames, spawns type $1D sparks |
 | $1B | `update_dying_soldier` | killed soldier thrown back (`start_dying_soldier`*), then an explosion effect |
-| $1C | `update_object_type_1C` | falling fragment (sprite by vertical speed) that explodes on the floor or when shot (stage 1 section 9). Not identified |
+| $1C | `update_midboss_tank_shell` | shell thrown by the mid-boss tank (type `$02`; seen in the emulator), sprite by vertical speed; explodes on the floor or when shot |
 | $1D | `update_effect` | effect (explosion, spark, fire): plays `OBJ_ANIM` and frees itself when the script ends (`make_effect_object`) |
 | $1E | `update_alien_dog` | alien dog that jumps out at the player (stage 1 sections 2-3; seen in the emulator) |
 | $1F | `update_stage1_boss_head` | stage 1 boss: the head (invulnerable target, slot `$0440`; seen in the emulator): pushed back while shot (`boss_work_1`), comes out again otherwise |
 | $20 | `update_stage1_boss_part` | stage 1 boss (the giant turtle), a part with HP 256: explodes when destroyed or when the boss dies (`obj_slots+28*OBJ_SIZE+$32`) |
 | $22 | `update_stage1_boss_wall_chunk` | stage 1 boss: the four chunks of the metal wall it bursts through (slots `$0300-$03C0`; seen in the emulator) |
 | $23 | `update_falling_debris` | falling wall debris (stage 1 boss, the turtle breaking through the wall); explodes at y >= $C8 |
-| $24 | `update_object_type_24` | stage 6 alien soldier (seen in the emulator) |
+| $24 | `update_face_boss_soldier` | stage 6: alien soldier the face boss drops where one of its side heads was (seen in the emulator); falls, then walks like type `$56` |
 | $26 | `update_stage1_boss_tracking_shot` | stage 1 boss projectile that follows the player's height (speed `stage1_boss_tracking_shot_accels` by difficulty) |
 | $27 | `update_stage1_boss_falling_shot` | stage 1 boss projectile that falls, then rolls on the floor |
-| $28 | `update_object_type_28` | the handler is a fill routine (also called directly as a helper); probably never used as a type |
+| $28 | `fill_wram_words` | not a type: nothing creates a type `$28`; its entry points at a fill routine called directly as a helper |
 | $29 | `update_stage1_boss` | stage 1 boss (the giant turtle), main body with HP $160 (352); fires at the player every `stage1_boss_fire_intervals`[difficulty] + rnd frames |
-| $2A | `update_object_type_2A` | advances the state of the type $06 object and deletes the type $2F one. Not identified |
-| $2B | `update_object_type_2B` | stage 1 burning section. Not identified |
-| $2C | `update_object_type_2C` | stage 1 burning section: fire pillar. Not identified exactly |
-| $2D | `update_object_type_2D` | stage 1 burning section: fire. Not identified exactly |
-| $2E | `update_object_type_2E` | stage 1 burning section: fireball. Not identified exactly |
-| $2F | `update_object_type_2F` | stage 1 burning section: spawns type $30 (falling fire). Not identified exactly |
-| $30 | `update_object_type_30` | stage 1 burning section: falling fire. Not identified exactly |
-| $31 | `update_object_type_31` | stage 1 burning section: flying fireball enemy, HP 64. Not identified exactly |
-| $32 | `update_object_type_32` | stage 1 section 10: fireballs. Not identified exactly |
-| $33 | `update_object_type_33` | stage 1 section 10. Not identified |
-| $34 | `update_object_type_34` | stage 1 section 2. Not identified |
-| $35 | `update_object_type_35` | stage 1 (the cafe front), HP 1. Not identified |
+| $2A | `update_bomber_raid_end_trigger` | stage trigger at the end of stage 1's fire section (seen in the emulator): moves the bomber raid (type `$06`) to the fire dissolving, deletes the fire jet (type `$2F`) |
+| $2B | `update_hopping_fireball` | stage 1 fire section: fireball hopping out of the fire, a big jump every few hops, leaving falling flames (type `$2E`) (seen in the emulator) |
+| $2C | `update_flame_geyser` | stage 1 section 7: invisible flame geyser in the floor, shoots flames (type `$2D`) up at intervals (seen in the emulator) |
+| $2D | `update_flame_geyser_flame` | flame of a flame geyser (seen in the emulator); destroys the player tank on contact |
+| $2E | `update_falling_flame` | harmful flame of a hopping fireball, falling back into the fire |
+| $2F | `update_fire_jet` | stage 1 fire section: invisible fire jet spewing arcs of flames (type `$30`) at intervals, the screen shaking (seen in the emulator) |
+| $30 | `update_fire_jet_flame` | flame of the fire jet (seen in the emulator) |
+| $31 | `update_leaping_fireball` | stage 1 fire section: fireball leaping out of the fire and falling back (HP 64; seen in the emulator) |
+| $32 | `update_eruption_fireball` | fireball thrown up by the fire eruption (type `$33`; seen in the emulator) |
+| $33 | `update_fire_eruption` | stage 1 section 10, start of the fire section: invisible, throws fireballs (type `$32`) up while the screen shakes (seen in the emulator) |
+| $34 | `update_sniper_bunker` | stage 1 section 2: invisible controller of the bunker on the girders: sends foot soldiers out while its window sniper (type `$17`, slot `$0900`) lives, blows the bunker up when it dies (seen in the emulator) |
+| $35 | `update_window_jumper` | stage 1: soldier crashing out through a window (the cafe and the next buildings), then a foot soldier (seen in the emulator) |
 | $38 | `update_stage1_boss_fire` | stage 1 boss fire breath (spawned near the boss by `stage1_boss_spawn_fire`) |
 | $39 | `update_swing_pivot` | stage 3 (sections 2, 4): pivot of a rotating swing; carries the players hanging from it (`PLAYER_STATE_HANG_OBJECT`, seen in the emulator) around, up/down moves them along the arm |
 | $3A | `update_swing_handle` | stage 3: a handle on a swing's arm; touching it grabs the swing (`swing_grab_handle`) |
 | $3B | `update_scroll_modes_trigger` | stage trigger: sets `bg2_scroll_mode` from field `$3B`, then as type `$0E` |
-| $3C | `update_object_type_3C` | stage 3 BG effect (palette cycling, line scroll table at `$7E:E000`). Not identified |
+| $3C | `update_stage3_funnel_clouds` | start of stage 3 (slot 27, put by `layout_init_stage3`; seen in the emulator): animates the BG tiles of the twisting funnel clouds and slants BG2 with a line-scroll ramp for a while |
 | $3D | `update_stage3_spiked_climber` | stage 3 mid-boss: the spiked machine climbing the girder (HP 160; seen in the emulator) |
-| $3E | `update_object_type_3E` | does nothing (rtl); stage 3 spiked climber's arm |
-| $3F | `update_object_type_3F` | stage 3 spiked climber, spike arm |
+| $3E | `update_stage3_spiked_climber_body` | stage 3 spiked climber: its spiked body (slot `$0340`; seen in the emulator), harmful and invulnerable; the handler does nothing; becomes type `$5A` in the climber's state 8 |
+| $3F | `update_stage3_spiked_climber_spike` | stage 3 spiked climber: the spike it thrusts up from its top (seen in the emulator); never on EASY |
 | $40 | `update_stage3_spiked_climber_core` | stage 3 spiked climber, its weak point (HP 80) |
 | $42 | `update_respawn_clamp_trigger` | stage trigger (stages 3, 6): copies fields `$3A`/`$3B` into `clamp_player_top` / `respawn_mode` |
 | $43 | `update_stage3_breakable_wall` | stage 3 section 9: the grey wall closing the way into the building (seen in the emulator), solid, HP 64; destroyed, BG blocks erase it and the scroll resumes |
@@ -167,8 +167,8 @@ for the laser), the bomb and the barrier 1 per frame; the object dies when
 | table | used by | easy | normal | hard |
 |---|---|---|---|---|
 | `soldier_hp` | `update_foot_soldier`, type `$35` | 0 | 1 | 3 |
-| `object_type_12_hp` | `update_object_type_12` | 4 | 6 | 8 |
-| `object_type_31_hp` | `update_object_type_31` | 16 | 64 | `$7FFF` |
+| `grenade_soldier_hp` | `update_grenade_soldier` | 4 | 6 | 8 |
+| `leaping_fireball_hp` | `update_leaping_fireball` | 16 | 64 | `$7FFF` |
 | `window_sniper_hp` | `update_window_sniper` | 4 | 6 | 8 |
 | `alien_dog_hp` | `update_alien_dog` | 0 | 2 | 8 |
 | `wall_hatch_hp` | `update_wall_hatch` | 4 | 8 | 16 |
@@ -199,7 +199,7 @@ and with what index. Patterns that recur:
 - by aim direction: a metasprite and a muzzle offset for `spawn_enemy_bullet`
   (`window_sniper_aim_sprites`, `rolling_mine_muzzle_x`, `wall_hatch_muzzle_y`);
 - debris and fragments spawned in a loop: x, y, velocity and sprite per piece
-  (`stage1_boss_debris_y`, `object_type_35_debris_x_vels`), often read
+  (`stage1_boss_debris_y`, `window_jumper_glass_x_vels`), often read
   past the end into the next table (`; LAYOUT`);
 - random velocities: `random_debris_vels` / `random_debris_vel_subs`, and the
   parts of the hard enemy bullet table (`enemy_bullet_speeds_hard_x`,
@@ -234,10 +234,8 @@ Unreachable code keeps an `unused_` name saying what it does
 
 ## Open questions
 
-- Type `$08` is a stage trigger whose variables are not named yet.
-- Type `$06` is a scripted scene (BG/HDMA) of stage 1.
-- Type `$02` (stage 1 section 8, HP 256, shares `shake_and_explode_state`
-  with `$34`) is not identified.
-- The burning section of stage 1 (`$2B`-`$33`) and the stage 4 soldiers need
-  a closer look in the emulator (the random player's bombs flash the
-  screen in most captures).
+- The stage 4 soldiers need a closer look in the emulator (the random
+  player's bombs flash the screen in most captures).
+- The bomber raid (type `$06`) redraws the BG through the VRAM queue before
+  the plane comes (states 1-2, `bomber_raid_map_ptr` ...); what that redraw
+  is for (the Mode 7 picture, probably) was not checked.

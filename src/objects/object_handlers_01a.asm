@@ -4,9 +4,15 @@
 ; Handlers of object types dispatched through tbl_object_types and their helpers;
 ; spawn_effect..sub_01CF66 are helpers used by every bank.
 
-; Object type $02: seen once in stage 1 (section 8); sets OBJ_HP to $100 in
-; state 0 and runs 11 states. Not identified.
-update_object_type_02:
+; Object type $02: the stage 1 mid-boss, a tank that crashes down through a
+; building (section 8, slot $0900; seen in the emulator). Drawn on BG2
+; (bg2_x/bg2_y follow its position), HP 256. Waits for the scroll stop and
+; the BG2 screen (state 0, which also deletes the player tank in slot 31),
+; breaks the building (state 1: tile blocks, dust), falls (2-3), lands
+; (4), then drives left and right (5-7) throwing shells (type $1C) from its
+; top. Destroyed: explosions (8, shake_and_explode_state), then state $0A
+; resumes the scroll and sets stage_checkpoint.
+update_midboss_tank:
 	lda	OBJ_STATE,x
 	pha
 	beq	@dispatch
@@ -58,24 +64,24 @@ update_object_type_02:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_02_states,x
+	lda	f:tbl_midboss_tank_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_02_states:
-	.addr	object_type_02_state_00
-	.addr	object_type_02_state_01
-	.addr	object_type_02_state_02
-	.addr	object_type_02_state_03
-	.addr	object_type_02_state_04
-	.addr	object_type_02_state_05
-	.addr	object_type_02_state_06
-	.addr	object_type_02_state_07
-	.addr	object_type_02_state_08
+tbl_midboss_tank_states:
+	.addr	midboss_tank_state_00
+	.addr	midboss_tank_state_01
+	.addr	midboss_tank_state_02
+	.addr	midboss_tank_state_03
+	.addr	midboss_tank_state_04
+	.addr	midboss_tank_state_05
+	.addr	midboss_tank_state_06
+	.addr	midboss_tank_state_07
+	.addr	midboss_tank_state_08
 	.addr	shake_and_explode_state
-	.addr	object_type_02_state_0A
+	.addr	midboss_tank_state_0A
 
-object_type_02_state_00:
+midboss_tank_state_00:
 	lda	#$8000	; [num]
 	sta	a:obj_slots+31*OBJ_SIZE+OBJ_FLAGS
 	lda	a:bg1_scroll_mode
@@ -104,7 +110,7 @@ object_type_02_state_00:
 @return:
 	rtl
 
-object_type_02_state_01:
+midboss_tank_state_01:
 	lda	#$0003
 	sta	a:shake_timer
 	lda	#$0078
@@ -183,7 +189,7 @@ object_type_02_state_01:
 	inc	$24,x
 	rtl
 
-object_type_02_state_02:
+midboss_tank_state_02:
 	dec	OBJ_TIMER,x
 	bne	@return
 	inc	OBJ_STATE,x
@@ -202,7 +208,7 @@ object_type_02_state_02:
 @return:
 	rtl
 
-object_type_02_state_03:
+midboss_tank_state_03:
 	inc	a:shake_continuous
 	lda	OBJ_Y,x
 	cmp	#$00C8
@@ -230,7 +236,7 @@ object_type_02_state_03:
 	plx
 	rtl
 
-object_type_02_state_04:
+midboss_tank_state_04:
 	lda	OBJ_TIMER,x
 	bne	@timer_running
 	ldy	#.loword(vram_blocks_05ACB7)
@@ -255,11 +261,11 @@ object_type_02_state_04:
 	plx
 	rtl
 
-object_type_02_state_05:
+midboss_tank_state_05:
 	inc	a:shake_continuous
 	lda	OBJ_X,x
 	cmp	#$0028
-	bcs	object_type_02_queue_move_tiles
+	bcs	midboss_tank_queue_move_tiles
 	inc	OBJ_STATE,x
 	stz	OBJ_X_VEL,x
 	stz	OBJ_FACING,x
@@ -267,18 +273,18 @@ object_type_02_state_05:
 	sta	$38,x
 	rtl
 
-object_type_02_state_06:
+midboss_tank_state_06:
 	inc	a:shake_continuous
 	lda	OBJ_FACING,x
 	beq	@moving_right
 	lda	OBJ_X,x
 	cmp	$34,x
-	bcs	object_type_02_queue_move_tiles
+	bcs	midboss_tank_queue_move_tiles
 	bcc	@stop
 @moving_right:
 	lda	$0A,x
 	cmp	#$0090
-	bcc	object_type_02_queue_move_tiles
+	bcc	midboss_tank_queue_move_tiles
 @stop:
 	lda	#$0100
 	sta	$30,x
@@ -289,7 +295,7 @@ object_type_02_state_06:
 	lda	#$0007
 	sta	$12,x
 	rtl
-object_type_02_queue_move_tiles:
+midboss_tank_queue_move_tiles:
 	lda	stage_frame_bit1
 	bne	@frame_2
 	lda	#$B600	; [num]
@@ -318,10 +324,10 @@ object_type_02_queue_move_tiles:
 	lda	#$4E08
 	jsl	f:queue_vram_block
 	lda	$38,x
-	bne	object_type_02_throw_fragments
+	bne	midboss_tank_throw_shells
 	rtl
 
-object_type_02_state_07:
+midboss_tank_state_07:
 	lda	difficulty
 	cmp	#$0004
 	bcs	@check_timer
@@ -350,12 +356,12 @@ object_type_02_state_07:
 	bra	loc_01B4D0
 @wait:
 	dec	$30,x
-; Every object_type_02_fragment_masks[difficulty] frames throws a fragment
+; Every midboss_tank_shell_masks[difficulty] frames throws a shell
 ; (type $1C) with a random velocity, sound $1A.
-object_type_02_throw_fragments:
+midboss_tank_throw_shells:
 	ldy	difficulty
 	lda	stage_frame_counter
-	and	a:object_type_02_fragment_masks,y
+	and	a:midboss_tank_shell_masks,y
 	bne	@pick_tile
 	jsl	f:find_free_slot_y
 	bcs	@pick_tile
@@ -365,7 +371,7 @@ object_type_02_throw_fragments:
 	lda	$0E,x
 	adc	#$FFC0
 	sta	a:$000E,y
-	lda	#$001C
+	lda	#OBJT_MIDBOSS_TANK_SHELL
 	sta	a:$0010,y
 	lda	#$001F
 	sta	a:$0016,y
@@ -381,7 +387,7 @@ object_type_02_throw_fragments:
 	asl	a
 	sta	zp_00
 	tax
-	lda	a:object_type_02_fragment_y_vels,x
+	lda	a:midboss_tank_shell_y_vels,x
 	sta	a:$001E,y
 	lda	rng_hi
 	and	#$0007
@@ -390,12 +396,12 @@ object_type_02_throw_fragments:
 	adc	zp_00
 	sta	zp_00
 	tax
-	lda	a:object_type_02_fragment_x_vel_subs,x
+	lda	a:midboss_tank_shell_x_vel_subs,x
 	sta	a:$0018,y
 	lda	zp_00
 	and	#$000F
 	tax
-	lda	a:object_type_02_fragment_x_vels,x
+	lda	a:midboss_tank_shell_x_vels,x
 	sta	a:$001A,y
 	plx
 	lda	#$001A
@@ -413,7 +419,7 @@ loc_01B4D8:
 	lda	#$4D8C
 	jml	f:queue_vram_block
 
-object_type_02_state_08:
+midboss_tank_state_08:
 	jsl	f:queue_sound_41_throttled
 	dec	$24,x
 	bne	@explosions
@@ -443,7 +449,7 @@ object_type_02_state_08:
 @return:
 	rtl
 
-object_type_02_state_0A:
+midboss_tank_state_0A:
 	lda	#$0000
 	sta	a:bg2_x
 	lda	#$8000	; [num]
@@ -454,9 +460,11 @@ object_type_02_state_0A:
 	sta	a:stage_checkpoint
 	rtl
 
-; Object type $1C: falling fragment (sprite by vertical speed) that explodes
-; on the floor or when shot (stage 1 section 9). Not identified.
-update_object_type_1C:
+; Object type $1C: shell thrown by the mid-boss tank (type $02,
+; midboss_tank_throw_shells; seen in the emulator): a finned bomb whose
+; sprite follows its vertical speed; explodes on the floor (y >= $C8) or
+; when shot.
+update_midboss_tank_shell:
 	lda	OBJ_Y,x
 	cmp	#$00C8
 	bcc	@check_hit
@@ -830,7 +838,7 @@ player_tank_push_and_damage:
 	bit	#$1000
 	beq	@next
 	lda	a:$0010,y
-	cmp	#$002D
+	cmp	#OBJT_FLAME_GEYSER_FLAME
 	beq	@destroyed
 	lda	#$0200
 	sta	a:$003C,y
@@ -1421,8 +1429,12 @@ foot_soldier_state_03:
 @return:
 	rtl
 
-; Object type $35: stage 1 (the cafe front), HP 1. Not identified.
-update_object_type_35:
+; Object type $35: soldier crashing out through a window (stage 1, the
+; cafe and the next buildings; seen in the emulator), HP soldier_hp. Waits
+; behind the window until x < $D0, breaks it (queue_object_tiles, shards:
+; type $10 debris), jumps down and lands as a foot soldier
+; (stop_and_init_foot_soldier).
+update_window_jumper:
 	lda	OBJ_HP,x
 	bpl	@dispatch
 	brl	kill_foot_soldier
@@ -1431,18 +1443,18 @@ update_object_type_35:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_35_states,x
+	lda	f:tbl_window_jumper_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_35_states:
-	.addr	object_type_35_state_00
-	.addr	object_type_35_state_01
-	.addr	object_type_35_state_02
-	.addr	object_type_35_state_03
-	.addr	object_type_35_state_04
+tbl_window_jumper_states:
+	.addr	window_jumper_state_00
+	.addr	window_jumper_state_01
+	.addr	window_jumper_state_02
+	.addr	window_jumper_state_03
+	.addr	window_jumper_state_04
 
-object_type_35_state_00:
+window_jumper_state_00:
 	lda	#.loword(vram_blocks_05AFCE)
 	sta	$32,x
 	lda	#$0001
@@ -1454,7 +1466,7 @@ object_type_35_state_00:
 	inc	OBJ_STATE,x
 	rtl
 
-object_type_35_state_01:
+window_jumper_state_01:
 	lda	OBJ_X,x
 	cmp	#$00D0
 	bcs	@return
@@ -1462,7 +1474,7 @@ object_type_35_state_01:
 @return:
 	rtl
 
-object_type_35_state_02:
+window_jumper_state_02:
 	lda	$34,x
 	bne	@queue_tiles
 	lda	#$0003
@@ -1499,14 +1511,14 @@ object_type_35_state_02:
 	sta	a:$0010,y
 	lda	#$0001
 	sta	a:$0016,y
-	lda	a:object_type_35_debris_x_offsets,x
+	lda	a:window_jumper_glass_x_offsets,x
 	adc	zp_10
 	sta	a:$000A,y
-	lda	a:object_type_35_debris_y,x
+	lda	a:window_jumper_glass_y,x
 	sta	a:$000E,y
-	lda	a:object_type_35_debris_x_vels,x
+	lda	a:window_jumper_glass_x_vels,x
 	sta	a:$001A,y
-	lda	a:object_type_35_debris_x_vel_subs,x
+	lda	a:window_jumper_glass_x_vel_subs,x
 	sta	a:$0018,y
 	lda	#$0020
 	sta	a:$0024,y
@@ -1526,9 +1538,9 @@ object_type_35_state_02:
 @return:
 	rtl
 
-object_type_35_state_03:
+window_jumper_state_03:
 	lda	OBJ_Y_VEL,x
-	bmi	object_type_35_fall
+	bmi	window_jumper_fall
 	lda	#$081F
 	sta	OBJ_FLAGS,x
 	lda	#$0010
@@ -1537,7 +1549,7 @@ object_type_35_state_03:
 	sta	OBJ_HITBOX_H,x
 	inc	OBJ_STATE,x
 
-object_type_35_state_04:
+window_jumper_state_04:
 	lda	$3E,x
 	beq	@check_floor
 	; (not executed in the CDL traces)
@@ -1545,9 +1557,9 @@ object_type_35_state_04:
 @check_floor:
 	lda	#$00C8
 	cmp	$0E,x
-	bcs	object_type_35_fall
+	bcs	window_jumper_fall
 	brl	stop_and_init_foot_soldier
-object_type_35_fall:
+window_jumper_fall:
 	lda	$1C,x
 	adc	#$3000
 	sta	$1C,x
@@ -2556,26 +2568,30 @@ wall_hatch_state_05:
 	sta	OBJ_FLAGS,x
 	rtl
 
-; Object types $04 and $54: seen in stage 1 (section 4, a red soldier on a
-; building ledge, probably). Not identified with certainty.
-update_object_type_04:
+; Object type $04 (also the entry of type $54, which nothing creates): the
+; armored barricade blocking the street in stage 1 (section 4, twice; seen
+; in the emulator). Solid. When the scroll stops (type $08) it creates its
+; core (type $14, slot 27) and two cannons (type $15, slots 25-26); when
+; the core is destroyed it deletes them, kills a window sniper (type $17),
+; collapses (tile blocks, explosions, shake) and the scroll resumes.
+update_barricade:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_04_states,x
+	lda	f:tbl_barricade_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_04_states:
-	.addr	object_type_04_state_00
-	.addr	object_type_04_state_01
-	.addr	object_type_04_state_02
-	.addr	object_type_04_state_03
-	.addr	object_type_04_state_04
-	.addr	object_type_04_state_05
+tbl_barricade_states:
+	.addr	barricade_state_00
+	.addr	barricade_state_01
+	.addr	barricade_state_02
+	.addr	barricade_state_03
+	.addr	barricade_state_04
+	.addr	barricade_state_05
 
-object_type_04_state_00:
+barricade_state_00:
 	lda	#$0041
 	sta	OBJ_FLAGS,x
 	lda	#$0060
@@ -2583,14 +2599,14 @@ object_type_04_state_00:
 	lda	#$FF10	; [num]
 	sta	OBJ_HITBOX_H,x
 	inc	OBJ_STATE,x
-object_type_04_return:
+barricade_return:
 	rtl
 
-object_type_04_state_01:
+barricade_state_01:
 	jsl	f:solid_object_vs_players_and_soldiers
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
-	bne	object_type_04_return
+	bne	barricade_return
 	sep	#$20
 	.a8
 	lda	#$7E
@@ -2614,7 +2630,7 @@ object_type_04_state_01:
 	rep	#$20
 	.a16
 	inc	$12,x
-	lda	#$0014
+	lda	#OBJT_BARRICADE_CORE
 	sta	a:obj_slots+27*OBJ_SIZE+OBJ_TYPE
 	lda	#$4010
 	sta	a:obj_slots+27*OBJ_SIZE+OBJ_FLAGS
@@ -2634,7 +2650,7 @@ object_type_04_state_01:
 	sta	a:obj_slots+26*OBJ_SIZE+OBJ_HITBOX_H
 	lda	#ENEMY_HP($0040)
 	sta	a:obj_slots+27*OBJ_SIZE+OBJ_HP
-	lda	#$0015
+	lda	#OBJT_BARRICADE_CANNON
 	sta	a:obj_slots+25*OBJ_SIZE+OBJ_TYPE
 	sta	a:obj_slots+26*OBJ_SIZE+OBJ_TYPE
 	lda	#$00A8
@@ -2677,7 +2693,7 @@ object_type_04_state_01:
 	stz	a:obj_slots+26*OBJ_SIZE+OBJ_STATE
 	rtl
 
-object_type_04_state_02:
+barricade_state_02:
 	jsl	f:solid_object_vs_players_and_soldiers
 	lda	a:obj_slots+27*OBJ_SIZE+OBJ_HP
 	bpl	@return
@@ -2689,7 +2705,7 @@ object_type_04_state_02:
 @return:
 	rtl
 
-object_type_04_state_03:
+barricade_state_03:
 	jsl	f:solid_object_vs_players_and_soldiers
 	lda	#.loword(vram_blocks_05B0A0)
 	sta	$30,x
@@ -2699,7 +2715,7 @@ object_type_04_state_03:
 	ldy	#$0300
 @loop:
 	lda	a:$0010,y
-	cmp	#$0017
+	cmp	#OBJT_WINDOW_SNIPER
 	beq	@kill_type_17
 	tya
 	clc
@@ -2714,7 +2730,7 @@ object_type_04_state_03:
 	sta	a:$0006,y
 	rtl
 
-object_type_04_state_04:
+barricade_state_04:
 	jsl	f:solid_object_vs_players_and_soldiers
 	lda	stage_frame_counter
 	and	#$000F
@@ -2723,7 +2739,7 @@ object_type_04_state_04:
 @return:
 	rtl
 
-object_type_04_state_05:
+barricade_state_05:
 	lda	#$0004
 	sta	a:shake_timer
 	jsl	f:solid_object_vs_players_and_soldiers
@@ -2750,40 +2766,40 @@ object_type_04_state_05:
 	lda	stage_frame_counter
 	and	#$000F
 	cmp	#$0004
-	bcs	object_type_04_collapse_wait
+	bcs	barricade_collapse_wait
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_04_collapse_steps,x
+	lda	f:tbl_barricade_collapse_steps,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_04_collapse_steps:
-	.addr	object_type_04_collapse_wait
-	.addr	object_type_04_collapse_step_1
-	.addr	object_type_04_collapse_step_2
-	.addr	object_type_04_collapse_step_3
+tbl_barricade_collapse_steps:
+	.addr	barricade_collapse_wait
+	.addr	barricade_collapse_step_1
+	.addr	barricade_collapse_step_2
+	.addr	barricade_collapse_step_3
 
-object_type_04_collapse_step_1:
+barricade_collapse_step_1:
 	stz	zp_00
 	stz	zp_0C
-	bra	object_type_04_collapse_queue
+	bra	barricade_collapse_queue
 
-object_type_04_collapse_step_2:
+barricade_collapse_step_2:
 	lda	#$0100
 	sta	zp_0C
 	lda	#$000C
 	sta	zp_00
-	bra	object_type_04_collapse_queue
+	bra	barricade_collapse_queue
 
-object_type_04_collapse_step_3:
+barricade_collapse_step_3:
 	lda	#$0200
 	sta	zp_0C
 	lda	#$0018
 	sta	zp_00
 	lda	#$0018
 	sta	zp_08
-object_type_04_collapse_queue:
+barricade_collapse_queue:
 	lda	#$0003
 	sta	zp_02
 	clc
@@ -2798,24 +2814,25 @@ object_type_04_collapse_queue:
 	lda	stage_frame_counter
 	and	#$000F
 	cmp	#$0002
-	bne	object_type_04_collapse_wait
+	bne	barricade_collapse_wait
 	clc
 	lda	$30,x
 	adc	#$001E
 	sta	$30,x
 	cmp	#.loword(vram_blocks_05B0A0 + $D2)
-	bcc	object_type_04_collapse_wait
+	bcc	barricade_collapse_wait
 	lda	#$8000	; [num]
 	sta	$16,x
 	lda	#$0001
 	sta	a:bg1_scroll_mode
 
-object_type_04_collapse_wait:
+barricade_collapse_wait:
 	rtl
 
-; Object type $14: stage 1 section 4: part of the wall structure, HP 64
-; (flashes its palette when hit). Not identified exactly.
-update_object_type_14:
+; Object type $14: the barricade's core (the red light at its foot, slot
+; 27, HP 64; seen in the emulator), made by update_barricade; flashes its
+; palette when hit. Destroying it brings the barricade down.
+update_barricade_core:
 	lda	OBJ_SAVED_ATTR,x
 	beq	@return
 	lda	#.loword(palette_05914A)
@@ -2825,9 +2842,10 @@ update_object_type_14:
 @return:
 	rtl
 
-; Object type $15: stage 1 section 4: destructible wall gun, HP 40;
-; destroyed: a burst of explosions. Not identified exactly.
-update_object_type_15:
+; Object type $15: a cannon on the barricade (slots 25-26, HP 40; seen in
+; the emulator), made by update_barricade: every $28 frames swaps its tile
+; and lobs a cannonball (type $16); destroyed: a burst of explosions.
+update_barricade_cannon:
 	lda	OBJ_STATE,x
 	beq	@alive
 	lda	stage_frame_mod4
@@ -2879,7 +2897,7 @@ update_object_type_15:
 	jsl	f:find_free_slot_from_x
 	ply
 	bcs	@return2
-	lda	#$0016
+	lda	#OBJT_BARRICADE_CANNONBALL
 	sta	$10,x
 	lda	#$3E00
 	sta	$02,x
@@ -2914,9 +2932,10 @@ update_object_type_15:
 @return2:
 	rtl
 
-; Object type $16: falls with gravity and explodes on the floor or on
-; contact (stage 1 section 4).
-update_object_type_16:
+; Object type $16: cannonball lobbed by a barricade cannon (type $15; seen
+; in the emulator): falls with gravity and explodes on the floor or on
+; contact.
+update_barricade_cannonball:
 	lda	OBJ_TOUCHED_BY,x
 	bne	@explode
 	lda	OBJ_Y_VEL_SUB,x
@@ -3228,22 +3247,24 @@ weapon_item_stage4:
 	sta	$0A,x
 	rtl
 
-; Object type $11: stage 1, HP 16. Not identified.
-update_object_type_11:
+; Object type $11: the wrecked car at the start of stage 1 (HP 16; seen in
+; the emulator). Solid (players and soldiers stand on it); destroyed: it
+; explodes into bouncing debris (type $10) and keeps burning.
+update_wrecked_car:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_11_states,x
+	lda	f:tbl_wrecked_car_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_11_states:
-	.addr	object_type_11_state_00
-	.addr	object_type_11_state_01
-	.addr	object_type_11_state_02
+tbl_wrecked_car_states:
+	.addr	wrecked_car_state_00
+	.addr	wrecked_car_state_01
+	.addr	wrecked_car_state_02
 
-object_type_11_state_00:
+wrecked_car_state_00:
 	lda	#.loword(metasprite_06B374)
 	sta	OBJ_SPRITE,x
 	lda	#$4013
@@ -3264,12 +3285,12 @@ object_type_11_state_00:
 	sta	OBJ_HITBOX_W,x
 	inc	OBJ_STATE,x
 	rtl
-object_type_11_solid:
+wrecked_car_solid:
 	jml	f:solid_object_vs_players_and_soldiers
 
-object_type_11_state_01:
+wrecked_car_state_01:
 	lda	OBJ_HP,x
-	bpl	object_type_11_solid
+	bpl	wrecked_car_solid
 	lda	#$0042
 	jsl	f:queue_sound
 	inc	$12,x
@@ -3308,7 +3329,7 @@ object_type_11_state_01:
 	plx
 	rtl
 @spawn_debris:
-	lda	a:object_type_11_debris_sprites,y
+	lda	a:wrecked_car_debris_sprites,y
 	sta	$00,x
 	sta	$32,x
 	lda	#$0003
@@ -3323,10 +3344,10 @@ object_type_11_state_01:
 	sta	$0A,x
 	lda	zp_02
 	sta	$0E,x
-	lda	a:object_type_11_debris_y_vels,y
+	lda	a:wrecked_car_debris_y_vels,y
 	sta	$1E,x
 	sta	$30,x
-	lda	a:object_type_11_debris_x_vels,y
+	lda	a:wrecked_car_debris_x_vels,y
 	sta	$1A,x
 	dey
 	dey
@@ -3334,7 +3355,7 @@ object_type_11_state_01:
 	plx
 	rtl
 
-object_type_11_state_02:
+wrecked_car_state_02:
 	lda	stage_frame_odd
 	bne	@debris
 	lda	OBJ_X,x
@@ -3503,10 +3524,11 @@ update_stage3_breakable_wall:
 @return:
 	rtl
 
-; Object type $12: stage 1 soldier variant, HP 6 (seen in the emulator). Not
-; identified exactly.
-update_object_type_12:
-	jsr	a:object_type_12_aim_at_nearest_player
+; Object type $12: soldier throwing grenades (stage 1, HP 6 on NORMAL; seen
+; in the emulator): stands facing the nearest player, winds up and throws a
+; grenade (type $13) with a speed by the distance; killed: type $1B.
+update_grenade_soldier:
+	jsr	a:grenade_soldier_aim_at_nearest_player
 	lda	$06,x
 	bpl	@dispatch
 	stz	$06,x
@@ -3518,21 +3540,21 @@ update_object_type_12:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_12_states,x
+	lda	f:tbl_grenade_soldier_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_12_states:
-	.addr	object_type_12_state_00
-	.addr	object_type_12_state_01
-	.addr	object_type_12_state_02
-	.addr	object_type_12_state_03
-	.addr	object_type_12_state_02
-	.addr	object_type_12_state_05
-	.addr	object_type_12_state_02
-	.addr	object_type_12_state_01
+tbl_grenade_soldier_states:
+	.addr	grenade_soldier_state_00
+	.addr	grenade_soldier_state_01
+	.addr	grenade_soldier_state_02
+	.addr	grenade_soldier_state_03
+	.addr	grenade_soldier_state_02
+	.addr	grenade_soldier_state_05
+	.addr	grenade_soldier_state_02
+	.addr	grenade_soldier_state_01
 
-object_type_12_state_00:
+grenade_soldier_state_00:
 	lda	#$3400
 	sta	OBJ_ATTR,x
 	stz	OBJ_SAVED_ATTR,x
@@ -3548,31 +3570,31 @@ object_type_12_state_00:
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
 	ldy	difficulty
-	lda	a:object_type_12_hp,y
+	lda	a:grenade_soldier_hp,y
 	sta	OBJ_HP,x
 	inc	OBJ_STATE,x
 
-object_type_12_state_01:
+grenade_soldier_state_01:
 	ldy	OBJ_FACING,x
-	lda	a:object_type_12_idle_sprites,y
+	lda	a:grenade_soldier_idle_sprites,y
 	sta	OBJ_SPRITE,x
 	ldy	difficulty
-	lda	a:object_type_12_wait_times,y
+	lda	a:grenade_soldier_wait_times,y
 	sta	OBJ_TIMER,x
 	lda	#$0002
 	sta	OBJ_STATE,x
 	rtl
 
-object_type_12_state_02:
+grenade_soldier_state_02:
 	dec	OBJ_TIMER,x
 	bne	@return
 	inc	OBJ_STATE,x
 @return:
 	rtl
 
-object_type_12_state_03:
+grenade_soldier_state_03:
 	ldy	OBJ_FACING,x
-	lda	a:object_type_12_windup_sprites,y
+	lda	a:grenade_soldier_windup_sprites,y
 	sta	OBJ_SPRITE,x
 	lda	#$000C
 	sta	OBJ_TIMER,x
@@ -3581,7 +3603,7 @@ object_type_12_state_03:
 	lda	#$0016
 	jml	f:queue_sound
 
-object_type_12_state_05:
+grenade_soldier_state_05:
 	jsl	f:find_free_slot_y
 	bcs	@no_slot
 	lda	#OBJT_GRENADE
@@ -3590,7 +3612,7 @@ object_type_12_state_05:
 	clc
 	phy
 	ldy	$04,x
-	adc	a:object_type_12_grenade_x_offsets,y
+	adc	a:grenade_soldier_grenade_x_offsets,y
 	ply
 	sta	a:$000A,y
 	lda	$04,x
@@ -3607,16 +3629,16 @@ object_type_12_state_05:
 	and	#$003C
 	ora	$04,x
 	tay
-	lda	a:object_type_12_grenade_x_vels,y
+	lda	a:grenade_soldier_grenade_x_vels,y
 	sta	$1A,x
-	lda	a:object_type_12_grenade_x_vel_subs,y
+	lda	a:grenade_soldier_grenade_x_vel_subs,y
 	sta	$18,x
 	lda	#$FFFA	; [num]
 	sta	$1E,x
 	stz	$1C,x
 	plx
 	ldy	$04,x
-	lda	a:object_type_12_throw_sprites,y
+	lda	a:grenade_soldier_throw_sprites,y
 	sta	$00,x
 	lda	#$0010
 	sta	$24,x
@@ -3626,7 +3648,7 @@ object_type_12_state_05:
 @no_slot:
 	; (not executed in the CDL traces)
 	ldy	$04,x
-	lda	a:object_type_12_idle_sprites,y
+	lda	a:grenade_soldier_idle_sprites,y
 	sta	$00,x
 	lda	#$000C
 	sta	$24,x
@@ -3634,7 +3656,7 @@ object_type_12_state_05:
 	sta	$12,x
 	rtl
 
-object_type_12_aim_at_nearest_player:
+grenade_soldier_aim_at_nearest_player:
 	lda	a:p1_lives
 	ora	a:p2_lives
 	beq	@return

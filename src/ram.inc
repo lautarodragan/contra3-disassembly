@@ -289,10 +289,10 @@ spawn_pos_invert    = $1608	; 0, or $FFFF when positions count backwards (vertic
 spawn_scroll_var    = $160A	; address of the scroll variable spawning follows (bg1_x or bg1_y)
 spawn_last_page     = $160C	; page (high byte) of that variable last seen by spawn_stage_objects
 debug_coldata       = $1612	; debug_color_math_keys (no caller): COLDATA value, changed by A / B on pad 2
-obj06_map_ptr       = $161C	; object type $06 (stage 1 section 9 scene): read pointer in the $7E:F300 block map while it redraws the BG into the VRAM queue (object_type_06_state_02)
-obj06_attr_ptr      = $161E	; object type $06: read pointer in $7E:A000 (high bytes of the tilemap words it queues)
-obj06_vram_offset   = $1620	; object type $06: VRAM offset of the next chunk, +$20 a frame; the redraw ends at $1000
-obj06_block_column  = $1622	; object type $06: tile column inside the current block (0-$18, step 8)
+bomber_raid_map_ptr = $161C	; object type $06 (the bomber raid, stage 1): read pointer in the $7E:F300 block map while it redraws the BG into the VRAM queue (bomber_raid_state_02)
+bomber_raid_attr_ptr = $161E	; object type $06: read pointer in $7E:A000 (high bytes of the tilemap words it queues)
+bomber_raid_vram_offset = $1620	; object type $06: VRAM offset of the next chunk, +$20 a frame; the redraw ends at $1000
+bomber_raid_block_column = $1622	; object type $06: tile column inside the current block (0-$18, step 8)
 hang_lock_buttons   = $1628	; buttons that keep a hanging player from moving (input_hang, input_hang_object, input_ground): button_fire | button_stand_still (stage_init)
 debug_window_test   = $162C	; debug_window_keys (no caller): 1 while the window test is on (Select on pad 1 toggles it)
 boss_work_0         = $1636	; boss_work_0-7 ($1636-$1645): work variables of the big scripted object of the moment (stage 1 boss, stage 3 spiked climber, the ending...), meaning set by each
@@ -311,7 +311,7 @@ shake_continuous    = $1660	; non-zero: 1-pixel shake (update_shake_side_view) u
 shake_timer         = $1662	; shake amplitude in pixels, decremented every 16 frames (update_shake_side_view); objects set it for explosions
 clamp_player_top    = $1666	; non-zero: move_player keeps the players' y at $31 or more (vertical autoscroll sections; set by the stage trigger type $42 and the spiked climber)
 update_objects_stop = $166A	; slot where update_objects stops ($0AC0; $0300 for update_objects_0280)
-obj06_dither_step   = $166C	; object type $06: step of the dither fade of state 8 ($3F down to 0, one every 2 frames; indexes object_type_06_dither_offsets)
+bomber_raid_dither_step = $166C	; object type $06: step of the dither fade of state 8 ($3F down to 0, one every 2 frames; indexes bomber_raid_dither_offsets)
 stage_layout           = $1670	; side-view stage layout x2 (stage_layouts[stage_number], + $0A from the checkpoint); indexes the per-stage tables of stage_init and stage_layout_init
 respawn_mode        = $1672	; respawn mode (from stage_respawn_modes, changed by triggers such as type $42): how player state $0F places the player (tbl_respawn_placement) and the state, pose and y velocity after it
 scroll_split_y      = $1674	; vertical position the scroll-split HDMA table is built for (build_scroll_split_hdma)
@@ -328,7 +328,7 @@ airship_spawn_index = $168A	; stage 4 airship section: offset of the next entry 
 bg1_vel_x_sub       = $168C	; stage 4 airship section: BG1 horizontal scroll speed, fraction (scroll_bg1_by_velocity_and_spawn adds it to bg1_x_sub; the stage 4 controller steers it)
 bg1_vel_x           = $168E	; stage 4 airship section: BG1 horizontal scroll speed, pixels
 bg1_vel_y_sub       = $1690	; stage 4 airship section: BG1 vertical scroll speed, fraction
-bg1_vel_y           = $1692	; stage 4 airship section: BG1 vertical scroll speed, pixels; object type $06 (stage 1) uses it as a countdown ($80) instead
+bg1_vel_y           = $1692	; stage 4 airship section: BG1 vertical scroll speed, pixels; object type $06 (the bomber raid, stage 1) uses it as a countdown ($80) instead
 bg1_moved_x         = $1694	; stage 4 airship section: BG1's x movement this frame (scroll_bg1_by_velocity_and_spawn), subtracted from the objects that ride with the airship (scroll_with_airship)
 bg1_moved_y         = $1696	; stage 4 airship section: BG1's y movement this frame
 stage_layout_base           = $1698	; stage_layouts[stage_number], without the checkpoint offset
@@ -755,7 +755,7 @@ TDA_HOLE            = $FF	; hole: the player falls (td_player_state_falling), an
 ; (stage_dp_params_*) and stores one of $0000, $2002, $0004, $4008, $4010,
 ; $6020, $6040, $6080, $6100, $1200, $5400, $5800, $A000, with TILE_FLIPPED
 ; from the tile's h-flip on the slope and sloped bar classes; the fill helper
-; update_object_type_28 writes words directly (the stage 1 boss wall $A000).
+; fill_wram_words writes words directly (the stage 1 boss wall $A000).
 ; A slope rises 8 pixels per 16 (one tile row per 16-pixel column, aligned
 ; on the 16-pixel grid of the stage), rising to the right unless flipped;
 ; each 16-pixel column of a slope has an upper and a lower tile. See

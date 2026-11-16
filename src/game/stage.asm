@@ -393,7 +393,7 @@ layout_init_stage3_checkpoint:
 layout_init_stage3:
 	lda	#$0007
 	sta	hdma_preset
-	lda	#$003C
+	lda	#OBJT_STAGE3_FUNNEL_CLOUDS
 	sta	a:obj_slots+27*OBJ_SIZE+OBJ_TYPE
 layout_init_stage3_common:
 	lda	#$004A

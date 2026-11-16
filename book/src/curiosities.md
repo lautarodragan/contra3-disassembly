@@ -229,7 +229,7 @@ matter for anyone who moves data. By kind:
   `metasprite_06B172` (bank `$06`), which the CDL shows being drawn. Its last entry is also the first word of
   `weapon_capsule_kind_states`.
 - `data_059F0C` is read on from `song_change_trigger_sets` by the stage 1
-  bomber (`object_type_06_state_04`): the same words give the song set of a
+  bomber (`bomber_raid_state_04`): the same words give the song set of a
   song change trigger and the drift direction of the bomber's two bombs
   (`update_bomber_bomb`).
 - The last frame of the animation `anim_05CD0B` is also entry 0 of
