@@ -2438,7 +2438,7 @@ loc_01E16F:
 	asl	a
 	phx
 	tax
-	lda	f:data_058010,x
+	lda	f:half_turn_sine,x
 	plx
 	lsr	a
 	lsr	a

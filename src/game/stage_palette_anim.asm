@@ -20,7 +20,7 @@ apply_palette_anim_once:
 	bra	palette_anim_apply_first
 
 ; Every frame of a side-view stage: while palette_anim_id is set, starts
-; palette task data_05CD1B[id] every $30 frames and data_05CD21[id] $20
+; palette task ptrs_palette_anim_first[id] every $30 frames and ptrs_palette_anim_second[id] $20
 ; frames later.
 update_palette_anim:
 	ldy	a:palette_anim_id
@@ -31,7 +31,7 @@ update_palette_anim:
 	sta	a:palette_anim_timer
 palette_anim_apply_first:
 	phx
-	lda	a:data_05CD1B,y
+	lda	a:ptrs_palette_anim_first,y
 	tay
 	jsl	f:start_palette_task
 	plx
@@ -41,7 +41,7 @@ palette_anim_check_second:
 	cmp	#$0010
 	bne	palette_anim_return
 	phx
-	lda	a:data_05CD21,y
+	lda	a:ptrs_palette_anim_second,y
 	tay
 	jsl	f:start_palette_task
 	plx

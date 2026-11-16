@@ -99,7 +99,7 @@ loc_02DE3F:
 	rtl
 
 ; Writes the left/right window positions of each line of the circle (from
-; the table data_05E336 through the hardware divider/multiplier) to the
+; the table circle_chord_widths through the hardware divider/multiplier) to the
 ; table at zp_1C in $7E.
 build_window_circle:
 	sep	#$20
@@ -138,7 +138,7 @@ loc_02DE6B:
 	nop
 	nop
 	ldy	a:RDDIVL
-	lda	a:data_05E336,y
+	lda	a:circle_chord_widths,y
 	sta	a:WRMPYB
 	nop
 	nop
@@ -209,7 +209,7 @@ loc_02DEE0:
 	nop
 	nop
 	ldy	a:RDDIVL
-	lda	a:data_05E336,y
+	lda	a:circle_chord_widths,y
 	sta	a:WRMPYB
 	nop
 	nop
@@ -579,7 +579,7 @@ loc_02E133:
 loc_02E141:
 	sep	#$20
 	.a8
-	lda	a:data_05E43E,y
+	lda	a:bomb_flash_cgadsub_p1,y
 	sta	a:CGADSUB
 	sta	f:wram_7E3863
 	sta	f:wram_7E3867
@@ -888,7 +888,7 @@ loc_02E3E4:
 loc_02E3F2:
 	sep	#$20
 	.a8
-	lda	a:data_05E442,y
+	lda	a:bomb_flash_cgadsub_p2,y
 	sta	a:CGADSUB
 	sta	f:wram_7E3863
 	sta	f:wram_7E3867

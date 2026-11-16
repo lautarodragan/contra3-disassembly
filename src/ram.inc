@@ -53,7 +53,7 @@ joy1_held           = $20	; joypad 1 buttons held (written by read_joypads; pads
 joy2_held           = $22	; joypad 2 buttons held
 joy1_pressed        = $28	; joypad 1 buttons newly pressed this frame (pads 2-4 at $2A/$2C/$2E)
 joy2_pressed        = $2A	; joypad 2 buttons newly pressed this frame
-soft_reset_pad_mask = $30	; pads whose L+R+Start+Select+Select resets the game (bit 0 pad 1, bit 1 pad 2; tested by read_joypads against data_058228); 3 from warm_boot
+soft_reset_pad_mask = $30	; pads whose L+R+Start+Select+Select resets the game (bit 0 pad 1, bit 1 pad 2; tested by read_joypads against soft_reset_pad_bits); 3 from warm_boot
 game_mode           = $32	; game mode, index into tbl_game_modes (run_game_mode)
 game_submode        = $34	; sub-mode of the current game mode (each mode dispatches it through its own table)
 mode_result               = $36	; result of the current game mode's handler, read by the mode (0 = still running; 1/2/3 = done, meaning depends on the mode); cleared by set_game_mode
@@ -64,7 +64,7 @@ force_blank_frames  = $3E	; frames left with forced blank: the NMI frame handler
 m7_split_screen               = $40	; non-zero (2) in 2-player mode A: the IRQ switches to player 2's Mode 7 matrix at line $70 (irq_mode7_top_view)
 nmi_mode            = $42	; NMI frame handler, x2 index into tbl_nmi_frame_handlers (0, 2 = side-view stages, 4 = top-down stages)
 irq_mode            = $44	; IRQ handler, x2 index into tbl_irq_handlers (0 none, 2 irq_mode7_top_view, 4 irq_mode7_bottom_view)
-hdma_preset         = $46	; HDMA preset: index into data_05822E (setup_hdma_channels, nmi_frame_default) or, minus 1, into ptrs_stage_hdma_lists (setup_stage_hdma, side-view stages); 0 = none
+hdma_preset         = $46	; HDMA preset: index into ptrs_hdma_presets (setup_hdma_channels, nmi_frame_default) or, minus 1, into ptrs_stage_hdma_lists (setup_stage_hdma, side-view stages); 0 = none
 cgram_dma_src       = $48	; low word of the $7E:xxxx buffer DMAd to CGRAM (512 bytes) every frame by dma_oam_and_palette; always $2200
 demo_mode               = $4A	; 2 while the attract demo plays (demo_init): run_stage then skips the pause check
 demo_timer               = $4C	; frames left in the attract demo ($0800 from demo_init, demo_play); also set to $0100 by the unused game_mode_stage_select
@@ -204,7 +204,7 @@ bg1_y               = $1398	; BG1 vertical scroll
 bg1_y_sub           = $13A4	; BG1 vertical scroll fraction (vertical autoscroll, bg1_scroll_vertical)
 bg1_y_delta         = $13A6	; BG1 vertical movement this frame; objects subtract it
 bg1_autoscroll      = $13B4	; non-zero: BG1 scrolls by itself instead of following the players
-bg1_autoscroll_speed = $13B6	; vertical autoscroll speed: index into data_058D52
+bg1_autoscroll_speed = $13B6	; vertical autoscroll speed: index into bg1_autoscroll_speeds
 bg1_scroll_mode     = $13BA	; BG1 scroll handler: index into tbl_bg1_scroll_modes (run_bg1_scroll_mode)
 bg1_map_offset      = $13BC	; BG1 BG_MAP_OFFSET: +$80 per 256-pixel page; its high byte is stage_progress
 stage_progress      = $13BD	; stage progress counter
@@ -536,7 +536,7 @@ title_menu_timeout  = $1C02	; title menu: frames left before the demo starts ($0
 continue_option_count = $1C02	; continue menu: number of entries (2 CONTINUE/END, 3 for the player choice)
 stage_bonus         = $1C02	; stage clear screen: bonus, BCD, low word (10000 at the start)
 options_cursor      = $1C02	; OPTION screen: cursor (0 PLAYER, 1 LEVEL, 2 SOUND, 3 EXIT)
-sound_check_id      = $1C02	; SOUND CHECK: selected entry ($00-$6A, index into data_1DCCE0)
+sound_check_id      = $1C02	; SOUND CHECK: selected entry ($00-$6A, index into sound_check_sound_ids)
 demo_p1_timer       = $1C04	; attract demo: frames left of player 1's current input
 stage_bonus_hi      = $1C04	; stage clear screen: bonus, BCD, high word
 options_lives_index = $1C04	; OPTION screen: PLAYER entry (index into lives_options)

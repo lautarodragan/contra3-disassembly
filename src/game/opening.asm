@@ -230,7 +230,7 @@ tbl_opening_city_steps:
 opening_city_init:
 	ldx	#$0000
 @loop:
-	lda	f:data_05A85B,x
+	lda	f:opening_city_hdma_table,x
 	sta	f:$7EA000,x
 	inx
 	cpx	#$0016
@@ -316,20 +316,20 @@ opening_vortex_spawn_objects:
 	jsr	a:opening_set_layers_normal
 	ldy	#$0000
 @loop:
-	lda	a:data_05A9D9,y
+	lda	a:opening_object_slots,y
 	tax
 	lda	#$0053
 	sta	$10,x
 	stz	$16,x
 	lda	#$0080
 	sta	$0A,x
-	lda	a:data_05A871,y
+	lda	a:opening_vortex_object_y,y
 	sta	$0E,x
 	lda	#$2000
 	sta	$02,x
 	lda	#$0000
 	sta	$04,x
-	lda	a:data_05A891,y
+	lda	a:opening_vortex_object_anims,y
 	sta	$20,x
 	stz	$22,x
 	iny
@@ -490,7 +490,7 @@ opening_ruins_fade:
 	lda	a:opening_step_timer
 	lsr	a
 	tay
-	lda	a:data_05A8B1,y
+	lda	a:opening_ruins_fade_view_x,y
 	and	#$00FF
 	sta	a:p1_view_x
 	sta	a:p2_view_x
@@ -586,9 +586,9 @@ opening_scene_hero_face:
 	ldy	a:opening_caption_index
 	inc	a:opening_caption_timer
 	lda	a:opening_caption_timer
-	cmp	a:data_05A8D1,y
+	cmp	a:opening_hero_face_caption_delays,y
 	bcc	opening_caption_return
-	lda	a:data_05A8DB,y
+	lda	a:opening_hero_face_caption_parts,y
 	rep	#$20
 	.a16
 	and	#$00FF
@@ -647,9 +647,9 @@ opening_scene_heroes:
 	ldy	a:opening_caption_index
 	inc	a:opening_caption_timer
 	lda	a:opening_caption_timer
-	cmp	a:data_05A8E5,y
+	cmp	a:opening_heroes_caption_delays,y
 	bcc	@check_end
-	lda	a:data_05A8F3,y
+	lda	a:opening_heroes_caption_parts,y
 	rep	#$20
 	.a16
 	and	#$00FF
@@ -679,17 +679,17 @@ opening_scene_heroes:
 @return2:
 	rts
 
-; A = entry: queues a strip of caption tiles (data_05A901...) with queue_vram_blocks.
+; A = entry: queues a strip of caption tiles (caption_part_row_widths...) with queue_vram_blocks.
 opening_draw_caption_part:
 	asl	a
 	tay
-	lda	a:data_05A901,y
+	lda	a:caption_part_row_widths,y
 	sta	zp_02
-	lda	a:data_05A909,y
+	lda	a:caption_part_block_counts,y
 	sta	zp_08
-	lda	a:data_05A911,y
+	lda	a:caption_part_vram_addrs,y
 	pha
-	lda	a:data_05A919,y
+	lda	a:ptrs_caption_part_blocks,y
 	tay
 	pla
 	phx
@@ -727,11 +727,11 @@ opening_update_parallax:
 	sta	f:wram_7EA010
 	rts
 
-; Clears the 16 object slots listed in data_05A9D9.
+; Clears the 16 object slots listed in opening_object_slots.
 opening_clear_objects:
 	ldy	#$0000
 @loop:
-	lda	a:data_05A9D9,y
+	lda	a:opening_object_slots,y
 	tax
 	stz	$10,x
 	stz	$00,x
@@ -769,7 +769,7 @@ opening_set_layers_normal:
 	rts
 
 ; Y = parameters: fills a table with a value modulated by the sign of a
-; sine table (data_058010); used for the wavy ruins effect.
+; sine table (half_turn_sine); used for the wavy ruins effect.
 build_wave_table:
 	lda	a:$0000,y
 	sta	zp_00
@@ -794,7 +794,7 @@ build_wave_table:
 	asl	a
 	asl	a
 	tax
-	lda	f:data_058010,x
+	lda	f:half_turn_sine,x
 	rol	a
 	rol	a
 	and	#$0001
@@ -823,7 +823,7 @@ opening_init_ruins_wave:
 	ldy	#$0000
 	ldx	#$0000
 @loop:
-	lda	a:data_05A9F9,y
+	lda	a:opening_ruins_hdma_table_a,y
 	sta	f:$7EA000,x
 	inx
 	iny
@@ -832,7 +832,7 @@ opening_init_ruins_wave:
 	ldy	#$0000
 	ldx	#$0000
 @loop2:
-	lda	a:data_05AA03,y
+	lda	a:opening_ruins_hdma_table_b,y
 	sta	f:$7EA400,x
 	inx
 	iny

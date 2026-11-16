@@ -735,7 +735,7 @@ options_change_level:
 	rts
 options_draw_level:
 	ldy	a:option_level
-	ldx	a:data_058903,y
+	ldx	a:ptrs_level_texts,y
 	jsl	f:draw_text
 	rts
 
@@ -780,7 +780,7 @@ options_apply_sound_mode:
 	rts
 options_draw_sound:
 	ldy	a:option_sound
-	ldx	a:data_05892E,y
+	ldx	a:ptrs_sound_mode_texts,y
 	jsl	f:draw_text
 	rts
 

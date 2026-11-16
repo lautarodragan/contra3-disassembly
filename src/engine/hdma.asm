@@ -23,7 +23,7 @@
 ; $7E:E800 (two halves of 127 lines, indirect HDMA list at $7E:EA00).
 
 ; Clears hud_buffer, draws the HUD label text and copies the templates
-; (data_05A14F.. + 2, 32 bytes per row) for player 1 and, with two players,
+; (hud_p1_top_template.. + 2, 32 bytes per row) for player 1 and, with two players,
 ; player 2.
 init_hud:
 	rep	#$30
@@ -41,14 +41,14 @@ init_hud:
 	jsl	f:draw_text_attr
 	ldx	#$0020
 @copy_p1_top:
-	lda	a:data_05A14F,x
+	lda	a:hud_p1_top_template,x
 	sta	a:$16FE,x
 	dex
 	dex
 	bne	@copy_p1_top
 	ldx	#$0020
 @copy_p1_bottom:
-	lda	a:data_05A18F,x
+	lda	a:hud_p1_bottom_template,x
 	sta	a:$173E,x
 	dex
 	dex
@@ -60,14 +60,14 @@ init_hud:
 	jsl	f:draw_text_attr
 	ldx	#$0020
 @copy_p2_top:
-	lda	a:data_05A16F,x
+	lda	a:hud_p2_top_template,x
 	sta	a:$171E,x
 	dex
 	dex
 	bne	@copy_p2_top
 	ldx	#$0020
 @copy_p2_bottom:
-	lda	a:data_05A1AF,x
+	lda	a:hud_p2_bottom_template,x
 	sta	a:$175E,x
 	dex
 	dex

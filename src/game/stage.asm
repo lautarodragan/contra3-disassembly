@@ -57,14 +57,14 @@ stage_init:
 	ldy	#.loword(palette_task_058AC7)
 	jsl	f:start_palette_task
 	ldy	a:stage_layout
-	lda	a:data_0589D3,y
+	lda	a:stage_bg1_map_offsets,y
 	sta	a:bg1_map_offset
-	lda	a:data_0589E7,y
+	lda	a:stage_bg2_map_offsets,y
 	sta	a:bg2_map_offset
 	ldy	a:stage_layout_base
 	ldx	a:ptrs_stage_dp_params,y
 	jsl	f:load_stage_dp_params
-	lda	a:data_0589FB,y
+	lda	a:stage_respawn_modes,y
 	sta	a:wram_1672
 	stz	shake_bg1_y
 	stz	shake_bg2_y
@@ -601,7 +601,7 @@ player_autopilot_mode1:
 @walk_to_target:
 	sec
 	lda	$0A,x
-	sbc	a:data_058CDE,y
+	sbc	a:autopilot_target_x,y
 	bpl	@check_left
 	beq	@stop
 	cmp	#$FFFE	; [num]

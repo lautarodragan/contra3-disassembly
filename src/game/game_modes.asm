@@ -409,7 +409,7 @@ game_mode_game_start:
 	lda	a:title_menu_cursor
 	asl	a
 	tay
-	ldx	a:data_05840A,y
+	ldx	a:ptrs_title_menu_texts,y
 	lda	#$2400
 	jsl	f:draw_text_attr
 	jsl	f:tick_wait_timer
@@ -574,7 +574,7 @@ game_mode_stage_select:
 	lda	stage_number
 	asl	a
 	tay
-	ldx	a:data_058428,y
+	ldx	a:ptrs_stage_card_texts,y
 	jsl	f:draw_text
 	lda	joy1_pressed
 	ora	joy2_pressed
@@ -624,7 +624,7 @@ game_mode_stage_select:
 	plp
 	brl	next_game_mode
 
-; GAME_MODE_STAGE_CARD: draws the stage name (data_058428), scores and
+; GAME_MODE_STAGE_CARD: draws the stage name (ptrs_stage_card_texts), scores and
 ; lives; button masks; fades in, loads the stage graphics unless
 ; stage_gfx_loaded, starts the music, fades out; stage_index =
 ; stage_number - 1 -> GAME_MODE_STAGE_PLAY.
@@ -655,7 +655,7 @@ game_mode_stage_card:
 	lda	stage_number
 	asl	a
 	tay
-	ldx	a:data_058428,y
+	ldx	a:ptrs_stage_card_texts,y
 	lda	#$2400
 	jsl	f:draw_text_attr
 	stz	a:stage_state
@@ -1017,7 +1017,7 @@ continue_draw_menu:
 	lda	a:continue_cursor
 	asl	a
 	tay
-	lda	a:data_0583FC,y
+	lda	a:continue_menu_attrs,y
 	ldx	#.loword(text_continue)
 	pha
 	jsl	f:draw_text_attr
@@ -1029,7 +1029,7 @@ continue_draw_menu:
 	eor	#$0001
 	asl	a
 	tay
-	lda	a:data_0583FC,y
+	lda	a:continue_menu_attrs,y
 	ldx	#.loword(text_end)
 	jsl	f:draw_text_attr
 	rts
@@ -1051,19 +1051,19 @@ continue_draw_player_menu:
 	lda	a:continue_cursor
 	asl	a
 	tay
-	lda	a:data_058404,y
+	lda	a:continue_player_menu_attrs_1p,y
 	ldx	#.loword(text_1_player)
 	jsl	f:draw_text_attr
 	lda	a:continue_cursor
 	asl	a
 	tay
-	lda	a:data_058402,y
+	lda	a:continue_player_menu_attrs_2p_a,y
 	ldx	#.loword(text_2_players_a)
 	jsl	f:draw_text_attr
 	lda	a:continue_cursor
 	asl	a
 	tay
-	lda	a:data_058400,y
+	lda	a:continue_player_menu_attrs_2p_b,y
 	ldx	#.loword(text_2_players_b)
 	jsl	f:draw_text_attr
 	rts

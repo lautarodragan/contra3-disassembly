@@ -3,7 +3,9 @@
 ;
 ; A table nothing read in the CDL traces, then $FF padding.
 
-data_1DCCE0:
+; Sound played for each entry of the sound check (sound_check_play, by
+; sound_check_id): ids $60-$73 load a song set first.
+sound_check_sound_ids:
 	; CDL: not accessed
 	.byte	$01, $02, $03, $04, $05, $06, $07, $08, $09, $0A, $0B, $0C, $0D, $0E, $0F, $10
 	.byte	$11, $12, $13, $14, $15, $16, $17, $1A, $1B, $1C, $1D, $20, $21, $22, $23, $24

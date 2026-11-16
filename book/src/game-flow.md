@@ -96,8 +96,9 @@ Three button codes are in the ROM but nothing calls them:
 (`option_lives` = 30) and `check_stage_select_code` (sets
 `stage_select_enabled`, which makes `game_mode_game_start` go to
 `game_mode_stage_select`). Each compares the d-pad against a three-step
-sequence (`data_0586D3`, `data_0586D9`, `data_0586DF`) within a time
-limit and then waits for a button.
+sequence (`code_unused_dpad_sequence`, `code_30_lives_dpad_sequence`,
+`code_stage_select_dpad_sequence`) within a time limit and then waits for
+a button.
 
 ## The attract demo
 

@@ -7,7 +7,7 @@
 
 ; (no caller found; decoded because it follows the end of a routine)
 ; (No caller.) Mode 7 matrix shadows m7a-m7d from the angle at $1F98 (sine
-; table data_058010) and the scales at $1F94/$1F96, and M7X/M7Y from
+; table half_turn_sine) and the scales at $1F94/$1F96, and M7X/M7Y from
 ; $1F90/$1F92.
 unused_calc_mode7_matrix:
 	; (not executed in the CDL traces)
@@ -24,17 +24,17 @@ unused_calc_mode7_matrix:
 	tay
 	lda	a:p1_m7_angle
 	clc
-	adc	f:data_058000,x
+	adc	f:m7_matrix_sign_phases,x
 	and	#$01FF
 	pha
 	lda	a:p1_m7_angle
 	and	#$00FF
 	asl	a
 	clc
-	adc	f:data_058008,x
+	adc	f:m7_matrix_sine_phases,x
 	and	#$01FF
 	tax
-	lda	f:data_058010,x
+	lda	f:half_turn_sine,x
 	ldx	a:$1F94,y
 	jsl	f:sub_0089E4
 	pla

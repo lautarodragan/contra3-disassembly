@@ -11,13 +11,22 @@
 tables_05:
 TABLES_05_BASE = ^tables_05 << 16
 
-data_058000:
+; Unused (unused_calc_mode7_matrix): added to the angle per matrix entry (m7a,
+; m7b, m7c, m7d) before testing >= $100 for the sign: cos is negative a
+; quarter turn later than sin.
+m7_matrix_sign_phases:
 	; CDL: not accessed
 	.byte	$80, $00, $00, $00, $00, $01, $80, $00
-data_058008:
+; Unused (unused_calc_mode7_matrix): added to the angle x 2 to index
+; half_turn_sine: $100 (a quarter turn) for the cosine entries m7a/m7d, 0 for
+; m7b/m7c.
+m7_matrix_sine_phases:
 	; CDL: not accessed
 	.byte	$00, $01, $00, $00, $00, $00, $00, $01
-data_058010:
+; sin(i * 180 / 256) * $FFFF for i = 0-255 (words, unsigned: callers apply the
+; sign): unused_calc_mode7_matrix, build_wave_table (sign only), loc_01E16F.
+; The 24 bytes after the table are not read in the traces.
+half_turn_sine:
 	; CDL: read by build_wave_table, object_type_4E_state_0D; partly not accessed
 	.byte	$00, $00, $24, $03, $48, $06, $6C, $09, $8F, $0C, $B2, $0F, $D4, $12, $F6, $15
 	.byte	$17, $19, $37, $1C, $55, $1F, $73, $22, $8F, $25, $AA, $28, $C3, $2B, $DB, $2E
@@ -53,11 +62,16 @@ data_058010:
 	.byte	$1D, $19, $FC, $15, $DA, $12, $B8, $0F, $95, $0C, $72, $09, $4E, $06, $2A, $03
 	.byte	$00, $00, $01, $00, $02, $00, $03, $00, $04, $00, $05, $00, $06, $00, $08, $00
 	.byte	$10, $00, $50, $00, $00, $01, $00, $10
-data_058228:
+; Pad bit of each joypad (1, 2, 4...) tested against soft_reset_pad_mask by
+; read_joypads (X = pad x 2).
+soft_reset_pad_bits:
 	; CDL: read by read_joypads
 	.byte	$01, $00, $02, $00, $04, $00
-data_05822E:
-	; LAYOUT: read on from data_058228 (and a:data_058228,x)
+; HDMA channel list of hdma_preset (x2; setup_hdma_channels). Entry 0 (preset
+; 0 = none) is never read as a pointer: its word ($0008) is the fourth pad bit
+; of soft_reset_pad_bits.
+ptrs_hdma_presets:
+	; LAYOUT: read on from soft_reset_pad_bits (and a:soft_reset_pad_bits,x)
 	; CDL: read by read_joypads, setup_hdma_channels; partly not accessed
 	.byte	$08, $00
 	.addr	hdma_list_0584FE
@@ -204,22 +218,31 @@ continues_per_difficulty:
 .else
 	.byte	$02, $00, $04, $00, $04, $00
 .endif
-data_0583FC:
+; Tile attributes of CONTINUE / END by continue_cursor: $2400 highlighted,
+; $2000 normal (continue_draw_menu reads it for both, the second with the
+; cursor flipped).
+continue_menu_attrs:
 	; CDL: read by continue_draw_menu
 	.byte	$00, $24, $00, $20
-data_058400:
+; Attribute of "2 PLAYERS B" by continue_cursor (continue_draw_player_menu;
+; the three tables overlap: $2400 where the cursor is).
+continue_player_menu_attrs_2p_b:
 	; LAYOUT: the attribute tables of the menus overlap (indexed reads run on)
 	; CDL: read by continue_draw_player_menu
 	.byte	$00, $20
-data_058402:
+; Attribute of "2 PLAYERS A" by continue_cursor (continue_draw_player_menu).
+continue_player_menu_attrs_2p_a:
 	; LAYOUT: the attribute tables of the menus overlap (indexed reads run on)
 	; CDL: read by continue_draw_player_menu
 	.byte	$00, $20
-data_058404:
-	; LAYOUT: read on from data_058402 (lda a:data_058402,y)
+; Attribute of "1 PLAYER" by continue_cursor (continue_draw_player_menu).
+continue_player_menu_attrs_1p:
+	; LAYOUT: read on from continue_player_menu_attrs_2p_a (lda a:continue_player_menu_attrs_2p_a,y)
 	; CDL: read by continue_draw_player_menu
 	.byte	$00, $24, $00, $20, $00, $20
-data_05840A:
+; Title menu entries by title_menu_cursor (game_mode_game_start blinks the
+; chosen one).
+ptrs_title_menu_texts:
 	; CDL: read by start_palette_task_at, palette_task_animate, game_mode_game_start; partly not accessed
 	.addr	text_1_player, text_2_players_a, text_2_players_b, text_option
 palette_task_058412:
@@ -230,7 +253,7 @@ text_stage_select:
 	.byte	$2B, $5A, $4D, $4E, $3C, $42, $40, $00, $4D, $40, $47, $40, $3E
 ; Stage card text by stage (game_mode_stage_card: index = stage * 2, so
 ; entry 0 is the end of the string above).
-data_058428:
+ptrs_stage_card_texts:
 	; CDL: read by draw_text, game_mode_stage_card; partly not accessed
 	.byte	$4E, $FF
 	.addr	text_stage_1, text_stage_2, text_stage_3, text_stage_4, text_stage_5, text_stage_6
@@ -290,19 +313,24 @@ hdma_table_05850F:
 hdma_table_058514:
 	.byte	$80, $11
 	.byte	$01, $04, $00
-data_058519:
+; Attribute of OPTION by title_menu_cursor (draw_title_menu_cursor; the four
+; tables overlap: $2400 at the cursor, $2000 elsewhere).
+title_menu_attrs_option:
 	; LAYOUT: read on from the table before
 	; CDL: read by draw_title_menu_cursor
 	.byte	$00, $20
-data_05851B:
+; Attribute of "2 PLAYERS B" by title_menu_cursor (draw_title_menu_cursor).
+title_menu_attrs_2p_b:
 	; LAYOUT: the attribute tables of the menus overlap (indexed reads run on)
 	; CDL: read by draw_title_menu_cursor
 	.byte	$00, $20
-data_05851D:
+; Attribute of "2 PLAYERS A" by title_menu_cursor (draw_title_menu_cursor).
+title_menu_attrs_2p_a:
 	; LAYOUT: the attribute tables of the menus overlap (indexed reads run on)
 	; CDL: read by draw_title_menu_cursor
 	.byte	$00, $20
-data_05851F:
+; Attribute of "1 PLAYER" by title_menu_cursor (draw_title_menu_cursor).
+title_menu_attrs_1p:
 	; LAYOUT: the attribute tables of the menus overlap (indexed reads run on)
 	; CDL: read by draw_title_menu_cursor
 	.byte	$00, $24, $00, $20, $00, $20, $00, $20
@@ -408,13 +436,18 @@ load_list_058687:
 	load_wram	$7EB000, packed_0FF83B
 	load_wram	$7EF000, packed_0FFDB7
 	load_end
-data_0586D3:
+; D-pad sequence of check_button_code_unused (never run): right, down,
+; down+right.
+code_unused_dpad_sequence:
 	; CDL: not accessed
 	.byte	$00, $01, $00, $04, $00, $05
-data_0586D9:
+; D-pad sequence of check_30_lives_code (never run): down, down+right, right.
+code_30_lives_dpad_sequence:
 	; CDL: not accessed
 	.byte	$00, $04, $00, $05, $00, $01
-data_0586DF:
+; D-pad sequence of check_stage_select_code (never run): down, down+left,
+; left.
+code_stage_select_dpad_sequence:
 	; CDL: read by draw_title_sprite_group; partly not accessed
 	.byte	$00, $04, $00, $06, $00, $02
 title_sprites_0586E5:
@@ -451,7 +484,8 @@ title_sprites_05878F:
 	.byte	$00, $00
 title_sprites_058791:
 	.byte	$68, $38
-data_058793:
+; The four texts that konami_logo_sweep draws in turn (konami_logo_count1).
+ptrs_konami_logo_sweep_texts:
 	; CDL: read by draw_text, konami_logo_sweep
 	.addr	text_05879B, text_05879F, text_0587A3, text_0587A7
 text_05879B:
@@ -588,7 +622,8 @@ ptrs_0588ED:
 lives_options:
 	; CDL: read by options_store_lives; partly not accessed
 	.byte	$03, $00, $05, $00, $07, $00, $1E, $00
-data_058903:
+; EASY / NORMAL / HARD by option_level (options_draw_level).
+ptrs_level_texts:
 	; CDL: read by draw_text, options_change_level
 	.addr	text_easy, text_normal, text_hard
 text_easy:
@@ -602,7 +637,8 @@ text_hard:
 sound_mode_commands:
 	; CDL: read by draw_text; partly not accessed
 	.byte	$7F, $00, $7E, $00
-data_05892E:
+; STEREO / MONAURAL by option_sound (options_draw_sound).
+ptrs_sound_mode_texts:
 	; CDL: read by draw_text, options_apply_sound_mode; partly not accessed
 	.addr	text_stereo, text_monaural
 text_stereo:
@@ -651,19 +687,25 @@ text_rest_03_4:
 stage_layouts:
 	; CDL: read by stage_init
 	.byte	$08, $00, $02, $02, $04, $04, $06
-data_0589D3:
+; bg1_map_offset by stage_layout (stage_init; the checkpoint layouts start $0A
+; bytes in).
+stage_bg1_map_offsets:
 	; CDL: read by stage_init; partly not accessed
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $09, $00, $07, $80, $00
 	.byte	$00, $04, $00, $00
-data_0589E7:
+; bg2_map_offset by stage_layout (stage_init).
+stage_bg2_map_offsets:
 	; CDL: read by stage_init; partly not accessed
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $00, $01, $00, $00
 	.byte	$00, $00, $00, $00
-data_0589FB:
+; Respawn mode (wram_1672, read by the player's state $0F through
+; tbl_respawn_placement) set at the start of each stage, by stage_layout_base
+; (stage_init).
+stage_respawn_modes:
 	; CDL: read by stage_init
 	.byte	$00, $00, $00, $00, $05, $00, $00, $00
 ptrs_stage_dp_params:
-	; LAYOUT: read on from data_0589FB (lda a:data_0589FB,y)
+	; LAYOUT: read on from stage_respawn_modes (lda a:stage_respawn_modes,y)
 	; CDL: read by stage_init
 	.addr	stage_dp_params_058A2B, stage_dp_params_058A45, stage_dp_params_058A5F, stage_dp_params_058A79, stage_dp_params_058A5F
 ptrs_stage_load_lists:
@@ -853,10 +895,14 @@ palette_task_058CCD:
 	palette_copy	palette_088F92, $2200
 	palette_copy	palette_0886C6, $2340
 	palette_copy_end
-data_058CDE:
+; X position the autopilot walks the player to (player_autopilot_mode1, index
+; Y from the caller; probably one per player).
+autopilot_target_x:
 	; CDL: read by player_autopilot_mode1; partly not accessed
 	.byte	$68, $00, $98, $00
-data_058CE2:
+; Source addresses in $7E of the BG3 blocks that draw_bg3_block_map writes to
+; VRAM $5C00 (one word per block, 4 rows of 4 tiles each).
+bg3_block_sources:
 	; CDL: read by draw_bg3_block_map
 	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B0
 	.byte	$00, $B3, $E0, $B7, $20, $B8, $00, $B3, $20, $B3, $40, $B3, $E0, $B7, $20, $B8
@@ -865,7 +911,9 @@ data_058CE2:
 	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B3, $E0, $B7, $20, $B8, $00, $B0, $00, $B0
 	.byte	$00, $B3, $20, $B3, $40, $B3, $E0, $B7, $20, $B8, $00, $B0, $00, $B0, $00, $B0
 	.byte	$00, $B0, $00, $B0, $00, $B0, $00, $B0, $00, $B3, $E0, $B7, $20, $B8, $00, $B0
-data_058D52:
+; Upward autoscroll speed (fraction added to bg1_y_sub each frame, carry = one
+; more pixel) by bg1_autoscroll_speed (bg1_scroll_vertical).
+bg1_autoscroll_speeds:
 	; CDL: read by bg1_scroll_vertical; partly not accessed
 	.byte	$00, $00, $00, $C0, $00, $20, $00, $00
 ; Velocity of 8 pixels a frame in 64 directions (index = angle & $7E, $00
@@ -1609,22 +1657,28 @@ text_2p:
 	.byte	$30, $5C, $00, $03, $0B, $00, $0D, $00, $00, $0E
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $FE, $50, $5C, $00, $0C, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $0C
-data_05A14F:
+; HUD template rows copied by init_hud (16 words, read at +2 ... +$21 because
+; X counts $20 down to 2, so the label is 2 bytes before its row): player 1,
+; top row.
+hud_p1_top_template:
 	; CDL: read by draw_text, init_hud
 	.byte	$00, $FF, $00, $20, $02, $20, $0B, $20, $00, $20, $0D, $20, $10, $2C, $11, $2C
 	.byte	$0E, $20, $10, $28, $11, $28, $00, $00, $28, $30, $29, $30, $00, $20, $00, $20
-data_05A16F:
-	; LAYOUT: read on from data_05A14F (lda a:data_05A14F,x)
+; HUD template: player 2, top row (read at +2 ... +$21 by init_hud).
+hud_p2_top_template:
+	; LAYOUT: read on from hud_p1_top_template (lda a:hud_p1_top_template,x)
 	; CDL: read by init_hud
 	.byte	$00, $20, $00, $20, $03, $24, $0B, $24, $00, $20, $0D, $24, $10, $2C, $11, $2C
 	.byte	$0E, $24, $10, $28, $11, $28, $00, $24, $28, $30, $29, $30, $00, $20, $00, $20
-data_05A18F:
-	; LAYOUT: read on from data_05A16F (lda a:data_05A16F,x)
+; HUD template: player 1, bottom row (read at +2 ... +$21 by init_hud).
+hud_p1_bottom_template:
+	; LAYOUT: read on from hud_p2_top_template (lda a:hud_p2_top_template,x)
 	; CDL: read by init_hud
 	.byte	$00, $20, $00, $20, $0C, $20, $01, $20, $01, $20, $00, $20, $12, $2C, $13, $2C
 	.byte	$00, $20, $12, $28, $13, $28, $00, $20, $2A, $30, $2B, $30, $0C, $20, $01, $20
-data_05A1AF:
-	; LAYOUT: read on from data_05A18F (lda a:data_05A18F,x)
+; HUD template: player 2, bottom row (read at +2 ... +$21 by init_hud).
+hud_p2_bottom_template:
+	; LAYOUT: read on from hud_p1_bottom_template (lda a:hud_p1_bottom_template,x)
 	; CDL: read by init_hud
 	.byte	$00, $20, $00, $20, $0C, $24, $01, $24, $01, $24, $00, $20, $12, $2C, $13, $2C
 	.byte	$00, $20, $12, $28, $13, $28, $00, $20, $2A, $30, $2B, $30, $0C, $24, $01, $24
@@ -1744,16 +1798,26 @@ hdma_list_05A380:
 hdma_list_05A393:
 	hdma_channel_ind	$4370, $42, $10, $7EE800, $7E
 	hdma_channels_end	$80
-data_05A39E:
+; Player object ($0200 / $0240) whose window effect is drawn, by
+; stage_frame_odd, when both players are alive (update_player_window: one
+; player each frame).
+window_player_by_frame:
 	; CDL: read by update_player_window
 	.byte	$00, $02, $40, $02
-data_05A3A2:
+; Address of the COLDATA HDMA table (zp_C6) by stage_frame_odd: two buffers,
+; $F800 and $FA00 (update_player_window).
+coldata_hdma_buffers:
 	; CDL: read by update_player_window
 	.byte	$00, $F8, $00, $FA
-data_05A3A6:
+; Address of the window HDMA table (zp_9E) by stage_frame_odd: two buffers,
+; $3C00 and $3E00 (update_player_window).
+window_hdma_buffers:
 	; CDL: read by update_player_window
 	.byte	$00, $3C, $00, $3E
-data_05A3AA:
+; $80 bytes: offsets added to the barrier circle, scrolled by
+; stage_frame_counter (wobble_barrier_window); then, from +$80, the half
+; widths (words) of a circle of radius $18 (setup_barrier_window).
+barrier_wobble_offsets:
 	; CDL: read by wobble_barrier_window
 	.byte	$1F, $1F, $1E, $1E, $1D, $1D, $1C, $1C, $1B, $1B, $1A, $1A, $19, $19, $18, $18
 	.byte	$17, $17, $16, $16, $15, $15, $14, $14, $13, $13, $12, $12, $11, $11, $10, $10
@@ -2013,48 +2077,68 @@ load_list_05A84B:
 	load_wram	$7E9000, packed_07F552
 	load_wram	$7E5000, packed_15D80A
 	load_end
-data_05A85B:
+; HDMA table copied to $7E:A000 for the city scene (opening_city_init,
+; hdma_preset $0D).
+opening_city_hdma_table:
 	; CDL: read by opening_city_init
 	.byte	$20, $00, $00, $08, $00, $00, $08, $00, $00, $08, $00, $00, $08, $00, $00, $08
 	.byte	$00, $00, $08, $00, $00, $00
-data_05A871:
-	; LAYOUT: read on from data_05A85B (lda f:data_05A85B,x)
+; OBJ_Y of the 16 objects of the vortex scene (opening_vortex_spawn_objects).
+opening_vortex_object_y:
+	; LAYOUT: read on from opening_city_hdma_table (lda f:opening_city_hdma_table,x)
 	; CDL: read by opening_city_init, opening_vortex_spawn_objects
 	.byte	$26, $00, $2E, $00, $36, $00, $3E, $00, $46, $00, $4E, $00, $56, $00, $5E, $00
 	.byte	$66, $00, $6E, $00, $76, $00, $7E, $00, $86, $00, $8E, $00, $96, $00, $9E, $00
-data_05A891:
+; Animation (+$20) of the 16 objects of the vortex scene
+; (opening_vortex_spawn_objects).
+opening_vortex_object_anims:
 	; CDL: read by opening_vortex_spawn_objects
 	.addr	anim_05A92D, anim_05A93F, anim_05A951, anim_05A933
 	.addr	anim_05A945, anim_05A957, anim_05A939, anim_05A94B
 	.addr	anim_05A92D, anim_05A93F, anim_05A951, anim_05A933
 	.addr	anim_05A945, anim_05A957, anim_05A939, anim_05A94B
-data_05A8B1:
+; p1_view_x / p2_view_x by opening_step_timer / 2 in opening_ruins_fade (ends
+; at 0).
+opening_ruins_fade_view_x:
 	; CDL: read by opening_ruins_fade
 	.byte	$FE, $FD, $FC, $FB, $FA, $F9, $F8, $F7, $F6, $F5, $F4, $F3, $F2, $F1, $F0, $EF
 	.byte	$EE, $ED, $EC, $EB, $EA, $E9, $E8, $E7, $E6, $E5, $E4, $E3, $E2, $E1, $E0, $00
-data_05A8D1:
-	; LAYOUT: read on from data_05A8B1 (lda a:data_05A8B1,y)
+; Frames before each caption part of the hero face scene
+; (opening_scene_hero_face; byte per part, $FF ends).
+opening_hero_face_caption_delays:
+	; LAYOUT: read on from opening_ruins_fade_view_x (lda a:opening_ruins_fade_view_x,y)
 	; CDL: read by opening_ruins_fade, opening_scene_hero_face; partly not accessed
 	.byte	$10, $08, $10, $08, $04, $04, $08, $04, $FF, $FF
-data_05A8DB:
+; Caption part (opening_draw_caption_part) drawn at each step of the hero face
+; scene.
+opening_hero_face_caption_parts:
 	; CDL: read by opening_scene_hero_face; partly not accessed
 	.byte	$01, $00, $01, $00, $01, $00, $01, $00, $00, $00
-data_05A8E5:
+; Frames before each caption part of the heroes scene (opening_scene_heroes;
+; $FF ends).
+opening_heroes_caption_delays:
 	; CDL: read by opening_scene_heroes; partly not accessed
 	.byte	$19, $08, $10, $08, $04, $04, $08, $04, $04, $08, $08, $04, $FF, $FF
-data_05A8F3:
+; Caption part drawn at each step of the heroes scene.
+opening_heroes_caption_parts:
 	; CDL: read by opening_scene_heroes; partly not accessed
 	.byte	$03, $02, $03, $02, $03, $02, $03, $02, $03, $02, $03, $02, $02, $02
-data_05A901:
+; Blocks per row of each caption part (zp_02 for queue_vram_blocks;
+; opening_draw_caption_part).
+caption_part_row_widths:
 	; CDL: read by opening_draw_caption_part
 	.byte	$02, $00, $02, $00, $01, $00, $01, $00
-data_05A909:
+; Number of blocks of each caption part (zp_08; opening_draw_caption_part).
+caption_part_block_counts:
 	; CDL: read by opening_draw_caption_part
 	.byte	$10, $00, $10, $00, $08, $00, $08, $00
-data_05A911:
+; VRAM address of each caption part (opening_draw_caption_part).
+caption_part_vram_addrs:
 	; CDL: read by opening_draw_caption_part
 	.byte	$6C, $42, $6C, $42, $0E, $49, $0E, $49
-data_05A919:
+; Block list of each caption part (Y for queue_vram_blocks;
+; opening_draw_caption_part).
+ptrs_caption_part_blocks:
 	; CDL: read by update_objects, opening_draw_caption_part, queue_vram_blocks_at_x; partly not accessed
 	.addr	vram_blocks_05A921, vram_blocks_05A925, vram_blocks_05A929, vram_blocks_05A92B
 vram_blocks_05A921:
@@ -2105,14 +2189,18 @@ anim_05A95F:
 anim_05A9D1:
 	anim_frame	$0002, $0000, $0000
 	anim_goto	anim_05A9D1
-data_05A9D9:
+; The 16 object slots of the opening scenes ($0300-$06C0):
+; opening_vortex_spawn_objects, opening_clear_objects.
+opening_object_slots:
 	; CDL: read by opening_clear_objects
 	.byte	$00, $03, $40, $03, $80, $03, $C0, $03, $00, $04, $40, $04, $80, $04, $C0, $04
 	.byte	$00, $05, $40, $05, $80, $05, $C0, $05, $00, $06, $40, $06, $80, $06, $C0, $06
-data_05A9F9:
+; HDMA table copied to $7E:A000 by opening_init_ruins_wave (the wavy ruins).
+opening_ruins_hdma_table_a:
 	; CDL: read by opening_init_ruins_wave
 	.byte	$50, $10, $A0, $EE, $20, $A0, $30, $10, $A0, $00
-data_05AA03:
+; HDMA table copied to $7E:A400 by opening_init_ruins_wave.
+opening_ruins_hdma_table_b:
 	; CDL: read by build_wave_table, opening_init_ruins_wave
 	.byte	$50, $10, $A4, $EE, $20, $A4, $30, $10, $A4, $00
 ruins_wave_params_0:
@@ -3574,13 +3662,17 @@ anim_05CD0B:
 	anim_frame	$0010, metasprite_06C741, metasprite_06C741
 	.word	$0000
 	.addr	metasprite_06C6C6
-data_05CD1B:
+; Palette task started every $30 frames by update_palette_anim, by
+; palette_anim_id (x2; entry 0, id none, is never read).
+ptrs_palette_anim_first:
 	; CDL: read by update_palette_anim; partly not accessed
 	.addr	metasprite_06C6C6
 	.addr	palette_task_05CD29
 	.addr	palette_task_05CD41
-data_05CD21:
-	; LAYOUT: read on from data_05CD1B (lda a:data_05CD1B,y)
+; Palette task started $20 frames after the first one (update_palette_anim),
+; by palette_anim_id; ids 2, 4, 6 (entry 0 is the first table's id 6).
+ptrs_palette_anim_second:
+	; LAYOUT: read on from ptrs_palette_anim_first (lda a:ptrs_palette_anim_first,y)
 	; CDL: read by start_palette_task_at, palette_task_fade_out, palette_task_fade_in (+2 more); DMA / HDMA
 	.addr	palette_task_05CD4D
 	.addr	palette_task_05CD2F
@@ -4624,7 +4716,10 @@ window_widths_05E2F6:
 	.byte	$0D, $00, $0E, $00, $0E, $00, $0F, $00, $0F, $00, $0F, $00, $0F, $00, $0F, $00
 	.byte	$10, $00, $0F, $00, $0F, $00, $0F, $00, $0F, $00, $0F, $00, $0E, $00, $0E, $00
 	.byte	$0D, $00, $0D, $00, $0C, $00, $0B, $00, $0A, $00, $09, $00, $07, $00, $05, $00
-data_05E336:
+; sqrt(1 - (1 - i/256)^2) * 255 for i = 0-255 (plus filler): half width of a
+; circle at each height, scaled by the radius with the hardware multiplier
+; (build_window_circle).
+circle_chord_widths:
 	; CDL: read by build_window_circle; partly not accessed
 	.byte	$00, $16, $1F, $27, $2D, $32, $37, $3B, $3F, $43, $46, $4A, $4D, $50, $53, $56
 	.byte	$59, $5B, $5E, $60, $63, $65, $67, $6A, $6C, $6E, $70, $72, $74, $76, $78, $7A
@@ -4643,10 +4738,13 @@ data_05E336:
 	.byte	$FD, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-data_05E43E:
+; CGADSUB for the smart bomb flash of player 1 (code not run in the traces):
+; $13 or $11 by bit $2000 (sprite priority) of player 1's object attributes.
+bomb_flash_cgadsub_p1:
 	; CDL: not accessed
 	.byte	$13, $00, $11, $00
-data_05E442:
+; The same for player 2.
+bomb_flash_cgadsub_p2:
 	; CDL: not accessed
 	.byte	$13, $00, $11, $00
 td_enemy_scores:

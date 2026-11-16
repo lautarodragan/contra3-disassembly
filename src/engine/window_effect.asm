@@ -21,7 +21,7 @@ update_player_window:
 	beq	loc_00E80C
 	lda	a:p1_lives
 	beq	loc_00E805
-	lda	a:data_05A39E,y
+	lda	a:window_player_by_frame,y
 	tax
 	sta	zp_FE
 	bra	loc_00E811
@@ -34,9 +34,9 @@ loc_00E80C:
 	ldx	#$0200
 	stx	zp_FE
 loc_00E811:
-	lda	a:data_05A3A2,y
+	lda	a:coldata_hdma_buffers,y
 	sta	zp_C6
-	lda	a:data_05A3A6,y
+	lda	a:window_hdma_buffers,y
 	sta	zp_9E
 	sta	zp_1E
 	clc
@@ -79,7 +79,7 @@ setup_barrier_window:
 	lda	#$0203
 	sta	a:tmw_shadow
 	stz	a:coldata_shadow
-	lda	#.loword(data_05A3AA + $80)
+	lda	#.loword(barrier_wobble_offsets + $80)
 	sta	zp_12
 	lda	#$0018
 	sta	zp_10
@@ -177,7 +177,7 @@ loc_00E8FF:
 	.a16
 	rts
 
-; Wobbles the barrier circle: adds data_05A3AA (a sine-like table, scrolled
+; Wobbles the barrier circle: adds barrier_wobble_offsets (a sine-like table, scrolled
 ; by stage_frame_counter) to the table, with a colour that changes when the
 ; barrier has less than $60 frames left (it blinks before running out).
 wobble_barrier_window:
@@ -206,7 +206,7 @@ loc_00E927:
 	rep	#$20
 @loop:
 	.a16
-	lda	f:data_05A3AA,x
+	lda	f:barrier_wobble_offsets,x
 	and	#$00FF
 	ora	zp_00
 	xba

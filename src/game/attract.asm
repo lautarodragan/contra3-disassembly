@@ -655,25 +655,25 @@ draw_title_menu_cursor:
 	lda	a:title_menu_cursor
 	asl	a
 	tay
-	lda	a:data_05851F,y
+	lda	a:title_menu_attrs_1p,y
 	ldx	#.loword(text_1_player)
 	jsl	f:draw_text_attr
 	lda	a:title_menu_cursor
 	asl	a
 	tay
-	lda	a:data_05851D,y
+	lda	a:title_menu_attrs_2p_a,y
 	ldx	#.loword(text_2_players_a)
 	jsl	f:draw_text_attr
 	lda	a:title_menu_cursor
 	asl	a
 	tay
-	lda	a:data_05851B,y
+	lda	a:title_menu_attrs_2p_b,y
 	ldx	#.loword(text_2_players_b)
 	jsl	f:draw_text_attr
 	lda	a:title_menu_cursor
 	asl	a
 	tay
-	lda	a:data_058519,y
+	lda	a:title_menu_attrs_option,y
 	ldx	#.loword(text_option)
 	jsl	f:draw_text_attr
 	clc
@@ -730,7 +730,7 @@ check_button_code_unused:
 	lda	joy1_held
 	ora	joy2_held
 	and	#JOY_DPAD
-	cmp	a:data_0586D3,y
+	cmp	a:code_unused_dpad_sequence,y
 	bne	@not_entered
 	cpy	#$0000
 	bne	@next_entry
@@ -776,7 +776,7 @@ check_30_lives_code:
 	lda	joy1_held
 	ora	joy2_held
 	and	#JOY_DPAD
-	cmp	a:data_0586D9,y
+	cmp	a:code_30_lives_dpad_sequence,y
 	bne	@not_entered
 	cpy	#$0000
 	bne	@next_entry
@@ -824,7 +824,7 @@ check_stage_select_code:
 	lda	joy1_held
 	ora	joy2_held
 	and	#JOY_DPAD
-	cmp	a:data_0586DF,y
+	cmp	a:code_stage_select_dpad_sequence,y
 	bne	@not_entered
 	cpy	#$0000
 	bne	@next_entry
@@ -1027,7 +1027,7 @@ konami_logo_sweep:
 	lda	a:konami_logo_count1
 	asl	a
 	tay
-	ldx	a:data_058793,y
+	ldx	a:ptrs_konami_logo_sweep_texts,y
 	lda	#$2C00
 	jsl	f:draw_text_attr
 	inc	a:konami_logo_count1

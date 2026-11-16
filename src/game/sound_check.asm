@@ -6,7 +6,7 @@
 ; never run in the CDL traces (checked in the emulator by poking game_mode).
 
 ; SOUND CHECK MODE (game mode 5, never run): d-pad picks sound_check_id
-; ($00-$6A, auto-repeat), Y plays it (data_1DCCE0; ids $60-$73 load a song
+; ($00-$6A, auto-repeat), Y plays it (sound_check_sound_ids; ids $60-$73 load a song
 ; set first), B sends $84 (stop), Start leaves.
 run_sound_check:
 	; (not executed in the CDL traces)
@@ -146,7 +146,7 @@ sound_check_play:
 	bit	#JOY_Y
 	beq	@return
 	ldx	a:sound_check_id
-	lda	f:data_1DCCE0,x
+	lda	f:sound_check_sound_ids,x
 	and	#$00FF
 	cmp	#$0060
 	bcc	@play_sound
@@ -169,7 +169,7 @@ sound_check_play:
 	lda	a:song_start_commands,y
 	jsl	f:send_sound_command_now
 	ldx	a:sound_check_id
-	lda	f:data_1DCCE0,x
+	lda	f:sound_check_sound_ids,x
 	and	#$00FF
 	jsl	f:send_sound_command_now
 	rts

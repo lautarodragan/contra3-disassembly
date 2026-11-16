@@ -32,7 +32,7 @@ read_joypads:
 @reset_check_loop:
 	rep	#$20
 	lda	soft_reset_pad_mask
-	and	a:data_058228,x
+	and	a:soft_reset_pad_bits,x
 	beq	@next_pad
 	lda	$28,x
 	cmp	#JOY_SELECT

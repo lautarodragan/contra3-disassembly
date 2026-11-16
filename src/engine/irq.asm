@@ -2,7 +2,7 @@
 ; Bank $00, $00:8BA7-$00:8CFE. Included by main.asm in segment BANK00.
 ;
 ; setup_hdma_channels (from nmi_frame_default) programs the HDMA channels
-; from the preset hdma_preset (data_05822E). irq (also the COP/BRK/ABORT
+; from the preset hdma_preset (ptrs_hdma_presets). irq (also the COP/BRK/ABORT
 ; vector) acknowledges TIMEUP, masks the H/V IRQ in NMITIMEN and dispatches
 ; on irq_mode through tbl_irq_handlers. The two handlers serve the two-player
 ; split screen of the top-down stages: irq_mode7_top_view loads player 1's
@@ -12,7 +12,7 @@
 ; reset_vram_queue (end of the file) belongs to engine/vram.asm.
 
 ; hdma_preset = 0: just HDMAEN = 0. Otherwise the preset's list in bank $05
-; (pointer at data_05822E + 2*preset): 7-byte entries {channel register
+; (pointer at ptrs_hdma_presets + 2*preset): 7-byte entries {channel register
 ; base $43x0, DMAP/BBAD word, table address (3 bytes)}, ended by $FFFF and
 ; the HDMAEN value.
 setup_hdma_channels:
@@ -27,7 +27,7 @@ setup_hdma_channels:
 @setup:
 	asl	a
 	tax
-	ldy	a:data_05822E,x
+	ldy	a:ptrs_hdma_presets,x
 @loop:
 	ldx	a:$0000,y
 	cpx	#$FFFF	; [num]

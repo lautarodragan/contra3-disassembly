@@ -303,7 +303,7 @@ dma_bg_tilemap_updates:
 	.i16
 	rtl
 
-; Writes BG3 tilemap blocks (4 rows of 4 tiles) listed in data_058CE2 from
+; Writes BG3 tilemap blocks (4 rows of 4 tiles) listed in bg3_block_sources from
 ; $7E to VRAM $5C00 (stage 4).
 draw_bg3_block_map:
 	ldx	#$0000
@@ -314,7 +314,7 @@ draw_bg3_block_map:
 	lda	#$0008
 	sta	zp_0A
 @loop:
-	lda	a:data_058CE2,x
+	lda	a:bg3_block_sources,x
 	sta	zp_08
 	sep	#$10
 	.i8
@@ -630,7 +630,7 @@ bg1_no_vertical_scroll:
 	rtl
 
 ; Follows a player who moves up past scroll_threshold, or autoscrolls at
-; data_058D52[bg1_autoscroll_speed].
+; bg1_autoscroll_speeds[bg1_autoscroll_speed].
 bg1_scroll_vertical:
 	lda	a:bg1_autoscroll
 	bne	@autoscroll
@@ -680,7 +680,7 @@ bg1_scroll_vertical:
 @autoscroll:
 	ldy	a:bg1_autoscroll_speed
 	clc
-	lda	a:data_058D52,y
+	lda	a:bg1_autoscroll_speeds,y
 	adc	a:bg1_y_sub
 	sta	a:bg1_y_sub
 	lda	#$FFFF	; [num]
