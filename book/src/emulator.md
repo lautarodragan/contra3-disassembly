@@ -116,6 +116,13 @@ matching `build/contra3.sfc` (checkout of `main`, `make`).
 * `test_cdl.py`: sanity checks of the tracer (skipped on a core without it).
   It checks the reset vector of the original layout, so the shift test
   leaves it out.
+* `test_previews.py`: the gallery's previews against the game. Each
+  `cgram` line of `assets/views.txt` names a preview, a play (or
+  `poweron`) and a frame; the play runs to it and the CGRAM there (within
+  2 game frames) must hold the colours of the preview's palettes at every
+  index they set and every index the picture shows (see
+  [Assets: Tilemaps](assets.md#tilemaps)). About 1.5 minutes on 4 cores
+  (the longest play runs to FINAL SCORE).
 * `test_cheats.py`: the build-time cheats (milestone 4). Builds cheat ROMs
   from this checkout (`C3_DISASM` for another one; needs cc65) with
   `tools/cheats.py` and checks them through RAM reads, mostly against the

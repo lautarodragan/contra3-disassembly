@@ -2,15 +2,29 @@
 # viewing: nothing here changes the ROM.
 #
 # note ASSET TEXT
-#   a sentence the gallery prints under that tilemap (Markdown; several note
-#   lines for one asset are joined). Only for the reader.
+#   a sentence the gallery prints under that tilemap or level (ASSET: a
+#   tilemap path or a level name; Markdown; several note lines for one
+#   asset are joined). Only for the reader.
 #
 # palette PNG PALETTE FIRST
 #   the viewing palette of the PNG asset is the colours of the palette
 #   asset from FIRST on (2, 16 or 256 of them): `python3 tools/assets.py
 #   sync-palettes` copies them into the PNG, `make assets-check` fails
 #   when they differ.  Listed where the colours tools/gfx_palettes.py found
-#   on screen are those of exactly one palette asset.
+#   on screen are those of exactly one palette asset, or where the screen
+#   that shows the graphic is known (the row its tilemap gives it, in the
+#   palette its palette task copies).  PALETTE level:NAME: the 256 colours
+#   of that level preview (its palette=, through EXTBG for extbg=1).
+#
+# cgram NAME play=PLAY frame=N [skip=I-J,...]
+#   the palette of the preview NAME (a level name or a tilemap path) is
+#   checked against the emulator (tests/test_previews.py, `make
+#   emu-test`): at game frame N of PLAY (a play of tools/c3emu/plays.py;
+#   `poweron`: N frames from power-on, no input), the CGRAM holds the
+#   colours its palette= gives at every index it sets and every index its
+#   pixels show, except the indices of skip= (colours that code or an
+#   animation writes there, explained in a note line).  The frames were
+#   picked where the screen shows that map and its palette is steady.
 # preview TILEMAP chars=ASSET@VRAMWORD,... [base=VRAMWORD] bpp=N palette=PALETTE@INDEX,...
 #   the gallery draws the tilemap with the characters of those assets,
 #   placed in VRAM where the game's load list puts them (base: the BG's
@@ -100,8 +114,29 @@ preview gfx/gfx_18D15B  chars=gfx/gfx_18AF20@2000,gfx/gfx_18C896@3000 base=2000 
 preview gfx/gfx_18FAF5  chars=gfx/gfx_18D4E3@2000,gfx/gfx_18E9DF@3000 base=2000 bpp=4 palette=palettes/palette_08882C@0
 preview gfx/gfx_19AB40  chars=gfx/gfx_198000@2000,gfx/gfx_199AB1@3000 base=2000 bpp=4 palette=palettes/palette_08882C@0
 preview gfx/gfx_19D779  chars=gfx/gfx_19AF8C@2000,gfx/gfx_19CAB9@3000 base=2000 bpp=4 palette=palettes/palette_08882C@0
+cgram gfx/gfx_18AAE3  play=stage1_boss frame=11563
+cgram gfx/gfx_18D15B  play=stage2_boss frame=4370
+cgram gfx/gfx_18FAF5  play=stage3_boss frame=24011
+cgram gfx/gfx_19AB40  play=stage4_boss frame=15203
+cgram gfx/gfx_19D779  play=stage5_boss frame=20658
+note gfx/gfx_18AAE3 The picture as it fades in. When the scores are drawn over it
+note gfx/gfx_18AAE3 (stage_clear_show_scores), palette_task_058889 copies `palette_08892E` to
+note gfx/gfx_18AAE3 CGRAM 32-127: the same picture darker.
+note gfx/gfx_18D15B The picture as it fades in. When the scores are drawn over it
+note gfx/gfx_18D15B (stage_clear_show_scores), palette_task_058889 copies `palette_08892E` to
+note gfx/gfx_18D15B CGRAM 32-127: the same picture darker.
+note gfx/gfx_18FAF5 The picture as it fades in. When the scores are drawn over it
+note gfx/gfx_18FAF5 (stage_clear_show_scores), palette_task_058889 copies `palette_08892E` to
+note gfx/gfx_18FAF5 CGRAM 32-127: the same picture darker.
+note gfx/gfx_19AB40 The picture as it fades in. When the scores are drawn over it
+note gfx/gfx_19AB40 (stage_clear_show_scores), palette_task_058889 copies `palette_08892E` to
+note gfx/gfx_19AB40 CGRAM 32-127: the same picture darker.
+note gfx/gfx_19D779 The picture as it fades in. When the scores are drawn over it
+note gfx/gfx_19D779 (stage_clear_show_scores), palette_task_058889 copies `palette_08892E` to
+note gfx/gfx_19D779 CGRAM 32-127: the same picture darker.
 # The FINAL SCORE screen (load_list_058976, palette_task_05898E)
 preview gfx/gfx_1EEBD0  chars=gfx/gfx_1FE855@2000,gfx/gfx_1AE9C9@3000 base=2000 bpp=4 palette=palettes/palette_088B7A@0
+cgram gfx/gfx_1EEBD0  play=stage6_ending_hard frame=77000
 # The opening's BG1/BG2 maps (load_list_05A7DB, load_list_05A807; the
 # stage layout, characters from $0000) in palette_task_05A815's colours
 preview gfx/gfx_06EF5C  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 base=0000 bpp=4 palette=palettes/palette_0889F0@0
@@ -109,6 +144,11 @@ preview gfx/gfx_06EC94  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08
 preview gfx/gfx_06F184  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 base=0000 bpp=4 palette=palettes/palette_0889F0@0
 preview gfx/gfx_06F313  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 base=0000 bpp=4 palette=palettes/palette_0889F0@0
 preview gfx/gfx_06F68F  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 base=0000 bpp=4 palette=palettes/palette_0889F0@0
+cgram gfx/gfx_06EF5C  play=poweron frame=1000
+cgram gfx/gfx_06EC94  play=poweron frame=1000
+cgram gfx/gfx_06F184  play=poweron frame=1000
+cgram gfx/gfx_06F313  play=poweron frame=1000
+cgram gfx/gfx_06F68F  play=poweron frame=1000
 # The Konami logo (load_list_0587AB: characters at $2000, BG12NBA $22;
 # BG1 map at $0000, BG2 at $1000) in palette_task_0587C3's colours
 preview gfx/gfx_088FD4  chars=gfx/gfx_07E9FE@2000 base=2000 bpp=4 palette=palettes/palette_088022@0,palettes/palette_088022@16,palettes/palette_088022@32,palettes/palette_088000@48
@@ -119,9 +159,18 @@ note gfx/gfx_0891DE `palette_088022`); the other 48 are characters `$000` (palet
 note gfx/gfx_089225 Every cell is character `$084`, solid colour 1 (black in `palette_088022`): loaded
 note gfx/gfx_089225 right after `gfx_0891DE`, it fills rows 8-15 of the BG1 map with a blank tile, so
 note gfx/gfx_089225 nothing left in VRAM shows there. The black rectangle is what the game draws.
+cgram gfx/gfx_088FD4  play=poweron frame=330 skip=50-63
+cgram gfx/gfx_0891DE  play=poweron frame=330 skip=50-63
+cgram gfx/gfx_089225  play=poweron frame=330 skip=50-63
+note gfx/gfx_088FD4 Colours 50-63 (palette 3) are not those of `palette_088000` on screen:
+note gfx/gfx_088FD4 `konami_logo_cycle_line` rotates them by one, three times, as the line
+note gfx/gfx_088FD4 sweeps in (`rotate_palette_row`), and the shine and the fade out change
+note gfx/gfx_088FD4 the palette after; drawn here with `palette_088000` as copied.
+note gfx/gfx_0891DE Palette 3 (colours 50-63) is rotated on screen: see `gfx_088FD4`.
 # The title logo, Mode 7 (load_title_graphics: load_list_058527 the
 # characters, load_list_058539 the map; palette_task_05854B)
 preview gfx/gfx_06FADF  chars=gfx/gfx_089249@0000 bpp=8 palette=palettes/palette_0880AA@0
+cgram gfx/gfx_06FADF  play=poweron frame=3700
 # The closing message after stage 6, one map per difficulty
 # (ptrs_ending_message_loads: BG3 map at $5C00; BG34NBA $05: the font
 # gfx_089D7E the stage loads at $5000), map palette 0: CGRAM 1-3 are
@@ -131,13 +180,23 @@ preview gfx/gfx_06FADF  chars=gfx/gfx_089249@0000 bpp=8 palette=palettes/palette
 preview gfx/ending_message_easy  chars=gfx/gfx_089D7E@5000 base=5000 bpp=2 palette=palettes/palette_08F01A@1
 preview gfx/ending_message_normal  chars=gfx/gfx_089D7E@5000 base=5000 bpp=2 palette=palettes/palette_08F01A@1
 preview gfx/ending_message_hard  chars=gfx/gfx_089D7E@5000 base=5000 bpp=2 palette=palettes/palette_08F01A@1
+cgram gfx/ending_message_easy  play=stage6_ending_easy frame=43900
+cgram gfx/ending_message_normal  play=stage6_boss frame=48500
+cgram gfx/ending_message_hard  play=stage6_ending_hard frame=68500
 # level NAME map=MAP[,MAP...] defs=DEFS[,...] chars=ASSET@VRAMWORD[:LENGTH],... [base=VRAMWORD] bpp=N palette=PALETTE@INDEX,... [pages=N]
 #   a level preview in the gallery (book: Assets, Editing a level): the
 #   side-view map MAP drawn through its metatiles DEFS (each placed by its
 #   first= number), N pages per row (default 8), or the top-down map from
 #   its four block map streams and block definitions; the characters and
 #   colours as for `preview` (LENGTH: only that many bytes of the asset,
-#   hex; asm:LABEL: a palette block left inline in src/).
+#   hex; asm:LABEL: a palette block left inline in src/; a later palette
+#   overwrites an earlier one).  extbg=1: Mode 7 shown through EXTBG, as
+#   on the top-down stages (SETINI $40 and BG1+BG2 on the main screen,
+#   init_topdown_hdma's tables): BG2 draws the same Mode 7 pixels with bit 7
+#   as their priority and bits 0-6 as their colour, above BG1, so a pixel
+#   129-255 shows colour (pixel & $7F) and CGRAM 129-255 is only the
+#   sprites' (checked in the emulator: those colours set to green turn
+#   only sprites green).
 
 # The side-view stages: the stage's BG characters (ptrs_stage_load_lists,
 # first layout; BG12NBA $00: characters from $0000) and palette task
@@ -145,24 +204,56 @@ preview gfx/ending_message_hard  chars=gfx/gfx_089D7E@5000 base=5000 bpp=2 palet
 # (ptrs_0588ED).  Stage 1: load_list_058B08, palette_task_058B4C.
 level stage1_bg1  map=wram/stage1_bg1_map defs=wram/stage1_bg1_metatiles,wram/stage1_bg1_metatiles_2 chars=gfx/gfx_098000@0000,gfx/gfx_09998E@1000,gfx/gfx_09B32D@2000,gfx/gfx_09CD49@3000 bpp=4 palette=palettes/palette_088150@32,palettes/palette_088F92@0
 level stage1_bg2  map=wram/stage1_bg2_map defs=wram/stage1_bg2_metatiles chars=gfx/gfx_098000@0000,gfx/gfx_09998E@1000,gfx/gfx_09B32D@2000,gfx/gfx_09CD49@3000 bpp=4 palette=palettes/palette_088150@32,palettes/palette_088F92@0
+cgram stage1_bg1  play=stage1 frame=600
+cgram stage1_bg2  play=stage1 frame=600
 # Stage 3: load_list_058B85, palette_task_058BE7
 level stage3_bg1  map=wram/stage3_bg1_map defs=wram/stage3_bg1_metatiles,wram/stage3_bg1_metatiles_2 chars=gfx/gfx_0C8000@0000,gfx/gfx_0C98A2@1000,gfx/gfx_0CAFBF@2000,gfx/gfx_0CC65E@3000 bpp=4 palette=palettes/palette_0882F8@32,palettes/palette_088F92@0
 level stage3_bg2  map=wram/stage3_bg2_map defs=wram/stage3_bg2_metatiles chars=gfx/gfx_0C8000@0000,gfx/gfx_0C98A2@1000,gfx/gfx_0CAFBF@2000,gfx/gfx_0CC65E@3000 bpp=4 palette=palettes/palette_0882F8@32,palettes/palette_088F92@0
+cgram stage3_bg1  play=stage3 frame=600
+cgram stage3_bg2  play=stage3 frame=600
 # Stage 4: load_list_058C14, palette_task_058C62
 level stage4_bg1  map=wram/stage4_bg1_map defs=wram/stage4_bg1_metatiles chars=gfx/gfx_0F8000@0000,gfx/gfx_0F9460@1000,gfx/gfx_0FAC90@2000,gfx/gfx_0FC8E5@3000 bpp=4 palette=palettes/palette_08843E@0
 level stage4_bg2  map=wram/stage4_bg2_map defs=wram/stage4_bg2_metatiles chars=gfx/gfx_0F8000@0000,gfx/gfx_0F9460@1000,gfx/gfx_0FAC90@2000,gfx/gfx_0FC8E5@3000 bpp=4 palette=palettes/palette_08843E@0
+cgram stage4_bg1  play=stage4 frame=600
+cgram stage4_bg2  play=stage4 frame=600
 # Stage 6: load_list_058C97, palette_task_058CCD
 level stage6_bg1  map=wram/stage6_bg1_map defs=wram/stage6_bg1_metatiles,wram/stage6_bg1_metatiles_2 chars=gfx/gfx_108000@0000,gfx/gfx_109C17@1000,gfx/gfx_10B927@2000,gfx/gfx_10D5A2@3000 bpp=4 palette=palettes/palette_088540@32,palettes/palette_088F92@0
 level stage6_bg2  map=wram/stage6_bg2_map defs=wram/stage6_bg2_metatiles chars=gfx/gfx_108000@0000,gfx/gfx_109C17@1000,gfx/gfx_10B927@2000,gfx/gfx_10D5A2@3000 bpp=4 palette=palettes/palette_088540@32,palettes/palette_088F92@0
+cgram stage6_bg1  play=stage6 frame=600
+cgram stage6_bg2  play=stage6 frame=600
 # The opening (stage 0): load_list_05A84B's map and metatiles, the
 # characters of load_list_05A7DB, palette_task_05A815
 level opening_bg1 map=wram/opening_bg1_map defs=wram/opening_bg1_metatiles chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 bpp=4 palette=palettes/palette_0889F0@0,palettes/palette_0882B6@128,palettes/palette_088254@208,palettes/palette_088AF6@192
+cgram opening_bg1  play=poweron frame=1000
 # The top-down maps (Mode 7): the characters of the type-3 list
 # (load_list_05CF2A, load_list_05CFCF, load_list_05D01F, load_list_05D073:
 # high bytes from VRAM $0000) and the map's palette task; on the boss maps
 # the first frame of the boss's characters (stage2_boss_m7_chars, $600
 # bytes to VRAM $0040; stage5_boss_m7_chars, $280 bytes to VRAM $3200).
-level stage2      map=wram/stage2_block_map_0,wram/stage2_block_map_1,wram/stage2_block_map_2,wram/stage2_block_map_3 defs=wram/stage2_m7_blocks chars=gfx/gfx_13CC02@0000 bpp=8 palette=asm:palette_088C3E@32,palettes/palette_088F92@0,palettes/palette_088F50@128,palettes/palette_088F2E@160,palettes/palette_088F0C@176,palettes/palette_088CE0@192
-level stage2_boss map=wram/stage2_boss_block_map_0,wram/stage2_boss_block_map_1,wram/stage2_boss_block_map_2,wram/stage2_boss_block_map_3 defs=wram/stage2_boss_m7_blocks chars=gfx/gfx_148000@0000,wram/stage2_boss_m7_chars@0040:600 bpp=8 palette=asm:palette_088C3E@32,palettes/palette_088F92@0,palettes/palette_088D82@128,palettes/palette_088F0C@176,palettes/palette_088CE0@192
-level stage5      map=wram/stage5_block_map_0,wram/stage5_block_map_1,wram/stage5_block_map_2,wram/stage5_block_map_3 defs=wram/stage5_m7_blocks chars=gfx/gfx_158000@0000 bpp=8 palette=palettes/palette_088DA4@32,palettes/palette_088F92@0,asm:palette_088ECA@128,palettes/palette_088F2E@160,palettes/palette_088F0C@176,palettes/palette_088CE0@192
-level stage5_boss map=wram/stage5_boss_block_map_0,wram/stage5_boss_block_map_1,wram/stage5_boss_block_map_2,wram/stage5_boss_block_map_3 defs=wram/stage5_boss_m7_blocks chars=gfx/gfx_168000@0000,wram/stage5_boss_m7_chars@3200:280 bpp=8 palette=palettes/palette_088DA4@32,palettes/palette_088F92@0,palettes/palette_088E46@128,palettes/palette_088F0C@176,palettes/palette_088CE0@192
+level stage2      map=wram/stage2_block_map_0,wram/stage2_block_map_1,wram/stage2_block_map_2,wram/stage2_block_map_3 defs=wram/stage2_m7_blocks chars=gfx/gfx_13CC02@0000 bpp=8 palette=asm:palette_088C3E@32,palettes/palette_088F92@0,palettes/palette_088F50@128,palettes/palette_088F2E@160,palettes/palette_088F0C@176,palettes/palette_088CE0@192,palettes/palette_088D62@69 extbg=1
+level stage2_boss map=wram/stage2_boss_block_map_0,wram/stage2_boss_block_map_1,wram/stage2_boss_block_map_2,wram/stage2_boss_block_map_3 defs=wram/stage2_boss_m7_blocks chars=gfx/gfx_148000@0000,wram/stage2_boss_m7_chars@0040:600 bpp=8 palette=asm:palette_088C3E@32,palettes/palette_088F92@0,palettes/palette_088D82@128,palettes/palette_088F0C@176,palettes/palette_088CE0@192,palettes/palette_088D62@69 extbg=1
+level stage5      map=wram/stage5_block_map_0,wram/stage5_block_map_1,wram/stage5_block_map_2,wram/stage5_block_map_3 defs=wram/stage5_m7_blocks chars=gfx/gfx_158000@0000 bpp=8 palette=palettes/palette_088DA4@32,palettes/palette_088F92@0,asm:palette_088ECA@128,palettes/palette_088F2E@160,palettes/palette_088F0C@176,palettes/palette_088CE0@192 extbg=1
+level stage5_boss map=wram/stage5_boss_block_map_0,wram/stage5_boss_block_map_1,wram/stage5_boss_block_map_2,wram/stage5_boss_block_map_3 defs=wram/stage5_boss_m7_blocks chars=gfx/gfx_168000@0000,wram/stage5_boss_m7_chars@3200:280 bpp=8 palette=palettes/palette_088DA4@32,palettes/palette_088F92@0,palettes/palette_088E46@128,palettes/palette_088F0C@176,palettes/palette_088CE0@192 extbg=1
+cgram stage2       play=stage2 frame=190
+cgram stage2_boss  play=stage2_boss frame=3550
+cgram stage5       play=stage5 frame=190
+cgram stage5_boss  play=stage5_boss frame=1009 skip=96
+note stage2 Drawn through EXTBG (`extbg=1`), as the game shows it. Colours 69-79 pulse:
+note stage2 every $60 frames `animate_stage2_palettes` fades `palette_088D62` out there
+note stage2 and back in (`palette_task_05F576`, `palette_task_05F57C`); drawn at their
+note stage2 brightest, `palette_088D62` itself.
+note stage2_boss Drawn through EXTBG (`extbg=1`), as the game shows it. Colours 69-79 pulse
+note stage2_boss as on the stage 2 map (`palette_088D62`, drawn at its brightest). When the core
+note stage2_boss is hit, `td_flash_boss_palette_on_hit` fills CGRAM 48-103 with white for 4
+note stage2_boss frames, then copies `palette_088C60` (colours 16 on of `palette_088C3E`) back.
+note stage5 Drawn through EXTBG (`extbg=1`), as the game shows it. Colours 48-50 pulse
+note stage5 (`palette_088D7A` faded out and in by `palette_task_05F582`, `palette_task_05F588`;
+note stage5 drawn at their brightest), and `cycle_palette_colors` rotates colours 56-63 by one
+note stage5 every 2 frames (`animate_stage5_palettes` runs on into it); drawn in the order
+note stage5 `palette_088DA4` gives them.
+note stage5_boss Drawn through EXTBG (`extbg=1`), as the game shows it. `cycle_palette_colors`
+note stage5_boss rotates colours 56-63 by one every 2 frames (drawn in the order of
+note stage5_boss `palette_088DA4`), and `stage5_boss_flash_on_hit` copies `palette_088E6A`,
+note stage5_boss `palette_088E8A`, `palette_088EAA`, `palette_088E8A` to colours 80-95 in turn, two
+note stage5_boss frames each (the first is the same as `palette_088DA4`'s colours there): 33 bytes,
+note stage5_boss so the low byte of colour 96 changes too (not drawn by the map; left out of the check).

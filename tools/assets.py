@@ -414,10 +414,10 @@ def read_views(root=ROOT):
             links[words[1]] = (words[2], int(words[3]))
         elif words[0] == "preview" and len(words) > 2:
             previews[words[1]] = dict(w.split("=", 1) for w in words[2:])
-        elif words[0] in ("level", "note"):
-            pass                # read_levels(), read_notes()
+        elif words[0] in ("level", "note", "cgram"):
+            pass                # read_levels(), read_notes(), read_cgram_refs()
         else:
-            sys.exit(f"{VIEWS}:{n}: not a palette, preview, level or note line")
+            sys.exit(f"{VIEWS}:{n}: not a palette, preview, level, note or cgram line")
     return links, previews
 
 
@@ -451,6 +451,57 @@ def read_levels(root=ROOT):
     return out
 
 
+def read_cgram_refs(root=ROOT):
+    """The `cgram` lines of assets/views.txt: [(name, play, frame, skip)]:
+    the preview `name` (a level name or a tilemap path) is checked against
+    the CGRAM of the emulator at `frame` of `play` (a play of
+    tools/c3emu/plays.py: game frames played; `poweron`: frames from
+    power-on with no input); `skip`, a set of CGRAM indices left out (a
+    colour that code or an animation writes, explained in a note line)."""
+    out = []
+    path = os.path.join(root, VIEWS)
+    if not os.path.exists(path):
+        return out
+    for n, line in enumerate(open(path), 1):
+        words = line.split("#")[0].split()
+        if not words or words[0] != "cgram":
+            continue
+        opts = dict(w.split("=", 1) for w in words[2:])
+        if len(words) < 4 or "play" not in opts or "frame" not in opts:
+            sys.exit(f"{VIEWS}:{n}: a cgram line needs a name, play= and frame=")
+        skip = set()
+        for item in filter(None, opts.get("skip", "").split(",")):
+            a, _, b = item.partition("-")
+            skip |= set(range(int(a), int(b or a) + 1))
+        out.append((words[1], opts["play"], int(opts["frame"]), skip))
+    return out
+
+
+def preview_view(name, root=ROOT):
+    """(view, render) of a preview by name: a `level` name or the path of a
+    tilemap with a `preview` line; render() gives (W, H, pixels, palette)."""
+    manifest = {a.path: a for a in read_manifest(root)}
+    levels = dict(read_levels(root))
+    if name in levels:
+        return levels[name], lambda: render_level(levels[name], manifest, root)
+    _links, previews = read_views(root)
+    if name in previews:
+        return previews[name], lambda: render_preview(manifest[name], previews[name], manifest, root)
+    sys.exit(f"{VIEWS}: no level or preview named {name}")
+
+
+def preview_cgram_indices(name, skip=(), root=ROOT):
+    """(indices, words) to check a preview against CGRAM: the CGRAM indices
+    its palette= sets and those its pixels show (minus `skip`), and its
+    composed palette (256 words; black where palette= sets nothing)."""
+    view, render = preview_view(name, root)
+    manifest = {a.path: a for a in read_manifest(root)}
+    words = palette_words(view["palette"], manifest, root)
+    used = set(render()[2])
+    given = {i for i, w in enumerate(words) if w is not None}
+    return sorted((used | given) - set(skip)), [w or 0 for w in words]
+
+
 def asm_palette(label, root=ROOT):
     """The colours of a palette block that stays inline in src/ (`.byte`
     lines after its label: a size-1 word, then the colours)."""
@@ -475,11 +526,12 @@ def asm_palette(label, root=ROOT):
     sys.exit(f"{label}: no such label in {SRC}/")
 
 
-def palette_rgb(spec, manifest, root=ROOT):
-    """256 (r, g, b) of a CGRAM image: spec "PALETTE@INDEX,..." (colours
-    not given are black); PALETTE is a palette asset, or asm:LABEL for a
-    palette block left inline in src/."""
-    cgram = [(0, 0, 0)] * 256
+def palette_words(spec, manifest, root=ROOT):
+    """256 colour words (bit 15 clear) of a CGRAM image, None where not
+    given: spec "PALETTE@INDEX,..." in order (a later one overwrites);
+    PALETTE is a palette asset, or asm:LABEL for a palette block left
+    inline in src/."""
+    cgram = [None] * 256
     for item in spec.split(","):
         p, first = item.split("@")
         if p.startswith("asm:"):
@@ -488,8 +540,14 @@ def palette_rgb(spec, manifest, root=ROOT):
             words = snespal.read_gpl(os.path.join(root, manifest[p].source))
         for i, w in enumerate(words):
             if int(first) + i < 256:
-                cgram[int(first) + i] = snespal.rgb(w)
+                cgram[int(first) + i] = w & 0x7FFF
     return cgram
+
+
+def palette_rgb(spec, manifest, root=ROOT):
+    """256 (r, g, b) of a CGRAM image (palette_words; black where not
+    given)."""
+    return [snespal.rgb(w or 0) for w in palette_words(spec, manifest, root)]
 
 
 def linked_palette(asset, links, manifest, root=ROOT):
@@ -498,9 +556,21 @@ def linked_palette(asset, links, manifest, root=ROOT):
     if asset.path not in links:
         return None
     p, first = links[asset.path]
-    words = snespal.read_gpl(os.path.join(root, manifest[p].source))
     n = 1 << snesgfx.FORMATS[asset.png][0]
+    if p.startswith("level:"):
+        return level_palette(dict(read_levels(root))[p[6:]], manifest, root)[first:first + n]
+    words = snespal.read_gpl(os.path.join(root, manifest[p].source))
     return [snespal.rgb(w) for w in words[first:first + n]]
+
+
+def level_palette(view, manifest, root=ROOT):
+    """The 256 colours a pixel value shows in a level preview: its
+    palette=, through EXTBG when the line says extbg=1 (the viewing
+    palette of the Mode 7 characters linked to `level:NAME`)."""
+    pal = palette_rgb(view["palette"], manifest, root)
+    if view.get("extbg") == "1":
+        return [pal[EXTBG[p]] for p in range(256)]
+    return pal
 
 
 def render_preview(asset, view, manifest, root=ROOT):
@@ -591,7 +661,8 @@ def render_level(view, manifest, root=ROOT):
     map=MAP[,MAP...] (a side-view map, or the four block map streams)
     defs=DEFS[,...] (its metatiles, or the block definitions)
     chars=ASSET@VRAMWORD[:LENGTH],... [base=VRAMWORD] bpp=4|8
-    palette=PALETTE@CGRAMINDEX,... [pages=N] (pages per row)."""
+    palette=PALETTE@CGRAMINDEX,... [pages=N] (pages per row)
+    [extbg=1] (Mode 7 shown through EXTBG: see EXTBG)."""
     cells, width, mode7 = level_cells(view, manifest, root)
     bpp = 8 if mode7 else int(view.get("bpp", 4))
     vram = vram_chars(view["chars"], manifest, mode7, root)
@@ -604,8 +675,19 @@ def render_level(view, manifest, root=ROOT):
             a = (base + t * size) % len(vram)
             chars[t] = snesgfx.decode_tile(bytes(vram[a:a + size]),
                                            "mode7" if mode7 else f"{bpp}bpp")
-    return levelmap.render(cells, width, chars, bpp,
-                           palette_rgb(view["palette"], manifest, root), mode7)
+    W, H, pixels, pal = levelmap.render(cells, width, chars, bpp,
+                                        palette_rgb(view["palette"], manifest, root), mode7)
+    if view.get("extbg") == "1":
+        pixels = pixels.translate(EXTBG)
+    return W, H, pixels, pal
+
+
+# Mode 7 with EXTBG (SETINI bit 6) and both BG1 and BG2 on the main screen,
+# as on the top-down stages: BG2 draws the same pixels with bit 7 as their
+# priority and bits 0-6 as their colour, above BG1 where bit 7 is set.  A
+# pixel 128-255 shows colour (pixel & $7F), except 128 (BG2's colour 0 is
+# transparent: BG1 shows colour 128).
+EXTBG = bytes(p & 0x7F if p > 128 else p for p in range(256))
 
 
 def sync_palettes(root=ROOT):
@@ -815,6 +897,18 @@ def gallery():
                     'style="image-rendering: pixelated">', ""]
     links, previews = read_views()
     notes = read_notes()
+    checked = {}
+    for name, play, frame, skip in read_cgram_refs():
+        where = "power-on" if play == "poweron" else f"play `{play}`"
+        runs = []
+        for i in sorted(skip):
+            if runs and i == runs[-1][1] + 1:
+                runs[-1][1] = i
+            else:
+                runs.append([i, i])
+        left = ", ".join(f"{a}" if a == b else f"{a}-{b}" for a, b in runs)
+        checked[name] = (f"Its palette is the CGRAM of the game at frame {frame} of {where}"
+                         + (f", except colour{'s' if len(skip) > 1 else ''} {left}" if skip else "") + " (`tests/test_previews.py`).")
     tilemaps = [a for a in read_manifest() if a.tilemap]
     if tilemaps:
         out += ["## Tilemaps", "",
@@ -834,7 +928,8 @@ def gallery():
             if view:
                 chars = ", ".join(f"`{c.split('@')[0].split('/')[-1]}`" for c in view["chars"].split(","))
                 pals = ", ".join(f"`{c.split('@')[0].split('/')[-1]}`" for c in view["palette"].split(","))
-                out += [f"Drawn with {chars} and {pals}.", "",
+                out += [f"Drawn with {chars} and {pals}."
+                        + (" " + checked[a.path] if a.path in checked else ""), "",
                         f'<img src="gallery/{a.path}.png" alt="{label}" '
                         f'width="{min(512, 8 * width * (2 if width <= 32 else 1))}" '
                         'style="image-rendering: pixelated">', ""]
@@ -864,6 +959,10 @@ def gallery():
             what = ("Mode 7 map, 128x128 tiles" if mode7 else
                     f"{len(data_bytes(manifest[maps[0]])) // levelmap.PAGE} pages")
             out += [f"### {name}", "", f"{what}: {files}. Drawn with {chars} and {pals}.", ""]
+            if name in notes:
+                out += [notes[name], ""]
+            if name in checked:
+                out += [checked[name], ""]
             missing = level_undefined(view, manifest)
             if missing:
                 where = "; ".join(f"page {pg}: " + ", ".join(f"`{n:03X}`" for n in ns)

@@ -707,7 +707,7 @@ the picture.
 
 `assets/gfx/gfx_06EC94.tilemap`: bg, 32x32 cells, lz-v2.
 
-Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0889F0`.
+Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0889F0`. Its palette is the CGRAM of the game at frame 1000 of power-on (`tests/test_previews.py`).
 
 <img src="gallery/gfx/gfx_06EC94.png" alt="gfx_06EC94" width="512" style="image-rendering: pixelated">
 
@@ -715,7 +715,7 @@ Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0
 
 `assets/gfx/gfx_06EF5C.tilemap`: bg, 32x32 cells, lz-v2.
 
-Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0889F0`.
+Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0889F0`. Its palette is the CGRAM of the game at frame 1000 of power-on (`tests/test_previews.py`).
 
 <img src="gallery/gfx/gfx_06EF5C.png" alt="gfx_06EF5C" width="512" style="image-rendering: pixelated">
 
@@ -723,7 +723,7 @@ Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0
 
 `assets/gfx/gfx_06F184.tilemap`: bg, 32x32 cells, lz-v2.
 
-Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0889F0`.
+Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0889F0`. Its palette is the CGRAM of the game at frame 1000 of power-on (`tests/test_previews.py`).
 
 <img src="gallery/gfx/gfx_06F184.png" alt="gfx_06F184" width="512" style="image-rendering: pixelated">
 
@@ -731,7 +731,7 @@ Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0
 
 `assets/gfx/gfx_06F313.tilemap`: bg, 32x32 cells, lz-v2.
 
-Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0889F0`.
+Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0889F0`. Its palette is the CGRAM of the game at frame 1000 of power-on (`tests/test_previews.py`).
 
 <img src="gallery/gfx/gfx_06F313.png" alt="gfx_06F313" width="512" style="image-rendering: pixelated">
 
@@ -739,7 +739,7 @@ Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0
 
 `assets/gfx/gfx_06F68F.tilemap`: bg, 32x32 cells, lz-v2.
 
-Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0889F0`.
+Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0889F0`. Its palette is the CGRAM of the game at frame 1000 of power-on (`tests/test_previews.py`).
 
 <img src="gallery/gfx/gfx_06F68F.png" alt="gfx_06F68F" width="512" style="image-rendering: pixelated">
 
@@ -747,7 +747,7 @@ Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0
 
 `assets/gfx/ending_message_easy.tilemap`: bg, 32x32 cells, lz-v1.
 
-Drawn with `gfx_089D7E` and `palette_08F01A`.
+Drawn with `gfx_089D7E` and `palette_08F01A`. Its palette is the CGRAM of the game at frame 43900 of play `stage6_ending_easy` (`tests/test_previews.py`).
 
 <img src="gallery/gfx/ending_message_easy.png" alt="ending_message_easy" width="512" style="image-rendering: pixelated">
 
@@ -755,7 +755,7 @@ Drawn with `gfx_089D7E` and `palette_08F01A`.
 
 `assets/gfx/ending_message_normal.tilemap`: bg, 32x32 cells, lz-v1.
 
-Drawn with `gfx_089D7E` and `palette_08F01A`.
+Drawn with `gfx_089D7E` and `palette_08F01A`. Its palette is the CGRAM of the game at frame 48500 of play `stage6_boss` (`tests/test_previews.py`).
 
 <img src="gallery/gfx/ending_message_normal.png" alt="ending_message_normal" width="512" style="image-rendering: pixelated">
 
@@ -763,7 +763,7 @@ Drawn with `gfx_089D7E` and `palette_08F01A`.
 
 `assets/gfx/gfx_06FADF.tilemap`: mode7, 128x128 cells, lz-v1.
 
-Drawn with `gfx_089249` and `palette_0880AA`.
+Drawn with `gfx_089249` and `palette_0880AA`. Its palette is the CGRAM of the game at frame 3700 of power-on (`tests/test_previews.py`).
 
 <img src="gallery/gfx/gfx_06FADF.png" alt="gfx_06FADF" width="512" style="image-rendering: pixelated">
 
@@ -771,7 +771,7 @@ Drawn with `gfx_089249` and `palette_0880AA`.
 
 `assets/gfx/ending_message_hard.tilemap`: bg, 32x32 cells, lz-v1.
 
-Drawn with `gfx_089D7E` and `palette_08F01A`.
+Drawn with `gfx_089D7E` and `palette_08F01A`. Its palette is the CGRAM of the game at frame 68500 of play `stage6_ending_hard` (`tests/test_previews.py`).
 
 <img src="gallery/gfx/ending_message_hard.png" alt="ending_message_hard" width="512" style="image-rendering: pixelated">
 
@@ -779,7 +779,9 @@ Drawn with `gfx_089D7E` and `palette_08F01A`.
 
 `assets/gfx/gfx_088FD4.tilemap`: bg, 32x32 cells, lz-v1.
 
-Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`, `palette_088000`.
+Colours 50-63 (palette 3) are not those of `palette_088000` on screen: `konami_logo_cycle_line` rotates them by one, three times, as the line sweeps in (`rotate_palette_row`), and the shine and the fade out change the palette after; drawn here with `palette_088000` as copied.
+
+Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`, `palette_088000`. Its palette is the CGRAM of the game at frame 330 of power-on, except colours 50-63 (`tests/test_previews.py`).
 
 <img src="gallery/gfx/gfx_088FD4.png" alt="gfx_088FD4" width="512" style="image-rendering: pixelated">
 
@@ -787,9 +789,9 @@ Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`
 
 `assets/gfx/gfx_0891DE.tilemap`: bg, 32x8 cells, lz-v2.
 
-208 of its 256 cells are character `$084`, solid colour 1 (black in `palette_088022`); the other 48 are characters `$000` (palette 2) and `$086` (palette 3).
+208 of its 256 cells are character `$084`, solid colour 1 (black in `palette_088022`); the other 48 are characters `$000` (palette 2) and `$086` (palette 3). Palette 3 (colours 50-63) is rotated on screen: see `gfx_088FD4`.
 
-Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`, `palette_088000`.
+Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`, `palette_088000`. Its palette is the CGRAM of the game at frame 330 of power-on, except colours 50-63 (`tests/test_previews.py`).
 
 <img src="gallery/gfx/gfx_0891DE.png" alt="gfx_0891DE" width="512" style="image-rendering: pixelated">
 
@@ -799,7 +801,7 @@ Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`
 
 Every cell is character `$084`, solid colour 1 (black in `palette_088022`): loaded right after `gfx_0891DE`, it fills rows 8-15 of the BG1 map with a blank tile, so nothing left in VRAM shows there. The black rectangle is what the game draws.
 
-Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`, `palette_088000`.
+Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`, `palette_088000`. Its palette is the CGRAM of the game at frame 330 of power-on, except colours 50-63 (`tests/test_previews.py`).
 
 <img src="gallery/gfx/gfx_089225.png" alt="gfx_089225" width="512" style="image-rendering: pixelated">
 
@@ -807,7 +809,9 @@ Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`
 
 `assets/gfx/gfx_18AAE3.tilemap`: bg, 32x32 cells, lz-v2.
 
-Drawn with `gfx_188000`, `gfx_1899A4` and `palette_08882C`.
+The picture as it fades in. When the scores are drawn over it (stage_clear_show_scores), palette_task_058889 copies `palette_08892E` to CGRAM 32-127: the same picture darker.
+
+Drawn with `gfx_188000`, `gfx_1899A4` and `palette_08882C`. Its palette is the CGRAM of the game at frame 11563 of play `stage1_boss` (`tests/test_previews.py`).
 
 <img src="gallery/gfx/gfx_18AAE3.png" alt="gfx_18AAE3" width="512" style="image-rendering: pixelated">
 
@@ -815,7 +819,9 @@ Drawn with `gfx_188000`, `gfx_1899A4` and `palette_08882C`.
 
 `assets/gfx/gfx_18D15B.tilemap`: bg, 32x32 cells, lz-v2.
 
-Drawn with `gfx_18AF20`, `gfx_18C896` and `palette_08882C`.
+The picture as it fades in. When the scores are drawn over it (stage_clear_show_scores), palette_task_058889 copies `palette_08892E` to CGRAM 32-127: the same picture darker.
+
+Drawn with `gfx_18AF20`, `gfx_18C896` and `palette_08882C`. Its palette is the CGRAM of the game at frame 4370 of play `stage2_boss` (`tests/test_previews.py`).
 
 <img src="gallery/gfx/gfx_18D15B.png" alt="gfx_18D15B" width="512" style="image-rendering: pixelated">
 
@@ -823,7 +829,9 @@ Drawn with `gfx_18AF20`, `gfx_18C896` and `palette_08882C`.
 
 `assets/gfx/gfx_18FAF5.tilemap`: bg, 32x32 cells, lz-v2.
 
-Drawn with `gfx_18D4E3`, `gfx_18E9DF` and `palette_08882C`.
+The picture as it fades in. When the scores are drawn over it (stage_clear_show_scores), palette_task_058889 copies `palette_08892E` to CGRAM 32-127: the same picture darker.
+
+Drawn with `gfx_18D4E3`, `gfx_18E9DF` and `palette_08882C`. Its palette is the CGRAM of the game at frame 24011 of play `stage3_boss` (`tests/test_previews.py`).
 
 <img src="gallery/gfx/gfx_18FAF5.png" alt="gfx_18FAF5" width="512" style="image-rendering: pixelated">
 
@@ -831,7 +839,9 @@ Drawn with `gfx_18D4E3`, `gfx_18E9DF` and `palette_08882C`.
 
 `assets/gfx/gfx_19AB40.tilemap`: bg, 32x32 cells, lz-v2.
 
-Drawn with `gfx_198000`, `gfx_199AB1` and `palette_08882C`.
+The picture as it fades in. When the scores are drawn over it (stage_clear_show_scores), palette_task_058889 copies `palette_08892E` to CGRAM 32-127: the same picture darker.
+
+Drawn with `gfx_198000`, `gfx_199AB1` and `palette_08882C`. Its palette is the CGRAM of the game at frame 15203 of play `stage4_boss` (`tests/test_previews.py`).
 
 <img src="gallery/gfx/gfx_19AB40.png" alt="gfx_19AB40" width="512" style="image-rendering: pixelated">
 
@@ -839,7 +849,9 @@ Drawn with `gfx_198000`, `gfx_199AB1` and `palette_08882C`.
 
 `assets/gfx/gfx_19D779.tilemap`: bg, 32x32 cells, lz-v2.
 
-Drawn with `gfx_19AF8C`, `gfx_19CAB9` and `palette_08882C`.
+The picture as it fades in. When the scores are drawn over it (stage_clear_show_scores), palette_task_058889 copies `palette_08892E` to CGRAM 32-127: the same picture darker.
+
+Drawn with `gfx_19AF8C`, `gfx_19CAB9` and `palette_08882C`. Its palette is the CGRAM of the game at frame 20658 of play `stage5_boss` (`tests/test_previews.py`).
 
 <img src="gallery/gfx/gfx_19D779.png" alt="gfx_19D779" width="512" style="image-rendering: pixelated">
 
@@ -847,7 +859,7 @@ Drawn with `gfx_19AF8C`, `gfx_19CAB9` and `palette_08882C`.
 
 `assets/gfx/gfx_1EEBD0.tilemap`: bg, 32x32 cells, lz-v1.
 
-Drawn with `gfx_1FE855`, `gfx_1AE9C9` and `palette_088B7A`.
+Drawn with `gfx_1FE855`, `gfx_1AE9C9` and `palette_088B7A`. Its palette is the CGRAM of the game at frame 77000 of play `stage6_ending_hard` (`tests/test_previews.py`).
 
 <img src="gallery/gfx/gfx_1EEBD0.png" alt="gfx_1EEBD0" width="512" style="image-rendering: pixelated">
 
@@ -867,11 +879,15 @@ map is the 128x128-tile Mode 7 map `build_m7_tilemap` makes.
 
 32 pages: `assets/wram/stage1_bg1_map.map`, `assets/wram/stage1_bg1_metatiles.metatiles`, `assets/wram/stage1_bg1_metatiles_2.metatiles`. Drawn with `gfx_098000`, `gfx_09998E`, `gfx_09B32D`, `gfx_09CD49` and `palette_088150`, `palette_088F92`.
 
+Its palette is the CGRAM of the game at frame 600 of play `stage1` (`tests/test_previews.py`).
+
 <img src="gallery/levels/stage1_bg1.png" alt="stage1_bg1" width="1024" style="image-rendering: pixelated">
 
 ### stage1_bg2
 
 16 pages: `assets/wram/stage1_bg2_map.map`, `assets/wram/stage1_bg2_metatiles.metatiles`. Drawn with `gfx_098000`, `gfx_09998E`, `gfx_09B32D`, `gfx_09CD49` and `palette_088150`, `palette_088F92`.
+
+Its palette is the CGRAM of the game at frame 600 of play `stage1` (`tests/test_previews.py`).
 
 Cells naming a metatile past those defined (drawn as zero words): page 6: `143`; page 7: `143`, `160`, `161`, `162`, `163`, `164`, `165`, `166`, `167`, `168`, `169`, `16A`, `16B`; page 8: `143`; page 9: `143`.
 
@@ -881,11 +897,15 @@ Cells naming a metatile past those defined (drawn as zero words): page 6: `143`;
 
 32 pages: `assets/wram/stage3_bg1_map.map`, `assets/wram/stage3_bg1_metatiles.metatiles`, `assets/wram/stage3_bg1_metatiles_2.metatiles`. Drawn with `gfx_0C8000`, `gfx_0C98A2`, `gfx_0CAFBF`, `gfx_0CC65E` and `palette_0882F8`, `palette_088F92`.
 
+Its palette is the CGRAM of the game at frame 600 of play `stage3` (`tests/test_previews.py`).
+
 <img src="gallery/levels/stage3_bg1.png" alt="stage3_bg1" width="1024" style="image-rendering: pixelated">
 
 ### stage3_bg2
 
 16 pages: `assets/wram/stage3_bg2_map.map`, `assets/wram/stage3_bg2_metatiles.metatiles`. Drawn with `gfx_0C8000`, `gfx_0C98A2`, `gfx_0CAFBF`, `gfx_0CC65E` and `palette_0882F8`, `palette_088F92`.
+
+Its palette is the CGRAM of the game at frame 600 of play `stage3` (`tests/test_previews.py`).
 
 <img src="gallery/levels/stage3_bg2.png" alt="stage3_bg2" width="1024" style="image-rendering: pixelated">
 
@@ -893,11 +913,15 @@ Cells naming a metatile past those defined (drawn as zero words): page 6: `143`;
 
 32 pages: `assets/wram/stage4_bg1_map.map`, `assets/wram/stage4_bg1_metatiles.metatiles`. Drawn with `gfx_0F8000`, `gfx_0F9460`, `gfx_0FAC90`, `gfx_0FC8E5` and `palette_08843E`.
 
+Its palette is the CGRAM of the game at frame 600 of play `stage4` (`tests/test_previews.py`).
+
 <img src="gallery/levels/stage4_bg1.png" alt="stage4_bg1" width="1024" style="image-rendering: pixelated">
 
 ### stage4_bg2
 
 16 pages: `assets/wram/stage4_bg2_map.map`, `assets/wram/stage4_bg2_metatiles.metatiles`. Drawn with `gfx_0F8000`, `gfx_0F9460`, `gfx_0FAC90`, `gfx_0FC8E5` and `palette_08843E`.
+
+Its palette is the CGRAM of the game at frame 600 of play `stage4` (`tests/test_previews.py`).
 
 <img src="gallery/levels/stage4_bg2.png" alt="stage4_bg2" width="1024" style="image-rendering: pixelated">
 
@@ -905,11 +929,15 @@ Cells naming a metatile past those defined (drawn as zero words): page 6: `143`;
 
 32 pages: `assets/wram/stage6_bg1_map.map`, `assets/wram/stage6_bg1_metatiles.metatiles`, `assets/wram/stage6_bg1_metatiles_2.metatiles`. Drawn with `gfx_108000`, `gfx_109C17`, `gfx_10B927`, `gfx_10D5A2` and `palette_088540`, `palette_088F92`.
 
+Its palette is the CGRAM of the game at frame 600 of play `stage6` (`tests/test_previews.py`).
+
 <img src="gallery/levels/stage6_bg1.png" alt="stage6_bg1" width="1024" style="image-rendering: pixelated">
 
 ### stage6_bg2
 
 16 pages: `assets/wram/stage6_bg2_map.map`, `assets/wram/stage6_bg2_metatiles.metatiles`. Drawn with `gfx_108000`, `gfx_109C17`, `gfx_10B927`, `gfx_10D5A2` and `palette_088540`, `palette_088F92`.
+
+Its palette is the CGRAM of the game at frame 600 of play `stage6` (`tests/test_previews.py`).
 
 <img src="gallery/levels/stage6_bg2.png" alt="stage6_bg2" width="1024" style="image-rendering: pixelated">
 
@@ -917,17 +945,27 @@ Cells naming a metatile past those defined (drawn as zero words): page 6: `143`;
 
 32 pages: `assets/wram/opening_bg1_map.map`, `assets/wram/opening_bg1_metatiles.metatiles`. Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0889F0`, `palette_0882B6`, `palette_088254`, `palette_088AF6`.
 
+Its palette is the CGRAM of the game at frame 1000 of power-on (`tests/test_previews.py`).
+
 <img src="gallery/levels/opening_bg1.png" alt="opening_bg1" width="1024" style="image-rendering: pixelated">
 
 ### stage2
 
-Mode 7 map, 128x128 tiles: `assets/wram/stage2_block_map_0.map`, `assets/wram/stage2_block_map_1.map`, `assets/wram/stage2_block_map_2.map`, `assets/wram/stage2_block_map_3.map`, `assets/wram/stage2_m7_blocks.blocks`. Drawn with `gfx_13CC02` and `palette_088C3E`, `palette_088F92`, `palette_088F50`, `palette_088F2E`, `palette_088F0C`, `palette_088CE0`.
+Mode 7 map, 128x128 tiles: `assets/wram/stage2_block_map_0.map`, `assets/wram/stage2_block_map_1.map`, `assets/wram/stage2_block_map_2.map`, `assets/wram/stage2_block_map_3.map`, `assets/wram/stage2_m7_blocks.blocks`. Drawn with `gfx_13CC02` and `palette_088C3E`, `palette_088F92`, `palette_088F50`, `palette_088F2E`, `palette_088F0C`, `palette_088CE0`, `palette_088D62`.
+
+Drawn through EXTBG (`extbg=1`), as the game shows it. Colours 69-79 pulse: every $60 frames `animate_stage2_palettes` fades `palette_088D62` out there and back in (`palette_task_05F576`, `palette_task_05F57C`); drawn at their brightest, `palette_088D62` itself.
+
+Its palette is the CGRAM of the game at frame 190 of play `stage2` (`tests/test_previews.py`).
 
 <img src="gallery/levels/stage2.png" alt="stage2" width="1024" style="image-rendering: pixelated">
 
 ### stage2_boss
 
-Mode 7 map, 128x128 tiles: `assets/wram/stage2_boss_block_map_0.map`, `assets/wram/stage2_boss_block_map_1.map`, `assets/wram/stage2_boss_block_map_2.map`, `assets/wram/stage2_boss_block_map_3.map`, `assets/wram/stage2_boss_m7_blocks.blocks`. Drawn with `gfx_148000`, `stage2_boss_m7_chars` and `palette_088C3E`, `palette_088F92`, `palette_088D82`, `palette_088F0C`, `palette_088CE0`.
+Mode 7 map, 128x128 tiles: `assets/wram/stage2_boss_block_map_0.map`, `assets/wram/stage2_boss_block_map_1.map`, `assets/wram/stage2_boss_block_map_2.map`, `assets/wram/stage2_boss_block_map_3.map`, `assets/wram/stage2_boss_m7_blocks.blocks`. Drawn with `gfx_148000`, `stage2_boss_m7_chars` and `palette_088C3E`, `palette_088F92`, `palette_088D82`, `palette_088F0C`, `palette_088CE0`, `palette_088D62`.
+
+Drawn through EXTBG (`extbg=1`), as the game shows it. Colours 69-79 pulse as on the stage 2 map (`palette_088D62`, drawn at its brightest). When the core is hit, `td_flash_boss_palette_on_hit` fills CGRAM 48-103 with white for 4 frames, then copies `palette_088C60` (colours 16 on of `palette_088C3E`) back.
+
+Its palette is the CGRAM of the game at frame 3550 of play `stage2_boss` (`tests/test_previews.py`).
 
 <img src="gallery/levels/stage2_boss.png" alt="stage2_boss" width="1024" style="image-rendering: pixelated">
 
@@ -935,11 +973,19 @@ Mode 7 map, 128x128 tiles: `assets/wram/stage2_boss_block_map_0.map`, `assets/wr
 
 Mode 7 map, 128x128 tiles: `assets/wram/stage5_block_map_0.map`, `assets/wram/stage5_block_map_1.map`, `assets/wram/stage5_block_map_2.map`, `assets/wram/stage5_block_map_3.map`, `assets/wram/stage5_m7_blocks.blocks`. Drawn with `gfx_158000` and `palette_088DA4`, `palette_088F92`, `palette_088ECA`, `palette_088F2E`, `palette_088F0C`, `palette_088CE0`.
 
+Drawn through EXTBG (`extbg=1`), as the game shows it. Colours 48-50 pulse (`palette_088D7A` faded out and in by `palette_task_05F582`, `palette_task_05F588`; drawn at their brightest), and `cycle_palette_colors` rotates colours 56-63 by one every 2 frames (`animate_stage5_palettes` runs on into it); drawn in the order `palette_088DA4` gives them.
+
+Its palette is the CGRAM of the game at frame 190 of play `stage5` (`tests/test_previews.py`).
+
 <img src="gallery/levels/stage5.png" alt="stage5" width="1024" style="image-rendering: pixelated">
 
 ### stage5_boss
 
 Mode 7 map, 128x128 tiles: `assets/wram/stage5_boss_block_map_0.map`, `assets/wram/stage5_boss_block_map_1.map`, `assets/wram/stage5_boss_block_map_2.map`, `assets/wram/stage5_boss_block_map_3.map`, `assets/wram/stage5_boss_m7_blocks.blocks`. Drawn with `gfx_168000`, `stage5_boss_m7_chars` and `palette_088DA4`, `palette_088F92`, `palette_088E46`, `palette_088F0C`, `palette_088CE0`.
+
+Drawn through EXTBG (`extbg=1`), as the game shows it. `cycle_palette_colors` rotates colours 56-63 by one every 2 frames (drawn in the order of `palette_088DA4`), and `stage5_boss_flash_on_hit` copies `palette_088E6A`, `palette_088E8A`, `palette_088EAA`, `palette_088E8A` to colours 80-95 in turn, two frames each (the first is the same as `palette_088DA4`'s colours there): 33 bytes, so the low byte of colour 96 changes too (not drawn by the map; left out of the check).
+
+Its palette is the CGRAM of the game at frame 1009 of play `stage5_boss`, except colour 96 (`tests/test_previews.py`).
 
 <img src="gallery/levels/stage5_boss.png" alt="stage5_boss" width="1024" style="image-rendering: pixelated">
 

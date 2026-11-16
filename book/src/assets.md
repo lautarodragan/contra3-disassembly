@@ -382,6 +382,21 @@ copies to CGRAM. 18 have one:
 The previews are made by `make book` (`gallery-copy`), from the assets:
 editing a tilemap, a graphic or a palette changes them.
 
+**Checked against the game.** Every preview, tilemap or level, has a
+`cgram` line in `assets/views.txt`: a scripted play (or power-on) and a
+frame where the game shows that screen with a steady palette.
+`tests/test_previews.py` (`make emu-test`) runs the plays and checks that
+the CGRAM at that frame (`Console.cgram()`, read from the core's save
+state) holds the colours the preview's palettes give, at every index they
+set and every index the picture shows. Where code or an animation changes
+a colour on screen, the preview keeps the palette asset (drawn as the
+palette task copies it, or an animation at its brightest) and a `note`
+line, printed in the gallery, says what changes it; colours that never
+match a palette asset are left out of the check (`skip=`). The Konami
+logo's palette 3 (rotated by `konami_logo_cycle_line`), the stage clear
+pictures (darkened while the scores are up), the top-down maps' pulsing
+and cycling colours and the stage 5 boss's shimmer are such cases.
+
 ## WRAM streams of bank $7E
 
 The 54 streams that the load lists (`load_wram`) decompress to bank `$7E`
@@ -554,6 +569,18 @@ boss's characters on the boss maps. Two of those palettes stay inline in
 a `level` line names them `asm:LABEL` and the tool reads their `.byte`
 lines. A side-view map is drawn page by page, 8 pages a row, so a
 vertical stretch shows as consecutive pages side by side.
+
+The top-down maps are drawn through EXTBG (`extbg=1`), as the game shows
+them: `init_topdown_hdma`'s tables set SETINI `$40` and BG1 + BG2 on the
+main screen for the playfield, so BG2 draws the Mode 7 pixels again with
+bit 7 as their priority and bits 0-6 as their colour, above BG1. A pixel
+129-255 shows colour (pixel & `$7F`), and CGRAM 129-255 holds only the
+sprites' colours (in the emulator, setting them all to green turns only
+the sprites green). Drawn with CGRAM 129-255 instead, the stage 2 boss,
+dark grey metal with a red dome in the game, came out orange, teal and
+blue. Stage 2's colours 69-79 are those of `palette_088D62` (at its
+brightest: `animate_stage2_palettes` fades it out and in again every
+`$60` frames), which the palette task's `palette_088C3E` leaves to it.
 
 ## Editing a level
 
