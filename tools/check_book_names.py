@@ -156,11 +156,11 @@ def main():
         return tok in symbols or tok in tool_names
 
     def generated_asset(p):
-        # build/assets/<path>.lz or .bin: made from assets/<path>.bin or .png
+        # build/assets/<path>.lz or .bin: made from assets/<path>.bin, .png, .gpl or .tilemap
         if not p.startswith("build/assets/"):
             return False
         stem = p[len("build/assets/"):].rsplit(".", 1)[0]
-        return any((ROOT / "assets" / (stem + ext)).exists() for ext in (".bin", ".png"))
+        return any((ROOT / "assets" / (stem + ext)).exists() for ext in (".bin", ".png", ".gpl", ".tilemap"))
 
     def path_exists(p):
         p = p.rstrip("/")

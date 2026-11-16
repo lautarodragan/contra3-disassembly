@@ -19,7 +19,12 @@ assets/<path>.png (tools/snesgfx.py: 2bpp, 4bpp, 8bpp, mode7), which the
 build converts to build/assets/<path>.bin: the first `tiles` tiles of the
 PNG, then the bytes `tail` gives in hex (data that is not a whole number of
 tiles).  `width` is the number of tiles per row of the PNG `topng` writes
-(default 16).
+(default 16).  With gpl=LAYOUT the data is the palette assets/<path>.gpl
+(tools/snespal.py; LAYOUT block: a size-1 word then the colours, colours:
+the colours alone; `colours=N`: the number of colours it must have); with
+tilemap=FORMAT the tilemap text assets/<path>.tilemap (tools/snesmap.py: bg,
+mode7; `width`: cells per row).  The build converts both to
+build/assets/<path>.bin.
 
 ca65 looks the included paths up in INCLUDE_DIRS (assets/, then
 build/assets/), so every assembly of src/ (the Makefile, tools/srcmap.py,
@@ -32,7 +37,12 @@ writes (`makefile`), so that editing an asset rebuilds what depends on it.
     python3 tools/assets.py list                 # path, kind, sizes
     python3 tools/assets.py topng FORMAT PATH ... [--width N]
                                                  # assets/PATH.bin -> .png (sets png=)
-    python3 tools/assets.py check                # every PNG converts back exactly
+    python3 tools/assets.py tilemap FORMAT PATH ... [--width N]
+                                                 # assets/PATH.bin -> .tilemap (sets tilemap=)
+    python3 tools/assets.py check                # every PNG converts back exactly;
+                                                 # palettes exact, PNG viewing palettes in sync
+    python3 tools/assets.py sync-palettes        # PNG viewing palettes from assets/views.txt
+    python3 tools/assets.py normalize            # rewrite the .gpl files with exact words
     python3 tools/assets.py gallery              # book/src/gallery.md (make book)
     python3 tools/assets.py gallery-copy DIR     # the PNGs into DIR/gallery/
 """
@@ -44,6 +54,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import c3lz  # noqa: E402
 import snesgfx  # noqa: E402
+import snesmap  # noqa: E402
+import snespal  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
 ASSETS = "assets"
@@ -52,7 +64,8 @@ MANIFEST = os.path.join(ASSETS, "manifest.txt")
 INCLUDE_DIRS = [ASSETS, BUILD]
 KINDS = ("raw", "lz-v1", "lz-v2")
 # the tools a generated file depends on
-TOOLS = ["tools/assets.py", "tools/c3lz.py", "tools/snesgfx.py"]
+TOOLS = ["tools/assets.py", "tools/c3lz.py", "tools/snesgfx.py", "tools/snespal.py",
+         "tools/snesmap.py"]
 
 
 class Asset:
@@ -80,14 +93,31 @@ class Asset:
         return self.options.get("png")
 
     @property
+    def gpl(self):
+        """The layout of the palette (.gpl) that holds the data, or None."""
+        return self.options.get("gpl")
+
+    @property
+    def tilemap(self):
+        """The format of the tilemap text that holds the data, or None."""
+        return self.options.get("tilemap")
+
+    @property
+    def converted(self):
+        """True if the build converts the source to the data."""
+        return bool(self.png or self.gpl or self.tilemap)
+
+    @property
     def source(self):
         """The file in the repository that holds the data."""
-        return os.path.join(ASSETS, self.path + (".png" if self.png else ".bin"))
+        ext = ".png" if self.png else ".gpl" if self.gpl else ".tilemap" if self.tilemap else ".bin"
+        return os.path.join(ASSETS, self.path + ext)
 
     @property
     def data_source(self):
-        """The file that holds the bytes (made from the PNG if there is one)."""
-        if self.png:
+        """The file that holds the bytes (made from the PNG, palette or
+        tilemap text if there is one)."""
+        if self.converted:
             return os.path.join(BUILD, self.path + ".bin")
         return self.source
 
@@ -96,7 +126,7 @@ class Asset:
         """The files the build makes, in order ([]: the source is included
         as is)."""
         out = []
-        if self.png:
+        if self.converted:
             out.append(self.data_source)
         if self.compressed:
             out.append(os.path.join(BUILD, self.path + ".lz"))
@@ -110,7 +140,7 @@ class Asset:
     def prerequisites(self, target=None):
         """What a target is made from (default: the last one)."""
         target = target or self.target
-        if target == self.data_source and self.png:
+        if target == self.data_source and self.converted:
             return [self.source]
         return [self.data_source]
 
@@ -118,6 +148,21 @@ class Asset:
         data = snesgfx.png_to_tiles(os.path.join(root, self.source), self.png,
                                     int(self.options["tiles"]))
         return data + bytes.fromhex(self.options.get("tail", ""))
+
+    def from_source(self, root=ROOT):
+        """The data (decompressed), from the file in the repository."""
+        src = os.path.join(root, self.source)
+        if self.png:
+            return self.tiles_from_png(root)
+        if self.gpl:
+            words = snespal.read_gpl(src)
+            if "colours" in self.options and len(words) != int(self.options["colours"]):
+                raise ValueError(f"{self.source}: {len(words)} colours, the game reads "
+                                 f"{self.options['colours']}")
+            return snespal.to_bytes(words, self.gpl)
+        if self.tilemap:
+            return snesmap.read_text(src, self.tilemap, int(self.options.get("width", 0)) or None)
+        return open(src, "rb").read()
 
 
 def read_manifest(root=ROOT):
@@ -143,8 +188,8 @@ def _write(path, data):
 
 def make_target(asset, target, root=ROOT):
     """Write one of asset.targets from its prerequisite."""
-    if asset.png and target == asset.data_source:
-        data = asset.tiles_from_png(root)
+    if asset.converted and target == asset.data_source:
+        data = asset.from_source(root)
     else:
         data = c3lz.compress(open(os.path.join(root, asset.data_source), "rb").read(),
                              asset.version)
@@ -153,9 +198,7 @@ def make_target(asset, target, root=ROOT):
 
 def data_bytes(asset, root=ROOT):
     """The asset's data (decompressed), from its source."""
-    if asset.png:
-        return asset.tiles_from_png(root)
-    return open(os.path.join(root, asset.source), "rb").read()
+    return asset.from_source(root)
 
 
 def _mtime(path):
@@ -268,6 +311,30 @@ def topng(paths, fmt, width=16):
     return done
 
 
+def totilemap(paths, fmt, width=None):
+    """Turn assets/PATH.bin into the tilemap text assets/PATH.tilemap,
+    checking the round trip, and record it in the manifest."""
+    manifest = {a.path: a for a in read_manifest()}
+    done = []
+    for path in paths:
+        a = manifest[path]
+        if a.converted:
+            sys.exit(f"{path}: already converted ({a.source})")
+        bin_path = a.source
+        data = open(bin_path, "rb").read()
+        a.options = dict(a.options, tilemap=fmt)
+        if width:
+            a.options["width"] = str(width)
+        snesmap.write_text(a.source, data, fmt, width, path.split("/")[-1])
+        if a.from_source() != data:
+            os.remove(a.source)
+            sys.exit(f"{path}: the text does not convert back to the same bytes")
+        os.remove(bin_path)
+        done.append(a)
+    write_manifest(done)
+    return done
+
+
 def check():
     """Every PNG asset: its tiles, drawn again, give the same PNG pixels
     (so the PNG holds nothing that the build would drop)."""
@@ -289,7 +356,17 @@ def check():
                 print(f"{a.source}: does not round-trip")
                 bad += 1
     print(f"{n} PNG assets, {n - bad} round-trip exactly")
-    return 1 if bad else 0
+    pals = [a for a in read_manifest() if a.gpl]
+    inexact = 0
+    for a in pals:
+        lines = snespal.parse_gpl(open(a.source).read(), a.source)
+        odd = [i for i, (_w, exact) in enumerate(lines) if not exact]
+        if odd:
+            print(f"{a.source}: colours {', '.join(map(str, odd))} are not given as exact "
+                  "SNES words (python3 tools/assets.py normalize)")
+            inexact += 1
+    print(f"{len(pals)} palettes, {len(pals) - inexact} exact")
+    return 1 if bad or inexact else 0
 
 
 def gallery():
@@ -343,6 +420,19 @@ def main(argv):
         for a in read_manifest():
             size = len(data_bytes(a))
             print(f"{a.path:32} {a.kind:6} {a.png or '-':6} {size:7}")
+    elif cmd == "normalize":
+        for a in read_manifest():
+            if a.gpl and snespal.normalize(a.source):
+                print(f"{a.source}: rewritten")
+    elif cmd == "tilemap":
+        import argparse
+        ap = argparse.ArgumentParser(prog="assets.py tilemap")
+        ap.add_argument("format", choices=list(snesmap.FORMATS))
+        ap.add_argument("paths", nargs="+")
+        ap.add_argument("--width", type=int)
+        args = ap.parse_args(argv[2:])
+        for a in totilemap(args.paths, args.format, args.width):
+            print(f"{a.source}: {a.tilemap}")
     elif cmd == "check":
         return check()
     elif cmd == "gallery":
