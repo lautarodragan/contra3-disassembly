@@ -6748,271 +6748,77 @@ metasprite_07E87D:
 metasprite_07E89C:
 	.byte	$04, $00, $00, $06, $00, $F0, $00, $04, $00, $00, $F0, $02
 	.byte	$00, $F0, $F0, $00, $00, $01, $F8, $F8, $A0, $01, $01, $F8, $F8, $A2, $01
+; The metasprites of the top-down items (draw_td_item_metasprite): a count,
+; then 4 bytes per sprite (x, y, tile, attributes; bit 0 of the attributes is
+; the size).  The routine reads the attributes as a word, so it also reads the
+; byte after the last sprite (the next metasprite's count, after
+; metasprite_07E9ED the first byte of gfx_07E9FE), but it only keeps bit 0 of
+; the low byte: that byte is not used, and these blocks can move apart
+; (checked in the emulator with other values there).
 	; CDL: read by draw_td_item_metasprite, draw_td_item_metasprite_p2; partly not accessed
 metasprite_07E8B7:
 	.byte	$04, $00, $00, $A6, $C1, $F0, $00, $A6, $81, $00, $F0, $A6, $41, $F0, $F0, $A6
 	.byte	$01
 metasprite_07E8C8:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00, $00, $A8, $C1, $F0, $00, $A8, $81, $00, $F0, $A8, $41, $F0, $F0
 	.byte	$A8, $01
 metasprite_07E8D9:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00, $00, $AA, $C1, $F0, $00, $AA, $81, $00, $F0, $AA, $41, $F0
 	.byte	$F0, $AA, $01
 metasprite_07E8EA:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00, $00, $AC, $C1, $F0, $00, $AC, $81, $00, $F0, $AC, $41
 	.byte	$F0, $F0, $AC, $01
 metasprite_07E8FB:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$01, $F8, $F8, $88, $01
 metasprite_07E900:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$01, $F8, $F8, $8A, $01
 metasprite_07E905:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00
 	.byte	$00, $AE, $C1, $F0, $00, $AE, $81, $00, $F0, $AE, $41, $F0, $F0, $AE, $01
 metasprite_07E916:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04
 	.byte	$00, $00, $CA, $C1, $F0, $00, $CA, $81, $00, $F0, $CA, $41, $F0, $F0, $CA, $01
 metasprite_07E927:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00, $00, $CC, $C1, $F0, $00, $CC, $81, $00, $F0, $CC, $41, $F0, $F0, $CC
 	.byte	$01
 metasprite_07E938:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00, $00, $CE, $C1, $F0, $00, $CE, $81, $00, $F0, $CE, $41, $F0, $F0
 	.byte	$CE, $01, $01, $F8, $F8, $A4, $01, $01, $F8, $F8, $8C, $01, $01, $F8, $F8, $C0
 	.byte	$01, $01, $F8, $F8, $C2, $01, $01, $F8, $F8, $C4, $01, $01, $F8, $F8, $8E, $01
 metasprite_07E967:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$01, $F8, $F8, $86, $01, $01, $FC, $FC, $11, $00
 metasprite_07E971:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $FC, $FE, $F9, $00, $FC
 	.byte	$F6, $E9, $00, $00, $F8, $EC, $01, $F0, $F8, $EA, $01
 metasprite_07E982:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$01, $F8, $F8, $E2, $01
 metasprite_07E987:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00, $00, $E0, $C1, $F0, $00, $E0, $81, $00, $F0, $E0, $41, $F0, $F0, $E0
 	.byte	$01
 metasprite_07E998:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00, $00, $EE, $C1, $F0, $00, $EE, $81, $00, $F0, $EE, $41, $F0, $F0
 	.byte	$EE, $01
 metasprite_07E9A9:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04
 	; CDL: read by draw_td_item_metasprite, draw_td_item_metasprite_p2
 	.byte	$FC, $FE, $E5, $00, $FC, $F6, $E4, $00, $00, $F8, $EC, $01, $F0, $F8, $EA, $01
 metasprite_07E9BA:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $FC, $FE, $F5, $00, $FC, $F6, $E4, $00, $00, $F8, $EC, $01, $F0, $F8, $EA
 	.byte	$01
 metasprite_07E9CB:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $FC, $FE, $F6, $00, $FC, $F6, $E6, $00, $00, $F8, $EC, $01, $F0, $F8
 	.byte	$EA, $01
 metasprite_07E9DC:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04
 	; CDL: read by draw_td_item_metasprite
 	.byte	$FC, $FE, $F7, $00, $FC, $F6, $E7, $00, $00, $F8, $EC, $01, $F0, $F8, $EA, $01
 metasprite_07E9ED:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $FC, $FE, $F8, $00, $FC, $F6, $E8, $00, $00, $F8, $EC, $01, $F0, $F8, $EA
 	.byte	$01
 	; CDL: read by decompress_chunk
 gfx_07E9FE:
-	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	; ASSET: compressed graphics (VRAM), $07:E9FE-$07:F551 (from its length word), loaded by load_list_0587AB
-	.byte	$54, $0B, $FF, $FD, $86, $E0, $7F, $FF, $1F, $F8, $07, $08, $23, $84, $FF, $07
-	.byte	$F0, $0F, $00, $2B, $81, $80, $A1, $E0, $F8, $FF, $04, $28, $04, $37, $81, $0F
-	.byte	$00, $3B, $81, $03, $AE, $03, $03, $03, $03, $07, $07, $07, $03, $03, $07, $07
-	.byte	$07, $07, $07, $0F, $F0, $00, $3C, $00, $30, $81, $1F, $00, $61, $00, $65, $82
-	.byte	$C0, $3F, $08, $65, $08, $3B, $00, $21, $0C, $73, $00, $6A, $04, $7A, $08, $5B
-	.byte	$08, $81, $81, $1F, $A7, $1F, $1E, $3C, $0F, $0F, $0F, $1F, $1F, $1F, $82, $01
-	.byte	$3F, $00, $9A, $81, $03, $00, $6D, $00, $2F, $00, $9F, $E2, $14, $A3, $00, $20
-	.byte	$08, $B0, $C7, $FF, $EA, $81, $01, $A9, $01, $00, $00, $00, $00, $00, $01, $01
-	.byte	$03, $3C, $3F, $84, $07, $78, $00, $7F, $04, $70, $00, $31, $08, $77, $00, $9D
-	.byte	$83, $78, $07, $7F, $0C, $2A, $00, $EB, $00, $63, $00, $69, $04, $AD, $04, $BE
-	.byte	$10, $BB, $14, $B9, $0D, $0E, $19, $11, $FC, $00, $DD, $29, $33, $00, $97, $81
-	.byte	$FE, $1C, $CD, $01, $4E, $00, $7F, $00, $FE, $01, $4D, $08, $51, $84, $0F, $01
-	.byte	$3C, $03, $04, $27, $83, $1F, $80, $7F, $04, $34, $04, $92, $83, $1E, $01, $7C
-	.byte	$05, $66, $00, $FB, $09, $6B, $00, $B3, $31, $11, $09, $7B, $29, $91, $3D, $0F
-	.byte	$39, $AE, $AF, $00, $00, $00, $00, $00, $01, $07, $00, $00, $00, $00, $00, $01
-	.byte	$07, $0F, $00, $00, $FF, $FA, $01, $4B, $01, $90, $01, $5D, $0D, $BC, $0D, $A9
-	.byte	$09, $90, $02, $23, $01, $79, $19, $B7, $05, $67, $16, $28, $12, $43, $02, $3F
-	.byte	$04, $FD, $31, $92, $1E, $42, $81, $FE, $09, $6D, $26, $56, $81, $01, $02, $6B
-	.byte	$04, $33, $0A, $67, $02, $7E, $00, $E9, $00, $A0, $C0, $78, $C0, $E0, $12, $75
-	.byte	$00, $26, $00, $FA, $81, $7F, $C0, $80, $E2, $81, $FE, $06, $87, $29, $CE, $81
-	.byte	$FE, $02, $97, $0A, $90, $81, $F0, $EF, $08, $DB, $21, $CD, $12, $C9, $0D, $6F
-	.byte	$A6, $3F, $78, $F0, $FF, $C0, $80, $1F, $3E, $0D, $74, $00, $F7, $08, $FB, $01
-	.byte	$8F, $09, $BE, $28, $A3, $39, $AF, $22, $FF, $05, $4D, $0A, $D7, $23, $14, $02
-	.byte	$7C, $03, $3A, $83, $FC, $F3, $03, $C0, $1E, $85, $F4, $3C, $48, $78, $10, $02
-	.byte	$E7, $82, $E0, $20, $02, $A1, $82, $C0, $0C, $07, $48, $A4, $C0, $80, $00, $00
-	.byte	$00, $00, $12, $9A, $F8, $10, $7F, $00, $99, $03, $85, $04, $DF, $81, $03, $00
-	.byte	$F3, $18, $91, $02, $E3, $01, $65, $02, $2F, $03, $9B, $04, $A1, $2D, $02, $0E
-	.byte	$FD, $26, $44, $38, $FF, $2A, $5F, $0F, $D5, $02, $F4, $03, $DD, $02, $F6, $82
-	.byte	$FF, $F1, $02, $7A, $02, $B1, $82, $FE, $C2, $07, $3C, $02, $85, $02, $7D, $03
-	.byte	$50, $06, $B7, $06, $8D, $03, $54, $81, $40, $07, $54, $7B, $5F, $18, $D7, $08
-	.byte	$29, $30, $21, $03, $7F, $08, $F3, $00, $E7, $0A, $F7, $10, $F9, $3D, $AE, $35
-	.byte	$A0, $7C, $4F, $2C, $72, $03, $EE, $0B, $ED, $83, $80, $FC, $04, $04, $A4, $06
-	.byte	$7D, $83, $F8, $08, $F8, $0B, $54, $08, $B1, $23, $77, $12, $DB, $1B, $8F, $30
-	.byte	$C1, $00, $DB, $00, $4D, $0A, $FB, $10, $E3, $48, $6B, $44, $70, $6C, $F2, $0F
-	.byte	$3A, $15, $32, $04, $AA, $81, $00, $00, $AD, $01, $3F, $07, $F6, $81, $F0, $03
-	.byte	$47, $09, $47, $A7, $E0, $00, $00, $00, $00, $00, $00, $00, $00, $00, $DD, $03
-	.byte	$89, $81, $33, $AC, $0F, $00, $00, $00, $00, $3F, $3F, $3F, $3F, $00, $00, $00
-	.byte	$00, $00, $15, $1D, $21, $78, $35, $BA, $82, $FF, $06, $12, $24, $AA, $00, $00
-	.byte	$00, $F8, $FE, $FF, $FF, $00, $00, $00, $00, $00, $07, $4A, $82, $A0, $60, $31
-	.byte	$4E, $00, $B5, $25, $C5, $14, $88, $1D, $DF, $19, $DB, $C5, $FF, $01, $F4, $03
-	.byte	$E5, $01, $A2, $05, $A2, $07, $EC, $81, $02, $09, $31, $E3, $C4, $C0, $C2, $80
-	.byte	$3B, $CF, $CE, $FF, $2A, $1F, $03, $29, $02, $4B, $C8, $FF, $C4, $FE, $00, $A7
-	.byte	$82, $84, $7C, $08, $AB, $09, $41, $09, $49, $0E, $1B, $AC, $00, $00, $00, $00
-	.byte	$00, $FF, $00, $FF, $00, $00, $FF, $00, $00, $FF, $CD, $FF, $81, $FC, $04, $39
-	.byte	$06, $9F, $04, $CF, $00, $45, $01, $64, $03, $E9, $C4, $FC, $C2, $F8, $C2, $F0
-	.byte	$07, $FA, $0F, $4A, $6B, $FF, $23, $C1, $81, $FE, $02, $9E, $12, $3C, $19, $E4
-	.byte	$0A, $0C, $81, $1E, $04, $9F, $82, $3C, $84, $00, $A2, $06, $66, $02, $6D, $02
-	.byte	$C1, $0B, $FA, $C0, $C0, $20, $B2, $30, $7F, $0D, $A2, $2C, $91, $2B, $1F, $00
-	.byte	$48, $C0, $FE, $27, $33, $02, $FE, $81, $E0, $00, $35, $07, $E1, $83, $FF, $E1
-	.byte	$FF, $02, $0B, $82, $AC, $FC, $0E, $BB, $09, $AD, $09, $4C, $03, $14, $A2, $08
-	.byte	$00, $80, $40, $06, $1A, $FF, $AF, $00, $00, $00, $00, $00, $FF, $FF, $FE, $80
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $AF, $00, $00, $00, $00, $FE, $F0, $00
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $18, $2F, $EE, $84, $7F, $3F
-	.byte	$5F, $20, $04, $02, $82, $7F, $81, $00, $07, $82, $82, $03, $00, $0B, $E0, $81
-	.byte	$20, $01, $74, $81, $1F, $00, $13, $82, $7E, $3E, $00, $17, $82, $FC, $7C, $00
-	.byte	$1B, $8D, $00, $C1, $81, $C3, $82, $C5, $84, $C9, $0B, $90, $17, $A0, $20, $C0
-	.byte	$40, $0F, $B5, $8B, $03, $01, $07, $01, $0F, $03, $1F, $07, $3F, $0F, $7F, $01
-	.byte	$5F, $03, $4C, $03, $64, $8B, $FF, $04, $FA, $F8, $05, $F0, $0A, $20, $14, $40
-	.byte	$28, $E2, $0E, $B2, $87, $F0, $F1, $E0, $E3, $C1, $C7, $81, $02, $A7, $81, $07
-	.byte	$00, $3E, $83, $67, $00, $9F, $08, $EA, $00, $0E, $81, $04, $04, $0E, $05, $5D
-	.byte	$81, $07, $00, $3D, $82, $FF, $7F, $0A, $9C, $00, $55, $03, $D0, $83, $F0, $FC
-	.byte	$0C, $02, $0A, $C0, $FF, $07, $2D, $00, $2E, $81, $60, $0C, $2E, $04, $80, $81
-	.byte	$FC, $C0, $FE, $C1, $FF, $C0, $7F, $00, $62, $0B, $EC, $04, $A2, $88, $01, $82
-	.byte	$81, $C2, $82, $C4, $42, $64, $2B, $E4, $00, $33, $81, $83, $00, $5E, $04, $9A
-	.byte	$08, $E7, $21, $B3, $06, $1E, $00, $C6, $08, $78, $12, $3A, $00, $5B, $83, $E3
-	.byte	$41, $E2, $00, $E3, $82, $C3, $64, $00, $E7, $82, $44, $68, $00, $EB, $E2, $82
-	.byte	$81, $80, $00, $F3, $00, $BD, $00, $F7, $82, $87, $83, $00, $FB, $04, $A5, $81
-	.byte	$02, $01, $01, $83, $02, $05, $03, $00, $6D, $84, $04, $07, $08, $04, $07, $79
-	.byte	$08, $B7, $05, $02, $05, $16, $05, $08, $84, $03, $FE, $7F, $FD, $00, $84, $83
-	.byte	$F8, $04, $F1, $08, $C7, $81, $E7, $05, $0C, $88, $80, $7C, $01, $F8, $07, $F8
-	.byte	$0E, $F1, $01, $28, $84, $08, $F7, $14, $E3, $01, $3B, $86, $BF, $3F, $7F, $7E
-	.byte	$02, $FD, $04, $45, $83, $04, $F0, $08, $01, $49, $85, $08, $0C, $C0, $3F, $81
-	.byte	$01, $42, $82, $FC, $04, $03, $08, $02, $6C, $81, $E0, $01, $59, $00, $92, $8A
-	.byte	$83, $4B, $0B, $93, $08, $17, $10, $27, $17, $20, $01, $67, $82, $2F, $40, $00
-	.byte	$2B, $87, $84, $03, $0C, $03, $08, $07, $18, $0D, $74, $82, $30, $0F, $01, $7B
-	.byte	$85, $F8, $F4, $F0, $F8, $20, $03, $0C, $83, $F0, $C0, $60, $01, $87, $81, $80
-	.byte	$03, $80, $81, $C0, $01, $57, $A5, $E0, $C0, $C0, $80, $80, $00, $00, $00, $01
-	.byte	$83, $1F, $2F, $10, $05, $A2, $82, $3F, $40, $09, $A7, $00, $2D, $84, $20, $1F
-	.byte	$10, $0F, $09, $B1, $01, $AF, $09, $B7, $01, $AA, $94, $C3, $E5, $C7, $EB, $44
-	.byte	$EB, $48, $F7, $CF, $70, $0F, $50, $1F, $60, $10, $60, $02, $81, $04, $83, $01
-	.byte	$D1, $82, $08, $87, $01, $D5, $84, $88, $07, $90, $0F, $01, $DB, $C1, $FF, $87
-	.byte	$EF, $10, $EF, $30, $EF, $FF, $20, $01, $E7, $84, $DF, $60, $50, $60, $01, $37
-	.byte	$01, $E3, $05, $F1, $81, $CF, $0D, $F5, $81, $8F, $01, $FB, $01, $C1, $82, $CF
-	.byte	$F7, $01, $C5, $82, $50, $EF, $01, $EB, $02, $07, $84, $FF, $40, $60, $40, $11
-	.byte	$D3, $09, $FB, $02, $17, $82, $20, $9F, $02, $1B, $82, $08, $10, $02, $1F, $81
-	.byte	$10, $01, $BB, $81, $2F, $02, $25, $08, $01, $82, $41, $BF, $01, $73, $02, $2F
-	.byte	$01, $B5, $00, $9E, $02, $35, $81, $3F, $A1, $3F, $7E, $04, $83, $18, $22, $3C
-	.byte	$00, $AD, $01, $BF, $02, $45, $00, $A9, $02, $49, $00, $A7, $84, $24, $C3, $02
-	.byte	$C1, $01, $CF, $00, $FE, $04, $FE, $0E, $58, $01, $4D, $02, $5F, $82, $04, $06
-	.byte	$00, $96, $0A, $65, $00, $85, $02, $6B, $A1, $F0, $F0, $F8, $00, $7E, $0A, $75
-	.byte	$03, $5A, $02, $7B, $01, $6D, $0A, $7F, $88, $2F, $4F, $27, $47, $17, $27, $10
-	.byte	$23, $02, $21, $09, $7B, $02, $91, $0A, $39, $0A, $35, $81, $0F, $01, $99, $01
-	.byte	$8C, $85, $C1, $40, $66, $C5, $FD, $0C, $DB, $0B, $B1, $08, $B4, $00, $F6, $A3
-	.byte	$C7, $FF, $FF, $FF, $40, $0B, $81, $8D, $01, $FA, $F9, $F4, $F2, $E8, $E5, $10
-	.byte	$89, $61, $12, $41, $3E, $09, $51, $0A, $FC, $0B, $70, $81, $E1, $02, $7E, $81
-	.byte	$C0, $02, $DF, $81, $41, $00, $08, $81, $BF, $02, $E5, $01, $1F, $84, $82, $7F
-	.byte	$04, $FE, $0D, $B9, $00, $18, $A3, $7E, $FC, $FC, $F8, $90, $81, $E0, $02, $FF
-	.byte	$84, $10, $A0, $1F, $AF, $07, $05, $0D, $A2, $11, $B1, $0A, $99, $13, $17, $C2
-	.byte	$41, $81, $02, $01, $1E, $04, $40, $02, $D4, $83, $04, $FF, $09, $02, $D5, $81
-	.byte	$BE, $07, $2F, $C0, $FC, $A3, $FC, $F8, $F8, $F1, $7E, $04, $C3, $1C, $C8, $A8
-	.byte	$00, $7F, $7F, $00, $00, $00, $00, $00, $00, $01, $81, $82, $03, $5F, $A4, $83
-	.byte	$00, $00, $00, $00, $00, $3B, $EC, $83, $FC, $01, $FE, $03, $71, $27, $44, $03
-	.byte	$2E, $0E, $AE, $E7, $84, $06, $08, $01, $06, $2B, $70, $81, $07, $37, $70, $03
-	.byte	$B1, $07, $81, $27, $91, $16, $AC, $E7, $82, $81, $62, $07, $61, $0C, $6E, $17
-	.byte	$D9, $37, $B0, $06, $63, $81, $02, $2B, $D0, $0A, $79, $EA, $06, $23, $81, $20
-	.byte	$A4, $3F, $00, $00, $00, $00, $00, $0B, $1B, $EA, $84, $09, $0E, $FB, $04, $2B
-	.byte	$83, $03, $3D, $81, $FB, $EC, $06, $68, $02, $ED, $00, $63, $82, $F8, $0C, $00
-	.byte	$67, $82, $10, $18, $00, $6B, $0C, $0B, $C1, $F8, $C2, $F0, $C2, $E0, $03, $AE
-	.byte	$84, $03, $07, $04, $0B, $00, $83, $03, $12, $00, $21, $00, $1F, $82, $21, $41
-	.byte	$0F, $AB, $00, $81, $84, $03, $0F, $07, $1F, $03, $14, $83, $0F, $3E, $1E, $18
-	.byte	$5F, $81, $FC, $00, $00, $82, $06, $84, $04, $AA, $18, $6F, $C3, $F8, $81, $78
-	.byte	$00, $BB, $03, $E3, $81, $01, $00, $C0, $05, $17, $09, $07, $01, $2D, $09, $0D
-	.byte	$13, $6D, $08, $C0, $08, $93, $00, $43, $0E, $A9, $0C, $E1, $04, $1D, $13, $CA
-	.byte	$C8, $FF, $81, $EF, $00, $4E, $84, $E0, $F1, $21, $F2, $01, $03, $82, $E3, $34
-	.byte	$01, $07, $82, $24, $38, $01, $0B, $E2, $82, $C1, $C0, $01, $13, $82, $C3, $C1
-	.byte	$01, $17, $82, $C7, $C3, $01, $1B, $30, $DF, $0C, $6E, $28, $F2, $81, $E7, $01
-	.byte	$32, $81, $F9, $07, $2C, $01, $43, $82, $F3, $1C, $01, $47, $19, $0B, $82, $F1
-	.byte	$F0, $01, $53, $82, $E3, $E1, $01, $57, $09, $1B, $01, $81, $81, $E0, $01, $84
-	.byte	$8B, $F1, $41, $E2, $C1, $62, $C3, $64, $87, $C8, $84, $C8, $11, $91, $02, $B3
-	.byte	$01, $75, $05, $CF, $04, $C7, $02, $E7, $83, $7E, $BF, $84, $02, $EC, $83, $FF
-	.byte	$F8, $0D, $01, $87, $84, $F0, $19, $20, $3F, $02, $F3, $83, $40, $3C, $80, $00
-	.byte	$BE, $0A, $D9, $01, $98, $05, $70, $82, $FC, $7E, $01, $9F, $81, $84, $05, $A2
-	.byte	$08, $A7, $08, $A9, $01, $93, $31, $AF, $81, $07, $00, $86, $83, $17, $08, $17
-	.byte	$03, $0D, $06, $F0, $05, $8D, $02, $83, $01, $7D, $12, $2F, $09, $D5, $0A, $EF
-	.byte	$00, $FD, $01, $DF, $84, $30, $EF, $50, $EF, $02, $09, $01, $E7, $81, $9F, $0B
-	.byte	$00, $83, $EF, $10, $CF, $05, $F1, $06, $18, $05, $F7, $05, $D8, $84, $EF, $F7
-	.byte	$CF, $F7, $01, $E5, $02, $03, $82, $FF, $40, $06, $07, $87, $41, $42, $43, $08
-	.byte	$C7, $08, $87, $09, $F7, $82, $20, $9F, $02, $17, $07, $31, $81, $BC, $01, $FF
-	.byte	$01, $E1, $02, $05, $01, $E8, $82, $BF, $C0, $02, $27, $82, $7F, $81, $02, $E3
-	.byte	$02, $0F, $09, $F3, $06, $17, $0E, $F0, $02, $3B, $82, $E7, $FB, $02, $01, $84
-	.byte	$48, $F7, $90, $EF, $01, $EB, $02, $47, $81, $3F, $06, $E0, $82, $04, $C3, $02
-	.byte	$11, $06, $11, $1D, $D6, $0D, $5F, $85, $F0, $40, $E0, $C0, $60, $02, $67, $06
-	.byte	$9F, $01, $72, $0D, $70, $A3, $80, $80, $80, $00, $00, $82, $08, $90, $03, $03
-	.byte	$00, $8B, $82, $3F, $5F, $06, $E5, $81, $BE, $02, $EB, $82, $02, $FF, $11, $D3
-	.byte	$00, $24, $0B, $4F, $0B, $35, $81, $3F, $00, $22, $19, $30, $0B, $CD, $82, $01
-	.byte	$1F, $02, $74, $15, $24, $10, $44, $01, $AD, $03, $FF, $83, $04, $07, $FC, $03
-	.byte	$28, $87, $FF, $FD, $7E, $85, $7E, $86, $7D, $0D, $93, $C0, $F8, $A3, $F8, $F9
-	.byte	$F9, $FB, $41, $06, $2C, $81, $82, $03, $24, $81, $7F, $02, $E5, $08, $A1, $82
-	.byte	$08, $FC, $0A, $3B, $82, $80, $7C, $1B, $35, $01, $9A, $02, $81, $02, $4D, $01
-	.byte	$CD, $02, $85, $0B, $05, $81, $20, $07, $0A, $12, $59, $02, $95, $1B, $15, $04
-	.byte	$C6, $85, $07, $05, $06, $F9, $FE, $03, $25, $85, $F3, $FD, $12, $FD, $24, $02
-	.byte	$DD, $06, $F7, $82, $01, $F8, $00, $4F, $03, $35, $81, $E3, $A1, $E3, $C7, $82
-	.byte	$81, $03, $03, $3F, $12, $C3, $03, $27, $01, $45, $03, $2B, $02, $F3, $03, $4F
-	.byte	$12, $D3, $13, $35, $AF, $80, $80, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00, $00, $01, $AD, $01, $01, $00, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00, $00, $00, $00, $00, $81, $86, $01, $85, $2C, $42, $03, $2E, $30, $51
-	.byte	$81, $08, $00, $68, $03, $A2, $24, $11, $02, $FD, $03, $57, $EA, $07, $03, $81
-	.byte	$40, $A4, $7F, $00, $00, $00, $00, $00, $0B, $1B, $EA, $01, $4D, $82, $C7, $28
-	.byte	$A4, $EF, $00, $00, $00, $00, $00, $03, $3D, $00, $0F, $EA, $81, $12, $01, $48
-	.byte	$81, $0C, $2B, $A3, $03, $5D, $81, $F3, $3B, $B2, $00, $22, $2F, $C4, $00, $4F
-	.byte	$EA, $12, $B5, $20, $63, $EE, $78, $5F, $0E, $B1, $16, $A7, $0C, $A4, $2C, $78
-	.byte	$10, $B6, $6C, $A3, $E1, $81, $10, $00, $3E, $81, $08, $03, $C2, $85, $FD, $03
-	.byte	$E5, $E3, $C0, $0D, $4E, $04, $E3, $E0, $86, $04, $FD, $02, $E0, $1F, $07, $14
-	.byte	$CD, $86, $06, $00, $94, $04, $F8, $60, $02, $63, $C0, $30, $1C, $FF, $83, $08
-	.byte	$E0, $18, $00, $50, $81, $D0, $02, $70, $0F, $7D, $8A, $C3, $01, $F6, $C3, $74
-	.byte	$E6, $C8, $D8, $A4, $1C, $15, $1F, $89, $00, $F6, $01, $E5, $1B, $C7, $3F, $03
-	.byte	$FF, $01, $0E, $C0, $30, $83, $50, $00, $B0, $06, $67, $85, $30, $20, $18, $30
-	.byte	$0C, $01, $4B, $A0, $30, $50, $82, $20, $90, $01, $0A, $86, $C0, $F0, $C0, $D8
-	.byte	$E0, $EC, $14, $51, $01, $33, $87, $03, $01, $E2, $1F, $F4, $F2, $18, $17, $D1
-	.byte	$05, $65, $85, $00, $FE, $01, $F1, $0F, $00, $FD, $07, $60, $07, $62, $01, $82
-	.byte	$82, $40, $80, $02, $66, $82, $30, $60, $01, $4E, $0F, $60, $05, $8F, $01, $87
-	.byte	$02, $6A, $01, $45, $01, $5B, $00, $42, $C0, $0C, $8A, $0A, $00, $0D, $03, $06
-	.byte	$03, $80, $74, $D0, $C8, $01, $EE, $05, $9F, $84, $00, $0A, $04, $09, $02, $C2
-	.byte	$83, $03, $F3, $0F, $01, $3B, $81, $0F, $0C, $FE, $01, $94, $02, $6C, $87, $6F
-	.byte	$C2, $3B, $62, $14, $18, $08, $01, $1A, $11, $C0, $88, $00, $6F, $80, $B3, $CC
-	.byte	$E4, $F8, $E8, $1D, $5E, $41, $E5, $01, $77, $09, $F9, $E4, $01, $FD, $84, $1F
-	.byte	$00, $7E, $01, $18, $8B, $0A, $05, $03, $E4, $01, $79, $83, $F0, $0F, $C0, $0F
-	.byte	$F1, $02, $15, $10, $D9, $12, $0B, $12, $23, $00, $FB, $58, $88, $7C, $71, $7E
-	.byte	$52, $2E, $73, $14, $CC, $0A, $2A, $10, $C2, $22, $89, $C5, $FF, $6E, $A2, $88
-	.byte	$A8, $98, $AC, $7C, $68, $17, $07, $03, $C0, $10, $81, $20, $E3, $85, $87, $7F
-	.byte	$E3, $1F, $78, $C0, $07, $81, $08, $00, $F3, $12, $E9, $85, $18, $20, $10, $30
-	.byte	$70, $01, $1C, $01, $99, $01, $B0, $04, $E6, $E0, $01, $9D, $01, $1D, $81, $10
-	.byte	$05, $89, $82, $80, $18, $01, $B1, $0B, $0B, $86, $F8, $FC, $8C, $74, $7E, $03
-	.byte	$01, $A5, $01, $A3, $C1, $0C, $0B, $AC, $01, $7D, $83, $03, $7C, $03, $01, $B5
-	.byte	$01, $B3, $09, $AF, $E0, $01, $CB, $01, $C9, $01, $C7, $01, $C5, $05, $91, $E3
-	.byte	$01, $DB, $01, $D9, $01, $D7, $01, $D5, $1B, $47, $C0, $EC, $85, $E4, $1E, $1F
-	.byte	$03, $02, $C0, $01, $09, $E2, $07, $66, $02, $F1, $00, $E9, $82, $1E, $01, $03
-	.byte	$65, $09, $F4, $0B, $76, $82, $2B, $32, $01, $8B, $01, $47, $23, $45, $82, $C3
-	.byte	$FC, $05, $45, $27, $54, $85, $D8, $C8, $CC, $22, $3E, $C0, $03, $0F, $66, $0C
-	.byte	$0B, $85, $3F, $E1, $1F, $3E, $01, $02, $13, $1B, $A7, $01, $8D, $01, $49, $03
-	.byte	$83, $03, $91, $01, $43, $C1, $30, $0F, $0C, $01, $59, $01, $57, $01, $55, $01
-	.byte	$53, $09, $4F, $E0
+	.incbin	"gfx/gfx_07E9FE.lz"
 opening_bg1_map:
 	; Compressed data for WRAM $7E:9000, $07:F552-$07:F78D (from its length word), loaded by load_list_05A84B.
 	; Opening cinematic (stage 0): BG1 map, one word per metatile (byte offset of the metatile, bits 14-15 flip), 8x8 metatiles per $80-byte page.

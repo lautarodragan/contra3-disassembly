@@ -25,6 +25,7 @@ gfx/ending_message_easy          lz-v1  max=$0800 tilemap=bg
 gfx/ending_message_normal        lz-v1  max=$0800 tilemap=bg
 gfx/gfx_06FADF                   lz-v1  max=$4000 tilemap=mode7
 gfx/ending_message_hard          lz-v1  max=$0800 tilemap=bg
+gfx/gfx_07E9FE                   lz-v2  png=4bpp tiles=160 max=$2000
 gfx/gfx_088FD4                   lz-v1  max=$2000 tilemap=bg
 gfx/gfx_0891DE                   lz-v2  max=$0200 tilemap=bg
 gfx/gfx_089225                   lz-v2  max=$0E00 tilemap=bg

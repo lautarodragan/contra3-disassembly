@@ -14,6 +14,7 @@
 #   palettes at those CGRAM indices (the palette tasks of the same screen).
 
 palette  gfx/gfx_06D6A7           palettes/palette_0889F0 32
+palette  gfx/gfx_07E9FE           palettes/palette_088022 0
 palette  gfx/gfx_08C078           palettes/palette_0889F0 64
 palette  gfx/gfx_08D8AF           palettes/palette_0889F0 64
 palette  gfx/gfx_098000           palettes/palette_088150 80
@@ -102,6 +103,11 @@ preview gfx/gfx_06EC94  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08
 preview gfx/gfx_06F184  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 base=0000 bpp=4 palette=palettes/palette_0889F0@0
 preview gfx/gfx_06F313  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 base=0000 bpp=4 palette=palettes/palette_0889F0@0
 preview gfx/gfx_06F68F  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 base=0000 bpp=4 palette=palettes/palette_0889F0@0
+# The Konami logo (load_list_0587AB: characters at $2000, BG12NBA $22;
+# BG1 map at $0000, BG2 at $1000) in palette_task_0587C3's colours
+preview gfx/gfx_088FD4  chars=gfx/gfx_07E9FE@2000 base=2000 bpp=4 palette=palettes/palette_088022@0,palettes/palette_088022@16,palettes/palette_088022@32,palettes/palette_088000@48
+preview gfx/gfx_0891DE  chars=gfx/gfx_07E9FE@2000 base=2000 bpp=4 palette=palettes/palette_088022@0,palettes/palette_088022@16,palettes/palette_088022@32,palettes/palette_088000@48
+preview gfx/gfx_089225  chars=gfx/gfx_07E9FE@2000 base=2000 bpp=4 palette=palettes/palette_088022@0,palettes/palette_088022@16,palettes/palette_088022@32,palettes/palette_088000@48
 # The title logo, Mode 7 (load_title_graphics: load_list_058527 the
 # characters, load_list_058539 the map; palette_task_05854B)
 preview gfx/gfx_06FADF  chars=gfx/gfx_089249@0000 bpp=8 palette=palettes/palette_0880AA@0

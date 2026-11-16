@@ -2276,8 +2276,8 @@ draw_td_item_metasprite:
 	inx
 	inx
 	inx
-	lda	a:$0004,y
-	lsr	a
+	lda	a:$0004,y	; a word: the high byte is past the last sprite, not used
+	lsr	a	; carry = bit 0 of the attributes: large sprite
 	ror	zp_14
 	bcc	@next_sprite
 	phx
@@ -3770,8 +3770,8 @@ draw_td_item_metasprite_p2:
 	inx
 	inx
 	inx
-	lda	a:$0004,y
-	lsr	a
+	lda	a:$0004,y	; a word: the high byte is past the last sprite, not used
+	lsr	a	; carry = bit 0 of the attributes: large sprite
 	ror	zp_14
 	bcc	@next_sprite
 	phx
