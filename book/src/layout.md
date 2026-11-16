@@ -34,9 +34,9 @@ data-only files, without code. Their labels name the
 streams that the data lists in `src/data/tables_05.asm` point to; other
 blocks start at a CDL comment. A block whose bounds are exact and that
 holds no pointers is marked `; ASSET:` (see [Shiftability](shiftability.md));
-those blocks and the compressed WRAM streams are binary files in
-`assets/`, included with `.incbin` after their label (see
-[Assets](assets.md)). The rest is `.byte` lines. Banks `$05`, `$06` and `$07`, and the data blocks inside code
+those blocks and the compressed WRAM streams are files in
+`assets/` (PNGs for the graphics), included with `.incbin` after their
+label (see [Assets](assets.md)). The rest is `.byte` lines. Banks `$05`, `$06` and `$07`, and the data blocks inside code
 banks, stay as source because they contain pointers; their formats are
 macros in `src/data_macros.inc`.
 

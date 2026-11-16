@@ -30,7 +30,7 @@ build/assets.mk: assets/manifest.txt tools/assets.py | build
 
 assets: $(asset_targets)
 
-.PHONY: all assets compare clean disasm cores bsnes emu-test goldens trace shift-build shift-test book book-check cheats ips cheat-test compress-test
+.PHONY: all assets assets-check compare clean disasm cores bsnes emu-test goldens trace shift-build shift-test book book-check cheats ips cheat-test compress-test
 
 all: compare
 
@@ -173,3 +173,10 @@ COMPRESS_FLAGS ?=
 
 compress-test: compare
 	$(PYTHON) tools/test_compressor.py $(COMPRESS_FLAGS)
+
+# The PNG assets (book: Assets): each one's tiles, drawn again, give the same
+# PNG pixels, so the PNG holds nothing the build drops.  (That the PNGs give
+# the ROM's bytes is what `make` checks.)
+#   make assets-check
+assets-check:
+	$(PYTHON) tools/assets.py check

@@ -5,9 +5,10 @@
 - GNU make.
 - [cc65](https://cc65.github.io/) 2.19 or newer, for `ca65` and `ld65`.
   On Debian/Ubuntu `sudo apt install cc65` is enough.
-- Python 3 (standard library only): the build compresses the graphics
-  and data streams from `assets/` with `tools/c3lz.py` (see
-  [Assets](assets.md)); the other tools use it too.
+- Python 3 (standard library only): the build converts the graphics from
+  PNG and compresses the streams of `assets/` (`tools/assets.py`,
+  `tools/snesgfx.py`, `tools/c3lz.py`; see [Assets](assets.md)); the other
+  tools use it too.
 
 ## make
 
@@ -19,9 +20,10 @@ make clean      # removes what the build made in build/
 
 The build is three steps:
 
-1. `tools/assets.py` compresses each stream of `assets/` that the
-   manifest marks `lz-v1` or `lz-v2` into `build/assets/` (one make rule
-   per stream, in the generated `build/assets.mk`; see [Assets](assets.md)).
+1. `tools/assets.py` converts the graphics of `assets/` from PNG to tiles
+   and compresses each stream that the manifest marks `lz-v1` or `lz-v2`,
+   into `build/assets/` (one make rule per file, in the generated
+   `build/assets.mk`; see [Assets](assets.md)).
 2. `ca65 --cpu 65816 -I src --bin-include-dir assets --bin-include-dir build/assets -o build/main.o src/main.asm`.
    `src/main.asm` includes every bank file, so it is the only translation
    unit. Every file in `src/`, every file in `assets/` and every stream
@@ -79,7 +81,8 @@ the suite, the cores, the goldens and the CDL tracer.
 
 `.github/workflows/build.yml` runs on every push to `main`, on pull requests
 and by hand. Its `build` job installs Ubuntu's `cc65` package, runs `make
-compare`, builds the cheat presets and their IPS patches, runs the shift
+compare` (with the system's Python 3 for the assets), `make
+assets-check`, builds the cheat presets and their IPS patches, runs the shift
 scan and a shifted build, and then fails if the build changed any tracked
 file (`git status --porcelain` must be empty).
 

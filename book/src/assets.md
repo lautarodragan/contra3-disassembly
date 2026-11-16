@@ -2,17 +2,22 @@
 
 The graphics, the compressed streams the game decompresses to WRAM and the
 sound CPU data are not `.byte` lines in `src/`: each block is a file under
-`assets/`, included with `.incbin` right after its label. This page gives
-the layout, what was moved and what was left inline, and why.
+`assets/`, included with `.incbin` right after its label. The graphics are
+indexed PNGs that the build converts back to the game's tile format and
+compresses, byte for byte the original. This page gives the layout, the
+formats, how to edit a graphic, and what was left as it was, and why.
 
 ## Layout
 
 ```
-assets/manifest.txt         every asset: its path and how the build makes it
-assets/gfx/<label>.bin      graphics (VRAM streams, td_sprite_tiles_16)
-assets/wram/<label>.bin     streams decompressed to WRAM
-assets/sound/<label>.bin    sound CPU data
-build/assets/<dir>/<label>.lz   the compressed streams, made by the build
+assets/manifest.txt          every asset: its path and how the build makes it
+assets/gfx/<label>.png       graphics (VRAM streams, td_sprite_tiles_16)
+assets/gfx/<label>.bin       tilemaps loaded to VRAM
+assets/wram/<label>.png      the player's tiles (streams decompressed to WRAM $7F)
+assets/wram/<label>.bin      the other streams decompressed to WRAM
+assets/sound/<label>.bin     sound CPU data
+build/assets/<dir>/<label>.bin   the tiles of a PNG, made by the build
+build/assets/<dir>/<label>.lz    the compressed streams, made by the build
 ```
 
 The file is named after the label of the block; the label stays in the
@@ -25,38 +30,46 @@ gfx_0891DE:
 ```
 
 A compressed stream is stored **decompressed**: `assets/gfx/gfx_0891DE.bin`
-holds the 512 bytes the game decompresses to VRAM, and the build compresses
-them into `build/assets/gfx/gfx_0891DE.lz` with `tools/c3lz.py`. The
-`.lz` file is the whole stream, its length word included, so the size of
-the stream in the ROM is whatever the compressor makes of the data.
+holds the 512 bytes the game decompresses to VRAM (a tilemap), and the
+build compresses them into `build/assets/gfx/gfx_0891DE.lz` with
+`tools/c3lz.py`. The `.lz` file is the whole stream, its length word
+included, so the size of the stream in the ROM is whatever the compressor
+makes of the data. A graphic is stored as a PNG: the build converts
+`assets/gfx/gfx_089D7E.png` to the font's tiles in
+`build/assets/gfx/gfx_089D7E.bin` (`tools/snesgfx.py`), then compresses
+those.
 
-`assets/manifest.txt` says which encoder version reproduces each stream
-(the game's encoder came in two versions, see
-[Compression](compression.md#two-versions)), one line per asset:
+`assets/manifest.txt` says how each asset is made, one line per asset:
 
 ```
 gfx/gfx_0891DE                   lz-v2
-gfx/gfx_088FD4                   lz-v1
+gfx/gfx_089249                   lz-v1  png=mode7 tiles=118 tail=00
+gfx/gfx_089D7E                   lz-v2  png=2bpp tiles=253
 sound/spc_block_1D8002           raw
 ```
 
-- `lz-v1`, `lz-v2`: the source includes `<path>.lz`, compressed from
-  `assets/<path>.bin` with that version;
-- `raw`: the source includes `<path>.bin`, the file as it is (the
-  uncompressed sound blocks and `td_sprite_tiles_16`).
+- `lz-v1`, `lz-v2`: the source includes `<path>.lz`, compressed from the
+  data with that version of the game's encoder (it came in two versions,
+  see [Compression](compression.md#two-versions));
+- `raw`: the source includes `<path>.bin`, the data as it is (the
+  uncompressed sound blocks and `td_sprite_tiles_16`);
+- without `png=`, the data is `assets/<path>.bin`; with `png=FORMAT`, it
+  is the first `tiles` tiles of `assets/<path>.png` in that format, followed
+  by the bytes that `tail` gives in hex (see [Graphics](#graphics-png)).
 
 ca65 looks the included path up in `assets/`, then in `build/assets/`:
 every assembly of `src/` passes `--bin-include-dir assets
 --bin-include-dir build/assets`. In the `Makefile`, `build/assets.mk`
 (written by `python3 tools/assets.py makefile` from the manifest) has one
-rule per compressed stream, from its `.bin` and the two tools, and the
-streams (`asset_targets`) are dependencies of `build/main.o`: editing a
-`.bin` recompresses that stream only and reassembles. `make assets` makes
-them alone. The tools that assemble `src/` themselves
-(`tools/srcmap.py`, `tools/cheats.py`, `tools/shift.py`) go through
-`ca65_args` in `tools/assets.py`, which first makes the streams that are
-out of date. Making all 179 takes a few seconds (`make -j` runs them in
-parallel).
+rule per made file (tiles from a PNG, a stream from its data; each also
+depends on the three tools), and the made files (`asset_targets`) are
+dependencies of `build/main.o`: editing a PNG or a `.bin` remakes that
+asset only and reassembles. `make assets` makes them alone. The tools that
+assemble `src/` themselves (`tools/srcmap.py`, `tools/cheats.py`,
+`tools/shift.py`) go through `ca65_args` in `tools/assets.py`, which first
+makes what is out of date. Making everything takes about ten seconds
+(`make -j` runs the rules in parallel). The build needs only Python's
+standard library.
 
 Why binary files and not `.inc` files of `.byte` lines: the bytes are the
 data itself, with no labels, pointers or expressions in them, so a text
@@ -119,6 +132,87 @@ way, so moving them to a file changes nothing for shifting.
   `ASSET` (palettes overlap: some labels are inside the palette before),
   and banks `$05`-`$07` hold pointers.
 
+## Graphics (PNG)
+
+97 assets are graphics whose format is known, stored as indexed PNGs:
+
+| format | assets | what |
+|---|---|---|
+| `4bpp` | 74 VRAM streams, `td_sprite_tiles_16`, 16 WRAM streams | BG1/BG2 characters and sprites: 32 bytes per 8x8 tile, 16 colours |
+| `2bpp` | 1 (`gfx_089D7E`, the font) | BG3 characters: 16 bytes per tile, 4 colours |
+| `mode7` | 5 (`gfx_089249`, `gfx_13CC02`, `gfx_148000`, `gfx_158000`, `gfx_168000`) | Mode 7 characters: 64 bytes per tile, one byte per pixel, 256 colours |
+
+`tools/snesgfx.py` converts both ways. The SNES planar formats (`2bpp`,
+`4bpp`, `8bpp`) store a tile's rows as bitplane pairs (planes 0 and 1 in
+bytes 0-15, row by row, then planes 2 and 3, ...), the leftmost pixel in
+bit 7; `mode7` is the high bytes of Mode 7 VRAM, one pixel per byte. A PNG
+is 16 tiles (128 pixels) wide, the tiles in order left to right, top to
+bottom, as they are in VRAM; the last row is padded with tiles of colour 0.
+Each pixel's value in the PNG *is* the colour index in the data.
+
+How the format of each was worked out, from where it is loaded:
+
+- the data lists give each VRAM stream's destination. In the side-view
+  stages (`stage_setup_video`: BG12NBA `$00`, BG34NBA `$05`, OBSEL `$03`,
+  BG Mode 1) words `$0000`-`$3FFF` are BG1/BG2 characters (4bpp),
+  `$4000`-`$4FFF` the BG1/BG2 tilemaps, `$5000`-`$5BFF` BG3 characters
+  (2bpp), `$5C00`-`$5FFF` its tilemap and `$6000`-`$7FFF` sprite
+  characters (4bpp). The title and the other screens (`init.asm`:
+  BG12NBA `$22`, BG34NBA `$55`) have their tilemaps at `$0000`-`$1FFF`
+  and characters from `$2000`; the lists of the attract sequence, the
+  title, the stage intro screens (`load_list_058808` to `load_list_058868`,
+  `load_list_058976`) and `load_list_05CF41` use that layout. The
+  top-down stages (Mode 7) have their sprites at `$4000`-`$7FFF`;
+- a list of type 3 loads one byte of each VRAM word (`load_vram_byte_list`):
+  flags bit 0 clear, the high bytes, which in Mode 7 are the characters
+  (`mode7`); bit 0 set, the low bytes, the Mode 7 tilemap;
+- the WRAM streams of bank `$7F` (`$7F:0000`-`$7F:FFFF`, two sets of eight
+  `$2000`-byte streams, loaded by different lists) are sprite tiles that
+  the NMI copies from WRAM to sprite VRAM (the player's frames,
+  `player_frames`): 4bpp; `td_sprite_tiles_16` is DMAd to sprite VRAM:
+  4bpp;
+- every PNG was then looked at: a wrong depth shows at once (rows doubled
+  or halved, noise).
+
+**Round trip.** `make` builds the ROM from the PNGs, so the hash check
+proves that every PNG gives back the original bytes. `make assets-check`
+checks the other direction: each PNG's tiles, drawn again, give the same
+pixels, so a PNG holds nothing that the build would drop. The PNG writer
+is deterministic (no time or text chunks; zlib level 9), so converting
+again gives the same file.
+
+Data that is not a whole number of tiles: 16 streams are one byte longer
+than their tiles (8,193 bytes for 256 4bpp tiles, for instance; the
+decompressor writes that byte after them). The manifest keeps
+it as `tail=` (hex), appended after the tiles.
+
+**Palettes.** The PNG's palette is only for viewing; the build ignores
+it. `tools/gfx_palettes.py` picked them: it runs the attract sequence and
+the scripted plays in the emulator and, every 120 frames, finds the
+characters on screen (BG tilemaps, Mode 7, the OAM buffer) among the
+tiles of the PNG assets, and counts the colours each is drawn with (from
+`palette_buffer`, the copy of CGRAM). The most frequent palette of each
+asset was written into its PNG (`--apply`); palettes that are all black (a
+faded-out screen) do not count. 90 of the 97 got a palette this way; the
+other 7 (`gfx_0E8307`, `gfx_11C386`, `gfx_148000`, `gfx_15DCD9`,
+`gfx_168000`, `gfx_17D20E`, `gfx_1AE9C9`) were never seen on screen at
+those moments and keep a grey ramp. An asset shown
+with several palettes (a sprite sheet shared by enemies of several
+colours) has the most frequent one.
+
+## Not graphics, or format not known: still `.bin`
+
+- the 18 tilemaps loaded to VRAM: `gfx_06EC94`, `gfx_06EF5C`,
+  `gfx_06F184`, `gfx_06F313`, `gfx_06F68F` (BG1/BG2 maps at `$4000`-`$4BFF`),
+  `gfx_06F84C`, `gfx_06F996`, `gfx_07F78E` (the BG3 map at `$5C00`),
+  `gfx_088FD4`, `gfx_0891DE`, `gfx_089225`, `gfx_18AAE3`, `gfx_18D15B`,
+  `gfx_18FAF5`, `gfx_19AB40`, `gfx_19D779`, `gfx_1EEBD0` (screen maps at
+  `$0000`-`$1FFF`) and `gfx_06FADF` (a Mode 7 tilemap, low bytes);
+- the 54 streams decompressed to WRAM bank `$7E`: what they hold
+  (tilemaps, metatiles, collision data, graphics copied to VRAM later) is
+  not worked out per stream yet;
+- the 30 sound CPU blocks (11 compressed, 19 not).
+
 ## Shifting
 
 The assets move with their banks like the bytes did: the label is in the
@@ -127,9 +221,28 @@ also inserts a filler byte before labels that follow an `.incbin` (through
 a small macro, `shift_incbin_filler`, that it adds to its copy of
 `main.asm`), so assets move relative to each other in the shift test too.
 
+## Editing a graphic
+
+Open the PNG (`assets/gfx/<label>.png`, `assets/wram/<label>.png`) in an
+editor that keeps it in **indexed colour** (palette) mode: GIMP (Image >
+Mode > Indexed, which it already is), Aseprite, GraphicsGale, Pro Motion,
+or Pillow. Draw with the palette's colours; the colour's *index* is what
+goes into the ROM, so:
+
+- keep the image indexed, and do not let the editor reorder, sort or
+  "optimize" the palette (that renumbers the pixels); changing the
+  palette's colours is harmless;
+- use only the first 4 (`2bpp`), 16 (`4bpp`) or 256 (`mode7`) colours;
+- keep the size, and leave the padding tiles after the last tile (if any)
+  colour 0. The build stops with a message naming the tile if not.
+
+Then run `make`. To start from a `.bin` that is not a PNG yet, `python3
+tools/assets.py topng FORMAT PATH` converts it and records `png=` in the
+manifest (it checks the round trip first).
+
 ## Editing an asset
 
-Edit the `.bin` (or replace it) and run `make`. The stream is
+Edit the PNG or the `.bin` (or replace it) and run `make`. The stream is
 recompressed with the version the manifest gives; if it comes out longer
 or shorter, everything after it in its bank moves, which the source
 allows since every reference to it is a label (milestone 3). The ROM is
@@ -143,8 +256,9 @@ decompresses a stream to the address in its data list until the stream
 ends; a larger asset overwrites whatever follows it in VRAM or WRAM. Keep
 the size unless you know what is there.
 
-An example, done in a throwaway copy of the repository: in the 2bpp font
-`assets/gfx/gfx_089D7E.bin` (loaded at VRAM `$5000` for BG3), tile 73,
+An example, done in a throwaway copy of the repository (before the
+graphics were PNGs, so on the `.bin`; on the PNG it is the same edit): in
+the 2bpp font `assets/gfx/gfx_089D7E` (loaded at VRAM `$5000` for BG3), tile 73,
 the letter N (bytes `$490`-`$49F`), replaced by a framed box with a
 cross. The stream went from 1,978 to 1,977 bytes, so the 10 labels after it
 in bank `$08` (`gfx_08A538` to the end of the bank) moved down by one
