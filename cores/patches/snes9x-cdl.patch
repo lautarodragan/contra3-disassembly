@@ -1,0 +1,706 @@
+diff --git a/cdl.cpp b/cdl.cpp
+new file mode 100644
+index 0000000..b1ea206
+--- /dev/null
++++ b/cdl.cpp
+@@ -0,0 +1,467 @@
++/*****************************************************************************\
++   Code/Data Logger (CDL) for the snes9x libretro core. See cdl.h.
++
++   Exported API (C linkage, all prefixed retro_cdl_ so that the libretro
++   version script exports them):
++
++     uint32_t retro_cdl_enable(int on)   start/stop logging; allocates the
++                                         buffers on first use and returns the
++                                         ROM size (0 if no ROM is loaded).
++     void     retro_cdl_clear(void)      zero every buffer.
++     uint32_t retro_cdl_rom_size(void)
++     uint8_t *retro_cdl_plane_a(void)    rom_size bytes, CDL_* flags
++     uint8_t *retro_cdl_plane_b(void)    rom_size bytes, CDL_B_* flags
++     uint8_t *retro_cdl_wram(void)       0x20000 bytes, plane-A style flags for
++                                         code executed from WRAM ($7E:0000-
++                                         $7F:FFFF, low mirror included)
++     uint32_t*retro_cdl_readers(void)    rom_size uint32: 24-bit address + 1 of
++                                         the first instruction that read the
++                                         byte as data / triggered its DMA
++                                         (0 = unknown / never read / HDMA)
++     size_t   retro_cdl_flows(uint32_t *out, size_t max)
++              dynamic control-flow edges, 5 uint32 per record:
++              {opcode, src_pc24, dst_pc24, ptr_addr24 (0xFFFFFFFF: n/a), count}
++              Returns the total number of records (call with out=NULL first).
++     size_t   retro_cdl_regs(uint32_t *out, size_t max)
++              per instruction (ROM offset) DB/D values seen, 3 uint32 per
++              record: {rom_offset, DB << 16 | D, count}. Returns total.
++     uint64_t retro_cdl_stat(int which)  0: instructions executed from ROM,
++                                         1: from WRAM, 2: from elsewhere.
++\*****************************************************************************/
++
++#include "snes9x.h"
++#include "memmap.h"
++#include "cpuexec.h"
++#include "ppu.h"
++#include "cdl.h"
++
++#include <string.h>
++#include <stdlib.h>
++#include <unordered_map>
++#include <vector>
++
++uint8_t  *cdl_rom_base = NULL;
++uint32_t  cdl_rom_size = 0;
++uint8_t  *cdl_ram_base = NULL;
++uint8_t  *cdl_a = NULL;
++uint8_t  *cdl_b = NULL;
++uint32_t *cdl_reader = NULL;
++uint32_t  cdl_cur_lo = 0xffffffff, cdl_cur_hi = 0;
++uint32_t  cdl_cur_pc1 = 0;
++int       cdl_irq_pending = 0;
++uint8_t  *cdl_watch_map = NULL;
++
++struct watch_rec { uint32_t pc; uint32_t off; uint32_t value; uint32_t frame; };
++static std::vector<watch_rec> watch_log;
++static const size_t WATCH_LOG_MAX = 1 << 20;
++
++void cdl_watch_hit(uint32_t wram_off, uint32_t value, int n)
++{
++	if (watch_log.size() >= WATCH_LOG_MAX)
++		return;
++	watch_rec r;
++	r.pc = (CPU.InDMAorHDMA ? 0x80000000u : 0) | (Registers.PBPC & 0xffffff);
++	if (!CPU.InDMAorHDMA && cdl_cur_pc1)
++		r.pc = cdl_cur_pc1 - 1;   /* PC of the instruction, not of its operand */
++	r.off = wram_off | ((uint32_t) n << 24);
++	r.value = value;
++	r.frame = IPPU.TotalEmulatedFrames;
++	watch_log.push_back(r);
++}
++
++static uint32_t  alloc_size = 0;
++static uint8_t  *wram = NULL;            /* 0x20000 */
++static uint32_t *run_key = NULL;         /* per ROM offset: last (DB,D) | valid */
++static uint32_t *run_count = NULL;
++static std::unordered_map<uint64_t, uint32_t> regs_seen;   /* off<<24|DB<<16|D */
++
++struct flow_val { uint32_t ptr; uint32_t count; };
++static std::unordered_map<uint64_t, flow_val> flows;        /* op<<48|src<<24|dst */
++
++static uint64_t stats[3];
++
++/* State of the instruction between begin and end. */
++static uint32_t cur_pc;        /* 24-bit address */
++static uint8_t  cur_op;
++static uint8_t  cur_len;
++static uint32_t cur_ptr;       /* pointer address read by an indirect jump */
++static int      cur_valid;
++
++static const uint32_t NO_PTR = 0xffffffff;
++
++/* Side-effect free mapping of a CPU address to a host pointer (NULL when the
++   address is I/O or otherwise not plain memory). */
++static inline uint8_t *host_ptr(uint32_t addr)
++{
++	addr &= 0xffffff;
++	uint8_t *p = Memory.Map[addr >> MEMMAP_SHIFT];
++	if (p < (uint8_t *) CMemory::MAP_LAST)
++		return NULL;
++	return p + (addr & 0xffff);
++}
++
++static inline int64_t rom_off(uint32_t addr)
++{
++	uint8_t *p = host_ptr(addr);
++	if (!p || !cdl_rom_base)
++		return -1;
++	uint32_t off = (uint32_t)(p - cdl_rom_base);
++	return off < cdl_rom_size ? (int64_t) off : -1;
++}
++
++static inline int64_t wram_off(uint32_t addr)
++{
++	uint8_t *p = host_ptr(addr);
++	if (!p || !cdl_ram_base)
++		return -1;
++	uint32_t off = (uint32_t)(p - cdl_ram_base);
++	return off < 0x20000 ? (int64_t) off : -1;
++}
++
++static inline int peek(uint32_t addr)
++{
++	uint8_t *p = host_ptr(addr);
++	return p ? *p : -1;
++}
++
++static void flush_run(uint32_t off)
++{
++	if (run_count[off])
++	{
++		uint64_t key = ((uint64_t) off << 24) | (run_key[off] & 0xffffff);
++		regs_seen[key] += run_count[off];
++		run_count[off] = 0;
++	}
++}
++
++static void flush_all_runs(void)
++{
++	if (!run_count)
++		return;
++	for (uint32_t off = 0; off < alloc_size; off++)
++		flush_run(off);
++}
++
++static void mark_flags_b(uint32_t addr, uint8_t flag)
++{
++	int64_t off = rom_off(addr);
++	if (off >= 0)
++		cdl_b[off] |= flag;
++}
++
++void cdl_begin_instruction(void)
++{
++	uint32_t pc = Registers.PBPC & 0xffffff;
++	int emu = CheckEmulation() ? 1 : 0;
++	uint8_t pl = Registers.PL;
++	uint8_t fl = 0;
++	fl |= (pl & MemoryFlag) ? CDL_M1 : CDL_M0;
++	fl |= (pl & IndexFlag) ? CDL_X1 : CDL_X0;
++
++	int op = peek(pc);
++	cur_valid = op >= 0;
++	if (!cur_valid)
++	{
++		cdl_cur_lo = 0xffffffff; cdl_cur_hi = 0; cdl_cur_pc1 = pc + 1;
++		stats[2]++;
++		return;
++	}
++	cur_pc = pc;
++	cur_op = (uint8_t) op;
++	cur_len = ICPU.S9xOpLengths[cur_op];
++	cdl_cur_pc1 = pc + 1;
++	cur_ptr = NO_PTR;
++
++	/* Pointer read by indirect jumps, computed before the opcode runs. */
++	if (cur_op == 0x6c || cur_op == 0x7c || cur_op == 0xdc || cur_op == 0xfc)
++	{
++		int lo = peek((pc & 0xff0000) | ((pc + 1) & 0xffff));
++		int hi = peek((pc & 0xff0000) | ((pc + 2) & 0xffff));
++		if (lo >= 0 && hi >= 0)
++		{
++			uint16_t operand = (uint16_t) (lo | (hi << 8));
++			if (cur_op == 0x7c || cur_op == 0xfc)
++				cur_ptr = (pc & 0xff0000) | (uint16_t) (operand + Registers.X.W);
++			else
++				cur_ptr = operand;
++			int n = cur_op == 0xdc ? 3 : 2;
++			for (int i = 0; i < n; i++)
++				mark_flags_b((cur_ptr & 0xff0000) | ((cur_ptr + i) & 0xffff), CDL_B_PTRTAB);
++		}
++	}
++
++	int64_t off = rom_off(pc);
++	if (off >= 0)
++	{
++		stats[0]++;
++		cdl_cur_lo = (uint32_t) off;
++		cdl_cur_hi = (uint32_t) off + cur_len;
++		cdl_a[off] |= CDL_OPCODE | fl;
++		cdl_b[off] |= emu ? CDL_B_EMU : CDL_B_NATIVE;
++		if (cdl_irq_pending)
++			cdl_b[off] |= CDL_B_IRQ;
++		for (int i = 1; i < cur_len; i++)
++		{
++			int64_t o = rom_off((pc & 0xff0000) | ((pc + i) & 0xffff));
++			if (o >= 0)
++				cdl_a[o] |= CDL_OPERAND;
++		}
++		uint32_t key = 0x1000000 | ((uint32_t) Registers.DB << 16) | Registers.D.W;
++		if (run_key[off] != key)
++		{
++			flush_run((uint32_t) off);
++			run_key[off] = key;
++		}
++		run_count[off]++;
++	}
++	else
++	{
++		cdl_cur_lo = 0xffffffff; cdl_cur_hi = 0;
++		int64_t w = wram_off(pc);
++		if (w >= 0)
++		{
++			stats[1]++;
++			wram[w] |= CDL_OPCODE | fl;
++			for (int i = 1; i < cur_len; i++)
++			{
++				int64_t o = wram_off((pc & 0xff0000) | ((pc + i) & 0xffff));
++				if (o >= 0)
++					wram[o] |= CDL_OPERAND;
++			}
++		}
++		else
++			stats[2]++;
++	}
++	cdl_irq_pending = 0;
++}
++
++static void add_flow(uint8_t op, uint32_t src, uint32_t dst, uint32_t ptr)
++{
++	uint64_t key = ((uint64_t) op << 48) | ((uint64_t) src << 24) | dst;
++	auto it = flows.find(key);
++	if (it == flows.end())
++		flows[key] = flow_val{ptr, 1};
++	else
++		it->second.count++;
++}
++
++void cdl_end_instruction(void)
++{
++	uint32_t pc = cur_pc, dst = Registers.PBPC & 0xffffff;
++	uint32_t next = (pc & 0xff0000) | ((pc + cur_len) & 0xffff);
++	cdl_cur_lo = 0xffffffff; cdl_cur_hi = 0; cdl_cur_pc1 = 0;
++	if (!cur_valid)
++		return;
++	cur_valid = 0;
++	switch (cur_op)
++	{
++		case 0x10: case 0x30: case 0x50: case 0x70:      /* Bcc */
++		case 0x90: case 0xb0: case 0xd0: case 0xf0:
++			if (dst != next)
++				mark_flags_b(dst, CDL_B_JUMP);
++			break;
++		case 0x80: case 0x82: case 0x4c: case 0x5c:      /* BRA BRL JMP JML */
++			mark_flags_b(dst, CDL_B_JUMP);
++			break;
++		case 0x20: case 0x22:                            /* JSR JSL */
++			mark_flags_b(dst, CDL_B_SUB);
++			break;
++		case 0x6c: case 0x7c: case 0xdc:                 /* JMP (a) (a,X) [a] */
++			mark_flags_b(dst, CDL_B_JUMP | CDL_B_INDIRECT);
++			add_flow(cur_op, pc, dst, cur_ptr);
++			break;
++		case 0xfc:                                       /* JSR (a,X) */
++			mark_flags_b(dst, CDL_B_SUB | CDL_B_INDIRECT);
++			add_flow(cur_op, pc, dst, cur_ptr);
++			break;
++		case 0x00: case 0x02:                            /* BRK COP */
++			mark_flags_b(dst, CDL_B_IRQ);
++			break;
++		case 0x60: case 0x6b:                            /* RTS RTL */
++		{
++			/* A normal return lands right after a JSR (3 bytes; opcode
++			   $20 or $FC) or JSL (4 bytes; $22). Anything else is a
++			   "push address, RTS" dispatch: record it. */
++			int back = cur_op == 0x60 ? 3 : 4;
++			uint32_t call = (dst & 0xff0000) | ((dst - back) & 0xffff);
++			int cop = peek(call);
++			int normal;
++			if (cur_op == 0x60)
++				normal = cop == 0x20 || cop == 0xfc;
++			else
++				normal = cop == 0x22;
++			if (normal)
++			{
++				/* The byte must also have been executed as an opcode. */
++				int64_t o = rom_off(call);
++				if (o >= 0)
++					normal = (cdl_a[o] & CDL_OPCODE) != 0;
++				else
++				{
++					int64_t w = wram_off(call);
++					if (w >= 0)
++						normal = (wram[w] & CDL_OPCODE) != 0;
++				}
++			}
++			if (!normal)
++			{
++				mark_flags_b(dst, CDL_B_RETDISP);
++				add_flow(cur_op, pc, dst, NO_PTR);
++			}
++			break;
++		}
++		default:
++			break;
++	}
++}
++
++void cdl_dma_range(uint32_t addr, uint32_t count, int step, int is_hdma)
++{
++	if (!cdl_rom_base)
++		return;
++	uint32_t bank = addr & 0xff0000;
++	uint16_t a = (uint16_t) addr;
++	for (uint32_t i = 0; i < count; i++)
++	{
++		uint8_t *p = host_ptr(bank | a);
++		if (p)
++			cdl_read_ptr(p, 1, is_hdma ? 2 : 1);
++		a = (uint16_t) (a + step);
++		if (step == 0)
++			break;
++	}
++}
++
++static void free_all(void)
++{
++	free(cdl_a); free(cdl_b); free(cdl_reader); free(wram);
++	free(run_key); free(run_count);
++	cdl_a = cdl_b = wram = NULL;
++	cdl_reader = run_key = run_count = NULL;
++	alloc_size = 0;
++}
++
++extern "C" {
++
++uint32_t retro_cdl_enable(int on)
++{
++	if (!on)
++	{
++		cdl_rom_base = NULL;
++		return cdl_rom_size;
++	}
++	if (!Memory.ROM || !Memory.CalculatedSize)
++		return 0;
++	uint32_t size = Memory.CalculatedSize;
++	if (alloc_size != size)
++	{
++		free_all();
++		cdl_a = (uint8_t *) calloc(size, 1);
++		cdl_b = (uint8_t *) calloc(size, 1);
++		cdl_reader = (uint32_t *) calloc(size, 4);
++		run_key = (uint32_t *) calloc(size, 4);
++		run_count = (uint32_t *) calloc(size, 4);
++		wram = (uint8_t *) calloc(0x20000, 1);
++		regs_seen.clear();
++		flows.clear();
++		memset(stats, 0, sizeof(stats));
++		alloc_size = size;
++	}
++	cdl_rom_size = size;
++	cdl_ram_base = Memory.RAM;
++	cdl_rom_base = Memory.ROM;
++	return size;
++}
++
++void retro_cdl_clear(void)
++{
++	if (!alloc_size)
++		return;
++	memset(cdl_a, 0, alloc_size);
++	memset(cdl_b, 0, alloc_size);
++	memset(cdl_reader, 0, alloc_size * 4);
++	memset(run_key, 0, alloc_size * 4);
++	memset(run_count, 0, alloc_size * 4);
++	memset(wram, 0, 0x20000);
++	regs_seen.clear();
++	flows.clear();
++	memset(stats, 0, sizeof(stats));
++}
++
++uint32_t retro_cdl_rom_size(void) { return alloc_size; }
++uint8_t *retro_cdl_plane_a(void) { return cdl_a; }
++uint8_t *retro_cdl_plane_b(void) { return cdl_b; }
++uint8_t *retro_cdl_wram(void) { return wram; }
++uint32_t *retro_cdl_readers(void) { return cdl_reader; }
++uint64_t retro_cdl_stat(int which) { return which >= 0 && which < 3 ? stats[which] : 0; }
++
++/* Write watch. retro_cdl_watch(off, len, on) flags WRAM offsets
++   [off, off+len) (off in 0..0x1FFFF); retro_cdl_watch_log(out, max) copies
++   4 uint32 per write {pc24 (bit 31: by DMA), wram_off | size << 24, value,
++   frame} and returns the total; retro_cdl_watch_clear() empties the log.
++   Works whether or not the CDL is enabled. */
++void retro_cdl_watch(uint32_t off, uint32_t len, int on)
++{
++	if (!cdl_watch_map)
++		cdl_watch_map = (uint8_t *) calloc(0x20000, 1);
++	cdl_ram_base = Memory.RAM;
++	for (uint32_t i = off; i < off + len && i < 0x20000; i++)
++		cdl_watch_map[i] = on ? 1 : 0;
++}
++
++size_t retro_cdl_watch_log(uint32_t *out, size_t max)
++{
++	size_t n = watch_log.size();
++	for (size_t i = 0; out && i < n && i < max; i++)
++	{
++		out[4 * i + 0] = watch_log[i].pc;
++		out[4 * i + 1] = watch_log[i].off;
++		out[4 * i + 2] = watch_log[i].value;
++		out[4 * i + 3] = watch_log[i].frame;
++	}
++	return n;
++}
++
++void retro_cdl_watch_clear(void)
++{
++	watch_log.clear();
++}
++
++size_t retro_cdl_flows(uint32_t *out, size_t max)
++{
++	size_t n = 0;
++	for (auto &kv : flows)
++	{
++		if (out && n < max)
++		{
++			uint32_t *r = out + n * 5;
++			r[0] = (uint32_t) (kv.first >> 48);
++			r[1] = (uint32_t) (kv.first >> 24) & 0xffffff;
++			r[2] = (uint32_t) kv.first & 0xffffff;
++			r[3] = kv.second.ptr;
++			r[4] = kv.second.count;
++		}
++		n++;
++	}
++	return n;
++}
++
++size_t retro_cdl_regs(uint32_t *out, size_t max)
++{
++	flush_all_runs();
++	size_t n = 0;
++	for (auto &kv : regs_seen)
++	{
++		if (out && n < max)
++		{
++			uint32_t *r = out + n * 3;
++			r[0] = (uint32_t) (kv.first >> 24);
++			r[1] = (uint32_t) kv.first & 0xffffff;
++			r[2] = kv.second;
++		}
++		n++;
++	}
++	return n;
++}
++
++}
+diff --git a/cdl.h b/cdl.h
+new file mode 100644
+index 0000000..12f1e5e
+--- /dev/null
++++ b/cdl.h
+@@ -0,0 +1,86 @@
++/*****************************************************************************\
++   Code/Data Logger (CDL) for the snes9x libretro core.
++
++   Not part of upstream snes9x: added by the contra3-disassembly project
++   (cores/snes9x-cdl/snes9x-cdl.patch). It records, per ROM byte, how the
++   S-CPU used it: executed as an opcode or operand (with the M/X/E flag state
++   seen), read as data by the CPU, read by DMA/HDMA, and which addresses
++   dynamic control flow (indirect jumps, RTS/RTL dispatch) went to.
++
++   The hot-path hooks below are inline and cost one compare when the logger
++   is disabled (cdl_rom_base == NULL). Everything is exported to the frontend
++   through retro_cdl_* functions (see cdl.cpp), which the libretro version
++   script (link.T: "retro_*") already exports.
++\*****************************************************************************/
++
++#ifndef _CDL_H_
++#define _CDL_H_
++
++#include <stdint.h>
++#include <stddef.h>
++
++/* Plane A flags (one byte per ROM byte). */
++#define CDL_OPCODE     0x01  /* first byte of an executed instruction       */
++#define CDL_OPERAND    0x02  /* non-first byte of an executed instruction   */
++#define CDL_DATA       0x04  /* read by the CPU as data                     */
++#define CDL_DMA        0x08  /* read as a DMA/HDMA source (incl. HDMA tables)*/
++#define CDL_M0         0x10  /* opcode executed with M=0 (16-bit A)         */
++#define CDL_M1         0x20  /* opcode executed with M=1 (8-bit A)          */
++#define CDL_X0         0x40  /* opcode executed with X=0 (16-bit X/Y)       */
++#define CDL_X1         0x80  /* opcode executed with X=1 (8-bit X/Y)        */
++
++/* Plane B flags (one byte per ROM byte). */
++#define CDL_B_EMU      0x01  /* opcode executed in emulation mode (E=1)     */
++#define CDL_B_NATIVE   0x02  /* opcode executed in native mode (E=0)        */
++#define CDL_B_SUB      0x04  /* target of JSR/JSL (direct or indirect)      */
++#define CDL_B_JUMP     0x08  /* target of JMP/JML/BRA/BRL/taken Bcc         */
++#define CDL_B_INDIRECT 0x10  /* target of JMP (a)/(a,X)/[a], JSR (a,X)     */
++#define CDL_B_RETDISP  0x20  /* RTS/RTL landed here without a matching JSR  */
++#define CDL_B_IRQ      0x40  /* first instruction after NMI/IRQ/BRK/COP     */
++#define CDL_B_PTRTAB   0x80  /* read as the pointer of an indirect jump     */
++
++extern uint8_t  *cdl_rom_base;     /* == Memory.ROM while enabled, else NULL */
++extern uint32_t  cdl_rom_size;
++extern uint8_t  *cdl_ram_base;     /* == Memory.RAM while enabled           */
++extern uint8_t  *cdl_a;            /* plane A                               */
++extern uint8_t  *cdl_b;            /* plane B                               */
++extern uint32_t *cdl_reader;       /* first reader (PBPC+1) of each byte    */
++extern uint32_t  cdl_cur_lo, cdl_cur_hi; /* ROM range of the instruction being executed */
++extern uint32_t  cdl_cur_pc1;      /* PBPC+1 of the instruction being executed (0: none) */
++extern int       cdl_irq_pending;
++
++/* Write watch (debugging aid): WRAM offsets flagged in cdl_watch_map log
++   every CPU write to them, with the writing instruction's address. */
++extern uint8_t  *cdl_watch_map;    /* 0x20000 bytes, NULL when no watch    */
++void cdl_watch_hit(uint32_t wram_off, uint32_t value, int n);
++
++static inline void cdl_write_ptr(const uint8_t *p, uint32_t value, int n)
++{
++	uint32_t off = (uint32_t)(p - cdl_ram_base);
++	if (off < 0x20000 && (cdl_watch_map[off] || (n == 2 && off + 1 < 0x20000 && cdl_watch_map[off + 1])))
++		cdl_watch_hit(off, value, n);
++}
++
++void cdl_begin_instruction(void);
++void cdl_end_instruction(void);
++void cdl_dma_range(uint32_t addr, uint32_t count, int step, int is_hdma);
++
++/* A CPU (or DMA) read through a direct memory pointer. */
++static inline void cdl_read_ptr(const uint8_t *p, int n, int in_dma)
++{
++	uint32_t off = (uint32_t)(p - cdl_rom_base);
++	if (!cdl_rom_base || off >= cdl_rom_size)
++		return;
++	for (int i = 0; i < n; i++, off++)
++	{
++		if (off >= cdl_rom_size)
++			break;
++		if (!in_dma && off >= cdl_cur_lo && off < cdl_cur_hi)
++			continue;   /* operand fetch of the current instruction */
++		cdl_a[off] |= in_dma ? CDL_DMA : CDL_DATA;
++		if (!cdl_reader[off] && in_dma != 2)
++			cdl_reader[off] = cdl_cur_pc1;
++	}
++}
++
++#endif
+diff --git a/cpuexec.cpp b/cpuexec.cpp
+index 0494810..040df6f 100644
+--- a/cpuexec.cpp
++++ b/cpuexec.cpp
+@@ -14,6 +14,7 @@
+ #include "spc7110.h"
+ #include "bsflash.h"
+ #include "snapshot.h"
++#include "cdl.h"
+ #ifdef DEBUGGER
+ #include "debug.h"
+ #include "missing.h"
+@@ -66,6 +67,7 @@ void S9xMainLoop (void)
+ 
+ 				CHECK_FOR_IRQ_CHANGE();
+ 				S9xOpcode_NMI();
++				cdl_irq_pending = 1;
+ 			}
+ 		}
+ 
+@@ -95,6 +97,7 @@ void S9xMainLoop (void)
+ 				/* The flag pushed onto the stack is the new value */
+ 				CHECK_FOR_IRQ_CHANGE();
+ 				S9xOpcode_IRQ();
++				cdl_irq_pending = 1;
+ 			}
+ 		}
+ 
+@@ -139,6 +142,9 @@ void S9xMainLoop (void)
+ 		uint8				Op;
+ 		struct	SOpcodes	*Opcodes;
+ 
++		if (cdl_rom_base)
++			cdl_begin_instruction();
++
+ 		if (CPU.PCBase)
+ 		{
+ 			Op = CPU.PCBase[Registers.PCw];
+@@ -171,6 +177,9 @@ void S9xMainLoop (void)
+ 		Registers.PCw++;
+ 		(*Opcodes[Op].S9xOpcode)();
+ 
++		if (cdl_rom_base)
++			cdl_end_instruction();
++
+ 		if (Settings.SA1)
+ 			S9xSA1MainLoop();
+ 	}
+diff --git a/dma.cpp b/dma.cpp
+index 95cb1a9..7b8974f 100644
+--- a/dma.cpp
++++ b/dma.cpp
+@@ -4,6 +4,7 @@
+    For further information, consult the LICENSE file in the root directory.
+ \*****************************************************************************/
+ 
++#include "cdl.h"
+ #include "snes9x.h"
+ #include "memmap.h"
+ #include "dma.h"
+@@ -216,6 +217,9 @@ bool8 S9xDoDMA (uint8 Channel)
+ 	if (!d->ReverseTransfer)
+     {
+ 		// CPU -> PPU
++		if (cdl_rom_base)
++			cdl_dma_range((d->ABank << 16) | d->AAddress, count,
++				d->AAddressFixed ? 0 : (d->AAddressDecrement ? -1 : 1), 0);
+ 		int32	b = 0;
+ 		uint16	p = d->AAddress;
+ 		uint8	*base = S9xGetBasePointer((d->ABank << 16) + d->AAddress);
+@@ -1166,6 +1170,8 @@ uint8 S9xDoHDMA (uint8 byte)
+ 
+ 				if (!p->ReverseTransfer)
+ 				{
++					if (cdl_rom_base)
++						cdl_dma_range(ShiftedIBank + IAddr, HDMA_ModeByteCounts[p->TransferMode], 1, 1);
+ 					if ((IAddr & MEMMAP_MASK) + HDMA_ModeByteCounts[p->TransferMode] >= MEMMAP_BLOCK_SIZE)
+ 					{
+ 						// HDMA REALLY-SLOW PATH
+diff --git a/getset.h b/getset.h
+index bd3b365..fe2bfea 100644
+--- a/getset.h
++++ b/getset.h
+@@ -17,6 +17,9 @@
+ #include "seta.h"
+ #include "bsx.h"
+ #include "msu1.h"
++#include "cdl.h"
++
++#define CDL_DMA_KIND (CPU.InDMAorHDMA ? (CPU.InHDMA ? 2 : 1) : 0)
+ 
+ #define addCyclesInMemoryAccess \
+ 	if (!CPU.InDMAorHDMA) \
+@@ -65,6 +68,8 @@ inline uint8 S9xGetByte (uint32 Address)
+ 	if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
+ 	{
+ 		byte = *(GetAddress + (Address & 0xffff));
++		if (cdl_rom_base)
++			cdl_read_ptr(GetAddress + (Address & 0xffff), 1, CDL_DMA_KIND);
+ 		addCyclesInMemoryAccess;
+ 		return (byte);
+ 	}
+@@ -204,6 +209,8 @@ inline uint16 S9xGetWord (uint32 Address, enum s9xwrap_t w = WRAP_NONE)
+ 	if (GetAddress >= (uint8 *) CMemory::MAP_LAST)
+ 	{
+ 		word = READ_WORD(GetAddress + (Address & 0xffff));
++		if (cdl_rom_base)
++			cdl_read_ptr(GetAddress + (Address & 0xffff), 2, CDL_DMA_KIND);
+ 		addCyclesInMemoryAccess_x2;
+ 		return (word);
+ 	}
+@@ -346,6 +353,8 @@ inline void S9xSetByte (uint8 Byte, uint32 Address)
+ 	if (SetAddress >= (uint8 *) CMemory::MAP_LAST)
+ 	{
+ 		*(SetAddress + (Address & 0xffff)) = Byte;
++		if (cdl_watch_map)
++			cdl_write_ptr(SetAddress + (Address & 0xffff), Byte, 1);
+ 		addCyclesInMemoryAccess;
+ 		return;
+ 	}
+@@ -491,6 +500,8 @@ inline void S9xSetWord (uint16 Word, uint32 Address, enum s9xwrap_t w = WRAP_NON
+ 	if (SetAddress >= (uint8 *) CMemory::MAP_LAST)
+ 	{
+ 		WRITE_WORD(SetAddress + (Address & 0xffff), Word);
++		if (cdl_watch_map)
++			cdl_write_ptr(SetAddress + (Address & 0xffff), Word, 2);
+ 		addCyclesInMemoryAccess_x2;
+ 		return;
+ 	}
+diff --git a/libretro/Makefile.common b/libretro/Makefile.common
+index 664c6f7..3f03ade 100644
+--- a/libretro/Makefile.common
++++ b/libretro/Makefile.common
+@@ -32,6 +32,7 @@ SOURCES_CXX := $(CORE_DIR)/apu/apu.cpp \
+ 	       $(CORE_DIR)/controls.cpp \
+ 	       $(CORE_DIR)/cpu.cpp \
+ 	       $(CORE_DIR)/cpuexec.cpp \
++	       $(CORE_DIR)/cdl.cpp \
+ 	       $(CORE_DIR)/cpuops.cpp \
+ 	       $(CORE_DIR)/crosshairs.cpp \
+ 	       $(CORE_DIR)/dma.cpp \
