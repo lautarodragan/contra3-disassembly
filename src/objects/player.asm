@@ -723,6 +723,10 @@ run_player_state:
 	lda	#$0004
 	sta	PLAYER_CONTACT,x
 @not_fallen:
+	; $32: pass-through flags (high byte) for a few frames (low byte): set
+	; to $010A walking off a floor, $020A leaving a bar, $040A dropping,
+	; $070A jumping; airborne_falling_collision then ignores floor tiles
+	; without bit 13 (flag $0100) and bar tiles (flag $0200).
 	lda	$32,x
 	beq	@fire_delays
 	and	#$00FF
@@ -1041,7 +1045,7 @@ player_state_spin_stance:
 	bne	@left_state
 	lda	zp_C4
 	bne	@on_floor
-	brl	loc_0182CD
+	brl	start_player_fall
 @on_floor:
 	; zp_C4 from check_floor_tiles: bit 3 = a slope rising to the right
 	; (its snap routines lower y as x grows), bit 4 = falling to the right.
@@ -1176,7 +1180,7 @@ player_state_hang_climb:
 	bne	hang_climb_return
 	lda	zp_C4
 	bne	@on_bar
-	brl	loc_0182C8
+	brl	start_player_fall_from_hang
 @on_bar:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
@@ -1184,7 +1188,7 @@ player_state_hang_climb:
 	lda	PLAYER_AIM,x
 	bit	#$0008
 	beq	@aim
-	brl	loc_0182C8
+	brl	start_player_fall_from_hang
 @aim:
 	stz	zp_14
 	lda	PLAYER_AIM,x
@@ -1545,19 +1549,19 @@ loc_01B05C:
 loc_01B05F:
 	lda	#$0008
 	sta	zp_C4
-	brl	loc_0194AB
+	brl	stop_y_slope_up_right_below_high
 loc_01B067:
 	lda	#$0008
 	sta	zp_C4
-	brl	loc_019450
+	brl	stop_y_slope_up_right
 loc_01B06F:
 	lda	#$0010
 	sta	zp_C4
-	brl	loc_0195BA
+	brl	stop_y_slope_down_right_below_high
 loc_01B077:
 	lda	#$0010
 	sta	zp_C4
-	brl	loc_019565
+	brl	stop_y_slope_down_right
 
 ; unused_ceiling_result_*: never reached (no branch or pointer leads here).
 ; Each sets zp_C4 and goes to a snap routine, like the outcomes of
@@ -1582,14 +1586,14 @@ unused_ceiling_result_01B08D:
 	; (not executed in the CDL traces)
 	lda	#$0010
 	sta	zp_C4
-	brl	loc_01961D
+	brl	stop_y_slope_down_right_below
 
 ; (no caller found; decoded because it follows the end of a routine)
 unused_ceiling_result_01B095:
 	; (not executed in the CDL traces)
 	lda	#$0008
 	sta	zp_C4
-	brl	loc_019502
+	brl	stop_y_slope_up_right_below
 
 ; (no caller found; decoded because it follows the end of a routine)
 unused_ceiling_result_01B09D:
@@ -1602,28 +1606,28 @@ unused_ceiling_result_01B0A0:
 	; (not executed in the CDL traces)
 	lda	#$0008
 	sta	zp_C4
-	brl	loc_019450
+	brl	stop_y_slope_up_right
 
 ; (no caller found; decoded because it follows the end of a routine)
 unused_ceiling_result_01B0A8:
 	; (not executed in the CDL traces)
 	lda	#$0008
 	sta	zp_C4
-	brl	loc_0194AB
+	brl	stop_y_slope_up_right_below_high
 
 ; (no caller found; decoded because it follows the end of a routine)
 unused_ceiling_result_01B0B0:
 	; (not executed in the CDL traces)
 	lda	#$0010
 	sta	zp_C4
-	brl	loc_019565
+	brl	stop_y_slope_down_right
 
 ; (no caller found; decoded because it follows the end of a routine)
 unused_ceiling_result_01B0B8:
 	; (not executed in the CDL traces)
 	lda	#$0010
 	sta	zp_C4
-	brl	loc_0195BA
+	brl	stop_y_slope_down_right_below_high
 
 ; Body box and PLAYER_CENTER_X/Y for the hanging states, from OBJ_FACING.
 set_player_box_hanging:
@@ -1659,7 +1663,7 @@ player_state_bike:
 	beq	player_state_bike_intro
 	lda	#$0002
 	sta	$34,x
-	brl	loc_0182FD
+	brl	start_player_jump
 
 ; State $12: on the bike without the kill and jump checks (driving in at the
 ; start of stage 4); aims and fires from bike_aim_angles...

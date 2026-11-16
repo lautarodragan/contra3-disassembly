@@ -20,15 +20,15 @@ update_spin_flag:
 	stz	a:PLAYER_SPIN,x
 	lda	OBJ_STATE,x
 	cmp	#$000C
-	beq	loc_018017
+	beq	@spinning
 	lda	PLAYER_JOY_HELD,x
 	and	#$0030
 	beq	@return
 	cmp	#$0030
-	beq	loc_018017
+	beq	@spinning
 @return:
 	rtl
-loc_018017:
+@spinning:
 	inc	a:PLAYER_SPIN,x
 	rtl
 
@@ -66,14 +66,14 @@ unused_mosaic_flicker_on_y:
 	; (not executed in the CDL traces)
 	lda	PLAYER_JOY_HELD,x
 	bit	#$4000
-	beq	loc_018062
+	beq	@return
 	ldy	#$0012
 	lda	stage_frame_odd
-	beq	loc_01805F
+	beq	@set_mosaic
 	ldy	#$0000
-loc_01805F:
+@set_mosaic:
 	sty	a:mosaic_shadow
-loc_018062:
+@return:
 	rtl
 
 ; Looks up the player's frame (PLAYER_POSE + PLAYER_POSE_ADD + $38, 16
@@ -123,11 +123,11 @@ set_player_frame:
 	sta	a:player_tile_src+22
 	stz	$38,x
 	lda	OBJ_FACING,x
-	bne	loc_0180CB
+	bne	@facing_left
 	lda	a:player_frames+12,y
 	sta	OBJ_SPRITE,x
 	rtl
-loc_0180CB:
+@facing_left:
 	lda	a:player_frames+14,y
 	sta	OBJ_SPRITE,x
 	rtl
@@ -151,28 +151,28 @@ debug_color_math_keys:
 	ldy	#$0052
 	lda	joy2_held
 	bit	#$2000
-	beq	loc_0180F6
+	beq	@no_blend
 	lda	joy2_held
 	bit	#$0040
-	bne	loc_0180F9
-loc_0180F6:
+	bne	@set_cgadsub
+@no_blend:
 	ldy	#$0000
-loc_0180F9:
+@set_cgadsub:
 	sty	a:cgadsub_shadow
 	bit	#$4000
-	beq	loc_01810A
+	beq	@set_coldata
 	lda	a:cgadsub_shadow
 	and	#$0012
 	sta	a:cgadsub_shadow
-loc_01810A:
+@set_coldata:
 	lda	a:debug_coldata
 	sta	a:coldata_shadow
 	lda	joy2_pressed
 	bit	#$0080
-	beq	loc_01811B
+	beq	@check_b
 	inc	a:debug_coldata
 	rtl
-loc_01811B:
+@check_b:
 	bit	#$8000
 	beq	@return
 	dec	a:debug_coldata
@@ -186,18 +186,18 @@ debug_window_keys:
 	; (not executed in the CDL traces)
 	lda	joy1_pressed
 	bit	#$2000
-	beq	loc_018134
+	beq	@check_test
 	lda	a:debug_window_test
 	eor	#$0001
 	sta	a:debug_window_test
-loc_018134:
+@check_test:
 	lda	a:debug_window_test
-	bne	loc_01813C
-	brl	loc_0181E1
-loc_01813C:
+	bne	@test_on
+	brl	@test_off
+@test_on:
 	lda	joy1_pressed
 	bit	#$8000
-	beq	loc_018156
+	beq	@check_y
 	lda	a:tmw_shadow
 	pha
 	inc	a
@@ -207,10 +207,10 @@ loc_01813C:
 	and	#$FF00
 	ora	zp_00
 	sta	a:tmw_shadow
-loc_018156:
+@check_y:
 	lda	joy1_pressed
 	bit	#$4000
-	beq	loc_018174
+	beq	@check_l
 	lda	a:tmw_shadow
 	pha
 	and	#$00FF
@@ -222,10 +222,10 @@ loc_018156:
 	xba
 	ora	a:tmw_shadow
 	sta	a:tmw_shadow
-loc_018174:
+@check_l:
 	lda	joy1_pressed
 	bit	#$0020
-	beq	loc_018194
+	beq	@check_r
 	lda	a:w12sel_shadow
 	pha
 	inc	a
@@ -237,16 +237,16 @@ loc_018174:
 	and	#$0030
 	ora	a:w12sel_shadow
 	sta	a:w12sel_shadow
-loc_018194:
+@check_r:
 	lda	joy1_pressed
 	bit	#$0010
-	beq	loc_0181A8
+	beq	@set_hdma
 	lda	a:wobjsel_shadow
 	clc
 	adc	#$0010
 	and	#$0030
 	sta	a:wobjsel_shadow
-loc_0181A8:
+@set_hdma:
 	lda	#$00FF
 	sta	f:debug_window_hdma_a
 	lda	#$F807	; [num]
@@ -264,7 +264,7 @@ loc_0181A8:
 	lda	#$FA87	; [num]
 	sta	f:debug_window_hdma_b+$04
 	rtl
-loc_0181E1:
+@test_off:
 	stz	a:tmw_shadow
 	stz	a:wram_1EBC
 	rtl
@@ -284,10 +284,10 @@ make_players_invulnerable:
 	ora	#$0002
 	sta	OBJ_FLAGS,x
 	cpx	#$0240
-	beq	loc_018205
+	beq	@done
 	ldx	#$0240
 	bra	@loop
-loc_018205:
+@done:
 	plx
 	rtl
 
@@ -301,11 +301,11 @@ update_player_bike:
 	tay
 	lda	a:$0012,y
 	cmp	#$0001
-	bne	loc_01821B
+	bne	@dispatch
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	rtl
-loc_01821B:
+@dispatch:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
@@ -332,12 +332,12 @@ player_bike_state_00:
 
 player_bike_state_01:
 	lda	OBJ_TIMER,x
-	bmi	loc_01824B
+	bmi	@hide
 	dec	OBJ_TIMER,x
-	bra	loc_01824D
-loc_01824B:
+	bra	@follow
+@hide:
 	stz	OBJ_SPRITE,x
-loc_01824D:
+@follow:
 	lda	a:$000A,y
 	sta	OBJ_X,x
 	lda	a:$000E,y
@@ -359,19 +359,19 @@ loc_01824D:
 player_bike_state_02:
 	lda	OBJ_Y,x
 	cmp	#$00B1
-	bcc	loc_01827C
+	bcc	@check_player
 	dec	OBJ_Y,x
-loc_01827C:
+@check_player:
 	lda	a:$0016,y
-	beq	loc_0182B2
-	bmi	loc_0182B2
+	beq	@back_to_state_1
+	bmi	@back_to_state_1
 	lda	a:$000A,y
 	sta	OBJ_X,x
 	lda	a:$0032,y
-	bne	loc_0182B4
+	bne	@return
 	lda	a:$000E,y
 	cmp	#$00A4
-	bcc	loc_0182B4
+	bcc	@return
 	lda	#$0002
 	sta	OBJ_TIMER,x
 	lda	#PLAYER_STATE_BIKE
@@ -382,33 +382,36 @@ loc_01827C:
 	sta	a:$001C,y
 	lda	#$0000
 	sta	a:$001E,y
-loc_0182B2:
+@back_to_state_1:
 	dec	OBJ_STATE,x
-loc_0182B4:
+@return:
 	rtl
-loc_0182B5:
+start_player_fall_left:
 	dec	OBJ_X,x
 	lda	#$0000
-	bra	loc_0182D0
+	bra	enter_fall_state
 
 ; Moves 1 pixel right and starts falling (state 4): leaving a wall on the
-; left. loc_0182B5 does the same to the left.
+; left. start_player_fall_left does the same to the left.
 start_player_fall_right:
 	inc	OBJ_X,x
 	lda	#$0000
-	bra	loc_0182D0
+	bra	enter_fall_state
 
 ; Starts a fall (state 4) with $32 = $040A: dropping down from a bar or an
 ; object (down + jump).
 start_player_drop:
 	lda	#$040A
-	bra	loc_0182D0
-loc_0182C8:
+	bra	enter_fall_state
+; From the hanging states (no bar any more, or down + jump): $32 = $020A.
+start_player_fall_from_hang:
 	lda	#$020A
-	bra	loc_0182D0
-loc_0182CD:
+	bra	enter_fall_state
+; Walking off the floor (ground, climb, spin stance): $32 = $010A.
+start_player_fall:
 	lda	#$010A
-loc_0182D0:
+; In: A = $32.  State 4, pose $D3, then player_state_fall.
+enter_fall_state:
 	sta	$32,x
 	stz	OBJ_Y_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
@@ -418,7 +421,9 @@ loc_0182D0:
 	sta	PLAYER_POSE,x
 	stz	$38,x
 	bra	player_state_fall
-loc_0182E4:
+; Climbing, the wall ends above the hands but not at the feet: a small
+; jump (state 3) over the top.
+hop_off_wall_top:
 	lda	#$DFFF	; [num]
 	sta	OBJ_Y_VEL_SUB,x
 	lda	#$FFFB	; [num]
@@ -427,12 +432,15 @@ loc_0182E4:
 	sta	OBJ_STATE,x
 	stz	$32,x
 	bra	player_state_jump
-loc_0182F7:
+; Jump pressed while climbing a wall on the right: 1 pixel left, jump.
+wall_jump_left:
 	dec	OBJ_X,x
-	bra	loc_0182FD
-loc_0182FB:
+	bra	start_player_jump
+; Jump pressed while climbing a wall on the left: 1 pixel right, jump.
+wall_jump_right:
 	inc	OBJ_X,x
-loc_0182FD:
+; The normal jump: y velocity -6, pose $68, state 3, $32 = $070A.
+start_player_jump:
 	lda	#$0068
 	sta	PLAYER_POSE,x
 	stz	$38,x
@@ -450,9 +458,9 @@ loc_0182FD:
 player_state_fall:
 	lda	PLAYER_CONTACT,x
 	bit	#$0004
-	beq	loc_018322
+	beq	@alive
 	jml	f:kill_player
-loc_018322:
+@alive:
 	jsr	a:set_player_box_standing
 	jsl	f:check_bomb_button
 	stz	zp_C4
@@ -484,9 +492,9 @@ tbl_fall_aim:
 player_state_jump:
 	lda	PLAYER_CONTACT,x
 	bit	#$0004
-	beq	loc_01835F
+	beq	@alive
 	jml	f:kill_player
-loc_01835F:
+@alive:
 	jsr	a:set_player_box_jumping
 	jsl	f:check_bomb_button
 	stz	zp_C4
@@ -527,7 +535,7 @@ fall_aim_right:
 	sta	zp_16
 	lda	#$00D3
 	sta	PLAYER_POSE,x
-	bra	loc_0183E9
+	bra	airborne_fire_and_move
 
 fall_aim_left:
 	lda	#$0060
@@ -538,7 +546,7 @@ fall_aim_left:
 	sta	zp_16
 	lda	#$00D3
 	sta	PLAYER_POSE,x
-	bra	loc_0183E9
+	bra	airborne_fire_and_move
 
 jump_aim_none:
 	lda	OBJ_FACING,x
@@ -551,7 +559,7 @@ jump_aim_right:
 	sta	zp_14
 	lda	#$FFD8	; [num]
 	sta	zp_16
-	bra	loc_0183E9
+	bra	airborne_fire_and_move
 
 jump_aim_left:
 	lda	#$0060
@@ -560,15 +568,17 @@ jump_aim_left:
 	sta	zp_14
 	lda	#$FFD8	; [num]
 	sta	zp_16
-loc_0183E9:
+; Jump and fall aims: fire (both weapons around in the spin jump, state
+; $0C), gravity, then the collision for the direction of motion.
+airborne_fire_and_move:
 	lda	OBJ_STATE,x
 	cmp	#$000C
-	bne	loc_01841E
+	bne	@fire
 	lda	#$FFF2	; [num]
 	ldy	OBJ_FACING,x
-	bne	loc_0183FA
+	bne	@set_muzzle_2
 	lda	#$FFF6	; [num]
-loc_0183FA:
+@set_muzzle_2:
 	sta	zp_14
 	lda	#$FFD8	; [num]
 	sta	zp_16
@@ -576,27 +586,27 @@ loc_0183FA:
 	stz	$38,x
 	lda	#$0002
 	ldy	OBJ_FACING,x
-	bne	loc_018411
+	bne	@set_muzzle_1
 	lda	#$0006
-loc_018411:
+@set_muzzle_1:
 	sta	zp_14
 	lda	#$FFD8	; [num]
 	sta	zp_16
 	jsl	f:spin_fire_weapon_1
-	bra	loc_018429
-loc_01841E:
+	bra	@clear_shot_pose
+@fire:
 	jsl	f:fire_weapon
 	lda	OBJ_STATE,x
 	cmp	#$0003
-	bne	loc_01842B
-loc_018429:
+	bne	@gravity_check
+@clear_shot_pose:
 	stz	$38,x
-loc_01842B:
+@gravity_check:
 	lda	OBJ_Y_VEL,x
-	bmi	loc_018434
+	bmi	@gravity
 	cmp	#$0006
-	bcs	loc_018443
-loc_018434:
+	bcs	@collide
+@gravity:
 	clc
 	lda	OBJ_Y_VEL_SUB,x
 	adc	#$4000
@@ -604,12 +614,12 @@ loc_018434:
 	lda	OBJ_Y_VEL,x
 	adc	#$0000
 	sta	OBJ_Y_VEL,x
-loc_018443:
+@collide:
 	lda	OBJ_Y_VEL,x
-	bmi	loc_01844A
-	brl	loc_01871A
-loc_01844A:
-	brl	loc_018682
+	bmi	@rising
+	brl	airborne_falling_collision
+@rising:
+	brl	airborne_rising_collision
 
 fall_aim_up:
 	lda	#$00D7
@@ -617,16 +627,16 @@ fall_aim_up:
 	lda	#$0000
 	sta	zp_12
 	lda	OBJ_FACING,x
-	bne	loc_018460
+	bne	@facing_left
 	lda	#$FFFE	; [num]
-	bra	loc_018463
-loc_018460:
+	bra	@set_muzzle
+@facing_left:
 	lda	#$FFF9	; [num]
-loc_018463:
+@set_muzzle:
 	sta	zp_14
 	lda	#$FFBE	; [num]
 	sta	zp_16
-	brl	loc_0183E9
+	brl	airborne_fire_and_move
 
 jump_aim_up:
 	lda	#$0000
@@ -635,7 +645,7 @@ jump_aim_up:
 	sta	zp_14
 	lda	#$FFD0	; [num]
 	sta	zp_16
-	brl	loc_0183E9
+	brl	airborne_fire_and_move
 
 fall_aim_up_right:
 	lda	#$00D5
@@ -646,7 +656,7 @@ fall_aim_up_right:
 	sta	zp_14
 	lda	#$FFCA	; [num]
 	sta	zp_16
-	brl	loc_0183E9
+	brl	airborne_fire_and_move
 
 jump_aim_up_right:
 	lda	#$0010
@@ -655,7 +665,7 @@ jump_aim_up_right:
 	sta	zp_14
 	lda	#$FFD4	; [num]
 	sta	zp_16
-	brl	loc_0183E9
+	brl	airborne_fire_and_move
 
 fall_aim_up_left:
 	lda	#$00D5
@@ -666,7 +676,7 @@ fall_aim_up_left:
 	sta	zp_14
 	lda	#$FFC8	; [num]
 	sta	zp_16
-	brl	loc_0183E9
+	brl	airborne_fire_and_move
 
 jump_aim_up_left:
 	lda	#$0070
@@ -675,7 +685,7 @@ jump_aim_up_left:
 	sta	zp_14
 	lda	#$FFD0	; [num]
 	sta	zp_16
-	brl	loc_0183E9
+	brl	airborne_fire_and_move
 
 fall_aim_down:
 	lda	#$00DB
@@ -683,15 +693,15 @@ fall_aim_down:
 	lda	#$0040
 	sta	zp_12
 	lda	OBJ_FACING,x
-	bne	loc_0184E4
+	bne	@set_muzzle
 	lda	#$FFF9	; [num]
-	bra	loc_0184E4
-loc_0184E4:
+	bra	@set_muzzle
+@set_muzzle:
 	lda	#$FFFD	; [num]
 	sta	zp_14
 	lda	#$FFFC	; [num]
 	sta	zp_16
-	brl	loc_0183E9
+	brl	airborne_fire_and_move
 
 jump_aim_down:
 	lda	#$0040
@@ -700,7 +710,7 @@ jump_aim_down:
 	sta	zp_14
 	lda	#$FFE0	; [num]
 	sta	zp_16
-	brl	loc_0183E9
+	brl	airborne_fire_and_move
 
 fall_aim_down_right:
 	lda	#$00D9
@@ -711,7 +721,7 @@ fall_aim_down_right:
 	sta	zp_14
 	lda	#$FFF0	; [num]
 	sta	zp_16
-	brl	loc_0183E9
+	brl	airborne_fire_and_move
 
 jump_aim_down_right:
 	lda	#$0030
@@ -720,7 +730,7 @@ jump_aim_down_right:
 	sta	zp_14
 	lda	#$FFE0	; [num]
 	sta	zp_16
-	brl	loc_0183E9
+	brl	airborne_fire_and_move
 
 fall_aim_down_left:
 	lda	#$00D9
@@ -731,7 +741,7 @@ fall_aim_down_left:
 	sta	zp_14
 	lda	#$FFF0	; [num]
 	sta	zp_16
-	brl	loc_0183E9
+	brl	airborne_fire_and_move
 
 jump_aim_down_left:
 	; (not executed in the CDL traces)
@@ -741,32 +751,32 @@ jump_aim_down_left:
 	sta	zp_14
 	lda	#$FFE0	; [num]
 	sta	zp_16
-	brl	loc_0183E9
+	brl	airborne_fire_and_move
 
 ; PLAYER_POSE cycles $3A-$3D, every 2 frames going up, every 4 going down.
 animate_player_somersault:
 	lda	PLAYER_POSE,x
 	cmp	#$003A
-	bcs	loc_018562
-loc_01855C:
+	bcs	@check_direction
+@reset_pose:
 	lda	#$003A
 	sta	PLAYER_POSE,x
 	rtl
-loc_018562:
+@check_direction:
 	lda	OBJ_Y_VEL,x
-	bpl	loc_01856C
+	bpl	@falling
 	lda	stage_frame_odd
-	bne	loc_018579
-	beq	loc_018570
-loc_01856C:
+	bne	@return
+	beq	@next_pose
+@falling:
 	lda	stage_frame_mod4
-	bne	loc_018579
-loc_018570:
+	bne	@return
+@next_pose:
 	inc	PLAYER_POSE,x
 	lda	PLAYER_POSE,x
 	cmp	#$003E
-	bcs	loc_01855C
-loc_018579:
+	bcs	@reset_pose
+@return:
 	rtl
 
 ; Classifies the collision tiles under the feet (zp_04 at x, zp_06 at x+6):
@@ -883,31 +893,34 @@ loc_018649:
 loc_01864F:
 	lda	#$0010
 	sta	zp_C4
-	brl	loc_01961D
+	brl	stop_y_slope_down_right_below
 loc_018657:
 	lda	#$0008
 	sta	zp_C4
-	brl	loc_019502
+	brl	stop_y_slope_up_right_below
 loc_01865F:
 	stz	zp_C4
 	rtl
 loc_018662:
 	lda	#$0008
 	sta	zp_C4
-	brl	loc_019450
+	brl	stop_y_slope_up_right
 loc_01866A:
 	lda	#$0008
 	sta	zp_C4
-	brl	loc_0194AB
+	brl	stop_y_slope_up_right_below_high
 loc_018672:
 	lda	#$0010
 	sta	zp_C4
-	brl	loc_019565
+	brl	stop_y_slope_down_right
 loc_01867A:
 	lda	#$0010
 	sta	zp_C4
-	brl	loc_0195BA
-loc_018682:
+	brl	stop_y_slope_down_right_below_high
+; Moving up: ceiling and bar (check_ceiling_hang_height), walls 32 and 8
+; pixels above the feet (bit 1: climb, state 2 / 5; bit 15: blocked); a
+; bar above starts hanging (state $0D).
+airborne_rising_collision:
 	jsl	f:check_ceiling_hang_height
 	lda	#$0006
 	sta	zp_00
@@ -915,108 +928,111 @@ loc_018682:
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
-	beq	loc_0186AC
-	bmi	loc_0186F5
+	beq	@check_left_wall
+	bmi	@block_right
 	lda	#$0002
 	sta	OBJ_STATE,x
 	jsl	f:snap_x_left_to_tile
-	lda	zp_C4
-	bpl	loc_0186AB
-	brl	snap_y_down_to_tile
-loc_0186AB:
-	rtl
-loc_0186AC:
-	stz	zp_00
-	jsl	f:get_bg_tile_at_object
-	bit	#$8002
-	beq	loc_0186C9
-	; (not executed in the CDL traces)
-	bmi	loc_0186D7
-	lda	#$0005
-	sta	OBJ_STATE,x
-	jsl	f:snap_x_right_to_tile
-	lda	zp_C4
-	bpl	loc_0186AB
-	brl	snap_y_down_to_tile
-loc_0186C9:
-	lda	#$FFF8	; [num]
-	sta	zp_02
-	jsl	f:get_bg_tile_at_object
-	bit	#$8002
-	beq	loc_0186E7
-loc_0186D7:
-	; (not executed in the CDL traces)
-	jsl	f:snap_x_right_if_moving_left
-	lda	zp_C4
-	beq	@return
-	bmi	@return
-	lda	#$000D
-	sta	OBJ_STATE,x
-@return:
-	rtl
-loc_0186E7:
-	lda	#$0006
-	sta	zp_00
-	jsl	f:get_bg_tile_at_object
-	bit	#$8002
-	beq	loc_018705
-loc_0186F5:
-	jsl	f:snap_x_left_if_moving_right
-	lda	zp_C4
-	beq	@return
-	; (not executed in the CDL traces)
-	bmi	@return
-	lda	#$000D
-	sta	OBJ_STATE,x
-@return:
-	rtl
-loc_018705:
-	lda	zp_C4
-	beq	@return
-	lda	#$000D
-	sta	OBJ_STATE,x
 	lda	zp_C4
 	bpl	@return
 	brl	snap_y_down_to_tile
 @return:
 	rtl
-loc_018716:
+@check_left_wall:
+	stz	zp_00
+	jsl	f:get_bg_tile_at_object
+	bit	#$8002
+	beq	@check_left_low
+	; (not executed in the CDL traces)
+	bmi	@block_left
+	lda	#$0005
+	sta	OBJ_STATE,x
+	jsl	f:snap_x_right_to_tile
+	lda	zp_C4
+	bpl	@return
+	brl	snap_y_down_to_tile
+@check_left_low:
+	lda	#$FFF8	; [num]
+	sta	zp_02
+	jsl	f:get_bg_tile_at_object
+	bit	#$8002
+	beq	@check_right_low
+@block_left:
+	; (not executed in the CDL traces)
+	jsl	f:snap_x_right_if_moving_left
+	lda	zp_C4
+	beq	@return2
+	bmi	@return2
+	lda	#$000D
+	sta	OBJ_STATE,x
+@return2:
+	rtl
+@check_right_low:
+	lda	#$0006
+	sta	zp_00
+	jsl	f:get_bg_tile_at_object
+	bit	#$8002
+	beq	@no_wall
+@block_right:
+	jsl	f:snap_x_left_if_moving_right
+	lda	zp_C4
+	beq	@return3
+	; (not executed in the CDL traces)
+	bmi	@return3
+	lda	#$000D
+	sta	OBJ_STATE,x
+@return3:
+	rtl
+@no_wall:
+	lda	zp_C4
+	beq	@return4
+	lda	#$000D
+	sta	OBJ_STATE,x
+	lda	zp_C4
+	bpl	@return4
+	brl	snap_y_down_to_tile
+@return4:
+	rtl
+airborne_kill_player:
 	; (not executed in the CDL traces)
 	jml	f:kill_player
-loc_01871A:
+; Moving down: lands on an object (PCONTACT_ON_OBJECT) or the BG floor
+; (check_floor_tiles; $32 bit 8 ignores floor tiles without bit 13),
+; walls as above, then a bar 48 pixels up starts hanging (state 1).
+airborne_falling_collision:
 	lda	PLAYER_CONTACT,x
 	bit	#$0004
-	bne	loc_018716
+	bne	airborne_kill_player
 	bit	#$0080
-	beq	loc_018731
+	beq	@check_floor
 	lda	#$0000
 	sta	OBJ_STATE,x
 	lda	#$0014
 	sta	PLAYER_POSE,x
 	rtl
-loc_018731:
+@check_floor:
 	stz	zp_00
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
 	sta	zp_04
 	bit	#$2000
-	bne	loc_018749
+	bne	@check_right_foot
 	lda	$32,x
 	bit	#$0100
-	beq	loc_018749
+	beq	@check_right_foot
 	stz	zp_04
-loc_018749:
+@check_right_foot:
 	lda	#$0006
 	sta	zp_00
 	jsl	f:get_bg_tile_at_object
 	sta	zp_06
 	bit	#$2000
-	bne	loc_018762
+	bne	@classify_floor
 	lda	$32,x
 	bit	#$0100
-	beq	loc_018762
+	beq	@classify_floor
 	stz	zp_06
-loc_018762:
+@classify_floor:
 	jsl	f:check_floor_tiles
 	lda	#$0006
 	sta	zp_00
@@ -1024,8 +1040,8 @@ loc_018762:
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
-	beq	loc_01878C
-	bmi	loc_0187D6
+	beq	@check_left_wall
+	bmi	@block_right
 	lda	#$0002
 	sta	OBJ_STATE,x
 	jsl	f:snap_x_left_to_tile
@@ -1034,89 +1050,89 @@ loc_018762:
 	brl	snap_y_up_to_tile
 @return:
 	rtl
-loc_01878C:
+@check_left_wall:
 	stz	zp_00
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
-	beq	loc_0187AA
-	bmi	loc_0187B8
+	beq	@check_left_low
+	bmi	@block_left
 	lda	#$0005
 	sta	OBJ_STATE,x
 	jsl	f:snap_x_right_to_tile
 	lda	zp_C4
-	bpl	@return
+	bpl	@return2
 	brl	snap_y_up_to_tile
-@return:
+@return2:
 	rtl
-loc_0187AA:
+@check_left_low:
 	lda	#$FFF8	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
-	beq	loc_0187C8
-loc_0187B8:
+	beq	@check_right_low
+@block_left:
 	jsl	f:snap_x_right_if_moving_left
 	lda	zp_C4
-	beq	loc_0187F7
-	bmi	loc_0187F7
+	beq	@check_bar
+	bmi	@check_bar
 	; (not executed in the CDL traces)
 	lda	#$0000
 	sta	OBJ_STATE,x
 	rtl
-loc_0187C8:
+@check_right_low:
 	lda	#$0006
 	sta	zp_00
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
-	beq	loc_0187E6
-loc_0187D6:
+	beq	@no_wall
+@block_right:
 	jsl	f:snap_x_left_if_moving_right
 	lda	zp_C4
-	beq	loc_0187F7
-	bmi	loc_0187F7
+	beq	@check_bar
+	bmi	@check_bar
 	lda	#$0000
 	sta	OBJ_STATE,x
 	rtl
-loc_0187E6:
+@no_wall:
 	lda	zp_C4
-	beq	loc_0187F7
+	beq	@check_bar
 	lda	#$0000
 	sta	OBJ_STATE,x
 	lda	zp_C4
-	bpl	@return
+	bpl	@return3
 	brl	snap_y_up_to_tile
-@return:
+@return3:
 	rtl
-loc_0187F7:
+@check_bar:
 	stz	zp_00
 	lda	#$FFD0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	sta	zp_04
 	bit	#$0E00
-	beq	loc_018812
+	beq	@check_bar_right
 	lda	$32,x
 	bit	#$0200
-	beq	loc_018812
+	beq	@check_bar_right
 	stz	zp_04
-loc_018812:
+@check_bar_right:
 	lda	#$0006
 	sta	zp_00
 	jsl	f:get_bg_tile_at_object
 	sta	zp_06
 	bit	#$0E00
-	beq	loc_01882B
+	beq	@classify_bar
 	lda	$32,x
 	bit	#$0200
-	beq	loc_01882B
+	beq	@classify_bar
 	stz	zp_06
-loc_01882B:
+@classify_bar:
 	jsl	f:classify_hang_bar_tiles
 	lda	zp_C4
-	beq	@return
+	beq	@return4
 	lda	#$0001
 	sta	OBJ_STATE,x
-@return:
+@return4:
 	rtl
 
 ; Body box and PLAYER_CENTER_X/Y while jumping (smaller).  RTS.
@@ -1136,7 +1152,7 @@ set_player_box_jumping:
 	adc	#$0006
 	sta	a:PLAYER_CENTER_Y,x
 	rts
-loc_01885D:
+ground_return:
 	rtl
 
 ; State 0, on the ground: dies on PCONTACT_KILLED, follows the platform
@@ -1148,13 +1164,13 @@ player_state_ground:
 	jsr	a:set_player_box_standing
 	lda	PLAYER_CONTACT,x
 	bit	#$0004
-	beq	loc_018870
+	beq	@alive
 	jml	f:kill_player
-loc_018870:
+@alive:
 	ldy	a:PLAYER_PLATFORM,x
-	beq	loc_0188A4
+	beq	@check_floor
 	bit	#$0080
-	beq	loc_0188A4
+	beq	@check_floor
 	clc
 	lda	OBJ_X_SUB,x
 	adc	a:$0018,y
@@ -1173,51 +1189,51 @@ loc_018870:
 	sta	zp_C4
 	lda	#$2000
 	sta	zp_12
-	bra	loc_0188C2
-loc_0188A4:
+	bra	@check_jump
+@check_floor:
 	jsl	f:check_walls_and_floor
 	lda	OBJ_STATE,x
-	bne	loc_01885D
+	bne	ground_return
 	lda	zp_C4
-	bne	loc_0188B3
-	brl	loc_0182CD
-loc_0188B3:
+	bne	@on_floor
+	brl	start_player_fall
+@on_floor:
 	bit	#$0078
-	beq	loc_0188C2
+	beq	@check_jump
 	clc
 	lda	a:PLAYER_CENTER_Y,x
 	adc	#$FFFC
 	sta	a:PLAYER_CENTER_Y,x
-loc_0188C2:
+@check_jump:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	loc_0188F3
+	beq	@no_jump
 	lda	PLAYER_AIM,x
 	cmp	#$0008
-	beq	loc_0188D2
-	brl	loc_0182FD
-loc_0188D2:
+	beq	@down_jump
+	brl	start_player_jump
+@down_jump:
 	lda	zp_12
 	bit	#$2000
-	beq	loc_0188DC
-	brl	loc_0182FD
-loc_0188DC:
+	beq	@not_on_platform
+	brl	start_player_jump
+@not_on_platform:
 	lda	stage_number
 	cmp	#$0006
-	beq	loc_0188E6
-	brl	loc_0182CD
-loc_0188E6:
+	beq	@stage6
+	brl	start_player_fall
+@stage6:
 	lda	OBJ_Y,x
 	cmp	#$0074
-	bcc	loc_0188F0
-	brl	loc_0182FD
-loc_0188F0:
-	brl	loc_0182CD
-loc_0188F3:
+	bcc	@drop
+	brl	start_player_jump
+@drop:
+	brl	start_player_fall
+@no_jump:
 	lda	a:PLAYER_SPIN,x
-	beq	loc_0188FB
+	beq	@aim
 	brl	enter_spin_stance
-loc_0188FB:
+@aim:
 	lda	PLAYER_AIM,x
 	phx
 	asl	a
@@ -1253,22 +1269,22 @@ ground_aim_right:
 	sta	zp_12
 	lda	zp_C4
 	bit	#$0002
-	beq	loc_018971
+	beq	@slope
 	lda	PLAYER_LOCKED,x
-	beq	loc_018959
+	beq	@walk
 	stz	PLAYER_POSE,x
 	lda	zp_C4
-	bpl	loc_01894B
-loc_018946:
+	bpl	@fire
+@pose_14:
 	lda	#$0014
 	sta	PLAYER_POSE,x
-loc_01894B:
+@fire:
 	lda	#$0010
 	sta	zp_14
 	lda	#$FFDD	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018959:
+@walk:
 	lda	#$0002
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1277,13 +1293,13 @@ loc_018959:
 	lda	#$FFDD	; [num]
 	sta	zp_16
 	jml	f:fire_weapon_walking
-loc_018971:
+@slope:
 	ldy	PLAYER_LOCKED,x
-	beq	loc_0189A4
+	beq	@walk_slope
 	lda	zp_C4
-	bmi	loc_018946
+	bmi	@pose_14
 	bit	#$0028
-	bne	loc_018991
+	bne	@uphill
 	lda	#$00BA
 	sta	PLAYER_POSE,x
 	lda	#$0010
@@ -1291,7 +1307,7 @@ loc_018971:
 	lda	#$FFDA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018991:
+@uphill:
 	lda	#$00B0
 	sta	PLAYER_POSE,x
 	lda	#$0010
@@ -1299,9 +1315,9 @@ loc_018991:
 	lda	#$FFDA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_0189A4:
+@walk_slope:
 	bit	#$0028
-	bne	loc_0189C1
+	bne	@walk_uphill
 	lda	#$0074
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1310,7 +1326,7 @@ loc_0189A4:
 	lda	#$FFDD	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_0189C1:
+@walk_uphill:
 	lda	#$0068
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1325,30 +1341,30 @@ ground_aim_up:
 	sta	zp_12
 	lda	zp_C4
 	bit	#$0002
-	beq	loc_018A06
+	beq	@slope
 	ldy	#$001A
 	lda	zp_C4
-	bpl	loc_0189EF
-loc_0189EC:
+	bpl	@set_pose
+@pose_dd:
 	ldy	#$00DD
-loc_0189EF:
+@set_pose:
 	sty	PLAYER_POSE,x
 	ldy	#$FFF9	; [num]
 	lda	OBJ_FACING,x
-	bne	loc_0189FB
+	bne	@set_muzzle
 	ldy	#$FFFE	; [num]
-loc_0189FB:
+@set_muzzle:
 	sty	zp_14
 	lda	#$FFC0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018A06:
+@slope:
 	lda	zp_C4
-	bmi	loc_0189EC
+	bmi	@pose_dd
 	bit	#$0028
-	bne	loc_018A39
+	bne	@slope_up_right
 	lda	OBJ_FACING,x
-	bne	loc_018A26
+	bne	@uphill
 	lda	#$FFFF	; [num]
 	sta	zp_14
 	lda	#$FFBE	; [num]
@@ -1356,7 +1372,7 @@ loc_018A06:
 	lda	#$00BC
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
-loc_018A26:
+@uphill:
 	lda	#$FFF8	; [num]
 	sta	zp_14
 	lda	#$FFBE	; [num]
@@ -1364,9 +1380,9 @@ loc_018A26:
 	lda	#$00B2
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
-loc_018A39:
+@slope_up_right:
 	lda	OBJ_FACING,x
-	bne	loc_018A50
+	bne	@downhill
 	lda	#$FFFF	; [num]
 	sta	zp_14
 	lda	#$FFBE	; [num]
@@ -1374,7 +1390,7 @@ loc_018A39:
 	lda	#$00B2
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
-loc_018A50:
+@downhill:
 	lda	#$FFF8	; [num]
 	sta	zp_14
 	lda	#$FFBE	; [num]
@@ -1388,22 +1404,22 @@ ground_aim_up_right:
 	sta	zp_12
 	lda	zp_C4
 	bit	#$0002
-	beq	loc_018AA5
+	beq	@slope
 	lda	PLAYER_LOCKED,x
-	beq	loc_018A8D
+	beq	@walk
 	ldy	#$001C
 	lda	zp_C4
-	bpl	loc_018A7D
-loc_018A7A:
+	bpl	@set_pose
+@pose_24:
 	ldy	#$0024
-loc_018A7D:
+@set_pose:
 	sty	PLAYER_POSE,x
 	lda	#$000C
 	sta	zp_14
 	lda	#$FFCA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018A8D:
+@walk:
 	lda	#$001E
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1412,13 +1428,13 @@ loc_018A8D:
 	lda	#$FFCA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018AA5:
+@slope:
 	ldy	PLAYER_LOCKED,x
-	beq	loc_018AD8
+	beq	@walk_slope
 	lda	zp_C4
-	bmi	loc_018A7A
+	bmi	@pose_24
 	bit	#$0028
-	bne	loc_018AC5
+	bne	@uphill
 	lda	#$00BE
 	sta	PLAYER_POSE,x
 	lda	#$000C
@@ -1426,7 +1442,7 @@ loc_018AA5:
 	lda	#$FFC7	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018AC5:
+@uphill:
 	lda	#$00B4
 	sta	PLAYER_POSE,x
 	lda	#$000C
@@ -1434,9 +1450,9 @@ loc_018AC5:
 	lda	#$FFC7	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018AD8:
+@walk_slope:
 	bit	#$0028
-	bne	loc_018AF5
+	bne	@walk_uphill
 	lda	#$008C
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1445,7 +1461,7 @@ loc_018AD8:
 	lda	#$FFCA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018AF5:
+@walk_uphill:
 	lda	#$0080
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1460,22 +1476,22 @@ ground_aim_left:
 	sta	zp_12
 	lda	zp_C4
 	bit	#$0002
-	beq	loc_018B4F
+	beq	@slope
 	lda	PLAYER_LOCKED,x
-	beq	loc_018B37
+	beq	@walk
 	ldy	#$0000
 	lda	zp_C4
-	bpl	loc_018B27
-loc_018B24:
+	bpl	@set_pose
+@pose_14:
 	ldy	#$0014
-loc_018B27:
+@set_pose:
 	sty	PLAYER_POSE,x
 	lda	#$FFE6	; [num]
 	sta	zp_14
 	lda	#$FFDD	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018B37:
+@walk:
 	lda	#$0002
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1484,13 +1500,13 @@ loc_018B37:
 	lda	#$FFDD	; [num]
 	sta	zp_16
 	jml	f:fire_weapon_walking
-loc_018B4F:
+@slope:
 	ldy	PLAYER_LOCKED,x
-	beq	loc_018B82
+	beq	@walk_slope
 	lda	zp_C4
-	bmi	loc_018B24
+	bmi	@pose_14
 	bit	#$0050
-	bne	loc_018B6F
+	bne	@uphill
 	lda	#$00BA
 	sta	PLAYER_POSE,x
 	lda	#$FFE6	; [num]
@@ -1498,7 +1514,7 @@ loc_018B4F:
 	lda	#$FFDA	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018B6F:
+@uphill:
 	lda	#$00B0
 	sta	PLAYER_POSE,x
 	lda	#$FFE6	; [num]
@@ -1506,9 +1522,9 @@ loc_018B6F:
 	lda	#$FFDD	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018B82:
+@walk_slope:
 	bit	#$0050
-	bne	loc_018B9F
+	bne	@walk_uphill
 	lda	#$0074
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1517,7 +1533,7 @@ loc_018B82:
 	lda	#$FFDD	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018B9F:
+@walk_uphill:
 	lda	#$0068
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1532,23 +1548,23 @@ ground_aim_up_left:
 	sta	zp_12
 	lda	zp_C4
 	bit	#$0002
-	beq	loc_018BF9
+	beq	@slope
 	lda	PLAYER_LOCKED,x
-	beq	loc_018BE1
+	beq	@walk
 	; (not executed in the CDL traces)
 	ldy	#$001C
 	lda	zp_C4
-	bpl	loc_018BD1
-loc_018BCE:
+	bpl	@set_pose
+@pose_24:
 	ldy	#$0024
-loc_018BD1:
+@set_pose:
 	sty	PLAYER_POSE,x
 	lda	#$FFE8	; [num]
 	sta	zp_14
 	lda	#$FFC8	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018BE1:
+@walk:
 	lda	#$001E
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1557,14 +1573,14 @@ loc_018BE1:
 	lda	#$FFC8	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018BF9:
+@slope:
 	ldy	PLAYER_LOCKED,x
-	beq	loc_018C2C
+	beq	@walk_slope
 	; (not executed in the CDL traces)
 	lda	zp_C4
-	bmi	loc_018BCE
+	bmi	@pose_24
 	bit	#$0050
-	bne	loc_018C19
+	bne	@uphill
 	lda	#$00BE
 	sta	PLAYER_POSE,x
 	lda	#$FFEC	; [num]
@@ -1572,7 +1588,7 @@ loc_018BF9:
 	lda	#$FFC8	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018C19:
+@uphill:
 	lda	#$00B4
 	sta	PLAYER_POSE,x
 	lda	#$FFEC	; [num]
@@ -1580,9 +1596,9 @@ loc_018C19:
 	lda	#$FFC8	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018C2C:
+@walk_slope:
 	bit	#$0050
-	bne	loc_018C49
+	bne	@walk_uphill
 	lda	#$008C
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1591,7 +1607,7 @@ loc_018C2C:
 	lda	#$FFC9	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018C49:
+@walk_uphill:
 	lda	#$0080
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1603,13 +1619,13 @@ loc_018C49:
 
 ground_aim_down:
 	lda	PLAYER_LOCKED,x
-	beq	loc_018C68
+	beq	@not_locked
 	; (not executed in the CDL traces)
-	brl	loc_018D19
-loc_018C68:
+	brl	@aim_down
+@not_locked:
 	lda	zp_C4
 	bit	#$0002
-	beq	loc_018CA2
+	beq	@slope
 	lda	OBJ_Y,x
 	sta	PLAYER_HITBOX_BOTTOM,x
 	adc	#$FFF2
@@ -1617,14 +1633,14 @@ loc_018C68:
 	adc	#$0006
 	sta	a:PLAYER_CENTER_Y,x
 	lda	OBJ_FACING,x
-	bne	loc_018C8A
+	bne	@crouch_left
 	lda	#$0020
 	ldy	#$0018
-	bra	loc_018C90
-loc_018C8A:
+	bra	@crouch_fire
+@crouch_left:
 	lda	#$0060
 	ldy	#$FFDE	; [num]
-loc_018C90:
+@crouch_fire:
 	sta	zp_12
 	sty	zp_14
 	lda	#$FFF2	; [num]
@@ -1632,7 +1648,7 @@ loc_018C90:
 	lda	#$002A
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
-loc_018CA2:
+@slope:
 	lda	OBJ_Y,x
 	sta	PLAYER_HITBOX_BOTTOM,x
 	adc	#$FFE4
@@ -1641,12 +1657,12 @@ loc_018CA2:
 	sta	a:PLAYER_CENTER_Y,x
 	lda	zp_C4
 	ldy	OBJ_FACING,x
-	bne	loc_018CE9
+	bne	@slope_left
 	ldy	#$0020
 	sty	zp_12
 	lda	zp_C4
 	bit	#$0028
-	bne	loc_018CD6
+	bne	@slope_right_uphill
 	lda	#$0012
 	sta	zp_14
 	lda	#$FFE5	; [num]
@@ -1654,7 +1670,7 @@ loc_018CA2:
 	lda	#$00C0
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
-loc_018CD6:
+@slope_right_uphill:
 	lda	#$0010
 	sta	zp_14
 	lda	#$FFE5	; [num]
@@ -1662,11 +1678,11 @@ loc_018CD6:
 	lda	#$00B6
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
-loc_018CE9:
+@slope_left:
 	ldy	#$0060
 	sty	zp_12
 	bit	#$0028
-	bne	loc_018D06
+	bne	@slope_left_downhill
 	lda	#$FFE4	; [num]
 	sta	zp_14
 	lda	#$FFE5	; [num]
@@ -1674,7 +1690,7 @@ loc_018CE9:
 	lda	#$00B6
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
-loc_018D06:
+@slope_left_downhill:
 	lda	#$FFE6	; [num]
 	sta	zp_14
 	lda	#$FFE5	; [num]
@@ -1682,36 +1698,36 @@ loc_018D06:
 	lda	#$00C0
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
-loc_018D19:
+@aim_down:
 	; (not executed in the CDL traces)
 	lda	#$0040
 	sta	zp_12
 	lda	zp_C4
 	bit	#$0002
-	beq	loc_018D46
-	bpl	loc_018D2C
-loc_018D27:
+	beq	@aim_down_slope
+	bpl	@pose_df
+@pose_e1:
 	lda	#$00E1
-	bra	loc_018D2F
-loc_018D2C:
+	bra	@set_pose
+@pose_df:
 	lda	#$00DF
-loc_018D2F:
+@set_pose:
 	sta	PLAYER_POSE,x
 	ldy	#$FFFD	; [num]
 	lda	OBJ_FACING,x
-	bne	loc_018D3B
+	bne	@set_muzzle
 	ldy	#$FFF9	; [num]
-loc_018D3B:
+@set_muzzle:
 	sty	zp_14
 	lda	#$FFFC	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018D46:
-	bmi	loc_018D27
+@aim_down_slope:
+	bmi	@pose_e1
 	bit	#$0028
-	bne	loc_018D77
+	bne	@aim_down_slope_up_right
 	lda	OBJ_FACING,x
-	bne	loc_018D64
+	bne	@aim_down_uphill
 	lda	#$FFFA	; [num]
 	sta	zp_14
 	lda	#$FFF6	; [num]
@@ -1719,7 +1735,7 @@ loc_018D46:
 	lda	#$00E5
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
-loc_018D64:
+@aim_down_uphill:
 	lda	#$FFFA	; [num]
 	sta	zp_14
 	lda	#$FFF6	; [num]
@@ -1727,9 +1743,9 @@ loc_018D64:
 	lda	#$00E3
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
-loc_018D77:
+@aim_down_slope_up_right:
 	lda	OBJ_FACING,x
-	bne	loc_018D8E
+	bne	@aim_down_downhill
 	lda	#$FFFA	; [num]
 	sta	zp_14
 	lda	#$FFF4	; [num]
@@ -1737,7 +1753,7 @@ loc_018D77:
 	lda	#$00E3
 	sta	PLAYER_POSE,x
 	jml	f:fire_weapon
-loc_018D8E:
+@aim_down_downhill:
 	lda	#$FFFC	; [num]
 	sta	zp_14
 	lda	#$FFF4	; [num]
@@ -1751,23 +1767,23 @@ ground_aim_down_right:
 	sta	zp_12
 	lda	zp_C4
 	bit	#$0002
-	beq	loc_018DE3
+	beq	@slope
 	lda	PLAYER_LOCKED,x
-	beq	loc_018DCB
+	beq	@walk
 	; (not executed in the CDL traces)
 	ldy	#$002C
 	lda	zp_C4
-	bpl	loc_018DBB
-loc_018DB8:
+	bpl	@set_pose
+@pose_34:
 	ldy	#$0034
-loc_018DBB:
+@set_pose:
 	sty	PLAYER_POSE,x
 	lda	#$000A
 	sta	zp_14
 	lda	#$FFF0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018DCB:
+@walk:
 	lda	#$002E
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1776,14 +1792,14 @@ loc_018DCB:
 	lda	#$FFF0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018DE3:
+@slope:
 	; (not executed in the CDL traces)
 	ldy	PLAYER_LOCKED,x
-	beq	loc_018E16
+	beq	@walk_slope
 	lda	zp_C4
-	bmi	loc_018DB8
+	bmi	@pose_34
 	bit	#$0028
-	bne	loc_018E03
+	bne	@uphill
 	lda	#$00C2
 	sta	PLAYER_POSE,x
 	lda	#$000A
@@ -1791,7 +1807,7 @@ loc_018DE3:
 	lda	#$FFEC	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018E03:
+@uphill:
 	lda	#$00B8
 	sta	PLAYER_POSE,x
 	lda	#$000B
@@ -1799,9 +1815,9 @@ loc_018E03:
 	lda	#$FFEC	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018E16:
+@walk_slope:
 	bit	#$0028
-	bne	loc_018E33
+	bne	@walk_uphill
 	lda	#$00A4
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1810,7 +1826,7 @@ loc_018E16:
 	lda	#$FFF0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018E33:
+@walk_uphill:
 	lda	#$0098
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1825,23 +1841,23 @@ ground_aim_down_left:
 	sta	zp_12
 	lda	zp_C4
 	bit	#$0002
-	beq	loc_018E8D
+	beq	@slope
 	lda	PLAYER_LOCKED,x
-	beq	loc_018E75
+	beq	@walk
 	; (not executed in the CDL traces)
 	ldy	#$002C
 	lda	zp_C4
-	bpl	loc_018E65
-loc_018E62:
+	bpl	@set_pose
+@pose_34:
 	ldy	#$0034
-loc_018E65:
+@set_pose:
 	sty	PLAYER_POSE,x
 	lda	#$FFEC	; [num]
 	sta	zp_14
 	lda	#$FFF0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018E75:
+@walk:
 	lda	#$002E
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1850,14 +1866,14 @@ loc_018E75:
 	lda	#$FFF0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018E8D:
+@slope:
 	; (not executed in the CDL traces)
 	ldy	PLAYER_LOCKED,x
-	beq	loc_018EC0
+	beq	@walk_slope
 	lda	zp_C4
-	bmi	loc_018E62
+	bmi	@pose_34
 	bit	#$0050
-	bne	loc_018EAD
+	bne	@uphill
 	lda	#$00C2
 	sta	PLAYER_POSE,x
 	lda	#$FFEC	; [num]
@@ -1865,7 +1881,7 @@ loc_018E8D:
 	lda	#$FFEC	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018EAD:
+@uphill:
 	lda	#$00B8
 	sta	PLAYER_POSE,x
 	lda	#$FFEA	; [num]
@@ -1873,9 +1889,9 @@ loc_018EAD:
 	lda	#$FFEE	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018EC0:
+@walk_slope:
 	bit	#$0050
-	bne	loc_018EDD
+	bne	@walk_uphill
 	lda	#$00A4
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1884,7 +1900,7 @@ loc_018EC0:
 	lda	#$FFF0	; [num]
 	sta	zp_16
 	jml	f:fire_weapon
-loc_018EDD:
+@walk_uphill:
 	lda	#$0098
 	sta	a:PLAYER_POSE_ADD,x
 	jsl	f:animate_player_walk
@@ -1906,33 +1922,33 @@ check_walls_and_floor:
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8000
-	beq	loc_018F0B
+	beq	@check_climb_left
 	; (not executed in the CDL traces)
 	jsl	f:snap_x_right_to_tile
-	bra	loc_018F3E
-loc_018F0B:
+	bra	@check_floor
+@check_climb_left:
 	bit	#$0002
-	beq	loc_018F18
+	beq	@check_right
 	lda	#$0005
 	sta	OBJ_STATE,x
 	brl	snap_x_right_to_tile
-loc_018F18:
+@check_right:
 	lda	#$0006
 	sta	zp_00
 	lda	#$FFE0	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8000
-	beq	loc_018F31
+	beq	@check_climb_right
 	jsl	f:snap_x_left_to_tile
-	bra	loc_018F3E
-loc_018F31:
+	bra	@check_floor
+@check_climb_right:
 	bit	#$0002
-	beq	loc_018F3E
+	beq	@check_floor
 	lda	#$0002
 	sta	OBJ_STATE,x
 	brl	snap_x_left_to_tile
-loc_018F3E:
+@check_floor:
 	stz	zp_00
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
@@ -1943,15 +1959,15 @@ loc_018F3E:
 	sta	zp_06
 	ora	zp_04
 	sta	zp_12
-	brl	loc_019699
+	brl	classify_floor_tiles
 
 ; PLAYER_POSE steps by 2 every 8 frames through 0-$0A.
 animate_player_walk:
 	lda	stage_frame_mod8
-	bne	loc_018F62
+	bne	@check_pose
 	inc	PLAYER_POSE,x
 	inc	PLAYER_POSE,x
-loc_018F62:
+@check_pose:
 	lda	PLAYER_POSE,x
 	cmp	#$000C
 	bcc	@return
@@ -1980,16 +1996,16 @@ set_player_box_standing:
 player_state_hang:
 	lda	PLAYER_CONTACT,x
 	bit	#$0004
-	beq	loc_018F96
+	beq	@alive
 	jml	f:kill_player
-loc_018F96:
+@alive:
 	jsr	a:set_player_box_hanging
 	jsl	f:check_bomb_button
 	ldy	a:PLAYER_PLATFORM,x
-	beq	loc_018FC9
+	beq	@check_bar
 	lda	PLAYER_CONTACT,x
 	bit	#$2000
-	beq	loc_018FC9
+	beq	@check_bar
 	clc
 	lda	OBJ_X_SUB,x
 	adc	a:$0018,y
@@ -2004,23 +2020,24 @@ loc_018F96:
 	lda	OBJ_Y,x
 	adc	a:$001E,y
 	sta	OBJ_Y,x
-	bra	loc_018FD5
-loc_018FC9:
+	bra	@check_jump
+@check_bar:
 	jsl	f:check_hang_bar
 	lda	a:zp_C4
-	bne	loc_018FD5
-	brl	loc_0182C8
-loc_018FD5:
+	bne	@check_jump
+	brl	start_player_fall_from_hang
+@check_jump:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	loc_018FE8
+	beq	run_hang_aim
 	lda	PLAYER_AIM,x
 	bit	#$0008
-	beq	loc_018FE5
-	brl	loc_0182C8
-loc_018FE5:
-	brl	loc_0182FD
-loc_018FE8:
+	beq	@jump
+	brl	start_player_fall_from_hang
+@jump:
+	brl	start_player_jump
+; Dispatch by PLAYER_AIM (tbl_hang_aim); also player_state_hang_object.
+run_hang_aim:
 	stz	zp_14
 	lda	PLAYER_AIM,x
 	phx
@@ -2175,51 +2192,51 @@ loc_019102:
 loc_019105:
 	lda	#$0008
 	sta	zp_C4
-	brl	loc_0194AB
+	brl	stop_y_slope_up_right_below_high
 loc_01910D:
 	lda	#$0008
 	sta	zp_C4
-	brl	loc_019450
+	brl	stop_y_slope_up_right
 loc_019115:
 	lda	#$0010
 	sta	zp_C4
-	brl	loc_0195BA
+	brl	stop_y_slope_down_right_below_high
 loc_01911D:
 	lda	#$0010
 	sta	zp_C4
-	brl	loc_019565
+	brl	stop_y_slope_down_right
 
 ; State $10 (stage 3, seen in the emulator): hanging from a moving object;
 ; jump lets go (down + jump drops).
 player_state_hang_object:
 	lda	PLAYER_CONTACT,x
 	bit	#$0004
-	beq	loc_019130
+	beq	@alive
 	jml	f:kill_player
-loc_019130:
+@alive:
 	jsr	a:set_player_box_hanging
 	jsl	f:check_bomb_button
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	loc_01914C
+	beq	@aim
 	stz	$3E,x
 	lda	PLAYER_JOY_HELD,x
 	bit	#$0400
-	beq	loc_019149
+	beq	@jump
 	brl	start_player_drop
-loc_019149:
-	brl	loc_0182FD
-loc_01914C:
-	brl	loc_018FE8
+@jump:
+	brl	start_player_jump
+@aim:
+	brl	run_hang_aim
 
 ; State 2, climbing a wall on the right (BG wall bit at x+6): aims and fires
 ; (tbl_climb_right_aim); falls when the wall ends.
 player_state_climb_right:
 	lda	PLAYER_CONTACT,x
 	bit	#$0004
-	beq	loc_01915A
+	beq	@alive
 	jml	f:kill_player
-loc_01915A:
+@alive:
 	lda	OBJ_X,x
 	adc	#$FFF6
 	sta	PLAYER_HITBOX_LEFT,x
@@ -2241,17 +2258,17 @@ loc_01915A:
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$0002
-	bne	loc_0191A9
+	bne	@on_wall
 	lda	#$FFF8	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$0002
-	bne	loc_0191A6
+	bne	@wall_top
 	; (not executed in the CDL traces)
-	brl	loc_0182CD
-loc_0191A6:
-	brl	loc_0182E4
-loc_0191A9:
+	brl	start_player_fall
+@wall_top:
+	brl	hop_off_wall_top
+@on_wall:
 	stz	OBJ_FACING,x
 	lda	PLAYER_AIM,x
 	phx
@@ -2279,10 +2296,10 @@ tbl_climb_right_aim:
 climb_right_aim_none:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	loc_0191DD
-	brl	loc_0182B5
-loc_0191DD:
-	brl	loc_019285
+	beq	@no_jump
+	brl	start_player_fall_left
+@no_jump:
+	brl	climb_right_fire_left
 
 climb_right_aim_right:
 	lda	#$0058
@@ -2297,24 +2314,24 @@ climb_right_aim_right:
 
 climb_right_aim_up:
 	lda	PLAYER_LOCKED,x
-	beq	loc_019203
+	beq	@climb
 	lda	#$0066
 	sta	PLAYER_POSE,x
-	bra	loc_019211
-loc_019203:
+	bra	@check_jump
+@climb:
 	jsl	f:climb_right_check_ceiling
-	beq	loc_01920D
+	beq	@animate
 	; (not executed in the CDL traces)
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
-loc_01920D:
+@animate:
 	jsl	f:animate_player_climb
-loc_019211:
+@check_jump:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	loc_01921A
-	brl	loc_0182F7
-loc_01921A:
+	beq	@fire
+	brl	wall_jump_left
+@fire:
 	lda	#$0000
 	sta	zp_12
 	lda	#$FFF3	; [num]
@@ -2325,18 +2342,18 @@ loc_01921A:
 
 climb_right_aim_up_right:
 	lda	PLAYER_LOCKED,x
-	beq	loc_019238
+	beq	@climb
 	lda	#$005A
 	sta	PLAYER_POSE,x
-	bra	loc_019246
-loc_019238:
+	bra	@fire
+@climb:
 	jsl	f:climb_right_check_ceiling
-	beq	loc_019242
+	beq	@animate
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
-loc_019242:
+@animate:
 	jsl	f:animate_player_climb
-loc_019246:
+@fire:
 	lda	#$0010
 	sta	zp_12
 	lda	#$0002
@@ -2347,27 +2364,28 @@ loc_019246:
 
 climb_right_aim_left:
 	jsl	f:climb_right_check_ceiling
-	bne	loc_019265
+	bne	@leave_wall
 	jsl	f:climb_right_check_floor
-	beq	loc_019272
-loc_019265:
+	beq	@check_jump
+@leave_wall:
 	ldy	OBJ_X,x
 	cpy	#$000B
-	bcc	loc_019272
+	bcc	@check_jump
 	dec	a
 	sta	OBJ_STATE,x
 	dec	OBJ_X,x
 	rtl
-loc_019272:
+@check_jump:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	loc_019285
+	beq	climb_right_fire_left
 	lda	#$97FF	; [num]
 	sta	OBJ_X_VEL_SUB,x
 	lda	#$FFFE	; [num]
 	sta	OBJ_X_VEL,x
-	brl	loc_0182B5
-loc_019285:
+	brl	start_player_fall_left
+; Aiming away from the wall (left), also the idle pose.
+climb_right_fire_left:
 	lda	#$005E
 	sta	PLAYER_POSE,x
 	lda	#$0060
@@ -2380,37 +2398,37 @@ loc_019285:
 
 climb_right_aim_up_left:
 	jsl	f:climb_right_check_ceiling
-	bne	loc_0192A9
+	bne	@leave_wall
 	jsl	f:climb_right_check_floor
-	beq	loc_0192B6
-loc_0192A9:
+	beq	@aim
+@leave_wall:
 	ldy	OBJ_X,x
 	cpy	#$000B
-	bcc	loc_0192B6
+	bcc	@aim
 	dec	a
 	sta	OBJ_STATE,x
 	dec	OBJ_X,x
 	rtl
-loc_0192B6:
+@aim:
 	lda	PLAYER_LOCKED,x
-	beq	loc_0192C1
+	beq	@animate
 	lda	#$0060
 	sta	PLAYER_POSE,x
-	bra	loc_0192C5
-loc_0192C1:
+	bra	@check_jump
+@animate:
 	; (not executed in the CDL traces)
 	jsl	f:animate_player_climb
-loc_0192C5:
+@check_jump:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	loc_0192D8
+	beq	@fire
 	; (not executed in the CDL traces)
 	lda	#$97FF	; [num]
 	sta	OBJ_X_VEL_SUB,x
 	lda	#$FFFE	; [num]
 	sta	OBJ_X_VEL,x
-	brl	loc_0182F7
-loc_0192D8:
+	brl	wall_jump_left
+@fire:
 	lda	#$0070
 	sta	zp_12
 	lda	#$FFD5	; [num]
@@ -2421,23 +2439,23 @@ loc_0192D8:
 
 climb_right_aim_down:
 	lda	PLAYER_LOCKED,x
-	beq	loc_0192F6
+	beq	@climb
 	lda	#$0064
 	sta	PLAYER_POSE,x
-	bra	loc_019304
-loc_0192F6:
+	bra	@check_jump
+@climb:
 	jsl	f:climb_right_check_floor
-	beq	loc_019300
+	beq	@animate
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
-loc_019300:
+@animate:
 	jsl	f:animate_player_climb
-loc_019304:
+@check_jump:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	loc_01930D
-	brl	loc_0182B5
-loc_01930D:
+	beq	@fire
+	brl	start_player_fall_left
+@fire:
 	lda	#$0040
 	sta	zp_12
 	lda	#$FFF0	; [num]
@@ -2449,18 +2467,18 @@ loc_01930D:
 climb_right_aim_down_right:
 	; (not executed in the CDL traces)
 	lda	PLAYER_LOCKED,x
-	beq	loc_01932B
+	beq	@climb
 	lda	#$005C
 	sta	PLAYER_POSE,x
-	bra	loc_019339
-loc_01932B:
+	bra	@fire
+@climb:
 	jsl	f:climb_right_check_floor
-	beq	loc_019335
+	beq	@animate
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
-loc_019335:
+@animate:
 	jsl	f:animate_player_climb
-loc_019339:
+@fire:
 	lda	#$0030
 	sta	zp_12
 	stz	zp_14
@@ -2471,35 +2489,35 @@ loc_019339:
 climb_right_aim_down_left:
 	; (not executed in the CDL traces)
 	jsl	f:climb_right_check_ceiling
-	bne	loc_019355
+	bne	@leave_wall
 	jsl	f:climb_right_check_floor
-	beq	loc_019362
-loc_019355:
+	beq	@aim
+@leave_wall:
 	ldy	OBJ_X,x
 	cpy	#$000B
-	bcc	loc_019362
+	bcc	@aim
 	dec	a
 	sta	OBJ_STATE,x
 	dec	OBJ_X,x
 	rtl
-loc_019362:
+@aim:
 	lda	PLAYER_LOCKED,x
-	beq	loc_01936D
+	beq	@animate
 	lda	#$0062
 	sta	PLAYER_POSE,x
-	bra	loc_019371
-loc_01936D:
+	bra	@check_jump
+@animate:
 	jsl	f:animate_player_climb
-loc_019371:
+@check_jump:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	loc_019384
+	beq	@fire
 	lda	#$97FF	; [num]
 	sta	OBJ_X_VEL_SUB,x
 	lda	#$FFFE	; [num]
 	sta	OBJ_X_VEL,x
-	brl	loc_0182B5
-loc_019384:
+	brl	start_player_fall_left
+@fire:
 	lda	#$0050
 	sta	zp_12
 	lda	#$FFD2	; [num]
@@ -2536,20 +2554,21 @@ climb_right_check_floor:
 ; Climbing animation: poses $54-$57, one step every 8 frames.
 animate_player_climb:
 	lda	stage_frame_mod8
-	bne	loc_0193C4
+	bne	@check_pose
 	inc	PLAYER_POSE,x
-loc_0193C4:
+@check_pose:
 	lda	PLAYER_POSE,x
 	cmp	#$0054
-	bcc	loc_0193D1
+	bcc	@reset_pose
 	cmp	#$0058
-	bcs	loc_0193D1
+	bcs	@reset_pose
 	rtl
-loc_0193D1:
+@reset_pose:
 	lda	#$0054
 	sta	PLAYER_POSE,x
 	rtl
-loc_0193D7:
+; Stops the horizontal motion too (weapon_item_move).
+stop_and_snap_y_up_to_tile:
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 
@@ -2591,7 +2610,7 @@ snap_y_down_to_tile:
 
 snap_x_left_if_moving_right:
 	lda	OBJ_X_VEL,x
-	bmi	loc_01942E
+	bmi	snap_x_left_return
 
 ; Moves the object left to the left edge of its tile column (offset zp_00,
 ; BG scroll bg1_x) and stops its horizontal motion: a wall on the right.
@@ -2609,12 +2628,12 @@ snap_x_left_to_tile:
 	stz	OBJ_X_VEL,x
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_SUB,x
-loc_01942E:
+snap_x_left_return:
 	rtl
 
 snap_x_right_if_moving_left:
 	lda	OBJ_X_VEL,x
-	bpl	loc_01944F
+	bpl	snap_x_right_return
 
 ; Moves the object right to the right edge of its tile column and stops its
 ; horizontal motion: a wall on the left.
@@ -2633,9 +2652,19 @@ snap_x_right_to_tile:
 	stz	OBJ_X_VEL,x
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_SUB,x
-loc_01944F:
+snap_x_right_return:
 	rtl
-loc_019450:
+
+; Slope snapping (zp_C4 8: slope rising to the right, $10: falling to the
+; right; 1 pixel up per 2 across, so 8 pixels over 16).  t = ((x + bg1_x)
+; & 15) / 2 (the falling ones add zp_00 to x) and row = the screen y of the
+; top of the object's 8-pixel BG tile row; each sets OBJ_Y to the slope
+; surface in that row, the row above or the row below.  snap_y_slope_*
+; (objects: object_check_floor_tiles, classify_floor_tiles) keep the
+; velocity; stop_y_slope_* (the players' floor, ceiling and bar checks) also
+; stop the vertical motion and end 1 pixel higher (_high: 2 pixels).
+; y = row + 6 - t.
+stop_y_slope_up_right:
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
 	lda	a:bg1_y
@@ -2660,7 +2689,8 @@ loc_019450:
 	dec	a
 	sta	OBJ_Y,x
 	rtl
-loc_019480:
+; y = row + 7 - t.
+snap_y_slope_up_right:
 	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
@@ -2682,7 +2712,8 @@ loc_019480:
 	adc	zp_0E
 	sta	OBJ_Y,x
 	rtl
-loc_0194AB:
+; y = row + 13 - t.
+stop_y_slope_up_right_below_high:
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
 	lda	a:bg1_y
@@ -2709,7 +2740,8 @@ loc_0194AB:
 	dec	a
 	sta	OBJ_Y,x
 	rtl
-loc_0194DD:
+; y = row - t.
+snap_y_slope_up_right_above:
 	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
@@ -2729,7 +2761,8 @@ loc_0194DD:
 	sbc	zp_0E
 	sta	OBJ_Y,x
 	rtl
-loc_019502:
+; y = row + 14 - t.
+stop_y_slope_up_right_below:
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
 	lda	a:bg1_y
@@ -2756,7 +2789,8 @@ loc_019502:
 	dec	a
 	sta	OBJ_Y,x
 	rtl
-loc_019536:
+; y = row + 15 - t.
+snap_y_slope_up_right_below:
 	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
@@ -2780,7 +2814,8 @@ loc_019536:
 	adc	zp_0E
 	sta	OBJ_Y,x
 	rtl
-loc_019565:
+; y = row + t - 1.
+stop_y_slope_down_right:
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
 	lda	a:bg1_y
@@ -2805,7 +2840,8 @@ loc_019565:
 	dec	a
 	sta	OBJ_Y,x
 	rtl
-loc_019592:
+; y = row + t.
+snap_y_slope_down_right:
 	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
@@ -2827,7 +2863,8 @@ loc_019592:
 	adc	zp_0E
 	sta	OBJ_Y,x
 	rtl
-loc_0195BA:
+; y = row + 6 + t.
+stop_y_slope_down_right_below_high:
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
 	lda	a:bg1_y
@@ -2857,7 +2894,8 @@ loc_0195BA:
 	dec	a
 	sta	OBJ_Y,x
 	rtl
-loc_0195F2:
+; y = row + t - 7.
+snap_y_slope_down_right_above:
 	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
@@ -2880,7 +2918,8 @@ loc_0195F2:
 	sbc	zp_0E
 	sta	OBJ_Y,x
 	rtl
-loc_01961D:
+; y = row + 7 + t.
+stop_y_slope_down_right_below:
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
 	lda	a:bg1_y
@@ -2908,7 +2947,8 @@ loc_01961D:
 	dec	a
 	sta	OBJ_Y,x
 	rtl
-loc_019651:
+; y = row + 8 + t.
+snap_y_slope_down_right_below:
 	lda	a:bg1_y
 	and	#$0007
 	sta	zp_10
@@ -2949,7 +2989,8 @@ unused_check_floor_at_feet:
 	sta	zp_06
 	ora	zp_04
 	sta	zp_12
-loc_019699:
+; The ground states' classification of zp_04/zp_06 (check_walls_and_floor).
+classify_floor_tiles:
 	lda	zp_06
 	bit	#$807E
 	bne	loc_0196A3
@@ -3102,12 +3143,12 @@ loc_0197A8:
 loc_0197AB:
 	lda	#$8011	; [num]
 	sta	zp_C4
-	brl	loc_019651
+	brl	snap_y_slope_down_right_below
 loc_0197B3:
 	; (not executed in the CDL traces)
 	lda	#$8011	; [num]
 	sta	zp_C4
-	brl	loc_019592
+	brl	snap_y_slope_down_right
 loc_0197BB:
 	lda	#$0002
 	sta	zp_C4
@@ -3119,48 +3160,48 @@ loc_0197C3:
 loc_0197CB:
 	lda	#$8008	; [num]
 	sta	zp_C4
-	brl	loc_019480
+	brl	snap_y_slope_up_right
 loc_0197D3:
 	lda	#$8008	; [num]
 	sta	zp_C4
-	brl	loc_0194DD
+	brl	snap_y_slope_up_right_above
 loc_0197DB:
 	lda	#$8008	; [num]
 	sta	zp_C4
-	brl	loc_019536
+	brl	snap_y_slope_up_right_below
 loc_0197E3:
 	lda	#$0008
 	sta	zp_C4
-	brl	loc_019480
+	brl	snap_y_slope_up_right
 loc_0197EB:
 	lda	#$0008
 	sta	zp_C4
-	brl	loc_0194DD
+	brl	snap_y_slope_up_right_above
 loc_0197F3:
 	lda	#$8010	; [num]
 	sta	zp_C4
-	brl	loc_019592
+	brl	snap_y_slope_down_right
 loc_0197FB:
 	lda	#$0010
 	sta	zp_C4
-	brl	loc_019592
+	brl	snap_y_slope_down_right
 loc_019803:
 	; (not executed in the CDL traces)
 	lda	#$8010	; [num]
 	sta	zp_C4
-	brl	loc_0195F2
+	brl	snap_y_slope_down_right_above
 loc_01980B:
 	lda	#$0010
 	sta	zp_C4
-	brl	loc_0195F2
+	brl	snap_y_slope_down_right_above
 
 ; State 5, climbing a wall on the left.
 player_state_climb_left:
 	lda	PLAYER_CONTACT,x
 	bit	#$0004
-	beq	loc_01981E
+	beq	@alive
 	jml	f:kill_player
-loc_01981E:
+@alive:
 	lda	OBJ_X,x
 	adc	#$0008
 	sta	PLAYER_HITBOX_LEFT,x
@@ -3181,17 +3222,17 @@ loc_01981E:
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$0002
-	bne	loc_01986A
+	bne	@on_wall
 	; (not executed in the CDL traces)
 	lda	#$FFF8	; [num]
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$0002
-	bne	loc_019867
-	brl	loc_0182CD
-loc_019867:
-	brl	loc_0182E4
-loc_01986A:
+	bne	@wall_top
+	brl	start_player_fall
+@wall_top:
+	brl	hop_off_wall_top
+@on_wall:
 	lda	#$0002
 	sta	OBJ_FACING,x
 	lda	PLAYER_AIM,x
@@ -3220,31 +3261,32 @@ tbl_climb_left_aim:
 climb_left_aim_none:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	loc_0198A1
+	beq	@no_jump
 	brl	start_player_fall_right
-loc_0198A1:
-	bra	loc_0198C8
+@no_jump:
+	bra	climb_left_fire_right
 
 climb_left_aim_right:
 	jsl	f:climb_left_check_ceiling
-	bne	loc_0198AF
+	bne	@leave_wall
 	jsl	f:climb_left_check_floor
-	beq	loc_0198B5
-loc_0198AF:
+	beq	@check_jump
+@leave_wall:
 	dec	a
 	sta	OBJ_STATE,x
 	inc	OBJ_X,x
 	rtl
-loc_0198B5:
+@check_jump:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	loc_0198C8
+	beq	climb_left_fire_right
 	lda	#$6800
 	sta	OBJ_X_VEL_SUB,x
 	lda	#$0001
 	sta	OBJ_X_VEL,x
 	brl	start_player_fall_right
-loc_0198C8:
+; Aiming away from the wall (right), also the idle pose.
+climb_left_fire_right:
 	lda	#$005E
 	sta	PLAYER_POSE,x
 	lda	#$0020
@@ -3257,24 +3299,24 @@ loc_0198C8:
 
 climb_left_aim_up:
 	lda	PLAYER_LOCKED,x
-	beq	loc_0198EB
+	beq	@climb
 	lda	#$0066
 	sta	PLAYER_POSE,x
-	bra	loc_0198F9
-loc_0198EB:
+	bra	@check_jump
+@climb:
 	; (not executed in the CDL traces)
 	jsl	f:climb_left_check_ceiling
-	beq	loc_0198F5
+	beq	@animate
 	stz	OBJ_Y_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
-loc_0198F5:
+@animate:
 	jsl	f:animate_player_climb
-loc_0198F9:
+@check_jump:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	loc_019902
-	brl	loc_0182FB
-loc_019902:
+	beq	@fire
+	brl	wall_jump_right
+@fire:
 	lda	#$0000
 	sta	zp_12
 	lda	#$0004
@@ -3285,33 +3327,33 @@ loc_019902:
 
 climb_left_aim_up_right:
 	jsl	f:climb_left_check_ceiling
-	bne	loc_019921
+	bne	@leave_wall
 	jsl	f:climb_left_check_floor
-	beq	loc_019927
-loc_019921:
+	beq	@aim
+@leave_wall:
 	; (not executed in the CDL traces)
 	dec	a
 	sta	OBJ_STATE,x
 	inc	OBJ_X,x
 	rtl
-loc_019927:
+@aim:
 	lda	PLAYER_LOCKED,x
-	beq	loc_019932
+	beq	@animate
 	lda	#$0060
 	sta	PLAYER_POSE,x
-	bra	loc_019936
-loc_019932:
+	bra	@check_jump
+@animate:
 	jsl	f:animate_player_climb
-loc_019936:
+@check_jump:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	loc_019949
+	beq	@fire
 	lda	#$6800
 	sta	OBJ_X_VEL_SUB,x
 	lda	#$0001
 	sta	OBJ_X_VEL,x
-	brl	loc_0182FB
-loc_019949:
+	brl	wall_jump_right
+@fire:
 	lda	#$0010
 	sta	zp_12
 	lda	#$0020
@@ -3333,19 +3375,19 @@ climb_left_aim_left:
 
 climb_left_aim_up_left:
 	lda	PLAYER_LOCKED,x
-	beq	loc_01997F
+	beq	@climb
 	lda	#$005A
 	sta	PLAYER_POSE,x
-	bra	loc_01998D
-loc_01997F:
+	bra	@fire
+@climb:
 	; (not executed in the CDL traces)
 	jsl	f:climb_left_check_ceiling
-	beq	loc_019989
+	beq	@animate
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
-loc_019989:
+@animate:
 	jsl	f:animate_player_climb
-loc_01998D:
+@fire:
 	lda	#$0070
 	sta	zp_12
 	lda	#$FFF4	; [num]
@@ -3356,25 +3398,25 @@ loc_01998D:
 
 climb_left_aim_down:
 	lda	PLAYER_LOCKED,x
-	beq	loc_0199AB
+	beq	@climb
 	lda	#$0064
 	sta	PLAYER_POSE,x
-	bra	loc_0199B9
-loc_0199AB:
+	bra	@check_jump
+@climb:
 	jsl	f:climb_left_check_floor
-	beq	loc_0199B5
+	beq	@animate
 	; (not executed in the CDL traces)
 	stz	OBJ_Y_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
-loc_0199B5:
+@animate:
 	jsl	f:animate_player_climb
-loc_0199B9:
+@check_jump:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	loc_0199C3
+	beq	@fire
 	; (not executed in the CDL traces)
 	jsl	f:start_player_fall_right
-loc_0199C3:
+@fire:
 	lda	#$0040
 	sta	zp_12
 	lda	#$0006
@@ -3386,32 +3428,32 @@ loc_0199C3:
 climb_left_aim_down_right:
 	; (not executed in the CDL traces)
 	jsl	f:climb_left_check_ceiling
-	bne	loc_0199E2
+	bne	@leave_wall
 	jsl	f:climb_left_check_floor
-	beq	loc_0199E8
-loc_0199E2:
+	beq	@aim
+@leave_wall:
 	dec	a
 	sta	OBJ_STATE,x
 	inc	OBJ_X,x
 	rtl
-loc_0199E8:
+@aim:
 	lda	PLAYER_LOCKED,x
-	beq	loc_0199F3
+	beq	@animate
 	lda	#$0062
 	sta	PLAYER_POSE,x
-	bra	loc_0199F7
-loc_0199F3:
+	bra	@check_jump
+@animate:
 	jsl	f:animate_player_climb
-loc_0199F7:
+@check_jump:
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
-	beq	loc_019A0A
+	beq	@fire
 	lda	#$6800
 	sta	OBJ_X_VEL_SUB,x
 	lda	#$0001
 	sta	OBJ_X_VEL,x
 	brl	start_player_fall_right
-loc_019A0A:
+@fire:
 	lda	#$0030
 	sta	zp_12
 	lda	#$0024
@@ -3423,18 +3465,18 @@ loc_019A0A:
 climb_left_aim_down_left:
 	; (not executed in the CDL traces)
 	lda	PLAYER_LOCKED,x
-	beq	loc_019A28
+	beq	@climb
 	lda	#$005C
 	sta	PLAYER_POSE,x
-	bra	loc_019A36
-loc_019A28:
+	bra	@fire
+@climb:
 	jsl	f:climb_left_check_floor
-	beq	loc_019A32
+	beq	@animate
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
-loc_019A32:
+@animate:
 	jsl	f:animate_player_climb
-loc_019A36:
+@fire:
 	lda	#$0050
 	sta	zp_12
 	lda	#$FFF6	; [num]
@@ -3479,28 +3521,28 @@ kill_player:
 	lda	#$003F
 	ldy	OBJ_Y,x
 	cpy	#$00F8
-	bcc	loc_019A85
-	bmi	loc_019A85
+	bcc	@play_sound
+	bmi	@play_sound
 	lda	#$0043
-loc_019A85:
+@play_sound:
 	jsl	f:queue_sound
 	stz	$30,x
 	stz	$34,x
 	stz	$36,x
 	stz	$3E,x
 	lda	OBJ_FACING,x
-	beq	loc_019AA1
+	beq	@facing_right
 	lda	#$0001
 	sta	OBJ_X_VEL,x
 	lda	#$6800
 	sta	OBJ_X_VEL_SUB,x
-	bra	loc_019AAB
-loc_019AA1:
+	bra	@set_y_vel
+@facing_right:
 	lda	#$FFFE	; [num]
 	sta	OBJ_X_VEL,x
 	lda	#$97FF	; [num]
 	sta	OBJ_X_VEL_SUB,x
-loc_019AAB:
+@set_y_vel:
 	lda	#$DFFF	; [num]
 	sta	OBJ_Y_VEL_SUB,x
 	lda	#$FFFB	; [num]
@@ -3548,27 +3590,27 @@ player_state_dying:
 	adc	#$FFE4
 	sta	PLAYER_HITBOX_TOP,x
 	lda	OBJ_Y,x
-	bmi	loc_019B09
+	bmi	@on_screen
 	cmp	#$0120
-	bcs	loc_019B52
-loc_019B09:
+	bcs	@dead
+@on_screen:
 	dec	$30,x
 	lda	$30,x
-	beq	loc_019B22
+	beq	@gravity_check
 	bit	#$0007
-	bne	loc_019B22
+	bne	@gravity_check
 	inc	PLAYER_POSE,x
 	lda	#$00ED
 	cmp	PLAYER_POSE,x
-	bne	loc_019B22
+	bne	@gravity_check
 	lda	#$00E9
 	sta	PLAYER_POSE,x
-loc_019B22:
+@gravity_check:
 	lda	OBJ_Y_VEL,x
-	bmi	loc_019B2B
+	bmi	@gravity
 	cmp	#$0006
-	bcs	loc_019B3A
-loc_019B2B:
+	bcs	@collide
+@gravity:
 	clc
 	lda	OBJ_Y_VEL_SUB,x
 	adc	#$4000
@@ -3576,20 +3618,20 @@ loc_019B2B:
 	lda	OBJ_Y_VEL,x
 	adc	#$0000
 	sta	OBJ_Y_VEL,x
-loc_019B3A:
+@collide:
 	stz	zp_C4
 	lda	OBJ_Y_VEL,x
-	bpl	loc_019B4A
+	bpl	@falling
 	jsl	f:dying_check_ceiling_walls
-loc_019B44:
+@still_dying:
 	lda	#$0007
 	sta	OBJ_STATE,x
 	rtl
-loc_019B4A:
+@falling:
 	jsl	f:dying_check_floor_walls
 	lda	OBJ_STATE,x
-	bne	loc_019B44
-loc_019B52:
+	bne	@still_dying
+@dead:
 	lda	#$0008
 	sta	OBJ_STATE,x
 	lda	#$0020
@@ -3612,7 +3654,7 @@ player_state_dead:
 	adc	#$FFF0
 	sta	PLAYER_HITBOX_TOP,x
 	dec	$30,x
-	bpl	loc_019B9C
+	bpl	@return
 	stz	OBJ_X,x
 	stz	OBJ_Y,x
 	stz	OBJ_SPRITE,x
@@ -3627,11 +3669,11 @@ player_state_dead:
 .else
 	dec	a:PLAYER_LIVES,x
 .endif
-	beq	loc_019B99
+	beq	@set_bombs
 	lda	#$0001
-loc_019B99:
+@set_bombs:
 	sta	a:PLAYER_BOMBS,x
-loc_019B9C:
+@return:
 	rtl
 
 ; State $0E: if lives remain, resets the player and goes to state $0F.
@@ -3684,9 +3726,9 @@ tbl_respawn_placement:
 respawn_at_upper_left:
 	lda	#$0020
 	cpx	#$0200
-	beq	loc_019BF5
+	beq	@set_x
 	lda	#$0040
-loc_019BF5:
+@set_x:
 	sta	OBJ_X,x
 	lda	#$005A
 	sta	OBJ_Y,x
@@ -3701,10 +3743,10 @@ respawn_above_slot_0280:
 	sta	OBJ_Y,x
 	lda	#$0058
 	cpx	#$0200
-	beq	loc_019C13
+	beq	@set_x
 	; (not executed in the CDL traces)
 	lda	#$0098
-loc_019C13:
+@set_x:
 	sta	OBJ_X,x
 	brl	respawn_player
 
@@ -3713,14 +3755,14 @@ loc_019C13:
 ; < $44; until there is one, does nothing.
 respawn_on_missile:
 	ldy	#$07C0
-loc_019C1B:
+@loop:
 	lda	a:$0010,y
 	cmp	#$0065
-	bne	loc_019C49
+	bne	@next_slot
 	lda	a:$000A,y
-	bmi	loc_019C49
+	bmi	@next_slot
 	cmp	#$0044
-	bcs	loc_019C49
+	bcs	@next_slot
 	txa
 	sec
 	sbc	#$0200
@@ -3734,13 +3776,13 @@ loc_019C1B:
 	adc	#$0024
 	sta	OBJ_Y,x
 	jml	f:respawn_player
-loc_019C49:
+@next_slot:
 	tya
 	clc
 	adc	#$0040
 	tay
 	cmp	#$0880
-	bcc	loc_019C1B
+	bcc	@loop
 	rtl
 
 ; Respawn mode 5: drives in from the left on the bike (state $12, x velocity
@@ -3760,14 +3802,14 @@ respawn_on_floor_low:
 	lda	#$0040
 	sta	zp_0E
 	lda	#$000E
-	bra	loc_019C85
+	bra	respawn_on_floor_search
 
 ; Respawn mode 1: as respawn_on_floor, searching from $20 below the top.
 respawn_on_floor_high:
 	lda	#$0020
 	sta	zp_0E
 	lda	#$0012
-	bra	loc_019C85
+	bra	respawn_on_floor_search
 
 ; Respawn mode 0: searches the collision map ($7E:4000) down from y $30 for
 ; the first solid tile and places the player there (x $38, player 2: $20).
@@ -3775,25 +3817,26 @@ respawn_on_floor:
 	lda	#$0030
 	sta	zp_0E
 	lda	#$0014
-loc_019C85:
+; In: zp_0E = first row (y below the top), A = rows to search per column.
+respawn_on_floor_search:
 	sta	zp_08
 	sta	zp_02
 	lda	#$0020
 	sta	zp_06
 	lda	#$0038
 	cpx	#$0200
-	beq	loc_019C99
+	beq	@have_x
 	lda	#$0020
-loc_019C99:
+@have_x:
 	stx	zp_FC
 	stz	zp_04
 	clc
 	adc	a:bg1_x
 	bit	#$0100
-	beq	loc_019CAB
+	beq	@have_half
 	ldy	#$0800
 	sty	zp_04
-loc_019CAB:
+@have_half:
 	lsr	a
 	lsr	a
 	and	#$003E
@@ -3806,14 +3849,14 @@ loc_019CAB:
 	asl	a
 	and	#$07C0
 	sta	zp_12
-loc_019CC0:
+@next_row:
 	sta	zp_0A
 	ora	zp_00
 	ora	zp_04
-loc_019CC6:
+@test_tile:
 	tax
 	lda	f:$7E4000,x
-	beq	loc_019D03
+	beq	@empty
 	txa
 	and	#$003E
 	asl	a
@@ -3830,12 +3873,12 @@ loc_019CC6:
 	ldx	zp_FC
 	sec
 	sbc	#$0038
-	bmi	loc_019CF0
+	bmi	@clamp_top
 	cmp	#$0020
-	bcs	loc_019CF3
-loc_019CF0:
+	bcs	@set_y
+@clamp_top:
 	lda	#$0020
-loc_019CF3:
+@set_y:
 	sta	OBJ_Y,x
 	sec
 	lda	zp_00
@@ -3843,39 +3886,39 @@ loc_019CF3:
 	and	#$00FF
 	sta	OBJ_X,x
 	brl	respawn_player
-loc_019D03:
+@empty:
 	clc
 	lda	zp_0A
 	adc	#$0040
 	and	#$07C0
 	dec	zp_02
-	bne	loc_019CC0
+	bne	@next_row
 	lda	zp_08
 	sta	zp_02
 	lda	zp_12
 	sta	zp_0A
 	dec	zp_06
-	bne	loc_019D21
+	bne	@next_column
 	; (not executed in the CDL traces)
 	ldx	zp_FC
-	brl	loc_019D42
-loc_019D21:
+	brl	@not_found
+@next_column:
 	clc
 	lda	zp_00
 	adc	#$0002
 	cmp	#$0040
-	bcc	loc_019D39
+	bcc	@column_ok
 	lda	zp_04
 	adc	#$0800
 	and	#$0800
 	sta	zp_04
 	lda	#$0000
-loc_019D39:
+@column_ok:
 	sta	zp_00
 	ora	zp_04
 	ora	zp_12
-	brl	loc_019CC6
-loc_019D42:
+	brl	@test_tile
+@not_found:
 	; (not executed in the CDL traces)
 	lda	#$0080
 	sta	OBJ_X,x
@@ -3886,9 +3929,9 @@ loc_019D42:
 respawn_on_right_wall:
 	lda	#$0070
 	cpx	#$0200
-	beq	loc_019D57
+	beq	@set_y
 	lda	#$0088
-loc_019D57:
+@set_y:
 	sta	OBJ_Y,x
 	lda	#$00D2
 	sta	OBJ_X,x
@@ -3898,10 +3941,10 @@ loc_019D57:
 respawn_at_bottom:
 	lda	#$0078
 	cpx	#$0200
-	beq	loc_019D6C
+	beq	@set_x
 	; (not executed in the CDL traces)
 	lda	#$0058
-loc_019D6C:
+@set_x:
 	sta	OBJ_X,x
 	lda	#$00BC
 	sta	OBJ_Y,x
@@ -3917,15 +3960,15 @@ dying_check_ceiling_walls:
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
-	beq	loc_019D93
+	beq	@check_left
 	brl	snap_x_left_to_tile
-loc_019D93:
+@check_left:
 	stz	zp_00
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
-	beq	loc_019DA1
+	beq	@check_ceiling
 	brl	snap_x_right_to_tile
-loc_019DA1:
+@check_ceiling:
 	lda	zp_C4
 	beq	@return
 	bpl	@return
@@ -3939,11 +3982,11 @@ loc_019DA1:
 dying_check_floor_walls:
 	lda	PLAYER_CONTACT,x
 	bit	#$0080
-	beq	loc_019DB5
+	beq	@check_floor
 	; (not executed in the CDL traces)
 	stz	OBJ_STATE,x
 	rtl
-loc_019DB5:
+@check_floor:
 	stz	zp_00
 	stz	zp_02
 	jsl	f:get_bg_tile_at_object
@@ -3959,7 +4002,7 @@ loc_019DB5:
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
-	beq	loc_019DEE
+	beq	@check_left
 	jsl	f:snap_x_left_to_tile
 	lda	zp_C4
 	beq	@return
@@ -3967,26 +4010,26 @@ loc_019DB5:
 	stz	OBJ_STATE,x
 @return:
 	rtl
-loc_019DEE:
+@check_left:
 	stz	zp_00
 	jsl	f:get_bg_tile_at_object
 	bit	#$8002
-	beq	loc_019E06
+	beq	@no_wall
 	jsl	f:snap_x_right_to_tile
 	lda	zp_C4
-	beq	@return
-	bmi	@return
+	beq	@return2
+	bmi	@return2
 	stz	OBJ_STATE,x
-@return:
+@return2:
 	rtl
-loc_019E06:
+@no_wall:
 	lda	zp_C4
-	beq	@return
+	beq	@return3
 	stz	OBJ_STATE,x
 	lda	zp_C4
-	bpl	@return
+	bpl	@return3
 	brl	snap_y_up_to_tile
-@return:
+@return3:
 	rtl
 
 ; Sets the state, y velocity and pose of respawn mode respawn_mode

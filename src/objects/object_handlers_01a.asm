@@ -3130,7 +3130,7 @@ weapon_item_move:
 	beq	@right_clear
 	lda	zp_04
 	beq	@fall
-	brl	loc_0193D7
+	brl	stop_and_snap_y_up_to_tile
 @right_clear:
 	lda	zp_04
 	beq	@fall

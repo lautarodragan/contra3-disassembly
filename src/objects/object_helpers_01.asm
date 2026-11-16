@@ -656,19 +656,19 @@ loc_01A25D:
 	stz	zp_FC
 	rtl
 loc_01A260:
-	brl	loc_019651
+	brl	snap_y_slope_down_right_below
 loc_01A263:
 	brl	snap_y_up_to_tile
 loc_01A266:
-	brl	loc_019480
+	brl	snap_y_slope_up_right
 loc_01A269:
-	brl	loc_019592
+	brl	snap_y_slope_down_right
 loc_01A26C:
-	brl	loc_0194DD
+	brl	snap_y_slope_up_right_above
 loc_01A26F:
-	brl	loc_019536
+	brl	snap_y_slope_up_right_below
 loc_01A272:
-	brl	loc_0195F2
+	brl	snap_y_slope_down_right_above
 
 ; Object type $53: does nothing (rtl). A hitbox moved by another object
 ; (stage 3 spiked climber's body, seen in the emulator; stages 4 and 6).
