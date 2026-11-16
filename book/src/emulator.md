@@ -111,7 +111,8 @@ matching `build/contra3.sfc` (checkout of `main`, `make`).
   top-down split screen). On a mismatch the first differing checkpoint is
   reported and the actual frame, the original's frame and a diff go to
   `out/play/`. The plays run in parallel (`C3_JOBS`, default the CPU
-  count); about 330,000 frames, 100 s on 4 cores.
+  count); about 430,000 frames, some 4 minutes on 4 cores (the longest
+  play, `stage6_ending_hard`, 78,000 frames, takes 2).
 * `test_cdl.py`: sanity checks of the tracer (skipped on a core without it).
   It checks the reset vector of the original layout, so the shift test
   leaves it out.
