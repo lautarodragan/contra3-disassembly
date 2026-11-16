@@ -414,11 +414,25 @@ def read_views(root=ROOT):
             links[words[1]] = (words[2], int(words[3]))
         elif words[0] == "preview" and len(words) > 2:
             previews[words[1]] = dict(w.split("=", 1) for w in words[2:])
-        elif words[0] == "level":
-            pass                # read_levels()
+        elif words[0] in ("level", "note"):
+            pass                # read_levels(), read_notes()
         else:
-            sys.exit(f"{VIEWS}:{n}: not a palette or preview line")
+            sys.exit(f"{VIEWS}:{n}: not a palette, preview, level or note line")
     return links, previews
+
+
+def read_notes(root=ROOT):
+    """The `note ASSET text...` lines of assets/views.txt: {asset path: text},
+    a sentence the gallery prints under that asset (several lines join)."""
+    notes = {}
+    path = os.path.join(root, VIEWS)
+    if not os.path.exists(path):
+        return notes
+    for line in open(path):
+        if line.startswith("note "):
+            _, asset, text = line.rstrip("\n").split(None, 2)
+            notes[asset] = (notes.get(asset, "") + " " + text).strip()
+    return notes
 
 
 def read_levels(root=ROOT):
@@ -800,6 +814,7 @@ def gallery():
                     f'width="{2 * snesgfx.read_png(a.source)[0]}" '
                     'style="image-rendering: pixelated">', ""]
     links, previews = read_views()
+    notes = read_notes()
     tilemaps = [a for a in read_manifest() if a.tilemap]
     if tilemaps:
         out += ["## Tilemaps", "",
@@ -813,6 +828,8 @@ def gallery():
             width = int(a.options.get("width", 0)) or snesmap.FORMATS[a.tilemap][1]
             rows = len(data_bytes(a)) // snesmap.FORMATS[a.tilemap][0] // width
             out += [f"### {label}", "", f"`{a.source}`: {a.tilemap}, {width}x{rows} cells, {a.kind}.", ""]
+            if a.path in notes:
+                out += [notes[a.path], ""]
             view = previews.get(a.path)
             if view:
                 chars = ", ".join(f"`{c.split('@')[0].split('/')[-1]}`" for c in view["chars"].split(","))

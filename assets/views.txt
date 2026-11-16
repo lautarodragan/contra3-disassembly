@@ -1,6 +1,10 @@
 # How the gallery shows assets (tools/assets.py, book: Assets).  Only for
 # viewing: nothing here changes the ROM.
 #
+# note ASSET TEXT
+#   a sentence the gallery prints under that tilemap (Markdown; several note
+#   lines for one asset are joined). Only for the reader.
+#
 # palette PNG PALETTE FIRST
 #   the viewing palette of the PNG asset is the colours of the palette
 #   asset from FIRST on (2, 16 or 256 of them): `python3 tools/assets.py
@@ -110,6 +114,11 @@ preview gfx/gfx_06F68F  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08
 preview gfx/gfx_088FD4  chars=gfx/gfx_07E9FE@2000 base=2000 bpp=4 palette=palettes/palette_088022@0,palettes/palette_088022@16,palettes/palette_088022@32,palettes/palette_088000@48
 preview gfx/gfx_0891DE  chars=gfx/gfx_07E9FE@2000 base=2000 bpp=4 palette=palettes/palette_088022@0,palettes/palette_088022@16,palettes/palette_088022@32,palettes/palette_088000@48
 preview gfx/gfx_089225  chars=gfx/gfx_07E9FE@2000 base=2000 bpp=4 palette=palettes/palette_088022@0,palettes/palette_088022@16,palettes/palette_088022@32,palettes/palette_088000@48
+note gfx/gfx_0891DE 208 of its 256 cells are character `$084`, solid colour 1 (black in
+note gfx/gfx_0891DE `palette_088022`); the other 48 are characters `$000` (palette 2) and `$086` (palette 3).
+note gfx/gfx_089225 Every cell is character `$084`, solid colour 1 (black in `palette_088022`): loaded
+note gfx/gfx_089225 right after `gfx_0891DE`, it fills rows 8-15 of the BG1 map with a blank tile, so
+note gfx/gfx_089225 nothing left in VRAM shows there. The black rectangle is what the game draws.
 # The title logo, Mode 7 (load_title_graphics: load_list_058527 the
 # characters, load_list_058539 the map; palette_task_05854B)
 preview gfx/gfx_06FADF  chars=gfx/gfx_089249@0000 bpp=8 palette=palettes/palette_0880AA@0

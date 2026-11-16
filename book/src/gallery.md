@@ -787,6 +787,8 @@ Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`
 
 `assets/gfx/gfx_0891DE.tilemap`: bg, 32x8 cells, lz-v2.
 
+208 of its 256 cells are character `$084`, solid colour 1 (black in `palette_088022`); the other 48 are characters `$000` (palette 2) and `$086` (palette 3).
+
 Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`, `palette_088000`.
 
 <img src="gallery/gfx/gfx_0891DE.png" alt="gfx_0891DE" width="512" style="image-rendering: pixelated">
@@ -794,6 +796,8 @@ Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`
 ### gfx_089225
 
 `assets/gfx/gfx_089225.tilemap`: bg, 32x8 cells, lz-v2.
+
+Every cell is character `$084`, solid colour 1 (black in `palette_088022`): loaded right after `gfx_0891DE`, it fills rows 8-15 of the BG1 map with a blank tile, so nothing left in VRAM shows there. The black rectangle is what the game draws.
 
 Drawn with `gfx_07E9FE` and `palette_088022`, `palette_088022`, `palette_088022`, `palette_088000`.
 
