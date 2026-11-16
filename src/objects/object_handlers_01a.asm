@@ -3692,6 +3692,8 @@ loc_01CD99:
 	jsl	f:get_bg_tile_at_object
 	bit	#$2000
 	beq	loc_01CDCA
+; Bug: x + 8 and y - $10 are computed but never stored (the second lda of
+; each pair was probably meant as sta), so the blast starts at the grenade.
 loc_01CDAA:
 	lda	#OBJT_GRENADE_BLAST
 	sta	$10,x

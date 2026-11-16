@@ -2396,9 +2396,11 @@ ptrs_enemy_bullet_speeds:
 	.addr	enemy_bullet_speeds_normal
 	.addr	enemy_bullet_speeds_normal
 	.addr	enemy_bullet_speeds_hard
-; Homing missile acceleration (fraction of a pixel), x and y interleaved: x at
-; [difficulty*2 + field $3A], y at the next word (homing_missile_accel_y).
-; Read with that index, so the difficulty and the flight direction overlap.
+; Homing missile acceleration (fraction of a pixel), read at difficulty*2 +
+; field $3A (0 horizontal, 2 vertical): x at that index, y at the next word
+; (homing_missile_accel_y). The words alternate $1400 and the steering of each
+; difficulty ($0440, $0580, $0780), so +2 for a vertical flight swaps x and y:
+; the main axis always gets $1400, the other one more on harder levels.
 homing_missile_accel_x:
 	; CDL: read by init_homing_missile
 	.byte	$00, $14

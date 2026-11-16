@@ -25,3 +25,4 @@
 - [Objects](objects.md)
   - [Enemies and objects: banks $00, $01](enemies-early.md)
   - [Enemies and bosses: banks $02, $04, $1D](enemies-late.md)
+- [Curiosities: bugs, leftovers and oddities](curiosities.md)

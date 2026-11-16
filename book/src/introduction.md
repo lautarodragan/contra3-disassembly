@@ -54,3 +54,7 @@ something, fix the pages that name it in the same commit.
 
 Write only what you checked in the code or by running the game, and say how
 you know it when it isn't obvious.
+
+For a quick tour of what the work has found so far (bugs in the original
+code, unused debug features, tables that share their bytes), start with
+[Curiosities](curiosities.md).
