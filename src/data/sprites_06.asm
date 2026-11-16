@@ -1792,6 +1792,7 @@ metasprite_06B158:
 metasprite_06B16D:
 	.byte	$05, $12, $E4, $6A, $01
 metasprite_06B172:
+	; LAYOUT: the sprites of the metasprite before run on into this one (shared tail)
 	.byte	$0A
 	.byte	$D8, $71, $01, $02, $D8, $6B, $01, $02, $E0, $08, $21, $FF, $F0, $0A, $21
 metasprite_06B182:
