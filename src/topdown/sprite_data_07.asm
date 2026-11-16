@@ -6753,63 +6753,83 @@ metasprite_07E8B7:
 	.byte	$04, $00, $00, $A6, $C1, $F0, $00, $A6, $81, $00, $F0, $A6, $41, $F0, $F0, $A6
 	.byte	$01
 metasprite_07E8C8:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00, $00, $A8, $C1, $F0, $00, $A8, $81, $00, $F0, $A8, $41, $F0, $F0
 	.byte	$A8, $01
 metasprite_07E8D9:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00, $00, $AA, $C1, $F0, $00, $AA, $81, $00, $F0, $AA, $41, $F0
 	.byte	$F0, $AA, $01
 metasprite_07E8EA:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00, $00, $AC, $C1, $F0, $00, $AC, $81, $00, $F0, $AC, $41
 	.byte	$F0, $F0, $AC, $01
 metasprite_07E8FB:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$01, $F8, $F8, $88, $01
 metasprite_07E900:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$01, $F8, $F8, $8A, $01
 metasprite_07E905:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00
 	.byte	$00, $AE, $C1, $F0, $00, $AE, $81, $00, $F0, $AE, $41, $F0, $F0, $AE, $01
 metasprite_07E916:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04
 	.byte	$00, $00, $CA, $C1, $F0, $00, $CA, $81, $00, $F0, $CA, $41, $F0, $F0, $CA, $01
 metasprite_07E927:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00, $00, $CC, $C1, $F0, $00, $CC, $81, $00, $F0, $CC, $41, $F0, $F0, $CC
 	.byte	$01
 metasprite_07E938:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00, $00, $CE, $C1, $F0, $00, $CE, $81, $00, $F0, $CE, $41, $F0, $F0
 	.byte	$CE, $01, $01, $F8, $F8, $A4, $01, $01, $F8, $F8, $8C, $01, $01, $F8, $F8, $C0
 	.byte	$01, $01, $F8, $F8, $C2, $01, $01, $F8, $F8, $C4, $01, $01, $F8, $F8, $8E, $01
 metasprite_07E967:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$01, $F8, $F8, $86, $01, $01, $FC, $FC, $11, $00
 metasprite_07E971:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $FC, $FE, $F9, $00, $FC
 	.byte	$F6, $E9, $00, $00, $F8, $EC, $01, $F0, $F8, $EA, $01
 metasprite_07E982:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$01, $F8, $F8, $E2, $01
 metasprite_07E987:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00, $00, $E0, $C1, $F0, $00, $E0, $81, $00, $F0, $E0, $41, $F0, $F0, $E0
 	.byte	$01
 metasprite_07E998:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $00, $00, $EE, $C1, $F0, $00, $EE, $81, $00, $F0, $EE, $41, $F0, $F0
 	.byte	$EE, $01
 metasprite_07E9A9:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04
 	; CDL: read by draw_td_item_metasprite, draw_td_item_metasprite_p2
 	.byte	$FC, $FE, $E5, $00, $FC, $F6, $E4, $00, $00, $F8, $EC, $01, $F0, $F8, $EA, $01
 metasprite_07E9BA:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $FC, $FE, $F5, $00, $FC, $F6, $E4, $00, $00, $F8, $EC, $01, $F0, $F8, $EA
 	.byte	$01
 metasprite_07E9CB:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $FC, $FE, $F6, $00, $FC, $F6, $E6, $00, $00, $F8, $EC, $01, $F0, $F8
 	.byte	$EA, $01
 metasprite_07E9DC:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04
 	; CDL: read by draw_td_item_metasprite
 	.byte	$FC, $FE, $F7, $00, $FC, $F6, $E7, $00, $00, $F8, $EC, $01, $F0, $F8, $EA, $01
 metasprite_07E9ED:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	.byte	$04, $FC, $FE, $F8, $00, $FC, $F6, $E8, $00, $00, $F8, $EC, $01, $F0, $F8, $EA
 	.byte	$01
 	; CDL: read by decompress_chunk
 gfx_07E9FE:
+	; LAYOUT: draw_td_item_metasprite reads a fifth byte after the last sprite of the metasprite before: this count byte
 	; ASSET: compressed graphics (VRAM), $07:E9FE-$07:F551 (from its length word), loaded by load_list_0587AB
 	.byte	$54, $0B, $FF, $FD, $86, $E0, $7F, $FF, $1F, $F8, $07, $08, $23, $84, $FF, $07
 	.byte	$F0, $0F, $00, $2B, $81, $80, $A1, $E0, $F8, $FF, $04, $28, $04, $37, $81, $0F

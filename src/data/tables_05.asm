@@ -241,6 +241,7 @@ text_stage_2:
 text_stage_3:
 	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00, $04, $FF
 text_stage_4:
+	; LAYOUT: the string before goes on into this line ($FE, new line)
 	.byte	$6D, $5A, $4D, $4E
 	.byte	$3C, $42, $40, $00, $05, $FF
 text_stage_5:
@@ -289,6 +290,7 @@ hdma_table_058514:
 	.byte	$80, $11
 	.byte	$01, $04, $00
 data_058519:
+	; LAYOUT: read on from the table before
 	; CDL: read by draw_title_menu_cursor
 	.byte	$00, $20
 data_05851B:
@@ -346,6 +348,7 @@ text_2_players_b:
 text_option:
 	.byte	$EC, $5A, $4A, $0B, $4E, $44, $4A, $49, $FF
 ptrs_0585CB:
+	; LAYOUT: the string before goes on into this line ($FE, new line)
 	.addr	load_list_0585D1
 	.addr	load_list_058623
 	.addr	load_list_058687
@@ -610,6 +613,7 @@ text_player:
 	.byte	$8A, $59, $0B, $47, $3C, $53, $40, $4C
 	.byte	$FF
 text_level:
+	; LAYOUT: the string before goes on into this line ($FE, new line)
 	.byte	$CA, $59, $47, $40, $50, $40, $47, $FF
 text_sound:
 	.byte	$0A, $5A, $4D, $4A, $4F, $49, $3F
@@ -967,6 +971,7 @@ data_0591AA:
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 data_05921A:
+	; LAYOUT: read on from the table before
 	; CDL: read by stage1_boss_move_up
 	.byte	$D8, $FF, $26, $FC, $8F, $F3, $28, $E6, $13, $D4, $7C, $BD, $9A, $A2, $B0, $83
 	.byte	$0B, $61, $FF, $3A, $EB, $11, $33, $E6, $44, $B8, $8E, $88, $88, $57, $AA, $25
@@ -2176,6 +2181,7 @@ respawn_states:
 	; CDL: read by respawn_player
 	.byte	$04, $04, $02, $04, $04, $12, $04, $04, $04
 respawn_poses:
+	; LAYOUT: read on from the table before
 	; CDL: read by respawn_player
 	.byte	$D3, $00, $D3, $00, $54, $00, $D3, $00, $D3, $00, $F0, $00, $D3, $00, $D3, $00
 	.byte	$D3, $00
@@ -4470,27 +4476,36 @@ td_map_object_scores:
 hdma_table_05E496:
 	.byte	$18, $09, $01, $07, $00, $09, $00, $07, $00
 hdma_table_05E49F:
+	; LAYOUT: a table of HDMA tables copied with a fixed length (copy_hdma_table): the one before is read on into this one
 	.byte	$18, $00, $01, $40, $00, $00, $00
 	.byte	$40, $00
 hdma_table_05E4A8:
+	; LAYOUT: a table of HDMA tables copied with a fixed length (copy_hdma_table): the one before is read on into this one
 	.byte	$18, $0F, $01, $00, $00, $0F, $00, $00, $00
 hdma_table_05E4B1:
+	; LAYOUT: a table of HDMA tables copied with a fixed length (copy_hdma_table): the one before is read on into this one
 	.byte	$18, $04, $01, $13, $00
 	.byte	$04, $00, $13, $00
 hdma_table_05E4BA:
+	; LAYOUT: a table of HDMA tables copied with a fixed length (copy_hdma_table): the one before is read on into this one
 	.byte	$18, $00, $01, $13, $00, $00, $00, $13, $00
 hdma_table_05E4C3:
+	; LAYOUT: a table of HDMA tables copied with a fixed length (copy_hdma_table): the one before is read on into this one
 	.byte	$04, $09, $64
 	.byte	$07, $10, $09, $01, $07, $00
 hdma_table_05E4CC:
+	; LAYOUT: a table of HDMA tables copied with a fixed length (copy_hdma_table): the one before is read on into this one
 	.byte	$04, $00, $64, $40, $10, $00, $01, $40, $00
 hdma_table_05E4D5:
+	; LAYOUT: a table of HDMA tables copied with a fixed length (copy_hdma_table): the one before is read on into this one
 	.byte	$04
 	.byte	$0F, $64, $00, $10, $0F, $01, $00, $00
 hdma_table_05E4DE:
+	; LAYOUT: a table of HDMA tables copied with a fixed length (copy_hdma_table): the one before is read on into this one
 	.byte	$06, $00, $62, $13, $10, $04, $01, $13
 	.byte	$00
 hdma_table_05E4E7:
+	; LAYOUT: a table of HDMA tables copied with a fixed length (copy_hdma_table): the one before is read on into this one
 	.byte	$04, $00, $64, $13, $10, $00, $01, $13, $00
 sine_table:
 	; CDL: read by copy_hdma_table, compute_m7_matrix, compute_p2_m7_matrix

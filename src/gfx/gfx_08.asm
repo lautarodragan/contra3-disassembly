@@ -274,6 +274,7 @@ palette_088C3E:
 	.byte	$2A, $21, $8C, $2D, $F1, $35, $D9, $52, $3D, $5F, $49, $29, $20, $08, $60, $10
 	.byte	$A2, $18, $E4, $20, $26, $29, $68, $31, $AA, $39
 palette_088C60:
+	; LAYOUT: inside the palette before (its colours from here are copied alone)
 	.byte	$00, $00, $00, $0C, $41, $18
 	.byte	$A4, $24, $07, $31, $6A, $3D, $CD, $49, $30, $56, $00, $00, $41, $08, $83, $10
 	.byte	$E6, $1C, $49, $29, $AC, $35, $0F, $42, $93, $52, $A0, $0C, $03, $19, $66, $25
@@ -322,16 +323,20 @@ palette_088E46:
 	.byte	$53, $62, $F8, $6E, $3B, $73, $5F, $00
 	; CDL: read by stage5_boss_restore_palette
 palette_088E6A:
+	; LAYOUT: inside the palette before (its colours from here are copied alone)
 	.byte	$64, $18, $A5, $20, $09, $2D, $6B, $41, $AF, $49, $53, $62, $F8, $6E, $3B, $73
 	.byte	$66, $0C, $AB, $18, $0D, $29, $70, $31, $B4, $35, $59, $4E, $FF, $66, $3F, $73
 palette_088E8A:
+	; LAYOUT: inside the palette before (its colours from here are copied alone)
 	.byte	$64, $18, $A4, $1C, $E8, $28, $4A, $3D, $8E, $45, $32, $5E, $D7, $6A, $1A, $6F
 	.byte	$66, $0C, $AB, $18, $0E, $29, $70, $31, $D4, $35, $9A, $52, $3F, $6B, $3F, $73
 palette_088EAA:
+	; LAYOUT: inside the palette before (its colours from here are copied alone)
 	.byte	$43, $14, $84, $1C, $C7, $28, $49, $39, $6D, $45, $12, $5E, $B7, $6A, $1A, $6F
 	.byte	$66, $0C, $AB, $18, $0E, $29, $90, $31, $D4, $39, $BA, $52, $5F, $6F, $5F, $77
 	; CDL: read by palette_task_animate
 palette_088ECA:
+	; LAYOUT: inside the palette before (its colours from here are copied alone)
 	.byte	$3F, $00, $CE, $39, $BD, $36, $FE, $1D, $FC, $2B, $7D, $11, $9A, $04, $FB, $0C
 	.byte	$96, $00, $70, $00, $29, $00, $06, $00, $BD, $1D, $E0, $03, $95, $04, $29, $00
 	.byte	$AF, $08, $CE, $39, $7B, $5B, $B6, $4A, $73, $3E, $32, $32, $CE, $29, $11, $32

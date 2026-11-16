@@ -24,6 +24,12 @@ shifted run is checked every CHUNK frames and stops at the first chunk with
 anomalies (later ones would mostly follow from the first); they are
 printed with the instruction that read them (as an address in the normal
 build with the nearest label), which tells whose pointer is wrong.
+
+With --fillers it only runs the shifted build, to the end of the scenario,
+and lists every filler byte of the shift test that was read, with the
+label after it: in a `--labels` build that is a table read past its end
+into the next block (mark the next label LAYOUT) or a label inside a
+block.
 """
 import argparse
 import bisect
@@ -144,6 +150,51 @@ def run_shifted(private, rom, scenario, frames, chunk, ref, ref_readers, mapping
     c.close()
 
 
+def run_fillers(private, rom, scenario, frames, q):
+    """Runs the whole scenario; returns the ROM offsets read as data, with
+    their first readers (the caller keeps those of filler bytes)."""
+    sys.path.insert(0, private)
+    from tools.c3emu import retro
+    c = retro.Console(rom)
+    c.cdl_enable(True)
+    for _ in _chunks(c, scenario, frames, 600):
+        pass
+    a = _plane_a(c)
+    rd = _readers(c)
+    q.put([(off, rd[off]) for off in range(len(a)) if a[off] & DATA])
+    c.close()
+
+
+def report_fillers(args, private, mapping):
+    """--fillers: every byte of the shift test's filler read in the scenario,
+    with the label after it: the block before that label is read past its
+    end (or the label is inside a block); it needs a LAYOUT comment, or the
+    reader a fix."""
+    shifted = srcmap.SrcMap.load(os.path.join(args.out, "contra3.dbg"))
+    labs = sorted((v, n) for n, v in shifted.labels.items() if v >> 16 < 0x40)
+    lv = [v for v, _n in labs]
+    ctx = mp.get_context("spawn")
+    q = ctx.Queue()
+    p = ctx.Process(target=run_fillers, args=(private, os.path.abspath(os.path.join(args.out, "contra3.sfc")),
+                                             args.scenario, args.frames, q))
+    p.start()
+    reads = q.get()
+    p.join()
+    found = {}
+    for off, rd in reads:
+        if mapping.get(off, -1) != -1:
+            continue
+        addr = lorom_addr(off)
+        i = bisect.bisect_right(lv, addr)
+        after = labs[i][1] if i < len(labs) else "?"
+        r = shifted.line_at((rd - 1) & 0xFFFFFF) if rd else None
+        found.setdefault(after, (addr, "%s:%d" % (r[0], r[1]) if r else "DMA"))
+    for name, (addr, reader) in sorted(found.items(), key=lambda kv: kv[1][0]):
+        print("filler at $%06X (before %s) read by %s" % (addr, name, reader))
+    print("%s: %d fillers read" % (args.scenario, len(found)))
+    return 1 if found else 0
+
+
 def build_mapping(out):
     """{shifted ROM offset: normal ROM offset} for every emitted byte."""
     a = srcmap.SrcMap.load(os.path.join(out, "base", "contra3.dbg"))
@@ -197,6 +248,8 @@ def main(argv):
     ap.add_argument("--chunk", type=int, default=60)
     ap.add_argument("--max", type=int, default=40)
     ap.add_argument("-v", "--verbose", action="store_true", help="dump the object slots of both runs")
+    ap.add_argument("--fillers", action="store_true",
+                    help="run the whole scenario and list the filler bytes read (for --labels builds)")
     args = ap.parse_args(argv[1:])
     private = os.path.abspath(args.private)
     if args.frames is None:
@@ -204,6 +257,8 @@ def main(argv):
         from tools.c3emu import plays
         args.frames = plays.PLAYS[args.scenario].frames if args.scenario in plays.PLAYS else 18300
     mapping, base = build_mapping(args.out)
+    if args.fillers:
+        return report_fillers(args, private, mapping)
     ctx = mp.get_context("spawn")
     q = ctx.Queue()
     p = ctx.Process(target=run_reference, args=(private, os.path.abspath(os.path.join(args.out, "base", "contra3.sfc")),
