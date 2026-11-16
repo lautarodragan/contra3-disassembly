@@ -6866,21 +6866,22 @@ hdma_table_05FD96:
 	.byte	$1F, $12, $7F, $16
 	.byte	$00
 ; ending_sequence_state_17: the load list of the closing message, by
-; difficulty.
+; difficulty (EASY, NORMAL, HARD; seen in the emulator, plays
+; stage6_ending_easy, stage6_boss, stage6_ending_hard).
 ptrs_ending_message_loads:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk (+1 more); partly not accessed
 	.addr	load_list_05FDA1, load_list_05FDAA, load_list_05FDB3
 load_list_05FDA1:
 	load_list	$00, $01
-	load_vram	$5C00, gfx_06F84C
+	load_vram	$5C00, ending_message_easy
 	load_end
 load_list_05FDAA:
 	load_list	$00, $01
-	load_vram	$5C00, gfx_06F996
+	load_vram	$5C00, ending_message_normal
 	load_end
 load_list_05FDB3:
 	load_list	$00, $01
-	load_vram	$5C00, gfx_07F78E
+	load_vram	$5C00, ending_message_hard
 	load_end
 ptrs_05FDBC:
 	.addr	load_list_05FDC6

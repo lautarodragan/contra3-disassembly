@@ -7018,9 +7018,12 @@ opening_bg1_map:
 	; Opening cinematic (stage 0): BG1 map, one word per metatile (byte offset of the metatile, bits 14-15 flip), 8x8 metatiles per $80-byte page.
 	; What it decompresses to is not checked for pointers (none known).
 	.incbin	"wram/opening_bg1_map.lz"
-gfx_07F78E:
+ending_message_hard:
 	; ASSET: compressed graphics (VRAM), $07:F78E-$07:F902 (from its length word), loaded by load_list_05FDB3
-	.incbin	"gfx/gfx_07F78E.lz"
+	; BG3 map (VRAM $5C00) of the closing message after stage 6 on HARD:
+	; "Way to go! You've conquered the toughest Contra challenge yet. ..."
+	; (seen in the emulator, play stage6_ending_hard).
+	.incbin	"gfx/ending_message_hard.lz"
 tile_attrs_stage2:
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00

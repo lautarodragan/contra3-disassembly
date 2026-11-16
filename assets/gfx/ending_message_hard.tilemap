@@ -1,4 +1,4 @@
-# gfx_07F78E
+# ending_message_hard
 # bg tilemap, 32x32 cells (tools/snesmap.py)
 # Each cell: the VRAM word in hex, bits vhopppcc cccccccc:
 #   $8000 v (vertical flip)  $4000 h (horizontal flip)  $2000 o (priority)

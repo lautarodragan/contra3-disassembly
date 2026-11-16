@@ -105,6 +105,15 @@ preview gfx/gfx_06F68F  chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08
 # The title logo, Mode 7 (load_title_graphics: load_list_058527 the
 # characters, load_list_058539 the map; palette_task_05854B)
 preview gfx/gfx_06FADF  chars=gfx/gfx_089249@0000 bpp=8 palette=palettes/palette_0880AA@0
+# The closing message after stage 6, one map per difficulty
+# (ptrs_ending_message_loads: BG3 map at $5C00; BG34NBA $05: the font
+# gfx_089D7E the stage loads at $5000), map palette 0: CGRAM 1-3 are
+# palette_08F01A's (palette_task_05FEC7 fades it in at $2202; read from
+# CGRAM in the emulator, plays stage6_ending_easy, stage6_boss,
+# stage6_ending_hard)
+preview gfx/ending_message_easy  chars=gfx/gfx_089D7E@5000 base=5000 bpp=2 palette=palettes/palette_08F01A@1
+preview gfx/ending_message_normal  chars=gfx/gfx_089D7E@5000 base=5000 bpp=2 palette=palettes/palette_08F01A@1
+preview gfx/ending_message_hard  chars=gfx/gfx_089D7E@5000 base=5000 bpp=2 palette=palettes/palette_08F01A@1
 # level NAME map=MAP[,MAP...] defs=DEFS[,...] chars=ASSET@VRAMWORD[:LENGTH],... [base=VRAMWORD] bpp=N palette=PALETTE@INDEX,... [pages=N]
 #   a level preview in the gallery (book: Assets, Editing a level): the
 #   side-view map MAP drawn through its metatiles DEFS (each placed by its

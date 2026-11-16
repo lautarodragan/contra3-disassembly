@@ -3119,13 +3119,20 @@ gfx_06F68F:
 	; ASSET: compressed graphics (VRAM), $06:F68F-$06:F84B (from its length word), loaded by load_list_05A807
 	.incbin	"gfx/gfx_06F68F.lz"
 	; CDL: not accessed
-gfx_06F84C:
+ending_message_easy:
 	; ASSET: compressed graphics (VRAM), $06:F84C-$06:F995 (from its length word), loaded by load_list_05FDA1
-	.incbin	"gfx/gfx_06F84C.lz"
+	; BG3 map (VRAM $5C00) of the closing message after stage 6 on EASY:
+	; "Congratulations! You've beaten the easy mode. Do you think you are
+	; sharp enough to beat the normal mode? ..." (seen in the emulator, play
+	; stage6_ending_easy).
+	.incbin	"gfx/ending_message_easy.lz"
 	; CDL: read by decompress_chunk
-gfx_06F996:
+ending_message_normal:
 	; ASSET: compressed graphics (VRAM), $06:F996-$06:FADE (from its length word), loaded by load_list_05FDAA
-	.incbin	"gfx/gfx_06F996.lz"
+	; BG3 map (VRAM $5C00) of the closing message after stage 6 on NORMAL:
+	; "You're getting better! But this Alien War only gets harder. ..." (seen
+	; in the emulator, play stage6_boss).
+	.incbin	"gfx/ending_message_normal.lz"
 gfx_06FADF:
 	; ASSET: compressed graphics (VRAM), $06:FADF-$06:FF41 (from its length word), loaded by load_list_058539
 	.incbin	"gfx/gfx_06FADF.lz"

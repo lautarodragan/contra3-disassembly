@@ -719,17 +719,21 @@ Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0
 
 <img src="gallery/gfx/gfx_06F68F.png" alt="gfx_06F68F" width="512" style="image-rendering: pixelated">
 
-### gfx_06F84C
+### ending_message_easy
 
-`assets/gfx/gfx_06F84C.tilemap`: bg, 32x32 cells, lz-v1.
+`assets/gfx/ending_message_easy.tilemap`: bg, 32x32 cells, lz-v1.
 
-No preview (see [Assets](assets.md#tilemaps)).
+Drawn with `gfx_089D7E` and `palette_08F01A`.
 
-### gfx_06F996
+<img src="gallery/gfx/ending_message_easy.png" alt="ending_message_easy" width="512" style="image-rendering: pixelated">
 
-`assets/gfx/gfx_06F996.tilemap`: bg, 32x32 cells, lz-v1.
+### ending_message_normal
 
-No preview (see [Assets](assets.md#tilemaps)).
+`assets/gfx/ending_message_normal.tilemap`: bg, 32x32 cells, lz-v1.
+
+Drawn with `gfx_089D7E` and `palette_08F01A`.
+
+<img src="gallery/gfx/ending_message_normal.png" alt="ending_message_normal" width="512" style="image-rendering: pixelated">
 
 ### gfx_06FADF
 
@@ -739,11 +743,13 @@ Drawn with `gfx_089249` and `palette_0880AA`.
 
 <img src="gallery/gfx/gfx_06FADF.png" alt="gfx_06FADF" width="512" style="image-rendering: pixelated">
 
-### gfx_07F78E
+### ending_message_hard
 
-`assets/gfx/gfx_07F78E.tilemap`: bg, 32x32 cells, lz-v1.
+`assets/gfx/ending_message_hard.tilemap`: bg, 32x32 cells, lz-v1.
 
-No preview (see [Assets](assets.md#tilemaps)).
+Drawn with `gfx_089D7E` and `palette_08F01A`.
+
+<img src="gallery/gfx/ending_message_hard.png" alt="ending_message_hard" width="512" style="image-rendering: pixelated">
 
 ### gfx_088FD4
 

@@ -21,10 +21,10 @@ gfx/gfx_06EF5C                   lz-v2  max=$0800 tilemap=bg
 gfx/gfx_06F184                   lz-v2  max=$1000 tilemap=bg
 gfx/gfx_06F313                   lz-v2  max=$0800 tilemap=bg
 gfx/gfx_06F68F                   lz-v2  max=$1000 tilemap=bg
-gfx/gfx_06F84C                   lz-v1  max=$0800 tilemap=bg
-gfx/gfx_06F996                   lz-v1  max=$0800 tilemap=bg
+gfx/ending_message_easy          lz-v1  max=$0800 tilemap=bg
+gfx/ending_message_normal        lz-v1  max=$0800 tilemap=bg
 gfx/gfx_06FADF                   lz-v1  max=$4000 tilemap=mode7
-gfx/gfx_07F78E                   lz-v1  max=$0800 tilemap=bg
+gfx/ending_message_hard          lz-v1  max=$0800 tilemap=bg
 gfx/gfx_088FD4                   lz-v1  max=$2000 tilemap=bg
 gfx/gfx_0891DE                   lz-v2  max=$0200 tilemap=bg
 gfx/gfx_089225                   lz-v2  max=$0E00 tilemap=bg

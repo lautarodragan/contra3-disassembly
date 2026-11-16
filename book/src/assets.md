@@ -286,8 +286,11 @@ The 18 tilemaps loaded to VRAM are text files, `assets/gfx/<label>.tilemap`
   (BG2, `$4800`), loaded by `load_list_05A7DB`, and `gfx_06F313`,
   `gfx_06F68F` (`load_list_05A807`): the opening's scenes
   (`ptrs_05A7AF`; `opening_scene_blank` sets BG1SC `$41`, BG2SC `$49`);
-- `gfx_06F84C`, `gfx_06F996`, `gfx_07F78E`: the BG3 map at `$5C00` of the
-  closing message, one per difficulty (`ptrs_ending_message_loads`);
+- `ending_message_easy`, `ending_message_normal`, `ending_message_hard`:
+  the BG3 map at `$5C00` of the closing message after stage 6, one per
+  difficulty (`ptrs_ending_message_loads`, indexed by `difficulty`; each
+  matches VRAM `$5C00` on that difficulty in the emulator, plays
+  `stage6_ending_easy`, `stage6_boss`, `stage6_ending_hard`);
 - `gfx_088FD4` (`$1000`), `gfx_0891DE` (`$0000`, 8 rows) and `gfx_089225`
   (`$0100`, 8 rows): the Konami logo (`load_list_0587AB`);
 - `gfx_18AAE3`, `gfx_18D15B`, `gfx_18FAF5`, `gfx_19AB40`, `gfx_19D779`: the
@@ -321,7 +324,7 @@ palette or priority bits per cell.
 `assets/views.txt` says which characters and colours the game shows it
 with: the graphics assets its load list puts in VRAM (at their VRAM
 address), the BG's character base, and the palettes its palette task
-copies to CGRAM. 12 have one:
+copies to CGRAM. 15 have one:
 
 - the five stage clear pictures: characters at `$2000` and `$3000` (the
   BG12NBA `$22` of the screens), `palette_08882C` (`palette_task_058880`);
@@ -331,11 +334,15 @@ copies to CGRAM. 12 have one:
   `$0000`-`$3FFF` (stage layout), `palette_0889F0`
   (`palette_task_05A815`, from `opening_cinematic_init`);
 - the title logo (Mode 7): `gfx_089249`, `palette_0880AA`
-  (`load_title_graphics`).
+  (`load_title_graphics`);
+- the three closing messages: the stage's font `gfx_089D7E` at `$5000`
+  (BG34NBA `$05`), palette 0 of the map: CGRAM 1-3 hold the first colours
+  of `palette_08F01A` (faded in by `palette_task_05FEC7` from
+  `ending_sequence_state_18`; read from CGRAM in the emulator while the
+  message is up, the same on the three difficulties).
 
 No preview: the Konami logo's three maps (their characters, `gfx_07E9FE`,
-stay inline, see above) and the three BG3 maps of the closing message
-(which colours CGRAM holds then is not worked out). The previews are
+stay inline, see above). The previews are
 made by `make book` (`gallery-copy`), from the assets: editing a tilemap,
 a graphic or a palette changes them.
 
