@@ -5066,6 +5066,7 @@ vram_blocks_05EDA8:
 	.byte	$E0, $C0, $00, $C1
 	.byte	$20, $C1
 data_05EDAE:
+	; LAYOUT: the block list vram_blocks_05EDA8 goes on into it (queue_vram_blocks)
 	; CDL: read by queue_vram_blocks_at_x, sub_04A95D
 	.byte	$40, $C1, $08, $4C, $88, $4C, $08, $4D
 data_05EDB6:
