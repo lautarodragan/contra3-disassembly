@@ -200,6 +200,8 @@ those moments and keep a grey ramp. An asset shown
 with several palettes (a sprite sheet shared by enemies of several
 colours) has the most frequent one.
 
+The [Graphics gallery](gallery.md) shows all 97.
+
 ## Not graphics, or format not known: still `.bin`
 
 - the 18 tilemaps loaded to VRAM: `gfx_06EC94`, `gfx_06EF5C`,
@@ -212,6 +214,10 @@ colours) has the most frequent one.
   (tilemaps, metatiles, collision data, graphics copied to VRAM later) is
   not worked out per stream yet;
 - the 30 sound CPU blocks (11 compressed, 19 not).
+
+Not editable as files yet either: the palettes (`.byte` lines in bank `$08`
+and in the tables, where some palettes overlap) and the tilemaps above as
+images or tables of tile numbers.
 
 ## Shifting
 

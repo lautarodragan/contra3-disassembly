@@ -132,10 +132,16 @@ shift-test: shift-build compare cores
 # book: needs mdBook (https://github.com/rust-lang/mdBook) on the PATH.
 MDBOOK ?= mdbook
 
+# The gallery page (book/src/gallery.md) is generated from the manifest by
+# tools/assets.py and must be up to date; its images are the PNGs of assets/,
+# copied into book/src/gallery/ (not tracked) before the book is built.
 book-check:
 	$(PYTHON) tools/check_book_names.py
+	$(PYTHON) tools/assets.py gallery | diff -u book/src/gallery.md - \
+	    || { echo 'book/src/gallery.md is out of date: python3 tools/assets.py gallery > book/src/gallery.md'; exit 1; }
 
 book: book-check
+	$(PYTHON) tools/assets.py gallery-copy book/src
 	$(MDBOOK) build book
 
 # Cheats (milestone 4): optional changes chosen at build time, defined in

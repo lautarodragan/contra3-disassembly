@@ -104,7 +104,10 @@ make book           # book-check, then mdbook build book (output in book/book/)
 mdbook serve book   # live preview at http://localhost:3000
 ```
 
-`make book` needs [mdBook](https://github.com/rust-lang/mdBook) on the
+`make book` also copies the PNGs of `assets/` into `book/src/gallery/` (not
+tracked) for the [Graphics gallery](gallery.md), whose page
+`tools/assets.py gallery` generates (`make book-check` fails if it is out of
+date). It needs [mdBook](https://github.com/rust-lang/mdBook) on the
 `PATH`; CI uses the release tarball of v0.5.4 from GitHub, and the same
 binary works locally.
 

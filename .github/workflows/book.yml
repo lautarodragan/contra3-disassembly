@@ -11,6 +11,8 @@ on:
       - 'book/**'
       - 'docs/disasm_report.md'
       - 'tools/check_book_names.py'
+      - 'tools/assets.py'
+      - 'assets/**'
       - '.github/workflows/book.yml'
   workflow_dispatch:
 
@@ -44,10 +46,15 @@ jobs:
 
       - name: Check names
         # every label, constant and path the book names must exist in the code
-        run: python3 tools/check_book_names.py
+        run: |
+          python3 tools/check_book_names.py
+          python3 tools/assets.py gallery | diff -u book/src/gallery.md -
 
       - name: Build
-        run: mdbook build book
+        # the gallery page's images: the PNGs of assets/
+        run: |
+          python3 tools/assets.py gallery-copy book/src
+          mdbook build book
 
       - uses: actions/configure-pages@v6
 

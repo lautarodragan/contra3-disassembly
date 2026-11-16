@@ -12,6 +12,7 @@
 - [Progress](progress.md)
 - [Shiftability](shiftability.md)
 - [Assets](assets.md)
+  - [Graphics gallery](gallery.md)
 - [Cheats](cheats.md)
 - [Contributing: naming](contributing.md)
 

@@ -11,8 +11,9 @@ build/
 *.zip
 /rom/
 
-# the built book (mdbook build book)
+# the built book (mdbook build book) and the gallery's images (make book)
 /book/book/
+/book/src/gallery/
 
 # python
 __pycache__/
