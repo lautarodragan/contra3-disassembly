@@ -57,11 +57,11 @@ make_debris_effect:
 	tay
 	lda	a:enemy_bullet_speeds_hard,y
 	sta	$1E,x
-	lda	a:data_0593DA,y
+	lda	a:enemy_bullet_speeds_hard_x,y
 	sta	$1A,x
-	lda	a:data_05941A,y
+	lda	a:enemy_bullet_speeds_hard_y_sub,y
 	sta	$1C,x
-	lda	a:data_05942A,y
+	lda	a:enemy_bullet_speeds_hard_x_sub,y
 	sta	$18,x
 loc_01CFF4:
 	rtl
@@ -96,11 +96,11 @@ loc_01D015:
 	jsl	f:make_effect_object
 	lda	a:enemy_bullet_speeds_hard,x
 	sta	a:$001E,y
-	lda	a:data_0593DA,x
+	lda	a:enemy_bullet_speeds_hard_x,x
 	sta	a:$001A,y
-	lda	a:data_05941A,x
+	lda	a:enemy_bullet_speeds_hard_y_sub,x
 	sta	a:$001C,y
-	lda	a:data_05942A,x
+	lda	a:enemy_bullet_speeds_hard_x_sub,x
 	sta	a:$0018,y
 	lda	zp_FA
 	sta	a:$000A,y
@@ -343,7 +343,7 @@ enemy_bullet_cycle_palette:
 	lda	stage_frame_counter
 	and	#$0006
 	tay
-	lda	a:data_05C792,y
+	lda	a:enemy_bullet_palette_attrs,y
 	sta	$02,x
 	rtl
 
@@ -356,7 +356,7 @@ update_dying_soldier:
 ; type $1B (thrown back, then an explosion). With sprite A and sound $0E
 ; (here), $0D (start_dying_soldier_sound_0D) or $0B
 ; (start_dying_soldier_sprite); start_dying_soldier takes the sprite from
-; data_05C79A by OBJ_FACING.
+; dying_soldier_sprites by OBJ_FACING.
 start_dying_soldier_sound_0E:
 	sta	$00,x
 	lda	#$000E
@@ -372,7 +372,7 @@ start_dying_soldier_sprite:
 	bra	loc_01D208
 start_dying_soldier:
 	ldy	$04,x
-	lda	a:data_05C79A,y
+	lda	a:dying_soldier_sprites,y
 	sta	$00,x
 loc_01D208:
 	lda	#$000B
@@ -384,9 +384,9 @@ loc_01D20F:
 	stz	$20,x
 	lda	#$0003
 	sta	$16,x
-	lda	a:data_05C79E,y
+	lda	a:dying_soldier_x_vels,y
 	sta	$1A,x
-	lda	a:data_05C7A2,y
+	lda	a:dying_soldier_x_vel_subs,y
 	sta	$18,x
 	lda	#$FFFC	; [num]
 	sta	$1E,x
@@ -597,7 +597,7 @@ loc_01D395:
 	ldy	difficulty
 	lda	#$0024
 	sta	$32,x
-	lda	a:data_05C7E2,y
+	lda	a:object_type_2F_delays,y
 	sta	$24,x
 	lda	#$0022
 	jsl	f:queue_sound
@@ -749,7 +749,7 @@ update_object_type_31:
 	lda	#$0004
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
-	lda	a:data_05C81C,y
+	lda	a:object_type_31_hp,y
 	sta	OBJ_HP,x
 	lda	#$0010
 	sta	OBJ_HITBOX_W,x
@@ -972,7 +972,7 @@ update_object_type_2C:
 	ldy	difficulty
 	sec
 	lda	$3A,x
-	sbc	a:data_05C822,y
+	sbc	a:object_type_2C_delay_cuts,y
 	sta	$30,x
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
@@ -1309,9 +1309,9 @@ loc_01D925:
 
 init_swing_pivot:
 	ldy	$3A,x
-	lda	a:data_05C874,y
+	lda	a:swing_speeds,y
 	sta	$38,x
-	lda	a:data_05C860,y
+	lda	a:swing_handle_counts,y
 	sta	zp_00
 	sta	zp_02
 	asl	a
@@ -1322,7 +1322,7 @@ init_swing_pivot:
 	clc
 	adc	#$0008
 	sta	$36,x
-	lda	a:data_05C86A,y
+	lda	a:swing_start_angles,y
 	sta	$30,x
 	sta	zp_04
 	clc
@@ -1417,7 +1417,7 @@ loc_01D9DA:
 	lsr	a
 	lsr	a
 	tay
-	lda	a:data_05C87E,y
+	lda	a:swing_handle_sprites,y
 	sta	$00,x
 	rts
 
@@ -1456,10 +1456,10 @@ loc_01DA40:
 	ldx	zp_FE
 	clc
 	lda	$34,x
-	adc	a:data_05C8CE,y
+	adc	a:swing_climb_steps_sub,y
 	sta	$34,x
 	lda	$36,x
-	adc	a:data_05C88E,y
+	adc	a:swing_climb_steps,y
 	cmp	#$0008
 	bcs	loc_01DA5F
 	lda	#$0008
@@ -1773,19 +1773,19 @@ object_type_48_set_x_velocity:
 	cmp	$0A,x
 	bcc	loc_01DCBD
 	ldy	difficulty
-	lda	a:data_05C916,y
+	lda	a:object_type_48_speeds_right,y
 	and	#$FF00
 	sta	$18,x
-	lda	a:data_05C916,y
+	lda	a:object_type_48_speeds_right,y
 	and	#$00FF
 	sta	$1A,x
 	bra	loc_01DCCF
 loc_01DCBD:
 	ldy	difficulty
-	lda	a:data_05C91E,y
+	lda	a:object_type_48_speeds_left,y
 	and	#$FF00
 	sta	$18,x
-	lda	a:data_05C91E,y
+	lda	a:object_type_48_speeds_left,y
 	ora	#$FF00
 	sta	$1A,x
 loc_01DCCF:
@@ -1852,7 +1852,7 @@ loc_01DD3E:
 	inc	$32,x
 	inc	$30,x
 	ldy	difficulty
-	lda	a:data_05C94E,y
+	lda	a:object_type_49_burst_counts,y
 	cmp	$30,x
 	bcs	loc_01DD4F
 	stz	$24,x
@@ -1866,7 +1866,7 @@ object_type_49_state_02:
 	bcs	@return
 	inc	OBJ_TIMER,x
 	ldy	difficulty
-	lda	a:data_05C956,y
+	lda	a:object_type_49_burst_delays,y
 	cmp	OBJ_TIMER,x
 	bcs	@return
 	stz	$30,x
@@ -1917,9 +1917,9 @@ rolling_mine_state_00:
 	sta	OBJ_HITBOX_H,x
 	ldy	$3A,x
 	sty	OBJ_FACING,x
-	lda	a:data_05C964,y
+	lda	a:rolling_mine_x_vel_subs,y
 	sta	OBJ_X_VEL_SUB,x
-	lda	a:data_05C968,y
+	lda	a:rolling_mine_x_vels,y
 	sta	OBJ_X_VEL,x
 	stz	$32,x
 	lda	#.loword(anim_05C96C)
@@ -2013,9 +2013,9 @@ rolling_mine_state_05:
 	lda	#$0080
 	sta	OBJ_TIMER,x
 	ldy	OBJ_FACING,x
-	lda	a:data_05C964,y
+	lda	a:rolling_mine_x_vel_subs,y
 	sta	OBJ_X_VEL_SUB,x
-	lda	a:data_05C968,y
+	lda	a:rolling_mine_x_vels,y
 	sta	OBJ_X_VEL,x
 	lda	#$003F
 	sta	OBJ_FLAGS,x
@@ -2040,7 +2040,7 @@ rolling_mine_state_04:
 	lsr	a
 	and	#$000E
 	tay
-	lda	a:data_05C9C8,y
+	lda	a:rolling_mine_aim_sprites,y
 	sta	$00,x
 	dec	$24,x
 	lda	$24,x
@@ -2048,11 +2048,11 @@ rolling_mine_state_04:
 	cmp	#$0010
 	bne	@return
 	clc
-	lda	a:data_05C9D8,y
+	lda	a:rolling_mine_muzzle_x,y
 	adc	$0A,x
 	sta	zp_00
 	clc
-	lda	a:data_05C9E8,y
+	lda	a:rolling_mine_muzzle_y,y
 	adc	$0E,x
 	sta	zp_02
 	lda	zp_FE
@@ -2215,12 +2215,12 @@ object_type_4E_state_05:
 	asl	a
 	asl	a
 	clc
-	adc	a:data_05CA02,y
+	adc	a:object_type_4E_tile_row_vram_addrs,y
 	pha
 	lda	$38,x
 	asl	a
 	tay
-	lda	a:data_05C9F8,y
+	lda	a:ptrs_object_type_4E_tile_rows,y
 	tay
 	pla
 	phx
@@ -2293,7 +2293,7 @@ object_type_4E_state_08:
 	phx
 	ldx	#$0000
 @loop:
-	lda	a:data_05CA5C,x
+	lda	a:object_type_4E_buffer_init,x
 	sta	f:$7EA000,x
 	inx
 	inx
@@ -3169,7 +3169,7 @@ loc_01E6EF:
 stage3_winged_bug_state_00:
 	ldy	difficulty
 	lda	stage_frame_counter
-	and	a:data_05CABF,y
+	and	a:stage3_winged_bug_spawn_masks,y
 	bne	@return
 	ldy	#$04C0
 	jsl	f:find_free_slot_y_down
@@ -3230,7 +3230,7 @@ update_object_type_56:
 	stz	OBJ_HP,x
 	lda	OBJ_FACING,x
 	tay
-	lda	a:data_05CB19,y
+	lda	a:object_type_56_dying_sprites,y
 	jml	f:start_dying_soldier_sound_0E
 loc_01E782:
 	lda	$12,x
@@ -3286,16 +3286,16 @@ object_type_56_set_velocity:
 	lda	$04,x
 	bne	loc_01E7F2
 	ldy	difficulty
-	lda	a:data_05CAD3
+	lda	a:object_type_56_x_vel_subs_right
 	sta	$18,x
-	lda	a:data_05CADB
+	lda	a:object_type_56_x_vels_right
 	sta	$1A,x
 	bra	loc_01E7FE
 loc_01E7F2:
 	ldy	difficulty
-	lda	a:data_05CAE3
+	lda	a:object_type_56_x_vel_subs_left
 	sta	$18,x
-	lda	a:data_05CAEB
+	lda	a:object_type_56_x_vels_left
 	sta	$1A,x
 loc_01E7FE:
 	rts
@@ -3308,7 +3308,7 @@ object_type_56_state_01:
 	sta	$1E,x
 	lda	$04,x
 	tay
-	lda	a:data_05CAF3,y
+	lda	a:object_type_56_jump_x_vels,y
 	sta	$1A,x
 	stz	$1C,x
 	stz	$18,x
@@ -3376,8 +3376,8 @@ loc_01E883:
 	rts
 
 ; Object type $5C: stage 6, invisible spawner of alien soldiers (type $56):
-; every data_05CB1D[difficulty] + rnd frames one from the right edge, every
-; data_05CB23 + rnd frames one from the left, dropped onto the floor
+; every alien_soldier_spawn_delays_right[difficulty] + rnd frames one from the right edge, every
+; alien_soldier_spawn_delays_left + rnd frames one from the left, dropped onto the floor
 ; (drop_object_to_floor); none while a big enemy is near the right edge.
 update_alien_soldier_spawner:
 	lda	OBJ_STATE,x
@@ -3407,7 +3407,7 @@ spawn_alien_soldier_right:
 	ldy	difficulty
 	lda	rng_lo
 	and	#$007F
-	adc	a:data_05CB1D,y
+	adc	a:alien_soldier_spawn_delays_right,y
 	sta	$30,x
 	ldy	#$0900
 loc_01E8BC:
@@ -3444,7 +3444,7 @@ spawn_alien_soldier_left:
 	ldy	difficulty
 	lda	rng_lo
 	and	#$00FF
-	adc	a:data_05CB23,y
+	adc	a:alien_soldier_spawn_delays_left,y
 	sta	$32,x
 	jsl	f:find_free_slot_y
 	bcs	loc_01E8F8
@@ -3495,7 +3495,7 @@ update_object_type_24:
 	stz	OBJ_HP,x
 	lda	OBJ_FACING,x
 	tay
-	lda	a:data_05CB19,y
+	lda	a:object_type_56_dying_sprites,y
 	jml	f:start_dying_soldier_sound_0E
 loc_01E95F:
 	lda	$12,x
@@ -3713,7 +3713,7 @@ loc_01EAE7:
 	ldy	difficulty
 	lda	rng_lo
 	and	#$00FF
-	adc	a:data_05CB43,y
+	adc	a:stage3_spiked_climber_state_05_delays,y
 	sta	a:boss_work_2
 	lda	$38,x
 	eor	#$FFFF
@@ -3821,15 +3821,15 @@ loc_01EBC8:
 	rtl
 
 spiked_climber_init_part:
-	lda	a:data_05CB3D,y
+	lda	a:spiked_climber_part_sprites,y
 	sta	$00,x
-	lda	a:data_05CB31,y
+	lda	a:spiked_climber_part_types,y
 	sta	$10,x
 	lda	#$003C
 	sta	$16,x
 	lda	#$3E00
 	sta	$02,x
-	lda	a:data_05CB37,y
+	lda	a:spiked_climber_part_hitbox_w,y
 	sta	$28,x
 	lda	#$FFDC	; [num]
 	sta	$2A,x
@@ -3957,10 +3957,10 @@ loc_01ECD3:
 loc_01ECDD:
 	clc
 	lda	$18,x
-	adc	a:data_05CB29,y
+	adc	a:spiked_climber_move_x_accel_subs,y
 	sta	$18,x
 	lda	$1A,x
-	adc	a:data_05CB2D,y
+	adc	a:spiked_climber_move_x_accels,y
 	sta	$1A,x
 loc_01ECEC:
 	rts
@@ -4132,7 +4132,7 @@ loc_01EE53:
 	lda	a:boss_work_1
 	beq	loc_01EE7C
 	ldy	$36,x
-	lda	a:data_05CB99,y
+	lda	a:stage3_spiked_climber_segment_slots,y
 	tay
 	lda	$30,x
 	sta	a:$0030,y
@@ -4149,7 +4149,7 @@ loc_01EE7D:
 	ldy	a:boss_work_2
 	lda	a:obj_slots+5*OBJ_SIZE+OBJ_Y
 	bmi	loc_01EE7C
-	cmp	a:data_05CB7B,y
+	cmp	a:stage3_spiked_climber_missile_y,y
 	bcc	loc_01EE7C
 	phx
 	ldx	#$0340
@@ -4191,9 +4191,9 @@ loc_01EEE0:
 @loop:
 	lda	#$004F
 	sta	$24,x
-	lda	a:data_05CC41,y
+	lda	a:stage3_spiked_climber_segment_x_vel_subs,y
 	sta	$18,x
-	lda	a:data_05CC55,y
+	lda	a:stage3_spiked_climber_segment_x_vels,y
 	sta	$1A,x
 	lda	a:data_05CC19,y
 	sta	$3A,x
@@ -4247,16 +4247,16 @@ object_type_5A_state_00:
 	ldy	$38,x
 	clc
 	lda	a:obj_slots+5*OBJ_SIZE+OBJ_X
-	adc	a:data_05CBAF,y
+	adc	a:object_type_5A_x_offsets,y
 	sta	OBJ_X,x
 	clc
 	lda	a:obj_slots+5*OBJ_SIZE+OBJ_Y
-	adc	a:data_05CBC5,y
+	adc	a:object_type_5A_y_offsets,y
 	sta	OBJ_Y,x
 
 object_type_5A_state_01:
 	ldy	$32,x
-	lda	a:data_05CBDB,y
+	lda	a:object_type_5A_anchor_y_addrs,y
 	sta	zp_00
 	clc
 	lda	$38,x
@@ -4266,7 +4266,7 @@ object_type_5A_state_01:
 	lda	(zp_00)
 	sbc	OBJ_Y,x
 	sec
-	sbc	a:data_05CBDF,y
+	sbc	a:object_type_5A_y_gaps,y
 	beq	loc_01EF77
 	bpl	loc_01EF75
 	dec	OBJ_Y,x
@@ -4458,18 +4458,18 @@ loc_01F0F4:
 	bcc	loc_01F105
 	ldy	#$0002
 loc_01F105:
-	lda	a:data_05CC69,y
+	lda	a:stage3_spiked_climber_side_facings,y
 	cmp	$04,x
 	beq	loc_01F118
 	sta	$04,x
-	lda	a:data_05CC6D,y
+	lda	a:stage3_spiked_climber_side_flags,y
 	sta	$16,x
 	lda	#.loword(anim_05CCDD)
 	sta	$20,x
 loc_01F118:
 	ldy	difficulty
 	lda	$0A,x
-	cmp	a:data_05CCD7,y
+	cmp	a:stage3_spiked_climber_chase_max_x,y
 	bcc	loc_01F127
 	stz	$1C,x
 	stz	$1E,x
@@ -4556,10 +4556,10 @@ loc_01F1B2:
 loc_01F1CE:
 	clc
 	lda	$18,x
-	adc	a:data_05CCC7,y
+	adc	a:stage3_spiked_climber_x_accel_subs,y
 	sta	$18,x
 	lda	$1A,x
-	adc	a:data_05CCCB,y
+	adc	a:stage3_spiked_climber_x_accels,y
 	sta	$1A,x
 loc_01F1DD:
 	jsr	a:spiked_climber_place_bg
@@ -4773,13 +4773,13 @@ spiked_climber_init_hitbox:
 	sta	$16,x
 
 spiked_climber_set_hitbox:
-	lda	a:data_05CC71,y
+	lda	a:spiked_climber_hitbox_y,y
 	sta	$0E,x
-	lda	a:data_05CC75,y
+	lda	a:spiked_climber_hitbox_w,y
 	sta	$28,x
-	lda	a:data_05CC7B,y
+	lda	a:spiked_climber_hitbox_h,y
 	sta	$2A,x
-	lda	a:data_05CC81,y
+	lda	a:spiked_climber_hitbox_sprites,y
 	sta	$00,x
 	lda	#$3E00
 	sta	$02,x
@@ -4897,7 +4897,7 @@ hoverbike_rider_state_00:
 	lda	#$FFE0	; [num]
 	sta	OBJ_HITBOX_H,x
 	ldy	$30,x
-	lda	a:data_05CD07,y
+	lda	a:hoverbike_rider_sprites,y
 	sta	OBJ_SPRITE,x
 	lda	#$3800
 	sta	OBJ_ATTR,x

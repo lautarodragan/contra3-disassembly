@@ -3131,7 +3131,7 @@ loc_1DC79B:
 	and	#$003E
 	sta	$34,x
 	tay
-	lda	a:data_05941A,y
+	lda	a:enemy_bullet_speeds_hard_y_sub,y
 	asl	a
 	sta	zp_00
 	lda	a:enemy_bullet_speeds_hard,y

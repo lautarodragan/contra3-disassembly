@@ -1070,18 +1070,24 @@ enemy_bullet_speeds_normal:
 enemy_bullet_speeds_hard:
 	; CDL: read by make_debris_effect
 	.byte	$FD, $FF, $FD, $FF, $FD, $FF, $FD, $FF, $FD, $FF, $FE, $FF, $FE, $FF, $FF, $FF
-data_0593DA:
+; enemy_bullet_speeds_hard + $10: x velocities (spawn_enemy_bullet reads the
+; table at +$00 y, +$10 x, +$50 y fraction, +$60 x fraction); also read
+; directly by make_debris_effect and spawn_explosion_burst for random
+; directions.
+enemy_bullet_speeds_hard_x:
 	; LAYOUT: read on from enemy_bullet_speeds_hard (lda a:enemy_bullet_speeds_hard,y)
 	; CDL: read by make_debris_effect
 	.byte	$00, $00, $00, $00, $01, $00, $01, $00, $02, $00, $02, $00, $02, $00, $02, $00
 	.byte	$03, $00, $02, $00, $02, $00, $02, $00, $02, $00, $01, $00, $01, $00, $00, $00
 	.byte	$00, $00, $FF, $FF, $FE, $FF, $FE, $FF, $FD, $FF, $FD, $FF, $FD, $FF, $FD, $FF
 	.byte	$FD, $FF, $FD, $FF, $FD, $FF, $FD, $FF, $FD, $FF, $FE, $FF, $FE, $FF, $FF, $FF
-data_05941A:
+; enemy_bullet_speeds_hard + $50: y velocity fractions.
+enemy_bullet_speeds_hard_y_sub:
 	; CDL: read by make_debris_effect
 	.byte	$00, $00, $C2, $0E, $76, $3A, $6F, $81, $F2, $E0, $53, $55, $1A, $DA, $2C, $6A
-data_05942A:
-	; LAYOUT: read on from data_05941A (lda a:data_05941A,y)
+; enemy_bullet_speeds_hard + $60: x velocity fractions.
+enemy_bullet_speeds_hard_x_sub:
+	; LAYOUT: read on from enemy_bullet_speeds_hard_y_sub (lda a:enemy_bullet_speeds_hard_y_sub,y)
 	; CDL: read by queue_vram_blocks_at_x, make_debris_effect
 	.byte	$00, $00, $D4, $95, $E6, $25, $AD, $AA, $0E, $1F, $91, $7E, $8A, $C5, $3E, $F1
 	.byte	$00, $00, $3E, $F1, $8A, $C5, $91, $7E, $0E, $1F, $AD, $AA, $E6, $25, $D4, $95
@@ -3274,16 +3280,22 @@ anim_05C778:
 	anim_goto	anim_05C778
 anim_05C78C:
 	anim_end	metasprite_06B363, metasprite_06B363
-data_05C792:
+; enemy_bullet_cycle_palette: OBJ_ATTR by stage_frame_counter & 6 (the bullet
+; flashes through palettes 0, 1, 7).
+enemy_bullet_palette_attrs:
 	; CDL: read by enemy_bullet_cycle_palette
 	.byte	$00, $30, $00, $32, $00, $3E, $00, $30
-data_05C79A:
+; start_dying_soldier, by OBJ_FACING: metasprite of the soldier thrown back.
+dying_soldier_sprites:
 	; CDL: read by update_dying_soldier
 	.addr	metasprite_06B1D6, metasprite_06B490
-data_05C79E:
+; start_dying_soldier, by OBJ_FACING: x velocity (with
+; dying_soldier_x_vel_subs: -0.5 or +0.5).
+dying_soldier_x_vels:
 	; CDL: read by update_dying_soldier
 	.byte	$FF, $FF, $00, $00
-data_05C7A2:
+; x velocity fraction of the dying soldier.
+dying_soldier_x_vel_subs:
 	; CDL: read by update_dying_soldier; partly not accessed
 	.byte	$00, $80, $00, $80
 anim_05C7A6:
@@ -3294,7 +3306,9 @@ anim_05C7A6:
 	.byte	$02, $00, $C5, $AE
 	.byte	$C5, $AE, $02, $00, $CA, $AE, $CA, $AE, $02, $00, $33, $AF, $33, $AF, $02, $00
 	.byte	$E5, $AE, $E5, $AE, $02, $00, $F6, $AE, $F6, $AE, $00, $00, $00, $00, $00, $00
-data_05C7E2:
+; update_object_type_2F, by difficulty: reload of its timer (OBJ_TIMER)
+; between bursts.
+object_type_2F_delays:
 	; CDL: read by update_objects, update_object_type_2F; partly not accessed
 	.byte	$80, $00, $70, $00, $60, $00
 anim_05C7E8:
@@ -3309,10 +3323,13 @@ anim_05C802:
 	anim_frame	$0002, metasprite_06B668, metasprite_06B63C
 	anim_frame	$0002, metasprite_06B66D, metasprite_06B64D
 	anim_goto	anim_05C802
-data_05C81C:
+; OBJ_HP of update_object_type_31 by difficulty (easy, normal, hard).
+object_type_31_hp:
 	; CDL: read by update_object_type_31
 	.word	ENEMY_HP($0010), ENEMY_HP($0040), ENEMY_HP($7FFF)
-data_05C822:
+; update_object_type_2C, by difficulty: subtracted from field $3A for its
+; first timer (field $30, OBJ_TIMER).
+object_type_2C_delay_cuts:
 	; CDL: read by update_object_type_2C
 	.byte	$00, $00, $10, $00, $20, $00
 ; Velocities picked at random (rnd & $0E) for explosion debris
@@ -3330,26 +3347,35 @@ vram_blocks_05C848:
 vram_blocks_05C854:
 	.byte	$00, $50, $00, $50
 	.byte	$00, $50, $00, $50, $C0, $57, $00, $50
-data_05C860:
+; init_swing_pivot, by field $3A: handles (type $3A) spawned on each of the
+; two arms, $10 apart; arm length = count * $10 + 8 (field $36).
+swing_handle_counts:
 	; CDL: read by init_swing_pivot
 	.byte	$03, $00, $03, $00, $03, $00, $03, $00, $05, $00
-data_05C86A:
+; init_swing_pivot, by field $3A: start angle (field $30).
+swing_start_angles:
 	; CDL: read by init_swing_pivot
 	.byte	$80, $00, $80, $00, $00, $00, $00, $00, $00, $00
-data_05C874:
+; init_swing_pivot, by field $3A: angle added each frame (field $38, signed:
+; the direction of rotation).
+swing_speeds:
 	; CDL: read by init_swing_pivot
 	.byte	$FF, $FF, $FE, $FF, $01, $00, $FE, $FF, $01, $00
-data_05C87E:
+; swing_handle_follow_pivot: metasprite by angle / $10.
+swing_handle_sprites:
 	; CDL: read by swing_handle_follow_pivot
 	.addr	metasprite_06B755, metasprite_06B75A, metasprite_06B75F, metasprite_06B764
 	.addr	metasprite_06B769, metasprite_06B76E, metasprite_06B773, metasprite_06B778
-data_05C88E:
+; swing_player_climb: step along the arm by angle and up/down (integer part;
+; added to field $36 of the pivot).
+swing_climb_steps:
 	; CDL: read by swing_player_climb
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $01, $00, $01, $00, $01, $00, $01, $00
 	.byte	$01, $00, $01, $00, $01, $00, $01, $00, $01, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $FF, $FF, $FF, $FF, $FF, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF
 	.byte	$FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FE, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-data_05C8CE:
+; Fraction of swing_climb_steps.
+swing_climb_steps_sub:
 	; CDL: read by swing_player_climb
 	.byte	$00, $00, $E8, $4F, $BF, $9C, $8F, $E3, $A1, $21, $91, $54, $6B, $7A, $BA, $91
 	.byte	$99, $99, $BA, $91, $6B, $7A, $91, $54, $A1, $21, $8F, $E3, $BF, $9C, $E8, $4F
@@ -3359,10 +3385,14 @@ data_05C8CE:
 object_type_48_hp:
 	; CDL: read by object_type_48_state_00; partly not accessed
 	.word	ENEMY_HP($0000), ENEMY_HP($0000), ENEMY_HP($0001), ENEMY_HP($0001)
-data_05C916:
+; object_type_48_set_x_velocity, by difficulty: x velocity towards a target on
+; the right (8.8 packed in a word: high byte = OBJ_X_VEL_SUB high byte, low
+; byte = OBJ_X_VEL).
+object_type_48_speeds_right:
 	; CDL: read by object_type_48_set_x_velocity; partly not accessed
 	.byte	$00, $80, $00, $C0, $01, $00, $01, $40
-data_05C91E:
+; By difficulty: x velocity towards the left (same packing, negative).
+object_type_48_speeds_left:
 	; CDL: read by update_objects, object_type_48_set_x_velocity; partly not accessed
 	.byte	$FF, $80, $FF, $40, $FF, $00, $FE, $C0
 anim_05C926:
@@ -3376,20 +3406,25 @@ anim_05C940:
 anim_05C946:
 	anim_frame	$0002, metasprite_06C1B7, metasprite_06C1B7
 	anim_goto	anim_05C946
-data_05C94E:
+; object_type_49_state_01, by difficulty: objects aimed at a player it spawns
+; before state 2.
+object_type_49_burst_counts:
 	; CDL: read by object_type_49_state_01; partly not accessed
 	.byte	$02, $00, $02, $00, $03, $00, $03, $00
-data_05C956:
+; object_type_49_state_02, by difficulty: frames before the next burst.
+object_type_49_burst_delays:
 	; CDL: read by object_type_49_state_02; partly not accessed
 	.byte	$D2, $00, $B4, $00, $96, $00, $78, $00
 ; OBJ_HP of update_rolling_mine by difficulty (easy, normal, hard)
 rolling_mine_hp:
 	; CDL: read by rolling_mine_state_00
 	.word	ENEMY_HP($0004), ENEMY_HP($0006), ENEMY_HP($0010)
-data_05C964:
+; By field $3A / OBJ_FACING: x velocity fraction of the rolling mine.
+rolling_mine_x_vel_subs:
 	; CDL: read by rolling_mine_state_00
 	.byte	$00, $78, $FF, $87
-data_05C968:
+; By OBJ_FACING: x velocity of the rolling mine.
+rolling_mine_x_vels:
 	; CDL: read by update_objects, rolling_mine_state_00
 	.byte	$01, $00, $FE, $FF
 anim_05C96C:
@@ -3411,21 +3446,28 @@ anim_05C9B0:
 	anim_frame	$0006, metasprite_06B7D6, metasprite_06B7D6
 	anim_frame	$0008, metasprite_06B7C1, metasprite_06B7C1
 	anim_end	metasprite_06B7C1, metasprite_06B7C1
-data_05C9C8:
+; rolling_mine_state_04: metasprite by direction to the player.
+rolling_mine_aim_sprites:
 	; CDL: read by rolling_mine_state_04
 	.addr	metasprite_06B7EB, metasprite_06B7FC, metasprite_06B80D, metasprite_06B81E
 	.addr	metasprite_06B82F, metasprite_06B862, metasprite_06B851, metasprite_06B840
-data_05C9D8:
+; rolling_mine_state_04, by direction: x offset of the bullet.
+rolling_mine_muzzle_x:
 	; CDL: read by rolling_mine_state_04
 	.byte	$04, $00, $14, $00, $18, $00, $10, $00, $04, $00, $FC, $FF, $F0, $FF, $F4, $FF
-data_05C9E8:
+; By direction: y offset of the bullet.
+rolling_mine_muzzle_y:
 	; CDL: read by rolling_mine_state_04
 	.byte	$D8, $FF, $D8, $FF, $E8, $FF, $EC, $FF, $F0, $FF, $EC, $FF, $E8, $FF, $D8, $FF
-data_05C9F8:
+; object_type_4E_state_05, by step (field $38): the block list it queues
+; (queue_vram_blocks).
+ptrs_object_type_4E_tile_rows:
 	; CDL: read by object_type_4E_state_05
 	.addr	vram_blocks_05CA0C, vram_blocks_05CA1C, vram_blocks_05CA2C, vram_blocks_05CA3C
 	.addr	vram_blocks_05CA4C
-data_05CA02:
+; object_type_4E_state_05, by step: VRAM address of that block list (+$400 on
+; the second BG1 screen).
+object_type_4E_tile_row_vram_addrs:
 	; CDL: read by queue_vram_blocks_at_x, object_type_4E_state_05
 	.byte	$00, $41, $80, $41, $00, $42, $80, $42, $00, $43
 vram_blocks_05CA0C:
@@ -3443,7 +3485,9 @@ vram_blocks_05CA3C:
 vram_blocks_05CA4C:
 	.byte	$C0, $5F, $E0, $5F, $80, $5F
 	.byte	$A0, $5E, $C0, $5F, $E0, $5F, $80, $5F, $A0, $5E
-data_05CA5C:
+; object_type_4E_state_08: 8 bytes copied to $7E:A000 (probably an HDMA
+; table).
+object_type_4E_buffer_init:
 	; CDL: read by object_type_4E_state_08
 	.byte	$6D, $08, $A0, $E0, $00, $A1, $00, $00
 ; OBJ_HP of update_object_type_4E (the first 3 words; other data follows) by difficulty (easy, normal, hard)
@@ -3475,26 +3519,35 @@ anim_05CAAF:
 anim_05CAB7:
 	anim_frame	$0001, metasprite_06B740, metasprite_06B8A1
 	anim_goto	anim_05CAB7
-data_05CABF:
+; stage3_winged_bug_state_00, by difficulty: a bug is spawned when
+; stage_frame_counter & this is 0.
+stage3_winged_bug_spawn_masks:
 	; CDL: read by stage3_winged_bug_state_00; partly not accessed
 	.byte	$9F, $00, $2F, $00, $07, $00, $00, $00, $04, $00, $08, $00
 ; OBJ_HP of types $56 and $24 (a 4th word unused) by difficulty (easy, normal, hard)
 object_type_56_hp:
 	; CDL: read by object_type_56_state_00; partly not accessed
 	.word	ENEMY_HP($0001), ENEMY_HP($0002), ENEMY_HP($0003), ENEMY_HP($0004)
-data_05CAD3:
+; object_type_56_set_velocity: x velocity fraction walking right. The code
+; loads Y with the difficulty but reads the first entry only.
+object_type_56_x_vel_subs_right:
 	; CDL: read by object_type_56_set_velocity; partly not accessed
 	.byte	$00, $00, $00, $80, $00, $00, $00, $00
-data_05CADB:
+; x velocity walking right (first entry only, see above).
+object_type_56_x_vels_right:
 	; CDL: read by object_type_56_set_velocity; partly not accessed
 	.byte	$02, $00, $02, $00, $03, $00, $03, $00
-data_05CAE3:
+; x velocity fraction walking left (first entry only).
+object_type_56_x_vel_subs_left:
 	; CDL: read by object_type_56_set_velocity; partly not accessed
 	.byte	$00, $00, $00, $80, $00, $00, $00, $00
-data_05CAEB:
+; x velocity walking left (first entry only).
+object_type_56_x_vels_left:
 	; CDL: read by object_type_56_set_velocity; partly not accessed
 	.byte	$FE, $FF, $FD, $FF, $FD, $FF, $FD, $FF
-data_05CAF3:
+; object_type_56_state_01, by OBJ_FACING: x velocity when it jumps (y velocity
+; -3) off a ledge.
+object_type_56_jump_x_vels:
 	; CDL: read by update_objects, object_type_56_state_01
 	.byte	$02, $00, $FE, $FF
 anim_05CAF7:
@@ -3506,33 +3559,46 @@ anim_05CAF7:
 anim_05CB11:
 	anim_frame	$0002, metasprite_06C2D8, metasprite_06C447
 	anim_goto	anim_05CB11
-data_05CB19:
+; By OBJ_FACING: metasprite given to start_dying_soldier_sound_0E (types $56
+; and $24).
+object_type_56_dying_sprites:
 	; CDL: read by update_object_type_56
 	.addr	metasprite_06C2E9
 	.addr	metasprite_06C458
-data_05CB1D:
+; update_alien_soldier_spawner, by difficulty: frames (+ rnd) between alien
+; soldiers from the right edge.
+alien_soldier_spawn_delays_right:
 	; CDL: read by spawn_alien_soldier_right
 	.byte	$40, $00, $28, $00, $10, $00
-data_05CB23:
+; By difficulty: frames (+ rnd) between alien soldiers from the left edge.
+alien_soldier_spawn_delays_left:
 	; CDL: read by spawn_alien_soldier_left
 	.byte	$80, $00, $60, $00, $40, $00
-data_05CB29:
+; spiked_climber_move_x, by direction: x acceleration fraction.
+spiked_climber_move_x_accel_subs:
 	; CDL: read by spiked_climber_move_x
 	.byte	$00, $08, $FF, $F7
-data_05CB2D:
+; spiked_climber_move_x, by direction: x acceleration, integer part.
+spiked_climber_move_x_accels:
 	; CDL: read by spiked_climber_move_x
 	.byte	$00, $00, $FF, $FF
-data_05CB31:
+; spiked_climber_init_part: OBJ_TYPE of the parts ($3E arm, $3F spike arm, $40
+; core).
+spiked_climber_part_types:
 	; CDL: read by spiked_climber_init_part
 	.byte	$3E, $00, $3F, $00, $40, $00
-data_05CB37:
+; spiked_climber_init_part: OBJ_HITBOX_W of the parts.
+spiked_climber_part_hitbox_w:
 	; CDL: read by spiked_climber_init_part
 	.byte	$20, $00, $09, $00, $08, $00
-data_05CB3D:
+; spiked_climber_init_part: metasprite of the parts.
+spiked_climber_part_sprites:
 	; CDL: read by spiked_climber_init_part
 	.addr	metasprite_06B8D0, metasprite_06B8B6
 	.byte	$00, $00
-data_05CB43:
+; stage3_spiked_climber_state_05, by difficulty: boss_work_2 (+ rnd & $FF)
+; when it runs out.
+stage3_spiked_climber_state_05_delays:
 	; CDL: read by update_objects, stage3_spiked_climber_state_05; partly not accessed
 	.byte	$00, $03, $00, $02, $40, $00
 anim_05CB49:
@@ -3545,26 +3611,37 @@ anim_05CB49:
 	anim_frame	$0003, metasprite_06BB1F, metasprite_06B943
 	anim_frame	$0003, metasprite_06B8F9, metasprite_06B922
 	anim_goto	anim_05CB49
-data_05CB7B:
+; stage3_spiked_climber_state_0A, by boss_work_2 (+2 each time): y of slot
+; $0440 at which it fires its two missiles (spiked_climber_fire_missile).
+stage3_spiked_climber_missile_y:
 	; CDL: read by stage3_spiked_climber_state_0A
 	.byte	$A0, $00, $80, $00, $80, $00, $80, $00, $40, $00, $80, $00, $40, $00, $80, $00
 	.byte	$50, $00, $50, $00, $80, $00, $90, $00, $88, $00, $40, $00, $F0, $00
-data_05CB99:
+; stage3_spiked_climber_state_0A: slots that get fields $30/$32 copied one by
+; one.
+stage3_spiked_climber_segment_slots:
 	; CDL: read by stage3_spiked_climber_state_0A
 	.byte	$00, $06, $C0, $05, $80, $05, $40, $05, $00, $05, $40, $03, $C0, $04, $80, $04
 	.byte	$40, $04, $00, $04, $C0, $03
-data_05CBAF:
+; object_type_5A_state_00, by field $38: x offset from the climber (slot
+; $0440).
+object_type_5A_x_offsets:
 	; CDL: read by object_type_5A_state_00
 	.byte	$48, $00, $38, $00, $28, $00, $18, $00, $08, $00, $08, $00, $18, $00, $28, $00
 	.byte	$38, $00, $48, $00, $00, $00
-data_05CBC5:
+; object_type_5A_state_00, by field $38: y offset from the climber.
+object_type_5A_y_offsets:
 	; CDL: read by object_type_5A_state_00
 	.byte	$94, $FF, $A4, $FF, $B4, $FF, $C4, $FF, $D4, $FF, $18, $00, $28, $00, $38, $00
 	.byte	$48, $00, $58, $00, $00, $00
-data_05CBDB:
+; object_type_5A_state_01, by field $32: address of the OBJ_Y the spikes
+; follow (slots $0600 and $03C0).
+object_type_5A_anchor_y_addrs:
 	; CDL: read by object_type_5A_state_01
 	.byte	$0E, $06, $CE, $03
-data_05CBDF:
+; object_type_5A_state_01, by field $38 + $30: distance kept above that OBJ_Y
+; (moved 1 pixel per frame towards it).
+object_type_5A_y_gaps:
 	; CDL: read by update_objects, object_type_5A_state_01; partly not accessed
 	.byte	$C8, $00, $B8, $00, $A8, $00, $98, $00, $88, $00, $40, $00, $30, $00, $20, $00
 	.byte	$10, $00, $00, $00, $5C, $00, $00, $00, $F8, $FF, $F0, $FF, $E8, $FF, $E0, $FF
@@ -3581,31 +3658,40 @@ data_05CC2D:
 	; CDL: read by stage3_spiked_climber_state_0A
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00
-data_05CC41:
+; stage3_spiked_climber_state_0A: x velocity fraction given to each of 10
+; slots ($40 apart).
+stage3_spiked_climber_segment_x_vel_subs:
 	; CDL: read by stage3_spiked_climber_state_0A
 	.byte	$FF, $BB, $FF, $E2, $FF, $7E, $FF, $8F, $FF, $C7, $FF, $B1, $FF, $B1, $FF, $D8
 	.byte	$FF, $FF, $FF, $FF
-data_05CC55:
+; x velocity of those 10 slots.
+stage3_spiked_climber_segment_x_vels:
 	; CDL: read by stage3_spiked_climber_state_0A
 	.byte	$FB, $FF, $FB, $FF, $FC, $FF, $FD, $FF, $FE, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte	$FF, $FF, $FF, $FF
-data_05CC69:
+; stage3_spiked_climber_state_10, by side (x below $58 or not): OBJ_FACING.
+stage3_spiked_climber_side_facings:
 	; CDL: read by stage3_spiked_climber_state_10
 	.byte	$02, $00, $00, $00
-data_05CC6D:
+; By side: OBJ_FLAGS.
+stage3_spiked_climber_side_flags:
 	; CDL: read by stage3_spiked_climber_state_10
 	.byte	$3D, $00, $1D, $40
-data_05CC71:
+; spiked_climber_set_hitbox, by part: OBJ_Y (reads on into the next table).
+spiked_climber_hitbox_y:
 	; CDL: read by spiked_climber_set_hitbox
 	.byte	$80, $00, $CC, $00
-data_05CC75:
-	; LAYOUT: read on from data_05CC71 (lda a:data_05CC71,y)
+; spiked_climber_set_hitbox: OBJ_HITBOX_W.
+spiked_climber_hitbox_w:
+	; LAYOUT: read on from spiked_climber_hitbox_y (lda a:spiked_climber_hitbox_y,y)
 	; CDL: read by spiked_climber_set_hitbox
 	.byte	$28, $00, $10, $00, $1C, $00
-data_05CC7B:
+; spiked_climber_set_hitbox: OBJ_HITBOX_H.
+spiked_climber_hitbox_h:
 	; CDL: read by spiked_climber_set_hitbox
 	.byte	$E0, $FF, $40, $FF, $E0, $FF
-data_05CC81:
+; spiked_climber_set_hitbox: metasprite.
+spiked_climber_hitbox_sprites:
 	; CDL: read by update_objects, spiked_climber_set_hitbox; partly not accessed
 	.addr	metasprite_06B943, metasprite_06B9F7, metasprite_06B9BE
 anim_05CC87:
@@ -3625,16 +3711,21 @@ vram_blocks_05CCAF:
 vram_blocks_05CCBB:
 	.byte	$00, $50, $00, $50, $00, $50, $00, $50
 	.byte	$00, $50, $00, $50
-data_05CCC7:
+; stage3_spiked_climber_state_10, by direction (boss_work_5): x acceleration
+; fraction.
+stage3_spiked_climber_x_accel_subs:
 	; CDL: read by stage3_spiked_climber_state_10
 	.byte	$00, $10, $00, $E0
-data_05CCCB:
+; By direction: x acceleration, integer part.
+stage3_spiked_climber_x_accels:
 	; CDL: read by stage3_spiked_climber_state_10
 	.byte	$00, $00, $FF, $FF
 data_05CCCF:
 	; CDL: read by stage3_spiked_climber_state_10
 	.byte	$FF, $00, $5A, $00, $42, $00, $FF, $00
-data_05CCD7:
+; stage3_spiked_climber_state_10, by difficulty: at x >= this it stops
+; following the player's height.
+stage3_spiked_climber_chase_max_x:
 	; CDL: read by update_objects, stage3_spiked_climber_state_10; partly not accessed
 	.byte	$28, $00, $60, $00, $98, $00
 anim_05CCDD:
@@ -3654,7 +3745,8 @@ stage3_spiked_climber_hp:
 hoverbike_rider_hp:
 	; CDL: read by hoverbike_rider_state_00
 	.word	ENEMY_HP($0008), ENEMY_HP($0010), ENEMY_HP($0020)
-data_05CD07:
+; hoverbike_rider_state_00, by field $30: metasprite.
+hoverbike_rider_sprites:
 	; CDL: read by update_objects, hoverbike_rider_state_00; partly not accessed
 	.addr	metasprite_06C6C6, metasprite_06C6EB
 anim_05CD0B:

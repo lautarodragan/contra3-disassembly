@@ -107,7 +107,7 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $57 | `update_object_type_57` | never run in the CDL traces |
 | $59 | `update_object_type_59` | not seen. Not identified |
 | $5A | `update_object_type_5A` | stage 3 spiked climber, spikes. Not identified exactly |
-| $5C | `update_alien_soldier_spawner` | stage 6: invisible spawner of alien soldiers (type `$56`) from the screen edges (`data_05CB1D`, `data_05CB23`) |
+| $5C | `update_alien_soldier_spawner` | stage 6: invisible spawner of alien soldiers (type `$56`) from the screen edges (`alien_soldier_spawn_delays_right`, `alien_soldier_spawn_delays_left`) |
 | $60 | `update_object_type_60` | does nothing (rtl); never run in the CDL traces |
 | $6B, $6C | `update_destructible_part`, `update_destructible_part_2` | part of a bigger enemy that explodes when destroyed (`$6B` seen in stage 4 at the airship; `$6C` not seen) |
 | $6D | `update_player_bike` | stage 4: the hover bike under each player (slots `$0280`/`$02C0`); puts the player back in `PLAYER_STATE_BIKE` when it lands on it |
