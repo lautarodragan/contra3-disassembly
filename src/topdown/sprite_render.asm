@@ -616,7 +616,7 @@ map_view_player_position:
 	lsr	a
 	and	#$003E
 	tay
-	lda	a:data_05E748,y
+	lda	a:map_view_player_marker_sprites,y
 	sta	zp_04
 	lda	$02,x
 	and	#$0E00
@@ -859,12 +859,12 @@ loc_03E6CA:
 	lda	a:p1_start_x
 	asl	a
 	tay
-	lda	a:data_05E788,y
+	lda	a:start_cursor_x,y
 	sta	zp_00
 	lda	a:p1_start_y
 	asl	a
 	tay
-	lda	a:data_05E790,y
+	lda	a:start_cursor_y,y
 	sta	zp_02
 	ply
 	lda	#$3900
@@ -987,12 +987,12 @@ loc_03E7AB:
 	lda	a:p2_start_x
 	asl	a
 	tay
-	lda	a:data_05E788,y
+	lda	a:start_cursor_x,y
 	sta	zp_00
 	lda	a:p2_start_y
 	asl	a
 	tay
-	lda	a:data_05E790,y
+	lda	a:start_cursor_y,y
 	sta	zp_02
 	ply
 	lda	#$3B00
@@ -1105,13 +1105,13 @@ draw_intro_banner_sprites:
 @loop:
 	lda	#$0008
 	sta	a:$0001,y
-	lda	a:data_05E796,x
+	lda	a:intro_banner_sprite_x,x
 	sep	#$20
 	.a8
 	sta	a:$0000,y
 	rep	#$20
 	.a16
-	lda	a:data_05E7AA,x
+	lda	a:intro_banner_sprite_tiles,x
 	sta	a:$0002,y
 	iny
 	iny
@@ -1188,7 +1188,7 @@ loc_03E900:
 loc_03E90F:
 	ora	zp_FA
 	tax
-	lda	a:data_05E7C0,x
+	lda	a:td_target_marker_attrs,x
 	sta	zp_06
 	rts
 ; Sprites of player 1's view (or the intro / map view ones).

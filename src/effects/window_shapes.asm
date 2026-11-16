@@ -603,7 +603,7 @@ loc_02E141:
 	lda	#$0020
 loc_02E173:
 	tay
-	lda	a:ptrs_05E298,y
+	lda	a:ptrs_bomb_flash_coldata,y
 	sta	zp_04
 	lda	stage_frame_counter
 	lsr	a
@@ -912,7 +912,7 @@ loc_02E3F2:
 	lda	#$0020
 loc_02E424:
 	tay
-	lda	a:ptrs_05E298,y
+	lda	a:ptrs_bomb_flash_coldata,y
 	sta	zp_04
 	lda	stage_frame_counter
 	lsr	a

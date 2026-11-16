@@ -565,7 +565,7 @@ loc_029215:
 loc_029223:
 	ora	a:$10DE,x
 	tay
-	lda	a:data_05D15E,y
+	lda	a:td_player_jump_anims,y
 	cmp	$20,x
 	beq	@return
 	sta	$20,x
@@ -595,7 +595,7 @@ td_set_stand_anim:
 	rtl
 loc_029256:
 	ldy	a:$10DE,x
-	lda	a:data_05D166,y
+	lda	a:td_player_stand_anims,y
 	cmp	$20,x
 	beq	@return
 	sta	$20,x
@@ -627,7 +627,7 @@ loc_029288:
 	and	#$0004
 	ora	a:$10DE,x
 	tay
-	lda	a:data_05D16A,y
+	lda	a:td_player_stand_fire_anims,y
 	cmp	$20,x
 	beq	@return
 	sta	$20,x
@@ -810,7 +810,7 @@ loc_0293E8:
 loc_0293F5:
 	ora	a:$10DE,x
 	tay
-	lda	a:data_05D172,y
+	lda	a:td_player_dying_anims,y
 	cmp	$20,x
 	beq	@return
 	sta	$20,x
@@ -828,7 +828,7 @@ td_spin_dying_player:
 	tay
 	lda	$04,x
 	clc
-	adc	a:data_05D17A,y
+	adc	a:td_dying_spin_speeds,y
 	and	#$00FF
 	sta	$04,x
 	rtl
@@ -933,7 +933,7 @@ loc_0294BE:
 loc_0294CB:
 	ora	a:$10DE,x
 	tay
-	lda	a:data_05D18C,y
+	lda	a:td_player_falling_anims,y
 	cmp	$20,x
 	beq	@return
 	sta	$20,x
@@ -1154,7 +1154,7 @@ loc_029632:
 	and	#$000C
 	ora	a:$10DE,x
 	tay
-	lda	a:data_05D194,y
+	lda	a:td_player_walk_anims,y
 	cmp	$20,x
 	beq	@return
 	sta	$20,x
@@ -1256,7 +1256,7 @@ td_fire_jump_shot:
 	stz	zp_12
 	ldy	a:$10DE,x
 	sty	zp_14
-	lda	a:data_05D1A8,y
+	lda	a:td_jump_fire_side_offsets,y
 	sta	zp_10
 	ldy	#$0020
 	bra	fire_topdown_weapon
@@ -1265,7 +1265,7 @@ td_fire_forward:
 	stz	zp_12
 	ldy	a:$10DE,x
 	sty	zp_14
-	lda	a:data_05D1A4,y
+	lda	a:td_fire_side_offsets,y
 	sta	zp_10
 	ldy	#$0018
 
@@ -1376,7 +1376,7 @@ loc_02979A:
 	asl	a
 	phy
 	tay
-	lda	a:data_05D1AA,y
+	lda	a:td_spread_angle_offsets,y
 	ply
 	clc
 	adc	zp_1A
@@ -2746,13 +2746,13 @@ hatch_turret_aim_state_2:
 	jsl	f:td_angle_to_nearest_player
 	ldy	difficulty
 	clc
-	adc	a:data_05D500,y
+	adc	a:hatch_turret_aim_half_speeds,y
 	sec
 	sbc	$04,x
-	cmp	a:data_05D4FA,y
+	cmp	a:hatch_turret_aim_turn_speeds,y
 	bcc	loc_02A0B5
 	ldy	difficulty
-	lda	a:data_05D4FA,y
+	lda	a:hatch_turret_aim_turn_speeds,y
 	jsl	f:td_turn_towards_nearest_player
 	rtl
 loc_02A0B5:
@@ -2844,7 +2844,7 @@ hatch_turret_spin_state_2:
 	ldy	difficulty
 	lda	$04,x
 	clc
-	adc	a:data_05D50C,y
+	adc	a:hatch_turret_spin_speeds,y
 	and	#$00FF
 	sta	$04,x
 	ldy	difficulty
@@ -2915,7 +2915,7 @@ hatch_turret_sweep_state_2:
 	ldy	difficulty
 	lda	$24,x
 	clc
-	adc	a:data_05D518,y
+	adc	a:hatch_turret_sweep_phase_speeds,y
 	and	#$00FF
 	sta	$24,x
 	ldy	difficulty
@@ -2933,20 +2933,20 @@ hatch_turret_sweep_turn:
 	clc
 	adc	#$0040
 	sec
-	sbc	a:data_05D518,y
+	sbc	a:hatch_turret_sweep_phase_speeds,y
 	and	#$00FF
 	bit	#$0080
 	bne	loc_02A20E
 	lda	$04,x
 	clc
-	adc	a:data_05D51E,y
+	adc	a:hatch_turret_sweep_turn_speeds,y
 	and	#$00FF
 	sta	$04,x
 	rts
 loc_02A20E:
 	lda	$04,x
 	sec
-	sbc	a:data_05D51E,y
+	sbc	a:hatch_turret_sweep_turn_speeds,y
 	and	#$00FF
 	sta	$04,x
 	rts
@@ -3522,7 +3522,7 @@ loc_02A64C:
 	and	#$0018
 	clc
 	ldy	difficulty
-	adc	a:data_05D558,y
+	adc	a:td_centipede_bug_walk_times,y
 	sta	$24,x
 	lda	#$0003
 	sta	$12,x
@@ -3760,7 +3760,7 @@ loc_02A81E:
 	lda	#$2000
 	sta	$02,x
 	ldy	difficulty
-	lda	a:data_05D58A,y
+	lda	a:td_nest_crawler_walk_times,y
 	sta	$24,x
 	lda	#$0003
 	sta	$12,x
@@ -4152,7 +4152,7 @@ tbl_td_item_spread_states:
 
 td_item_spread_state_0:
 	ldy	a:boss_centered_view
-	lda	a:data_05D664,y
+	lda	a:td_item_spread_anims,y
 	sta	$20,x
 	lda	#$0001
 	sta	$14,x
@@ -4192,7 +4192,7 @@ tbl_td_item_crush_states:
 
 td_item_crush_state_0:
 	ldy	a:boss_centered_view
-	lda	a:data_05D668,y
+	lda	a:td_item_crush_anims,y
 	sta	$20,x
 	lda	#$0002
 	sta	$14,x
@@ -4213,7 +4213,7 @@ tbl_td_item_homing_states:
 
 td_item_homing_state_0:
 	ldy	a:boss_centered_view
-	lda	a:data_05D66C,y
+	lda	a:td_item_homing_anims,y
 	sta	$20,x
 	lda	#$0003
 	sta	$14,x
@@ -4234,7 +4234,7 @@ tbl_td_item_flame_states:
 
 td_item_flame_state_0:
 	ldy	a:boss_centered_view
-	lda	a:data_05D670,y
+	lda	a:td_item_flame_anims,y
 	sta	$20,x
 	lda	#$0004
 	sta	$14,x
@@ -4255,7 +4255,7 @@ tbl_td_item_laser_states:
 
 td_item_laser_state_0:
 	ldy	a:boss_centered_view
-	lda	a:data_05D674,y
+	lda	a:td_item_laser_anims,y
 	sta	$20,x
 	lda	#$0005
 	sta	$14,x
@@ -4276,7 +4276,7 @@ tbl_td_item_barrier_states:
 
 td_item_barrier_state_0:
 	ldy	a:boss_centered_view
-	lda	a:data_05D678,y
+	lda	a:td_item_barrier_anims,y
 	sta	$20,x
 	lda	#$0006
 	sta	$14,x
@@ -4297,7 +4297,7 @@ tbl_td_item_bomb_states:
 
 td_item_bomb_state_0:
 	ldy	a:boss_centered_view
-	lda	a:data_05D67C,y
+	lda	a:td_item_bomb_anims,y
 	sta	$20,x
 	lda	#$0007
 	sta	$14,x
@@ -4687,7 +4687,7 @@ stage2_boss_state_06:
 	ldy	$26,x
 	lda	$04,x
 	clc
-	adc	a:data_05D7B2,y
+	adc	a:stage2_boss_turn_steps,y
 	and	#$00FF
 	sta	$04,x
 	cmp	$24,x
@@ -4781,9 +4781,9 @@ loc_02AF2C:
 	lda	a:$0ECE,y
 	sta	a:td_boss_y
 	ldy	difficulty
-	lda	a:data_05D7B6,y
+	lda	a:stage2_boss_fall_spin_speeds,y
 	sta	a:td_map_objects+$3C
-	lda	a:data_05D7BC,y
+	lda	a:stage2_boss_fall_scale_speeds,y
 	sta	a:td_map_objects+$3A
 	inc	$12,x
 
@@ -4899,7 +4899,7 @@ loc_02B02D:
 	stz	$1E,x
 	stz	$1C,x
 	ldy	difficulty
-	lda	a:data_05D7C2,y
+	lda	a:stage2_boss_state_10_delays,y
 	sta	$24,x
 	lda	#$0010
 	sta	$12,x
@@ -5236,7 +5236,7 @@ stage2_boss_aim_jump:
 	jsl	f:calc_angle
 	sta	$04,x
 	ldy	difficulty
-	lda	a:data_05D7C8,y
+	lda	a:stage2_boss_jump_speeds,y
 	jsl	f:set_velocity_from_angle
 	pla
 	sta	$04,x
@@ -5299,7 +5299,7 @@ loc_02B2D3:
 	sta	zp_DA
 	sep	#$10
 	.i8
-	ldx	a:data_05D868,y
+	ldx	a:td_boss_cosine,y
 	stx	a:WRMPYB
 	stx	zp_E2
 	lda	zp_D4
@@ -5312,7 +5312,7 @@ loc_02B2D3:
 	inc	a
 loc_02B301:
 	sta	zp_00
-	ldx	a:data_05D828,y
+	ldx	a:td_boss_sine,y
 	stx	a:WRMPYB
 	lda	zp_D4
 	eor	zp_D7
@@ -5456,11 +5456,11 @@ stage2_boss_core_position:
 	adc	#$0040
 	and	#$007E
 	tay
-	lda	a:data_05DA64,y
+	lda	a:stage2_boss_core_offsets_x,y
 	clc
 	adc	a:td_boss_x
 	sta	$0A,x
-	lda	a:data_05DA44,y
+	lda	a:stage2_boss_core_offsets_y,y
 	clc
 	adc	a:td_boss_y
 	sta	$0E,x
@@ -5480,7 +5480,7 @@ update_stage2_boss_pod:
 	lda	$20,x
 	sta	$2A,x
 	ldy	$14,x
-	lda	a:data_05D98C,y
+	lda	a:stage2_boss_pod_hit_blocks,y
 	sta	$20,x
 	lda	$2E,x
 	and	#$FFBF
@@ -5553,7 +5553,7 @@ loc_02B4A6:
 
 stage2_boss_pod_state_2:
 	ldy	$14,x
-	lda	a:data_05D968,y
+	lda	a:stage2_boss_pod_closed_blocks,y
 	sta	$20,x
 	lda	#$B000	; [num]
 	sta	$16,x
@@ -5561,7 +5561,7 @@ stage2_boss_pod_state_2:
 
 stage2_boss_pod_state_3:
 	ldy	$14,x
-	lda	a:data_05D974,y
+	lda	a:stage2_boss_pod_half_open_blocks,y
 	sta	$20,x
 	lda	#$0008
 	sta	$24,x
@@ -5574,7 +5574,7 @@ stage2_boss_pod_state_4:
 	dec	$24,x
 	bne	loc_02B501
 	ldy	$14,x
-	lda	a:data_05D980,y
+	lda	a:stage2_boss_pod_open_blocks,y
 	sta	$20,x
 	lda	#$0020
 	sta	$24,x
@@ -5591,7 +5591,7 @@ stage2_boss_pod_state_5:
 	rtl
 loc_02B4EF:
 	ldy	$14,x
-	lda	a:data_05D974,y
+	lda	a:stage2_boss_pod_half_open_blocks,y
 	sta	$20,x
 	lda	#$0008
 	sta	$24,x
@@ -5624,7 +5624,7 @@ loc_02B528:
 	rtl
 loc_02B529:
 	ldy	$14,x
-	lda	a:data_05D998,y
+	lda	a:stage2_boss_pod_destroyed_blocks,y
 	sta	$20,x
 	cmp	$28,x
 	bne	loc_02B528
@@ -5675,14 +5675,14 @@ stage2_boss_pod_position:
 	ldy	$14,x
 	lda	a:td_map_objects+$3E
 	clc
-	adc	a:data_05DC04,y
+	adc	a:stage2_boss_pod_arm_angles,y
 	and	#$007E
 	tay
-	lda	a:data_05DB04,y
+	lda	a:stage2_boss_pod_offsets_x,y
 	clc
 	adc	a:td_boss_x
 	sta	$0A,x
-	lda	a:data_05DAE4,y
+	lda	a:stage2_boss_pod_offsets_y,y
 	clc
 	adc	a:td_boss_y
 	sta	$0E,x
@@ -5789,7 +5789,7 @@ stage2_boss_cannon_state_3:
 	ldy	a:td_map_objects+$26
 	lda	$04,x
 	clc
-	adc	a:data_05D81E,y
+	adc	a:stage2_boss_cannon_turn_steps,y
 	and	#$00FF
 	sta	$04,x
 	jsr	a:stage2_boss_cannon_fire
@@ -5933,9 +5933,9 @@ loc_02B748:
 	and	#$007E
 	phx
 	tax
-	lda	a:data_05D9A4,x
+	lda	a:td_circle_r32_y,x
 	sta	zp_08
-	lda	a:data_05D9C4,x
+	lda	a:td_circle_r32_x,x
 	plx
 	clc
 	adc	$0A,x
@@ -5957,7 +5957,7 @@ stage2_boss_stream_chr:
 	lda	a:boss_anim_frame
 	asl	a
 	tay
-	lda	a:data_05DC30,y
+	lda	a:stage2_boss_chr_sources,y
 	sta	a:boss_chr_stream_src
 	rtl
 
@@ -5980,10 +5980,10 @@ loc_02B7AF:
 	clc
 	adc	a:turn_sound_counter
 	sta	a:turn_sound_counter
-	cmp	a:data_05DC34,y
+	cmp	a:td_turn_sound_thresholds,y
 	bcc	loc_02B7C8
 	stz	a:turn_sound_counter
-	lda	a:data_05DC44,y
+	lda	a:td_turn_sounds,y
 	jsl	f:queue_sound
 loc_02B7C8:
 	rts
@@ -6121,7 +6121,7 @@ loc_02B8B8:
 	tay
 	lda	$02,x
 	and	#$3000
-	ora	a:data_05DC56,y
+	ora	a:td_enemy_bullet_palettes,y
 	sta	$02,x
 	rtl
 
@@ -6451,7 +6451,7 @@ loc_02BB08:
 	sbc	$12,x
 	asl	a
 	tay
-	lda	a:data_05DC62,y
+	lda	a:td_laser_segment_distances,y
 	tay
 	lda	$04,x
 	jsl	f:polar_to_xy
@@ -6485,7 +6485,7 @@ td_flicker_shot:
 loc_02BB75:
 	lda	$02,x
 	and	#$3000
-	ora	a:data_05DC7A,y
+	ora	a:td_flicker_palettes,y
 	sta	$02,x
 	rtl
 
@@ -6545,7 +6545,7 @@ loc_02BBD3:
 	sbc	$12,x
 	and	#$000E
 	tay
-	lda	a:data_05DCFC,y
+	lda	a:td_flame_segment_distances,y
 	tay
 	lda	$14,x
 	sta	$18,x
@@ -6585,7 +6585,7 @@ loc_02BC30:
 	tya
 	ora	zp_00
 	tay
-	lda	a:data_05DC86,y
+	lda	a:td_shot_anim_sprites,y
 	sta	$00,x
 	rts
 
@@ -6751,13 +6751,13 @@ td_crush_blast_frame:
 	asl	a
 	and	#$000E
 	tay
-	lda	a:data_05DCC6,y
+	lda	a:td_crush_blast_sprites,y
 	sta	$00,x
 	lda	$02,x
 	and	#$3000
-	ora	a:data_05DCD6,y
+	ora	a:td_crush_blast_palettes,y
 	sta	$02,x
-	lda	a:data_05DCE6,y
+	lda	a:td_crush_blast_flags,y
 	sta	$16,x
 	rtl
 
@@ -6786,7 +6786,7 @@ loc_02BDC1:
 	sbc	$12,x
 	asl	a
 	tay
-	lda	a:data_05DC62,y
+	lda	a:td_laser_segment_distances,y
 	clc
 	adc	#$0020
 	tay
@@ -6874,7 +6874,7 @@ td_boss_spit_frame:
 	asl	a
 	and	#$000E
 	tay
-	lda	a:data_05DCA6,y
+	lda	a:td_shot_anim_sprites_2,y
 	sta	$00,x
 	rts
 
@@ -6965,7 +6965,7 @@ td_homing_orb_steer:
 	ldy	difficulty
 	lda	$04,x
 	clc
-	adc	a:data_05DCF6,y
+	adc	a:td_homing_orb_turn_speeds,y
 	and	#$00FF
 	sta	$04,x
 	rts
@@ -6973,7 +6973,7 @@ loc_02BF2D:
 	ldy	difficulty
 	lda	$04,x
 	sec
-	sbc	a:data_05DCF6,y
+	sbc	a:td_homing_orb_turn_speeds,y
 	and	#$00FF
 	sta	$04,x
 	rts
@@ -7013,7 +7013,7 @@ loc_02BF77:
 	tya
 	ora	zp_00
 	tay
-	lda	a:data_05DC86,y
+	lda	a:td_shot_anim_sprites,y
 	sta	$00,x
 	rts
 
@@ -7062,7 +7062,7 @@ loc_02BFCE:
 	pha
 	lda	$02,x
 	and	#$CFFF
-	ora	a:data_05DF42,y
+	ora	a:td_sprite_priorities,y
 	sta	$02,x
 	pla
 loc_02BFDA:
@@ -7161,7 +7161,7 @@ loc_02C073:
 	pha
 	lda	$02,x
 	and	#$CFFF
-	ora	a:data_05DF42,y
+	ora	a:td_sprite_priorities,y
 	sta	$02,x
 	pla
 loc_02C07F:
@@ -7261,7 +7261,7 @@ loc_02C105:
 loc_02C115:
 	lda	$02,x
 	and	#$CFFF
-	ora	a:data_05DF42,y
+	ora	a:td_sprite_priorities,y
 	sta	$02,x
 loc_02C11F:
 	sec
@@ -7573,7 +7573,7 @@ loc_02C351:
 loc_02C366:
 	lda	$02,x
 	and	#$CFFF
-	ora	a:data_05DF42,y
+	ora	a:td_sprite_priorities,y
 	sta	$02,x
 loc_02C370:
 	clc
@@ -7662,12 +7662,12 @@ td_tile_whirl_player:
 	ldy	difficulty
 	lda	$04,x
 	clc
-	adc	a:data_05DD1E,y
+	adc	a:td_whirl_turn_speeds,y
 	and	#$00FF
 	sta	$04,x
 	lda	a:$0658,x
 	clc
-	adc	a:data_05DD1E,y
+	adc	a:td_whirl_turn_speeds,y
 	and	#$00FF
 	sta	a:$0658,x
 	clc
@@ -7679,12 +7679,12 @@ loc_02C40C:
 	ldy	difficulty
 	lda	$04,x
 	clc
-	adc	a:data_05DD1E,y
+	adc	a:td_whirl_turn_speeds,y
 	and	#$00FF
 	sta	$04,x
 	lda	a:$0654,x
 	clc
-	adc	a:data_05DD1E,y
+	adc	a:td_whirl_turn_speeds,y
 	and	#$00FF
 	sta	a:$0654,x
 	clc
@@ -7717,12 +7717,12 @@ loc_02C445:
 	ldy	difficulty
 	lda	$04,x
 	clc
-	adc	a:data_05DD24,y
+	adc	a:td_sand_pit_turn_speeds,y
 	and	#$00FF
 	sta	$04,x
 	lda	a:$0658,x
 	clc
-	adc	a:data_05DD24,y
+	adc	a:td_sand_pit_turn_speeds,y
 	and	#$00FF
 	sta	a:$0658,x
 	clc
@@ -7732,12 +7732,12 @@ loc_02C470:
 	ldy	difficulty
 	lda	$04,x
 	clc
-	adc	a:data_05DD24,y
+	adc	a:td_sand_pit_turn_speeds,y
 	and	#$00FF
 	sta	$04,x
 	lda	a:$0654,x
 	clc
-	adc	a:data_05DD24,y
+	adc	a:td_sand_pit_turn_speeds,y
 	and	#$00FF
 	sta	a:$0654,x
 	clc
@@ -8246,11 +8246,11 @@ loc_02C7FC:
 	tay
 	lda	$0A,x
 	sec
-	sbc	a:data_05DD2A,y
+	sbc	a:td_wall_push_dx,y
 	sta	$0A,x
 	lda	$0E,x
 	clc
-	adc	a:data_05DDAA,y
+	adc	a:td_wall_push_dy,y
 	sta	$0E,x
 	stz	$08,x
 	lda	#$FFFF	; [num]
@@ -8277,11 +8277,11 @@ loc_02C835:
 	tay
 	lda	$0A,x
 	sec
-	sbc	a:data_05DD2A,y
+	sbc	a:td_wall_push_dx,y
 	sta	$0A,x
 	lda	$0E,x
 	sec
-	sbc	a:data_05DDAA,y
+	sbc	a:td_wall_push_dy,y
 	sta	$0E,x
 	stz	$08,x
 	stz	$0C,x
@@ -8308,11 +8308,11 @@ loc_02C868:
 	tay
 	lda	$0A,x
 	clc
-	adc	a:data_05DD2A,y
+	adc	a:td_wall_push_dx,y
 	sta	$0A,x
 	lda	$0E,x
 	sec
-	sbc	a:data_05DDAA,y
+	sbc	a:td_wall_push_dy,y
 	sta	$0E,x
 	lda	#$FFFF	; [num]
 	sta	$08,x
@@ -8341,11 +8341,11 @@ loc_02C8A1:
 	tay
 	lda	$0A,x
 	clc
-	adc	a:data_05DD2A,y
+	adc	a:td_wall_push_dx,y
 	sta	$0A,x
 	lda	$0E,x
 	clc
-	adc	a:data_05DDAA,y
+	adc	a:td_wall_push_dy,y
 	sta	$0E,x
 	lda	#$FFFF	; [num]
 	sta	$08,x
@@ -8379,11 +8379,11 @@ loc_02C8FB:
 	tay
 	lda	$0A,x
 	sec
-	sbc	a:data_05DE2A,y
+	sbc	a:td_wall_push_diag,y
 	sta	$0A,x
 	lda	$0E,x
 	clc
-	adc	a:data_05DE2A,y
+	adc	a:td_wall_push_diag,y
 	sta	$0E,x
 	stz	$08,x
 	lda	#$FFFF	; [num]
@@ -8414,11 +8414,11 @@ loc_02C937:
 	tay
 	lda	$0A,x
 	sec
-	sbc	a:data_05DE2A,y
+	sbc	a:td_wall_push_diag,y
 	sta	$0A,x
 	lda	$0E,x
 	sec
-	sbc	a:data_05DE2A,y
+	sbc	a:td_wall_push_diag,y
 	sta	$0E,x
 	stz	$08,x
 	stz	$0C,x
@@ -8451,11 +8451,11 @@ loc_02C979:
 	tay
 	lda	$0A,x
 	clc
-	adc	a:data_05DE2A,y
+	adc	a:td_wall_push_diag,y
 	sta	$0A,x
 	lda	$0E,x
 	sec
-	sbc	a:data_05DE2A,y
+	sbc	a:td_wall_push_diag,y
 	sta	$0E,x
 	lda	#$FFFF	; [num]
 	sta	$08,x
@@ -8492,11 +8492,11 @@ loc_02C9C7:
 	tay
 	lda	$0A,x
 	clc
-	adc	a:data_05DE2A,y
+	adc	a:td_wall_push_diag,y
 	sta	$0A,x
 	lda	$0E,x
 	clc
-	adc	a:data_05DE2A,y
+	adc	a:td_wall_push_diag,y
 	sta	$0E,x
 	lda	#$FFFF	; [num]
 	sta	$08,x
@@ -8528,7 +8528,7 @@ td_trigger_trap:
 	lsr	a
 	lsr	a
 	tay
-	lda	a:data_05DEAA,y
+	lda	a:td_trap_timer_slots,y
 	beq	@return
 	tay
 	lda	a:$187E,y
@@ -8601,9 +8601,9 @@ loc_02CA6A:
 	ldy	#$0002
 loc_02CA8F:
 	sty	a:wram_18D2
-	lda	a:data_05DEEA,y
+	lda	a:td_switch2_vram_addrs,y
 	sta	a:wram_18D8
-	lda	a:data_05DEEE,y
+	lda	a:td_switch2_x,y
 	sta	a:wram_18D4
 	lda	#$0390
 	sta	a:wram_18D6
@@ -8628,9 +8628,9 @@ loc_02CAAB:
 	ldy	#$0002
 loc_02CAD0:
 	sty	a:wram_18C4
-	lda	a:data_05DEF2,y
+	lda	a:td_switch1_vram_addrs,y
 	sta	a:wram_18CA
-	lda	a:data_05DEF6,y
+	lda	a:td_switch1_x,y
 	sta	a:wram_18C6
 	lda	#$0230
 	sta	a:wram_18C8
@@ -8655,9 +8655,9 @@ loc_02CAEC:
 	ldy	#$0002
 loc_02CB11:
 	sty	a:wram_18B6
-	lda	a:data_05DEFA,y
+	lda	a:td_switch0_vram_addrs,y
 	sta	a:wram_18BC
-	lda	a:data_05DEFE,y
+	lda	a:td_switch0_x,y
 	sta	a:wram_18B8
 	lda	#$0050
 	sta	a:wram_18BA
@@ -8693,7 +8693,7 @@ loc_02CB57:
 	rts
 
 ; Y = the map object owning the TDA_MAP_OBJECT tile under X (by 256-pixel
-; cell: data_05DF02 on stage 2, data_05DF22 on stage 5; $0AC0 on the
+; cell: stage2_map_object_by_cell on stage 2, stage5_map_object_by_cell on stage 5; $0AC0 on the
 ; boss maps).
 td_get_map_object_at:
 	lda	$0A,x
@@ -8715,11 +8715,11 @@ td_get_map_object_at:
 	ldy	#$0AC0
 	rts
 loc_02CB7B:
-	lda	a:data_05DF02,y
+	lda	a:stage2_map_object_by_cell,y
 	tay
 	rts
 loc_02CB80:
-	lda	a:data_05DF22,y
+	lda	a:stage5_map_object_by_cell,y
 	tay
 	rts
 
@@ -8764,7 +8764,7 @@ loc_02CBB5:
 loc_02CBC3:
 	ora	zp_FA
 	tay
-	lda	a:data_05DF46,y
+	lda	a:td_distance_table,y
 	and	#$00FF
 	tay
 	beq	loc_02CBD7
@@ -9602,10 +9602,10 @@ loc_02D222:
 	dec	a
 	beq	loc_02D262
 loc_02D22A:
-	lda	a:data_05E046,y
+	lda	a:td_arrow_lr_sprites,y
 	beq	loc_02D240
 	sta	a:td_arrow_objs
-	lda	a:data_05E066,y
+	lda	a:td_arrow_lr_x,y
 	sta	a:td_arrow_objs+OBJ_X
 	lda	#$0070
 	sta	a:td_arrow_objs+OBJ_Y
@@ -9614,12 +9614,12 @@ loc_02D240:
 	lda	#$00F0
 	sta	a:td_arrow_objs+OBJ_Y
 loc_02D246:
-	lda	a:data_05E056,y
+	lda	a:td_arrow_tb_sprites,y
 	beq	loc_02D25B
 	sta	a:td_arrow_objs+1*OBJ_SIZE
 	lda	#$0078
 	sta	a:td_arrow_objs+1*OBJ_SIZE+OBJ_X
-	lda	a:data_05E076,y
+	lda	a:td_arrow_tb_y,y
 	sta	a:td_arrow_objs+1*OBJ_SIZE+OBJ_Y
 	rts
 loc_02D25B:
@@ -9627,10 +9627,10 @@ loc_02D25B:
 	sta	a:td_arrow_objs+1*OBJ_SIZE+OBJ_Y
 	rts
 loc_02D262:
-	lda	a:data_05E046,y
+	lda	a:td_arrow_lr_sprites,y
 	beq	loc_02D278
 	sta	a:td_arrow_objs
-	lda	a:data_05E066,y
+	lda	a:td_arrow_lr_x,y
 	sta	a:td_arrow_objs+OBJ_X
 	lda	#$0030
 	sta	a:td_arrow_objs+OBJ_Y
@@ -9639,12 +9639,12 @@ loc_02D278:
 	lda	#$00F0
 	sta	a:td_arrow_objs+OBJ_Y
 loc_02D27E:
-	lda	a:data_05E056,y
+	lda	a:td_arrow_tb_sprites,y
 	beq	loc_02D293
 	sta	a:td_arrow_objs+1*OBJ_SIZE
 	lda	#$0078
 	sta	a:td_arrow_objs+1*OBJ_SIZE+OBJ_X
-	lda	a:data_05E086,y
+	lda	a:td_arrow_tb_y_top_half,y
 	sta	a:td_arrow_objs+1*OBJ_SIZE+OBJ_Y
 	rts
 loc_02D293:
@@ -10606,10 +10606,10 @@ loc_02DA14:
 	beq	loc_02DA54
 loc_02DA1C:
 	; (not executed in the CDL traces)
-	lda	a:data_05E096,y
+	lda	a:td_p2_arrow_lr_sprites,y
 	beq	loc_02DA32
 	sta	a:td_arrow_objs
-	lda	a:data_05E0B6,y
+	lda	a:td_p2_arrow_lr_x,y
 	sta	a:td_arrow_objs+OBJ_X
 	lda	#$0070
 	sta	a:td_arrow_objs+OBJ_Y
@@ -10618,12 +10618,12 @@ loc_02DA32:
 	lda	#$00F0
 	sta	a:td_arrow_objs+OBJ_Y
 loc_02DA38:
-	lda	a:data_05E0A6,y
+	lda	a:td_p2_arrow_tb_sprites,y
 	beq	loc_02DA4D
 	sta	a:td_arrow_objs+1*OBJ_SIZE
 	lda	#$0078
 	sta	a:td_arrow_objs+1*OBJ_SIZE+OBJ_X
-	lda	a:data_05E0C6,y
+	lda	a:td_p2_arrow_tb_y,y
 	sta	a:td_arrow_objs+1*OBJ_SIZE+OBJ_Y
 	rts
 loc_02DA4D:
@@ -10631,10 +10631,10 @@ loc_02DA4D:
 	sta	a:td_arrow_objs+1*OBJ_SIZE+OBJ_Y
 	rts
 loc_02DA54:
-	lda	a:data_05E096,y
+	lda	a:td_p2_arrow_lr_sprites,y
 	beq	loc_02DA6A
 	sta	a:td_arrow_objs+2*OBJ_SIZE
-	lda	a:data_05E0B6,y
+	lda	a:td_p2_arrow_lr_x,y
 	sta	a:td_arrow_objs+2*OBJ_SIZE+OBJ_X
 	lda	#$00A8
 	sta	a:td_arrow_objs+2*OBJ_SIZE+OBJ_Y
@@ -10643,12 +10643,12 @@ loc_02DA6A:
 	lda	#$00F0
 	sta	a:td_arrow_objs+2*OBJ_SIZE+OBJ_Y
 loc_02DA70:
-	lda	a:data_05E0A6,y
+	lda	a:td_p2_arrow_tb_sprites,y
 	beq	loc_02DA85
 	sta	a:td_arrow_objs+3*OBJ_SIZE
 	lda	#$0078
 	sta	a:td_arrow_objs+3*OBJ_SIZE+OBJ_X
-	lda	a:data_05E0D6,y
+	lda	a:td_p2_arrow_tb_y_bottom_half,y
 	sta	a:td_arrow_objs+3*OBJ_SIZE+OBJ_Y
 	rts
 loc_02DA85:
@@ -10880,26 +10880,26 @@ loc_02DC4C:
 	dec	a:block_anim_timer_left
 	asl	a
 	tay
-	lda	a:data_05E13C,y
+	lda	a:td_block_anim_frames,y
 	beq	loc_02DC8A
 	tax
-	ldy	a:data_05E17C,x
-	lda	a:data_05E1BC,x
+	ldy	a:td_block_anim_blocks_0,x
+	lda	a:td_block_anim_vram_left_0,x
 	phx
 	jsl	f:set_m7_block_patch_0
 	plx
-	ldy	a:data_05E18C,x
-	lda	a:data_05E1CC,x
+	ldy	a:td_block_anim_blocks_1,x
+	lda	a:td_block_anim_vram_left_1,x
 	phx
 	jsl	f:set_m7_block_patch_1
 	plx
-	ldy	a:data_05E19C,x
-	lda	a:data_05E1DC,x
+	ldy	a:td_block_anim_blocks_2,x
+	lda	a:td_block_anim_vram_left_2,x
 	phx
 	jsl	f:set_m7_block_patch_2
 	plx
-	ldy	a:data_05E1AC,x
-	lda	a:data_05E1EC,x
+	ldy	a:td_block_anim_blocks_3,x
+	lda	a:td_block_anim_vram_left_3,x
 	jml	f:set_m7_block_patch_3
 loc_02DC8A:
 	lda	a:block_anim_timer_right
@@ -10907,26 +10907,26 @@ loc_02DC8A:
 	dec	a:block_anim_timer_right
 	asl	a
 	tay
-	lda	a:data_05E13C,y
+	lda	a:td_block_anim_frames,y
 	beq	loc_02DCC8
 	tax
-	ldy	a:data_05E17C,x
-	lda	a:data_05E1FC,x
+	ldy	a:td_block_anim_blocks_0,x
+	lda	a:td_block_anim_vram_right_0,x
 	phx
 	jsl	f:set_m7_block_patch_0
 	plx
-	ldy	a:data_05E18C,x
-	lda	a:data_05E20C,x
+	ldy	a:td_block_anim_blocks_1,x
+	lda	a:td_block_anim_vram_right_1,x
 	phx
 	jsl	f:set_m7_block_patch_1
 	plx
-	ldy	a:data_05E19C,x
-	lda	a:data_05E21C,x
+	ldy	a:td_block_anim_blocks_2,x
+	lda	a:td_block_anim_vram_right_2,x
 	phx
 	jsl	f:set_m7_block_patch_2
 	plx
-	ldy	a:data_05E1AC,x
-	lda	a:data_05E22C,x
+	ldy	a:td_block_anim_blocks_3,x
+	lda	a:td_block_anim_vram_right_3,x
 	jml	f:set_m7_block_patch_3
 loc_02DCC8:
 	ldx	#$002C
@@ -10947,16 +10947,16 @@ loc_02DCCB:
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
-	lda	a:data_05E0E4,x
+	lda	a:td_trap_blast_x,x
 	sta	a:$000A,y
-	lda	a:data_05E110,x
+	lda	a:td_trap_blast_y,x
 	sta	a:$000E,y
 loc_02DD01:
 	bra	loc_02DD14
 loc_02DD03:
 	phx
 	ldy	#$0057
-	lda	a:data_05E23C,x
+	lda	a:td_trap_vram_addrs,x
 	jsl	f:queue_m7_block_patch
 	plx
 	bcc	loc_02DD14
@@ -10992,7 +10992,7 @@ td_step_switch_event:
 	lda	$04,x
 	inc	$04,x
 	ldy	difficulty
-	cmp	a:data_05E26A,y
+	cmp	a:td_switch_event_step_delays,y
 	bcs	loc_02DD44
 	rts
 loc_02DD44:
@@ -11006,11 +11006,11 @@ loc_02DD44:
 	ldy	$06,x
 	lda	$08,x
 	clc
-	adc	a:data_05E270,y
+	adc	a:td_switch_event_step_x,y
 	sta	$08,x
 	lda	$0C,x
 	clc
-	adc	a:data_05E274,y
+	adc	a:td_switch_event_step_vram,y
 	sta	$0C,x
 @return:
 	rts
@@ -11032,7 +11032,7 @@ td_patch_switch_event_block:
 	adc	$02,x
 	asl	a
 	tay
-	lda	a:data_05E276,y
+	lda	a:td_switch_event_blocks,y
 	tay
 	lda	$0C,x
 	phx

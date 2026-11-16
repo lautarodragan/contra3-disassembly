@@ -3794,14 +3794,22 @@ hdma_table_05CD63:
 topdown_stage_songs:
 	; CDL: read by intro_play_music
 	.byte	$63, $00, $66, $00
-data_05CD6E:
+; BG3VOFS (low byte; the high byte is the next byte) for the status bar, by
+; mode: 0 for one view (1P, mode B), 2 for the split screen of mode A
+; (set_status_bar_scroll).
+status_bar_vofs_lo:
 	; CDL: read by set_status_bar_scroll
 	.byte	$00
-data_05CD6F:
-	; LAYOUT: read on from data_05CD6E (lda a:data_05CD6E,y)
+; High byte of BG3VOFS for the status bar (set_status_bar_scroll; one byte
+; after status_bar_vofs_lo).
+status_bar_vofs_hi:
+	; LAYOUT: read on from status_bar_vofs_lo (lda a:status_bar_vofs_lo,y)
 	; CDL: read by set_status_bar_scroll
 	.byte	$00, $9F, $FF
-data_05CD72:
+; Offset into stage2_target_type_sets by difficulty (x2), added to a random
+; multiple of $10 (spawn_stage2_targets; EASY uses offset 0 and no random, so
+; entry 0 is not read).
+stage2_target_set_bases:
 	.byte	$00, $00, $10, $00, $50, $00
 stage2_target_type_sets:
 	.byte	$01, $00, $01, $00, $01, $00, $01, $00, $01, $00
@@ -3814,27 +3822,38 @@ stage2_target_type_sets:
 	.byte	$00, $00, $00, $00, $00, $00, $0C, $00, $0D, $00, $0E, $00, $01, $00, $07, $00
 	.byte	$00, $00, $00, $00, $00, $00, $0D, $00, $0E, $00, $01, $00, $07, $00, $0C, $00
 	.byte	$00, $00, $00, $00, $00, $00
-data_05CE08:
+; OBJ_X of stage 2's five targets (spawn_stage2_targets).
+stage2_target_x:
 	; CDL: read by spawn_stage2_targets
 	.byte	$90, $00, $70, $03, $70, $01, $90, $02, $70, $00
-data_05CE12:
+; OBJ_Y of stage 2's five targets (spawn_stage2_targets).
+stage2_target_y:
 	; CDL: read by spawn_stage2_targets
 	.byte	$70, $00, $50, $00, $90, $02, $90, $02, $90, $03
-data_05CE1C:
+; Mode 7 VRAM address (+$26) where each stage 2 target draws its block
+; (spawn_stage2_targets, update_map_object_block).
+stage2_target_vram_addrs:
 	; CDL: read by spawn_stage2_targets
 	.byte	$10, $06, $6C, $04, $2C, $28, $50, $28, $0C, $38
-data_05CE26:
+; Field +$14 of each stage 2 target (spawn_stage2_targets).
+stage2_target_params:
 	; CDL: read by spawn_stage2_targets
 	.byte	$00, $00, $00, $00, $04, $00, $00, $00, $02, $00
-data_05CE30:
+; Map object type of the ten stage 2 boss objects from $0AC0: body, (none),
+; core, cannon, six pods (spawn_stage2_boss).
+stage2_boss_part_types:
 	; CDL: read by spawn_stage2_boss
 	.byte	$03, $00, $00, $00, $04, $00, $05, $00, $06, $00, $06, $00, $06, $00, $06, $00
 	.byte	$06, $00, $06, $00
-data_05CE44:
+; Field +$14 of the stage 2 boss objects: the arm x 2 for the pods
+; (spawn_stage2_boss).
+stage2_boss_part_params:
 	; CDL: read by spawn_stage2_boss
 	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $02, $00, $04, $00, $06, $00
 	.byte	$08, $00, $0A, $00
-data_05CE58:
+; Mode 7 VRAM address (+$26) of the stage 2 boss objects (spawn_stage2_boss).
+; The 16 bytes after the ten entries are not read.
+stage2_boss_part_vram_addrs:
 	; CDL: read by spawn_stage2_boss, spawn_stage5_targets; partly not accessed
 	.byte	$00, $00, $00, $00, $1C, $0E, $1C, $14, $16, $0D, $22, $0D, $14, $10, $24, $10
 	.byte	$16, $13, $22, $13, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
@@ -3850,25 +3869,33 @@ stage5_target_type_sets:
 	.byte	$02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
 	.byte	$02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00, $02, $00
 	.byte	$02, $00, $02, $00, $02, $00
-data_05CEFC:
+; Field +$14 of each stage 5 target (spawn_stage5_targets).
+stage5_target_params:
 	; CDL: read by spawn_stage5_targets
 	.byte	$00, $00, $00, $00, $02, $00, $00, $00, $02, $00
-data_05CF06:
+; OBJ_X of stage 5's five targets (spawn_stage5_targets).
+stage5_target_x:
 	; CDL: read by spawn_stage5_targets
 	.byte	$B0, $00, $70, $02, $90, $03, $50, $03, $F0, $00
-data_05CF10:
+; OBJ_Y of stage 5's five targets (spawn_stage5_targets).
+stage5_target_y:
 	; CDL: read by spawn_stage5_targets
 	.byte	$90, $00, $70, $01, $10, $01, $F0, $02, $30, $03
-data_05CF1A:
+; Mode 7 VRAM address (+$26) of each stage 5 target's block
+; (spawn_stage5_targets).
+stage5_target_vram_addrs:
 	; CDL: read by spawn_stage5_targets
 	.byte	$14, $08, $4C, $16, $70, $10, $68, $2E, $1C, $32
-data_05CF24:
+; Map object type of the stage 5 boss (TDMT_STAGE5_BOSS; spawn_stage5_boss).
+stage5_boss_spawn_type:
 	; CDL: read by spawn_stage5_boss
 	.byte	$08, $00
-data_05CF26:
+; Field +$14 of the stage 5 boss (spawn_stage5_boss).
+stage5_boss_spawn_param:
 	; CDL: read by spawn_stage5_boss
 	.byte	$00, $00
-data_05CF28:
+; Field +$26 of the stage 5 boss (spawn_stage5_boss).
+stage5_boss_spawn_vram_addr:
 	; CDL: read by spawn_stage5_boss
 	.byte	$00, $00
 load_list_05CF2A:
@@ -4025,36 +4052,56 @@ start_points_y_stage5:
 	; CDL: read by set_start_points, respawn_at_start_point_stage5
 	.byte	$A0, $00, $C0, $00, $60, $00, $60, $00, $60, $01, $80, $01, $A0, $01, $70, $01
 	.byte	$90, $02, $C0, $02, $80, $02, $80, $02, $70, $03, $90, $03, $90, $03, $80, $03
-data_05D15E:
+; Top-down player animation (+$20) by weapon slot choice (p1_weapon_select,
+; 0/2) + 4 in the second half of the jump (td_set_jump_anim).
+td_player_jump_anims:
 	; CDL: read by td_set_jump_anim
 	.byte	$10, $00, $07, $00, $11, $00, $08, $00
-data_05D166:
+; Animation of a standing player by weapon slot choice (td_set_stand_anim).
+td_player_stand_anims:
 	; CDL: read by td_set_stand_anim
 	.byte	$0E, $00, $03, $00
-data_05D16A:
+; Animation of a player standing and firing, by weapon slot choice + 4 every
+; other 4 frames (td_set_stand_fire_anim).
+td_player_stand_fire_anims:
 	; CDL: read by td_set_stand_fire_anim
 	.byte	$0E, $00, $03, $00, $0F, $00, $04, $00
-data_05D172:
+; Animation of a dying player by weapon slot choice + 4 after $10 frames
+; (td_player_state_dying).
+td_player_dying_anims:
 	; CDL: read by td_player_state_dying
 	.byte	$12, $00, $09, $00, $13, $00, $0A, $00
-data_05D17A:
+; Angle added each frame to a dying player, by its timer / 16
+; (td_spin_dying_player): the spin slows down.
+td_dying_spin_speeds:
 	; CDL: read by td_spin_dying_player
 	.byte	$06, $00, $04, $00, $02, $00, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00
-data_05D18C:
+; Animation of a player falling into a hole, by weapon slot choice + 4 after
+; $10 frames (td_set_falling_anim).
+td_player_falling_anims:
 	; CDL: read by td_set_falling_anim
 	.byte	$12, $00, $09, $00, $13, $00, $0A, $00
-data_05D194:
+; Walking animation by weapon slot choice + 4 x step (td_set_walk_anim).
+td_player_walk_anims:
 	; CDL: read by td_set_walk_anim
 	.byte	$0B, $00, $00, $00, $0C, $00, $01, $00, $0D, $00, $02, $00, $0C, $00, $01, $00
-data_05D1A4:
+; Sideways muzzle offset (zp_10) when firing forward, by weapon slot choice:
+; -12 for the first weapon, +13 for the second (td_fire_forward).
+td_fire_side_offsets:
 	; CDL: read by td_fire_jump_shot
 	.byte	$F4, $FF, $0D, $00
-data_05D1A8:
+; Sideways muzzle offset when firing from a jump, by weapon slot choice: -3,
+; +4 (td_fire_jump_shot; the second entry is the first word of the next
+; table).
+td_jump_fire_side_offsets:
 	; CDL: read by td_fire_jump_shot
 	.byte	$FD, $FF
-data_05D1AA:
-	; LAYOUT: read on from data_05D1A8 (lda a:data_05D1A8,y)
+; Angle offsets of the five spread shots (fire_td_spread): entries 1-5 or
+; 9-13, chosen at random (rng bit 3). Entry 0 is the last word of
+; td_jump_fire_side_offsets.
+td_spread_angle_offsets:
+	; LAYOUT: read on from td_jump_fire_side_offsets (lda a:td_jump_fire_side_offsets,y)
 	; CDL: read by td_fire_jump_shot, fire_td_spread; partly not accessed
 	.byte	$04, $00, $F0, $FF, $10, $00, $F8, $FF, $08, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $10, $00, $F0, $FF, $08, $00, $F8, $FF, $00, $00, $00, $00, $00, $00
@@ -4158,26 +4205,36 @@ td_anim_05D4E0:
 	anim_frame	$0008, $0000, $0200
 	anim_frame	$0008, $0002, $0200
 	anim_goto	td_anim_05D4E0
-data_05D4FA:
+; Turning speed of TDT_HATCH_TURRET_AIM by difficulty; also the width of the
+; angle window in which it fires (hatch_turret_aim_state_2).
+hatch_turret_aim_turn_speeds:
 	; CDL: read by hatch_turret_aim_state_2
 	.byte	$02, $00, $04, $00, $08, $00
-data_05D500:
+; Half of hatch_turret_aim_turn_speeds, added to the angle difference to
+; centre the firing window (hatch_turret_aim_state_2).
+hatch_turret_aim_half_speeds:
 	; CDL: read by hatch_turret_aim_state_2
 	.byte	$01, $00, $02, $00, $04, $00
 hatch_turret_aim_fire_masks:
 	; CDL: read by hatch_turret_aim_state_2
 	.byte	$1F, $00, $0F, $00
 	.byte	$07, $00
-data_05D50C:
+; Angle added each frame to TDT_HATCH_TURRET_SPIN, by difficulty
+; (hatch_turret_spin_state_2).
+hatch_turret_spin_speeds:
 	; CDL: read by hatch_turret_spin_state_2; partly not accessed
 	.byte	$04, $00, $08, $00, $10, $00
 hatch_turret_spin_fire_masks:
 	; CDL: read by hatch_turret_spin_state_2; partly not accessed
 	.byte	$07, $00, $01, $00, $00, $00
-data_05D518:
+; Added each frame to the sweep phase (+$24) of TDT_HATCH_TURRET_SWEEP, by
+; difficulty (hatch_turret_sweep_state_2).
+hatch_turret_sweep_phase_speeds:
 	; CDL: read by hatch_turret_sweep_state_2; partly not accessed
 	.byte	$08, $00, $04, $00, $10, $00
-data_05D51E:
+; Angle step of TDT_HATCH_TURRET_SWEEP, left or right by the sweep phase, by
+; difficulty (hatch_turret_sweep_turn).
+hatch_turret_sweep_turn_speeds:
 	; CDL: read by hatch_turret_sweep_turn; partly not accessed
 	.byte	$02, $00, $02, $00, $08, $00
 hatch_turret_sweep_fire_masks:
@@ -4204,7 +4261,9 @@ td_anim_05D544:
 td_centipede_bug_hp:
 	; CDL: read by td_centipede_bug_state_0
 	.word	ENEMY_HP($0002), ENEMY_HP($0004), ENEMY_HP($0008)
-data_05D558:
+; Frames a TDT_CENTIPEDE_BUG walks before stopping to fire, by difficulty
+; (plus 0-$18 by slot; td_centipede_bug_state_2).
+td_centipede_bug_walk_times:
 	; CDL: read by td_centipede_bug_state_2
 	.byte	$80, $00, $40, $00, $20, $00
 td_centipede_hp:
@@ -4224,7 +4283,9 @@ td_anim_05D570:
 	anim_frame	$0008, $0000, $0000
 	anim_frame	$0008, $0002, $0000
 	anim_goto	td_anim_05D570
-data_05D58A:
+; Frames a TDT_NEST_CRAWLER walks before firing, by difficulty
+; (td_nest_crawler_state_2).
+td_nest_crawler_walk_times:
 	; CDL: read by td_nest_crawler_state_2
 	.byte	$00, $01, $80, $00, $20, $00
 .if CHEAT_ENEMY_HP = 100
@@ -4274,25 +4335,33 @@ anim_05D610:
 	anim_frame	$0002, metasprite_07E987, $2E00
 	anim_frame	$0002, metasprite_07E998, $2E00
 	anim_end	$0000, $0000
-data_05D664:
+; Animation of the item, by boss_centered_view: the normal maps, then the
+; stage 2 boss map (td_item_spread_state_0).
+td_item_spread_anims:
 	; CDL: read by td_item_spread_state_0; partly not accessed
 	.addr	anim_05D680, anim_05D706
-data_05D668:
+; Animation of the item by boss_centered_view (td_item_crush_state_0).
+td_item_crush_anims:
 	; CDL: read by td_item_crush_state_0
 	.addr	anim_05D694, anim_05D71A
-data_05D66C:
+; Animation of the item by boss_centered_view (td_item_homing_state_0).
+td_item_homing_anims:
 	; CDL: read by td_item_homing_state_0
 	.addr	anim_05D6A8, anim_05D72E
-data_05D670:
+; Animation of the item by boss_centered_view (td_item_flame_state_0).
+td_item_flame_anims:
 	; CDL: read by td_item_flame_state_0
 	.addr	anim_05D6BC, anim_05D742
-data_05D674:
+; Animation of the item by boss_centered_view (td_item_laser_state_0).
+td_item_laser_anims:
 	; CDL: read by td_item_laser_state_0
 	.addr	anim_05D6D0, anim_05D756
-data_05D678:
+; Animation of the item by boss_centered_view (td_item_barrier_state_0).
+td_item_barrier_anims:
 	; CDL: read by td_item_barrier_state_0; partly not accessed
 	.addr	anim_05D6E4, anim_05D76A
-data_05D67C:
+; Animation of the item by boss_centered_view (td_item_bomb_state_0).
+td_item_bomb_anims:
 	; CDL: read by td_item_bomb_state_0, animate_td_item; partly not accessed
 	.addr	anim_05D6F8, anim_05D77E
 anim_05D680:
@@ -4384,19 +4453,29 @@ td_item_kind_types:
 	; LAYOUT: read on from td_item_drop_kinds (lda a:td_item_drop_kinds,y)
 	; CDL: read by td_spawn_item_drop
 	.byte	$07, $00, $03, $00, $04, $00, $05, $00, $06, $00, $07, $00, $08, $00, $09, $00
-data_05D7B2:
+; Angle step of the stage 2 boss turning to its target, +2 or -2 by the side
+; (+$26; stage2_boss_state_06).
+stage2_boss_turn_steps:
 	; CDL: read by stage2_boss_state_06
 	.byte	$02, $00, $FE, $FF
-data_05D7B6:
+; Angle added each frame to td_boss_angle while the stage 2 boss falls in, by
+; difficulty (stage2_boss_state_0A/0B).
+stage2_boss_fall_spin_speeds:
 	; CDL: read by stage2_boss_state_0A; partly not accessed
 	.byte	$04, $00, $06, $00, $08, $00
-data_05D7BC:
+; Added each frame to the Mode 7 scales while the stage 2 boss falls in (from
+; 0 to M7_SCALE_1X), by difficulty (stage2_boss_state_0A/0B).
+stage2_boss_fall_scale_speeds:
 	; CDL: read by stage2_boss_state_0A; partly not accessed
 	.byte	$04, $00, $06, $00, $0C, $00
-data_05D7C2:
+; Frames the stage 2 boss waits in state $10, by difficulty
+; (stage2_boss_state_0F).
+stage2_boss_state_10_delays:
 	; CDL: read by stage2_boss_state_0F; partly not accessed
 	.byte	$40, $00, $20, $00, $10, $00
-data_05D7C8:
+; Speed of the stage 2 boss jumping at its target player, by difficulty
+; (stage2_boss_aim_jump, set_velocity_from_angle).
+stage2_boss_jump_speeds:
 	; CDL: read by stage2_boss_aim_jump; partly not accessed
 	.byte	$30, $00, $40, $00, $60, $00
 stage2_boss_core_hp:
@@ -4416,20 +4495,26 @@ stage2_boss_pod_item_types:
 stage2_boss_cannon_hp:
 	; CDL: read by stage2_boss_cannon_state_0; partly not accessed
 	.word	ENEMY_HP($0080), ENEMY_HP($00C0), ENEMY_HP($0100)
-data_05D81E:
+; Angle step of the stage 2 boss cannon, +4 or -4 by the boss's +$26
+; (stage2_boss_cannon_state_3).
+stage2_boss_cannon_turn_steps:
 	; CDL: read by stage2_boss_cannon_state_3
 	.byte	$04, $00, $FC, $FF
 stage2_boss_cannon_fire_masks:
 	; CDL: read by stage2_boss_cannon_fire; partly not accessed
 	.byte	$03, $00, $01, $00, $00, $00
-data_05D828:
+; sin(i * 180 / 128) * 255, bytes (project_around_stage2_boss, through the
+; hardware multiplier).
+td_boss_sine:
 	; CDL: read by project_around_stage2_boss; partly not accessed
 	.byte	$00, $06, $0C, $12, $19, $1F, $25, $2B, $31, $38, $3E, $44, $4A, $50, $56, $5C
 	.byte	$61, $67, $6D, $73, $78, $7E, $83, $88, $8E, $93, $98, $9D, $A2, $A7, $AB, $B0
 	.byte	$B5, $B9, $BD, $C1, $C5, $C9, $CD, $D1, $D4, $D8, $DB, $DE, $E1, $E4, $E7, $EA
 	.byte	$EC, $EE, $F1, $F3, $F4, $F6, $F8, $F9, $FB, $FC, $FD, $FE, $FE, $FF, $FF, $FF
-data_05D868:
-	; LAYOUT: read on from data_05D828 (ldx a:data_05D828,y)
+; A quarter turn into td_boss_sine: the cosine (project_around_stage2_boss
+; reads it with the same index).
+td_boss_cosine:
+	; LAYOUT: read on from td_boss_sine (ldx a:td_boss_sine,y)
 	; CDL: read by project_around_stage2_boss; partly not accessed
 	.byte	$FF, $FF, $FF, $FF, $FE, $FE, $FD, $FC, $FB, $F9, $F8, $F6, $F4, $F3, $F1, $EE
 	.byte	$EC, $EA, $E7, $E4, $E1, $DE, $DB, $D8, $D4, $D1, $CD, $C9, $C5, $C1, $BD, $B9
@@ -4447,26 +4532,38 @@ data_05D868:
 	.byte	$61, $67, $6D, $73, $78, $7E, $83, $88, $8E, $93, $98, $9D, $A2, $A7, $AB, $B0
 	.byte	$B5, $B9, $BD, $C1, $C5, $C9, $CD, $D1, $D4, $D8, $DB, $DE, $E1, $E4, $E7, $EA
 	.byte	$EC, $EE, $F1, $F3, $F4, $F6, $F8, $F9, $FB, $FC, $FD, $FE, $FE, $FF, $FF, $FF
-data_05D968:
+; Mode 7 block of each stage 2 boss pod (by arm x 2) at rest
+; (stage2_boss_pod_state_2).
+stage2_boss_pod_closed_blocks:
 	; CDL: read by stage2_boss_pod_state_2
 	.byte	$2B, $00, $2C, $00, $1D, $00, $21, $00, $2D, $00, $2E, $00
-data_05D974:
+; Pod block for 8 frames before and after it is open (stage2_boss_pod_state_3,
+; _5).
+stage2_boss_pod_half_open_blocks:
 	; CDL: read by stage2_boss_pod_state_3
 	.byte	$35, $00, $01, $00, $02, $00, $03, $00, $04, $00, $05, $00
-data_05D980:
+; Pod block for the $20 frames it fires (stage2_boss_pod_state_4).
+stage2_boss_pod_open_blocks:
 	; CDL: read by stage2_boss_pod_state_4
 	.byte	$06, $00, $07, $00, $08, $00, $09, $00, $0A, $00, $0B, $00
-data_05D98C:
+; Pod block shown for a frame when it is hit (+$2E bit 6;
+; update_stage2_boss_pod).
+stage2_boss_pod_hit_blocks:
 	; CDL: read by update_stage2_boss_pod
 	.byte	$2F, $00, $30, $00, $31, $00, $32, $00, $33, $00, $34, $00
-data_05D998:
+; Pod block once destroyed (stage2_boss_pod_state_7).
+stage2_boss_pod_destroyed_blocks:
 	; CDL: read by stage2_boss_pod_state_7
 	.byte	$0C, $00, $0D, $00, $0E, $00, $0F, $00, $10, $00, $11, $00
-data_05D9A4:
+; Y offsets of a circle of radius $20 in 64 steps (the first 16 here, then the
+; x table read a quarter turn later): the flame of the stage 2 boss cannon
+; (loc_02B748, not run in the traces).
+td_circle_r32_y:
 	; CDL: not accessed
 	.byte	$E0, $FF, $E1, $FF, $E1, $FF, $E2, $FF, $E3, $FF, $E4, $FF, $E6, $FF, $E8, $FF
 	.byte	$EA, $FF, $EC, $FF, $EF, $FF, $F1, $FF, $F4, $FF, $F7, $FF, $FA, $FF, $FD, $FF
-data_05D9C4:
+; X offsets of a circle of radius $20 in 64 steps (sine; loc_02B748).
+td_circle_r32_x:
 	; CDL: not accessed
 	.byte	$00, $00, $03, $00, $06, $00, $09, $00, $0C, $00, $0F, $00, $11, $00, $14, $00
 	.byte	$16, $00, $18, $00, $1A, $00, $1C, $00, $1D, $00, $1E, $00, $1F, $00, $1F, $00
@@ -4476,12 +4573,16 @@ data_05D9C4:
 	.byte	$EA, $FF, $E8, $FF, $E6, $FF, $E4, $FF, $E3, $FF, $E2, $FF, $E1, $FF, $E1, $FF
 	.byte	$E0, $FF, $E1, $FF, $E1, $FF, $E2, $FF, $E3, $FF, $E4, $FF, $E6, $FF, $E8, $FF
 	.byte	$EA, $FF, $EC, $FF, $EF, $FF, $F1, $FF, $F4, $FF, $F7, $FF, $FA, $FF, $FD, $FF
-data_05DA44:
+; Y offset of the stage 2 boss core from the boss centre, by angle
+; (stage2_boss_core_position: radius $12, 64 steps; the first 16 here, then
+; the x table read a quarter turn later).
+stage2_boss_core_offsets_y:
 	; CDL: read by stage2_boss_core_position
 	.byte	$EE, $FF, $EF, $FF, $EF, $FF, $EF, $FF, $F0, $FF, $F1, $FF, $F2, $FF, $F3, $FF
 	.byte	$F4, $FF, $F5, $FF, $F6, $FF, $F8, $FF, $FA, $FF, $FB, $FF, $FD, $FF, $FF, $FF
-data_05DA64:
-	; LAYOUT: read on from data_05DA44 (lda a:data_05DA44,y)
+; X offset of the stage 2 boss core, by angle (stage2_boss_core_position).
+stage2_boss_core_offsets_x:
+	; LAYOUT: read on from stage2_boss_core_offsets_y (lda a:stage2_boss_core_offsets_y,y)
 	; CDL: read by stage2_boss_core_position
 	.byte	$00, $00, $01, $00, $03, $00, $05, $00, $06, $00, $08, $00, $0A, $00, $0B, $00
 	.byte	$0C, $00, $0D, $00, $0E, $00, $0F, $00, $10, $00, $11, $00, $11, $00, $11, $00
@@ -4491,12 +4592,17 @@ data_05DA64:
 	.byte	$F4, $FF, $F3, $FF, $F2, $FF, $F1, $FF, $F0, $FF, $EF, $FF, $EF, $FF, $EF, $FF
 	.byte	$EE, $FF, $EF, $FF, $EF, $FF, $EF, $FF, $F0, $FF, $F1, $FF, $F2, $FF, $F3, $FF
 	.byte	$F4, $FF, $F5, $FF, $F6, $FF, $F8, $FF, $FA, $FF, $FB, $FF, $FD, $FF, $FF, $FF
-data_05DAE4:
+; Y offset of a stage 2 boss pod from the boss centre, by angle
+; (stage2_boss_pod_position: radius $42, 64 steps; the first 16 here, then the
+; x table read a quarter turn later).
+stage2_boss_pod_offsets_y:
 	; CDL: read by stage2_boss_pod_position
 	.byte	$BE, $FF, $BF, $FF, $C0, $FF, $C1, $FF, $C4, $FF, $C6, $FF, $CA, $FF, $CD, $FF
 	.byte	$D2, $FF, $D7, $FF, $DC, $FF, $E1, $FF, $E7, $FF, $ED, $FF, $F4, $FF, $FA, $FF
-data_05DB04:
-	; LAYOUT: read on from data_05DAE4 (lda a:data_05DAE4,y)
+; X offset of a stage 2 boss pod, by angle (stage2_boss_pod_position). The
+; second copy of the table (last 128 bytes) is not read.
+stage2_boss_pod_offsets_x:
+	; LAYOUT: read on from stage2_boss_pod_offsets_y (lda a:stage2_boss_pod_offsets_y,y)
 	; CDL: read by stage2_boss_pod_position
 	.byte	$00, $00, $06, $00, $0C, $00, $13, $00, $19, $00, $1F, $00, $24, $00, $29, $00
 	.byte	$2E, $00, $33, $00, $36, $00, $3A, $00, $3C, $00, $3F, $00, $40, $00, $41, $00
@@ -4515,66 +4621,100 @@ data_05DB04:
 	.byte	$D2, $FF, $CD, $FF, $CA, $FF, $C6, $FF, $C4, $FF, $C1, $FF, $C0, $FF, $BF, $FF
 	.byte	$BE, $FF, $BF, $FF, $C0, $FF, $C1, $FF, $C4, $FF, $C6, $FF, $CA, $FF, $CD, $FF
 	.byte	$D2, $FF, $D7, $FF, $DC, $FF, $E1, $FF, $E7, $FF, $ED, $FF, $F4, $FF, $FA, $FF
-data_05DC04:
+; Angle of each arm of the stage 2 boss (by +$14), added to the body's angle
+; (stage2_boss_pod_position). The bytes after the six entries are not read.
+stage2_boss_pod_arm_angles:
 	; CDL: read by stage2_boss_pod_position; partly not accessed
 	.byte	$30, $00, $50, $00, $20, $00, $60, $00, $10, $00, $70, $00, $2F, $00, $30, $00
 	.byte	$31, $00, $32, $00, $33, $00, $34, $00, $00, $00, $00, $00, $2B, $00, $2C, $00
 	.byte	$1D, $00, $21, $00, $2D, $00, $2E, $00, $00, $00, $00, $00
-data_05DC30:
+; Source in $7E of the stage 2 boss's Mode 7 characters by boss_anim_frame
+; (stage2_boss_stream_chr; the third entry is the first word of the next
+; table).
+stage2_boss_chr_sources:
 	; CDL: read by stage2_boss_stream_chr
 	.byte	$00, $C0, $00, $C6
-data_05DC34:
-	; LAYOUT: read on from data_05DC30 (lda a:data_05DC30,y)
+; Value of turn_sound_counter that plays the turning sound, by speed (1-8, x2;
+; td_play_turn_sound). Entry 0 is the last word of stage2_boss_chr_sources.
+td_turn_sound_thresholds:
+	; LAYOUT: read on from stage2_boss_chr_sources (lda a:stage2_boss_chr_sources,y)
 	; CDL: read by stage2_boss_stream_chr, td_play_turn_sound
 	.byte	$00, $CC, $00, $01, $00, $01, $40, $00, $40, $00, $40, $00, $40, $00, $40, $00
-data_05DC44:
-	; LAYOUT: read on from data_05DC34 (cmp a:data_05DC34,y)
+; Turning sound by speed (1-8, x2; td_play_turn_sound). Entry 0 is the last
+; word of td_turn_sound_thresholds.
+td_turn_sounds:
+	; LAYOUT: read on from td_turn_sound_thresholds (cmp a:td_turn_sound_thresholds,y)
 	; CDL: read by td_play_turn_sound; partly not accessed
 	.byte	$40, $00, $26, $00, $27, $00, $28, $00, $29, $00, $2A, $00, $2B, $00, $2C, $00
 	.byte	$2D, $00
-data_05DC56:
+; Palette bits ORed into the attributes of an enemy bullet by its timer
+; (update_td_enemy_bullet: it changes colour).
+td_enemy_bullet_palettes:
 	; CDL: read by update_td_enemy_bullet; partly not accessed
 	.byte	$00, $08, $00, $06, $00, $0A, $00, $0C, $00, $08, $00, $0A
-data_05DC62:
+; Distance from the muzzle of each laser segment (polar_to_xy;
+; update_td_laser_shot); also the cannon flame, $20 farther.
+td_laser_segment_distances:
 	; CDL: read by update_td_laser_shot; partly not accessed
 	.byte	$04, $00, $12, $00, $20, $00, $2E, $00, $3C, $00, $4A, $00, $58, $00, $66, $00
 	.byte	$74, $00, $82, $00, $90, $00, $9E, $00
-data_05DC7A:
+; Palette bits of a shot that alternates colours every 2 frames
+; (td_flicker_shot). The bytes after the two entries are not read.
+td_flicker_palettes:
 	; CDL: read by td_flicker_shot; partly not accessed
 	.byte	$00, $0C, $00, $0A, $B6, $00, $C4, $00, $D2, $00, $E0, $00
-data_05DC86:
+; OBJ_SPRITE of the flame shot and the homing orb, 8 frames
+; (stage_frame_counter) per group, the group chosen by the shot's remaining
+; time (td_flame_shot_frame, td_homing_orb_frame).
+td_shot_anim_sprites:
 	; CDL: read by td_homing_orb_frame
 	.byte	$48, $01, $48, $01, $4A, $01, $4A, $01, $4A, $01, $4A, $C1, $4A, $C1, $4A, $C1
 	.byte	$4C, $01, $4C, $01, $4E, $01, $4E, $01, $4E, $01, $4E, $C1, $4E, $C1, $4E, $C1
-data_05DCA6:
-	; LAYOUT: read on from data_05DC86 (lda a:data_05DC86,y)
+; Group $20 of td_shot_anim_sprites; td_boss_spit_frame also reads it alone
+; (TDS_BOSS_SPIT).
+td_shot_anim_sprites_2:
+	; LAYOUT: read on from td_shot_anim_sprites (lda a:td_shot_anim_sprites,y)
 	; CDL: read by td_homing_orb_frame
 	.byte	$60, $01, $60, $01, $62, $01, $62, $01, $62, $01, $62, $C1, $62, $C1, $62, $C1
 	.byte	$8E, $01, $8E, $01, $8E, $01, $8E, $01, $8E, $01, $8E, $01, $8E, $01, $8E, $01
-data_05DCC6:
+; OBJ_SPRITE of TDS_CRUSH_BLAST by its age (td_crush_blast_frame).
+td_crush_blast_sprites:
 	; CDL: read by td_crush_blast_frame
 	.byte	$11, $01, $88, $01, $8A, $01, $C0, $01, $C2, $01, $C4, $01, $00, $00, $00, $00
-data_05DCD6:
+; Palette bits of TDS_CRUSH_BLAST by its age (td_crush_blast_frame).
+td_crush_blast_palettes:
 	; CDL: read by td_crush_blast_frame
 	.byte	$00, $0E, $00, $0E, $00, $0E, $00, $0C, $00, $0C, $00, $0C, $00, $0C, $00, $0C
-data_05DCE6:
+; OBJ_FLAGS (+$16) of TDS_CRUSH_BLAST by its age (td_crush_blast_frame).
+td_crush_blast_flags:
 	; CDL: read by td_crush_blast_frame
 	.byte	$04, $00, $08, $00, $08, $00, $08, $00, $08, $00, $08, $00, $08, $00, $08, $00
-data_05DCF6:
+; Angle step of TDS_HOMING_ORB towards its target, by difficulty
+; (td_homing_orb_steer).
+td_homing_orb_turn_speeds:
 	; CDL: read by td_homing_orb_steer; partly not accessed
 	.byte	$00, $00, $01, $00, $02, $00
-data_05DCFC:
+; Distance of the flame from the player by its age (polar_to_xy;
+; update_td_flame_shot).
+td_flame_segment_distances:
 	; CDL: read by update_td_flame_shot; partly not accessed
 	.byte	$00, $00, $0C, $00, $18, $00, $24, $00, $30, $00, $3C, $00, $48, $00, $54, $00
 	.byte	$60, $00, $6C, $00, $78, $00, $84, $00, $90, $00, $9C, $00, $90, $00, $B4, $00
 	.byte	$C0, $00
-data_05DD1E:
+; Angle added each frame to a player in a whirlpool (TDA_WHIRL), by difficulty
+; (td_tile_whirl_player).
+td_whirl_turn_speeds:
 	; CDL: read by td_tile_whirl_player; partly not accessed
 	.byte	$02, $00, $02, $00, $04, $00
-data_05DD24:
+; Angle added each frame to a player in the stage 5 boss funnel
+; (TDA_SAND_PIT), by difficulty (td_tile_sand_pit).
+td_sand_pit_turn_speeds:
 	; CDL: read by td_tile_sand_pit; partly not accessed
 	.byte	$01, $00, $03, $00, $05, $00
-data_05DD2A:
+; Pixels a wall pushes an object out on x, by its position inside the 8 x 8
+; tile (index ((y & 7) ^ 7) * 8 + (x & 7); td_wall_push_top_right and
+; siblings).
+td_wall_push_dx:
 	; CDL: read by td_wall_push_top_right, td_wall_push_bottom_right, td_wall_push_bottom_left (+1 more)
 	.byte	$04, $00, $01, $00, $01, $00, $01, $00, $00, $00, $01, $00, $02, $00, $03, $00
 	.byte	$04, $00, $05, $00, $01, $00, $01, $00, $00, $00, $01, $00, $02, $00, $03, $00
@@ -4584,7 +4724,9 @@ data_05DD2A:
 	.byte	$01, $00, $01, $00, $01, $00, $01, $00, $00, $00, $01, $00, $01, $00, $01, $00
 	.byte	$01, $00, $01, $00, $01, $00, $01, $00, $00, $00, $01, $00, $02, $00, $01, $00
 	.byte	$01, $00, $01, $00, $01, $00, $01, $00, $00, $00, $01, $00, $02, $00, $03, $00
-data_05DDAA:
+; Pixels a wall pushes an object out on y, same index (td_wall_push_top_right
+; and siblings).
+td_wall_push_dy:
 	; CDL: read by td_wall_push_top_right, td_wall_push_bottom_right, td_wall_push_bottom_left (+1 more)
 	.byte	$04, $00, $04, $00, $04, $00, $04, $00, $00, $00, $01, $00, $01, $00, $01, $00
 	.byte	$01, $00, $05, $00, $05, $00, $05, $00, $00, $00, $01, $00, $01, $00, $01, $00
@@ -4594,7 +4736,9 @@ data_05DDAA:
 	.byte	$01, $00, $01, $00, $01, $00, $01, $00, $00, $00, $01, $00, $01, $00, $01, $00
 	.byte	$02, $00, $02, $00, $02, $00, $02, $00, $00, $00, $01, $00, $02, $00, $02, $00
 	.byte	$03, $00, $03, $00, $03, $00, $03, $00, $00, $00, $01, $00, $01, $00, $03, $00
-data_05DE2A:
+; Pixels a diagonal wall pushes an object out on both axes, same index
+; (td_wall_push_bottom_right and siblings).
+td_wall_push_diag:
 	; CDL: read by td_wall_push_top_left
 	.byte	$01, $00, $01, $00, $02, $00, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$01, $00, $02, $00, $02, $00, $03, $00, $00, $00, $00, $00, $00, $00, $01, $00
@@ -4604,42 +4748,60 @@ data_05DE2A:
 	.byte	$00, $00, $00, $00, $00, $00, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $01, $00, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $01, $00, $01, $00, $02, $00, $00, $00, $00, $00, $00, $00, $00, $00
-data_05DEAA:
+; Offset of the trap timer at $187E by 32-pixel column of the stage 2 map; 0 =
+; no trap (td_trigger_trap).
+td_trap_timer_slots:
 	; CDL: read by td_trigger_trap; partly not accessed
 	.byte	$00, $00, $00, $00, $00, $00, $02, $00, $04, $00, $06, $00, $08, $00, $0A, $00
 	.byte	$0C, $00, $0E, $00, $10, $00, $12, $00, $14, $00, $16, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $18, $00, $1A, $00, $1C, $00, $1E, $00, $20, $00, $22, $00
 	.byte	$24, $00, $26, $00, $28, $00, $2A, $00, $2C, $00, $00, $00, $00, $00, $00, $00
-data_05DEEA:
+; Third switch event (y >= $300): Mode 7 VRAM address (+$0C) where its blocks
+; start, by side (x < $220 or not; td_trigger_switch_event).
+td_switch2_vram_addrs:
 	; CDL: read by td_trigger_switch_event
 	.byte	$34, $38, $50, $38
-data_05DEEE:
+; Third switch event: x (+$08) where its explosions start, by side.
+td_switch2_x:
 	; CDL: read by td_trigger_switch_event
 	.byte	$B0, $01, $90, $02
-data_05DEF2:
+; Second switch event ($100 <= y < $300): Mode 7 VRAM address, by side (x <
+; $140 or not).
+td_switch1_vram_addrs:
 	; CDL: read by td_trigger_switch_event
 	.byte	$18, $22, $34, $22
-data_05DEF6:
+; Second switch event: x of its explosions, by side.
+td_switch1_x:
 	; CDL: read by td_trigger_switch_event
 	.byte	$D0, $00, $B0, $01
-data_05DEFA:
+; First switch event (y < $100): Mode 7 VRAM address, by side (x < $300 or
+; not).
+td_switch0_vram_addrs:
 	; CDL: read by td_trigger_switch_event
 	.byte	$50, $04, $6C, $04
-data_05DEFE:
+; First switch event: x of its explosions, by side.
+td_switch0_x:
 	; CDL: read by td_trigger_switch_event
 	.byte	$90, $02, $70, $03
-data_05DF02:
+; Map object slot owning the TDA_MAP_OBJECT tiles of each 256 x 256-pixel cell
+; of the stage 2 map (index (y / 256) * 4 + x / 256; td_get_map_object_at).
+stage2_map_object_by_cell:
 	; CDL: read by td_get_map_object_at; partly not accessed
 	.byte	$C0, $0A, $00, $00, $00, $00, $00, $0B, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $40, $0B, $80, $0B, $00, $00, $C0, $0B, $00, $00, $00, $00, $00, $00
-data_05DF22:
+; The same for stage 5 (td_get_map_object_at).
+stage5_map_object_by_cell:
 	; CDL: read by td_get_map_object_at; partly not accessed
 	.byte	$C0, $0A, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $0B, $40, $0B
 	.byte	$00, $00, $00, $00, $00, $00, $80, $0B, $C0, $0B, $00, $00, $00, $00, $00, $00
-data_05DF42:
+; Sprite priority bits set by a TDA_SET_PRIORITY tile: high
+; (TDA_PRIORITY_HIGH), low (td_shot_tile_effect, td_tile_whirl_enemy).
+td_sprite_priorities:
 	; CDL: read by td_shot_tile_effect, td_tile_whirl_enemy
 	.byte	$00, $20, $00, $10
-data_05DF46:
+; Distance sqrt(dx^2 + dy^2) for dx, dy = 0-15 (index dy * 16 + dx;
+; td_whirl_around_cell).
+td_distance_table:
 	; CDL: read by td_whirl_around_cell
 	.byte	$00, $01, $02, $03, $04, $05, $06, $07, $08, $09, $0A, $0B, $0C, $0D, $0E, $0F
 	.byte	$01, $01, $02, $03, $04, $05, $06, $07, $08, $09, $0A, $0B, $0C, $0D, $0E, $0F
@@ -4657,150 +4819,208 @@ data_05DF46:
 	.byte	$0D, $0D, $0D, $0D, $0D, $0D, $0E, $0E, $0F, $0F, $10, $11, $11, $12, $13, $13
 	.byte	$0E, $0E, $0E, $0E, $0E, $0E, $0F, $0F, $10, $10, $11, $11, $12, $13, $13, $14
 	.byte	$0F, $0F, $0F, $0F, $0F, $0F, $10, $10, $11, $11, $12, $12, $13, $13, $14, $15
-data_05E046:
+; Player 1's target arrows: OBJ_SPRITE of the arrow at the left or right edge,
+; by the direction of the nearest target relative to the view (eighths of a
+; turn); 0 = none (td_check_nearest_target).
+td_arrow_lr_sprites:
 	; CDL: read by td_check_nearest_target
 	.byte	$00, $00, $C8, $3F, $C8, $3F, $C8, $3F, $00, $00, $C8, $7F, $C8, $7F, $C8, $7F
-data_05E056:
+; OBJ_SPRITE of the arrow at the top or bottom edge, by direction; 0 = none
+; (td_check_nearest_target).
+td_arrow_tb_sprites:
 	; CDL: read by td_check_nearest_target
 	.byte	$C6, $3F, $C6, $3F, $00, $00, $C6, $BF, $C6, $BF, $C6, $BF, $00, $00, $C6, $3F
-data_05E066:
+; X of the left/right arrow by direction (td_check_nearest_target).
+td_arrow_lr_x:
 	; CDL: read by td_check_nearest_target; partly not accessed
 	.byte	$F0, $00, $F0, $00, $F0, $00, $F0, $00, $00, $00, $00, $00, $00, $00, $00, $00
-data_05E076:
+; Y of the top/bottom arrow by direction, one view (td_check_nearest_target).
+td_arrow_tb_y:
 	; CDL: read by td_check_nearest_target; partly not accessed
 	.byte	$18, $00, $18, $00, $D0, $00, $D0, $00, $D0, $00, $D0, $00, $18, $00, $18, $00
-data_05E086:
+; Y of the top/bottom arrow in the top half of the split screen (mode A;
+; td_check_nearest_target).
+td_arrow_tb_y_top_half:
 	; CDL: read by td_check_nearest_target; partly not accessed
 	.byte	$06, $00, $06, $00, $58, $00, $58, $00, $58, $00, $58, $00, $06, $00, $06, $00
-data_05E096:
+; Player 2's target arrows: OBJ_SPRITE of the left/right arrow by direction
+; (td_check_nearest_target_p2).
+td_p2_arrow_lr_sprites:
 	; CDL: read by td_check_nearest_target_p2
 	.byte	$00, $00, $C8, $3F, $C8, $3F, $C8, $3F, $00, $00, $C8, $7F, $C8, $7F, $C8, $7F
-data_05E0A6:
+; Player 2's top/bottom arrow sprite by direction
+; (td_check_nearest_target_p2).
+td_p2_arrow_tb_sprites:
 	; CDL: read by td_check_nearest_target_p2
 	.byte	$C6, $3F, $C6, $3F, $00, $00, $C6, $BF, $C6, $BF, $C6, $BF, $00, $00, $C6, $3F
-data_05E0B6:
+; X of player 2's left/right arrow by direction (td_check_nearest_target_p2).
+td_p2_arrow_lr_x:
 	; CDL: read by td_check_nearest_target_p2; partly not accessed
 	.byte	$F0, $00, $F0, $00, $F0, $00, $F0, $00, $00, $00, $00, $00, $00, $00, $00, $00
-data_05E0C6:
+; Y of player 2's top/bottom arrow with one view (td_check_nearest_target_p2;
+; not read in the traces).
+td_p2_arrow_tb_y:
 	; CDL: not accessed
 	.byte	$18, $00, $18, $00, $D0, $00, $D0, $00, $D0, $00, $D0, $00, $18, $00, $18, $00
-data_05E0D6:
+; Y of player 2's top/bottom arrow in the bottom half of the split screen
+; (td_check_nearest_target_p2).
+td_p2_arrow_tb_y_bottom_half:
 	; CDL: read by td_check_nearest_target_p2; partly not accessed
 	.byte	$78, $00, $78, $00, $D0, $00, $D0, $00, $D0, $00, $D0, $00, $78, $00
-data_05E0E4:
-	; LAYOUT: read on from data_05E0D6 (lda a:data_05E0D6,y)
+; X of the TDI_BLAST of each stage 2 trap, by its timer offset
+; (td_update_stage2_map_events; entry 0 is the last word of the table before).
+td_trap_blast_x:
+	; LAYOUT: read on from td_p2_arrow_tb_y_bottom_half (lda a:td_p2_arrow_tb_y_bottom_half,y)
 	; CDL: read by td_check_nearest_target_p2, td_update_stage2_map_events
 	.byte	$78, $00, $70, $00, $90, $00, $B0, $00, $D0, $00, $F0, $00, $10, $01, $30, $01
 	.byte	$50, $01, $70, $01, $90, $01, $B0, $01, $50, $02, $70, $02, $90, $02, $B0, $02
 	.byte	$D0, $02, $F0, $02, $10, $03, $30, $03, $50, $03, $70, $03
-data_05E110:
-	; LAYOUT: read on from data_05E0E4 (lda a:data_05E0E4,x)
+; Y of the TDI_BLAST of each trap, by timer offset
+; (td_update_stage2_map_events).
+td_trap_blast_y:
+	; LAYOUT: read on from td_trap_blast_x (lda a:td_trap_blast_x,x)
 	; CDL: read by td_update_stage2_map_events
 	.byte	$90, $03, $B0, $01, $90, $02, $70, $02, $90, $02, $70, $02, $90, $02, $70, $02
 	.byte	$90, $02, $70, $02, $90, $02, $70, $02, $70, $02, $90, $02, $70, $02, $90, $02
 	.byte	$70, $02, $90, $02, $70, $02, $70, $00, $70, $00, $F0, $01
-data_05E13C:
-	; LAYOUT: read on from data_05E110 (lda a:data_05E110,x)
+; Frame of the stage 2 block animation (x2, 0 = nothing this frame) by
+; block_anim_timer_left/right (td_update_stage2_map_events).
+td_block_anim_frames:
+	; LAYOUT: read on from td_trap_blast_y (lda a:td_trap_blast_y,x)
 	; CDL: read by td_update_stage2_map_events
 	.byte	$D0, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$10, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $0E, $00, $0C, $00
 	.byte	$0A, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$08, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $06, $00, $04, $00
-data_05E17C:
-	; LAYOUT: read on from data_05E13C (lda a:data_05E13C,y)
+; Block for patch slot 0 by frame (td_update_stage2_map_events; frames 1-8,
+; entry 0 is the last word of the table before; likewise the next tables).
+td_block_anim_blocks_0:
+	; LAYOUT: read on from td_block_anim_frames (lda a:td_block_anim_frames,y)
 	; CDL: read by td_update_stage2_map_events
 	.byte	$02, $00, $44, $00, $48, $00, $42, $00, $54, $00, $44, $00, $48, $00, $37, $00
-data_05E18C:
-	; LAYOUT: read on from data_05E17C (ldy a:data_05E17C,x)
+; Block for patch slot 1 by frame.
+td_block_anim_blocks_1:
+	; LAYOUT: read on from td_block_anim_blocks_0 (ldy a:td_block_anim_blocks_0,x)
 	; CDL: read by td_update_stage2_map_events
 	.byte	$58, $00, $45, $00, $49, $00, $76, $00, $77, $00, $4D, $00, $51, $00, $78, $00
-data_05E19C:
-	; LAYOUT: read on from data_05E18C (ldy a:data_05E18C,x)
+; Block for patch slot 2 by frame.
+td_block_anim_blocks_2:
+	; LAYOUT: read on from td_block_anim_blocks_1 (ldy a:td_block_anim_blocks_1,x)
 	; CDL: read by td_update_stage2_map_events
 	.byte	$78, $00, $46, $00, $4A, $00, $33, $00, $36, $00, $4E, $00, $52, $00, $37, $00
-data_05E1AC:
-	; LAYOUT: read on from data_05E19C (ldy a:data_05E19C,x)
+; Block for patch slot 3 by frame.
+td_block_anim_blocks_3:
+	; LAYOUT: read on from td_block_anim_blocks_2 (ldy a:td_block_anim_blocks_2,x)
 	; CDL: read by td_update_stage2_map_events
 	.byte	$58, $00, $47, $00, $4B, $00, $43, $00, $55, $00, $4F, $00, $53, $00, $37, $00
-data_05E1BC:
-	; LAYOUT: read on from data_05E1AC (ldy a:data_05E1AC,x)
+; Mode 7 VRAM address of patch slot 0 by frame, left half of the map
+; (block_anim_timer_left).
+td_block_anim_vram_left_0:
+	; LAYOUT: read on from td_block_anim_blocks_3 (ldy a:td_block_anim_blocks_3,x)
 	; CDL: read by td_update_stage2_map_events
 	.byte	$58, $00, $08, $1E, $08, $22, $08, $20, $08, $20, $08, $1E, $08, $22, $08, $20
-data_05E1CC:
-	; LAYOUT: read on from data_05E1BC (lda a:data_05E1BC,x)
+; VRAM address of patch slot 1, left half.
+td_block_anim_vram_left_1:
+	; LAYOUT: read on from td_block_anim_vram_left_0 (lda a:td_block_anim_vram_left_0,x)
 	; CDL: read by td_update_stage2_map_events
 	.byte	$08, $20, $0C, $1E, $0C, $22, $0C, $20, $0C, $20, $0C, $1E, $0C, $22, $0C, $20
-data_05E1DC:
-	; LAYOUT: read on from data_05E1CC (lda a:data_05E1CC,x)
+; VRAM address of patch slot 2, left half.
+td_block_anim_vram_left_2:
+	; LAYOUT: read on from td_block_anim_vram_left_1 (lda a:td_block_anim_vram_left_1,x)
 	; CDL: read by td_update_stage2_map_events
 	.byte	$0C, $20, $10, $1E, $10, $22, $10, $20, $10, $20, $10, $1E, $10, $22, $10, $20
-data_05E1EC:
-	; LAYOUT: read on from data_05E1DC (lda a:data_05E1DC,x)
+; VRAM address of patch slot 3, left half.
+td_block_anim_vram_left_3:
+	; LAYOUT: read on from td_block_anim_vram_left_2 (lda a:td_block_anim_vram_left_2,x)
 	; CDL: read by td_update_stage2_map_events
 	.byte	$10, $20, $14, $1E, $14, $22, $14, $20, $14, $20, $14, $1E, $14, $22, $14, $20
-data_05E1FC:
-	; LAYOUT: read on from data_05E1EC (lda a:data_05E1EC,x)
+; VRAM address of patch slot 0 by frame, right half of the map
+; (block_anim_timer_right).
+td_block_anim_vram_right_0:
+	; LAYOUT: read on from td_block_anim_vram_left_3 (lda a:td_block_anim_vram_left_3,x)
 	; CDL: read by td_update_stage2_map_events
 	.byte	$14, $20, $68, $16, $68, $1A, $68, $18, $68, $18, $68, $16, $68, $1A, $68, $18
-data_05E20C:
-	; LAYOUT: read on from data_05E1FC (lda a:data_05E1FC,x)
+; VRAM address of patch slot 1, right half.
+td_block_anim_vram_right_1:
+	; LAYOUT: read on from td_block_anim_vram_right_0 (lda a:td_block_anim_vram_right_0,x)
 	; CDL: read by td_update_stage2_map_events
 	.byte	$68, $18, $6C, $16, $6C, $1A, $6C, $18, $6C, $18, $6C, $16, $6C, $1A, $6C, $18
-data_05E21C:
-	; LAYOUT: read on from data_05E20C (lda a:data_05E20C,x)
+; VRAM address of patch slot 2, right half.
+td_block_anim_vram_right_2:
+	; LAYOUT: read on from td_block_anim_vram_right_1 (lda a:td_block_anim_vram_right_1,x)
 	; CDL: read by td_update_stage2_map_events
 	.byte	$6C, $18, $70, $16, $70, $1A, $70, $18, $70, $18, $70, $16, $70, $1A, $70, $18
-data_05E22C:
-	; LAYOUT: read on from data_05E21C (lda a:data_05E21C,x)
+; VRAM address of patch slot 3, right half.
+td_block_anim_vram_right_3:
+	; LAYOUT: read on from td_block_anim_vram_right_2 (lda a:td_block_anim_vram_right_2,x)
 	; CDL: read by td_update_stage2_map_events
 	.byte	$70, $18, $74, $16, $74, $1A, $74, $18, $74, $18, $74, $16, $74, $1A, $74, $18
-data_05E23C:
-	; LAYOUT: read on from data_05E22C (lda a:data_05E22C,x)
+; Mode 7 VRAM address of each trap, redrawn as block $57 when its timer ends
+; (td_update_stage2_map_events).
+td_trap_vram_addrs:
+	; LAYOUT: read on from td_block_anim_vram_right_3 (lda a:td_block_anim_vram_right_3,x)
 	; CDL: read by td_update_stage2_map_events
 	.byte	$74, $18, $0C, $1A, $10, $28, $14, $26, $18, $28, $1C, $26, $20, $28, $24, $26
 	.byte	$28, $28, $2C, $26, $30, $28, $34, $26, $48, $26, $4C, $28, $50, $26, $54, $28
 	.byte	$58, $26, $5C, $28, $60, $26, $64, $06, $68, $06, $6C, $1E, $70, $0C
-data_05E26A:
+; Frames between the steps of a switch event, by difficulty
+; (td_step_switch_event).
+td_switch_event_step_delays:
 	; CDL: read by td_step_switch_event
 	.byte	$10, $00, $0F, $00, $0C, $00
-data_05E270:
+; Added to the explosion x (+$08) at each step, by side
+; (td_step_switch_event).
+td_switch_event_step_x:
 	; CDL: read by td_step_switch_event
 	.byte	$20, $00, $E0, $FF
-data_05E274:
+; Added to the VRAM address (+$0C) at each step, by side: +4, then -4 (the
+; first word of the next table; td_step_switch_event).
+td_switch_event_step_vram:
 	; CDL: read by td_step_switch_event
 	.byte	$04, $00
-data_05E276:
-	; LAYOUT: read on from data_05E274 (adc a:data_05E274,y)
+; Block drawn at each step of a switch event (index (side x 4 + steps left) x
+; 2; td_patch_switch_event_block). Entry 0 is the second word of
+; td_switch_event_step_vram.
+td_switch_event_blocks:
+	; LAYOUT: read on from td_switch_event_step_vram (adc a:td_switch_event_step_vram,y)
 	; CDL: read by td_step_switch_event, td_patch_switch_event_block
 	.byte	$FC, $FF, $17, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$16, $00, $16, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$17, $00
-ptrs_05E298:
-	.addr	data_05E2E6
-	.addr	data_05E2E6
-	.addr	data_05E2E6
-	.addr	data_05E2D6
-	.addr	data_05E2D6
-	.addr	data_05E2D6
-	.addr	data_05E2D6
-	.addr	data_05E2C6
-	.addr	data_05E2C6
-	.addr	data_05E2C6
-	.addr	data_05E2C6
-	.addr	data_05E2C6
-	.addr	data_05E2C6
-	.addr	data_05E2C6
-	.addr	data_05E2B6
-data_05E2B6:
+; Colour sequence of the smart bomb flash by its +$06 / 32, probably the
+; radius (window_shapes.asm: COLDATA = sequence[stage_frame_counter / 2 & 15];
+; not run in the traces).
+ptrs_bomb_flash_coldata:
+	.addr	bomb_flash_coldata_red
+	.addr	bomb_flash_coldata_red
+	.addr	bomb_flash_coldata_red
+	.addr	bomb_flash_coldata_yellow
+	.addr	bomb_flash_coldata_yellow
+	.addr	bomb_flash_coldata_yellow
+	.addr	bomb_flash_coldata_yellow
+	.addr	bomb_flash_coldata_blue
+	.addr	bomb_flash_coldata_blue
+	.addr	bomb_flash_coldata_blue
+	.addr	bomb_flash_coldata_blue
+	.addr	bomb_flash_coldata_blue
+	.addr	bomb_flash_coldata_blue
+	.addr	bomb_flash_coldata_blue
+	.addr	bomb_flash_coldata_white
+; COLDATA values of the smart bomb flash (all three colours), one per 2 frames
+; (window_shapes.asm, through ptrs_bomb_flash_coldata; not run in the traces).
+bomb_flash_coldata_white:
 	; CDL: not accessed
 	.byte	$EF, $EE, $EC, $EB, $EA, $E8, $E7, $E5, $E4, $E5, $E7, $E8, $EA, $EB, $EC, $EE
-data_05E2C6:
+; COLDATA values of the bomb flash, blue.
+bomb_flash_coldata_blue:
 	; CDL: not accessed
 	.byte	$9F, $9C, $99, $96, $93, $90, $8D, $8A, $87, $8A, $8D, $90, $93, $96, $99, $9C
-data_05E2D6:
+; COLDATA values of the bomb flash, red and green.
+bomb_flash_coldata_yellow:
 	; CDL: not accessed
 	.byte	$6F, $6E, $6C, $6B, $6A, $68, $67, $65, $64, $65, $67, $68, $6A, $6B, $6C, $6E
-data_05E2E6:
+; COLDATA values of the bomb flash, red.
+bomb_flash_coldata_red:
 	; CDL: not accessed
 	.byte	$3F, $3C, $39, $36, $33, $30, $2D, $2A, $27, $2A, $2D, $30, $33, $36, $39, $3C
 window_widths_05E2F6:
@@ -4916,37 +5136,54 @@ cosine_table:
 stage5_boss_hp:
 	; CDL: read by stage5_boss_state_0; partly not accessed
 	.word	ENEMY_HP($0200), ENEMY_HP($0400), ENEMY_HP($0800)
-data_05E676:
+; Source in $7E of the stage 5 boss's Mode 7 characters by boss_anim_frame / 8
+; (stage5_boss_stream_chr).
+stage5_boss_chr_sources:
 	; CDL: read by stage5_boss_stream_chr
 	.byte	$00, $C5, $80, $C2, $00, $C0, $80, $C7
-data_05E67E:
+; Shot slots ($0300-$03E0) used by the spits of the stage 5 boss
+; (stage5_boss_spit_step_2).
+stage5_boss_spit_slots:
 	; CDL: read by stage5_boss_spit_step_2
 	.byte	$00, $03, $20, $03, $40, $03, $60, $03, $80, $03, $A0, $03, $C0, $03, $E0, $03
-data_05E68E:
+; X velocity of a stage 5 boss spit by edge of the pit
+; (stage5_boss_spit_position; stage5_boss_spawn_spit).
+stage5_boss_spit_velocity_x:
 	; CDL: read by stage5_boss_spawn_spit
 	.byte	$00, $00, $04, $00, $00, $00, $FC, $FF
-data_05E696:
+; Y velocity of a spit by edge of the pit (stage5_boss_spawn_spit).
+stage5_boss_spit_velocity_y:
 	; CDL: read by stage5_boss_spawn_spit
 	.byte	$FC, $FF, $00, $00, $04, $00, $00, $00
-data_05E69E:
+; Palettes cycled while the stage 5 boss flashes after a hit
+; (stage5_boss_flash_on_hit).
+ptrs_stage5_boss_flash_palettes:
 	; CDL: read by stage5_boss_flash_on_hit
 	.addr	palette_088E6A
 	.addr	palette_088E8A
 	.addr	palette_088EAA
 	.addr	palette_088E8A
-data_05E6A6:
+; X of the four edges of the stage 5 boss pit (up, right, down, left): the
+; spits and the arm come out there (stage5_boss_spawn_spit,
+; stage5_boss_spawn_arm).
+stage5_boss_pit_edge_x:
 	; CDL: read by stage5_boss_spawn_arm
 	.byte	$00, $02, $30, $02, $00, $02, $D0, $01
-data_05E6AE:
+; Y of the four edges of the pit.
+stage5_boss_pit_edge_y:
 	; CDL: read by stage5_boss_spawn_arm
 	.byte	$CC, $01, $00, $02, $30, $02, $00, $02
 stage5_boss_claw_hp:
 	; CDL: read by stage5_boss_claw_state_0; partly not accessed
 	.word	ENEMY_HP($0020), ENEMY_HP($0080), ENEMY_HP($0100)
-data_05E6BC:
+; OBJ_SPRITE of a dying arm segment by its timer
+; (stage5_boss_arm_segment_state_4).
+stage5_boss_arm_segment_death_sprites:
 	; CDL: read by stage5_boss_arm_segment_state_4
 	.byte	$A0, $01, $A2, $01, $A4, $01, $8E, $01
-data_05E6C4:
+; Attributes of a dying arm segment by its timer
+; (stage5_boss_arm_segment_state_4).
+stage5_boss_arm_segment_death_attrs:
 	; CDL: read by stage5_boss_arm_segment_state_4
 	.byte	$00, $2C, $00, $2C, $00, $2C, $00, $2A
 td_nest_hp:
@@ -4955,10 +5192,14 @@ td_nest_hp:
 gun_hatch_hp:
 	; CDL: read by gun_hatch_state_0
 	.word	ENEMY_HP($0020), ENEMY_HP($0050), ENEMY_HP($0080)
-data_05E6D8:
+; Frames TDMT_GUN_HATCH_NO_FIRE stays open, by difficulty (not run in the
+; traces).
+gun_hatch_no_fire_open_times:
 	; CDL: not accessed
 	.byte	$40, $00, $30, $00, $20, $00
-data_05E6DE:
+; Frames TDMT_GUN_HATCH_BEHIND stays open, by difficulty
+; (gun_hatch_behind_state_2).
+gun_hatch_behind_open_times:
 	; CDL: read by gun_hatch_behind_state_2; partly not accessed
 	.byte	$80, $00, $60, $00, $40, $00
 ; addresses of the 40 shot slots ($0AC0 + n * SHOT_SIZE), searched by find_free_shot_slot
@@ -4983,29 +5224,41 @@ firework_spark_counts:
 radial_spark_speeds:
 	; CDL: read by radial_spark_velocity
 	.byte	$60, $00, $80, $00
-data_05E748:
+; Map view player marker: tile and flips by angle (32 steps;
+; map_view_player_position, not run in the traces).
+map_view_player_marker_sprites:
 	; CDL: not accessed
 	.byte	$04, $00, $06, $00, $08, $00, $0A, $00, $0C, $00, $0E, $00, $20, $00, $22, $00
 	.byte	$24, $00, $22, $80, $20, $80, $0E, $80, $0C, $80, $0A, $80, $08, $80, $06, $80
 	.byte	$04, $80, $06, $C0, $08, $C0, $0A, $C0, $0C, $C0, $0E, $C0, $20, $C0, $22, $C0
 	.byte	$24, $C0, $22, $40, $20, $40, $0E, $40, $0C, $40, $0A, $40, $08, $40, $06, $40
-data_05E788:
+; Start-point cursor x by column p1_start_x / p2_start_x
+; (draw_p1_start_cursor, draw_p2_start_cursor).
+start_cursor_x:
 	; CDL: read by draw_p1_start_cursor, draw_p2_start_cursor
 	.byte	$2B, $00, $5E, $00, $91, $00, $C4, $00
-data_05E790:
+; Start-point cursor y by row p1_start_y (the fourth entry is the first word
+; of the next table).
+start_cursor_y:
 	; CDL: read by draw_p1_start_cursor, draw_p2_start_cursor
 	.byte	$2A, $00, $5D, $00, $90, $00
-data_05E796:
-	; LAYOUT: read on from data_05E790 (lda a:data_05E790,y)
+; X of the ten sprites of the intro banner (draw_intro_banner_sprites reads +2
+; ... +$14; entry 0 is the last row of start_cursor_y).
+intro_banner_sprite_x:
+	; LAYOUT: read on from start_cursor_y (lda a:start_cursor_y,y)
 	; CDL: read by draw_p1_start_cursor, draw_intro_banner_sprites
 	.byte	$C3, $00, $30, $00, $40, $00, $50, $00, $60, $00, $70, $00, $80, $00, $90, $00
 	.byte	$A0, $00, $B0, $00
-data_05E7AA:
-	; LAYOUT: read on from data_05E796 (lda a:data_05E796,x)
+; Tile and attributes of the ten banner sprites (+2 ... +$14; entry 0 is the
+; last word of the table before).
+intro_banner_sprite_tiles:
+	; LAYOUT: read on from intro_banner_sprite_x (lda a:intro_banner_sprite_x,x)
 	; CDL: read by draw_intro_banner_sprites
 	.byte	$C0, $00, $40, $3F, $42, $3F, $44, $3F, $46, $3F, $48, $3F, $4A, $3F, $4C, $3F
 	.byte	$4E, $3F, $60, $3F, $62, $3F
-data_05E7C0:
+; Attributes of the target markers (intro and map view), by stage (2 or 5) and
+; blink (get_target_marker_attr).
+td_target_marker_attrs:
 	; CDL: read by start_palette_task_at, palette_task_animate, update_objects (+2 more); partly not accessed
 	.byte	$28, $3F, $28, $37, $2E, $3D, $2E, $3F
 vram_blocks_05E7C8:

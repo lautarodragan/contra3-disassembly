@@ -1435,9 +1435,9 @@ loc_028AD2:
 	.a8
 	stz	a:BG3HOFS
 	stz	a:BG3HOFS
-	lda	a:data_05CD6E,y
+	lda	a:status_bar_vofs_lo,y
 	sta	a:BG3VOFS
-	lda	a:data_05CD6F,y
+	lda	a:status_bar_vofs_hi,y
 	sta	a:BG3VOFS
 	rep	#$20
 	.a16
@@ -1752,7 +1752,7 @@ spawn_stage2_targets:
 	tay
 	lda	rng_lo
 	and	#$0030
-	ora	a:data_05CD72,y
+	ora	a:stage2_target_set_bases,y
 loc_028D85:
 	clc
 	adc	#.loword(stage2_target_type_sets)
@@ -1763,13 +1763,13 @@ loc_028D85:
 	lda	(zp_FA),y
 	sta	$10,x
 	stz	$12,x
-	lda	a:data_05CE08,y
+	lda	a:stage2_target_x,y
 	sta	$0A,x
-	lda	a:data_05CE12,y
+	lda	a:stage2_target_y,y
 	sta	$0E,x
-	lda	a:data_05CE1C,y
+	lda	a:stage2_target_vram_addrs,y
 	sta	$26,x
-	lda	a:data_05CE26,y
+	lda	a:stage2_target_params,y
 	sta	$14,x
 	txa
 	clc
@@ -1787,11 +1787,11 @@ spawn_stage2_boss:
 	ldx	#$0AC0
 @loop:
 	stz	$12,x
-	lda	a:data_05CE30,y
+	lda	a:stage2_boss_part_types,y
 	sta	$10,x
-	lda	a:data_05CE44,y
+	lda	a:stage2_boss_part_params,y
 	sta	$14,x
-	lda	a:data_05CE58,y
+	lda	a:stage2_boss_part_vram_addrs,y
 	sta	$26,x
 	txa
 	clc
@@ -1819,13 +1819,13 @@ loc_028DE7:
 	lda	(zp_FA),y
 	sta	$10,x
 	stz	$12,x
-	lda	a:data_05CF06,y
+	lda	a:stage5_target_x,y
 	sta	$0A,x
-	lda	a:data_05CF10,y
+	lda	a:stage5_target_y,y
 	sta	$0E,x
-	lda	a:data_05CF1A,y
+	lda	a:stage5_target_vram_addrs,y
 	sta	$26,x
-	lda	a:data_05CEFC,y
+	lda	a:stage5_target_params,y
 	sta	$14,x
 	txa
 	clc
@@ -1842,10 +1842,10 @@ spawn_stage5_boss:
 	ldy	#$0000
 	ldx	#$0AC0
 	stz	$12,x
-	lda	a:data_05CF24,y
+	lda	a:stage5_boss_spawn_type,y
 	sta	$10,x
-	lda	a:data_05CF26,y
+	lda	a:stage5_boss_spawn_param,y
 	sta	$14,x
-	lda	a:data_05CF28,y
+	lda	a:stage5_boss_spawn_vram_addr,y
 	sta	$26,x
 	rtl

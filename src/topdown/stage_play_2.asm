@@ -1494,7 +1494,7 @@ stage5_boss_stream_chr:
 	lsr	a
 	and	#$0006
 	tay
-	lda	a:data_05E676,y
+	lda	a:stage5_boss_chr_sources,y
 	sta	a:boss_chr_stream_src
 	rtl
 
@@ -1643,7 +1643,7 @@ stage5_boss_spit_step_2:
 	lsr	a
 	and	#$000E
 	tay
-	lda	a:data_05E67E,y
+	lda	a:stage5_boss_spit_slots,y
 	tay
 	lda	#$0001
 	sta	a:$0014,y
@@ -1701,16 +1701,16 @@ stage5_boss_spawn_spit:
 	lda	#$2000
 	sta	$02,x
 	ldy	a:stage5_boss_spit_position
-	lda	a:data_05E6A6,y
+	lda	a:stage5_boss_pit_edge_x,y
 	sta	$0A,x
 	stz	$08,x
-	lda	a:data_05E6AE,y
+	lda	a:stage5_boss_pit_edge_y,y
 	sta	$0E,x
 	stz	$0C,x
-	lda	a:data_05E68E,y
+	lda	a:stage5_boss_spit_velocity_x,y
 	sta	$1A,x
 	stz	$18,x
-	lda	a:data_05E696,y
+	lda	a:stage5_boss_spit_velocity_y,y
 	sta	$1E,x
 	stz	$1C,x
 	plx
@@ -1722,7 +1722,7 @@ stage5_boss_flash_on_hit:
 	lsr	a
 	and	#$0006
 	tay
-	lda	a:data_05E69E,y
+	lda	a:ptrs_stage5_boss_flash_palettes,y
 	sta	zp_00
 	lda	#$22A0
 	sta	zp_02
@@ -1795,9 +1795,9 @@ stage5_boss_spawn_arm:
 	asl	a
 	and	#$0006
 	tay
-	lda	a:data_05E6A6,y
+	lda	a:stage5_boss_pit_edge_x,y
 	sta	a:td_map_objects+2*OBJ_SIZE+OBJ_X
-	lda	a:data_05E6AE,y
+	lda	a:stage5_boss_pit_edge_y,y
 	sta	a:td_map_objects+2*OBJ_SIZE+OBJ_Y
 	lda	#TDT_STAGE5_BOSS_CLAW
 	sta	a:td_map_objects+2*OBJ_SIZE+OBJ_TYPE
@@ -2213,9 +2213,9 @@ loc_02F735:
 	lsr	a
 	and	#$0006
 	tay
-	lda	a:data_05E6BC,y
+	lda	a:stage5_boss_arm_segment_death_sprites,y
 	sta	$00,x
-	lda	a:data_05E6C4,y
+	lda	a:stage5_boss_arm_segment_death_attrs,y
 	sta	$02,x
 	rtl
 
@@ -2901,7 +2901,7 @@ loc_02FBDC:
 	lda	#$B000	; [num]
 	sta	$16,x
 	ldy	difficulty
-	lda	a:data_05E6D8,y
+	lda	a:gun_hatch_no_fire_open_times,y
 	sta	$24,x
 	inc	$12,x
 	jmp	a:gun_hatch_state_3
@@ -2973,7 +2973,7 @@ loc_02FC59:
 	lda	#$B000	; [num]
 	sta	$16,x
 	ldy	difficulty
-	lda	a:data_05E6DE,y
+	lda	a:gun_hatch_behind_open_times,y
 	sta	$24,x
 	inc	$12,x
 	jmp	a:gun_hatch_state_3
