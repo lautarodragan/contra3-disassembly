@@ -459,7 +459,7 @@ object_type_06_state_03:
 	sta	$1E,x
 	stz	a:boss_work_0
 	lda	#$00A0
-	sta	f:wram_7E3824
+	sta	f:hdma_tables+$24
 	lda	#$0320
 	sta	a:m7a_shadow
 	sta	a:m7d_shadow
@@ -562,25 +562,25 @@ loc_00D332:
 	lda	a:boss_work_0
 	adc	$1C,x
 	sta	a:boss_work_0
-	lda	f:wram_7E3824
+	lda	f:hdma_tables+$24
 	adc	$1E,x
-	sta	f:wram_7E3824
+	sta	f:hdma_tables+$24
 	sep	#$20
 	.a8
 	lda	a:bg1_y
 	dec	a
-	sta	f:wram_7E3827
-	lda	f:wram_7E3842
+	sta	f:hdma_tables+$27
+	lda	f:hdma_tables+$42
 	cmp	#$47
 	bcs	loc_00D37B
 	sec
 	lda	$38,x
 	sbc	$1C,x
 	sta	$38,x
-	lda	f:wram_7E3842
+	lda	f:hdma_tables+$42
 	sbc	$1E,x
-	sta	f:wram_7E3842
-	sta	f:wram_7E3823
+	sta	f:hdma_tables+$42
+	sta	f:hdma_tables+$23
 loc_00D37B:
 	rep	#$20
 	.a16
@@ -604,13 +604,13 @@ loc_00D394:
 	sta	hdma_preset
 	stz	$32,x
 	lda	#$007F
-	sta	f:wram_7E3820
+	sta	f:hdma_tables+$20
 	lda	#$0020
-	sta	f:wram_7E3823
+	sta	f:hdma_tables+$23
 	lda	#$0020
-	sta	f:wram_7E3826
+	sta	f:hdma_tables+$26
 	lda	#$0000
-	sta	f:wram_7E3829
+	sta	f:hdma_tables+$29
 	rtl
 loc_00D3C0:
 	lda	#$0008
@@ -712,11 +712,11 @@ object_type_06_state_07:
 	jsl	f:kill_players_outside
 loc_00D48E:
 	lda	a:bg2_x
-	sta	f:wram_7E3821
-	sta	f:wram_7E3824
+	sta	f:hdma_tables+$21
+	sta	f:hdma_tables+$24
 	lda	a:bg1_x
 	and	#$00FF
-	sta	f:wram_7E3827
+	sta	f:hdma_tables+$27
 	inc	$32,x
 	lda	$32,x
 	asl	a

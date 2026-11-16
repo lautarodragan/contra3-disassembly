@@ -93,8 +93,8 @@ stage_init:
 	lda	#$0020
 	sta	a:bomb_coldata_bits
 	lda	#$0001
-	sta	f:wram_7E3C1E
-	sta	f:wram_7E3E1E
+	sta	f:window_hdma_a+$1E
+	sta	f:window_hdma_b+$1E
 	lda	#$0020
 	sta	a:CGWSEL
 	sta	a:cgwsel_shadow

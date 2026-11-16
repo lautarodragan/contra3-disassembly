@@ -295,10 +295,10 @@ nmi_frame_top_down:
 	sep	#$20
 	.a8
 	lda	#$80
-	sta	f:wram_7E38A3
-	sta	f:wram_7E38A7
-	sta	f:wram_7E38A1
-	sta	f:wram_7E38A5
+	sta	f:hdma_tables+$A3
+	sta	f:hdma_tables+$A7
+	sta	f:hdma_tables+$A1
+	sta	f:hdma_tables+$A5
 	sta	a:INIDISP
 	lda	a:hdmaen_shadow
 	sta	a:HDMAEN
@@ -322,12 +322,12 @@ nmi_frame_top_down:
 	sep	#$20
 	.a8
 	lda	a:p1_view_brightness
-	sta	f:wram_7E38A3
+	sta	f:hdma_tables+$A3
 	lda	a:p2_view_brightness
-	sta	f:wram_7E38A7
+	sta	f:hdma_tables+$A7
 	lda	a:inidisp_shadow
-	sta	f:wram_7E38A1
-	sta	f:wram_7E38A5
+	sta	f:hdma_tables+$A1
+	sta	f:hdma_tables+$A5
 	sta	a:INIDISP
 	rep	#$20
 	.a16
@@ -336,12 +336,12 @@ nmi_frame_top_down:
 	sep	#$20
 	.a8
 	lda	a:p2_view_brightness
-	sta	f:wram_7E38A7
+	sta	f:hdma_tables+$A7
 	lda	a:inidisp_shadow
-	sta	f:wram_7E38A1
-	sta	f:wram_7E38A5
+	sta	f:hdma_tables+$A1
+	sta	f:hdma_tables+$A5
 	lda	a:p1_view_brightness
-	sta	f:wram_7E38A3
+	sta	f:hdma_tables+$A3
 	sta	a:INIDISP
 	rep	#$20
 @after_display:

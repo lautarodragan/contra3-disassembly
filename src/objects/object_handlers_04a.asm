@@ -3109,17 +3109,17 @@ stage4_queue_tiles:
 	plx
 	rts
 
-; Adds the 16.16 speed wram_140C/wram_140E to wram_1404/wram_7E3824:
-; wram_7E3824 is the BG3 horizontal scroll of the lower band of the HDMA table
+; Adds the 16.16 speed wram_140C/wram_140E to wram_1404/hdma_tables+$24:
+; hdma_tables+$24 is the BG3 horizontal scroll of the lower band of the HDMA table
 ; at $7E:3820 (hdma_preset $0B, set up by stage4_controller_state_16).
 stage4_scroll_bg3_lower:
 	clc
 	lda	a:bg3_x+BG_X_SUB
 	adc	a:bg3_x+BG_X_DELTA_SUB
 	sta	a:bg3_x+BG_X_SUB
-	lda	f:wram_7E3824
+	lda	f:hdma_tables+$24
 	adc	a:bg3_x+BG_X_DELTA
-	sta	f:wram_7E3824
+	sta	f:hdma_tables+$24
 	rts
 
 rideable_missile_set_hdma:
@@ -3287,10 +3287,10 @@ rideable_missile_helicopter_leaves:
 	lda	$3A,x
 	adc	$36,x
 	sta	$3A,x
-	lda	f:wram_7E3801
+	lda	f:hdma_tables+$01
 	adc	$38,x
-	sta	f:wram_7E3801
-	sta	f:wram_7E3806
+	sta	f:hdma_tables+$01
+	sta	f:hdma_tables+$06
 	cmp	#$0200
 	bcc	loc_049A05
 	inc	OBJ_STATE,x
@@ -3318,10 +3318,10 @@ loc_049A05:
 	lda	$3E,x
 	adc	#$0C00
 	sta	$3E,x
-	lda	f:wram_7E3803
+	lda	f:hdma_tables+$03
 	adc	#$0000
-	sta	f:wram_7E3803
-	sta	f:wram_7E3808
+	sta	f:hdma_tables+$03
+	sta	f:hdma_tables+$08
 	clc
 	lda	a:bg3_x+BG_X_DELTA_SUB
 	adc	#$2000
@@ -3954,11 +3954,11 @@ loc_049EC9:
 
 winged_alien_step_2:
 	lda	#$0000
-	sta	f:wram_7EE823
+	sta	f:winged_alien_hdma_state
 	lda	#$0074
-	sta	f:wram_7EE827
+	sta	f:winged_alien_hdma_height
 	lda	OBJ_Y,x
-	sta	f:wram_7EE825
+	sta	f:winged_alien_hdma_center_y
 	lda	#$000D
 	sta	OBJ_FLAGS,x
 	lda	#$003D
@@ -3971,7 +3971,7 @@ winged_alien_step_2:
 
 winged_alien_step_3:
 	jsr	a:winged_alien_warp_out
-	lda	f:wram_7EE823
+	lda	f:winged_alien_hdma_state
 	cmp	#$0002
 	bcc	@return
 	lda	#$0180
@@ -4026,14 +4026,14 @@ loc_049F4A:
 	sta	a:obj_slots+22*OBJ_SIZE+$38
 	inc	$3A,x
 	lda	#$0000
-	sta	f:wram_7EE823
+	sta	f:winged_alien_hdma_state
 	lda	OBJ_Y,x
-	sta	f:wram_7EE825
+	sta	f:winged_alien_hdma_center_y
 	rts
 
 winged_alien_step_7:
 	jsr	a:winged_alien_warp_in
-	lda	f:wram_7EE823
+	lda	f:winged_alien_hdma_state
 	cmp	#$0002
 	bcc	@return
 	lda	#$401D
@@ -4477,11 +4477,11 @@ winged_alien_flap_fast:
 
 ; Script steps 2-3: the alien vanishes stretched into vertical lines (seen in
 ; the emulator), a per-line BG2 vertical scroll (HDMA preset $0F, table built
-; at $7E:E800) whose visible height (wram_7EE827) shrinks by 4 per frame;
-; winged_alien_warp_in makes it grow back (steps 6-7). wram_7EE823 is the
+; at $7E:E800) whose visible height (winged_alien_hdma_height) shrinks by 4 per frame;
+; winged_alien_warp_in makes it grow back (steps 6-7). winged_alien_hdma_state is the
 ; step: start, shrink/grow, done.
 winged_alien_warp_out:
-	lda	f:wram_7EE823
+	lda	f:winged_alien_hdma_state
 	phx
 	asl	a
 	tax
@@ -4495,7 +4495,7 @@ tbl_winged_alien_warp_out_steps:
 	.addr	winged_alien_warp_done
 
 winged_alien_warp_in:
-	lda	f:wram_7EE823
+	lda	f:winged_alien_hdma_state
 	phx
 	asl	a
 	tax
@@ -4512,17 +4512,17 @@ winged_alien_warp_start:
 	jsr	a:winged_alien_warp_fill_lines
 	jsr	a:winged_alien_warp_update_hdma
 	lda	#$0001
-	sta	f:wram_7EE823
+	sta	f:winged_alien_hdma_state
 	lda	#$000F
 	sta	hdma_preset
 	rts
 
 winged_alien_warp_grow:
 	jsr	a:winged_alien_warp_update_hdma
-	lda	f:wram_7EE827
+	lda	f:winged_alien_hdma_height
 	clc
 	adc	#$0004
-	sta	f:wram_7EE827
+	sta	f:winged_alien_hdma_height
 	bmi	loc_04A341
 	cmp	#$0075
 	bcs	loc_04A341
@@ -4530,17 +4530,17 @@ winged_alien_warp_grow:
 
 winged_alien_warp_shrink:
 	jsr	a:winged_alien_warp_update_hdma
-	lda	f:wram_7EE827
+	lda	f:winged_alien_hdma_height
 	sec
 	sbc	#$0004
-	sta	f:wram_7EE827
+	sta	f:winged_alien_hdma_height
 	bmi	loc_04A341
 	cmp	#$0001
 	bcc	loc_04A341
 	rts
 loc_04A341:
 	lda	#$0002
-	sta	f:wram_7EE823
+	sta	f:winged_alien_hdma_state
 	rts
 
 winged_alien_warp_done:
@@ -4567,7 +4567,7 @@ winged_alien_warp_fill_lines:
 	lda	#$01E0
 	clc
 	adc	#$E880
-	sta	f:wram_7EE829
+	sta	f:winged_alien_hdma_lines
 	plx
 	rts
 
@@ -4575,14 +4575,14 @@ winged_alien_warp_update_hdma:
 	jsr	a:winged_alien_warp_compute_bands
 	jmp	a:loc_04A40A
 
-; From the visible height (wram_7EE827) and the alien's y (wram_7EE825): the
-; line counts of the HDMA bands (wram_7EE82B-835);
+; From the visible height (winged_alien_hdma_height) and the alien's y (winged_alien_hdma_center_y): the
+; line counts of the HDMA bands (winged_alien_hdma_counts-835);
 ; winged_alien_warp_update_hdma writes them into the HDMA table at $7E:E800.
 winged_alien_warp_compute_bands:
-	lda	f:wram_7EE827
+	lda	f:winged_alien_hdma_height
 	lsr	a
 	sta	zp_00
-	lda	f:wram_7EE825
+	lda	f:winged_alien_hdma_center_y
 	sec
 	sbc	zp_00
 	cmp	#$0002
@@ -4600,10 +4600,10 @@ loc_04A39C:
 	lsr	a
 	pha
 	adc	#$0000
-	sta	f:wram_7EE82B
+	sta	f:winged_alien_hdma_counts
 	pla
-	sta	f:wram_7EE82D
-	lda	f:wram_7EE827
+	sta	f:winged_alien_hdma_counts+2
+	lda	f:winged_alien_hdma_height
 	clc
 	adc	zp_02
 	sta	zp_04
@@ -4615,7 +4615,7 @@ loc_04A39C:
 	sbc	zp_02
 	bra	loc_04A3D0
 loc_04A3C4:
-	lda	f:wram_7EE827
+	lda	f:winged_alien_hdma_height
 	cmp	#$0002
 	bcs	loc_04A3D0
 	lda	#$0002
@@ -4623,9 +4623,9 @@ loc_04A3D0:
 	lsr	a
 	pha
 	adc	#$0000
-	sta	f:wram_7EE82F
+	sta	f:winged_alien_hdma_counts+4
 	pla
-	sta	f:wram_7EE831
+	sta	f:winged_alien_hdma_counts+6
 	lda	#$00F0
 	sec
 	sbc	zp_04
@@ -4637,59 +4637,59 @@ loc_04A3E9:
 	bcc	loc_04A3FE
 	sec
 	sbc	#$007F
-	sta	f:wram_7EE835
+	sta	f:winged_alien_hdma_counts+10
 	lda	#$007F
-	sta	f:wram_7EE833
+	sta	f:winged_alien_hdma_counts+8
 	rts
 loc_04A3FE:
-	sta	f:wram_7EE833
+	sta	f:winged_alien_hdma_counts+8
 	lda	#$0000
-	sta	f:wram_7EE835
+	sta	f:winged_alien_hdma_counts+10
 	rts
 loc_04A40A:
-	lda	f:wram_7EE82B
+	lda	f:winged_alien_hdma_counts
 	ora	#$0080
-	sta	f:wram_7EE800
-	lda	f:wram_7EE82B
+	sta	f:effect_hdma_buf
+	lda	f:winged_alien_hdma_counts
 	clc
-	adc	f:wram_7EE82D
+	adc	f:winged_alien_hdma_counts+2
 	asl	a
 	sta	zp_00
-	lda	f:wram_7EE829
+	lda	f:winged_alien_hdma_lines
 	sec
 	sbc	zp_00
-	sta	f:wram_7EE801
-	lda	f:wram_7EE82D
+	sta	f:effect_hdma_buf+$01
+	lda	f:winged_alien_hdma_counts+2
 	ora	#$0080
-	sta	f:wram_7EE803
-	lda	f:wram_7EE82D
+	sta	f:effect_hdma_buf+$03
+	lda	f:winged_alien_hdma_counts+2
 	asl	a
 	sta	zp_00
-	lda	f:wram_7EE829
+	lda	f:winged_alien_hdma_lines
 	sec
 	sbc	zp_00
-	sta	f:wram_7EE804
-	lda	f:wram_7EE82F
-	sta	f:wram_7EE806
-	lda	f:wram_7EE829
-	sta	f:wram_7EE807
-	lda	f:wram_7EE831
-	sta	f:wram_7EE809
-	lda	f:wram_7EE829
-	sta	f:wram_7EE80A
-	lda	f:wram_7EE833
+	sta	f:effect_hdma_buf+$04
+	lda	f:winged_alien_hdma_counts+4
+	sta	f:effect_hdma_buf+$06
+	lda	f:winged_alien_hdma_lines
+	sta	f:effect_hdma_buf+$07
+	lda	f:winged_alien_hdma_counts+6
+	sta	f:effect_hdma_buf+$09
+	lda	f:winged_alien_hdma_lines
+	sta	f:effect_hdma_buf+$0A
+	lda	f:winged_alien_hdma_counts+8
 	ora	#$0080
-	sta	f:wram_7EE80C
-	lda	f:wram_7EE829
-	sta	f:wram_7EE80D
-	lda	f:wram_7EE835
+	sta	f:effect_hdma_buf+$0C
+	lda	f:winged_alien_hdma_lines
+	sta	f:effect_hdma_buf+$0D
+	lda	f:winged_alien_hdma_counts+10
 	ora	#$0080
-	sta	f:wram_7EE80F
-	lda	f:wram_7EE833
+	sta	f:effect_hdma_buf+$0F
+	lda	f:winged_alien_hdma_counts+8
 	asl	a
 	clc
-	adc	f:wram_7EE829
-	sta	f:wram_7EE810
+	adc	f:winged_alien_hdma_lines
+	sta	f:effect_hdma_buf+$10
 	lda	#$0000
 	sta	f:zp_12
 	rts
@@ -10462,7 +10462,7 @@ loc_04D044:
 	stz	$3A,x
 loc_04D053:
 	sta	$38,x
-	sta	f:wram_7EA0E2
+	sta	f:scroll_hdma_tables+$E2
 	lda	#$0200
 	jsl	f:pick_target_player
 	jsl	f:angle_to_player
@@ -10486,7 +10486,7 @@ loc_04D079:
 loc_04D087:
 	and	#$01FE
 	sta	$36,x
-	sta	f:wram_7EA0E0
+	sta	f:scroll_hdma_tables+$E0
 	txy
 	clc
 	lda	$30,x
@@ -10538,7 +10538,7 @@ spiked_mine_state_04:
 
 ; A chain member: position = the recorded position of the one before (ring
 ; buffers at $7E:A000/$7E:A070) plus a point on a circle turning by
-; wram_7EA0E2; explodes when the leader (field $3E) is gone.
+; scroll_hdma_tables+$E2; explodes when the leader (field $3E) is gone.
 spiked_mine_follow:
 	ldy	$3E,x
 	lda	a:$0010,y
@@ -10553,12 +10553,12 @@ spiked_mine_follow:
 	jsl	f:make_effect_object
 loc_04D106:
 	phx
-	lda	f:wram_7EA0E0
+	lda	f:scroll_hdma_tables+$E0
 	and	#$01FE
 	tay
 	clc
-	adc	f:wram_7EA0E2
-	sta	f:wram_7EA0E0
+	adc	f:scroll_hdma_tables+$E2
+	sta	f:scroll_hdma_tables+$E0
 	clc
 	lda	$32,x
 	adc	#$0004

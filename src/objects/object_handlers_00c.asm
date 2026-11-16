@@ -942,12 +942,12 @@ stage1_boss_place_parts:
 	.a8
 	sec
 	lda	#$B8
-	sbc	f:wram_7EA068
+	sbc	f:scroll_hdma_tables+$68
 	sta	a:obj_slots+8*OBJ_SIZE+OBJ_Y
 	stz	a:obj_slots+8*OBJ_SIZE+OBJ_Y+1
 	sec
 	lda	#$90
-	sbc	f:wram_7EA056
+	sbc	f:scroll_hdma_tables+$56
 	sta	a:obj_slots+9*OBJ_SIZE+OBJ_Y
 	stz	a:obj_slots+9*OBJ_SIZE+OBJ_Y+1
 	sec
@@ -957,7 +957,7 @@ stage1_boss_place_parts:
 	stz	a:obj_slots+9*OBJ_SIZE+OBJ_X+1
 	sec
 	lda	#$9C
-	sbc	f:wram_7EA070
+	sbc	f:scroll_hdma_tables+$70
 	sta	a:obj_slots+4*OBJ_SIZE+OBJ_Y
 	rep	#$20
 	.a16
@@ -1301,7 +1301,7 @@ loc_00FC58:
 update_stage1_boss_part:
 	sec
 	lda	#$0060
-	sbc	f:wram_7EA068
+	sbc	f:scroll_hdma_tables+$68
 	and	#$00FF
 	sta	a:$000E,x
 	lda	OBJ_STATE,x

@@ -211,3 +211,18 @@ in `src/ram.inc`:
 | `boot_signature` | `$1E0A` | `>JIN L<` + `$0400`: keeps `$1E00-$1FFF` across a reset |
 | `inidisp_shadow` ... `hdmaen_shadow` | `$1E80-$1EC4` | PPU register shadows (`write_ppu_shadows`, the NMI frame handlers) |
 | `LOADER_SPC` | `$1F00` | sound CPU loader context; `pending_spc_list` (`$1F2C`) is the song set requested from the main loop |
+
+## Buffers above `$7E:2000`
+
+| name | address | what |
+|---|---|---|
+| `palette_buffer` | `$7E:2200` | the palette DMAd to CGRAM every frame (`cgram_dma_src`) |
+| `hdma_tables` | `$7E:3800` | 8 HDMA tables of 32 bytes for the stage effects (`setup_stage_hdma`, `init_topdown_hdma`); the top-down split screen's brightness is at `hdma_tables+$A1`-`+$A7` |
+| `window_hdma_a` / `window_hdma_b` | `$7E:3C00` / `$7E:3E00` | window HDMA tables, double buffered in the top-down stages (`update_topdown_window`) |
+| `scroll_hdma_tables` | `$7E:A000` | HDMA scroll tables of the effects that use them (opening, stage 1 boss, ending...) |
+| `effect_hdma_buf` | `$7E:E800` | HDMA data of the winged alien's band (`winged_alien_hdma_*`), the ending missile and `fill_line_hdma_table` (indirect table `line_hdma_ind`) |
+| `debug_window_hdma_a` / `_b` | `$7E:F800` / `$7E:FA00` | tables of the unused `debug_window_keys` |
+
+The other placeholders above `$7E:2000` are only the start addresses of
+RAM clears (`wram_7E4000` ...), commented as such in `src/ram.inc`.
+`persistent_ram` (`$1E00`) is the start of the block kept across a reset.

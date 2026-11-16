@@ -573,10 +573,10 @@ fill_line_hdma_table:
 	asl	a
 	clc
 	adc	#$E800
-	sta	f:wram_7EEA01
+	sta	f:line_hdma_ind+$01
 	clc
 	adc	#$00FC
-	sta	f:wram_7EEA04
+	sta	f:line_hdma_ind+$04
 	pla
 	phx
 	stz	zp_02

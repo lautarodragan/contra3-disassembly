@@ -862,7 +862,7 @@ loc_01B849:
 	sec
 	lda	#$0168
 	sbc	$0A,x
-	sta	f:wram_7E3807
+	sta	f:hdma_tables+$07
 	lda	a:tank_move_dx
 	bne	loc_01B85E
 	lda	a:wram_165A
@@ -908,7 +908,7 @@ player_tank_state_04:
 	cmp	#$0002
 	bne	@return
 	lda	#$0000
-	sta	f:wram_7E3807
+	sta	f:hdma_tables+$07
 	stz	a:bg2_x
 	stz	hdma_preset
 	lda	#$8000	; [num]
@@ -930,7 +930,7 @@ loc_01B8C6:
 	sta	$12,x
 	stz	$16,x
 	lda	#$0000
-	sta	f:wram_7E3807
+	sta	f:hdma_tables+$07
 	rtl
 loc_01B8D5:
 	lda	a:wram_165A
@@ -955,28 +955,28 @@ loc_01B8FA:
 	bcs	loc_01B90D
 	lda	stage_frame_odd
 	bne	loc_01B90D
-	sta	f:wram_7E3807
+	sta	f:hdma_tables+$07
 	rtl
 loc_01B90D:
 	sec
 	lda	#$0168
 	sbc	$0A,x
-	sta	f:wram_7E3807
+	sta	f:hdma_tables+$07
 	rtl
 
 init_tank_hdma_table:
 	lda	#$007F
-	sta	f:wram_7E3800
+	sta	f:hdma_tables
 	lda	#$1C00
-	sta	f:wram_7E3802
+	sta	f:hdma_tables+$02
 	lda	#$0000
-	sta	f:wram_7E3804
+	sta	f:hdma_tables+$04
 	lda	#$007F
-	sta	f:wram_7E3806
+	sta	f:hdma_tables+$06
 	lda	#$0000
-	sta	f:wram_7E3808
+	sta	f:hdma_tables+$08
 	lda	#$0000
-	sta	f:wram_7E380A
+	sta	f:hdma_tables+$0A
 	rtl
 
 set_solid_push_flags:

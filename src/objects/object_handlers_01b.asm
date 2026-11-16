@@ -2306,7 +2306,7 @@ object_type_4E_state_08:
 	cpx	#$0008
 	bcc	@loop
 	lda	a:bg2_x
-	sta	f:wram_7EA008
+	sta	f:scroll_hdma_tables+$08
 	ldx	#$0000
 @loop2:
 	sta	f:$7EA100,x
@@ -2401,7 +2401,7 @@ loc_01E111:
 object_type_4E_state_0D:
 	jsr	a:object_type_4E_set_bg2_scroll
 	lda	a:bg2_x
-	sta	f:wram_7EA008
+	sta	f:scroll_hdma_tables+$08
 	lda	stage_frame_counter
 	and	#$000F
 	bne	loc_01E16F
@@ -2488,7 +2488,7 @@ loc_01E19B:
 object_type_4E_state_0F:
 	jsr	a:object_type_4E_set_bg2_scroll
 	lda	a:bg2_x
-	sta	f:wram_7EA008
+	sta	f:scroll_hdma_tables+$08
 	stz	$1A,x
 	stz	$18,x
 	inc	$24,x
@@ -2587,7 +2587,7 @@ loc_01E290:
 loc_01E29E:
 	jsr	a:object_type_4E_set_bg2_scroll
 	lda	a:bg2_x
-	sta	f:wram_7EA008
+	sta	f:scroll_hdma_tables+$08
 	jsr	a:object_type_4E_keep_in_range
 
 object_type_4E_slant_to_target:
@@ -4377,15 +4377,15 @@ stage3_spiked_climber_state_0E:
 	jsr	a:spiked_climber_kill_players_outside
 	lda	#$0001
 	sta	a:shake_continuous
-	lda	f:wram_7E3821
+	lda	f:hdma_tables+$21
 	cmp	#$00A0
 	bcc	loc_01F039
 	inc	$12,x
 loc_01F039:
 	inc	a
 	inc	a
-	sta	f:wram_7E3821
-	sta	f:wram_7E382A
+	sta	f:hdma_tables+$21
+	sta	f:hdma_tables+$2A
 	lda	a:obj_slots+7*OBJ_SIZE+OBJ_X
 	dec	a
 	dec	a
@@ -4609,11 +4609,11 @@ stage3_spiked_climber_state_12:
 	jsr	a:spiked_climber_kill_players_outside
 	lda	#$0001
 	sta	a:shake_continuous
-	lda	f:wram_7E3821
+	lda	f:hdma_tables+$21
 	bpl	loc_01F24A
 	lda	#$0000
-	sta	f:wram_7E3821
-	sta	f:wram_7E382A
+	sta	f:hdma_tables+$21
+	sta	f:hdma_tables+$2A
 	phx
 	ldx	#.loword(load_list_059EB1)
 	jsl	f:load_data_list
@@ -4625,8 +4625,8 @@ stage3_spiked_climber_state_12:
 loc_01F24A:
 	sec
 	sbc	#$0004
-	sta	f:wram_7E3821
-	sta	f:wram_7E382A
+	sta	f:hdma_tables+$21
+	sta	f:hdma_tables+$2A
 	rtl
 
 stage3_spiked_climber_state_13:
@@ -4732,8 +4732,8 @@ spiked_climber_place_bg:
 	sec
 	lda	#$00C4
 	sbc	$0A,x
-	sta	f:wram_7E3821
-	sta	f:wram_7E382A
+	sta	f:hdma_tables+$21
+	sta	f:hdma_tables+$2A
 	lda	$0A,x
 	sta	a:obj_slots+8*OBJ_SIZE+OBJ_X
 	sta	a:obj_slots+9*OBJ_SIZE+OBJ_X

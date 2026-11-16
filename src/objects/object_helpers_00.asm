@@ -257,7 +257,7 @@ loc_00FF2B:
 
 clear_hdma_line_buffer:
 	lda	#$0000
-	sta	f:wram_7EA000
+	sta	f:scroll_hdma_tables
 	phx
 	phb
 	lda	#$01FF

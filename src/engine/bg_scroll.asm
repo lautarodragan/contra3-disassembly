@@ -824,8 +824,8 @@ bg2_start_draw_screen:
 bg2_parallax_x_1_8_hdma:
 	jsl	f:bg2_parallax_x_1_8
 	lda	a:bg2_x
-	sta	f:wram_7E3801
-	sta	f:wram_7E3804
+	sta	f:hdma_tables+$01
+	sta	f:hdma_tables+$04
 	rtl
 
 bg2_scroll_none_3:

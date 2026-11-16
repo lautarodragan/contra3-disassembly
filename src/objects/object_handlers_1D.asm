@@ -40,7 +40,7 @@ loc_1DAF46:
 	lda	#$8000	; [num]
 	sta	a:obj_slots+29*OBJ_SIZE+OBJ_FLAGS
 	lda	#$076F
-	sta	f:wram_7EE800
+	sta	f:effect_hdma_buf
 	lda	#$0200
 	sta	OBJ_TIMER,x
 loc_1DAF72:
@@ -135,16 +135,16 @@ ending_sequence_state_01:
 	lda	#$8000	; [num]
 	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
 	lda	#$076F
-	sta	f:wram_7EE800
+	sta	f:effect_hdma_buf
 	lda	#$7FE8
-	sta	f:wram_7EE802
+	sta	f:effect_hdma_buf+$02
 	lda	#$E809	; [num]
-	sta	f:wram_7EE804
+	sta	f:effect_hdma_buf+$04
 	lda	#$7F00
-	sta	f:wram_7EE806
-	sta	f:wram_7EE808
+	sta	f:effect_hdma_buf+$06
+	sta	f:effect_hdma_buf+$08
 	lda	#$0000
-	sta	f:wram_7EE80A
+	sta	f:effect_hdma_buf+$0A
 	lda	#$0011
 	sta	hdma_preset
 	lda	#$0007
@@ -455,7 +455,7 @@ ending_sequence_state_10:
 	lda	#$0200
 	sta	OBJ_TIMER,x
 	lda	#$0100
-	sta	f:wram_7EE809
+	sta	f:effect_hdma_buf+$09
 loc_1DB2F1:
 	jsr	a:ending_scroll_bg1_up_faster
 	jsr	a:ending_missile_bob_default
@@ -598,7 +598,7 @@ ending_set_missile_hdma:
 	sec
 	lda	#$0077
 	sbc	a:obj_slots+2*OBJ_SIZE+OBJ_Y
-	sta	f:wram_7EE807
+	sta	f:effect_hdma_buf+$07
 	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	bmi	loc_1DB434
 	cmp	#$0008
@@ -607,7 +607,7 @@ loc_1DB434:
 	lda	#$0008
 loc_1DB437:
 	ora	#$0700
-	sta	f:wram_7EE800
+	sta	f:effect_hdma_buf
 loc_1DB43E:
 	rts
 
@@ -618,14 +618,14 @@ ending_bg2_follow_missile:
 	sta	a:bg2_y
 	rts
 
-; From the ending object's y: the HDMA value wram_7EE809 ($141 - y), slot 29's
+; From the ending object's y: the HDMA value effect_hdma_buf+$09 ($141 - y), slot 29's
 ; y and the bases of the creature's arms (wram_169A-wram_16A0, read by
 ; ending_creature_feed_arm).
 ending_creature_place_arm_bases:
 	sec
 	lda	#$0141
 	sbc	OBJ_Y,x
-	sta	f:wram_7EE809
+	sta	f:effect_hdma_buf+$09
 	clc
 	lda	OBJ_Y,x
 	adc	#$FFF0

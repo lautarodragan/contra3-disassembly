@@ -248,21 +248,21 @@ loc_018194:
 	sta	a:wobjsel_shadow
 loc_0181A8:
 	lda	#$00FF
-	sta	f:wram_7EF800
+	sta	f:debug_window_hdma_a
 	lda	#$F807	; [num]
-	sta	f:wram_7EF801
+	sta	f:debug_window_hdma_a+$01
 	lda	#$00FF
-	sta	f:wram_7EF803
+	sta	f:debug_window_hdma_a+$03
 	lda	#$F887	; [num]
-	sta	f:wram_7EF804
+	sta	f:debug_window_hdma_a+$04
 	lda	#$00FF
-	sta	f:wram_7EFA00
+	sta	f:debug_window_hdma_b
 	lda	#$FA07	; [num]
-	sta	f:wram_7EFA01
+	sta	f:debug_window_hdma_b+$01
 	lda	#$00FF
-	sta	f:wram_7EFA03
+	sta	f:debug_window_hdma_b+$03
 	lda	#$FA87	; [num]
-	sta	f:wram_7EFA04
+	sta	f:debug_window_hdma_b+$04
 	rtl
 loc_0181E1:
 	stz	a:tmw_shadow

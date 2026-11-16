@@ -466,7 +466,7 @@ opening_ruins_init:
 	sta	hdma_preset
 	jsr	a:opening_init_ruins_wave
 	lda	#$0000
-	sta	f:wram_7E2250
+	sta	f:palette_buffer+$50
 	jsr	a:opening_clear_objects
 	stz	a:opening_step_timer
 	inc	a:opening_step
@@ -710,21 +710,21 @@ opening_is_scene_ending:
 ; Writes the HDMA scroll table at $7E:A000 from bg1_x and opening_frame_counter.
 opening_update_parallax:
 	lda	a:bg1_x
-	sta	f:wram_7EA013
+	sta	f:scroll_hdma_tables+$13
 	lda	a:opening_frame_counter
 	lsr	a
 	lsr	a
 	eor	#$FFFF
-	sta	f:wram_7EA004
+	sta	f:scroll_hdma_tables+$04
 	lda	a:opening_frame_counter
 	lsr	a
-	sta	f:wram_7EA007
+	sta	f:scroll_hdma_tables+$07
 	lsr	a
-	sta	f:wram_7EA00A
+	sta	f:scroll_hdma_tables+$0A
 	lsr	a
-	sta	f:wram_7EA00D
+	sta	f:scroll_hdma_tables+$0D
 	lsr	a
-	sta	f:wram_7EA010
+	sta	f:scroll_hdma_tables+$10
 	rts
 
 ; Clears the 16 object slots listed in opening_object_slots.
@@ -839,10 +839,10 @@ opening_init_ruins_wave:
 	cpy	#$0009
 	bcc	@loop2
 	lda	a:bg1_x
-	sta	f:wram_7EA010
+	sta	f:scroll_hdma_tables+$10
 	lda	a:bg1_y
 	inc	a
-	sta	f:wram_7EA410
+	sta	f:scroll_hdma_tables+$410
 	ldy	#.loword(ruins_wave_params_0)
 	jsl	f:build_wave_table
 	ldy	#.loword(ruins_wave_params_1)
@@ -854,7 +854,7 @@ opening_update_ruins_wave:
 	and	#$007E
 	clc
 	adc	#$A020
-	sta	f:wram_7EA004
+	sta	f:scroll_hdma_tables+$04
 	lda	a:opening_frame_counter
 	clc
 	adc	#$0010
@@ -862,5 +862,5 @@ opening_update_ruins_wave:
 	asl	a
 	clc
 	adc	#$A420
-	sta	f:wram_7EA404
+	sta	f:scroll_hdma_tables+$404
 	rts

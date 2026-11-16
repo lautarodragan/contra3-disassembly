@@ -729,24 +729,24 @@ init_topdown_hdma:
 	sep	#$20
 	.a8
 	lda	#$01
-	sta	f:wram_7E3C00
-	sta	f:wram_7E3E00
+	sta	f:window_hdma_a
+	sta	f:window_hdma_b
 	rep	#$20
 	.a16
 	lda	#$3C1E
-	sta	f:wram_7E3C01
+	sta	f:window_hdma_a+$01
 	lda	#$3E1E
-	sta	f:wram_7E3E01
+	sta	f:window_hdma_b+$01
 	sep	#$20
 	.a8
 	lda	#$00
-	sta	f:wram_7E3C03
-	sta	f:wram_7E3E03
+	sta	f:window_hdma_a+$03
+	sta	f:window_hdma_b+$03
 	rep	#$20
 	.a16
 	lda	#$0001
-	sta	f:wram_7E3E1E
-	sta	f:wram_7E3C1E
+	sta	f:window_hdma_b+$1E
+	sta	f:window_hdma_a+$1E
 	lda	a:title_menu_cursor
 	beq	loc_02EC34
 	dec	a
@@ -1942,9 +1942,9 @@ loc_02F532:
 	lda	#$2000
 	sta	$02,x
 	lda	$0A,x
-	sta	a:wram_1900
+	sta	a:stage5_boss_claw_x
 	lda	$0E,x
-	sta	a:wram_1902
+	sta	a:stage5_boss_claw_y
 
 stage5_boss_claw_state_2:
 	lda	#$0002
@@ -2082,9 +2082,9 @@ stage5_boss_arm_base_state_2:
 	; (not executed in the CDL traces)
 	brl	clear_topdown_slot
 loc_02F650:
-	lda	a:wram_1900
+	lda	a:stage5_boss_claw_x
 	sta	$0A,x
-	lda	a:wram_1902
+	lda	a:stage5_boss_claw_y
 	sta	$0E,x
 	jsr	a:stage5_boss_arm_angle_from_tail
 	sta	$04,x
@@ -2179,9 +2179,9 @@ stage5_boss_arm_segment_state_2:
 	bcs	loc_02F6FE
 	brl	clear_topdown_slot
 loc_02F6FE:
-	lda	a:wram_1900
+	lda	a:stage5_boss_claw_x
 	sta	$0A,x
-	lda	a:wram_1902
+	lda	a:stage5_boss_claw_y
 	sta	$0E,x
 	rtl
 loc_02F709:

@@ -62,7 +62,7 @@ reset:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:wram_1E00
+	sta	f:persistent_ram
 	lda	#$01FE
 	ldx	#$1E00
 	txy

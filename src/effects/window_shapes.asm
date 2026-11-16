@@ -552,15 +552,15 @@ loc_02E108:
 	sep	#$20
 	.a8
 	lda	#$01
-	sta	f:wram_7E3C00
+	sta	f:window_hdma_a
 	rep	#$20
 	.a16
 	lda	#$3C1E
-	sta	f:wram_7E3C01
+	sta	f:window_hdma_a+$01
 	sep	#$20
 	.a8
 	lda	#$00
-	sta	f:wram_7E3C03
+	sta	f:window_hdma_a+$03
 	sep	#$20
 	stz	a:CGWSEL
 	stz	a:WOBJSEL
@@ -581,8 +581,8 @@ loc_02E141:
 	.a8
 	lda	a:bomb_flash_cgadsub_p1,y
 	sta	a:CGADSUB
-	sta	f:wram_7E3863
-	sta	f:wram_7E3867
+	sta	f:hdma_tables+$63
+	sta	f:hdma_tables+$67
 	lda	#$10
 	sta	a:CGWSEL
 	lda	#$20
@@ -732,8 +732,8 @@ loc_02E291:
 	.a8
 	lda	#$13
 	sta	a:CGADSUB
-	sta	f:wram_7E3863
-	sta	f:wram_7E3867
+	sta	f:hdma_tables+$63
+	sta	f:hdma_tables+$67
 	lda	#$10
 	sta	a:CGWSEL
 	lda	#$20
@@ -861,15 +861,15 @@ loc_02E3B9:
 	sep	#$20
 	.a8
 	lda	#$01
-	sta	f:wram_7E3E00
+	sta	f:window_hdma_b
 	rep	#$20
 	.a16
 	lda	#$3E1E
-	sta	f:wram_7E3E01
+	sta	f:window_hdma_b+$01
 	sep	#$20
 	.a8
 	lda	#$00
-	sta	f:wram_7E3E03
+	sta	f:window_hdma_b+$03
 	sep	#$20
 	stz	a:CGWSEL
 	stz	a:WOBJSEL
@@ -890,8 +890,8 @@ loc_02E3F2:
 	.a8
 	lda	a:bomb_flash_cgadsub_p2,y
 	sta	a:CGADSUB
-	sta	f:wram_7E3863
-	sta	f:wram_7E3867
+	sta	f:hdma_tables+$63
+	sta	f:hdma_tables+$67
 	lda	#$10
 	sta	a:CGWSEL
 	lda	#$20
@@ -1041,8 +1041,8 @@ loc_02E542:
 	.a8
 	lda	#$13
 	sta	a:CGADSUB
-	sta	f:wram_7E3863
-	sta	f:wram_7E3867
+	sta	f:hdma_tables+$63
+	sta	f:hdma_tables+$67
 	lda	#$10
 	sta	a:CGWSEL
 	lda	#$20
