@@ -23,7 +23,7 @@ it ever runs.  Insertion points:
     free space allows: the code and data of one bank move relative to each
     other, not only relative to other banks.
   * --labels P: also one byte before a fraction P of the data labels (a
-    label whose next statement is data, after a .byte line), chosen with
+    label whose next statement is data, after a .byte or .incbin line), chosen with
     --seed, within each bank's free space.  This moves data blocks relative to each other: it
     catches tables indexed past their label into the next block.  Labels
     with a "; LAYOUT:" comment are not moved (the block before is read past
@@ -111,7 +111,7 @@ def parse_amounts(spec, banks, free=None):
 
 
 LABEL_RE = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*):")
-DATA_RE = re.compile(r"^\s*\.(byte|word|addr|faraddr|dbyt|res)\b")
+DATA_RE = re.compile(r"^\s*\.(byte|word|addr|faraddr|dbyt|res|incbin)\b")
 
 
 def bank_files(main_asm):
@@ -179,6 +179,10 @@ def cmd_build(args):
     lines = open(main).read().split("\n")
     for k, line in enumerate(lines):
         out.append(line)
+        if line.startswith('.include "common.inc"'):
+            # for --labels after an .incbin (an asset file, see data labels below)
+            out += [".macro shift_incbin_filler file", "\t.incbin\tfile",
+                    "\t.byte\t$%02X" % FILLER, ".endmacro"]
         m = re.match(r'\.segment\s+"BANK([0-9A-F]{2})"', line)
         if m:
             bank = int(m.group(1), 16)
@@ -221,9 +225,15 @@ def cmd_build(args):
                 while j >= 0 and (not lines[j].strip() or lines[j].strip().startswith(";")):
                     j -= 1
                 m = re.match(r"^(\s*\.byte\s+[^;]*?)(\s*;.*)?$", lines[j]) if j >= 0 else None
-                if not m:
+                inc = re.match(r"^\s*\.incbin\s+(\"[^\"]*\")\s*(;.*)?$", lines[j]) if j >= 0 else None
+                if inc:
+                    # an asset file: the macro that main.asm gets above
+                    # includes it, then the filler
+                    lines[j] = "\tshift_incbin_filler\t" + inc.group(1)
+                elif not m:
                     continue
-                lines[j] = m.group(1) + ", $%02X" % FILLER + (m.group(2) or "")
+                else:
+                    lines[j] = m.group(1) + ", $%02X" % FILLER + (m.group(2) or "")
                 budget -= 1
                 moved += 1
             for f in files:

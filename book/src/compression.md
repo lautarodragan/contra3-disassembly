@@ -146,8 +146,9 @@ input back), on the blocks and on a few synthetic inputs, and fails if one
 does not or if a block is reproduced by neither v1 nor v2.
 
 The blocks come from `build/contra3.sfc` at their labels, whose addresses
-come from a debug build (`tools/srcmap.py` builds one in build/dbg); nothing extracted
-is stored in the repository. The 19 uncompressed sound blocks
+come from a debug build (`tools/srcmap.py` builds one in build/dbg), so the
+test checks what the build put in the ROM, whatever the source form of
+each stream (see [Assets](assets.md)). The 19 uncompressed sound blocks
 (`; ASSET: sound CPU data (uncompressed)`) are not streams and are skipped.
 
 ```

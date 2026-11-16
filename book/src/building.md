@@ -18,9 +18,11 @@ make clean      # removes what the build made in build/
 
 The build is two steps:
 
-1. `ca65 --cpu 65816 -I src -o build/main.o src/main.asm`.
+1. `ca65 --cpu 65816 -I src --bin-include-dir assets -o build/main.o src/main.asm`.
    `src/main.asm` includes every bank file, so it is the only translation
-   unit. Every file in `src/` is a dependency of `build/main.o`.
+   unit. Every file in `src/` and every asset file in `assets/` (included
+   with `.incbin`, see [Assets](assets.md)) is a dependency of
+   `build/main.o`.
 2. `ld65 -C src/contra3.cfg -m build/contra3.map -Ln build/contra3.lbl -o build/contra3.sfc build/main.o`.
    The linker config `src/contra3.cfg` has one memory area per bank
    (`ROM00` to `ROM1F`, `$8000` bytes each at `$XX:8000`, filled with `$FF`)

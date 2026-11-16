@@ -7,12 +7,15 @@ CA65   ?= ca65
 LD65   ?= ld65
 PYTHON ?= python3
 
-CA65FLAGS := --cpu 65816 -I src
+CA65FLAGS := --cpu 65816 -I src --bin-include-dir assets
 LD65FLAGS := -C src/contra3.cfg
 
 # src/main.asm includes every bank file, so it is the only translation unit;
-# any file under src/ is a dependency.
+# any file under src/ is a dependency, and so is every binary asset under
+# assets/ (included with .incbin; see tools/assets.py and the book's Assets
+# page).
 src_files := $(shell find src -name '*.asm' -o -name '*.inc' -o -name '*.bin')
+asset_files := $(shell find assets -type f)
 
 # A failed link must not leave a partial ROM behind that looks up to date.
 .DELETE_ON_ERROR:
@@ -24,7 +27,7 @@ all: compare
 $(rom): build/main.o src/contra3.cfg
 	$(LD65) $(LD65FLAGS) -m build/contra3.map -Ln build/contra3.lbl -o $@ build/main.o
 
-build/main.o: $(src_files) | build
+build/main.o: $(src_files) $(asset_files) | build
 	$(CA65) $(CA65FLAGS) -o $@ src/main.asm
 
 build:

@@ -30,14 +30,13 @@ as their contents get understood; keep a bank's files in order.
 ## Data files
 
 The banks that only hold data (the files in `src/gfx/`, and `src/sound/sound_1A.asm` and its siblings) are
-data-only files of `.byte` lines, without code. Their labels name the
+data-only files, without code. Their labels name the
 streams that the data lists in `src/data/tables_05.asm` point to; other
 blocks start at a CDL comment. A block whose bounds are exact and that
-holds no pointers is marked `; ASSET:` (see [Shiftability](shiftability.md)):
-those can later be replaced by `.incbin` of files extracted from a
-user-supplied ROM (see the
-[Introduction](introduction.md#the-rom-and-the-assets)); no binary game data
-is committed. Banks `$05`, `$06` and `$07`, and the data blocks inside code
+holds no pointers is marked `; ASSET:` (see [Shiftability](shiftability.md));
+those blocks and the compressed WRAM streams are binary files in
+`assets/`, included with `.incbin` after their label (see
+[Assets](assets.md)). The rest is `.byte` lines. Banks `$05`, `$06` and `$07`, and the data blocks inside code
 banks, stay as source because they contain pointers; their formats are
 macros in `src/data_macros.inc`.
 

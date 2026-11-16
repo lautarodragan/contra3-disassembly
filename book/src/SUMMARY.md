@@ -11,6 +11,7 @@
 - [The disassembler](disassembler.md)
 - [Progress](progress.md)
 - [Shiftability](shiftability.md)
+- [Assets](assets.md)
 - [Cheats](cheats.md)
 - [Contributing: naming](contributing.md)
 

@@ -59,10 +59,12 @@ sound blocks, have a comment
 
     ; ASSET: compressed graphics (VRAM), $0A:8000-$0A:8F11 (from its length word), loaded by load_list_05AA1F
 
-meaning: bounds proven, no pointers inside; a later task can extract them
-as binary files for editing. Streams decompressed to WRAM are labelled but
-not marked yet (what they decompress to may hold pointers):
-`; Compressed data for WRAM ... Not an ASSET yet`.
+meaning: bounds proven, no pointers inside. Streams decompressed to WRAM
+are labelled but not marked (what they decompress to is not checked for
+pointers yet): `; Compressed data for WRAM ...`. Both are binary files in
+`assets/` now, included with `.incbin` right after their label (see
+[Assets](assets.md)); the label stays in the source, so they move with
+their bank.
 
 ## The shift test
 
@@ -84,7 +86,9 @@ bytes (`$EA`, NOP, harmless if it ever runs) and assembles
   free space allows: code and data of one bank move relative to each other;
 - with `--labels P --seed S`, also one byte before a fraction of the data
   labels (appended to the `.byte` line before them, so that line numbers
-  stay those of `src/`): blocks move relative to each other, which catches
+  stay those of `src/`; after an asset's `.incbin` line, that line becomes
+  `shift_incbin_filler`, a macro the tool adds to its copy of `main.asm`
+  that includes the file and then the filler): blocks move relative to each other, which catches
   tables read past their label into the next one. A label followed by a
   comment with `LAYOUT:` is left alone: the block before it is read on into
   it on purpose (see below).

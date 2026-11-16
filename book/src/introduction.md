@@ -32,13 +32,12 @@ the original:
 
 ## The ROM and the assets
 
-Right now the build doesn't need the original ROM: everything, graphics and
-music included, is in `src/` as `.byte` lines generated from it. The plan is
-to change that later: once the data is understood, the build will require a
-ROM supplied by the user, check it against `contra3.sha1`, and extract the
-assets (graphics, palettes, music and so on) from it into files the build
-uses, so that the repository holds the code and the knowledge of how to read
-the data, not the data.
+The build doesn't need the original ROM: everything is in the repository,
+the code and tables in `src/` as source, and the graphics, the compressed
+streams and the sound data as files in `assets/`, included by the source
+(see [Assets](assets.md)). Those files are also where a build from a ROM
+supplied by the user would put what it extracts, if the project later
+chooses to keep the data out of the repository.
 
 Either way, never commit a ROM: `*.sfc`, `*.smc` and `*.zip` are in
 `.gitignore`.

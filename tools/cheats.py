@@ -33,6 +33,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 
+import assets  # noqa: E402
 import make_ips  # noqa: E402
 
 CHEATS_INC = os.path.join(ROOT, "src", "cheats.inc")
@@ -126,7 +127,7 @@ def build(words, name=None, quiet=False):
     ld65 = os.environ.get("LD65", "ld65")
     obj = os.path.join(out, "main.o")
     sfc = os.path.join(out, "contra3.sfc")
-    cmd = [ca65, "--cpu", "65816", "-g", "-I", "src"]
+    cmd = [ca65, "--cpu", "65816", "-g", "-I", "src", *assets.ca65_args(ROOT)]
     for sym, value in defs:
         cmd += ["-D", "%s=%d" % (sym, value)]
     cmd += ["-o", obj, "src/main.asm"]

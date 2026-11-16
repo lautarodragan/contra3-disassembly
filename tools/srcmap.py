@@ -22,6 +22,9 @@ import re
 import subprocess
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import assets  # noqa: E402
+
 CA65 = os.environ.get("CA65", "ca65")
 LD65 = os.environ.get("LD65", "ld65")
 
@@ -32,7 +35,7 @@ def assemble(srcdir, outdir, defines=(), cfg=None, rom_name="contra3.sfc"):
     obj = os.path.join(outdir, "main.o")
     rom = os.path.join(outdir, rom_name)
     dbg = os.path.join(outdir, "contra3.dbg")
-    cmd = [CA65, "--cpu", "65816", "-g", "-I", srcdir, "-o", obj]
+    cmd = [CA65, "--cpu", "65816", "-g", "-I", srcdir, *assets.ca65_args(), "-o", obj]
     for d in defines:
         cmd += ["-D", d]
     cmd.append(os.path.join(srcdir, "main.asm"))
