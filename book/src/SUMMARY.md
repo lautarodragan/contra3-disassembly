@@ -5,6 +5,8 @@
 # Working on the code
 
 - [Building](building.md)
+  - [Emulator tests and the CDL tracer](emulator.md)
+  - [CDL format](cdl-format.md)
 - [Source layout](layout.md)
 - [The disassembler](disassembler.md)
 - [Progress](progress.md)

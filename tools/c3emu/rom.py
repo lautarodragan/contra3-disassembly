@@ -1,22 +1,19 @@
-"""Locating and extracting the ROM.
+"""Locating the ROM.
 
-The original ROM lives in the repository as the No-Intro zip. It is extracted
-on demand to rom/contra3.sfc (gitignored) and verified by SHA-1. Every tool
-that needs "the ROM" goes through `rom_path()`, which honours the C3_ROM
-environment variable so the same tests/tracer can run against a ROM rebuilt
-from the disassembly.
+The reference ROM is the default build of the disassembly, build/contra3.sfc
+(`make`), which is byte-identical to the original cartridge dump: it is
+checked here by SHA-1, as `make compare` does. Every tool that needs "the
+ROM" goes through `rom_path()`, which honours the C3_ROM environment variable
+so the same tests/tracer can run against another ROM (a shifted build, a
+cheat build, ...).
 
-    python3 -m tools.c3emu.rom --extract
+    python3 -m tools.c3emu.rom
 """
 import hashlib
 import os
-import sys
-import zipfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-ZIP = os.path.join(ROOT, "Contra III - The Alien Wars (USA).zip")
-MEMBER = "Contra III - The Alien Wars (USA).sfc"
-EXTRACTED = os.path.join(ROOT, "rom", "contra3.sfc")
+DEFAULT = os.path.join(ROOT, "build", "contra3.sfc")
 SHA1 = "265886e3f665adf2507e7b2f08b6b2ed9d0018b2"
 SIZE = 0x100000
 
@@ -25,32 +22,26 @@ def sha1(data):
     return hashlib.sha1(data).hexdigest()
 
 
-def extract(force=False):
-    """Extracts the original ROM to rom/contra3.sfc and returns its path."""
-    if os.path.exists(EXTRACTED) and not force:
-        with open(EXTRACTED, "rb") as f:
-            if sha1(f.read()) == SHA1:
-                return EXTRACTED
-    with zipfile.ZipFile(ZIP) as z:
-        data = z.read(MEMBER)
-    if sha1(data) != SHA1:
-        raise SystemExit("the ROM in the zip has SHA-1 %s, expected %s"
-                         % (sha1(data), SHA1))
-    os.makedirs(os.path.dirname(EXTRACTED), exist_ok=True)
-    tmp = EXTRACTED + ".tmp"
-    with open(tmp, "wb") as f:
-        f.write(data)
-    os.replace(tmp, EXTRACTED)
-    return EXTRACTED
+def original():
+    """The default build, build/contra3.sfc, after checking that it is the
+    original ROM byte for byte."""
+    if not os.path.exists(DEFAULT):
+        raise SystemExit("no %s: run `make` first" % DEFAULT)
+    with open(DEFAULT, "rb") as f:
+        got = sha1(f.read())
+    if got != SHA1:
+        raise SystemExit("%s has SHA-1 %s, expected %s (the default build must "
+                         "match the original; run `make`)" % (DEFAULT, got, SHA1))
+    return DEFAULT
 
 
 def rom_path(explicit=None):
-    """The ROM to run: an explicit path, else $C3_ROM, else the original
-    (extracted from the zip if needed)."""
+    """The ROM to run: an explicit path, else $C3_ROM, else the default
+    build (checked against the original's SHA-1)."""
     path = explicit or os.environ.get("C3_ROM")
     if path:
         return os.path.abspath(path)
-    return extract()
+    return original()
 
 
 def is_original(path):
@@ -59,7 +50,4 @@ def is_original(path):
 
 
 if __name__ == "__main__":
-    if "--extract" in sys.argv:
-        print(extract(force="--force" in sys.argv))
-    else:
-        print(rom_path())
+    print(rom_path())

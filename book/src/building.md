@@ -50,27 +50,38 @@ something other than the original (the cheats, see the
 
 The hash check proves that the ROM is the original; once the source starts
 changing the ROM on purpose (milestone 3 moves code and data around), it is
-not enough. The private companion repository has a test suite that boots a
-ROM in the snes9x libretro core and compares screenshots of the intro, the
-title, the attract demos and the first 600 frames of every stage with
-goldens taken from the original. To run it on `build/contra3.sfc`:
+not enough. The repository has an emulator test suite that boots a ROM in
+the snes9x libretro core and compares screenshots of the intro, the title,
+the attract demos and the first 600 frames of every stage, and scripted
+plays through every stage, with goldens taken from the original. It needs
+gcc/g++, git, network access to github.com the first time (to clone the
+pinned snes9x), and Python 3 with pytest and Pillow:
 
 ```sh
-make emu-test PRIVATE=path/to/contra3-disassembly-private
+pip install -r requirements.txt
+make cores      # builds build/cores/snes9x_libretro.so (~1 min, once)
+make emu-test   # the whole suite on build/contra3.sfc (~7 min on 4 cores)
+make emu-test TESTS=tests/test_screens.py   # only the screenshots (~1 min)
 ```
 
-`PRIVATE` defaults to `../contra3-disassembly-private`. The target builds
-the ROM (without requiring it to match the hash) and runs `make test
-ROM=...` in that repository, which needs Python 3 with pytest and Pillow and
-builds the core the first time (`make cores` there; it needs network access
-to GitHub). It takes about a minute.
+`make emu-test` builds the ROM without requiring it to match the hash, so
+it also checks a refactor that moves code. It needs no original ROM file:
+the default build is the reference. See [Emulator tests](emulator.md) for
+the suite, the cores, the goldens and the CDL tracer.
 
 ## CI
 
 `.github/workflows/build.yml` runs on every push to `main`, on pull requests
-and by hand. It installs Ubuntu's `cc65` package, runs `make compare`, and
-then fails if the build changed any tracked file (`git status --porcelain`
-must be empty).
+and by hand. Its `build` job installs Ubuntu's `cc65` package, runs `make
+compare`, builds the cheat presets and their IPS patches, runs the shift
+scan and a shifted build, and then fails if the build changed any tracked
+file (`git status --porcelain` must be empty).
+
+Its `emulator` job runs on pushes to `main` and by hand, not on pull
+requests: it builds the snes9x core (cached, keyed on `cores/build.sh`,
+which pins the commit, and the patch), then runs `make emu-test` and `make
+shift-test`. It takes about 12-15 minutes; on a failure the frames and diffs
+in `out/` are uploaded as an artifact.
 
 ## The book
 

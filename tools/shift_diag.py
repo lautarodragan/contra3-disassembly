@@ -3,17 +3,16 @@
 tracer and report the first reads of ROM data that the normal build doesn't
 make.
 
-    python3 tools/shift_diag.py [--private ../contra3-disassembly-private]
-                                [--out build/shift] [--scenario attract]
+    python3 tools/shift_diag.py [--out build/shift] [--scenario attract]
                                 [--frames N] [--chunk 60]
 
 Needs the build of `tools/shift.py build` in OUT (OUT/contra3.sfc and the
-normal build in OUT/base/) and the private companion repository (patched
-snes9x core with the CDL tracer, tools/c3emu).
+normal build in OUT/base/) and the patched snes9x core with the CDL tracer
+(`make cores`; driven through tools/c3emu).
 
 Both ROMs play the same scenario from power-on: `attract` (no input),
 `stageN` (start the game at stage N, as the screenshot tests do) or one of
-the scripted plays of the private repository (`tools/c3emu/plays.py`, as
+the scripted plays (`tools/c3emu/plays.py`, as
 `tests/test_play.py` runs them: `stage2_boss`, `stage6`...).  Every
 ROM byte the shifted build reads as data is mapped back to the source line
 and byte it came from (through the two builds' debug files) and so to its
@@ -41,6 +40,7 @@ import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)   # the repository, for the tools.c3emu package
 sys.path.insert(0, HERE)
 import srcmap  # noqa: E402
 
@@ -58,7 +58,7 @@ def lorom_addr(off):
 def _chunks(c, scenario, frames, chunk):
     """Runs the scenario, yielding after every `chunk` frames (up to `frames`):
     `attract` (no input), `stageN` (the game started at stage N, no input),
-    or a scripted play of the private repository (tools/c3emu/plays.py:
+    or a scripted play (tools/c3emu/plays.py:
     seeded random play through a stage, e.g. `stage2_boss`)."""
     from tools.c3emu import game, plays
     if scenario in plays.PLAYS:
@@ -93,8 +93,8 @@ def _readers(c):
     return (ctypes.c_uint32 * n).from_address(L.retro_cdl_readers())
 
 
-def run_reference(private, rom, scenario, frames, q, wram_at=None):
-    sys.path.insert(0, private)
+def run_reference(root, rom, scenario, frames, q, wram_at=None):
+    sys.path.insert(0, root)
     from tools.c3emu import retro
     c = retro.Console(rom)
     c.cdl_enable(True)
@@ -112,9 +112,9 @@ def run_reference(private, rom, scenario, frames, q, wram_at=None):
     c.close()
 
 
-def run_shifted(private, rom, scenario, frames, chunk, ref, ref_readers, mapping, q, harmless=()):
+def run_shifted(root, rom, scenario, frames, chunk, ref, ref_readers, mapping, q, harmless=()):
     """Stops at the first chunk with anomalies; returns them with readers."""
-    sys.path.insert(0, private)
+    sys.path.insert(0, root)
     from tools.c3emu import retro
     c = retro.Console(rom)
     c.cdl_enable(True)
@@ -173,10 +173,10 @@ def harmless_readers(smap, out):
     return pcs
 
 
-def run_fillers(private, rom, scenario, frames, q):
+def run_fillers(root, rom, scenario, frames, q):
     """Runs the whole scenario; returns the ROM offsets read as data, with
     their first readers (the caller keeps those of filler bytes)."""
-    sys.path.insert(0, private)
+    sys.path.insert(0, root)
     from tools.c3emu import retro
     c = retro.Console(rom)
     c.cdl_enable(True)
@@ -188,7 +188,7 @@ def run_fillers(private, rom, scenario, frames, q):
     c.close()
 
 
-def report_fillers(args, private, mapping):
+def report_fillers(args, root, mapping):
     """--fillers: every byte of the shift test's filler read in the scenario,
     with the label after it: the block before that label is read past its
     end (or the label is inside a block); it needs a LAYOUT comment, or the
@@ -198,7 +198,7 @@ def report_fillers(args, private, mapping):
     lv = [v for v, _n in labs]
     ctx = mp.get_context("spawn")
     q = ctx.Queue()
-    p = ctx.Process(target=run_fillers, args=(private, os.path.abspath(os.path.join(args.out, "contra3.sfc")),
+    p = ctx.Process(target=run_fillers, args=(root, os.path.abspath(os.path.join(args.out, "contra3.sfc")),
                                              args.scenario, args.frames, q))
     p.start()
     reads = q.get()
@@ -264,7 +264,6 @@ def find_literal(value, srcdir="src", limit=3):
 
 def main(argv):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--private", default=os.environ.get("PRIVATE", "../contra3-disassembly-private"))
     ap.add_argument("--out", default="build/shift")
     ap.add_argument("--scenario", default="attract")
     ap.add_argument("--frames", type=int, default=None,
@@ -275,22 +274,22 @@ def main(argv):
     ap.add_argument("--fillers", action="store_true",
                     help="run the whole scenario and list the filler bytes read (for --labels builds)")
     args = ap.parse_args(argv[1:])
-    private = os.path.abspath(args.private)
+    root = ROOT
     if args.frames is None:
-        sys.path.insert(0, private)
+        sys.path.insert(0, root)
         from tools.c3emu import plays
         args.frames = plays.PLAYS[args.scenario].frames if args.scenario in plays.PLAYS else 18300
     mapping, base = build_mapping(args.out)
     if args.fillers:
-        return report_fillers(args, private, mapping)
+        return report_fillers(args, root, mapping)
     ctx = mp.get_context("spawn")
     q = ctx.Queue()
-    p = ctx.Process(target=run_reference, args=(private, os.path.abspath(os.path.join(args.out, "base", "contra3.sfc")),
+    p = ctx.Process(target=run_reference, args=(root, os.path.abspath(os.path.join(args.out, "base", "contra3.sfc")),
                                                args.scenario, args.frames, q))
     p.start()
     ref, ref_readers = q.get()
     p.join()
-    p = ctx.Process(target=run_shifted, args=(private, os.path.abspath(os.path.join(args.out, "contra3.sfc")),
+    p = ctx.Process(target=run_shifted, args=(root, os.path.abspath(os.path.join(args.out, "contra3.sfc")),
                                              args.scenario, args.frames, args.chunk, ref, ref_readers, mapping, q,
                                              harmless_readers(srcmap.SrcMap.load(os.path.join(args.out, "contra3.dbg")),
                                                               args.out) |
@@ -302,7 +301,7 @@ def main(argv):
     if bad:
         # the object slots of both runs at that frame: an animation script or
         # metasprite pointer that did not move with its bank is suspect
-        p = ctx.Process(target=run_reference, args=(private, os.path.abspath(os.path.join(args.out, "base", "contra3.sfc")),
+        p = ctx.Process(target=run_reference, args=(root, os.path.abspath(os.path.join(args.out, "base", "contra3.sfc")),
                                                    args.scenario, args.frames, q, frame))
         p.start()
         wram_a = q.get()

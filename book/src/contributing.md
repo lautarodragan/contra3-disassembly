@@ -194,9 +194,9 @@ order) and the table in [Source layout](layout.md).
 ```sh
 make                  # the ROM must still match contra3.sha1
 make book-check       # every name the book mentions must exist
-make emu-test PRIVATE=../contra3-disassembly-private   # when code or data moves
+make emu-test         # when code or data moves (needs make cores)
 python3 tools/shift.py scan                            # no hardcoded ROM reference of known forms
-make shift-test PRIVATE=../contra3-disassembly-private # when converting references
+make shift-test       # when converting references
 ```
 
 A rename that keeps `make` matching changes nothing in the ROM, so

@@ -1,14 +1,14 @@
 """Build-time cheats of the disassembly (milestone 4), checked in the emulator.
 
-Each test builds a cheat ROM from the disassembly checkout with its
+Each test builds a cheat ROM from this checkout with
 tools/cheats.py (options as in `make cheats CHEATS="..."`) and checks the
 effect through RAM reads, usually against the original ROM doing the same.
 
-    python3 -m pytest tests/test_cheats.py                  # disassembly at ../contra3-disassembly
-    C3_DISASM=path/to/contra3-disassembly python3 -m pytest tests/test_cheats.py
-    make cheat-test PRIVATE=...                             # from the disassembly
+    make cheat-test
+    python3 -m pytest tests/test_cheats.py
+    C3_DISASM=path/to/other/checkout python3 -m pytest tests/test_cheats.py
 
-Skipped when there is no disassembly with tools/cheats.py, or no cc65.
+Skipped when there is no cc65.
 """
 import collections
 import os
@@ -22,8 +22,7 @@ import pytest
 from tools.c3emu import game, retro
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DISASM = os.environ.get("C3_DISASM") or os.path.join(
-    os.path.dirname(os.path.dirname(HERE)), "contra3-disassembly")
+DISASM = os.environ.get("C3_DISASM") or os.path.dirname(HERE)
 
 # RAM ($7E:xxxx)
 P1_STATE = 0x0212          # player 1 OBJ_STATE

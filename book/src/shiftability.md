@@ -94,7 +94,7 @@ full banks (`$00`: 14 bytes, `$05`: 74), so `--labels` moves only some of
 their labels per seed.
 
 ```sh
-make shift-test PRIVATE=../contra3-disassembly-private   # emulator suite on the shifted ROM
+make shift-test                                          # emulator suite on the shifted ROM
 make shift-test SHIFT=05=13                              # only bank $05 moved
 make shift-test SHIFT=max
 make shift-test SHIFT_FLAGS="--labels 0.3 --seed 2 --files 1"
@@ -104,13 +104,13 @@ python3 tools/shift.py scan                              # hardcoded references
 
 ### The suite
 
-`make shift-test` runs two test files of the private repository on the
+`make shift-test` runs two test files of the [emulator suite](emulator.md) on the
 shifted ROM (not `tests/test_cdl.py`, which checks the reset vector of the
 original layout):
 
 - `tests/test_screens.py`: screenshots of the intro, title, the three
   attract demos and the first 600 frames of every stage;
-- `tests/test_play.py`: scripted plays (`tools/c3emu/plays.py` there):
+- `tests/test_play.py`: scripted plays (`tools/c3emu/plays.py`):
   every stage from its start and from its midpoint (`$1E40` poked, which
   reaches the bosses, the stage clear screens and the next stage), 2-player
   modes A and B (the top-down split screen), HARD, the NORMAL ending of
@@ -142,12 +142,13 @@ other 16-bit immediate `>= $8000` that is loaded or compared (`lda`,
 `[num]`: a value checked to be a number (negative values, flag words,
 velocities, OAM attributes, colours, WRAM and VRAM addresses...). `scan
 --list` prints the unmarked ones. CI runs it, builds a shifted ROM
-(`--labels 0.3`) and its diff; it cannot run the emulator (that needs the
-ROM-holding private repository).
+(`--labels 0.3`) and its diff; on pushes to `main` a second job runs
+the emulator suite on the default and the shifted build (see
+[Building](building.md#ci)).
 
 `tools/shift_diag.py` runs the normal and the shifted build through the
 same scenario (`attract`, `stageN`, or a play name such as `stage2_boss`)
-in the patched snes9x of the private repository with the CDL tracer on,
+in the patched snes9x (`make cores`) with the CDL tracer on,
 maps every ROM byte the shifted build reads back to its source line and
 stops at the first chunk of frames where the shifted build reads data the
 normal build never reads, or that another instruction reads first. It

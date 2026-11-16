@@ -8,7 +8,7 @@ stages 2 and 5 and the rest use other banks; see [Objects](objects.md).)
 
 ## How they were identified
 
-In the emulator (the snes9x harness of the private repository), every stage
+In the emulator (the snes9x harness, see [Emulator tests](emulator.md)), every stage
 was played by the random player of the tracer, on NORMAL and on HARD, with
 the barrier kept on. Every 8 frames the 34 slots `$0280-$0ABF` were dumped
 (`OBJ_TYPE`, `OBJ_STATE`, `OBJ_HP`, position) and, for each type, a few

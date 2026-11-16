@@ -34,8 +34,8 @@ jobs:
         # Milestone 3: no hardcoded ROM reference of the forms tools/shift.py
         # scan knows, and a build with code and data moved (filler at the
         # start of every bank and before a third of the data labels) still
-        # assembles and links. Running that ROM needs the emulator suite of
-        # the private repository (make shift-test).
+        # assembles and links. The emulator job below runs such a ROM
+        # (make shift-test).
         run: |
           python3 tools/shift.py scan
           python3 tools/shift.py build --labels 0.3 --seed 1
@@ -48,3 +48,56 @@ jobs:
             git status --porcelain
             exit 1
           fi
+
+  emulator:
+    # The emulator suite (tests/, see the book's Emulator tests page) on the
+    # default build and on a shifted build, with the snes9x core built from
+    # the commit pinned in cores/build.sh and cores/patches/snes9x-cdl.patch.
+    # About 12-15 minutes on 4 cores (measured locally: core build ~1 min
+    # when not cached, screens + CDL + plays ~4 min, cheats ~3 min, shift
+    # test ~4 min; longer on a slower runner), so it runs on pushes to main
+    # and by hand, not on every pull request.
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install cc65 and the Python packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -yq cc65
+          pip install -r requirements.txt
+
+      - name: Cache the snes9x core
+        id: core-cache
+        uses: actions/cache@v4
+        with:
+          path: build/cores/snes9x_libretro.so
+          # cores/build.sh holds the pinned commit
+          key: snes9x-${{ runner.os }}-${{ hashFiles('cores/build.sh', 'cores/patches/snes9x-*.patch') }}
+
+      - name: Build the snes9x core
+        run: |
+          # a restored core is older than the checkout: keep make from rebuilding it
+          if [ "${{ steps.core-cache.outputs.cache-hit }}" = true ]; then touch build/cores/snes9x_libretro.so; fi
+          make cores
+
+      - name: Emulator suite on the default build
+        run: make emu-test
+
+      - name: Emulator suite on a shifted build
+        run: make shift-test
+
+      - name: Upload failure artefacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: emulator-out
+          path: out/
+          if-no-files-found: ignore

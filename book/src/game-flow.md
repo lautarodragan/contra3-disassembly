@@ -3,8 +3,8 @@
 How the game goes from power-on to the stages and back: the game modes,
 the attract mode, the menus, the screens between stages and the side-view
 stage state machine. Code in `src/game/`, constants in `src/game/game.inc`.
-Everything here was read in the code and checked in the emulator of the
-private repository (watching `game_mode`, `game_submode`, `stage_state` and
+Everything here was read in the code and checked in the emulator
+([Emulator tests](emulator.md); watching `game_mode`, `game_submode`, `stage_state` and
 `opening_scene` frame by frame from power-on, taking screenshots, and
 poking `game_mode` to enter the modes the traces never reach).
 

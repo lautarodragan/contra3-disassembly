@@ -287,16 +287,16 @@ attaches the patches to a GitHub release; CI never needs the original ROM.
 
 ## Testing
 
-The emulator suite of the private repository has `tests/test_cheats.py`:
-it builds cheat ROMs from this repository (`C3_DISASM`, by default
-`../contra3-disassembly`) with `tools/cheats.py` and checks them through
+The emulator suite ([Emulator tests](emulator.md)) has `tests/test_cheats.py`:
+it builds cheat ROMs from this checkout (`C3_DISASM` for another one)
+with `tools/cheats.py` and checks them through
 RAM reads: lives that do not go down after deaths (side view and
 top-down), no death while walking into stage 1, bombs that stay, the
 weapons at the start, the stage select screen, scaled HP tables, doubled
 damage, the button codes, the debug keys, the 30 lives in OPTION. `make cheat-test` runs it (about 3 minutes):
 
 ```sh
-make cheat-test PRIVATE=../contra3-disassembly-private
+make cheat-test
 ```
 
 Besides those, a ROM with the `god-mode` options and `enemy_hp=0` was

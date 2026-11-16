@@ -39,19 +39,24 @@ Never commit a ROM (`*.sfc` is ignored).
 ### Checking in the emulator
 
 `make` proves the ROM is identical to the original. To also run it, use the
-emulator test suite of the private companion repository
-(`contra3-disassembly-private`: snes9x libretro core, screenshots of the
-intro, title, demos and every stage start compared with goldens):
+emulator test suite in `tests/` (snes9x libretro core built from a pinned
+commit with a CDL tracer patch, `cores/`; driver in `tools/c3emu/`;
+screenshots of the intro, title, demos and every stage start, and scripted
+plays through every stage, compared with goldens in `tests/goldens/`):
 
 ```
-make emu-test [PRIVATE=../contra3-disassembly-private]
+pip install -r requirements.txt   # pytest, Pillow
+make cores                        # build/cores/snes9x_libretro.so (needs g++, git, github.com; ~1 min, once)
+make emu-test                     # the whole suite on build/contra3.sfc
+make emu-test TESTS=tests/test_screens.py ROM=path/to/other.sfc
+make goldens                      # rewrite tests/goldens/ from the default build
+make trace                        # coverage tracer, merges into cdl/contra3.cdl
 ```
 
-It builds `build/contra3.sfc` (without requiring the hash to match, so it
-also checks refactors that move code) and runs `make test ROM=...` in the
-private repository (needs Python 3 + pytest + Pillow there; the first run
-builds the core with `make cores`, which needs network access). About a
-minute.
+No original ROM file is needed: the default build is byte-identical to it
+and is the reference. `make emu-test` builds `build/contra3.sfc` without
+requiring the hash to match, so it also checks refactors that move code.
+See the book's Emulator tests page.
 
 `make shift-test` (milestone 3) does the same with a ROM whose code and data
 have been moved (filler bytes at the start of every bank): it passes only
@@ -68,7 +73,7 @@ has any. Options are defined and documented in `src/cheats.inc`
 make cheats CHEATS="infinite_lives invincible damage_mult=2"   # -> build/contra3-infinite_lives-invincible-damage_mult2.sfc
 make cheats PRESET=god-mode                                    # -> build/contra3-god-mode.sfc
 make ips                                                       # IPS patches of every preset -> build/patches/
-make cheat-test [PRIVATE=../contra3-disassembly-private]       # emulator tests of the cheats
+make cheat-test                                                # emulator tests of the cheats
 ```
 
 | option | effect |
@@ -226,7 +231,7 @@ a scratch directory, compare, and port improvements to `src/` by hand or by
 a script. By default it writes into `build/disasm/`, never into `src/`.
 
 ```
-make disasm BASEROM=path/to/original.sfc [CDL=path/to/contra3.cdl]
+make disasm    # BASEROM=build/contra3.sfc CDL=cdl/contra3.cdl by default
 # or
 python3 tools/disasm.py ROM [--hints tools/disasm_hints.json] [--cdl FILE] \
                             [--out build/disasm/src] [--report build/disasm/disasm_report.md]
@@ -269,10 +274,10 @@ registers, and addresses that must not be decoded.
 
 ### Feeding a CDL
 
-The private repository's emulator tracer writes `cdl/contra3.cdl` (+
-`contra3.cdl.json`), format "SNESCDL" v1 (spec in that repository's
-`docs/CDL_FORMAT.md`; summary in the docstring of `tools/cdl.py`). Pass it
-with `--cdl`. The generator uses it this way:
+The emulator tracer (`make trace`) writes `cdl/contra3.cdl` (+
+`cdl/contra3.cdl.json`), format "SNESCDL" v1 (spec in
+`book/src/cdl-format.md`; summary in the docstring of `tools/cdl.py`). Pass
+it with `--cdl` (`make disasm` does by default). The generator uses it this way:
 
 - every executed opcode's M/X (per flag, when unique) and DB override the
   static guesses; D values other than 0 are written as comments;

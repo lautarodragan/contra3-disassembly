@@ -146,8 +146,8 @@ def follow(ins, i, reg, labels_at, db_at):
 
 def main(argv):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--cdl", default=os.path.join(os.environ.get("PRIVATE", "../contra3-disassembly-private"),
-                                                  "cdl", "contra3.cdl.json"))
+    ap.add_argument("--cdl", default=os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                  "..", "cdl", "contra3.cdl.json"))
     ap.add_argument("--prefix", default="data_", help="labels to report (prefix)")
     ap.add_argument("-v", "--verbose", action="store_true", help="also list tables only read as numbers")
     args = ap.parse_args(argv[1:])

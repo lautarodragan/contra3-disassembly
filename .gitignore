@@ -1,4 +1,4 @@
-# build output
+# build output (also the emulator cores: build/src/, build/cores/)
 build/
 *.o
 *.map
@@ -9,6 +9,7 @@ build/
 *.sfc
 *.smc
 *.zip
+/rom/
 
 # the built book (mdbook build book)
 /book/book/
@@ -16,3 +17,7 @@ build/
 # python
 __pycache__/
 *.pyc
+.pytest_cache/
+
+# failure artefacts of the emulator tests (actual frames, diffs)
+/out/

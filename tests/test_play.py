@@ -40,7 +40,7 @@ import pytest
 from PIL import ImageChops
 
 from tools.c3emu import plays, retro
-from tools.c3emu.rom import rom_path
+from tools.c3emu.rom import original
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 GOLDENS = os.path.join(HERE, "goldens", "play")
@@ -217,7 +217,7 @@ def test_play(play_runs, rom, core, name, update_goldens):
         frames = [got["screen"][i][0] for i in isolated]
         span = sorted({f + d for f in frames for d in range(-SLACK, SLACK + 1)})
         act = images_at(rom, core, name, span)
-        orig = images_at(rom_path(None), core, name, frames)
+        orig = images_at(original(), core, name, frames)
         for i, f in zip(isolated, frames):
             n = min(pixels_differing(act[f + d], orig[f]) for d in range(-SLACK, SLACK + 1) if f + d in act)
             if n > PIXEL_TOLERANCE:
@@ -228,7 +228,7 @@ def test_play(play_runs, rom, core, name, update_goldens):
         frame, what, i, n = first
         os.makedirs(OUT, exist_ok=True)
         actual = record(rom, core, name, stop_at=frame)
-        golden = record(rom_path(None), core, name, stop_at=frame)
+        golden = record(original(), core, name, stop_at=frame)
         stem = os.path.join(OUT, "%s_%06d" % (name, frame))
         actual.save(stem + ".actual.png")
         golden.save(stem + ".original.png")

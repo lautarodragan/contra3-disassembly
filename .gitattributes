@@ -7,3 +7,5 @@
 *.json text
 *.sha1 text
 *.bin binary diff=hex
+*.png binary
+*.cdl binary

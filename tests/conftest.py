@@ -1,7 +1,7 @@
 """pytest configuration: which ROM and which core the suite runs.
 
-    python3 -m pytest tests                       # original ROM (from the zip)
-    python3 -m pytest tests --rom build/contra3.sfc   # e.g. the rebuilt ROM
+    python3 -m pytest tests                       # build/contra3.sfc (= the original)
+    python3 -m pytest tests --rom build/shift/contra3.sfc   # another ROM
     C3_ROM=... C3_CORE=... python3 -m pytest tests    # same, via environment
     python3 -m pytest tests --update-goldens      # rewrite tests/goldens/*.png
 """
@@ -20,7 +20,7 @@ from tools.c3emu.rom import rom_path     # noqa: E402
 
 def pytest_addoption(parser):
     parser.addoption("--rom", default=None,
-                     help="ROM to test (default: $C3_ROM, else the original from the zip)")
+                     help="ROM to test (default: $C3_ROM, else build/contra3.sfc, checked against the original's SHA-1)")
     parser.addoption("--core", default=None,
                      help="libretro core (default: $C3_CORE, else build/cores/snes9x_libretro.so)")
     parser.addoption("--update-goldens", action="store_true",

@@ -2,10 +2,6 @@
 # old names next to their new ones, history, and made-up examples.
 # tools/check_book_names.py skips these. One per line; # starts a comment.
 
-# the CDL the private repository's emulator tracer writes (disassembler.md)
-cdl/contra3.cdl
-contra3.cdl.json
-
 # placeholders in the CDL comment format (disassembler.md)
 sub_X
 sub_Y
@@ -40,22 +36,13 @@ update_players_next
 
 # the comment marker of blocks ready to become binary files (layout.md, shiftability.md)
 ASSET
-# tests and tools of the private repository (shiftability.md)
-tests/test_cdl.py
-tests/test_screens.py
-tests/test_play.py
-tools/c3emu/plays.py
-test_screens.py
-test_play.py
-
 # cheats.md: build outputs of `make cheats` / `make ips`, an option word,
-# a placeholder, the private repository's test file and screenshot names
+# a placeholder, screenshot names
 build/contra3-
 build/contra3-infinite_lives-invincible-damage_mult2.sfc
 build/patches/contra3-
 start_stage
 CHEAT_X
-tests/test_cheats.py
 demo_stage2
 demo_stage4
 build/cheats/
@@ -76,3 +63,8 @@ wram_7EA000
 @return_clc
 @return_sec
 kill_player_tail
+
+# scenario name patterns of tools/trace.py (emulator.md)
+stageN_hard
+stageN_easy
+stageN_2p

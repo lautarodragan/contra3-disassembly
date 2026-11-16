@@ -1,11 +1,10 @@
 """Loader for the emulator's code/data log (CDL), as hints for tools/disasm.py.
 
-The CDL is produced by the patched snes9x core in the private companion
-repository (`make trace` there, which writes cdl/contra3.cdl and
-cdl/contra3.cdl.json).  This module only *reads* it.  It follows the
-"SNESCDL" version 1 specification (docs/CDL_FORMAT.md in that repository,
-reference reader tools/c3emu/cdl.py there); if the format changes, adapt
-load().
+The CDL is produced by the patched snes9x core (`make trace`, which writes
+cdl/contra3.cdl and cdl/contra3.cdl.json).  This module only *reads* it.  It
+follows the "SNESCDL" version 1 specification (the book's CDL format page,
+book/src/cdl-format.md; the reference reader is tools/c3emu/cdl.py); if the
+format changes, adapt load().
 
 Binary file (little-endian), all per-byte planes indexed by ROM file offset:
 

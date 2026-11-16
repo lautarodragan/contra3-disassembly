@@ -47,8 +47,8 @@ def lorom_offset(addr):
 
 def main(argv):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--cdl", default=os.path.join(os.environ.get("PRIVATE", "../contra3-disassembly-private"),
-                                                  "cdl", "contra3.cdl"))
+    ap.add_argument("--cdl", default=os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                  "..", "cdl", "contra3.cdl"))
     ap.add_argument("--mark", action="store_true")
     args = ap.parse_args(argv[1:])
     m = srcmap.SrcMap.build("src", "build/dbg")

@@ -13,7 +13,7 @@ things that look like code names, and every code span for paths into the repo:
     `CamelCase`, upper-case constants of four or more characters (`INIDISP`,
     `NMITIMEN`, `FOO_BAR`; three-letter ones are mostly mnemonics and are not
     checked). Each must be a symbol defined in the ca65 sources, or appear in
-    tools/, the Makefile or the workflows (script, function, make variable,
+    tools/, tests/, the Makefile or the workflows (script, function, make variable,
     hint field names);
   * a name ending in `_` (`sub_`) is a family: some symbol must start with it;
   * paths (`src/main.asm`, `tools/`, `docs/disasm_report.md`) must be tracked
@@ -52,11 +52,13 @@ IGNORE_FILE = ROOT / "book" / "names-ignore.txt"
 # files and directories the build makes, which a fresh checkout doesn't have
 GENERATED = {"build", "build/contra3.sfc", "build/contra3.map", "build/contra3.lbl",
              "build/main.o", "book/book",
-             "build/disasm", "build/disasm/src", "build/disasm/disasm_report.md"}
+             "build/disasm", "build/disasm/src", "build/disasm/disasm_report.md",
+             "build/src", "build/src/snes9x", "build/cores", "build/cores/snes9x_libretro.so",
+             "build/cores/bsnes_libretro.so", "out", "out/screens", "out/play"}
 
 AUTO_LABEL = re.compile(r"^(?:sub|loc|tbl|ptrs|data)_[0-9A-F]{6}$")
 IDENT = re.compile(r"@?[A-Za-z_][A-Za-z0-9_]*")
-PATH = re.compile(r"^(?:src|tools|docs|book|build|\.github)(?:/[\w./*-]*)?$|^[\w.-]+(?:/[\w.*-]+)+\.\w+$")
+PATH = re.compile(r"^(?:src|tools|docs|book|build|tests|cores|cdl|out|\.github)(?:/[\w./*-]*)?$|^[\w.-]+(?:/[\w.*-]+)+\.\w+$")
 FILE = re.compile(r"^[\w.-]+\.(?:asm|inc|cfg|py|json|md|yml|toml|txt|sha1)$")
 
 # ca65 definitions, one regex per kind; group 1 is the name
@@ -101,7 +103,7 @@ def tool_identifiers():
     """Every identifier in the tools, the Makefile and the workflows: script
     options, function names, hint fields, make targets and variables."""
     names = set()
-    for pattern in ("tools/**/*.py", "tools/**/*.json", "Makefile", ".github/workflows/*.yml"):
+    for pattern in ("tools/**/*.py", "tests/**/*.py", "tools/**/*.json", "Makefile", ".github/workflows/*.yml"):
         for f in ROOT.glob(pattern):
             names.update(re.findall(r"[A-Za-z_][A-Za-z0-9_]*", f.read_text(errors="replace")))
     return names
