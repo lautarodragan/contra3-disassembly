@@ -2,6 +2,8 @@
 build/
 *.o
 *.map
+# (but the level maps of assets/ are sources: book: Assets, Level maps)
+!/assets/**/*.map
 *.lbl
 *.dbg
 

@@ -1,0 +1,15 @@
+# stage2_block_map_2
+# 8 rows of 32 blocks (tools/levelmap.py blockmap)
+# A top-down block map stream: 8 rows of 32 blocks (32x32 pixels each; the
+# four streams _0 to _3 are the rows 0-7, 8-15, 16-23 and 24-31 of the
+# 32x32-block map, 1024x1024 pixels). A cell: the block number (hex, as in
+# the .blocks text).
+# columns 0-31
+5C 5A 40 75 32 41 5E 4C 5C 4C 69 6A 6B 05 5E 4C 4C 5A 5D 5D 5D 5D 5A 4C 5A 4C 01 5F 5F 05 5E 5A
+5C 00 3C 3D 3E 3F 08 5E 5A 00 30 31 31 05 08 5E 5A 00 48 51 52 53 08 5E 5A 00 01 02 03 05 08 5E
+4C 04 01 06 07 16 17 09 09 09 14 5F 5F 16 6C 6D 09 09 14 06 07 16 17 09 09 09 14 06 07 05 0C 5E
+5A 5D 01 5F 65 56 5F 56 5F 56 5F 56 65 56 68 71 70 35 56 5F 56 0A 56 0A 56 0A 0B 19 03 05 60 61
+5C 4C 01 65 56 65 56 65 56 65 56 50 56 5F 6E 6F 68 71 5F 56 50 56 0F 56 0F 0E 0F 1D 07 05 5E 5A
+5C 00 69 6A 6B 15 0D 0D 67 0D 18 02 03 15 0D 0D 72 73 18 02 03 15 0D 67 0D 67 18 02 03 05 08 5E
+5A 04 30 31 31 05 66 60 5D 04 1C 06 07 05 66 60 5D 12 1C 06 07 05 66 5E 5D 12 1C 06 07 05 0C 5E
+4C 5D 01 1B 6A 1F 60 61 4C 5D 01 1B 6A 1F 60 61 4C 5D 01 1B 6A 1F 60 61 5A 5D 01 02 03 05 60 61
