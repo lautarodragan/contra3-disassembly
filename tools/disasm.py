@@ -325,13 +325,15 @@ class Disassembler:
             cur += ins.length
         return cur == b
 
-    def _cdl_refutes(self, ins_off, tgt):
+    def _cdl_refutes(self, ins_off, tgt, span=1):
         """With a CDL: the instruction at ins_off ran, but the ROM bytes it
-        supposedly points to were never read as data nor entered as code."""
+        supposedly points to were never read as data nor entered as code.
+        span: how many bytes from tgt count (an indexed load of a table
+        may never read its first entries)."""
         c = self.cdl
         if c is None or ins_off not in c.mx:
             return False
-        if c.accessed[tgt] or tgt in c.entries:
+        if tgt in c.entries or any(c.accessed[t] for t in range(tgt, min(tgt + span, len(c.accessed)))):
             # read as data, or a code entry point (e.g. a JML [ptr] target)
             return False
         self.rejected_ptrs.append((ins_off, tgt))
@@ -380,7 +382,7 @@ class Disassembler:
             start = rom_offset((ld.db << 16) | ld.operand)
             if start is None or start in self.data_tables or start in self.tables:
                 continue
-            if self._cdl_refutes(ld.off, start):
+            if self._cdl_refutes(ld.off, start, 1 if ld.mode == 'abs' else 64):
                 continue
             self._add_data_ptr_table(start, use.db, 1 if ld.mode == 'abs' else 256)
 
