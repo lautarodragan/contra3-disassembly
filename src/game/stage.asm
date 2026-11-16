@@ -445,7 +445,7 @@ layout_init_stage6:
 	lda	#$0006
 	sta	a:palette_anim_id
 	jsl	f:apply_palette_anim_once
-	lda	#$0055
+	lda	#OBJT_STAGE6_BG_TILE_ANIMATOR
 	sta	a:obj_slots+27*OBJ_SIZE+OBJ_TYPE
 	lda	#$004A
 	sta	a:bg2sc_shadow

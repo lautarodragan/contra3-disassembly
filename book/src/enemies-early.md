@@ -88,42 +88,42 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $3E | `update_object_type_3E` | does nothing (rtl); stage 3 spiked climber's arm |
 | $3F | `update_object_type_3F` | stage 3 spiked climber, spike arm |
 | $40 | `update_stage3_spiked_climber_core` | stage 3 spiked climber, its weak point (HP 80) |
-| $42 | `update_object_type_42` | invisible stage trigger: copies OBJ_+$3A/$3B into `clamp_player_top` / `respawn_mode` |
-| $43 | `update_object_type_43` | stage 3 section 9, HP 64. Not identified |
+| $42 | `update_respawn_clamp_trigger` | stage trigger (stages 3, 6): copies fields `$3A`/`$3B` into `clamp_player_top` / `respawn_mode` |
+| $43 | `update_stage3_breakable_wall` | stage 3 section 9: the grey wall closing the way into the building (seen in the emulator), solid, HP 64; destroyed, BG blocks erase it and the scroll resumes |
 | $46 | `update_debris_explosion` | becomes an explosion effect (type $1D) where there is a solid BG tile (stage 3 boss) |
 | $47 | `update_homing_missile` | small missile homing on a player (stages 3, 4; seen in the emulator), fired by the stage 4 tank, the snake robot and the spiked climber (`spawn_homing_missile`) |
-| $48, $51 | `update_object_type_48` | stage 3 (type $51: the flying machine with a searchlight, section 8). Not identified exactly |
-| $49 | `update_object_type_49` | stage 3 section 10: green shielded soldiers. Not identified exactly |
+| $48, $51 | `update_jumping_soldier` | stage 3: green soldier walking towards a player and jumping from platform to platform (seen in the emulator); `$48` let out by type `$49` (section 10), `$51` dropped by the searchlight craft (section 8), starting with a jump; dies as a dying soldier |
+| $49 | `update_jumping_soldier_spawner` | stage 3 section 10 (the climb up the building): invisible, lets out type `$48` soldiers in bursts (`jumping_soldier_spawner_burst_counts`) |
 | $4A | `update_rolling_mine` | stage 3: rolling disc (HP 6; seen in the emulator) |
 | $4B | `update_debris_spark` | becomes a type $1D effect flying in a random direction (stage 3 boss) |
 | $4D | `update_song_change_trigger` | stage trigger: starts a song change (`update_song_change`: `song_change_mode` / `song_change_set` from `song_change_trigger_modes`); never run in the CDL traces |
-| $4E | `update_object_type_4E` | stage 3 section 7, 27 states (a mid-boss, probably). Not identified |
+| $4E | `update_stage3_searchlight_craft` | stage 3 sections 7-8: the mid-boss, a flying craft with a searchlight drawn on BG2 (slot `$0900`, 27 states; seen in the emulator): drops type `$51` soldiers, throws grenades, HP 64/72/80 |
 | $4F | `update_stage3_winged_bug` | stage 3: winged alien bug (HP 8; seen in the emulator) |
 | $50 | `update_wall_hatch` | stage 3: wall hatch (HP 8; seen in the emulator) |
-| $52 | `update_object_type_52` | not seen. Not identified |
+| $52 | `stage3_spiked_climber_state_0B` | not a type: state `$0B` of the spiked climber, also in the handler table; never created |
 | $53 | `update_passive_part` | does nothing: a hitbox moved by another object (the spiked climber's body, stage 3; also stages 4 and 6) |
-| $55 | `update_object_type_55` | stage 6: palette cycling (`cgram_upload_`*). Not identified exactly |
-| $56 | `update_object_type_56` | stage 6. Not identified |
-| $57 | `update_object_type_57` | never run in the CDL traces |
-| $59 | `update_object_type_59` | not seen. Not identified |
-| $5A | `update_object_type_5A` | stage 3 spiked climber, spikes. Not identified exactly |
+| $55 | `update_stage6_bg_tile_animator` | stage 6 (slot 27, from `layout_init_stage6`): every 8 frames DMAs the next of 4 frames of the organic background tiles to VRAM `$3A90` (`stage6_bg_tile_animator_tile_frames`) |
+| $56 | `update_alien_soldier` | stage 6: alien soldier running along the floor and jumping off ledges (seen in the emulator), sent by type `$5C` |
+| $57 | `update_bg2_screen_size_trigger` | stage trigger: puts field `$3A` in the screen size bits of BG2SC (`bg2sc_shadow`). Unused: no spawn list or code creates it, never run in the CDL traces |
+| $59 | `stage3_spiked_climber_state_08` | not a type: state 8 of the spiked climber (makes its arms, type `$5A`), also in the handler table; never created |
+| $5A | `update_stage3_spiked_climber_arm` | stage 3 spiked climber: the segments of its two arms reaching to the wall, and its spiked body (slot `$0340`) (seen in the emulator) |
 | $5C | `update_alien_soldier_spawner` | stage 6: invisible spawner of alien soldiers (type `$56`) from the screen edges (`alien_soldier_spawn_delays_right`, `alien_soldier_spawn_delays_left`) |
-| $60 | `update_object_type_60` | does nothing (rtl); never run in the CDL traces |
-| $6B, $6C | `update_destructible_part`, `update_destructible_part_2` | part of a bigger enemy that explodes when destroyed (`$6B` seen in stage 4 at the airship; `$6C` not seen) |
+| $60 | `update_unused_type_60` | does nothing (rtl). Unused: no spawn list or code creates it, never run in the CDL traces |
+| $6B, $6C | `update_destructible_part`, `update_destructible_part_2` | part of a bigger enemy that explodes when destroyed (`$6B` seen in stage 4 at the airship; `$6C` never created: no spawn list or code stores it, never run in the CDL traces) |
 | $6D | `update_player_bike` | stage 4: the hover bike under each player (slots `$0280`/`$02C0`); puts the player back in `PLAYER_STATE_BIKE` when it lands on it |
 | $6E | `update_stage4_tank` | stage 4: the tank at the start (HP 315; seen in the emulator) |
-| $73 | `update_object_type_73` | stage 4: soldier dropping onto the road (HP 6); dies as type $1B |
+| $73 | `update_jetpack_soldier` | stage 4, under the airship: jetpack soldier flying up from below the screen trailing flame, hovering and firing (HP 2/4/6; seen in the emulator); spawned by the hanging soldiers' leader (type `$7E`); dies as type $1B |
 | $74 | `update_hoverbike_rider` | stage 4: enemy on a hover bike (HP 16; seen in the emulator) |
-| $76 | `update_object_type_76` | stage 4: projectile. Not identified exactly |
-| $78 | `update_object_type_78` | stage 4: projectile. Not identified exactly |
-| $7E | `update_object_type_7E` | stage 4: soldier (HP 128); dies as type $1B |
+| $76 | `update_hoverbike_rider_bomb` | stage 4: bomb dropped by a hover-bike rider (seen in the emulator): falls to the road, then burns along it |
+| $78 | `update_hoverbike_rider_shot` | stage 4: shot of a hover-bike rider (seen in the emulator), down at 45 degrees |
+| $7E | `update_airship_hanging_soldier` | stage 4: soldiers hanging from the airship's hull (seen in the emulator); the one from the airship spawn list (HP 128) spawns the others and type `$73`, and its death clears them; the others drop onto the road and run off; dies as type $1B |
 | $86 | `update_trail_segment` | segment of a chain that follows the path of the one before it (`spawn_trail_chain`, ring buffers at `$7E:E000`): the skeleton robot's eye fireballs, the helicopter rope, the brain boss's chain |
-| $89 | `update_object_type_89` | not seen. Not identified |
+| $89 | `update_checkpoint_trigger` | stage trigger: sets `stage_checkpoint` (the midpoint a continue starts from); stage 3 spawn list, page 14 |
 
 Several low types are invisible **stage triggers**: placed by the stage's
 object list, they copy their parameter (fields `$3A`/`$3B`) into a stage
 variable (scroll limits, the section, loader lists) and delete themselves at
-once (`OBJF_DELETE`): `$03`, `$05`, `$07`, `$08`, `$0E`, `$3B`, `$42`, `$4D`.
+once (`OBJF_DELETE`): `$03`, `$05`, `$07`, `$08`, `$0E`, `$3B`, `$42`, `$4D`, `$57`, `$89`.
 
 ## Shared helpers
 
@@ -173,9 +173,9 @@ for the laser), the bomb and the barrier 1 per frame; the object dies when
 | `alien_dog_hp` | `update_alien_dog` | 0 | 2 | 8 |
 | `wall_hatch_hp` | `update_wall_hatch` | 4 | 8 | 16 |
 | `rolling_mine_hp` | `update_rolling_mine` | 4 | 6 | 16 |
-| `object_type_48_hp` | types `$48`, `$51` | 0 | 0 | 1 |
-| `object_type_4E_hp` | `update_object_type_4E` | 64 | 72 | 80 |
-| `object_type_56_hp` | types `$56`, `$24` | 1 | 2 | 3 |
+| `jumping_soldier_hp` | types `$48`, `$51` | 0 | 0 | 1 |
+| `stage3_searchlight_craft_hp` | `update_stage3_searchlight_craft` | 64 | 72 | 80 |
+| `alien_soldier_hp` | types `$56`, `$24` | 1 | 2 | 3 |
 | `stage3_spiked_climber_hp` | `update_stage3_spiked_climber` | 96 | 160 | 184 |
 | `stage3_spiked_climber_core_hp` | its core (type `$40`) | 56 | 80 | 128 |
 | `hoverbike_rider_hp` | `update_hoverbike_rider` | 8 | 16 | 32 |
@@ -234,11 +234,8 @@ Unreachable code keeps an `unused_` name saying what it does
 
 ## Open questions
 
-- Type `$08` is a stage trigger whose variables are not named yet; type
-  `$42` sets `clamp_player_top` and `respawn_mode`.
-- Type `$06` is a scripted scene (BG/HDMA) of stage 1; type `$4E` (27
-  states, stage 3 section 7) is drawn on BG2 and leans towards a player
-  (`build_bg2_slant_table`), probably a mid-boss.
+- Type `$08` is a stage trigger whose variables are not named yet.
+- Type `$06` is a scripted scene (BG/HDMA) of stage 1.
 - Type `$02` (stage 1 section 8, HP 256, shares `shake_and_explode_state`
   with `$34`) is not identified.
 - The burning section of stage 1 (`$2B`-`$33`) and the stage 4 soldiers need

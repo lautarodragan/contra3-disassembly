@@ -1157,7 +1157,7 @@ ending_creature_spawn_claw:
 	sty	zp_04
 	ldy	#$0000
 @loop:
-	lda	#$0096
+	lda	#OBJT_ENDING_CREATURE_CLAW_SEGMENT
 	sta	OBJ_TYPE,x
 	lda	zp_04
 	sta	OBJ_FLAGS,x
@@ -1207,9 +1207,10 @@ ending_creature_spawn_claw:
 	stz	$36,x
 	rts
 
-; Object type $96. Ending on HARD: segments of the claws of the creature that
-; rises behind the brain (not identified exactly).
-update_enemy_type_96:
+; Object type $96. Ending on HARD: segments of the claws of the last creature
+; (ending_creature_spawn_claw; seen in the emulator); each replays the
+; positions of the one before it.
+update_ending_creature_claw_segment:
 	lda	a:clear_enemies_timer
 	beq	@alive
 	lda	#$8000	; [num]
@@ -1289,10 +1290,10 @@ update_enemy_type_96:
 	sta	OBJ_SPRITE,x
 	bra	@advance
 
-; Object type $97. Not seen in the emulator. It ends with rts: really the
-; setup of the ending's text screen, called (jsr) by
-; ending_sequence_state_1E; as an object handler (jsl) it would crash.
-update_enemy_type_97:
+; Sets up the ending's text screen; called (jsr) by ending_sequence_state_1E.
+; Also entry $97 of tbl_object_types, never spawned: it ends with rts, so as
+; an object handler (jsl) it would crash.
+ending_init_text_screen:
 	stz	a:boss_work_7
 	lda	#$FFFF	; [num]
 	sta	a:boss_work_4
@@ -1648,7 +1649,7 @@ ending_sequence_state_1E:
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
 	stz	hdma_preset
-	jsr	a:update_enemy_type_97
+	jsr	a:ending_init_text_screen
 	rtl
 
 ending_sequence_state_1F:
@@ -1814,8 +1815,9 @@ update_ending_explosion:
 	sta	OBJ_Y_VEL,x
 	rtl
 
-; Object type $99. Not seen in the emulator.
-update_enemy_type_99:
+; Object type $99: does nothing (rtl). Unused: no code creates a type $99,
+; never run in the CDL traces.
+update_unused_type_99:
 	; (not executed in the CDL traces)
 	rtl
 
@@ -2534,7 +2536,7 @@ brain_boss_attack_3:
 	lda	rng_lo
 	and	#$0001
 	bne	@spawn_other
-	lda	#$008E
+	lda	#OBJT_BRAIN_BOSS_SPIKED_BALL
 	phx
 	jsr	a:brain_boss_spawn_minion
 	bcs	@return2	; no free slot: returns with X still pushed (never in the traces)
@@ -2902,7 +2904,7 @@ brain_boss_attack_start_2:
 	lda	#$0002
 	jsl	f:pick_target_player
 	sty	a:boss_work_4
-	lda	#$008F
+	lda	#OBJT_BRAIN_BOSS_ENCIRCLING_ORB
 	ldy	#$0500
 	jsr	a:brain_boss_fill_slots
 	lda	#$0001
@@ -3211,9 +3213,9 @@ brain_boss_chain_delete:
 brain_boss_chain_pass_to_next:
 	jml	f:trail_pass_to_next
 
-; Object type $8E. Stage 6, brain_boss (hard): spiked orbs around the brain
-; (not identified exactly).
-update_enemy_type_8E:
+; Object type $8E. Stage 6, brain_boss: spiked balls launched from its mouth
+; (seen in the emulator, NORMAL and HARD): fall and explode on the floor.
+update_brain_boss_spiked_ball:
 	lda	OBJ_Y,x
 	cmp	#$00B4
 	bcc	@fall
@@ -3234,9 +3236,10 @@ update_enemy_type_8E:
 	sta	OBJ_Y_VEL,x
 	rtl
 
-; Object type $8F. Stage 6, brain_boss: glowing orbs thrown by the brain (not
-; identified exactly).
-update_enemy_type_8F:
+; Object type $8F. Stage 6, brain_boss (attack 2): spiked orbs circling a
+; player (seen in the emulator): placed around the player in boss_work_4 at
+; a radius that shrinks (boss_work_3), they blink, then burst.
+update_brain_boss_encircling_orb:
 	lda	a:clear_enemies_timer
 	bne	@burst
 	lda	a:boss_work_3

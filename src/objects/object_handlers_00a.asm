@@ -60,9 +60,10 @@ scroll_bg1_by_velocity_and_spawn:
 @return:
 	rtl
 
-; Object type $55: stage 6: palette cycling (cgram_upload_*). Not identified
-; exactly.
-update_object_type_55:
+; Object type $55: stage 6 (placed in slot 27 by layout_init_stage6): animates
+; BG tiles of the organic background: every 8 frames DMAs $400 bytes, one of
+; the frames stage6_bg_tile_animator_tile_frames, to VRAM $3A90.
+update_stage6_bg_tile_animator:
 	lda	stage_frame_counter
 	and	#$0007
 	dec	a
@@ -72,7 +73,7 @@ update_object_type_55:
 	lsr	a
 	and	#$0006
 	tay
-	lda	a:object_type_55_tile_frames,y
+	lda	a:stage6_bg_tile_animator_tile_frames,y
 	sta	bg_dma_src
 	lda	#$0400
 	sta	bg_dma_size
@@ -81,8 +82,10 @@ update_object_type_55:
 @return:
 	rtl
 
-; Object type $57: never run in the CDL traces.
-update_object_type_57:
+; Object type $57: stage trigger: puts field $3A in the screen size bits of
+; BG2SC (bg2sc_shadow) and deletes itself. Unused: no spawn list or code
+; creates a type $57, and it was never run in the CDL traces.
+update_bg2_screen_size_trigger:
 	; (not executed in the CDL traces)
 	lda	a:bg2sc_shadow
 	and	#$FFFC
@@ -146,8 +149,10 @@ update_object_type_08:
 	sta	(zp_02)
 	rtl
 
-; Object type $89: not seen. Not identified.
-update_object_type_89:
+; Object type $89: stage trigger: sets stage_checkpoint (the stage's midpoint:
+; a continue starts from here) and deletes itself. Placed by stage 3's spawn
+; list (page 14, at the searchlight craft).
+update_checkpoint_trigger:
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 	lda	#$0001
@@ -233,9 +238,9 @@ update_load_list_trigger:
 	ldx	zp_FA
 	rtl
 
-; Object type $42: invisible stage trigger: copies fields $3A/$3B into
-; clamp_player_top / respawn_mode.
-update_object_type_42:
+; Object type $42: stage trigger (stages 3 and 6): copies fields $3A/$3B into
+; clamp_player_top / respawn_mode and deletes itself.
+update_respawn_clamp_trigger:
 	sep	#$20
 	.a8
 	stz	a:respawn_mode+1

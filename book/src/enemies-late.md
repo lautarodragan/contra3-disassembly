@@ -14,7 +14,7 @@ the barrier kept on. Every 8 frames the 34 slots `$0280-$0ABF` were dumped
 (`OBJ_TYPE`, `OBJ_STATE`, `OBJ_HP`, position) and, for each type, a few
 screenshots were saved with the slots' positions marked on them. A type is
 named after what moves at its position; when the shape on screen and the code
-disagree or the object is too small to tell, it keeps enemy_type_XX (as in `update_enemy_type_7C`).
+disagree or the object is too small to tell, it keeps a generic enemy_type_XX name.
 
 ## How a handler looks
 
@@ -41,7 +41,7 @@ Many state routines fall through into the next one. A boss usually checks
 (explosions, then the next stage section).
 
 Types in the table below have an `OBJT_*` constant in
-`src/object_types.inc` (none for the update_enemy_type_XX ones yet).
+`src/object_types.inc`.
 
 ## Slot `$0900`: the boss slot
 
@@ -85,12 +85,12 @@ when it is read from a table indexed by `difficulty`.
 | `$88` | `update_snake_robot_debris` | its 16 pieces when destroyed | |
 | `$7A` | `update_lightning_pylon` | alien airship: hanging emitters of lightning | 64/96/`$7FFF` |
 | `$7B` | `update_lightning_bolt` | the lightning bolts and their sparks | |
-| `$7C` | `update_enemy_type_7C` | airship: small parts under it; the code aims them at a player (3 frames drawn on BG) and fires enemy bullets, so probably gun turrets | 20 |
+| `$7C` | `update_airship_turret` | airship: dome gun turrets under the hull (seen in the emulator), aimed at a player (3 frames drawn on BG), firing enemy bullets | 20 |
 | `$7D` | `update_spiked_mine` | airship: clusters of spiked mines | |
 | `$7F` | `update_airship_gun_arm` | airship: hanging cannon arms | 128 |
-| `$80` | `update_enemy_type_80` | airship: seen briefly at its end (not identified exactly) | |
+| `$80` | `update_airship_gun_arm_shell` | shell fired by a gun arm (seen in the emulator): down at 45 degrees trailing smoke, then burns along the road | |
 | `$84` | `update_helicopter_rope` | helicopter: the rope, its segments and the enemy hanging at its end (one handler, several states) | |
-| `$85` | `update_enemy_type_85` | helicopter scene: a spinning projectile thrown upward (probably by the enemy on the rope) | |
+| `$85` | `update_helicopter_rope_boomerang` | helicopter scene: spinning blade thrown by the enemy on the rope (`helicopter_rope_state_0A`; seen in the emulator), flies out and comes back | |
 | `$69` | `update_stage4_boss` | boss: green armoured flying fortress with a red eye | 384 |
 | `$6A` | `update_stage4_boss_pod` | its upper and lower pods | 128 |
 | `$82` | `update_stage4_boss_shot` | its spread shots | |
@@ -106,11 +106,11 @@ when it is read from a table indexed by `difficulty`.
 | `$62` | `update_floor_mouth_bug` | bugs they release | 1/1/2 |
 | `$58` | `update_heart_boss` | the giant heart with tendrils | 128/256/384 |
 | `$67` | `update_heart_boss_bug` | crawling bugs around it, drawn on BG (tile scripts); they release type `$68` | 32/64/128 |
-| `$68` | `update_enemy_type_68` | small creatures released by the heart's bugs; they walk on the ceiling (y `$48`) or the floor (y `$B8`) and drop or jump to the other side when level with a player | 0/2/4 |
+| `$68` | `update_heart_boss_crawler` | grey crawlers coming out of the heart's bugs (seen in the emulator); they walk on the ceiling (y `$48`) or the floor (y `$B8`) and drop or jump to the other side when level with a player | 0/2/4 |
 | `$5D` | `update_cave_beast` | dark cave: controller of the hunched beast | `$0FFF` |
 | `$A0` | `update_cave_beast_target` | the part of the beast that takes damage (handler: a bare `rtl`) | 320 |
 | `$66` | `update_cave_rock` | rocks piling up on the floor | |
-| `$70` | `update_enemy_type_70` | embers around the beast (not identified exactly) | |
+| `$70` | `update_cave_beast_ember` | fiery embers the beast sprays (`cave_beast_state_14`; seen in the emulator): thrown up, falling, harmful | |
 | `$71` | `update_cave_beast_fireball` | projectile aimed at a player (`aim_velocity_at_player`) | |
 | `$72` | `update_cave_beast_beam` | segments of the beast's beam | |
 | `$5E` | `update_winged_alien` | vertical section: winged skeletal alien | 128/160/192 |
@@ -120,11 +120,11 @@ when it is read from a table indexed by `difficulty`.
 | `$75` | `update_face_boss_side_head` | the side heads on necks | 128/192/256 |
 | `$77` | `update_face_boss_neck` | neck segments | |
 | `$21` | `update_face_boss_larva` | larvae spat by the central mouth | 2/4/8 |
-| `$8A` | `update_brain_boss` | final boss: the giant brain (`$6F` uses the same handler; not seen) | see below |
+| `$8A` | `update_brain_boss` | final boss: the giant brain (type `$6F` has the same handler but is never created: no code stores `$6F`) | see below |
 | `$8B` | `update_brain_boss_orb_ring` | (hard) a ring of orbs bursting out of the brain | |
 | `$8C` | `update_brain_boss_chain` | chain of red links swung from the brain | |
-| `$8E` | `update_enemy_type_8E` | (hard) spiked orbs around the brain (not identified exactly) | |
-| `$8F` | `update_enemy_type_8F` | glowing orbs thrown by the brain (not identified exactly) | |
+| `$8E` | `update_brain_boss_spiked_ball` | spiked balls launched from its mouth, falling and exploding on the floor (seen on NORMAL and HARD) | |
+| `$8F` | `update_brain_boss_encircling_orb` | (attack 2) spiked orbs circling a player, closing in, blinking, then bursting (seen in the emulator) | |
 | `$90` | `update_brain_boss_eyeball` | eyeballs thrown by the brain | 12 |
 | `$91` | `update_brain_boss_rolling_eye` | eye pods rolling on the floor | |
 | `$92` | `update_brain_boss_orb_arch` | arch of blue orbs forming arms | |
@@ -136,12 +136,12 @@ when it is read from a table indexed by `difficulty`.
 | type | handler | what | HP |
 |---|---|---|---|
 | `$95` | `update_ending_sequence` | the escape: helicopter, players on the missile, the lair exploding; on HARD a last creature chases the helicopter | 384 (hard) |
-| `$96` | `update_enemy_type_96` | (hard) segments of the claws of that creature (not identified exactly) | |
+| `$96` | `update_ending_creature_claw_segment` | (hard) segments of the claws of that creature (`ending_creature_spawn_claw`; seen in the emulator) | |
 | `$98` | `update_ending_explosion` | explosions along the floor of the lair | |
 | `$9A-$9D` | `update_ending_crowd_member` | the crowd cheering under the helicopter (one handler, four types) | |
 | `$9E`, `$9F` | `update_ending_crowd_walker_a`, `update_ending_crowd_walker_b` | crowd members walking back and forth | |
-| `$97` | `update_enemy_type_97` | not an object handler: the setup of the ending's text screen, called with `jsr` by `ending_sequence_state_1E`; it ends with `rts`, so run as a handler (`jsl`) it would crash. Never spawned | |
-| `$99` | `update_enemy_type_99` | not seen in the emulator | |
+| `$97` | `ending_init_text_screen` | not an object handler: the setup of the ending's text screen, called with `jsr` by `ending_sequence_state_1E`; it ends with `rts`, so run as a handler (`jsl`) it would crash. Never spawned | |
+| `$99` | `update_unused_type_99` | does nothing (rtl). Unused: no code creates it, never run in the CDL traces | |
 
 `spawn_ending_crowd` creates 6, 7 or 8 crowd members on easy, normal and
 hard (`ending_crowd_counts`): a bigger crowd for a harder game.
@@ -218,10 +218,8 @@ Oddities:
 
 ## Open questions
 
-- The exact role of `update_enemy_type_70`, `update_enemy_type_7C`,
-  `update_enemy_type_80`, `update_enemy_type_85`, `update_enemy_type_8E`, `update_enemy_type_8F` and
-  `update_enemy_type_96`; types `$6F` and `$99` were never seen (`$97` is not
-  a real object type, see the table).
+- Types `$6F` and `$99` are never created (`$97` is not a real object
+  type, see the table).
 - The helpers and tables of these handlers are named, except `sub_04C3A2`
   (never called). Many names of BG block tables say what the code does with
   them (`stage3_boss_state_0C_delays`, `ptrs_rideable_missile_anim_blocks`)

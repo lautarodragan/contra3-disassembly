@@ -3418,7 +3418,7 @@ stage4_spawn_dropping_soldier:
 	lda	$10,x
 	bne	@set_delay
 @found:
-	lda	#$0073
+	lda	#OBJT_JETPACK_SOLDIER
 	sta	$10,x
 	sty	$30,x
 @set_delay:
@@ -6070,42 +6070,42 @@ face_boss_larva_turn_toward_boss:
 	.a16
 	rts
 
-; Object type $68. Stage 6, heart_boss: small creatures around the heart's
-; ceiling pods (not identified exactly). HP by difficulty: 0/2/4
-; (enemy_type_68_hp).
-update_enemy_type_68:
+; Object type $68. Stage 6, heart_boss: grey crawlers that come out of the
+; pods (type $67) on the ceiling and the floor (seen in the emulator). HP by difficulty: 0/2/4
+; (heart_boss_crawler_hp).
+update_heart_boss_crawler:
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 	cmp	#$0003
 	bcc	@check_hp
-	brl	enemy_type_68_die
+	brl	heart_boss_crawler_die
 @check_hp:
 	lda	OBJ_HP,x
 	bpl	@dispatch
-	brl	enemy_type_68_die
+	brl	heart_boss_crawler_die
 @dispatch:
 	lda	OBJ_STATE,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_enemy_type_68_states,x
+	lda	f:tbl_heart_boss_crawler_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_enemy_type_68_states:
-	.addr	enemy_type_68_state_00
-	.addr	enemy_type_68_state_01
-	.addr	enemy_type_68_state_02
-	.addr	enemy_type_68_state_03
-	.addr	enemy_type_68_state_04
-	.addr	enemy_type_68_state_05
+tbl_heart_boss_crawler_states:
+	.addr	heart_boss_crawler_state_00
+	.addr	heart_boss_crawler_state_01
+	.addr	heart_boss_crawler_state_02
+	.addr	heart_boss_crawler_state_03
+	.addr	heart_boss_crawler_state_04
+	.addr	heart_boss_crawler_state_05
 
-enemy_type_68_state_00:
+heart_boss_crawler_state_00:
 	lda	#$001F
 	sta	OBJ_FLAGS,x
 	lda	#$3400
 	sta	OBJ_ATTR,x
 	ldy	difficulty
-	lda	a:enemy_type_68_hp,y
+	lda	a:heart_boss_crawler_hp,y
 	sta	OBJ_HP,x
 	lda	#$0014
 	sta	OBJ_HITBOX_W,x
@@ -6118,9 +6118,9 @@ enemy_type_68_state_00:
 	asl	a
 	sta	$30,x
 	tay
-	lda	a:enemy_type_68_start_y_vels,y
+	lda	a:heart_boss_crawler_start_y_vels,y
 	sta	OBJ_Y_VEL,x
-	lda	a:enemy_type_68_start_y_vel_subs,y
+	lda	a:heart_boss_crawler_start_y_vel_subs,y
 	sta	OBJ_Y_VEL_SUB,x
 	lda	#$FFFF	; [num]
 	sta	OBJ_X_VEL,x
@@ -6130,27 +6130,27 @@ enemy_type_68_state_00:
 	stz	OBJ_X_SUB,x
 	stz	OBJ_Y_SUB,x
 	ldy	$30,x
-	lda	a:enemy_type_68_sprites,y
+	lda	a:heart_boss_crawler_sprites,y
 	sta	OBJ_SPRITE,x
 	stz	OBJ_ANIM,x
 	lda	#$0001
 	sta	OBJ_STATE,x
 
-enemy_type_68_state_01:
+heart_boss_crawler_state_01:
 	ldy	$30,x
-	jsr	a:enemy_type_68_check_landed
-	bcs	enemy_type_68_land
+	jsr	a:heart_boss_crawler_check_landed
+	bcs	heart_boss_crawler_land
 	clc
 	lda	OBJ_Y_VEL_SUB,x
-	adc	a:enemy_type_68_gravity_subs,y
+	adc	a:heart_boss_crawler_gravity_subs,y
 	sta	OBJ_Y_VEL_SUB,x
 	lda	OBJ_Y_VEL,x
-	adc	a:enemy_type_68_gravity,y
+	adc	a:heart_boss_crawler_gravity,y
 	sta	OBJ_Y_VEL,x
 	rtl
 
 ; Y = 0: carry set at y >= $B8 (floor); else at y <= $48 (ceiling).
-enemy_type_68_check_landed:
+heart_boss_crawler_check_landed:
 	bne	@ceiling
 	lda	OBJ_Y,x
 	cmp	#$00B8
@@ -6159,9 +6159,9 @@ enemy_type_68_check_landed:
 	lda	#$0048
 	cmp	OBJ_Y,x
 	rts
-enemy_type_68_land:
+heart_boss_crawler_land:
 	ldy	$30,x
-	lda	a:enemy_type_68_landing_y,y
+	lda	a:heart_boss_crawler_landing_y,y
 	sta	OBJ_Y,x
 	stz	OBJ_Y_SUB,x
 	lda	#$FFFE	; [num]
@@ -6170,27 +6170,27 @@ enemy_type_68_land:
 	sta	OBJ_X_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
-	lda	a:enemy_type_68_walk_anims,y
+	lda	a:heart_boss_crawler_walk_anims,y
 	sta	OBJ_ANIM,x
 	stz	OBJ_ANIM_TIMER,x
 	lda	#$0002
 	sta	OBJ_STATE,x
 
-enemy_type_68_state_02:
-	jsr	a:enemy_type_68_check_player_x
+heart_boss_crawler_state_02:
+	jsr	a:heart_boss_crawler_check_player_x
 	bcc	@return
 	lda	$30,x
 	bne	@drop
-	brl	enemy_type_68_set_state_04
+	brl	heart_boss_crawler_set_state_04
 @drop:
-	bra	enemy_type_68_set_state_03
+	bra	heart_boss_crawler_set_state_03
 @return:
 	rtl
 
 ; Carry set (half of the time, at random) when a living player's
 ; p1_view_y/p2_view_y + $20 is within 2 pixels of the object's x: then it
 ; drops (or jumps) to the other side.
-enemy_type_68_check_player_x:
+heart_boss_crawler_check_player_x:
 	lda	a:p1_lives
 	beq	@check_p2
 	lda	a:player1_obj+PLAYER_CENTER_X
@@ -6219,7 +6219,7 @@ enemy_type_68_check_player_x:
 	bne	@no
 	sec
 	rts
-enemy_type_68_set_state_03:
+heart_boss_crawler_set_state_03:
 	stz	$30,x
 	lda	#.loword(metasprite_06C307)
 	sta	OBJ_SPRITE,x
@@ -6235,14 +6235,14 @@ enemy_type_68_set_state_03:
 	lda	#$0003
 	sta	OBJ_STATE,x
 
-enemy_type_68_state_03:
+heart_boss_crawler_state_03:
 	lda	OBJ_Y,x
 	cmp	#$00B8
 	bcc	@return
-	brl	enemy_type_68_land
+	brl	heart_boss_crawler_land
 @return:
 	rtl
-enemy_type_68_set_state_04:
+heart_boss_crawler_set_state_04:
 	lda	#$0002
 	sta	$30,x
 	stz	OBJ_ANIM,x
@@ -6257,14 +6257,14 @@ enemy_type_68_set_state_04:
 	lda	#$0004
 	sta	OBJ_STATE,x
 
-enemy_type_68_state_04:
+heart_boss_crawler_state_04:
 	lda	#$0048
 	cmp	OBJ_Y,x
 	bcc	@return
-	brl	enemy_type_68_land
+	brl	heart_boss_crawler_land
 @return:
 	rtl
-enemy_type_68_die:
+heart_boss_crawler_die:
 	lda	#$000E
 	jsl	f:queue_sound
 	lda	#$001D
@@ -6277,7 +6277,7 @@ enemy_type_68_die:
 	txy
 	jml	f:make_effect_object
 
-enemy_type_68_state_05:
+heart_boss_crawler_state_05:
 	; (not executed in the CDL traces)
 	rtl
 
@@ -7495,7 +7495,7 @@ cave_beast_state_14:
 	bne	cave_beast_update_body_jmp2
 	jsl	f:find_free_slot_y
 	bcs	@count
-	lda	#$0070
+	lda	#OBJT_CAVE_BEAST_EMBER
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -7933,9 +7933,10 @@ update_cave_rock:
 	sta	OBJ_Y_VEL,x
 	rtl
 
-; Object type $70. Stage 6, cave_beast: small embers flying around the beast
-; (not identified exactly).
-update_enemy_type_70:
+; Object type $70. Stage 6, cave_beast: fiery embers it sprays (cave_beast_state_14;
+; seen in the emulator): thrown up, fall under gravity, harmful, palette
+; cycling.
+update_cave_beast_ember:
 	lda	OBJ_STATE,x
 	bne	@fly
 	lda	#$000F
@@ -10049,15 +10050,15 @@ update_snake_robot_head:
 @return:
 	rtl
 
-; Object type $7C. Stage 4, airship: small parts under the airship (20 HP; not
-; identified exactly).
-update_enemy_type_7C:
+; Object type $7C. Stage 4, airship: dome gun turrets under the hull (20 HP;
+; seen in the emulator), drawn on BG, aiming at a player.
+update_airship_turret:
 	jsr	a:scroll_with_airship
 	lda	OBJ_HP,x
 	bpl	@dispatch
 	lda	#$001C
 	sta	$30,x
-	jsr	a:enemy_type_7C_draw_frame
+	jsr	a:airship_turret_draw_frame
 	lda	#$0010
 	sta	OBJ_TIMER,x
 	stz	OBJ_FLAGS,x
@@ -10069,18 +10070,18 @@ update_enemy_type_7C:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_enemy_type_7C_states,x
+	lda	f:tbl_airship_turret_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_enemy_type_7C_states:
-	.addr	enemy_type_7C_state_00
-	.addr	enemy_type_7C_state_01
-	.addr	enemy_type_7C_state_02
-	.addr	enemy_type_7C_state_03
+tbl_airship_turret_states:
+	.addr	airship_turret_state_00
+	.addr	airship_turret_state_01
+	.addr	airship_turret_state_02
+	.addr	airship_turret_state_03
 	.addr	airship_part_explode
 
-enemy_type_7C_state_00:
+airship_turret_state_00:
 	inc	OBJ_STATE,x
 	stz	OBJ_FLAGS,x
 	lda	#$0020
@@ -10088,7 +10089,7 @@ enemy_type_7C_state_00:
 	lda	#$FFE0	; [num]
 	sta	OBJ_HITBOX_H,x
 	ldy	$3A,x
-	lda	a:enemy_type_7C_delays,y
+	lda	a:airship_turret_delays,y
 	sta	OBJ_TIMER,x
 	lda	difficulty
 	asl	a
@@ -10097,9 +10098,9 @@ enemy_type_7C_state_00:
 	sta	OBJ_HP,x
 	rtl
 
-enemy_type_7C_state_01:
+airship_turret_state_01:
 	cmp	#$0002
-	beq	enemy_type_7C_state_03
+	beq	airship_turret_state_03
 	dec	OBJ_TIMER,x
 	bne	@return
 	inc	OBJ_STATE,x
@@ -10107,12 +10108,12 @@ enemy_type_7C_state_01:
 @return:
 	rtl
 
-enemy_type_7C_state_02:
+airship_turret_state_02:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	bit	#$0007
 	bne	@return
-	jsr	a:enemy_type_7C_draw_frame
+	jsr	a:airship_turret_draw_frame
 	clc
 	lda	$30,x
 	adc	#$0004
@@ -10125,7 +10126,7 @@ enemy_type_7C_state_02:
 @return:
 	rtl
 
-enemy_type_7C_state_03:
+airship_turret_state_03:
 	lda	#$0400
 	jsl	f:pick_target_player
 	jsl	f:angle_to_player
@@ -10151,17 +10152,17 @@ enemy_type_7C_state_03:
 	sec
 	sbc	#$0006
 	bpl	@loop
-	lda	a:enemy_type_7C_aim_frames,y
+	lda	a:airship_turret_aim_frames,y
 	sta	$30,x
 	phy
-	jsr	a:enemy_type_7C_draw_frame
+	jsr	a:airship_turret_draw_frame
 	ply
 	clc
-	lda	a:enemy_type_7C_gun_y_offsets,y
+	lda	a:airship_turret_gun_y_offsets,y
 	adc	OBJ_Y,x
 	sta	zp_02
 	clc
-	lda	a:enemy_type_7C_gun_x_offsets,y
+	lda	a:airship_turret_gun_x_offsets,y
 	adc	OBJ_X,x
 	sta	zp_00
 	dec	OBJ_TIMER,x
@@ -10174,16 +10175,16 @@ enemy_type_7C_state_03:
 	pla
 	rtl
 
-; Draws frame field $30 (tile pair enemy_type_7C_frame_tiles) at VRAM
-; enemy_type_7C_vram_addrs[field $3A].
-enemy_type_7C_draw_frame:
+; Draws frame field $30 (tile pair airship_turret_frame_tiles) at VRAM
+; airship_turret_vram_addrs[field $3A].
+airship_turret_draw_frame:
 	ldy	$30,x
-	lda	a:enemy_type_7C_frame_tiles,y
+	lda	a:airship_turret_frame_tiles,y
 	sta	zp_00
-	lda	a:enemy_type_7C_frame_tiles_b,y
+	lda	a:airship_turret_frame_tiles_b,y
 	pha
 	ldy	$3A,x
-	lda	a:enemy_type_7C_vram_addrs,y
+	lda	a:airship_turret_vram_addrs,y
 	sta	zp_FC
 	jsl	f:queue_vram_block
 	pla
@@ -10667,7 +10668,7 @@ update_airship_gun_arm:
 	ldy	#$05C0
 	jsl	f:find_free_slot_y_down
 	bcc	@return
-	lda	#$0080
+	lda	#OBJT_AIRSHIP_GUN_ARM_SHELL
 	sta	a:$0010,y
 	lda	$0A,x
 	adc	#$000C
@@ -10679,9 +10680,10 @@ update_airship_gun_arm:
 @return:
 	rtl
 
-; Object type $80. Stage 4, airship: seen briefly at the end of the airship
-; (not identified exactly).
-update_enemy_type_80:
+; Object type $80. Stage 4, airship: shell fired by a gun arm
+; (update_airship_gun_arm; seen in the emulator): flies down at 45 degrees
+; trailing smoke, then burns along the road.
+update_airship_gun_arm_shell:
 	lda	OBJ_STATE,x
 	bne	@active
 	inc	OBJ_STATE,x
@@ -11142,7 +11144,7 @@ helicopter_rope_state_0A:
 	ldy	#$04C0
 	jsl	f:find_free_slot_y_down
 	bcc	@place
-	lda	#$0085
+	lda	#OBJT_HELICOPTER_ROPE_BOOMERANG
 	sta	a:$0010,y
 	lda	OBJ_FACING,x
 	sta	a:$0004,y
@@ -11458,9 +11460,10 @@ helicopter_rope_swing:
 	sta	a:boss_work_3
 	rts
 
-; Object type $85. Stage 4, helicopter scene: a spinning projectile thrown
-; upward that curves (probably by the enemy on helicopter_rope).
-update_enemy_type_85:
+; Object type $85. Stage 4, helicopter scene: spinning blade thrown by the
+; enemy at the end of the rope (helicopter_rope_state_0A; seen in the
+; emulator); flies out sideways and comes back like a boomerang.
+update_helicopter_rope_boomerang:
 	lda	OBJ_STATE,x
 	bne	@fly
 	inc	OBJ_STATE,x
@@ -11475,7 +11478,7 @@ update_enemy_type_85:
 	lda	#$FFF8	; [num]
 	sta	OBJ_HITBOX_H,x
 	ldy	OBJ_FACING,x
-	lda	a:enemy_type_85_x_vels,y
+	lda	a:helicopter_rope_boomerang_x_vels,y
 	sta	OBJ_X_VEL,x
 	lda	#$FFFF	; [num]
 	sta	OBJ_Y_VEL,x
@@ -11486,9 +11489,9 @@ update_enemy_type_85:
 	ldy	OBJ_FACING,x
 	clc
 	lda	OBJ_X_VEL_SUB,x
-	adc	a:enemy_type_85_x_accel_subs,y
+	adc	a:helicopter_rope_boomerang_x_accel_subs,y
 	sta	OBJ_X_VEL_SUB,x
 	lda	OBJ_X_VEL,x
-	adc	a:enemy_type_85_x_accels,y
+	adc	a:helicopter_rope_boomerang_x_accels,y
 	sta	OBJ_X_VEL,x
 	rtl

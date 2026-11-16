@@ -1616,9 +1616,12 @@ swing_check_grab:
 	sec
 	rtl
 
-; Object types $48 and $51: stage 3 (type $51: the flying machine with a
-; searchlight, section 8). Not identified exactly.
-update_object_type_48:
+; Object types $48 and $51: stage 3: green soldier that walks towards a
+; player (field $38) and jumps from platform to platform (seen in the
+; emulator); dies as a dying soldier. Type $48 is let out by
+; update_jumping_soldier_spawner (section 10), type $51 is dropped by the
+; searchlight craft (section 8) and starts with a jump.
+update_jumping_soldier:
 	lda	OBJ_HP,x
 	bpl	@dispatch
 	stz	OBJ_HP,x
@@ -1629,18 +1632,18 @@ update_object_type_48:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_48_states,x
+	lda	f:tbl_jumping_soldier_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_48_states:
-	.addr	object_type_48_state_00
-	.addr	object_type_48_state_01
-	.addr	object_type_48_state_02
-	.addr	object_type_48_state_00
-	.addr	object_type_48_state_02
+tbl_jumping_soldier_states:
+	.addr	jumping_soldier_state_00
+	.addr	jumping_soldier_state_01
+	.addr	jumping_soldier_state_02
+	.addr	jumping_soldier_state_00
+	.addr	jumping_soldier_state_02
 
-object_type_48_state_00:
+jumping_soldier_state_00:
 	lda	#$001F
 	sta	OBJ_FLAGS,x
 	lda	#$3800
@@ -1650,19 +1653,19 @@ object_type_48_state_00:
 	lda	#$FFE0	; [num]
 	sta	OBJ_HITBOX_H,x
 	ldy	difficulty
-	lda	a:object_type_48_hp,y
+	lda	a:jumping_soldier_hp,y
 	sta	OBJ_HP,x
 	lda	OBJ_TYPE,x
-	cmp	#$0051
-	bne	object_type_48_start_walking
-	jmp	a:object_type_48_jump
-object_type_48_start_walking:
+	cmp	#OBJT_DROPPED_JUMPING_SOLDIER
+	bne	jumping_soldier_start_walking
+	jmp	a:jumping_soldier_jump
+jumping_soldier_start_walking:
 	jsl	f:snap_y_up_to_tile
 	stz	$30,x
 	stz	$32,x
 	stz	$34,x
 	stz	$36,x
-	jsr	a:object_type_48_set_x_velocity
+	jsr	a:jumping_soldier_set_x_velocity
 	stz	$1E,x
 	stz	$1C,x
 	stz	$0C,x
@@ -1682,7 +1685,7 @@ object_type_48_start_walking:
 	inc	$12,x
 	rtl
 
-object_type_48_state_01:
+jumping_soldier_state_01:
 	lda	OBJ_TIMER,x
 	beq	@count_down
 	lda	#$0004
@@ -1724,13 +1727,13 @@ object_type_48_state_01:
 	lda	#$8000	; [num]
 	sta	$18,x
 	stz	$1A,x
-	bra	object_type_48_jump
+	bra	jumping_soldier_jump
 @jump_left:
 	lda	#$8000	; [num]
 	sta	$18,x
 	lda	#$FFFF	; [num]
 	sta	$1A,x
-object_type_48_jump:
+jumping_soldier_jump:
 	lda	#$FFFC	; [num]
 	sta	$1E,x
 	stz	$1C,x
@@ -1748,7 +1751,7 @@ object_type_48_jump:
 	inc	$12,x
 	rtl
 
-object_type_48_state_02:
+jumping_soldier_state_02:
 	lda	$32,x
 	clc
 	adc	#$0020
@@ -1778,35 +1781,36 @@ object_type_48_state_02:
 @landed:
 	lda	#$0000
 	sta	$12,x
-	jmp	a:object_type_48_start_walking
+	jmp	a:jumping_soldier_start_walking
 
-object_type_48_set_x_velocity:
+jumping_soldier_set_x_velocity:
 	ldy	$38,x
 	lda	a:$000A,y
 	cmp	$0A,x
 	bcc	@move_left
 	ldy	difficulty
-	lda	a:object_type_48_speeds_right,y
+	lda	a:jumping_soldier_speeds_right,y
 	and	#$FF00
 	sta	$18,x
-	lda	a:object_type_48_speeds_right,y
+	lda	a:jumping_soldier_speeds_right,y
 	and	#$00FF
 	sta	$1A,x
 	bra	@return
 @move_left:
 	ldy	difficulty
-	lda	a:object_type_48_speeds_left,y
+	lda	a:jumping_soldier_speeds_left,y
 	and	#$FF00
 	sta	$18,x
-	lda	a:object_type_48_speeds_left,y
+	lda	a:jumping_soldier_speeds_left,y
 	ora	#$FF00
 	sta	$1A,x
 @return:
 	rts
 
-; Object type $49: stage 3 section 10: green shielded soldiers. Not
-; identified exactly.
-update_object_type_49:
+; Object type $49: stage 3 section 10 (the climb up the building): invisible
+; spawner of jumping soldiers (type $48) at its position, in bursts
+; (jumping_soldier_spawner_burst_counts, _burst_delays).
+update_jumping_soldier_spawner:
 	lda	OBJ_Y,x
 	cmp	#$00E8
 	bcc	@dispatch
@@ -1818,16 +1822,16 @@ update_object_type_49:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_49_states,x
+	lda	f:tbl_jumping_soldier_spawner_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_49_states:
-	.addr	object_type_49_state_00
-	.addr	object_type_49_state_01
-	.addr	object_type_49_state_02
+tbl_jumping_soldier_spawner_states:
+	.addr	jumping_soldier_spawner_state_00
+	.addr	jumping_soldier_spawner_state_01
+	.addr	jumping_soldier_spawner_state_02
 
-object_type_49_state_00:
+jumping_soldier_spawner_state_00:
 	lda	#$0003
 	sta	OBJ_FLAGS,x
 	stz	OBJ_TIMER,x
@@ -1836,13 +1840,13 @@ object_type_49_state_00:
 	inc	OBJ_STATE,x
 	rtl
 
-object_type_49_state_01:
+jumping_soldier_spawner_state_01:
 	lda	stage_frame_counter
 	and	#$001F
 	bne	@return
 	jsl	f:find_free_slot_y
 	bcs	@return
-	lda	#$0048
+	lda	#OBJT_JUMPING_SOLDIER
 	sta	a:$0010,y
 	lda	$0A,x
 	sta	a:$000A,y
@@ -1865,7 +1869,7 @@ object_type_49_state_01:
 	inc	$32,x
 	inc	$30,x
 	ldy	difficulty
-	lda	a:object_type_49_burst_counts,y
+	lda	a:jumping_soldier_spawner_burst_counts,y
 	cmp	$30,x
 	bcs	@return
 	stz	$24,x
@@ -1873,13 +1877,13 @@ object_type_49_state_01:
 @return:
 	rtl
 
-object_type_49_state_02:
+jumping_soldier_spawner_state_02:
 	lda	$32,x
 	cmp	#$0018
 	bcs	@return
 	inc	OBJ_TIMER,x
 	ldy	difficulty
-	lda	a:object_type_49_burst_delays,y
+	lda	a:jumping_soldier_spawner_burst_delays,y
 	cmp	OBJ_TIMER,x
 	bcs	@return
 	stz	$30,x
@@ -2124,9 +2128,11 @@ rolling_mine_check_wall:
 @return:
 	rts
 
-; Object type $4E: stage 3 section 7, 27 states (a mid-boss, probably). Not
-; identified.
-update_object_type_4E:
+; Object type $4E: stage 3 sections 7-8: the mid-boss flying craft with a
+; searchlight (seen in the emulator), drawn on BG2 (slot $0900, 27 states):
+; it flies in, shines its searchlight on the floor, drops jumping soldiers
+; (type $51) and throws grenades (type $13); explodes when its HP runs out.
+update_stage3_searchlight_craft:
 	lda	OBJ_HP,x
 	bpl	@flash
 	lda	#$0018
@@ -2143,42 +2149,42 @@ update_object_type_4E:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_4E_states,x
+	lda	f:tbl_stage3_searchlight_craft_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_4E_states:
-	.addr	object_type_4E_state_00
-	.addr	object_type_4E_state_01
-	.addr	object_type_4E_state_02
-	.addr	object_type_4E_state_03
-	.addr	object_type_4E_state_04
-	.addr	object_type_4E_state_05
-	.addr	object_type_4E_state_06
-	.addr	object_type_4E_state_07
-	.addr	object_type_4E_state_08
-	.addr	object_type_4E_state_09
-	.addr	object_type_4E_state_0A
-	.addr	object_type_4E_state_0B
-	.addr	object_type_4E_state_0C
-	.addr	object_type_4E_state_0D
-	.addr	object_type_4E_state_0E
-	.addr	object_type_4E_state_0F
-	.addr	object_type_4E_state_10
-	.addr	object_type_4E_state_0B
-	.addr	object_type_4E_state_12
-	.addr	object_type_4E_state_13
-	.addr	object_type_4E_state_0E
-	.addr	object_type_4E_state_15
-	.addr	object_type_4E_state_0F
-	.addr	object_type_4E_state_17
-	.addr	object_type_4E_state_18
-	.addr	object_type_4E_state_0E
-	.addr	object_type_4E_state_1A
+tbl_stage3_searchlight_craft_states:
+	.addr	stage3_searchlight_craft_state_00
+	.addr	stage3_searchlight_craft_state_01
+	.addr	stage3_searchlight_craft_state_02
+	.addr	stage3_searchlight_craft_state_03
+	.addr	stage3_searchlight_craft_state_04
+	.addr	stage3_searchlight_craft_state_05
+	.addr	stage3_searchlight_craft_state_06
+	.addr	stage3_searchlight_craft_state_07
+	.addr	stage3_searchlight_craft_state_08
+	.addr	stage3_searchlight_craft_state_09
+	.addr	stage3_searchlight_craft_state_0A
+	.addr	stage3_searchlight_craft_state_0B
+	.addr	stage3_searchlight_craft_state_0C
+	.addr	stage3_searchlight_craft_state_0D
+	.addr	stage3_searchlight_craft_state_0E
+	.addr	stage3_searchlight_craft_state_0F
+	.addr	stage3_searchlight_craft_state_10
+	.addr	stage3_searchlight_craft_state_0B
+	.addr	stage3_searchlight_craft_state_12
+	.addr	stage3_searchlight_craft_state_13
+	.addr	stage3_searchlight_craft_state_0E
+	.addr	stage3_searchlight_craft_state_15
+	.addr	stage3_searchlight_craft_state_0F
+	.addr	stage3_searchlight_craft_state_17
+	.addr	stage3_searchlight_craft_state_18
+	.addr	stage3_searchlight_craft_state_0E
+	.addr	stage3_searchlight_craft_state_1A
 	; CDL: not accessed
 	.byte	$6B
 
-object_type_4E_state_00:
+stage3_searchlight_craft_state_00:
 	lda	#$0000
 	sta	OBJ_FLAGS,x
 	lda	#$0006
@@ -2201,7 +2207,7 @@ object_type_4E_state_00:
 	inc	OBJ_STATE,x
 	rtl
 
-object_type_4E_state_01:
+stage3_searchlight_craft_state_01:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bcc	@return
@@ -2209,13 +2215,13 @@ object_type_4E_state_01:
 @return:
 	rtl
 
-object_type_4E_state_04:
+stage3_searchlight_craft_state_04:
 	stz	$36,x
 	stz	$38,x
 	inc	OBJ_STATE,x
 	rtl
 
-object_type_4E_state_05:
+stage3_searchlight_craft_state_05:
 	lda	#$0008
 	sta	zp_02
 	lda	#$0040
@@ -2228,12 +2234,12 @@ object_type_4E_state_05:
 	asl	a
 	asl	a
 	clc
-	adc	a:object_type_4E_tile_row_vram_addrs,y
+	adc	a:stage3_searchlight_craft_tile_row_vram_addrs,y
 	pha
 	lda	$38,x
 	asl	a
 	tay
-	lda	a:ptrs_object_type_4E_tile_rows,y
+	lda	a:ptrs_stage3_searchlight_craft_tile_rows,y
 	tay
 	pla
 	phx
@@ -2247,7 +2253,7 @@ object_type_4E_state_05:
 @return:
 	rtl
 
-object_type_4E_state_02:
+stage3_searchlight_craft_state_02:
 	lda	#$0001
 	sta	OBJ_FLAGS,x
 	lda	#$FFFF	; [num]
@@ -2257,8 +2263,8 @@ object_type_4E_state_02:
 	inc	OBJ_STATE,x
 	rtl
 
-object_type_4E_state_03:
-	jsr	a:object_type_4E_set_bg2_scroll
+stage3_searchlight_craft_state_03:
+	jsr	a:stage3_searchlight_craft_set_bg2_scroll
 	lda	$0E,x
 	cmp	#$0020
 	bcs	@return
@@ -2268,7 +2274,7 @@ object_type_4E_state_03:
 @return:
 	rtl
 
-object_type_4E_set_bg2_scroll:
+stage3_searchlight_craft_set_bg2_scroll:
 	lda	$0A,x
 	eor	#$FFFF
 	inc	a
@@ -2283,7 +2289,7 @@ object_type_4E_set_bg2_scroll:
 	sta	a:bg2_y
 	rts
 
-object_type_4E_state_06:
+stage3_searchlight_craft_state_06:
 	lda	#$0001
 	sta	OBJ_FLAGS,x
 	lda	#$0001
@@ -2291,8 +2297,8 @@ object_type_4E_state_06:
 	inc	OBJ_STATE,x
 	rtl
 
-object_type_4E_state_07:
-	jsr	a:object_type_4E_set_bg2_scroll
+stage3_searchlight_craft_state_07:
+	jsr	a:stage3_searchlight_craft_set_bg2_scroll
 	lda	$0E,x
 	cmp	#$0043
 	bcc	@return
@@ -2302,11 +2308,11 @@ object_type_4E_state_07:
 @return:
 	rtl
 
-object_type_4E_state_08:
+stage3_searchlight_craft_state_08:
 	phx
 	ldx	#$0000
 @loop:
-	lda	a:object_type_4E_buffer_init,x
+	lda	a:stage3_searchlight_craft_buffer_init,x
 	sta	f:$7EA000,x
 	inx
 	inx
@@ -2325,11 +2331,11 @@ object_type_4E_state_08:
 	inc	$12,x
 	rtl
 
-object_type_4E_state_09:
+stage3_searchlight_craft_state_09:
 	lda	#$400D
 	sta	OBJ_FLAGS,x
 	ldy	difficulty
-	lda	a:object_type_4E_hp,y
+	lda	a:stage3_searchlight_craft_hp,y
 	sta	OBJ_HP,x
 	inc	OBJ_STATE,x
 	stz	OBJ_TIMER,x
@@ -2339,7 +2345,7 @@ object_type_4E_state_09:
 	sta	hdma_preset
 	rtl
 
-object_type_4E_state_0A:
+stage3_searchlight_craft_state_0A:
 	lda	#$006D
 	sta	zp_06
 	lda	OBJ_X,x
@@ -2355,7 +2361,7 @@ object_type_4E_state_0A:
 	inc	$12,x
 	rtl
 
-object_type_4E_state_0B:
+stage3_searchlight_craft_state_0B:
 	lda	#$0002
 	sta	zp_02
 	lda	#$0030
@@ -2368,7 +2374,7 @@ object_type_4E_state_0B:
 	inc	$12,x
 	rtl
 
-object_type_4E_state_0E:
+stage3_searchlight_craft_state_0E:
 	lda	#$0002
 	sta	zp_02
 	lda	#$0030
@@ -2381,12 +2387,12 @@ object_type_4E_state_0E:
 	inc	$12,x
 	rtl
 
-object_type_4E_state_0C:
-	jsr	a:object_type_4E_pick_target
+stage3_searchlight_craft_state_0C:
+	jsr	a:stage3_searchlight_craft_pick_target
 	inc	$12,x
 	rtl
 
-object_type_4E_pick_target:
+stage3_searchlight_craft_pick_target:
 	lda	#$0200
 	sta	$34,x
 	lda	a:player1_obj+OBJ_FLAGS
@@ -2405,8 +2411,8 @@ object_type_4E_pick_target:
 @return:
 	rts
 
-object_type_4E_state_0D:
-	jsr	a:object_type_4E_set_bg2_scroll
+stage3_searchlight_craft_state_0D:
+	jsr	a:stage3_searchlight_craft_set_bg2_scroll
 	lda	a:bg2_x
 	sta	f:scroll_hdma_tables+$08
 	lda	stage_frame_counter
@@ -2479,7 +2485,7 @@ object_type_4E_state_0D:
 	phx
 	jsr	a:build_bg2_slant_table
 	plx
-	jsr	a:object_type_4E_track_target
+	jsr	a:stage3_searchlight_craft_track_target
 	inc	$24,x
 	lda	$24,x
 	cmp	#$00F0
@@ -2492,8 +2498,8 @@ object_type_4E_state_0D:
 @return:
 	rtl
 
-object_type_4E_state_0F:
-	jsr	a:object_type_4E_set_bg2_scroll
+stage3_searchlight_craft_state_0F:
+	jsr	a:stage3_searchlight_craft_set_bg2_scroll
 	lda	a:bg2_x
 	sta	f:scroll_hdma_tables+$08
 	stz	$1A,x
@@ -2508,7 +2514,7 @@ object_type_4E_state_0F:
 @return:
 	rtl
 
-object_type_4E_state_12:
+stage3_searchlight_craft_state_12:
 	lda	OBJ_FLAGS,x
 	ora	#$0010
 	sta	OBJ_FLAGS,x
@@ -2536,7 +2542,7 @@ object_type_4E_state_12:
 	inc	$12,x
 	rtl
 
-object_type_4E_state_13:
+stage3_searchlight_craft_state_13:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
 	cmp	#$0258
@@ -2551,7 +2557,7 @@ object_type_4E_state_13:
 	bne	@update
 	jsl	f:find_free_slot_y
 	bcs	@update
-	lda	#$0051
+	lda	#OBJT_DROPPED_JUMPING_SOLDIER
 	sta	a:$0010,y
 	lda	stage_frame_counter
 	and	#$0020
@@ -2592,12 +2598,12 @@ object_type_4E_state_13:
 	lda	#$0240
 	sta	a:$0038,y
 @update:
-	jsr	a:object_type_4E_set_bg2_scroll
+	jsr	a:stage3_searchlight_craft_set_bg2_scroll
 	lda	a:bg2_x
 	sta	f:scroll_hdma_tables+$08
-	jsr	a:object_type_4E_keep_in_range
+	jsr	a:stage3_searchlight_craft_keep_in_range
 
-object_type_4E_slant_to_target:
+stage3_searchlight_craft_slant_to_target:
 	lda	#$006D
 	sta	zp_06
 	lda	$0A,x
@@ -2609,7 +2615,7 @@ object_type_4E_slant_to_target:
 	lda	a:$0016,y
 	bit	#$0001
 	bne	@target_x
-	jsr	a:object_type_4E_pick_target
+	jsr	a:stage3_searchlight_craft_pick_target
 	lda	a:player1_obj+OBJ_FLAGS
 	ora	a:player2_obj+OBJ_FLAGS
 	and	#$0001
@@ -2627,13 +2633,13 @@ object_type_4E_slant_to_target:
 	plx
 	rtl
 
-object_type_4E_state_10:
-	jsr	a:object_type_4E_pick_target
-	jsl	f:object_type_4E_slant_to_target
+stage3_searchlight_craft_state_10:
+	jsr	a:stage3_searchlight_craft_pick_target
+	jsl	f:stage3_searchlight_craft_slant_to_target
 	inc	$12,x
 	rtl
 
-object_type_4E_state_15:
+stage3_searchlight_craft_state_15:
 	lda	OBJ_FLAGS,x
 	and	#$FFEF
 	sta	OBJ_FLAGS,x
@@ -2651,7 +2657,7 @@ object_type_4E_state_15:
 	inc	$12,x
 	rtl
 
-object_type_4E_state_17:
+stage3_searchlight_craft_state_17:
 	lda	#$000A
 	sta	OBJ_STATE,x
 	rtl
@@ -2769,37 +2775,37 @@ unused_build_bg2_slant_full_height:
 	plx
 	rtl
 
-object_type_4E_keep_in_range:
+stage3_searchlight_craft_keep_in_range:
 	lda	$0A,x
 	cmp	#$00B0
-	bcs	object_type_4E_move_left
+	bcs	stage3_searchlight_craft_move_left
 	cmp	#$0050
-	bcs	object_type_4E_range_done
+	bcs	stage3_searchlight_craft_range_done
 	lda	#$8000	; [num]
 	sta	$18,x
 	lda	#$0000
 	sta	$1A,x
-	bra	object_type_4E_range_done
+	bra	stage3_searchlight_craft_range_done
 
 ; (no caller found; decoded because it follows the end of a routine)
-; x velocity -0.5, then the end of object_type_4E_keep_in_range. Never
+; x velocity -0.5, then the end of stage3_searchlight_craft_keep_in_range. Never
 ; reached.
-unused_object_type_4E_drift_left:
+unused_stage3_searchlight_craft_drift_left:
 	; (not executed in the CDL traces)
 	lda	#$8000	; [num]
 	sta	$18,x
 	lda	#$FFFF	; [num]
 	sta	$1A,x
-object_type_4E_range_done:
-	jmp	a:object_type_4E_bob
+stage3_searchlight_craft_range_done:
+	jmp	a:stage3_searchlight_craft_bob
 
-object_type_4E_track_target:
+stage3_searchlight_craft_track_target:
 	lda	$34,x
 	tay
 	lda	a:$0016,y
 	bit	#$0001
 	bne	@target_x
-	jsr	a:object_type_4E_pick_target
+	jsr	a:stage3_searchlight_craft_pick_target
 	lda	a:player1_obj+OBJ_FLAGS
 	ora	a:player2_obj+OBJ_FLAGS
 	and	#$0001
@@ -2812,30 +2818,30 @@ object_type_4E_track_target:
 	lda	a:$000A,y
 @compare:
 	cmp	$0A,x
-	beq	object_type_4E_stop
-	bmi	object_type_4E_move_left
+	beq	stage3_searchlight_craft_stop
+	bmi	stage3_searchlight_craft_move_left
 	lda	$0A,x
 	cmp	#$00B0
-	bcs	object_type_4E_stop
+	bcs	stage3_searchlight_craft_stop
 	lda	#$8000	; [num]
 	sta	$18,x
 	lda	#$0000
 	sta	$1A,x
-	bra	object_type_4E_bob
-object_type_4E_move_left:
+	bra	stage3_searchlight_craft_bob
+stage3_searchlight_craft_move_left:
 	lda	$0A,x
 	cmp	#$0050
-	bcc	object_type_4E_stop
+	bcc	stage3_searchlight_craft_stop
 	lda	#$8000	; [num]
 	sta	$18,x
 	lda	#$FFFF	; [num]
 	sta	$1A,x
-	bra	object_type_4E_bob
-object_type_4E_stop:
+	bra	stage3_searchlight_craft_bob
+stage3_searchlight_craft_stop:
 	stz	$18,x
 	stz	$1A,x
 ; Moves the body 1 pixel up and down every 4 frames (bit 0 of OBJ_Y).
-object_type_4E_bob:
+stage3_searchlight_craft_bob:
 	lda	$0E,x
 	and	#$FFFE
 	sta	zp_00
@@ -2847,7 +2853,7 @@ object_type_4E_bob:
 	sta	$0E,x
 	rts
 
-object_type_4E_state_18:
+stage3_searchlight_craft_state_18:
 	lda	#$0002
 	sta	zp_02
 	lda	#$0010
@@ -2876,8 +2882,8 @@ object_type_4E_state_18:
 	jsl	f:queue_sound
 	rtl
 
-object_type_4E_state_1A:
-	jsr	a:object_type_4E_set_bg2_scroll
+stage3_searchlight_craft_state_1A:
+	jsr	a:stage3_searchlight_craft_set_bg2_scroll
 	jsl	f:queue_sound_41_throttled
 	lda	$0A,x
 	adc	#$FFE0
@@ -3241,34 +3247,35 @@ stage3_winged_bug_count_down:
 @return:
 	rts
 
-; Object type $56: stage 6. Not identified.
-update_object_type_56:
+; Object type $56: stage 6: alien soldier running along the floor and jumping
+; off ledges (seen in the emulator), sent by update_alien_soldier_spawner.
+update_alien_soldier:
 	lda	OBJ_HP,x
 	bpl	@dispatch
 	stz	OBJ_HP,x
 	lda	OBJ_FACING,x
 	tay
-	lda	a:object_type_56_dying_sprites,y
+	lda	a:alien_soldier_dying_sprites,y
 	jml	f:start_dying_soldier_sound_0E
 @dispatch:
 	lda	$12,x
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_56_states,x
+	lda	f:tbl_alien_soldier_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_56_states:
-	.addr	object_type_56_state_00
-	.addr	object_type_56_state_01
-	.addr	object_type_56_state_02
+tbl_alien_soldier_states:
+	.addr	alien_soldier_state_00
+	.addr	alien_soldier_state_01
+	.addr	alien_soldier_state_02
 
-object_type_56_state_00:
+alien_soldier_state_00:
 	ldy	difficulty
 	lda	#$001F
 	sta	OBJ_FLAGS,x
-	lda	a:object_type_56_hp,y
+	lda	a:alien_soldier_hp,y
 	sta	OBJ_HP,x
 	lda	#$3400
 	sta	OBJ_ATTR,x
@@ -3289,7 +3296,7 @@ object_type_56_state_00:
 	lda	#.loword(anim_05CAF7)
 	sta	$20,x
 	stz	$22,x
-	jsr	a:object_type_56_set_velocity
+	jsr	a:alien_soldier_set_velocity
 	stz	$1C,x
 	stz	$1E,x
 	stz	$08,x
@@ -3300,25 +3307,25 @@ object_type_56_state_00:
 	inc	$12,x
 	rtl
 
-object_type_56_set_velocity:
+alien_soldier_set_velocity:
 	lda	$04,x
 	bne	@left
 	ldy	difficulty
-	lda	a:object_type_56_x_vel_subs_right
+	lda	a:alien_soldier_x_vel_subs_right
 	sta	$18,x
-	lda	a:object_type_56_x_vels_right
+	lda	a:alien_soldier_x_vels_right
 	sta	$1A,x
 	bra	@return
 @left:
 	ldy	difficulty
-	lda	a:object_type_56_x_vel_subs_left
+	lda	a:alien_soldier_x_vel_subs_left
 	sta	$18,x
-	lda	a:object_type_56_x_vels_left
+	lda	a:alien_soldier_x_vels_left
 	sta	$1A,x
 @return:
 	rts
 
-object_type_56_state_01:
+alien_soldier_state_01:
 	jsl	f:object_follow_floor
 	lda	zp_FC
 	bne	@return
@@ -3326,7 +3333,7 @@ object_type_56_state_01:
 	sta	$1E,x
 	lda	$04,x
 	tay
-	lda	a:object_type_56_jump_x_vels,y
+	lda	a:alien_soldier_jump_x_vels,y
 	sta	$1A,x
 	stz	$1C,x
 	stz	$18,x
@@ -3337,7 +3344,7 @@ object_type_56_state_01:
 @return:
 	rtl
 
-object_type_56_state_02:
+alien_soldier_state_02:
 	lda	OBJ_Y_VEL,x
 	bmi	@accelerate
 	cmp	#$0004
@@ -3355,7 +3362,7 @@ object_type_56_state_02:
 	jsl	f:get_bg_tile_at_object
 	bit	#TILE_FLOOR_MASK
 	beq	@return
-	jsr	a:object_type_56_set_velocity
+	jsr	a:alien_soldier_set_velocity
 	stz	$1C,x
 	stz	$1E,x
 	stz	$08,x
@@ -3450,7 +3457,7 @@ spawn_alien_soldier_right:
 	sta	a:$000A,y
 	jsr	a:drop_object_to_floor
 init_alien_soldier_at_y:
-	lda	#$0056
+	lda	#OBJT_ALIEN_SOLDIER
 	sta	a:$0010,y
 	lda	#$0000
 	sta	a:$0012,y
@@ -3513,7 +3520,7 @@ update_object_type_24:
 	stz	OBJ_HP,x
 	lda	OBJ_FACING,x
 	tay
-	lda	a:object_type_56_dying_sprites,y
+	lda	a:alien_soldier_dying_sprites,y
 	jml	f:start_dying_soldier_sound_0E
 @dispatch:
 	lda	$12,x
@@ -3527,13 +3534,13 @@ update_object_type_24:
 tbl_object_type_24_states:
 	.addr	object_type_24_state_00
 	.addr	object_type_24_state_01
-	.addr	object_type_56_state_02
+	.addr	alien_soldier_state_02
 
 object_type_24_state_00:
 	ldy	difficulty
 	lda	#$001F
 	sta	OBJ_FLAGS,x
-	lda	a:object_type_56_hp,y
+	lda	a:alien_soldier_hp,y
 	sta	OBJ_HP,x
 	lda	#$2400
 	sta	OBJ_ATTR,x
@@ -3608,10 +3615,10 @@ tbl_stage3_spiked_climber_states:
 	.addr	stage3_spiked_climber_state_05
 	.addr	stage3_spiked_climber_state_06
 	.addr	stage3_spiked_climber_state_07
-	.addr	update_object_type_59
+	.addr	stage3_spiked_climber_state_08
 	.addr	stage3_spiked_climber_state_09
 	.addr	stage3_spiked_climber_state_0A
-	.addr	update_object_type_52
+	.addr	stage3_spiked_climber_state_0B
 	.addr	stage3_spiked_climber_state_0C
 	.addr	stage3_spiked_climber_state_0D
 	.addr	stage3_spiked_climber_state_0E
@@ -4040,8 +4047,10 @@ spiked_climber_check_fallen:
 @return:
 	rts
 
-; Object type $59: not seen. Not identified.
-update_object_type_59:
+; State 8 of update_stage3_spiked_climber; also entry $59 of
+; tbl_object_types, but no type $59 is ever created. Makes the arm
+; segments (type $5A, slots $03C0-$0600) and the spiked body sprite ($0340).
+stage3_spiked_climber_state_08:
 	lda	#$004E
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
@@ -4049,7 +4058,7 @@ update_object_type_59:
 	stx	zp_FC
 	ldx	#$03C0
 @loop:
-	lda	#$005A
+	lda	#OBJT_STAGE3_SPIKED_CLIMBER_ARM
 	sta	$10,x
 	lda	#.loword(anim_05CC0B)
 	sta	$20,x
@@ -4079,7 +4088,7 @@ update_object_type_59:
 	ldx	#$0340
 	lda	zp_04
 	sta	$38,x
-	lda	#$005A
+	lda	#OBJT_STAGE3_SPIKED_CLIMBER_ARM
 	sta	$10,x
 	lda	#$FF80	; [num]
 	sta	$0A,x
@@ -4242,40 +4251,44 @@ stage3_spiked_climber_state_0A:
 	sta	$24,x
 	rtl
 
-; Object type $60: does nothing (rtl); never run in the CDL traces.
-update_object_type_60:
+; Object type $60: does nothing (rtl). Unused: no spawn list or code creates
+; a type $60, never run in the CDL traces.
+update_unused_type_60:
 	; (not executed in the CDL traces)
 	rtl
 
-; Object type $5A: stage 3 spiked climber, spikes. Not identified exactly.
-update_object_type_5A:
+; Object type $5A: stage 3 spiked climber: the segments of its two arms
+; reaching to the wall, and its spiked body (slot $0340) (seen in the
+; emulator); placed relative to the climber (slot 5), they follow it by
+; boss_work_0.
+update_stage3_spiked_climber_arm:
 	lda	a:boss_work_0
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_5A_states,x
+	lda	f:tbl_stage3_spiked_climber_arm_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_5A_states:
-	.addr	object_type_5A_state_00
-	.addr	object_type_5A_state_01
-	.addr	object_type_5A_state_02
+tbl_stage3_spiked_climber_arm_states:
+	.addr	stage3_spiked_climber_arm_state_00
+	.addr	stage3_spiked_climber_arm_state_01
+	.addr	stage3_spiked_climber_arm_state_02
 
-object_type_5A_state_00:
+stage3_spiked_climber_arm_state_00:
 	ldy	$38,x
 	clc
 	lda	a:obj_slots+5*OBJ_SIZE+OBJ_X
-	adc	a:object_type_5A_x_offsets,y
+	adc	a:stage3_spiked_climber_arm_x_offsets,y
 	sta	OBJ_X,x
 	clc
 	lda	a:obj_slots+5*OBJ_SIZE+OBJ_Y
-	adc	a:object_type_5A_y_offsets,y
+	adc	a:stage3_spiked_climber_arm_y_offsets,y
 	sta	OBJ_Y,x
 
-object_type_5A_state_01:
+stage3_spiked_climber_arm_state_01:
 	ldy	$32,x
-	lda	a:object_type_5A_anchor_y_addrs,y
+	lda	a:stage3_spiked_climber_arm_anchor_y_addrs,y
 	sta	zp_00
 	clc
 	lda	$38,x
@@ -4285,7 +4298,7 @@ object_type_5A_state_01:
 	lda	(zp_00)
 	sbc	OBJ_Y,x
 	sec
-	sbc	a:object_type_5A_y_gaps,y
+	sbc	a:stage3_spiked_climber_arm_y_gaps,y
 	beq	@timer
 	bpl	@move_down
 	dec	OBJ_Y,x
@@ -4322,7 +4335,7 @@ object_type_5A_state_01:
 	sta	$1A,x
 	rtl
 
-object_type_5A_state_02:
+stage3_spiked_climber_arm_state_02:
 	lda	a:obj_slots+16*OBJ_SIZE+OBJ_X
 	cmp	OBJ_X,x
 	bcs	@return
@@ -4330,8 +4343,9 @@ object_type_5A_state_02:
 @return:
 	rtl
 
-; Object type $52: not seen. Not identified.
-update_object_type_52:
+; State $0B of update_stage3_spiked_climber; also entry $52 of
+; tbl_object_types, but no type $52 is ever created.
+stage3_spiked_climber_state_0B:
 	lda	a:bg1_x
 	eor	#$FFFF
 	and	#$0100
@@ -5074,7 +5088,7 @@ hoverbike_rider_fire:
 	ldy	#$0440
 	jsl	f:find_free_slot_from_y
 	bcs	@return
-	lda	#$0078
+	lda	#OBJT_HOVERBIKE_RIDER_SHOT
 	sta	a:$0010,y
 	lda	$0A,x
 	adc	#$0020
@@ -5100,7 +5114,7 @@ hoverbike_rider_drop_bomb:
 	ldy	#$0440
 	jsl	f:find_free_slot_from_y
 	bcs	@return
-	lda	#$0076
+	lda	#OBJT_HOVERBIKE_RIDER_BOMB
 	sta	a:$0010,y
 	lda	$0A,x
 	sta	a:$000A,y
@@ -5114,8 +5128,10 @@ hoverbike_rider_drop_bomb:
 @return:
 	rts
 
-; Object type $76: stage 4: projectile. Not identified exactly.
-update_object_type_76:
+; Object type $76: stage 4: bomb dropped by a hover-bike rider
+; (hoverbike_rider_drop_bomb; seen in the emulator): falls to the road, then
+; burns along it (harmful) giving off fire effects.
+update_hoverbike_rider_bomb:
 	lda	OBJ_STATE,x
 	bne	@active
 	inc	OBJ_STATE,x
@@ -5179,8 +5195,9 @@ update_object_type_76:
 @return:
 	rtl
 
-; Object type $78: stage 4: projectile. Not identified exactly.
-update_object_type_78:
+; Object type $78: stage 4: shot of a hover-bike rider (hoverbike_rider_fire;
+; seen in the emulator): flies down at 45 degrees, explodes at y $B0.
+update_hoverbike_rider_shot:
 	lda	OBJ_STATE,x
 	bne	@active
 	inc	OBJ_STATE,x

@@ -24,10 +24,10 @@ m7_matrix_sine_phases:
 	; CDL: not accessed
 	.byte	$00, $01, $00, $00, $00, $00, $00, $01
 ; sin(i * 180 / 256) * $FFFF for i = 0-255 (words, unsigned: callers apply the
-; sign): unused_calc_mode7_matrix, build_wave_table (sign only), @sway in object_type_4E_state_0D.
+; sign): unused_calc_mode7_matrix, build_wave_table (sign only), @sway in stage3_searchlight_craft_state_0D.
 ; The 24 bytes after the table are not read in the traces.
 half_turn_sine:
-	; CDL: read by build_wave_table, object_type_4E_state_0D; partly not accessed
+	; CDL: read by build_wave_table, stage3_searchlight_craft_state_0D; partly not accessed
 	.byte	$00, $00, $24, $03, $48, $06, $6C, $09, $8F, $0C, $B2, $0F, $D4, $12, $F6, $15
 	.byte	$17, $19, $37, $1C, $55, $1F, $73, $22, $8F, $25, $AA, $28, $C3, $2B, $DB, $2E
 	.byte	$F0, $31, $04, $35, $16, $38, $25, $3B, $33, $3E, $3E, $41, $46, $44, $4C, $47
@@ -1421,10 +1421,10 @@ spawn_list_059E36:
 	.byte	$10, $00
 spawn_list_059E40:
 	.byte	$FF, $00
-; update_object_type_55: bg_dma_src of the 4 frames of animated BG tiles ($400
+; update_stage6_bg_tile_animator: bg_dma_src of the 4 frames of animated BG tiles ($400
 ; bytes to VRAM $3A90), by stage_frame_counter / 8.
-object_type_55_tile_frames:
-	; CDL: read by update_object_type_55
+stage6_bg_tile_animator_tile_frames:
+	; CDL: read by update_stage6_bg_tile_animator
 	.byte	$00, $A0, $00, $A4, $00, $A8, $00, $A4
 ; Load lists of update_load_list_trigger (type $07), by field $3A.
 ptrs_trigger_load_lists:
@@ -1912,37 +1912,37 @@ tbl_object_types:
 	.faraddr	update_object_type_3F
 	.faraddr	update_stage3_spiked_climber_core
 	.faraddr	update_stage3_boss
-	.faraddr	update_object_type_42
-	.faraddr	update_object_type_43
+	.faraddr	update_respawn_clamp_trigger
+	.faraddr	update_stage3_breakable_wall
 	.faraddr	update_stage3_robot_cables
 	.faraddr	update_stage3_second_robot
 	.faraddr	update_debris_explosion
 	.faraddr	update_homing_missile
-	.faraddr	update_object_type_48
-	.faraddr	update_object_type_49
+	.faraddr	update_jumping_soldier
+	.faraddr	update_jumping_soldier_spawner
 	.faraddr	update_rolling_mine
 	.faraddr	update_debris_spark
 	.faraddr	update_countdown_bomb
 	.faraddr	update_song_change_trigger
-	.faraddr	update_object_type_4E
+	.faraddr	update_stage3_searchlight_craft
 	.faraddr	update_stage3_winged_bug
 	.faraddr	update_wall_hatch
-	.faraddr	update_object_type_48
-	.faraddr	update_object_type_52
+	.faraddr	update_jumping_soldier
+	.faraddr	stage3_spiked_climber_state_0B
 	.faraddr	update_passive_part
 	.faraddr	update_object_type_04
-	.faraddr	update_object_type_55
-	.faraddr	update_object_type_56
-	.faraddr	update_object_type_57
+	.faraddr	update_stage6_bg_tile_animator
+	.faraddr	update_alien_soldier
+	.faraddr	update_bg2_screen_size_trigger
 	.faraddr	update_heart_boss
-	.faraddr	update_object_type_59
-	.faraddr	update_object_type_5A
+	.faraddr	stage3_spiked_climber_state_08
+	.faraddr	update_stage3_spiked_climber_arm
 	.faraddr	update_wall_worm
 	.faraddr	update_alien_soldier_spawner
 	.faraddr	update_cave_beast
 	.faraddr	update_winged_alien
 	.faraddr	update_face_boss
-	.faraddr	update_object_type_60
+	.faraddr	update_unused_type_60
 	.faraddr	update_floor_mouth
 	.faraddr	update_floor_mouth_bug
 	.faraddr	update_wall_worm_larva
@@ -1950,7 +1950,7 @@ tbl_object_types:
 	.faraddr	update_rideable_missile
 	.faraddr	update_cave_rock
 	.faraddr	update_heart_boss_bug
-	.faraddr	update_enemy_type_68
+	.faraddr	update_heart_boss_crawler
 	.faraddr	update_stage4_boss
 	.faraddr	update_stage4_boss_pod
 	.faraddr	update_destructible_part
@@ -1958,48 +1958,48 @@ tbl_object_types:
 	.faraddr	update_player_bike
 	.faraddr	update_stage4_tank
 	.faraddr	update_brain_boss
-	.faraddr	update_enemy_type_70
+	.faraddr	update_cave_beast_ember
 	.faraddr	update_cave_beast_fireball
 	.faraddr	update_cave_beast_beam
-	.faraddr	update_object_type_73
+	.faraddr	update_jetpack_soldier
 	.faraddr	update_hoverbike_rider
 	.faraddr	update_face_boss_side_head
-	.faraddr	update_object_type_76
+	.faraddr	update_hoverbike_rider_bomb
 	.faraddr	update_face_boss_neck
-	.faraddr	update_object_type_78
+	.faraddr	update_hoverbike_rider_shot
 	.faraddr	update_snake_robot
 	.faraddr	update_lightning_pylon
 	.faraddr	update_lightning_bolt
-	.faraddr	update_enemy_type_7C
+	.faraddr	update_airship_turret
 	.faraddr	update_spiked_mine
-	.faraddr	update_object_type_7E
+	.faraddr	update_airship_hanging_soldier
 	.faraddr	update_airship_gun_arm
-	.faraddr	update_enemy_type_80
+	.faraddr	update_airship_gun_arm_shell
 	.faraddr	update_snake_robot_head
 	.faraddr	update_stage4_boss_shot
 	.faraddr	update_stage4_boss_fireball
 	.faraddr	update_helicopter_rope
-	.faraddr	update_enemy_type_85
+	.faraddr	update_helicopter_rope_boomerang
 	.faraddr	update_trail_segment
 	.faraddr	update_skeleton_eye_fireball
 	.faraddr	update_snake_robot_debris
-	.faraddr	update_object_type_89
+	.faraddr	update_checkpoint_trigger
 	.faraddr	update_brain_boss
 	.faraddr	update_brain_boss_orb_ring
 	.faraddr	update_brain_boss_chain
 	.faraddr	update_winged_alien_tail_tip
-	.faraddr	update_enemy_type_8E
-	.faraddr	update_enemy_type_8F
+	.faraddr	update_brain_boss_spiked_ball
+	.faraddr	update_brain_boss_encircling_orb
 	.faraddr	update_brain_boss_eyeball
 	.faraddr	update_brain_boss_rolling_eye
 	.faraddr	update_brain_boss_orb_arch
 	.faraddr	update_brain_boss_orb
 	.faraddr	update_brain_boss_orb_cluster
 	.faraddr	update_ending_sequence
-	.faraddr	update_enemy_type_96
-	.faraddr	update_enemy_type_97
+	.faraddr	update_ending_creature_claw_segment
+	.faraddr	ending_init_text_screen
 	.faraddr	update_ending_explosion
-	.faraddr	update_enemy_type_99
+	.faraddr	update_unused_type_99
 	.faraddr	update_ending_crowd_member
 	.faraddr	update_ending_crowd_member
 	.faraddr	update_ending_crowd_member
@@ -2611,17 +2611,17 @@ soldier_hp_odds:
 soldier_hp:
 	; CDL: read by init_foot_soldier_with_hp
 	.word	ENEMY_HP($0000), ENEMY_HP($0001), ENEMY_HP($0003)
-; object_type_73_state_00, by field: initial y velocity.
-object_type_73_y_vels:
-	; CDL: read by object_type_73_state_00
+; jetpack_soldier_state_00, by field: initial y velocity.
+jetpack_soldier_y_vels:
+	; CDL: read by jetpack_soldier_state_00
 	.byte	$F8, $FF, $F9, $FF, $FA, $FF
-; object_type_73_state_00: x position.
-object_type_73_x:
-	; CDL: read by object_type_73_state_00
+; jetpack_soldier_state_00: x position.
+jetpack_soldier_x:
+	; CDL: read by jetpack_soldier_state_00
 	.byte	$40, $00, $60, $00, $80, $00
-; object_type_73_state_03: y at which the falling soldier gets y velocity -3.
-object_type_73_bounce_y:
-	; CDL: read by update_objects, object_type_73_state_03; partly not accessed
+; jetpack_soldier_state_03: y at which the falling soldier gets y velocity -3.
+jetpack_soldier_bounce_y:
+	; CDL: read by update_objects, jetpack_soldier_state_03; partly not accessed
 	.byte	$60, $00, $70, $00, $80, $00
 anim_05AFFC:
 	anim_frame	$0020, metasprite_06C5CF, metasprite_06C7FB
@@ -2634,14 +2634,14 @@ anim_05B01A:
 	anim_frame	$0008, metasprite_06C675, metasprite_06C6A4
 	anim_frame	$0008, metasprite_06C686, metasprite_06C6B5
 	anim_goto	anim_05B01A
-; object_type_7E_state_01, by difficulty: frames (+ rnd & $1F) before it
+; airship_hanging_soldier_state_01, by difficulty: frames (+ rnd & $1F) before it
 ; spawns another type $7E.
-object_type_7E_spawn_delays:
-	; CDL: read by object_type_7E_state_01
+airship_hanging_soldier_spawn_delays:
+	; CDL: read by airship_hanging_soldier_state_01
 	.byte	$24, $00, $14, $00, $0C, $00
 ; x of that new type $7E, at random (rnd & 6).
-object_type_7E_spawn_x:
-	; CDL: read by object_type_7E_state_01
+airship_hanging_soldier_spawn_x:
+	; CDL: read by airship_hanging_soldier_state_01
 	.byte	$18, $00, $58, $00, $98, $00, $D8, $00
 ; queue_object_tiles, by field $3A: VRAM address of the BG tiles of a BG-drawn
 ; object.
@@ -3389,18 +3389,18 @@ swing_climb_steps_sub:
 	.byte	$00, $00, $18, $B0, $41, $63, $71, $1C, $5F, $DE, $6F, $AB, $95, $85, $46, $6E
 	.byte	$67, $66, $46, $6E, $95, $85, $6F, $AB, $5F, $DE, $71, $1C, $41, $63, $18, $B0
 ; OBJ_HP of types $48 and $51 (a 4th word unused) by difficulty (easy, normal, hard)
-object_type_48_hp:
-	; CDL: read by object_type_48_state_00; partly not accessed
+jumping_soldier_hp:
+	; CDL: read by jumping_soldier_state_00; partly not accessed
 	.word	ENEMY_HP($0000), ENEMY_HP($0000), ENEMY_HP($0001), ENEMY_HP($0001)
-; object_type_48_set_x_velocity, by difficulty: x velocity towards a target on
+; jumping_soldier_set_x_velocity, by difficulty: x velocity towards a target on
 ; the right (8.8 packed in a word: high byte = OBJ_X_VEL_SUB high byte, low
 ; byte = OBJ_X_VEL).
-object_type_48_speeds_right:
-	; CDL: read by object_type_48_set_x_velocity; partly not accessed
+jumping_soldier_speeds_right:
+	; CDL: read by jumping_soldier_set_x_velocity; partly not accessed
 	.byte	$00, $80, $00, $C0, $01, $00, $01, $40
 ; By difficulty: x velocity towards the left (same packing, negative).
-object_type_48_speeds_left:
-	; CDL: read by update_objects, object_type_48_set_x_velocity; partly not accessed
+jumping_soldier_speeds_left:
+	; CDL: read by update_objects, jumping_soldier_set_x_velocity; partly not accessed
 	.byte	$FF, $80, $FF, $40, $FF, $00, $FE, $C0
 anim_05C926:
 	anim_frame	$0007, metasprite_06C16F, metasprite_06C1E1
@@ -3413,14 +3413,14 @@ anim_05C940:
 anim_05C946:
 	anim_frame	$0002, metasprite_06C1B7, metasprite_06C1B7
 	anim_goto	anim_05C946
-; object_type_49_state_01, by difficulty: objects aimed at a player it spawns
+; jumping_soldier_spawner_state_01, by difficulty: objects aimed at a player it spawns
 ; before state 2.
-object_type_49_burst_counts:
-	; CDL: read by object_type_49_state_01; partly not accessed
+jumping_soldier_spawner_burst_counts:
+	; CDL: read by jumping_soldier_spawner_state_01; partly not accessed
 	.byte	$02, $00, $02, $00, $03, $00, $03, $00
-; object_type_49_state_02, by difficulty: frames before the next burst.
-object_type_49_burst_delays:
-	; CDL: read by object_type_49_state_02; partly not accessed
+; jumping_soldier_spawner_state_02, by difficulty: frames before the next burst.
+jumping_soldier_spawner_burst_delays:
+	; CDL: read by jumping_soldier_spawner_state_02; partly not accessed
 	.byte	$D2, $00, $B4, $00, $96, $00, $78, $00
 ; OBJ_HP of update_rolling_mine by difficulty (easy, normal, hard)
 rolling_mine_hp:
@@ -3466,16 +3466,16 @@ rolling_mine_muzzle_x:
 rolling_mine_muzzle_y:
 	; CDL: read by rolling_mine_state_04
 	.byte	$D8, $FF, $D8, $FF, $E8, $FF, $EC, $FF, $F0, $FF, $EC, $FF, $E8, $FF, $D8, $FF
-; object_type_4E_state_05, by step (field $38): the block list it queues
+; stage3_searchlight_craft_state_05, by step (field $38): the block list it queues
 ; (queue_vram_blocks).
-ptrs_object_type_4E_tile_rows:
-	; CDL: read by object_type_4E_state_05
+ptrs_stage3_searchlight_craft_tile_rows:
+	; CDL: read by stage3_searchlight_craft_state_05
 	.addr	vram_blocks_05CA0C, vram_blocks_05CA1C, vram_blocks_05CA2C, vram_blocks_05CA3C
 	.addr	vram_blocks_05CA4C
-; object_type_4E_state_05, by step: VRAM address of that block list (+$400 on
+; stage3_searchlight_craft_state_05, by step: VRAM address of that block list (+$400 on
 ; the second BG1 screen).
-object_type_4E_tile_row_vram_addrs:
-	; CDL: read by queue_vram_blocks_at_x, object_type_4E_state_05
+stage3_searchlight_craft_tile_row_vram_addrs:
+	; CDL: read by queue_vram_blocks_at_x, stage3_searchlight_craft_state_05
 	.byte	$00, $41, $80, $41, $00, $42, $80, $42, $00, $43
 vram_blocks_05CA0C:
 	.byte	$40, $61, $60, $61, $00, $50
@@ -3492,14 +3492,14 @@ vram_blocks_05CA3C:
 vram_blocks_05CA4C:
 	.byte	$C0, $5F, $E0, $5F, $80, $5F
 	.byte	$A0, $5E, $C0, $5F, $E0, $5F, $80, $5F, $A0, $5E
-; object_type_4E_state_08: 8 bytes copied to $7E:A000 (probably an HDMA
+; stage3_searchlight_craft_state_08: 8 bytes copied to $7E:A000 (probably an HDMA
 ; table).
-object_type_4E_buffer_init:
-	; CDL: read by object_type_4E_state_08
+stage3_searchlight_craft_buffer_init:
+	; CDL: read by stage3_searchlight_craft_state_08
 	.byte	$6D, $08, $A0, $E0, $00, $A1, $00, $00
-; OBJ_HP of update_object_type_4E (the first 3 words; other data follows) by difficulty (easy, normal, hard)
-object_type_4E_hp:
-	; CDL: read by update_objects, queue_vram_blocks_at_x, object_type_4E_state_09; DMA / HDMA; partly not accessed
+; OBJ_HP of update_stage3_searchlight_craft (the first 3 words; other data follows) by difficulty (easy, normal, hard)
+stage3_searchlight_craft_hp:
+	; CDL: read by update_objects, queue_vram_blocks_at_x, stage3_searchlight_craft_state_09; DMA / HDMA; partly not accessed
 	.byte	$40, $00, $48, $00, $50, $00, $58, $00
 vram_blocks_05CA6C:
 	.byte	$60, $B8, $80, $B8, $E0, $B8, $00, $B9
@@ -3532,30 +3532,30 @@ stage3_winged_bug_spawn_masks:
 	; CDL: read by stage3_winged_bug_state_00; partly not accessed
 	.byte	$9F, $00, $2F, $00, $07, $00, $00, $00, $04, $00, $08, $00
 ; OBJ_HP of types $56 and $24 (a 4th word unused) by difficulty (easy, normal, hard)
-object_type_56_hp:
-	; CDL: read by object_type_56_state_00; partly not accessed
+alien_soldier_hp:
+	; CDL: read by alien_soldier_state_00; partly not accessed
 	.word	ENEMY_HP($0001), ENEMY_HP($0002), ENEMY_HP($0003), ENEMY_HP($0004)
-; object_type_56_set_velocity: x velocity fraction walking right. The code
+; alien_soldier_set_velocity: x velocity fraction walking right. The code
 ; loads Y with the difficulty but reads the first entry only.
-object_type_56_x_vel_subs_right:
-	; CDL: read by object_type_56_set_velocity; partly not accessed
+alien_soldier_x_vel_subs_right:
+	; CDL: read by alien_soldier_set_velocity; partly not accessed
 	.byte	$00, $00, $00, $80, $00, $00, $00, $00
 ; x velocity walking right (first entry only, see above).
-object_type_56_x_vels_right:
-	; CDL: read by object_type_56_set_velocity; partly not accessed
+alien_soldier_x_vels_right:
+	; CDL: read by alien_soldier_set_velocity; partly not accessed
 	.byte	$02, $00, $02, $00, $03, $00, $03, $00
 ; x velocity fraction walking left (first entry only).
-object_type_56_x_vel_subs_left:
-	; CDL: read by object_type_56_set_velocity; partly not accessed
+alien_soldier_x_vel_subs_left:
+	; CDL: read by alien_soldier_set_velocity; partly not accessed
 	.byte	$00, $00, $00, $80, $00, $00, $00, $00
 ; x velocity walking left (first entry only).
-object_type_56_x_vels_left:
-	; CDL: read by object_type_56_set_velocity; partly not accessed
+alien_soldier_x_vels_left:
+	; CDL: read by alien_soldier_set_velocity; partly not accessed
 	.byte	$FE, $FF, $FD, $FF, $FD, $FF, $FD, $FF
-; object_type_56_state_01, by OBJ_FACING: x velocity when it jumps (y velocity
+; alien_soldier_state_01, by OBJ_FACING: x velocity when it jumps (y velocity
 ; -3) off a ledge.
-object_type_56_jump_x_vels:
-	; CDL: read by update_objects, object_type_56_state_01
+alien_soldier_jump_x_vels:
+	; CDL: read by update_objects, alien_soldier_state_01
 	.byte	$02, $00, $FE, $FF
 anim_05CAF7:
 	anim_frame	$0007, metasprite_06C299, metasprite_06C408
@@ -3568,8 +3568,8 @@ anim_05CB11:
 	anim_goto	anim_05CB11
 ; By OBJ_FACING: metasprite given to start_dying_soldier_sound_0E (types $56
 ; and $24).
-object_type_56_dying_sprites:
-	; CDL: read by update_object_type_56
+alien_soldier_dying_sprites:
+	; CDL: read by update_alien_soldier
 	.addr	metasprite_06C2E9
 	.addr	metasprite_06C458
 ; update_alien_soldier_spawner, by difficulty: frames (+ rnd) between alien
@@ -3630,26 +3630,26 @@ stage3_spiked_climber_segment_slots:
 	; CDL: read by stage3_spiked_climber_state_0A
 	.byte	$00, $06, $C0, $05, $80, $05, $40, $05, $00, $05, $40, $03, $C0, $04, $80, $04
 	.byte	$40, $04, $00, $04, $C0, $03
-; object_type_5A_state_00, by field $38: x offset from the climber (slot
+; stage3_spiked_climber_arm_state_00, by field $38: x offset from the climber (slot
 ; $0440).
-object_type_5A_x_offsets:
-	; CDL: read by object_type_5A_state_00
+stage3_spiked_climber_arm_x_offsets:
+	; CDL: read by stage3_spiked_climber_arm_state_00
 	.byte	$48, $00, $38, $00, $28, $00, $18, $00, $08, $00, $08, $00, $18, $00, $28, $00
 	.byte	$38, $00, $48, $00, $00, $00
-; object_type_5A_state_00, by field $38: y offset from the climber.
-object_type_5A_y_offsets:
-	; CDL: read by object_type_5A_state_00
+; stage3_spiked_climber_arm_state_00, by field $38: y offset from the climber.
+stage3_spiked_climber_arm_y_offsets:
+	; CDL: read by stage3_spiked_climber_arm_state_00
 	.byte	$94, $FF, $A4, $FF, $B4, $FF, $C4, $FF, $D4, $FF, $18, $00, $28, $00, $38, $00
 	.byte	$48, $00, $58, $00, $00, $00
-; object_type_5A_state_01, by field $32: address of the OBJ_Y the spikes
+; stage3_spiked_climber_arm_state_01, by field $32: address of the OBJ_Y the spikes
 ; follow (slots $0600 and $03C0).
-object_type_5A_anchor_y_addrs:
-	; CDL: read by object_type_5A_state_01
+stage3_spiked_climber_arm_anchor_y_addrs:
+	; CDL: read by stage3_spiked_climber_arm_state_01
 	.byte	$0E, $06, $CE, $03
-; object_type_5A_state_01, by field $38 + $30: distance kept above that OBJ_Y
+; stage3_spiked_climber_arm_state_01, by field $38 + $30: distance kept above that OBJ_Y
 ; (moved 1 pixel per frame towards it).
-object_type_5A_y_gaps:
-	; CDL: read by update_objects, object_type_5A_state_01; partly not accessed
+stage3_spiked_climber_arm_y_gaps:
+	; CDL: read by update_objects, stage3_spiked_climber_arm_state_01; partly not accessed
 	.byte	$C8, $00, $B8, $00, $A8, $00, $98, $00, $88, $00, $40, $00, $30, $00, $20, $00
 	.byte	$10, $00, $00, $00, $5C, $00, $00, $00, $F8, $FF, $F0, $FF, $E8, $FF, $E0, $FF
 	.byte	$A0, $FF, $98, $FF, $90, $FF, $88, $FF, $80, $FF, $B8, $FF
@@ -3658,7 +3658,7 @@ anim_05CC0B:
 	anim_frame	$0002, metasprite_06B9E5, metasprite_06B9CF
 	anim_goto	anim_05CC0B
 ; stage3_spiked_climber_state_0A: field $3A of the same 10 slots, the x
-; acceleration fraction that update_object_type_5A adds to OBJ_X_VEL_SUB each
+; acceleration fraction that update_stage3_spiked_climber_arm adds to OBJ_X_VEL_SUB each
 ; frame.
 stage3_spiked_climber_segment_x_accel_subs:
 	; CDL: read by stage3_spiked_climber_state_0A
@@ -5846,33 +5846,33 @@ anim_05EE68:
 face_boss_larva_hp:
 	; CDL: read by face_boss_larva_state_00; partly not accessed
 	.word	ENEMY_HP($0002), ENEMY_HP($0004), ENEMY_HP($0008)
-; enemy_type_68_state_00: OBJ_HP by difficulty; the start velocity, sprite,
-; gravity (enemy_type_68_gravity) and landing y (on the ceiling y $48 or the
+; heart_boss_crawler_state_00: OBJ_HP by difficulty; the start velocity, sprite,
+; gravity (heart_boss_crawler_gravity) and landing y (on the ceiling y $48 or the
 ; floor y $B8) by field $30 (0: going down, 2: going up).
-enemy_type_68_hp:
-	; CDL: read by enemy_type_68_state_00
+heart_boss_crawler_hp:
+	; CDL: read by heart_boss_crawler_state_00
 	.word	ENEMY_HP($0000), ENEMY_HP($0002), ENEMY_HP($0004)
-enemy_type_68_start_y_vels:
-	; CDL: read by enemy_type_68_state_00
+heart_boss_crawler_start_y_vels:
+	; CDL: read by heart_boss_crawler_state_00
 	.byte	$FC, $FF, $04, $00
-enemy_type_68_start_y_vel_subs:
-	; CDL: read by enemy_type_68_state_00
+heart_boss_crawler_start_y_vel_subs:
+	; CDL: read by heart_boss_crawler_state_00
 	.byte	$00, $00, $00, $00
-enemy_type_68_sprites:
-	; CDL: read by enemy_type_68_state_00
+heart_boss_crawler_sprites:
+	; CDL: read by heart_boss_crawler_state_00
 	.addr	metasprite_06C2FE, metasprite_06C33A
-enemy_type_68_gravity:
-	; CDL: read by enemy_type_68_state_01
+heart_boss_crawler_gravity:
+	; CDL: read by heart_boss_crawler_state_01
 	.byte	$00, $00, $FF, $FF
-enemy_type_68_gravity_subs:
-	; CDL: read by enemy_type_68_state_01
+heart_boss_crawler_gravity_subs:
+	; CDL: read by heart_boss_crawler_state_01
 	.byte	$00, $40, $00, $C0
-enemy_type_68_landing_y:
-	; CDL: read by enemy_type_68_check_landed
+heart_boss_crawler_landing_y:
+	; CDL: read by heart_boss_crawler_check_landed
 	.byte	$B8, $00, $48, $00
 ; Walking animation on the floor and on the ceiling.
-enemy_type_68_walk_anims:
-	; CDL: read by update_objects, enemy_type_68_check_landed; partly not accessed
+heart_boss_crawler_walk_anims:
+	; CDL: read by update_objects, heart_boss_crawler_check_landed; partly not accessed
 	.addr	anim_05EEC2, anim_05EEDC
 anim_05EEC2:
 	anim_frame	$0004, metasprite_06C307, metasprite_06C307
@@ -6212,32 +6212,32 @@ snake_robot_midpoint_slots:
 	.byte	$C0, $03, $00, $04, $00, $04, $40, $04, $00, $04, $80, $03, $80, $03, $40, $03
 	.byte	$80, $03, $40, $06, $00, $06, $00, $06, $C0, $05, $00, $06, $80, $06, $80, $06
 	.byte	$C0, $06, $80, $06
-; enemy_type_7C_state_00: OBJ_TIMER by field $3A. enemy_type_7C_state_03 aims
-; at a player (3 frames, enemy_type_7C_aim_frames) and fires enemy bullets
-; from the gun offsets (enemy_type_7C_gun_x_offsets,
-; enemy_type_7C_gun_y_offsets): a gun turret.
-enemy_type_7C_delays:
-	; CDL: read by enemy_type_7C_state_00
+; airship_turret_state_00: OBJ_TIMER by field $3A. airship_turret_state_03 aims
+; at a player (3 frames, airship_turret_aim_frames) and fires enemy bullets
+; from the gun offsets (airship_turret_gun_x_offsets,
+; airship_turret_gun_y_offsets): a gun turret.
+airship_turret_delays:
+	; CDL: read by airship_turret_state_00
 	.byte	$60, $00, $40, $00, $80, $00
-enemy_type_7C_frame_tiles:
-	; CDL: read by enemy_type_7C_draw_frame
+airship_turret_frame_tiles:
+	; CDL: read by airship_turret_draw_frame
 	.byte	$A0, $5A
-enemy_type_7C_frame_tiles_b:
-	; LAYOUT: read on from enemy_type_7C_frame_tiles (lda a:enemy_type_7C_frame_tiles,y)
-	; CDL: read by enemy_type_7C_draw_frame
+airship_turret_frame_tiles_b:
+	; LAYOUT: read on from airship_turret_frame_tiles (lda a:airship_turret_frame_tiles,y)
+	; CDL: read by airship_turret_draw_frame
 	.byte	$00, $50, $C0, $5A, $00, $50, $E0, $5A, $00, $5B, $20, $5B, $40, $5B, $20, $5B
 	.byte	$40, $5B, $20, $5B, $80, $5B, $20, $5B, $60, $5B, $A0, $5B, $C0, $5B
-enemy_type_7C_aim_frames:
-	; CDL: read by enemy_type_7C_state_03
+airship_turret_aim_frames:
+	; CDL: read by airship_turret_state_03
 	.byte	$18, $00, $10, $00, $14, $00
-enemy_type_7C_gun_y_offsets:
-	; CDL: read by enemy_type_7C_state_03
+airship_turret_gun_y_offsets:
+	; CDL: read by airship_turret_state_03
 	.byte	$03, $00, $04, $00, $00, $00
-enemy_type_7C_gun_x_offsets:
-	; CDL: read by enemy_type_7C_state_03
+airship_turret_gun_x_offsets:
+	; CDL: read by airship_turret_state_03
 	.byte	$1E, $00, $0C, $00, $00, $00
-enemy_type_7C_vram_addrs:
-	; CDL: read by enemy_type_7C_draw_frame
+airship_turret_vram_addrs:
+	; CDL: read by airship_turret_draw_frame
 	.byte	$84, $40, $9C, $44, $8C, $40
 ; update_lightning_pylon: VRAM address of the pylon's BG tiles by field $3A,
 ; cleared when it is destroyed (not seen: the pylons are hard to destroy).
@@ -6258,7 +6258,7 @@ lightning_pylon_fire_delays:
 .if CHEAT_ENEMY_HP = 100
 lightning_pylon_hp:
 .endif
-	; CDL: read by update_objects, update_lightning_pylon, update_enemy_type_80; partly not accessed
+	; CDL: read by update_objects, update_lightning_pylon, update_airship_gun_arm_shell; partly not accessed
 	.byte	$40, $00, $60, $00, $FF, $7F	; cheats: see cheat_enemy_hp_tables
 vram_blocks_05F272:
 	.byte	$C0, $59, $00, $50, $00, $50
@@ -6310,15 +6310,15 @@ anim_05F32D:
 	anim_frame	$0004, metasprite_06CB72, metasprite_06CB7C
 	anim_frame	$0004, metasprite_06CB77, metasprite_06CB81
 	anim_goto	anim_05F32D
-; update_enemy_type_85: initial x velocity and x acceleration, by OBJ_FACING.
-enemy_type_85_x_vels:
-	; CDL: read by update_enemy_type_85
+; update_helicopter_rope_boomerang: initial x velocity and x acceleration, by OBJ_FACING.
+helicopter_rope_boomerang_x_vels:
+	; CDL: read by update_helicopter_rope_boomerang
 	.byte	$07, $00, $F9, $FF
-enemy_type_85_x_accel_subs:
-	; CDL: read by update_enemy_type_85
+helicopter_rope_boomerang_x_accel_subs:
+	; CDL: read by update_helicopter_rope_boomerang
 	.byte	$00, $C0, $00, $40
-enemy_type_85_x_accels:
-	; CDL: read by update_enemy_type_85; partly not accessed
+helicopter_rope_boomerang_x_accels:
+	; CDL: read by update_helicopter_rope_boomerang; partly not accessed
 	.byte	$FF, $FF, $00, $00
 text_sound_check_mode:
 	.byte	$08, $59, $4D, $4A, $4F, $49, $3F, $00, $3E, $43, $40, $3E
@@ -6588,9 +6588,9 @@ ending_creature_arm_aim_turns:
 hdma_list_05F8A0:
 	hdma_channel_ind	$4370, $42, $10, $7EE800, $7E
 	hdma_channels_end	$80
-; update_enemy_type_96: sprite by an angle / 32.
+; update_ending_creature_claw_segment: sprite by an angle / 32.
 ending_claw_segment_sprites:
-	; CDL: read by setup_stage_hdma, update_enemy_type_96
+	; CDL: read by setup_stage_hdma, update_ending_creature_claw_segment
 	.addr	metasprite_06C59C
 	.addr	metasprite_06C5BE, metasprite_06C5AD, metasprite_06C4F2
 ; ending_creature_feed_arm: x of each arm root.

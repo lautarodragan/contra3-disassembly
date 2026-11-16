@@ -16,17 +16,17 @@ be deliberate is under [Other oddities](#other-oddities) instead.
 
 ### The stage 6 alien soldiers ignore the difficulty
 
-`object_type_56_set_velocity` sets the walking speed of object type `$56`,
+`alien_soldier_set_velocity` sets the walking speed of object type `$56`,
 the alien soldiers that `update_alien_soldier_spawner` sends in from the
 edges of the screen on stage 6. It loads `difficulty` into Y and then
-reads `object_type_56_x_vel_subs_right` / `object_type_56_x_vels_right`
+reads `alien_soldier_x_vel_subs_right` / `alien_soldier_x_vels_right`
 (or the `_left` pair) **without** the `,y` index:
 
 ```
 	ldy	difficulty
-	lda	a:object_type_56_x_vel_subs_right	; no ,y
+	lda	a:alien_soldier_x_vel_subs_right	; no ,y
 	sta	$18,x
-	lda	a:object_type_56_x_vels_right	; no ,y
+	lda	a:alien_soldier_x_vels_right	; no ,y
 	sta	$1A,x
 ```
 
@@ -206,7 +206,7 @@ and other routines of the engine that nothing calls.
   `unused_dma_list_*` / `unused_vram_dma_*` records (32 of them) at the
   start of bank `$05`.
 - Every HDMA preset of `ptrs_hdma_presets` but preset 1.
-- The fourth word of `object_type_56_hp`, entry 0 of
+- The fourth word of `alien_soldier_hp`, entry 0 of
   `ptrs_palette_anim_first`, the second half of
   `stage2_boss_pod_offsets_x`.
 - RAM that is written but never read by name: `zp_38`, `wram_167C`, `wram_167E`,
@@ -355,7 +355,7 @@ path with a `brl` into the player collision code in another file
 `$01`), a tail call that works because both end in `rtl`.
 
 **Object type `$97` is not an object.** Its entry in the handler table,
-`update_enemy_type_97`, is really the setup of the ending's text screen,
+`ending_init_text_screen`, is really the setup of the ending's text screen,
 called with `jsr` by `ending_sequence_state_1E`; it ends with `rts`, so
 spawning a type `$97` object (handlers are called with `jsl`) would crash.
 Nothing spawns one ([Enemies and bosses](enemies-late.md)).

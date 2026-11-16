@@ -1695,9 +1695,11 @@ update_soldier_spawner:
 	plx
 	rtl
 
-; Object type $73: stage 4: soldier dropping onto the road (HP 6); dies as
-; type $1B.
-update_object_type_73:
+; Object type $73: stage 4, under the airship: a jetpack soldier (seen in the
+; emulator): flies up from below the screen trailing flame (effects), hovers
+; and fires (HP 2/4/6); dies as type $1B. Spawned by the airship's hanging
+; soldier leader (update_airship_hanging_soldier).
+update_jetpack_soldier:
 	lda	a:clear_enemies_timer
 	bne	@clearing
 	lda	OBJ_HP,x
@@ -1720,17 +1722,17 @@ update_object_type_73:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_73_states,x
+	lda	f:tbl_jetpack_soldier_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_73_states:
-	.addr	object_type_73_state_00
-	.addr	object_type_73_state_01
-	.addr	object_type_73_state_02
-	.addr	object_type_73_state_03
+tbl_jetpack_soldier_states:
+	.addr	jetpack_soldier_state_00
+	.addr	jetpack_soldier_state_01
+	.addr	jetpack_soldier_state_02
+	.addr	jetpack_soldier_state_03
 
-object_type_73_state_00:
+jetpack_soldier_state_00:
 	inc	OBJ_STATE,x
 	lda	#.loword(metasprite_06C5CF)
 	sta	OBJ_SPRITE,x
@@ -1755,14 +1757,14 @@ object_type_73_state_00:
 	sta	$0E,x
 	stz	$32,x
 	stz	$34,x
-	lda	a:object_type_73_y_vels,y
+	lda	a:jetpack_soldier_y_vels,y
 	sta	$1E,x
-	lda	a:object_type_73_x,y
+	lda	a:jetpack_soldier_x,y
 	sta	$0A,x
 	lda	#$0015
 	jml	f:queue_sound
 
-object_type_73_state_01:
+jetpack_soldier_state_01:
 	clc
 	lda	OBJ_X_VEL_SUB,x
 	adc	#$2000
@@ -1805,7 +1807,7 @@ object_type_73_state_01:
 @return:
 	rtl
 
-object_type_73_state_02:
+jetpack_soldier_state_02:
 	sec
 	lda	OBJ_X_VEL_SUB,x
 	sbc	#$6000
@@ -1818,7 +1820,7 @@ object_type_73_state_02:
 @return:
 	rtl
 
-object_type_73_state_03:
+jetpack_soldier_state_03:
 	stz	zp_00
 	stz	zp_02
 	lda	OBJ_Y_VEL,x
@@ -1837,7 +1839,7 @@ object_type_73_state_03:
 	lda	$32,x
 	bne	@count_down
 	lda	$0E,x
-	cmp	a:object_type_73_bounce_y,y
+	cmp	a:jetpack_soldier_bounce_y,y
 	bcc	@decelerate
 	lda	#$FFFD	; [num]
 	sta	$1E,x
@@ -1921,8 +1923,14 @@ object_type_73_state_03:
 @return:
 	rtl
 
-; Object type $7E: stage 4: soldier (HP 128); dies as type $1B.
-update_object_type_7E:
+; Object type $7E: stage 4: soldiers hanging from the airship's hull (seen in
+; the emulator). The one placed by the airship spawn list (state 0, HP 128,
+; field $34 = 1) swings along the hull, spawns more of them (they drop from
+; the top of the screen onto the hull, state 4) and jetpack soldiers (type
+; $73); killing it clears the others (clear_enemies_timer). The others hang,
+; move towards a player, drop onto the road and run off (states 4-7). Dies as
+; type $1B.
+update_airship_hanging_soldier:
 	lda	a:clear_enemies_timer
 	bne	@die
 	lda	OBJ_HP,x
@@ -1944,22 +1952,22 @@ update_object_type_7E:
 	phx
 	asl	a
 	tax
-	lda	f:tbl_object_type_7E_states,x
+	lda	f:tbl_airship_hanging_soldier_states,x
 	plx
 	sta	zp_00
 	jmp	(zp_00)
-tbl_object_type_7E_states:
-	.addr	object_type_7E_state_00
-	.addr	object_type_7E_state_01
-	.addr	object_type_7E_state_02
-	.addr	object_type_7E_state_03
-	.addr	object_type_7E_state_04
-	.addr	object_type_7E_state_05
-	.addr	object_type_7E_state_06
-	.addr	object_type_7E_state_07
+tbl_airship_hanging_soldier_states:
+	.addr	airship_hanging_soldier_state_00
+	.addr	airship_hanging_soldier_state_01
+	.addr	airship_hanging_soldier_state_02
+	.addr	airship_hanging_soldier_state_03
+	.addr	airship_hanging_soldier_state_04
+	.addr	airship_hanging_soldier_state_05
+	.addr	airship_hanging_soldier_state_06
+	.addr	airship_hanging_soldier_state_07
 
-object_type_7E_state_00:
-	jsl	f:object_type_7E_state_03
+airship_hanging_soldier_state_00:
+	jsl	f:airship_hanging_soldier_state_03
 	lda	#$0600
 	sta	$02,x
 	lda	#ENEMY_HP($0080)
@@ -1973,7 +1981,7 @@ object_type_7E_state_00:
 	inc	$34,x
 	rtl
 
-object_type_7E_state_02:
+airship_hanging_soldier_state_02:
 	sec
 	lda	#$0080
 	sbc	a:bg1_y
@@ -1994,7 +2002,7 @@ object_type_7E_state_02:
 	lda	$1A,x
 	bpl	@accelerate_left
 	cmp	#$FFFD	; [num]
-	bcc	object_type_7E_state_01
+	bcc	airship_hanging_soldier_state_01
 @accelerate_left:
 	sec
 	lda	$18,x
@@ -2003,12 +2011,12 @@ object_type_7E_state_02:
 	lda	$1A,x
 	sbc	#$0000
 	sta	$1A,x
-	bra	object_type_7E_state_01
+	bra	airship_hanging_soldier_state_01
 @accelerate_right:
 	lda	$1A,x
 	bmi	@add_right
 	cmp	#$0003
-	bcs	object_type_7E_state_01
+	bcs	airship_hanging_soldier_state_01
 @add_right:
 	clc
 	lda	$18,x
@@ -2018,7 +2026,7 @@ object_type_7E_state_02:
 	adc	#$0000
 	sta	$1A,x
 
-object_type_7E_state_01:
+airship_hanging_soldier_state_01:
 	lda	OBJ_X,x
 	cmp	#$00E0
 	bcc	@check_left_edge
@@ -2054,31 +2062,31 @@ object_type_7E_state_01:
 	ldy	difficulty
 	lda	rng_lo
 	and	#$001F
-	adc	a:object_type_7E_spawn_delays,y
+	adc	a:airship_hanging_soldier_spawn_delays,y
 	sta	$36,x
 	phx
 	ldx	#$06C0
 	jsl	f:find_free_slot_x_down
 	bcc	@no_slot
-	jsl	f:object_type_7E_reset_sprite
-	lda	#$007E
+	jsl	f:airship_hanging_soldier_reset_sprite
+	lda	#OBJT_AIRSHIP_HANGING_SOLDIER
 	sta	$10,x
 	lda	#$0004
 	sta	$12,x
 	lda	rng_lo
 	and	#$0006
 	tay
-	lda	a:object_type_7E_spawn_x,y
+	lda	a:airship_hanging_soldier_spawn_x,y
 	sta	$0A,x
 @no_slot:
 	plx
 @fall:
-	bra	object_type_7E_state_04
+	bra	airship_hanging_soldier_state_04
 
-object_type_7E_state_03:
+airship_hanging_soldier_state_03:
 	inc	OBJ_STATE,x
 
-object_type_7E_reset_sprite:
+airship_hanging_soldier_reset_sprite:
 	lda	#$0001
 	sta	$16,x
 	lda	#.loword(metasprite_06C697)
@@ -2093,7 +2101,7 @@ object_type_7E_reset_sprite:
 	stz	$34,x
 	rtl
 
-object_type_7E_state_04:
+airship_hanging_soldier_state_04:
 	clc
 	lda	OBJ_Y_VEL_SUB,x
 	adc	#$2000
@@ -2119,7 +2127,7 @@ object_type_7E_state_04:
 @return:
 	rtl
 
-object_type_7E_state_05:
+airship_hanging_soldier_state_05:
 	sec
 	lda	#$0080
 	sbc	a:bg1_y
@@ -2147,7 +2155,7 @@ object_type_7E_state_05:
 	sty	$1A,x
 	rtl
 
-object_type_7E_state_06:
+airship_hanging_soldier_state_06:
 	clc
 	lda	OBJ_Y_VEL_SUB,x
 	adc	#$3000
@@ -2172,7 +2180,7 @@ object_type_7E_state_06:
 @return:
 	rtl
 
-object_type_7E_state_07:
+airship_hanging_soldier_state_07:
 	rtl
 
 ; Object type $0D: gun turret that rises out of the rubble (stage 1, HP 16;
@@ -3427,8 +3435,11 @@ update_bouncing_debris:
 	stz	$1C,x
 	rtl
 
-; Object type $43: stage 3 section 9, HP 64. Not identified.
-update_object_type_43:
+; Object type $43: stage 3 section 9: the grey wall closing the way into the
+; building (seen in the emulator), solid for the players, HP 64. Destroyed: an
+; explosion burst, BG blocks erase it and the scroll resumes
+; (bg1_scroll_mode 1).
+update_stage3_breakable_wall:
 	lda	OBJ_STATE,x
 	bne	@active
 	inc	OBJ_STATE,x
