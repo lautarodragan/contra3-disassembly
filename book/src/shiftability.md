@@ -174,13 +174,15 @@ run of the 29):
 make shift-test SHIFT=alt
 make shift-test SHIFT=max
 make shift-test SHIFT_FLAGS="--files 8"
-make shift-test SHIFT_FLAGS="--labels 0.3 --seed 1"     # 611 data labels moved
+make shift-test SHIFT_FLAGS="--labels 0.3 --seed 1"     # 607 data labels moved
 make shift-test SHIFT_FLAGS="--labels 0.3 --seed 2"     # 628
 make shift-test SHIFT=alt SHIFT_FLAGS="--labels 0.3 --seed 3 --files 4"
 make shift-test SHIFT_FLAGS="--labels 0.5 --seed 4 --files 1"
 ```
 
-In the top-down split screen (the play stage2_2p) some checkpoints differ in a
+(Each `--labels` run passed when last run; adding a `LAYOUT:` comment
+changes which labels a seed picks.) In the top-down split screen (the
+play stage2_2p) some checkpoints differ in a
 few pixels and are reported as tolerated (see above). The full banks have
 little free space, so each `--labels` seed moves only some 60 of bank
 `$05`'s 1,000 labels: other seeds may still find a table read past its
