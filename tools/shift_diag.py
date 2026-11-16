@@ -29,7 +29,9 @@ With --fillers it only runs the shifted build, to the end of the scenario,
 and lists every filler byte of the shift test that was read, with the
 label after it: in a `--labels` build that is a table read past its end
 into the next block (mark the next label LAYOUT) or a label inside a
-block.
+block.  A 16-bit read of a block's last byte also touches the filler after
+it and is harmless when the high byte is dropped (draw_text reads its
+characters so): those are left out.
 """
 import argparse
 import bisect
@@ -181,9 +183,13 @@ def report_fillers(args, private, mapping):
     reads = q.get()
     p.join()
     found = {}
+    harmless = {v for n, v in shifted.labels.items() if n == "draw_text_common"}
     for off, rd in reads:
         if mapping.get(off, -1) != -1:
             continue
+        r = shifted.line_at((rd - 1) & 0xFFFFFF) if rd else None
+        if r and "lda\ta:$0000,x" in open(r[0]).read().split("\n")[r[1] - 1] and "vram.asm" in r[0]:
+            continue        # draw_text's 16-bit character read
         addr = lorom_addr(off)
         i = bisect.bisect_right(lv, addr)
         after = labs[i][1] if i < len(labs) else "?"

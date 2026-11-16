@@ -238,21 +238,16 @@ text_stage_1:
 	.byte	$6D, $5A
 	.byte	$4D, $4E, $3C, $42, $40, $00, $02, $FF
 text_stage_2:
-	; LAYOUT: a shift test read the byte before this string while drawing it (draw_text); kept after the one before
 	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00
 	.byte	$03, $FF
 text_stage_3:
-	; LAYOUT: a shift test read the byte before this string while drawing it (draw_text); kept after the one before
 	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00, $04, $FF
 text_stage_4:
-	; LAYOUT: the string before goes on into this line ($FE, new line)
 	.byte	$6D, $5A, $4D, $4E
 	.byte	$3C, $42, $40, $00, $05, $FF
 text_stage_5:
-	; LAYOUT: a shift test read the byte before this string while drawing it (draw_text); kept after the one before
 	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00, $06, $FF
 text_stage_6:
-	; LAYOUT: a shift test read the byte before this string while drawing it (draw_text); kept after the one before
 	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00, $07, $FF
 text_game_over:
 	.byte	$2C, $5A, $42, $3C, $48, $40
@@ -357,7 +352,6 @@ text_2_players_b:
 text_option:
 	.byte	$EC, $5A, $4A, $0B, $4E, $44, $4A, $49, $FF
 ptrs_0585CB:
-	; LAYOUT: the string before goes on into this line ($FE, new line)
 	.addr	load_list_0585D1
 	.addr	load_list_058623
 	.addr	load_list_058687
@@ -467,7 +461,6 @@ text_05879F:
 text_0587A3:
 	.byte	$30, $00, $8C, $FF
 text_0587A7:
-	; LAYOUT: a shift test read the byte before this string while drawing it (draw_text); kept after the one before
 	.byte	$30, $00, $8E, $FF
 load_list_0587AB:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk (+2 more)
@@ -560,7 +553,6 @@ palette_task_058889:
 text_hi_score:
 	.byte	$6C, $58, $43, $44, $00, $4D, $3E, $4A, $4C, $40, $FF
 text_1p_score:
-	; LAYOUT: a shift test read the byte before this string while drawing it (draw_text); kept after the one before
 	.byte	$E3, $58, $02, $0B, $00
 	.byte	$4D, $3E, $4A, $4C, $40, $FF
 text_rest_03:
@@ -577,6 +569,7 @@ text_stage_clear_bonus:
 ; is the end of the string above ("S" and $FF), and entry 6 is also entry 0 of
 ; ptrs_0588ED: the tables overlap.
 ptrs_0588E1:
+	; LAYOUT: the end of text_stage_clear_bonus (see above)
 	.byte	$4D, $FF
 	.addr	load_list_058A93
 	.addr	load_list_05CF4A
@@ -615,7 +608,6 @@ data_05892E:
 text_stereo:
 	.byte	$12, $5A, $4D, $4E, $40, $4C, $40, $4A, $00, $00, $FF
 text_monaural:
-	; LAYOUT: a shift test read the byte before this string while drawing it (draw_text); kept after the one before
 	.byte	$12
 	.byte	$5A, $48, $4A, $49, $3C, $4F, $4C, $3C, $47, $FF
 text_option_mode:
@@ -625,7 +617,6 @@ text_player:
 	.byte	$8A, $59, $0B, $47, $3C, $53, $40, $4C
 	.byte	$FF
 text_level:
-	; LAYOUT: the string before goes on into this line ($FE, new line)
 	.byte	$CA, $59, $47, $40, $50, $40, $47, $FF
 text_sound:
 	.byte	$0A, $5A, $4D, $4A, $4F, $49, $3F
@@ -2124,6 +2115,7 @@ data_05AAD4:
 	; CDL: read by spawn_stage1_boss_parts
 	.byte	$10, $00, $3C, $00, $10, $00
 data_05AADA:
+	; LAYOUT: read on from the block before (DMA)
 	; CDL: read by spawn_stage1_boss_parts
 	.byte	$29, $00, $1F, $00, $20, $00
 data_05AAE0:
@@ -2162,6 +2154,7 @@ stage1_boss_shell_hp:
 	; CDL: read by spawn_stage1_boss_parts; DMA / HDMA
 	.byte	$80, $00, $00, $01, $FF, $7F	; cheats: see cheat_enemy_hp_tables
 data_05AB46:
+	; LAYOUT: read on from the block before (DMA)
 	; CDL: read by update_stage1_boss_tracking_shot; DMA / HDMA
 	.byte	$00, $04, $00, $06, $00, $08
 data_05AB4C:
@@ -2171,6 +2164,7 @@ data_05AB52:
 	; CDL: read by stage1_boss_attack_fire; partly not accessed
 	.byte	$40, $00, $80, $00, $00, $01
 data_05AB58:
+	; LAYOUT: read on from the block before (DMA)
 	; CDL: read by song_change_state_00; partly not accessed
 	.byte	$00, $00, $00, $00, $80, $00, $00, $00, $03, $00, $04, $00
 data_05AB64:
@@ -2183,14 +2177,17 @@ data_05AB6C:
 	; CDL: read by update_player_bike
 	.byte	$00, $02, $40, $02
 data_05AB70:
+	; LAYOUT: read on from the block before (DMA)
 	; CDL: read by player_bike_state_00
 	.byte	$00, $3A, $00, $3C
 data_05AB74:
+	; LAYOUT: read on from the block before (DMA)
 	; CDL: read by set_player_box_jumping
 	.byte	$FF, $FF, $FC, $FF
 ; By respawn mode (wram_1672): the player state, pose and y velocity after
 ; respawning (respawn_player).
 respawn_states:
+	; LAYOUT: read on from the block before (DMA)
 	; CDL: read by respawn_player
 	.byte	$04, $04, $02, $04, $04, $12, $04, $04, $04
 respawn_poses:
