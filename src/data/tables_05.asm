@@ -24,7 +24,7 @@ m7_matrix_sine_phases:
 	; CDL: not accessed
 	.byte	$00, $01, $00, $00, $00, $00, $00, $01
 ; sin(i * 180 / 256) * $FFFF for i = 0-255 (words, unsigned: callers apply the
-; sign): unused_calc_mode7_matrix, build_wave_table (sign only), loc_01E16F.
+; sign): unused_calc_mode7_matrix, build_wave_table (sign only), @sway in object_type_4E_state_0D.
 ; The 24 bytes after the table are not read in the traces.
 half_turn_sine:
 	; CDL: read by build_wave_table, object_type_4E_state_0D; partly not accessed

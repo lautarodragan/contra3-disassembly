@@ -1038,7 +1038,7 @@ loc_0487C2:
 	sta	OBJ_Y_VEL,x
 	lda	#$0001
 	sta	a:shake_continuous
-	jml	f:loc_01D83E
+	jml	f:spawn_explosion_near_object
 
 stage3_boss_state_16:
 	jsl	f:queue_sound_6E_throttled

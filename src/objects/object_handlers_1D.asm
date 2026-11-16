@@ -2310,7 +2310,7 @@ brain_boss_state_08:
 	plx
 loc_1DC13D:
 	jsl	f:queue_sound_41_throttled
-	jml	f:loc_01D83E
+	jml	f:spawn_explosion_near_object
 
 brain_boss_state_09:
 	lda	#$0200
