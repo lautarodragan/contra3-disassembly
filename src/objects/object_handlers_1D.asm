@@ -3074,7 +3074,7 @@ brain_boss_chain_state_00:
 	sta	zp_04
 	lda	#$000C
 	ldy	#$0340
-	jml	f:loc_01A41C
+	jml	f:spawn_trail_chain_with_fields
 
 brain_boss_chain_state_02:
 	clc

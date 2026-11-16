@@ -14,7 +14,7 @@ delete_self_and_linked:
 @loop:
 	lda	OBJ_TYPE,x
 	cmp	a:$003A,y
-	beq	loc_019E61
+	beq	@found
 	txa
 	clc
 	adc	#$0040
@@ -24,7 +24,7 @@ delete_self_and_linked:
 	; (not executed in the CDL traces)
 	tyx
 	rtl
-loc_019E61:
+@found:
 	phy
 	stz	$00,x
 	txy
@@ -38,7 +38,7 @@ loc_019E61:
 ; address Y (bosses drawn on BG flash this way).
 flash_palette_on_hit:
 	lda	OBJ_SAVED_ATTR,x
-	bne	loc_019E80
+	bne	@flash_done
 	lda	OBJ_HIT,x
 	beq	@return
 	inc	OBJ_SAVED_ATTR,x
@@ -47,7 +47,7 @@ flash_palette_on_hit:
 	sty	cgram_upload_addr
 @return:
 	rtl
-loc_019E80:
+@flash_done:
 	; (not executed in the CDL traces)
 	stz	OBJ_SAVED_ATTR,x
 	rtl
@@ -60,7 +60,7 @@ find_free_slot:
 ; The same, starting at X.
 find_free_slot_from_x:
 	lda	OBJ_TYPE,x
-	beq	loc_019E96
+	beq	@found
 	txa
 	clc
 	adc	#$0040
@@ -69,7 +69,7 @@ find_free_slot_from_x:
 	bcc	find_free_slot_from_x
 	; (not executed in the CDL traces)
 	rtl
-loc_019E96:
+@found:
 	clc
 	rtl
 
@@ -77,7 +77,7 @@ loc_019E96:
 ; none.
 find_free_slot_y_to_end:
 	lda	a:OBJ_TYPE,y
-	beq	loc_019EA9
+	beq	@found
 	tya
 	clc
 	adc	#$0040
@@ -86,7 +86,7 @@ find_free_slot_y_to_end:
 	bcc	find_free_slot_y_to_end
 	; (not executed in the CDL traces)
 	rtl
-loc_019EA9:
+@found:
 	clc
 	rtl
 
@@ -97,7 +97,7 @@ find_free_slot_y:
 ; The same, starting at Y.
 find_free_slot_from_y:
 	lda	a:OBJ_TYPE,y
-	beq	loc_019EBF
+	beq	@found
 	tya
 	clc
 	adc	#$0040
@@ -105,7 +105,7 @@ find_free_slot_from_y:
 	cmp	#$0780
 	bcc	find_free_slot_from_y
 	rtl
-loc_019EBF:
+@found:
 	clc
 	rtl
 
@@ -113,7 +113,7 @@ loc_019EBF:
 ; carry clear if none.
 find_free_slot_y_down:
 	lda	a:OBJ_TYPE,y
-	beq	loc_019ED2
+	beq	@found
 	tya
 	sec
 	sbc	#$0040
@@ -121,14 +121,14 @@ find_free_slot_y_down:
 	cmp	#$0300
 	bcs	find_free_slot_y_down
 	rtl
-loc_019ED2:
+@found:
 	sec
 	rtl
 
 ; X = the first free slot from X down to $0300, carry set when found.
 find_free_slot_x_down:
 	lda	OBJ_TYPE,x
-	beq	loc_019EE4
+	beq	@found
 	txa
 	sec
 	sbc	#$0040
@@ -137,7 +137,7 @@ find_free_slot_x_down:
 	bcs	find_free_slot_x_down
 	; (not executed in the CDL traces)
 	rtl
-loc_019EE4:
+@found:
 	sec
 	rtl
 
@@ -151,11 +151,11 @@ unused_check_walls_above:
 	sta	zp_02
 	jsl	f:get_bg_tile_at_object
 	bit	#$0002
-	beq	loc_019EFE
+	beq	@check_right
 	lda	#$0002
 	sta	$38,x
 	brl	snap_x_right_to_tile
-loc_019EFE:
+@check_right:
 	lda	#$0010
 	sta	zp_00
 	lda	#$FFE0	; [num]
@@ -173,17 +173,17 @@ loc_019EFE:
 solid_object_vs_players:
 	ldy	#$0200
 	lda	a:OBJ_FLAGS,y
-	beq	loc_019F28
+	beq	@player2
 	stz	zp_0C
 	jsl	f:solid_object_vs_player
-loc_019F28:
+@player2:
 	ldy	#$0240
 	lda	a:OBJ_FLAGS,y
-	beq	loc_019F36
+	beq	solid_object_return
 	; (not executed in the CDL traces)
 	stz	zp_0C
 	jsl	f:solid_object_vs_player
-loc_019F36:
+solid_object_return:
 	rtl
 
 ; If the hitbox of the object at X overlaps the body of the player at Y,
@@ -197,26 +197,26 @@ solid_object_vs_player:
 	adc	OBJ_HITBOX_W,x
 	sec
 	sbc	a:OBJ_X,y
-	bmi	loc_019F36
+	bmi	solid_object_return
 	sta	zp_10
 	lda	a:PLAYER_HITBOX_RIGHT,y
 	sec
 	sbc	OBJ_X,x
-	bmi	loc_019F36
+	bmi	solid_object_return
 	sta	zp_12
 	clc
 	lda	OBJ_Y,x
 	adc	OBJ_HITBOX_H,x
 	sec
 	sbc	a:OBJ_Y,y
-	bpl	loc_019F36
+	bpl	solid_object_return
 	eor	#$FFFF
 	inc	a
 	sta	zp_14
 	lda	a:PLAYER_HITBOX_TOP,y
 	sec
 	sbc	OBJ_Y,x
-	bpl	loc_019F36
+	bpl	solid_object_return
 	eor	#$FFFF
 	inc	a
 	sta	zp_16
@@ -224,22 +224,22 @@ solid_object_vs_player:
 	sta	a:PLAYER_PLATFORM,y
 	lda	zp_10
 	cmp	zp_12
-	bcc	loc_019F79
+	bcc	@have_min_x
 	lda	zp_12
-loc_019F79:
+@have_min_x:
 	sta	zp_08
 	lda	zp_14
 	cmp	zp_16
-	bcc	loc_019F83
+	bcc	@have_min_y
 	lda	zp_16
-loc_019F83:
+@have_min_y:
 	sta	zp_0A
 	lda	zp_0A
 	cmp	zp_08
-	bcs	loc_019FBB
+	bcs	solid_object_push_sideways
 	lda	zp_14
 	cmp	zp_16
-	bcs	loc_019FA6
+	bcs	solid_object_push_down
 	lda	zp_0C
 	phx
 	asl	a
@@ -252,7 +252,9 @@ tbl_solid_push_up:
 	.addr	solid_push_player_up
 	.addr	solid_push_player_up
 	.addr	solid_push_player_up
-loc_019FA6:
+; The vertical overlap is the smaller and the player is under the object:
+; tbl_solid_push_down (all solid_push_player_down, which does nothing).
+solid_object_push_down:
 	lda	zp_0C
 	phx
 	asl	a
@@ -265,10 +267,11 @@ tbl_solid_push_down:
 	.addr	solid_push_player_down
 	.addr	solid_push_player_down
 	.addr	solid_push_player_down
-loc_019FBB:
+; The horizontal overlap is the smaller: push right or left by kind.
+solid_object_push_sideways:
 	lda	zp_10
 	cmp	zp_12
-	bcs	loc_019FD6
+	bcs	solid_object_push_left
 	lda	zp_0C
 	phx
 	asl	a
@@ -281,7 +284,7 @@ tbl_solid_push_right:
 	.addr	solid_push_player_right
 	.addr	solid_push_player_right
 	.addr	solid_push_player_right_2
-loc_019FD6:
+solid_object_push_left:
 	lda	zp_0C
 	phx
 	asl	a
@@ -315,7 +318,7 @@ solid_push_player_up:
 solid_push_player_right:
 	jsr	a:place_player_right_of_object
 	cmp	#$00F1
-	bcs	loc_01A038
+	bcs	solid_push_right_crushed
 	lda	#$0000
 	sta	a:OBJ_X_VEL,y
 	sta	a:OBJ_X_VEL_SUB,y
@@ -328,15 +331,16 @@ solid_push_player_right_2:
 	; (not executed in the CDL traces)
 	jsr	a:place_player_right_of_object
 	cmp	#$00F1
-	bcs	loc_01A038
+	bcs	solid_push_right_crushed
 	lda	a:OBJ_X_VEL,y
-	bmi	loc_01A038
+	bmi	solid_push_right_crushed
 	sec
 	sbc	OBJ_X_VEL,x
-	bcs	loc_01A04B
+	bcs	solid_push_right_blocked
 	cmp	#$FFFF	; [num]
-	bcs	loc_01A04B
-loc_01A038:
+	bcs	solid_push_right_blocked
+; Against the right screen edge: stop, PCONTACT_BLOCK_LEFT | PCONTACT_KILLED.
+solid_push_right_crushed:
 	lda	#$0000
 	sta	a:OBJ_X_VEL,y
 	sta	a:OBJ_X_VEL_SUB,y
@@ -344,7 +348,8 @@ loc_01A038:
 	ora	a:PLAYER_CONTACT,y
 	sta	a:PLAYER_CONTACT,y
 	rtl
-loc_01A04B:
+; PCONTACT_BLOCK_LEFT only.
+solid_push_right_blocked:
 	; (not executed in the CDL traces)
 	lda	#$0200
 	ora	a:PLAYER_CONTACT,y
@@ -356,7 +361,7 @@ loc_01A04B:
 solid_push_player_left:
 	jsr	a:place_player_left_of_object
 	cmp	#$0009
-	bcc	loc_01A087
+	bcc	solid_push_left_crushed
 	lda	#$0000
 	sta	a:OBJ_X_VEL,y
 	sta	a:OBJ_X_VEL_SUB,y
@@ -368,16 +373,17 @@ solid_push_player_left:
 solid_push_player_left_1:
 	jsr	a:place_player_left_of_object
 	cmp	#$0009
-	bcc	loc_01A087
+	bcc	solid_push_left_crushed
 	lda	a:OBJ_X_VEL,y
-	bpl	loc_01A087
+	bpl	solid_push_left_crushed
 	; (not executed in the CDL traces)
 	sec
 	sbc	OBJ_X_VEL,x
-	bcc	loc_01A09A
+	bcc	solid_push_left_blocked
 	cmp	#$0001
-	bcc	loc_01A09A
-loc_01A087:
+	bcc	solid_push_left_blocked
+; Against the left screen edge: stop, PCONTACT_BLOCK_RIGHT | PCONTACT_KILLED.
+solid_push_left_crushed:
 	lda	#$0000
 	sta	a:OBJ_X_VEL,y
 	sta	a:OBJ_X_VEL_SUB,y
@@ -385,7 +391,8 @@ loc_01A087:
 	ora	a:PLAYER_CONTACT,y
 	sta	a:PLAYER_CONTACT,y
 	rtl
-loc_01A09A:
+; PCONTACT_BLOCK_RIGHT only.
+solid_push_left_blocked:
 	; (not executed in the CDL traces)
 	lda	#$0400
 	ora	a:PLAYER_CONTACT,y
@@ -446,18 +453,18 @@ angle_to_player:
 ; present one, alternating by stage_frame_odd); see spawn_enemy_bullet.
 fire_bullet_at_player:
 	lda	stage_frame_odd
-	bne	loc_01A0FA
+	bne	@odd_frame
 	ldy	#$0200
 	lda	a:player1_obj+OBJ_FLAGS
-	bne	loc_01A105
+	bne	@aim
 	ldy	#$0240
-	bra	loc_01A105
-loc_01A0FA:
+	bra	@aim
+@odd_frame:
 	ldy	#$0240
 	lda	a:player2_obj+OBJ_FLAGS
-	bne	loc_01A105
+	bne	@aim
 	ldy	#$0200
-loc_01A105:
+@aim:
 	lda	a:PLAYER_CENTER_X,y
 	sbc	zp_00
 	sta	zp_08
@@ -482,7 +489,7 @@ spawn_enemy_bullet:
 	sta	zp_FC
 	ldy	#$0740
 	jsl	f:find_free_slot_y_down
-	bcc	loc_01A15B
+	bcc	@no_slot
 	lda	#$0018
 	sta	a:OBJ_TYPE,y
 	lda	zp_00
@@ -501,7 +508,7 @@ spawn_enemy_bullet:
 	sta	a:OBJ_X_VEL_SUB,y
 	plx
 	sec
-loc_01A15B:
+@no_slot:
 	ply
 	rtl
 
@@ -509,18 +516,18 @@ loc_01A15B:
 ; present player, alternating when both are.
 pick_target_player:
 	and	stage_frame_counter
-	bne	loc_01A16C
+	bne	@try_player2
 	lda	a:player1_obj+OBJ_FLAGS
-	bmi	loc_01A173
-	beq	loc_01A173
-loc_01A168:
+	bmi	@player2
+	beq	@player2
+@player1:
 	ldy	#$0200
 	rtl
-loc_01A16C:
+@try_player2:
 	lda	a:player2_obj+OBJ_FLAGS
-	bmi	loc_01A168
-	beq	loc_01A168
-loc_01A173:
+	bmi	@player1
+	beq	@player1
+@player2:
 	ldy	#$0240
 	rtl
 
@@ -673,11 +680,12 @@ update_passive_part:
 ; OBJ_HP < 0.
 update_destructible_part:
 	lda	$06,x
-	bpl	loc_01A282
+	bpl	destructible_part_set_attr
 	txy
 	lda	#.loword(anim_05C59A)
 	jml	f:make_effect_object
-loc_01A282:
+; Not destroyed: OBJ_ATTR from word 2 of the current animation entry.
+destructible_part_set_attr:
 	ldy	$20,x
 	lda	a:$0004,y
 	sta	$02,x
@@ -688,7 +696,7 @@ loc_01A282:
 update_destructible_part_2:
 	; (not executed in the CDL traces)
 	lda	$06,x
-	bpl	loc_01A282
+	bpl	destructible_part_set_attr
 	txy
 	lda	#.loword(anim_05C516)
 	jml	f:make_effect_object
@@ -707,48 +715,48 @@ kill_players_outside:
 
 kill_player_outside:
 	lda	a:PLAYER_BARRIER,y
-	beq	loc_01A2AE
+	beq	@check_alive
 	; (not executed in the CDL traces)
 	lda	zp_FC
-	beq	loc_01A2EF
-loc_01A2AE:
+	beq	@return
+@check_alive:
 	lda	a:PLAYER_LIVES,y
-	beq	loc_01A2EF
+	beq	@return
 	lda	a:OBJ_FLAGS,y
-	beq	loc_01A2EF
+	beq	@return
 	bit	#$8002
-	bne	loc_01A2EF
+	bne	@return
 	lda	a:OBJ_Y,y
-	bmi	loc_01A2EF
+	bmi	@return
 	sep	#$20
 	.a8
 	lda	zp_01
-	beq	loc_01A2CD
+	beq	@check_bottom
 	cmp	a:OBJ_Y,y
-	bcs	loc_01A2E8
-loc_01A2CD:
+	bcs	@kill
+@check_bottom:
 	lda	zp_00
-	beq	loc_01A2D6
+	beq	@check_left
 	cmp	a:OBJ_Y,y
-	bcc	loc_01A2E8
-loc_01A2D6:
+	bcc	@kill
+@check_left:
 	lda	zp_02
-	beq	loc_01A2DF
+	beq	@check_right
 	; (not executed in the CDL traces)
 	cmp	a:OBJ_X,y
-	bcs	loc_01A2E8
-loc_01A2DF:
+	bcs	@kill
+@check_right:
 	lda	zp_03
-	beq	loc_01A2ED
+	beq	@inside
 	; (not executed in the CDL traces)
 	cmp	a:OBJ_X,y
-	bcs	loc_01A2ED
-loc_01A2E8:
+	bcs	@inside
+@kill:
 	lda	#$04
 	sta	a:PLAYER_CONTACT,y
-loc_01A2ED:
+@inside:
 	rep	#$20
-loc_01A2EF:
+@return:
 	.a16
 	rts
 
@@ -759,14 +767,14 @@ spawn_homing_missile:
 	sta	zp_00
 	ldy	#$0740
 	jsl	f:find_free_slot_y_down
-	bcc	loc_01A30A
+	bcc	@no_slot
 	tyx
 	lda	#OBJT_HOMING_MISSILE
 	sta	OBJ_TYPE,x
 	lda	zp_00
 	sta	$3A,x
 	jsl	f:init_homing_missile
-loc_01A30A:
+@no_slot:
 	plx
 	rtl
 
@@ -776,7 +784,7 @@ loc_01A30A:
 ; explodes after $A0 frames, when it touches a player or is shot.
 update_homing_missile:
 	lda	$12,x
-	bne	loc_01A332
+	bne	homing_missile_fly
 
 init_homing_missile:
 	lda	#.loword(metasprite_06AE9B)
@@ -794,21 +802,22 @@ init_homing_missile:
 	inc	$12,x
 	sec
 	rtl
-loc_01A332:
+; State 1: explode on timeout, contact or HP < 0; else steer and smoke.
+homing_missile_fly:
 	dec	$24,x
-	bmi	loc_01A33E
+	bmi	@explode
 	lda	$3C,x
-	bne	loc_01A33E
+	bne	@explode
 	lda	$06,x
-	bpl	loc_01A34F
-loc_01A33E:
+	bpl	@steer
+@explode:
 	lda	#$0017
 	jsl	f:queue_sound
 	stz	$04,x
 	txy
 	lda	#.loword(anim_05C516)
 	jml	f:make_effect_object
-loc_01A34F:
+@steer:
 	lda	#$0400
 	jsl	f:pick_target_player
 	lda	a:$1312,y
@@ -821,30 +830,30 @@ loc_01A34F:
 	lda	a:homing_missile_smoke_y_vels,y
 	sta	zp_04
 	cpy	#$0000
-	bne	loc_01A384
+	bne	@vertical
 	ldy	#.loword(metasprite_06AFB4)
 	lda	$1A,x
-	bmi	loc_01A395
+	bmi	@set_sprite
 	ldy	#.loword(metasprite_06AFA0)
 	lda	zp_06
 	eor	#$FFFF
 	sta	zp_06
-	bra	loc_01A395
-loc_01A384:
+	bra	@set_sprite
+@vertical:
 	ldy	#.loword(metasprite_06AF96)
 	lda	$1E,x
-	bmi	loc_01A395
+	bmi	@set_sprite
 	ldy	#.loword(metasprite_06AFAA)
 	lda	zp_04
 	eor	#$FFFF
 	sta	zp_04
-loc_01A395:
+@set_sprite:
 	sty	$00,x
 	lda	stage_frame_mod4
-	bne	loc_01A3BF
+	bne	@accelerate
 	ldy	#$0740
 	jsl	f:find_free_slot_y_down
-	bcc	loc_01A3BF
+	bcc	@accelerate
 	lda	#.loword(anim_05C606)
 	jsl	f:make_effect_object
 	lda	zp_06
@@ -855,7 +864,7 @@ loc_01A395:
 	sta	a:$000E,y
 	lda	$0A,x
 	sta	a:$000A,y
-loc_01A3BF:
+@accelerate:
 	lda	difficulty
 	asl	a
 	clc
@@ -863,7 +872,7 @@ loc_01A3BF:
 	tay
 	lda	$0E,x
 	cmp	zp_02
-	bcc	loc_01A3DD
+	bcc	@accel_down
 	sec
 	lda	$1C,x
 	sbc	a:homing_missile_accel_y,y
@@ -871,8 +880,8 @@ loc_01A3BF:
 	lda	$1E,x
 	sbc	#$0000
 	sta	$1E,x
-	bra	loc_01A3EC
-loc_01A3DD:
+	bra	@accel_x
+@accel_down:
 	clc
 	lda	$1C,x
 	adc	a:homing_missile_accel_y,y
@@ -880,10 +889,10 @@ loc_01A3DD:
 	lda	$1E,x
 	adc	#$0000
 	sta	$1E,x
-loc_01A3EC:
+@accel_x:
 	lda	$0A,x
 	cmp	zp_00
-	bcc	loc_01A402
+	bcc	@accel_right
 	sec
 	lda	$18,x
 	sbc	a:homing_missile_accel_x,y
@@ -892,7 +901,7 @@ loc_01A3EC:
 	sbc	#$0000
 	sta	$1A,x
 	rtl
-loc_01A402:
+@accel_right:
 	clc
 	lda	$18,x
 	adc	a:homing_missile_accel_x,y
@@ -914,10 +923,11 @@ spawn_trail_chain:
 	stz	zp_0C
 	stz	zp_0E
 	stz	zp_10
-loc_01A41C:
+; Entered with zp_08-zp_10 set by the caller (the brain boss chains).
+spawn_trail_chain_with_fields:
 	phx
 	sta	zp_06
-loc_01A41F:
+@next_segment:
 	lda	#$FFF0	; [num]
 	sta	zp_12
 	lda	#$0001
@@ -925,19 +935,19 @@ loc_01A41F:
 	lda	a:trail_buffers_used
 	sta	zp_16
 	jsl	f:find_free_slot_y_to_end
-	bcs	loc_01A4B3
-	bra	loc_01A438
-loc_01A436:
+	bcs	@done
+	bra	@try_buffer
+@buffer_used:
 	asl	zp_14
-loc_01A438:
+@try_buffer:
 	clc
 	lda	zp_12
 	adc	#$0010
 	sta	zp_12
 	cmp	#$0100
-	bcs	loc_01A4B3
+	bcs	@done
 	lsr	zp_16
-	bcs	loc_01A436
+	bcs	@buffer_used
 	lda	zp_12
 	sta	a:$0034,y
 	phx
@@ -981,11 +991,11 @@ loc_01A438:
 	sty	$3E,x
 	tyx
 	dec	zp_06
-	bmi	loc_01A4B1
-	brl	loc_01A41F
-loc_01A4B1:
+	bmi	@chain_end
+	brl	@next_segment
+@chain_end:
 	stz	$3E,x
-loc_01A4B3:
+@done:
 	plx
 	rtl
 
@@ -1021,9 +1031,9 @@ trail_segment_follow:
 	inc	a
 	inc	a
 	cmp	$04,x
-	bcc	loc_01A4E5
+	bcc	@no_wrap
 	sbc	$04,x
-loc_01A4E5:
+@no_wrap:
 	sta	$0C,x
 	clc
 	lda	$0C,x
@@ -1035,15 +1045,15 @@ loc_01A4E5:
 	sta	$0E,x
 	lda	$18,x
 	and	stage_frame_counter
-	bne	loc_01A508
+	bne	@hidden
 	lda	a:$E200,y
 	sta	$00,x
 	lda	$1A,x
 	sta	$02,x
-	bra	loc_01A50A
-loc_01A508:
+	bra	@restore_db
+@hidden:
 	stz	$00,x
-loc_01A50A:
+@restore_db:
 	sep	#$20
 	.a8
 	lda	#^tables_05
@@ -1075,7 +1085,7 @@ delete_trail_chain:
 	phx
 @loop:
 	ldy	$3E,x
-	beq	loc_01A546
+	beq	@done
 	lda	#$8000	; [num]
 	sta	a:$0016,y
 	lda	a:$0032,y
@@ -1084,6 +1094,6 @@ delete_trail_chain:
 	sta	a:trail_buffers_used
 	tyx
 	bra	@loop
-loc_01A546:
+@done:
 	plx
 	rtl
