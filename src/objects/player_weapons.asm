@@ -1216,7 +1216,7 @@ loc_0188F0:
 loc_0188F3:
 	lda	a:PLAYER_SPIN,x
 	beq	loc_0188FB
-	brl	loc_01AC62
+	brl	enter_spin_stance
 loc_0188FB:
 	lda	PLAYER_AIM,x
 	phx
