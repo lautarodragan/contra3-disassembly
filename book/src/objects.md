@@ -168,6 +168,11 @@ through a table indexed by `PLAYER_AIM` (`tbl_ground_aim`, `tbl_jump_aim`,
 with the shot angle (`$00` up, `$20` right, `$40` down, `$60` left) and the
 muzzle position; the entries are named `<table>_aim_<direction>` (`ground_aim_up_right`,
 `hang_aim_none`...; `none` fires the way the player faces).
+On the hover bike the aim is data instead of code: `bike_aim_angles`,
+`bike_aim_poses`, `bike_aim_muzzle_x`, `bike_aim_muzzle_y` (by `PLAYER_AIM`).
+The ground states check walls and floor with `check_walls_and_floor`: a
+wall tile 32 pixels above the feet starts climbing, then the tiles under
+the feet are classified as by `check_floor_tiles`.
 
 ### Getting killed
 

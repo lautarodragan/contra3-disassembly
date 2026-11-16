@@ -167,6 +167,7 @@ for the laser), the bomb and the barrier 1 per frame; the object dies when
 |---|---|---|---|---|
 | `soldier_hp` | `update_foot_soldier`, type `$35` | 0 | 1 | 3 |
 | `object_type_12_hp` | `update_object_type_12` | 4 | 6 | 8 |
+| `object_type_31_hp` | `update_object_type_31` | 16 | 64 | `$7FFF` |
 | `window_sniper_hp` | `update_window_sniper` | 4 | 6 | 8 |
 | `alien_dog_hp` | `update_alien_dog` | 0 | 2 | 8 |
 | `wall_hatch_hp` | `update_wall_hatch` | 4 | 8 | 16 |
@@ -183,6 +184,36 @@ The stage 1 boss's HP is set by the boss controller (type `$01`,
 difficulty, the shell (type `$20`) `stage1_boss_shell_hp` = 128, 256, `$7FFF`
 (so on hard the shell cannot really be destroyed); the head (`$1F`) is
 invulnerable.
+
+## Tables
+
+The handlers' tables in `src/data/tables_05.asm` are named after the object
+and the field they fill (`window_sniper_muzzle_x`,
+`stage1_boss_part_types`...), with a comment saying which state reads them
+and with what index. Patterns that recur:
+
+- by `difficulty`: delays, timers, HP and frame masks (`stage1_boss_fire_intervals`,
+  `soldier_spawn_delays_right`, `wall_hatch_turn_masks`: the action happens
+  when `stage_frame_counter & mask` is 0);
+- by aim direction: a metasprite and a muzzle offset for `spawn_enemy_bullet`
+  (`window_sniper_aim_sprites`, `rolling_mine_muzzle_x`, `wall_hatch_muzzle_y`);
+- debris and fragments spawned in a loop: x, y, velocity and sprite per piece
+  (`stage1_boss_debris_y`, `object_type_35_debris_x_vels`), often read
+  past the end into the next table (`; LAYOUT`);
+- random velocities: `random_debris_vels` / `random_debris_vel_subs`, and the
+  parts of the hard enemy bullet table (`enemy_bullet_speeds_hard_x`,
+  `enemy_bullet_speeds_hard_y_sub`, `enemy_bullet_speeds_hard_x_sub`: the
+  table at `+$10`, `+$50`, `+$60`, as `spawn_enemy_bullet` reads it);
+- the stage 4 airship is placed by a spawn list of its own
+  (`airship_spawn_x`, read by `scroll_bg1_by_velocity_and_spawn` as BG1
+  scrolls), not by the stage's spawn pages.
+
+Shot handlers set `SHOT_ATTR` from small frame tables (`crush_shot_attrs`,
+`laser_shot_attrs`, `spent_shot_attrs`... by direction or countdown).
+`circle15_x` / `circle15_y` are a 256-step circle of radius 15 (y = -15 cos,
+x = 15 sin, `$00` up), used by the flame shot and by bank `$04` handlers.
+Unreachable code keeps an `unused_` name saying what it does
+(`unused_apply_hit_flash`, `unused_ceiling_result_01B07F`...).
 
 ## Player shots
 
