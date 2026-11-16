@@ -253,7 +253,7 @@ ending_sequence_state_08:
 	lda	#$0010
 	sta	a:boss_work_1
 	inc	OBJ_STATE,x
-	jsr	a:sub_1DB81A
+	jsr	a:ending_creature_spawn_claws
 	stz	$30,x
 	lda	#$401D
 	sta	OBJ_FLAGS,x
@@ -292,7 +292,7 @@ ending_sequence_state_09:
 	stz	zp_00
 	lda	#$00FF
 	sta	zp_04
-	jsr	a:sub_1DBA68
+	jsr	a:ending_shake_and_explode
 	jsr	a:ending_queue_tile_changes
 	lda	a:boss_work_0
 	cmp	#$0012
@@ -323,7 +323,7 @@ ending_sequence_state_0A:
 	sta	OBJ_TIMER,x
 
 ending_sequence_state_0B:
-	jsr	a:sub_1DB685
+	jsr	a:ending_scroll_bg1_up_faster
 	dec	OBJ_TIMER,x
 	bpl	loc_1DB1D0
 	inc	OBJ_STATE,x
@@ -348,7 +348,7 @@ loc_1DB1E3:
 loc_1DB1F2:
 	lda	#$0004
 	sta	a:shake_timer
-	jsr	a:sub_1DB44A
+	jsr	a:ending_creature_place_arm_bases
 	jsr	a:ending_creature_update_angles
 	jsr	a:ending_creature_set_arm_angles
 	jsr	a:ending_creature_feed_arms
@@ -375,11 +375,11 @@ ending_sequence_state_0D:
 	sta	$36,x
 loc_1DB22E:
 	jsr	a:ending_creature_extend_arms
-	jsr	a:sub_1DB758
-	jsr	a:sub_1DB70F
+	jsr	a:ending_missile_bob_default
+	jsr	a:ending_creature_rise_and_sink
 loc_1DB237:
-	jsr	a:sub_1DB685
-	jsr	a:sub_1DB44A
+	jsr	a:ending_scroll_bg1_up_faster
+	jsr	a:ending_creature_place_arm_bases
 	jsr	a:ending_creature_update_angles
 	jsr	a:ending_creature_set_arm_angles
 	jsr	a:ending_creature_feed_arms
@@ -387,10 +387,10 @@ loc_1DB237:
 	rtl
 
 ending_sequence_state_0E:
-	jsr	a:sub_1DB758
-	jsr	a:sub_1DB70F
-	jsr	a:sub_1DB685
-	jsr	a:sub_1DB44A
+	jsr	a:ending_missile_bob_default
+	jsr	a:ending_creature_rise_and_sink
+	jsr	a:ending_scroll_bg1_up_faster
+	jsr	a:ending_creature_place_arm_bases
 	jsr	a:ending_creature_update_angles
 	jsr	a:ending_creature_aim_arms
 	jsr	a:ending_creature_feed_arms
@@ -433,13 +433,13 @@ ending_sequence_state_14:
 	sta	a:bg2_x+BG_VOFS_LATCH
 	rtl
 loc_1DB2BB:
-	jsr	a:sub_1DB685
-	jsr	a:sub_1DB758
+	jsr	a:ending_scroll_bg1_up_faster
+	jsr	a:ending_missile_bob_default
 	jsr	a:ending_set_missile_hdma
 	rtl
 
 ending_sequence_state_10:
-	jsr	a:sub_1DB44A
+	jsr	a:ending_creature_place_arm_bases
 	dec	OBJ_TIMER,x
 	bpl	loc_1DB2F1
 	inc	OBJ_STATE,x
@@ -457,8 +457,8 @@ ending_sequence_state_10:
 	lda	#$0100
 	sta	f:wram_7EE809
 loc_1DB2F1:
-	jsr	a:sub_1DB685
-	jsr	a:sub_1DB758
+	jsr	a:ending_scroll_bg1_up_faster
+	jsr	a:ending_missile_bob_default
 	jsr	a:ending_set_missile_hdma
 	lda	a:boss_work_0
 	cmp	#$0014
@@ -469,12 +469,12 @@ loc_1DB2F1:
 
 ending_sequence_state_15:
 	jsr	a:ending_set_scroll_split
-	jsr	a:sub_1DB6B6
+	jsr	a:ending_scroll_bg1_up_slower
 	lda	#$0064
 	sta	zp_00
 	lda	#$0080
 	sta	zp_02
-	jsr	a:sub_1DB762
+	jsr	a:ending_missile_bob
 	jsr	a:ending_bg2_follow_missile
 	lda	a:bg1_y
 	bpl	@return
@@ -490,7 +490,7 @@ ending_sequence_state_15:
 	rtl
 
 ending_sequence_state_20:
-	jsr	a:sub_1DB6F1
+	jsr	a:ending_parallax_speed_increase
 	lda	a:boss_work_4
 	bmi	loc_1DB360
 	cmp	#$0046
@@ -506,24 +506,24 @@ ending_sequence_state_20:
 	jsl	f:spawn_ending_crowd
 loc_1DB360:
 	jsr	a:ending_set_scroll_split
-	jsr	a:sub_1DB98D
+	jsr	a:ending_run_text_script
 	lda	#$0074
 	sta	zp_00
 	lda	#$0080
 	sta	zp_02
-	jsr	a:sub_1DB762
+	jsr	a:ending_missile_bob
 	jsr	a:ending_bg2_follow_missile
 	rtl
 
 ending_sequence_state_21:
-	jsr	a:sub_1DB6D3
-	jsr	a:sub_1DB668
-	jsr	a:sub_1DB98D
+	jsr	a:ending_parallax_speed_decrease
+	jsr	a:ending_scroll_bg1_down
+	jsr	a:ending_run_text_script
 	lda	#$0088
 	sta	zp_00
 	lda	#$0090
 	sta	zp_02
-	jsr	a:sub_1DB762
+	jsr	a:ending_missile_bob
 	jsr	a:ending_bg2_follow_missile
 	jsr	a:ending_set_scroll_split
 	lda	#$0100
@@ -588,8 +588,8 @@ ending_sequence_state_24:
 	bpl	loc_1DB412
 	jsl	f:spawn_ending_firework
 loc_1DB412:
-	jsr	a:sub_1DB6D3
-	jsr	a:sub_1DB7B9
+	jsr	a:ending_parallax_speed_decrease
+	jsr	a:ending_missile_fly_up
 	jsr	a:ending_bg2_follow_missile
 	jsr	a:ending_set_scroll_split
 	rtl
@@ -618,7 +618,10 @@ ending_bg2_follow_missile:
 	sta	a:bg2_y
 	rts
 
-sub_1DB44A:
+; From the ending object's y: the HDMA value wram_7EE809 ($141 - y), slot 29's
+; y and the bases of the creature's arms (wram_169A-wram_16A0, read by
+; ending_creature_feed_arm).
+ending_creature_place_arm_bases:
 	sec
 	lda	#$0141
 	sbc	OBJ_Y,x
@@ -652,14 +655,14 @@ ending_queue_tile_changes:
 	lda	#$0018
 	sta	zp_08
 	clc
-	lda	a:data_05F8EC,y
+	lda	a:ending_tile_change_columns,y
 	and	#$000F
 	adc	#$4B80
 	sta	zp_FC
 	eor	#$001C
 	sta	zp_FA
 	clc
-	lda	a:data_05F900,y
+	lda	a:ending_tile_change_block_offsets,y
 	and	#$00FF
 	adc	#.loword(vram_blocks_05F914)
 	tay
@@ -678,7 +681,7 @@ ending_queue_tile_changes:
 	jsl	f:queue_vram_blocks_at_x
 	plx
 	ldy	a:boss_work_0
-	lda	a:data_05F8EC,y
+	lda	a:ending_tile_change_columns,y
 	and	#$00FF
 	lsr	a
 	lsr	a
@@ -729,7 +732,7 @@ ending_creature_aim_arm:
 	cmp	#$0040
 	bcc	loc_1DB55B
 	and	#$0040
-	eor	a:data_05F894,y
+	eor	a:ending_creature_arm_sides,y
 	beq	loc_1DB55B
 	lda	a:obj_slots+28*OBJ_SIZE+$36
 	and	#$003F
@@ -755,7 +758,7 @@ loc_1DB55B:
 	sta	a:ending_arm_lengths,y
 	clc
 	lda	a:$163E,y
-	adc	a:data_05F898,y
+	adc	a:ending_creature_arm_retract_turns,y
 	and	#$00FF
 	sta	a:$163E,y
 @return:
@@ -772,7 +775,7 @@ loc_1DB582:
 	bcc	loc_1DB594
 	clc
 	lda	a:$163E,y
-	adc	a:data_05F89C,y
+	adc	a:ending_creature_arm_aim_turns,y
 	and	#$00FF
 	sta	a:$163E,y
 loc_1DB594:
@@ -803,7 +806,7 @@ ending_creature_swing:
 	bne	loc_1DB5CD
 	ldy	$34,x
 	sec
-	sbc	a:data_05F8BB,y
+	sbc	a:ending_creature_swing_speeds,y
 	and	#$00FF
 	sta	$32,x
 	cmp	#$0018
@@ -812,7 +815,7 @@ ending_creature_swing:
 loc_1DB5CD:
 	ldy	$34,x
 	clc
-	adc	a:data_05F8BB,y
+	adc	a:ending_creature_swing_speeds,y
 	and	#$00FF
 	sta	$32,x
 	cmp	#$007C
@@ -860,7 +863,7 @@ loc_1DB628:
 	clc
 	adc	$34,x
 	tax
-	lda	a:data_05F8B3,y
+	lda	a:ending_creature_arm_root_x,y
 	sta	f:$7EE000,x
 	lda	a:$169A,y
 	sta	f:$7EE100,x
@@ -884,7 +887,11 @@ ending_start_vertical_autoscroll:
 	sta	OBJ_Y_VEL,x
 	rts
 
-sub_1DB668:
+; The BG1 vertical scroll speed boss_work_2/boss_work_3 (16.16, added to
+; bg1_y): ending_scroll_bg1_down accelerates it towards +3,
+; ending_scroll_bg1_up_faster towards -6 and ending_scroll_bg1_up_slower
+; towards -1.
+ending_scroll_bg1_down:
 	lda	a:boss_work_3
 	cmp	#$0003
 	bcs	loc_1DB6A2
@@ -897,7 +904,7 @@ sub_1DB668:
 	sta	a:boss_work_3
 	bra	loc_1DB6A2
 
-sub_1DB685:
+ending_scroll_bg1_up_faster:
 	lda	a:boss_work_3
 	bpl	loc_1DB68F
 	cmp	#$FFFA	; [num]
@@ -920,7 +927,7 @@ loc_1DB6A2:
 	sta	a:bg1_y
 	rts
 
-sub_1DB6B6:
+ending_scroll_bg1_up_slower:
 	lda	a:boss_work_3
 	cmp	#$FFFF	; [num]
 	bcs	loc_1DB6A2
@@ -933,7 +940,10 @@ sub_1DB6B6:
 	sta	a:boss_work_3
 	bra	loc_1DB6A2
 
-sub_1DB6D3:
+; The speed boss_work_0/boss_work_1 that ending_set_scroll_split adds to the
+; scroll split bands: decreased by $C800 per frame down to -1, increased by
+; $1000 up to 6 (ending_parallax_speed_increase).
+ending_parallax_speed_decrease:
 	lda	a:boss_work_1
 	bpl	loc_1DB6DD
 	cmp	#$FFFF	; [num]
@@ -948,7 +958,7 @@ loc_1DB6DD:
 	sta	a:boss_work_1
 	rts
 
-sub_1DB6F1:
+ending_parallax_speed_increase:
 	lda	a:boss_work_1
 	cmp	#$0006
 	bmi	loc_1DB6FB
@@ -964,7 +974,9 @@ loc_1DB6FB:
 loc_1DB70E:
 	rts
 
-sub_1DB70F:
+; Moves the object up (2 px per frame) to y $C4 and down slowly to y $100
+; (sound $5D), alternating with field $34.
+ending_creature_rise_and_sink:
 	lda	$34,x
 	beq	loc_1DB722
 	stz	OBJ_Y_VEL_SUB,x
@@ -1005,13 +1017,15 @@ ending_protect_player:
 @return:
 	rts
 
-sub_1DB758:
+; ending_missile_bob with the band y $40-$60: the missile of slot $0280 bobs
+; up and down between zp_00 and zp_02 (field $3A = direction).
+ending_missile_bob_default:
 	lda	#$0040
 	sta	zp_00
 	lda	#$0060
 	sta	zp_02
 
-sub_1DB762:
+ending_missile_bob:
 	ldy	$3A,x
 	bne	loc_1DB790
 	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y
@@ -1055,7 +1069,8 @@ loc_1DB7A5:
 loc_1DB7B8:
 	rts
 
-sub_1DB7B9:
+; Accelerates the missile of slot $0280 upwards until it is above the screen.
+ending_missile_fly_up:
 	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	bpl	loc_1DB7CA
 	cmp	#$FFF0	; [num]
@@ -1102,7 +1117,10 @@ ending_set_scroll_split:
 	plx
 	rts
 
-sub_1DB81A:
+; (Hard) the four claws of the last creature: trail chains of type $96 from
+; slots $0300 (5 segments), $0440 (5), $0580 (3) and $0640 (3)
+; (ending_creature_spawn_claw: A = count - 1, Y = flags, X = first slot).
+ending_creature_spawn_claws:
 	phx
 	ldy	#$000C
 	lda	#$0000
@@ -1111,25 +1129,25 @@ sub_1DB81A:
 	sta	zp_0A
 	lda	#$0004
 	ldx	#$0300
-	jsr	a:sub_1DB85C
+	jsr	a:ending_creature_spawn_claw
 	lda	#$0004
 	ldy	#$000C
 	ldx	#$0440
-	jsr	a:sub_1DB85C
+	jsr	a:ending_creature_spawn_claw
 	lda	#$000E
 	sta	zp_0A
 	lda	#$0002
 	ldy	#$0000
 	ldx	#$0580
-	jsr	a:sub_1DB85C
+	jsr	a:ending_creature_spawn_claw
 	lda	#$0002
 	ldy	#$0000
 	ldx	#$0640
-	jsr	a:sub_1DB85C
+	jsr	a:ending_creature_spawn_claw
 	plx
 	rts
 
-sub_1DB85C:
+ending_creature_spawn_claw:
 	sta	zp_02
 	sty	zp_04
 	ldy	#$0000
@@ -1262,7 +1280,7 @@ loc_1DB940:
 	lsr	a
 	and	#$0006
 	tay
-	lda	a:data_05F8AB,y
+	lda	a:ending_claw_segment_sprites,y
 	sta	OBJ_SPRITE,x
 	bra	loc_1DB930
 
@@ -1292,7 +1310,9 @@ update_enemy_type_97:
 loc_1DB98C:
 	rts
 
-sub_1DB98D:
+; Runs ending_text_script: shows the closing text lines (ptrs_ending_text_a/b)
+; fading in with ending_text_fade_attrs, then erases them by DMA.
+ending_run_text_script:
 	ldy	a:wram_169A
 	lda	a:boss_work_5
 	bne	loc_1DB99F
@@ -1306,7 +1326,7 @@ loc_1DB99F:
 	ldy	a:boss_work_4
 	iny
 	sty	a:boss_work_4
-	lda	a:data_05F9D0,y
+	lda	a:ending_text_script,y
 	and	#$00FF
 	cmp	#$00FE
 	bcc	loc_1DB9C5
@@ -1380,7 +1400,7 @@ loc_1DBA36:
 	lsr	a
 	and	#$0006
 	tay
-	lda	a:data_05F9C8,y
+	lda	a:ending_text_fade_attrs,y
 	pha
 	sec
 	sbc	#$0400
@@ -1398,7 +1418,9 @@ loc_1DBA36:
 	plx
 	rts
 
-sub_1DBA68:
+; Shakes the screen and, every other frame, spawns an explosion effect
+; (anim_05C69C) in the area zp_00/zp_04.
+ending_shake_and_explode:
 	lda	#$0004
 	sta	a:shake_timer
 	lda	stage_frame_odd
@@ -1416,13 +1438,13 @@ sub_1DBA68:
 	rts
 
 ending_sequence_state_16:
-	jsr	a:sub_1DB6F1
+	jsr	a:ending_parallax_speed_increase
 	jsr	a:ending_set_scroll_split
 	lda	#$0030
 	sta	zp_00
 	lda	#$0040
 	sta	zp_02
-	jsr	a:sub_1DB762
+	jsr	a:ending_missile_bob
 	jsr	a:ending_bg2_follow_missile
 	lda	OBJ_TIMER,x
 	bmi	loc_1DBAAA
@@ -1463,7 +1485,7 @@ ending_sequence_state_17:
 	sta	OBJ_TIMER,x
 	phx
 	ldy	difficulty
-	ldx	a:data_05FD9B,y
+	ldx	a:ptrs_ending_message_loads,y
 	jsl	f:load_data_list
 	ldy	#.loword(palette_task_05FEE8)
 	jsl	f:start_palette_task
@@ -1561,12 +1583,12 @@ loc_1DBBA8:
 	lda	OBJ_TIMER,x
 	and	#$0002
 	tay
-	lda	a:data_05FDF7,y
+	lda	a:ending_hard_tile_vram_addrs,y
 	pha
-	lda	a:data_05FDF3,y
+	lda	a:ending_hard_tile_block_offsets,y
 	ldy	a:boss_work_4
 	clc
-	adc	a:data_05FDFB,y
+	adc	a:ptrs_ending_hard_tile_blocks,y
 	tay
 	lda	#$0004
 	sta	zp_02
@@ -1669,7 +1691,7 @@ loc_1DBC89:
 	sta	zp_00
 	lda	#$003F
 	sta	zp_04
-	jsr	a:sub_1DBA68
+	jsr	a:ending_shake_and_explode
 	rtl
 
 ending_sequence_state_26:
@@ -1688,7 +1710,7 @@ ending_sequence_state_26:
 	lda	#$0100
 	sta	OBJ_TIMER,x
 loc_1DBCBB:
-	jsr	a:sub_1DB685
+	jsr	a:ending_scroll_bg1_up_faster
 	rtl
 
 ending_sequence_state_27:
@@ -1728,23 +1750,23 @@ loc_1DBCFD:
 	lda	#$8000	; [num]
 	sta	OBJ_Y_VEL_SUB,x
 loc_1DBD02:
-	jsr	a:sub_1DB758
-	jsr	a:sub_1DB685
-	jsr	a:sub_1DB44A
+	jsr	a:ending_missile_bob_default
+	jsr	a:ending_scroll_bg1_up_faster
+	jsr	a:ending_creature_place_arm_bases
 	jsr	a:ending_set_missile_hdma
-	jsr	a:sub_1DBD6A
+	jsr	a:ending_shake_and_flash
 	lda	#$003F
 	sta	zp_04
 	sta	zp_06
-	jsr	a:sub_1DBDA0
+	jsr	a:ending_spawn_floor_explosions
 	rtl
 
 ending_sequence_state_11:
-	jsr	a:sub_1DB758
-	jsr	a:sub_1DB685
+	jsr	a:ending_missile_bob_default
+	jsr	a:ending_scroll_bg1_up_faster
 	jsr	a:ending_set_missile_hdma
-	jsr	a:sub_1DBD89
-	jsr	a:sub_1DBD6A
+	jsr	a:ending_floor_explosions_rise
+	jsr	a:ending_shake_and_flash
 	dec	OBJ_TIMER,x
 	bpl	@return
 	inc	OBJ_STATE,x
@@ -1752,11 +1774,11 @@ ending_sequence_state_11:
 	rtl
 
 ending_sequence_state_12:
-	jsr	a:sub_1DB758
-	jsr	a:sub_1DB685
+	jsr	a:ending_missile_bob_default
+	jsr	a:ending_scroll_bg1_up_faster
 	jsr	a:ending_set_missile_hdma
-	jsr	a:sub_1DBD89
-	jsr	a:sub_1DBD6A
+	jsr	a:ending_floor_explosions_rise
+	jsr	a:ending_shake_and_flash
 	inc	OBJ_STATE,x
 	lda	#$0002
 	sta	a:stage_pause_disabled
@@ -1786,7 +1808,8 @@ update_enemy_type_99:
 	; (not executed in the CDL traces)
 	rtl
 
-sub_1DBD6A:
+; Shakes the screen and now and then uploads the flash palette.
+ending_shake_and_flash:
 	lda	#$0002
 	sta	a:shake_timer
 	lda	stage_frame_counter
@@ -1802,7 +1825,10 @@ sub_1DBD6A:
 @return:
 	rts
 
-sub_1DBD89:
+; Raises the source of the floor explosions to y $E0 (one pixel every 4
+; frames), then ending_spawn_floor_explosions: two OBJT_ENDING_EXPLOSION
+; effects thrown up and outwards (ending_explosion_x_vels by side).
+ending_floor_explosions_rise:
 	lda	OBJ_Y,x
 	cmp	#$00E0
 	bcc	loc_1DBD96
@@ -1815,7 +1841,7 @@ loc_1DBD96:
 	lda	#$007F
 	sta	zp_06
 
-sub_1DBDA0:
+ending_spawn_floor_explosions:
 	lda	OBJ_X,x
 	adc	#$FFF0
 	sta	zp_00
@@ -1848,9 +1874,9 @@ loc_1DBDB3:
 	inx
 	inx
 loc_1DBDE5:
-	lda	a:data_05FEF1,x
+	lda	a:ending_explosion_x_vel_subs,x
 	sta	a:$0018,y
-	lda	a:data_05FEF5,x
+	lda	a:ending_explosion_x_vels,x
 	sta	a:$001A,y
 	plx
 	dec	zp_FC
@@ -1869,12 +1895,12 @@ loc_1DBE03:
 	ora	joy2_pressed
 	bit	#$1000
 	bne	loc_1DBE11
-	jsr	a:sub_1DBE61
+	jsr	a:ending_blink_push_start_key
 	bra	ending_sequence_state_2A
 loc_1DBE11:
 	; (not executed in the CDL traces)
 	phx
-	ldx	#.loword(text_05FF0A)
+	ldx	#.loword(text_push_start_key_blank)
 	lda	#$0400
 	jsl	f:draw_text_attr
 	plx
@@ -1885,10 +1911,12 @@ loc_1DBE11:
 	inc	OBJ_STATE,x
 
 ending_sequence_state_2A:
-	jsr	a:sub_1DBE30
+	jsr	a:ending_spawn_text_screen_sparkles
 	rtl
 
-sub_1DBE30:
+; On the last text screen, not on easy: random effects (anim_05C6EA /
+; anim_05C702) over the screen (seen in the emulator).
+ending_spawn_text_screen_sparkles:
 	lda	difficulty
 	beq	loc_1DBE60
 	lda	#$00FF
@@ -1912,13 +1940,15 @@ loc_1DBE4C:
 loc_1DBE60:
 	rts
 
-sub_1DBE61:
+; Blinks the text "PUSH START KEY" (text_push_start_key and its blank
+; text_push_start_key_blank) every 16 frames.
+ending_blink_push_start_key:
 	phx
-	ldx	#.loword(text_05FEF9)
+	ldx	#.loword(text_push_start_key)
 	lda	stage_frame_counter
 	bit	#$0010
 	bne	loc_1DBE6F
-	ldx	#.loword(text_05FF0A)
+	ldx	#.loword(text_push_start_key_blank)
 loc_1DBE6F:
 	lda	#$0400
 	jsl	f:draw_text_attr
@@ -2244,7 +2274,7 @@ loc_1DC0E1:
 	lda	#$0060
 	sta	OBJ_X,x
 	ldy	a:boss_work_1
-	lda	a:data_05FF1B,y
+	lda	a:brain_boss_reappear_y,y
 	sta	OBJ_Y,x
 	ldy	#.loword(vram_blocks_05FF59)
 	jsr	a:queue_brain_boss_tiles
@@ -2257,7 +2287,7 @@ loc_1DC10A:
 	cmp	#$014B
 	bcc	loc_1DC119
 	ldy	a:boss_work_1
-	lda	a:data_05FF1F,y
+	lda	a:brain_boss_reappear_states,y
 	sta	OBJ_STATE,x
 	stz	hdma_preset
 loc_1DC119:
@@ -2327,9 +2357,9 @@ loc_1DC18D:
 	sta	zp_04
 	sta	zp_06
 	ldy	a:boss_work_6
-	lda	a:data_05FFA1,y
+	lda	a:brain_boss_death_effect_y_vels,y
 	sta	zp_FC
-	lda	a:data_05FFA5,y
+	lda	a:brain_boss_death_effect_anims,y
 	ldy	#$02C0
 	jsl	f:spawn_effect_random_offset
 	bcs	@return
@@ -2472,7 +2502,7 @@ brain_boss_attack_3:
 	lda	a:boss_work_6
 	bne	loc_1DC2C0
 	ldy	a:difficulty
-	lda	a:data_05FF61,y
+	lda	a:brain_boss_attack_3_min_y,y
 	cmp	OBJ_Y,x
 	bcc	@return
 	inc	a:boss_work_6
@@ -2701,7 +2731,7 @@ loc_1DC462:
 loc_1DC467:
 	sta	$38,x
 	tay
-	lda	a:data_05FF87,y
+	lda	a:brain_boss_attack_4_slots,y
 	tay
 	lda	a:$000A,y
 	sta	a:$0036,y
@@ -2739,10 +2769,10 @@ brain_boss_attack_4_step_02:
 loc_1DC4A1:
 	clc
 	lda	a:boss_work_4
-	adc	a:data_05FF93,y
+	adc	a:brain_boss_attack_4_angle_steps,y
 	sta	a:boss_work_4
 	sta	a:boss_work_2
-	cmp	a:data_05FF8B,y
+	cmp	a:brain_boss_attack_4_angle_limits,y
 	bne	loc_1DC4DA
 	inc	a:boss_work_6
 	lda	a:boss_work_6
@@ -2761,7 +2791,7 @@ loc_1DC4C3:
 	jsl	f:queue_sound
 loc_1DC4DA:
 	ldy	$38,x
-	lda	a:data_05FF87,y
+	lda	a:brain_boss_attack_4_slots,y
 	tay
 	sec
 	lda	a:$0036,y
@@ -2785,7 +2815,7 @@ brain_boss_attack_4_step_04:
 	eor	#$0002
 	sta	$38,x
 	tay
-	lda	a:data_05FF87,y
+	lda	a:brain_boss_attack_4_slots,y
 	tay
 	lda	a:$000A,y
 	sta	a:$0036,y
@@ -3353,7 +3383,7 @@ loc_1DC931:
 	lsr	a
 	and	#$0002
 	tay
-	lda	a:data_05FF23,y
+	lda	a:brain_boss_rolling_eye_delays,y
 	sta	OBJ_TIMER,x
 @return:
 	rtl
@@ -3555,11 +3585,11 @@ loc_1DCA7F:
 	lda	a:boss_work_0
 	asl	a
 	tay
-	lda	a:data_05FF3E,y
+	lda	a:brain_boss_minion_flags,y
 	sta	OBJ_FLAGS,x
-	lda	a:data_05FF67,y
+	lda	a:brain_boss_minion_sprites,y
 	sta	OBJ_SPRITE,x
-	lda	a:data_05FF77,y
+	lda	a:brain_boss_minion_attrs,y
 	sta	OBJ_ATTR,x
 	clc
 loc_1DCAC8:
@@ -3826,10 +3856,10 @@ loc_1DCC6F:
 	lda	zp_00
 	and	#$000E
 	tay
-	lda	a:data_05FF67,y
+	lda	a:brain_boss_minion_sprites,y
 	sta	$00,x
 	sta	$3A,x
-	lda	a:data_05FF77,y
+	lda	a:brain_boss_minion_attrs,y
 	sta	$02,x
 	sty	$24,x
 	inc	zp_00

@@ -6454,31 +6454,36 @@ palette_task_05F582:
 	palette_fade_out	$08, palette_088D7A, $2260
 palette_task_05F588:
 	palette_fade_in	$10, palette_088D7A, $2260
-data_05F58E:
+; spawn_ending_crowd: 4-byte records, two tables interleaved in each: type and
+; OBJ_ATTR (ending_crowd_attrs), animation and OBJ_FACING (ending_crowd_anims,
+; ending_crowd_facings), x and y on the map (ending_crowd_x, ending_crowd_y;
+; place_ending_crowd_member), one record per crowd member; ending_crowd_slots
+; are their slots.
+ending_crowd_types:
 	; CDL: read by spawn_ending_crowd
 	.byte	$9A, $00
-data_05F590:
-	; LAYOUT: read on from data_05F58E (lda a:data_05F58E,y)
+ending_crowd_attrs:
+	; LAYOUT: read on from ending_crowd_types (lda a:ending_crowd_types,y)
 	; CDL: read by spawn_ending_crowd
 	.byte	$00, $34, $9A, $00, $00, $36, $9B, $00, $00, $36, $9B, $00, $00, $38, $9C, $00
 	.byte	$00, $38, $9D, $00, $00, $36, $9E, $00, $00, $34, $9F, $00, $00, $34
-data_05F5AE:
+ending_crowd_anims:
 	; CDL: read by spawn_ending_crowd
 	.addr	anim_05F604
-data_05F5B0:
-	; LAYOUT: read on from data_05F5AE (lda a:data_05F5AE,y)
+ending_crowd_facings:
+	; LAYOUT: read on from ending_crowd_anims (lda a:ending_crowd_anims,y)
 	; CDL: read by spawn_ending_crowd
 	.byte	$00, $00, $04, $F6, $00, $00, $12, $F6, $00, $00, $12, $F6, $02, $00, $20, $F6
 	.byte	$02, $00, $2E, $F6, $00, $00, $50, $F6, $02, $00, $6A, $F6, $02, $00
-data_05F5CE:
+ending_crowd_x:
 	; CDL: read by spawn_ending_crowd
 	.byte	$F0, $00
-data_05F5D0:
-	; LAYOUT: read on from data_05F5CE (lda a:data_05F5CE,y)
+ending_crowd_y:
+	; LAYOUT: read on from ending_crowd_x (lda a:ending_crowd_x,y)
 	; CDL: read by spawn_ending_crowd
 	.byte	$C5, $00, $38, $00, $BE, $00, $C4, $00, $C6, $00, $10, $00, $C8, $00, $A7, $00
 	.byte	$BE, $00, $20, $00, $C6, $00, $20, $00, $D4, $00, $D0, $00, $D1, $00
-data_05F5EE:
+ending_crowd_slots:
 	; CDL: read by spawn_ending_crowd
 	.byte	$C0, $03, $00, $05, $C0, $04, $40, $04, $00, $04, $80, $03, $00, $03, $40, $03
 ; number of crowd members spawned by spawn_ending_crowd, by difficulty (6, 7, 8)
@@ -6564,26 +6569,32 @@ quarter_cosine:
 	.byte	$EC, $EA, $E7, $E4, $E1, $DE, $DB, $D8, $D4, $D1, $CD, $C9, $C5, $C1, $BD, $B9
 	.byte	$B5, $B0, $AB, $A7, $A2, $9D, $98, $93, $8E, $88, $83, $7E, $78, $73, $6D, $67
 	.byte	$61, $5C, $56, $50, $4A, $44, $3E, $38, $31, $2B, $25, $1F, $19, $12, $0C, $06
-data_05F894:
+; ending_creature_aim_arm by arm (Y = 0, 2): which half of the cycle it aims
+; in, the turn while retracting (ending_creature_arm_retract_turns) and while
+; aiming (ending_creature_arm_aim_turns).
+ending_creature_arm_sides:
 	; CDL: read by ending_creature_aim_arm
 	.byte	$00, $00, $40, $00
-data_05F898:
+ending_creature_arm_retract_turns:
 	; CDL: read by ending_creature_aim_arm
 	.byte	$FC, $FF, $04, $00
-data_05F89C:
+ending_creature_arm_aim_turns:
 	; CDL: read by setup_stage_hdma, ending_creature_aim_arm; partly not accessed
 	.byte	$05, $00, $FB, $FF
 hdma_list_05F8A0:
 	hdma_channel_ind	$4370, $42, $10, $7EE800, $7E
 	hdma_channels_end	$80
-data_05F8AB:
+; update_enemy_type_96: sprite by an angle / 32.
+ending_claw_segment_sprites:
 	; CDL: read by setup_stage_hdma, update_enemy_type_96
 	.addr	metasprite_06C59C
 	.addr	metasprite_06C5BE, metasprite_06C5AD, metasprite_06C4F2
-data_05F8B3:
+; ending_creature_feed_arm: x of each arm root.
+ending_creature_arm_root_x:
 	; CDL: read by ending_creature_feed_arm
 	.byte	$48, $00, $B0, $00, $60, $00, $98, $00
-data_05F8BB:
+; ending_creature_swing: angle step by field $34.
+ending_creature_swing_speeds:
 	; CDL: read by ending_creature_swing; partly not accessed
 	.byte	$04, $00, $08, $00, $02, $00, $FE, $FF
 load_list_05F8C3:
@@ -6605,17 +6616,20 @@ palette_task_05F8E3:
 	palette_animate	$00, $00
 	palette_copy	palette_08EFCA, $2200
 	palette_copy_end
-data_05F8EC:
+; ending_queue_tile_changes, by step boss_work_0: low nibble = column of the
+; change, high nibble = frames to the next one;
+; ending_tile_change_block_offsets = the blocks in vram_blocks_05F914.
+ending_tile_change_columns:
 	; CDL: read by ending_queue_tile_changes
 	.byte	$10, $10, $00, $14, $00, $24, $00, $04, $58, $00, $04, $A8, $04, $08, $FC, $04
 	.byte	$08, $6C, $08, $6C
-data_05F900:
-	; LAYOUT: read on from data_05F8EC (lda a:data_05F8EC,y)
+ending_tile_change_block_offsets:
+	; LAYOUT: read on from ending_tile_change_columns (lda a:ending_tile_change_columns,y)
 	; CDL: read by setup_stage_hdma, queue_vram_blocks_at_x, ending_queue_tile_changes; DMA / HDMA; partly not accessed
 	.byte	$00, $0C, $18, $24, $30, $3C, $48, $54, $00, $60, $30, $3C, $6C, $18, $78, $60
 	.byte	$84, $90, $60, $60
 vram_blocks_05F914:
-	; LAYOUT: read on from data_05F900 (lda a:data_05F900,y)
+	; LAYOUT: read on from ending_tile_change_block_offsets (lda a:ending_tile_change_block_offsets,y)
 	.byte	$A0, $B5, $40, $C4, $40, $B4, $C0, $B5, $60, $C4, $60, $B4
 	.byte	$C0, $C2, $80, $C2, $A0, $C3, $E0, $C2, $A0, $C2, $C0, $C3, $80, $B5, $A0, $B4
 	.byte	$20, $B5, $E0, $B5, $C0, $B4, $40, $B5, $A0, $B5, $40, $C4, $40, $B4, $C0, $B5
@@ -6632,18 +6646,18 @@ hdma_list_05F9B0:
 	hdma_channels_end	$C0
 hdma_table_05F9C3:
 	.byte	$1F, $00, $7F, $02, $00
-data_05F9C8:
-	; CDL: read by sub_1DB98D
+ending_text_fade_attrs:
+	; CDL: read by ending_run_text_script
 	.byte	$00, $1C, $00, $14, $00, $0C, $00, $04
-data_05F9D0:
-	; CDL: read by sub_1DB98D; partly not accessed
+ending_text_script:
+	; CDL: read by ending_run_text_script; partly not accessed
 	.byte	$FF, $04, $FF, $14, $FF, $00, $02, $04, $06, $FF, $12, $14, $16, $10, $FE, $00
 	.byte	$02, $04, $06, $FF, $12, $14, $16, $10, $FE, $00, $02, $04, $06, $08, $FF, $12
 	.byte	$14, $16, $18, $FE, $02, $04, $06, $FF, $12, $14, $16, $10, $FE, $00, $02, $04
 	.byte	$06, $FF, $12, $14, $16, $FE, $02, $04, $06, $08, $FE, $18, $12, $14, $16, $10
 	.byte	$FE, $04, $FF, $14, $FE, $02, $04, $FF, $FF, $FF
 ptrs_ending_text_a:
-	; CDL: read by sub_1DB98D
+	; CDL: read by ending_run_text_script
 	.addr	text_05FA8A
 	.addr	text_05FAF5
 	.addr	text_05FB08
@@ -6673,7 +6687,7 @@ ptrs_ending_text_a:
 	.addr	text_05FD4E
 	.addr	text_05FD6E
 ptrs_ending_text_b:
-	; CDL: read by sub_1DB98D
+	; CDL: read by ending_run_text_script
 	.addr	text_05FAA7
 	.addr	text_05FAA7
 	.addr	text_05FB1C
@@ -6847,7 +6861,9 @@ hdma_list_05FD8B:
 hdma_table_05FD96:
 	.byte	$1F, $12, $7F, $16
 	.byte	$00
-data_05FD9B:
+; ending_sequence_state_17: the load list of the closing message, by
+; difficulty.
+ptrs_ending_message_loads:
 	; CDL: read by load_data_list, step_vram_loader, decompress_chunk (+1 more); partly not accessed
 	.addr	load_list_05FDA1, load_list_05FDAA, load_list_05FDB3
 load_list_05FDA1:
@@ -6893,13 +6909,16 @@ load_list_05FDEA:
 	load_list	$00, $01
 	load_vram	$3000, gfx_19EF62
 	load_end
-data_05FDF3:
+; ending_sequence_state_1B (hard only): an animation of 4 BG blocks
+; alternating with OBJ_TIMER (VRAM ending_hard_tile_vram_addrs, blocks
+; ptrs_ending_hard_tile_blocks[boss_work_4] + offset).
+ending_hard_tile_block_offsets:
 	; CDL: read by ending_sequence_state_1B
 	.byte	$00, $00, $10, $00
-data_05FDF7:
+ending_hard_tile_vram_addrs:
 	; CDL: read by ending_sequence_state_1B
 	.byte	$08, $4C, $08, $4D
-data_05FDFB:
+ptrs_ending_hard_tile_blocks:
 	; CDL: read by start_palette_task_at, palette_task_fade_out, palette_task_fade_in (+2 more)
 	.addr	vram_blocks_05FE07
 	.addr	vram_blocks_05FE27
@@ -6948,25 +6967,28 @@ palette_task_05FEE8:
 	palette_animate	$00, $00
 	palette_copy	palette_088B18, $2340
 	palette_copy_end
-data_05FEF1:
-	; CDL: read by sub_1DBDA0
+ending_explosion_x_vel_subs:
+	; CDL: read by ending_spawn_floor_explosions
 	.byte	$00, $E0, $00, $20
-data_05FEF5:
-	; CDL: read by draw_text, sub_1DBDA0
+ending_explosion_x_vels:
+	; CDL: read by draw_text, ending_spawn_floor_explosions
 	.byte	$FF, $FF, $00, $00
-text_05FEF9:
+text_push_start_key:
 	.byte	$E9, $5E, $0B, $4F, $4D, $43, $00, $4D, $4E, $3C, $4C, $4E
 	.byte	$00, $46, $40, $53, $FF
-text_05FF0A:
+text_push_start_key_blank:
 	.byte	$E9, $5E, $00, $00, $00, $00, $00, $00, $00, $00, $00
 	.byte	$00, $00, $00, $00, $00, $FF
-data_05FF1B:
+; brain_boss_state_07: y where the brain reappears and the state it goes to
+; afterwards (brain_boss_reappear_states), by boss_work_1.
+brain_boss_reappear_y:
 	; CDL: read by brain_boss_state_07
 	.byte	$70, $00, $C0, $00
-data_05FF1F:
+brain_boss_reappear_states:
 	; CDL: read by brain_boss_state_07
 	.byte	$03, $00, $09, $00
-data_05FF23:
+; update_brain_boss_rolling_eye: OBJ_TIMER by difficulty / 4.
+brain_boss_rolling_eye_delays:
 	; CDL: read by update_brain_boss_rolling_eye
 	.byte	$10, $00, $20, $00
 load_list_05FF27:
@@ -6980,10 +7002,13 @@ load_list_05FF30:
 	load_vram	$1000, gfx_0F9460
 	load_vram	$2000, gfx_119D0E
 	load_end
-data_05FF3E:
+; brain_boss_init_minion, by attack (boss_work_0): OBJ_FLAGS, sprite
+; (brain_boss_minion_sprites) and OBJ_ATTR (brain_boss_minion_attrs); the
+; sprites and attributes are also used by brain_boss_spawn_orb_clusters.
+brain_boss_minion_flags:
 	; CDL: read by brain_boss_init_minion
 	.byte	$1C, $00, $3D, $40, $00, $40, $3F, $40, $3D, $40, $3D, $40, $1F, $00, $3F
-	; (last byte of the table, read through data_05FF3E,y)
+	; (last byte of the table, read through brain_boss_minion_flags,y)
 	.byte	$40
 hdma_list_05FF4E:
 	hdma_channel_ind	$4370, $42, $10, $7EEA00, $7E
@@ -6992,37 +7017,43 @@ vram_blocks_05FF59:
 	.byte	$A0, $B3, $C0, $B3
 vram_blocks_05FF5D:
 	.byte	$C0, $BE, $E0, $BE
-data_05FF61:
+; brain_boss_attack_3: y the brain rises to, by difficulty.
+brain_boss_attack_3_min_y:
 	; CDL: read by brain_boss_attack_3; partly not accessed
 	.byte	$40, $00, $50, $00, $80, $00
-data_05FF67:
+brain_boss_minion_sprites:
 	; CDL: read by brain_boss_spawn_orb_clusters
 	.addr	metasprite_06C514, metasprite_06C525, metasprite_06C536, metasprite_06C558
 	.addr	metasprite_06C547, metasprite_06C569, metasprite_06C57A, metasprite_06C58B
-data_05FF77:
+brain_boss_minion_attrs:
 	; CDL: read by brain_boss_spawn_orb_clusters
 	.byte	$00, $06, $00, $06, $00, $06, $00, $04, $00, $00, $00, $0E, $00, $04, $00, $00
-data_05FF87:
+; brain_boss_attack_4 steps: the slot whose position the brain follows, by
+; field $38 (3 bytes, read on into the next table), then the angle limits and
+; angle steps of the swing (boss_work_4).
+brain_boss_attack_4_slots:
 	; CDL: read by brain_boss_attack_4_step_01, brain_boss_attack_4_step_04
 	.byte	$00, $04, $40
-	; (last byte of the table, read through data_05FF87,y)
+	; (last byte of the table, read through brain_boss_attack_4_slots,y)
 	.byte	$05
-data_05FF8B:
+brain_boss_attack_4_angle_limits:
 	; CDL: read by brain_boss_attack_4_step_02
 	.byte	$74, $00, $8C
-	; (the rest of the table, read through data_05FF8B,y)
+	; (the rest of the table, read through brain_boss_attack_4_angle_limits,y)
 	.byte	$00, $80, $00, $80, $00
-data_05FF93:
+brain_boss_attack_4_angle_steps:
 	; CDL: read by brain_boss_attack_4_step_02
 	.byte	$FF, $FF, $01, $00, $01, $00, $FF, $FF
 ; OBJ_HP of brain_boss by difficulty (easy, normal, hard)
 brain_boss_hp:
 	; CDL: read by brain_boss_state_00; partly not accessed
 	.word	ENEMY_HP($0401), ENEMY_HP($4256), ENEMY_HP($7532)
-data_05FFA1:
+; brain_boss_state_0A: y velocity and animation of its death explosions, by
+; boss_work_6.
+brain_boss_death_effect_y_vels:
 	; CDL: read by brain_boss_state_0A
 	.byte	$F8, $FF, $FF, $FF
-data_05FFA5:
+brain_boss_death_effect_anims:
 	; CDL: read by brain_boss_state_0A; partly not accessed
 	.addr	anim_05C6EA
 	.addr	anim_05C558

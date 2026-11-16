@@ -14,22 +14,22 @@ loc_04E222:
 	lda	zp_00
 	asl	a
 	tay
-	lda	a:data_05F5EE,y
+	lda	a:ending_crowd_slots,y
 	tax
 	tya
 	asl	a
 	tay
-	lda	a:data_05F58E,y
+	lda	a:ending_crowd_types,y
 	sta	$10,x
-	lda	a:data_05F590,y
+	lda	a:ending_crowd_attrs,y
 	sta	$02,x
-	lda	a:data_05F5AE,y
+	lda	a:ending_crowd_anims,y
 	sta	$20,x
-	lda	a:data_05F5B0,y
+	lda	a:ending_crowd_facings,y
 	sta	$04,x
-	lda	a:data_05F5CE,y
+	lda	a:ending_crowd_x,y
 	sta	$0A,x
-	lda	a:data_05F5D0,y
+	lda	a:ending_crowd_y,y
 	sta	$32,x
 	lda	#$0001
 	sta	$16,x
