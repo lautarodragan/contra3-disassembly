@@ -179,12 +179,12 @@ stage1_boss_controller_state_05:
 	lda	#$0080
 	sta	$38,x
 	lda	#$0080
-	sta	a:wram_0474
+	sta	a:obj_slots+9*OBJ_SIZE+$34
 	lda	#$0100
 	sta	a:boss_work_1
 	jsr	a:spawn_stage1_boss_parts
 loc_00F3DF:
-	dec	a:wram_030E
+	dec	a:obj_slots+4*OBJ_SIZE+OBJ_Y
 	jsr	a:stage1_boss_place_middle_chunks
 	jsr	a:stage1_boss_set_bg2_scroll
 	rtl
@@ -387,16 +387,16 @@ loc_00F572:
 	bpl	@return
 	lda	#$0020
 	sta	$24,x
-	stz	a:wram_0318
-	stz	a:wram_031A
-	stz	a:wram_031C
-	stz	a:wram_031E
-	stz	a:wram_0330
-	stz	a:wram_03D8
-	stz	a:wram_03DA
-	stz	a:wram_03DC
-	stz	a:wram_03DE
-	stz	a:wram_03F0
+	stz	a:obj_slots+4*OBJ_SIZE+OBJ_X_VEL_SUB
+	stz	a:obj_slots+4*OBJ_SIZE+OBJ_X_VEL
+	stz	a:obj_slots+4*OBJ_SIZE+OBJ_Y_VEL_SUB
+	stz	a:obj_slots+4*OBJ_SIZE+OBJ_Y_VEL
+	stz	a:obj_slots+4*OBJ_SIZE+$30
+	stz	a:obj_slots+7*OBJ_SIZE+OBJ_X_VEL_SUB
+	stz	a:obj_slots+7*OBJ_SIZE+OBJ_X_VEL
+	stz	a:obj_slots+7*OBJ_SIZE+OBJ_Y_VEL_SUB
+	stz	a:obj_slots+7*OBJ_SIZE+OBJ_Y_VEL
+	stz	a:obj_slots+7*OBJ_SIZE+$30
 	lda	#$0004
 	sta	a:shake_timer
 	lda	#$0056
@@ -433,8 +433,8 @@ loc_00F5BE:
 stage1_boss_place_middle_chunks:
 	stz	zp_00
 	sec
-	lda	a:wram_030A
-	sbc	a:wram_03CA
+	lda	a:obj_slots+4*OBJ_SIZE+OBJ_X
+	sbc	a:obj_slots+7*OBJ_SIZE+OBJ_X
 	bpl	loc_00F5E9
 	eor	#$FFFF
 	inc	zp_00
@@ -449,8 +449,8 @@ loc_00F5E9:
 	.a16
 	stz	zp_02
 	sec
-	lda	a:wram_030E
-	sbc	a:wram_03CE
+	lda	a:obj_slots+4*OBJ_SIZE+OBJ_Y
+	sbc	a:obj_slots+7*OBJ_SIZE+OBJ_Y
 	bpl	loc_00F608
 	eor	#$FFFF
 	inc	zp_02
@@ -464,14 +464,14 @@ loc_00F608:
 loc_00F616:
 	sta	zp_00
 	clc
-	lda	a:wram_030A
+	lda	a:obj_slots+4*OBJ_SIZE+OBJ_X
 	adc	zp_00
 	adc	#$0000
-	sta	a:wram_034A
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_X
 	clc
 	adc	zp_00
 	adc	#$0000
-	sta	a:wram_038A
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_X
 	pla
 	sta	a:WRDIVL
 	sep	#$20
@@ -496,12 +496,12 @@ loc_00F616:
 loc_00F64C:
 	sta	zp_02
 	clc
-	lda	a:wram_030E
+	lda	a:obj_slots+4*OBJ_SIZE+OBJ_Y
 	adc	zp_02
-	sta	a:wram_034E
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_Y
 	clc
 	adc	zp_02
-	sta	a:wram_038E
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_Y
 	rts
 
 stage1_boss_init_hdma_table:
@@ -652,7 +652,7 @@ loc_00F763:
 	stz	$36,x
 	lda	#$0080
 	sta	$38,x
-	stz	a:wram_0464
+	stz	a:obj_slots+9*OBJ_SIZE+OBJ_TIMER
 loc_00F771:
 	ldy	a:boss_work_5
 	lda	$38,x
@@ -664,8 +664,8 @@ loc_00F771:
 	brl	loc_00F797
 loc_00F783:
 	sec
-	lda	a:wram_020E
-	sbc	a:wram_044E
+	lda	a:player1_obj+OBJ_Y
+	sbc	a:obj_slots+9*OBJ_SIZE+OBJ_Y
 	bcs	loc_00F7A3
 	brl	loc_00F705
 loc_00F78F:
@@ -675,8 +675,8 @@ loc_00F78F:
 loc_00F797:
 	; (not executed in the CDL traces)
 	sec
-	lda	a:wram_024E
-	sbc	a:wram_044E
+	lda	a:player2_obj+OBJ_Y
+	sbc	a:obj_slots+9*OBJ_SIZE+OBJ_Y
 	bcs	loc_00F7A3
 	brl	loc_00F705
 loc_00F7A3:
@@ -701,7 +701,7 @@ stage1_boss_attack_choose:
 loc_00F7C6:
 	lda	#$0057
 	jsl	f:queue_sound
-	lda	a:wram_0490
+	lda	a:obj_slots+10*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0020
 	bne	loc_00F7E2
 	ldy	#$0080
@@ -721,7 +721,7 @@ loc_00F7F3:
 	lda	#$0057
 	jsl	f:queue_sound
 	lda	#$0001
-	sta	a:wram_0464
+	sta	a:obj_slots+9*OBJ_SIZE+OBJ_TIMER
 	ldy	#$0100
 	lda	#$0003
 loc_00F806:
@@ -845,17 +845,17 @@ stage1_boss_add_height:
 stage1_boss_set_bg2_scroll:
 	sec
 	lda	#$01C0
-	sbc	a:wram_030A
+	sbc	a:obj_slots+4*OBJ_SIZE+OBJ_X
 	sta	a:bg2_x
 	sec
 	lda	#$009C
-	sbc	a:wram_030E
+	sbc	a:obj_slots+4*OBJ_SIZE+OBJ_Y
 	sta	a:bg2_y
 loc_00F8F6:
-	lda	a:wram_030A
+	lda	a:obj_slots+4*OBJ_SIZE+OBJ_X
 	adc	#$FFE0
 	sta	$0A,x
-	lda	a:wram_030E
+	lda	a:obj_slots+4*OBJ_SIZE+OBJ_Y
 	adc	#$001C
 	sta	$0E,x
 	rts
@@ -891,9 +891,9 @@ spawn_stage1_boss_parts:
 	bcc	@loop
 	ldy	difficulty
 	lda	#ENEMY_HP($0160)
-	sta	a:wram_0406
+	sta	a:obj_slots+8*OBJ_SIZE+OBJ_HP
 	lda	a:stage1_boss_shell_hp,y
-	sta	a:wram_0486
+	sta	a:obj_slots+10*OBJ_SIZE+OBJ_HP
 	plx
 	rts
 
@@ -943,22 +943,22 @@ stage1_boss_place_parts:
 	sec
 	lda	#$B8
 	sbc	f:wram_7EA068
-	sta	a:wram_040E
-	stz	a:wram_040F
+	sta	a:obj_slots+8*OBJ_SIZE+OBJ_Y
+	stz	a:obj_slots+8*OBJ_SIZE+OBJ_Y+1
 	sec
 	lda	#$90
 	sbc	f:wram_7EA056
-	sta	a:wram_044E
-	stz	a:wram_044F
+	sta	a:obj_slots+9*OBJ_SIZE+OBJ_Y
+	stz	a:obj_slots+9*OBJ_SIZE+OBJ_Y+1
 	sec
 	lda	#$60
 	sbc	a:boss_work_1
-	sta	a:wram_044A
-	stz	a:wram_044B
+	sta	a:obj_slots+9*OBJ_SIZE+OBJ_X
+	stz	a:obj_slots+9*OBJ_SIZE+OBJ_X+1
 	sec
 	lda	#$9C
 	sbc	f:wram_7EA070
-	sta	a:wram_030E
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_Y
 	rep	#$20
 	.a16
 	brl	loc_00F8F6
@@ -1011,10 +1011,10 @@ stage1_boss_fire_tracking_shot:
 	sta	a:$0002,y
 	lda	#.loword(anim_05AB14)
 	sta	a:$0020,y
-	lda	a:wram_048E
+	lda	a:obj_slots+10*OBJ_SIZE+OBJ_Y
 	adc	#$FFE8
 	sta	a:$000E,y
-	lda	a:wram_048A
+	lda	a:obj_slots+10*OBJ_SIZE+OBJ_X
 	adc	#$0010
 	sta	a:$000A,y
 	lda	rng_lo
@@ -1047,9 +1047,9 @@ stage1_boss_fire_falling_shot:
 	sta	a:$0020,y
 	lda	#$0001
 	sta	a:$0004,y
-	lda	a:wram_044E
+	lda	a:obj_slots+9*OBJ_SIZE+OBJ_Y
 	sta	a:$000E,y
-	lda	a:wram_044A
+	lda	a:obj_slots+9*OBJ_SIZE+OBJ_X
 	adc	#$0008
 	sta	a:$000A,y
 	lda	#$0001
@@ -1179,10 +1179,10 @@ stage1_boss_spawn_fire:
 	sta	a:$0010,y
 	lda	#$1200
 	sta	a:$0002,y
-	lda	a:wram_044A
+	lda	a:obj_slots+9*OBJ_SIZE+OBJ_X
 	adc	#$0010
 	sta	a:$000A,y
-	lda	a:wram_044E
+	lda	a:obj_slots+9*OBJ_SIZE+OBJ_Y
 	adc	#$FFFC
 	sta	a:$000E,y
 	lda	#$0080
@@ -1198,10 +1198,10 @@ stage1_boss_spawn_fire_stream_shot:
 	bcs	@return
 	lda	#$000F
 	sta	a:$0016,y
-	lda	a:wram_044A
+	lda	a:obj_slots+9*OBJ_SIZE+OBJ_X
 	adc	#$0010
 	sta	a:$000A,y
-	lda	a:wram_044E
+	lda	a:obj_slots+9*OBJ_SIZE+OBJ_Y
 	adc	#$FFFC
 	sta	a:$000E,y
 	lda	#$FFF0	; [num]
@@ -1282,12 +1282,12 @@ loc_00FC58:
 	lda	$06,x
 	bpl	loc_00FCBD
 	lda	#$0100
-	sta	a:wram_0932
+	sta	a:obj_slots+28*OBJ_SIZE+$32
 	lda	#$0110
-	sta	a:wram_093E
+	sta	a:obj_slots+28*OBJ_SIZE+$3E
 	lda	#$0006
-	sta	a:wram_0936
-	stz	a:wram_0464
+	sta	a:obj_slots+28*OBJ_SIZE+$36
+	stz	a:obj_slots+9*OBJ_SIZE+OBJ_TIMER
 	lda	#$8000	; [num]
 	sta	$16,x
 	lda	#$C540	; [num] WRAM $7E:C540, the tiles queue_vram_block copies
@@ -1297,7 +1297,7 @@ loc_00FC58:
 	jml	f:loc_00FE7D
 
 ; Object type $20: stage 1 boss (the giant turtle), a part with HP 256:
-; explodes when destroyed or when the boss dies (wram_0932).
+; explodes when destroyed or when the boss dies (obj_slots+28*OBJ_SIZE+$32).
 update_stage1_boss_part:
 	sec
 	lda	#$0060
@@ -1306,7 +1306,7 @@ update_stage1_boss_part:
 	sta	a:$000E,x
 	lda	OBJ_STATE,x
 	bne	loc_00FCC9
-	lda	a:wram_0932
+	lda	a:obj_slots+28*OBJ_SIZE+$32
 	bne	loc_00FCA0
 	lda	OBJ_HP,x
 	bpl	loc_00FCBD
@@ -1424,9 +1424,9 @@ update_stage1_boss_fire:
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
 loc_00FD73:
-	lda	a:wram_044A
+	lda	a:obj_slots+9*OBJ_SIZE+OBJ_X
 	sta	$0A,x
-	lda	a:wram_044E
+	lda	a:obj_slots+9*OBJ_SIZE+OBJ_Y
 	adc	#$FFFC
 	sta	$0E,x
 	lda	stage_frame_counter

@@ -280,8 +280,8 @@ stage_frame:
 	jsr	a:update_stage_frame_counters
 	jsl	f:update_players
 	jsl	f:update_shots
-	stz	a:wram_023C
-	stz	a:wram_027C
+	stz	a:player1_obj+PLAYER_CONTACT
+	stz	a:player2_obj+PLAYER_CONTACT
 	stz	a:wram_1504
 	stz	a:wram_1544
 	lda	a:wram_16B6
@@ -394,7 +394,7 @@ layout_init_stage3:
 	lda	#$0007
 	sta	hdma_preset
 	lda	#$003C
-	sta	a:wram_08D0
+	sta	a:obj_slots+27*OBJ_SIZE+OBJ_TYPE
 layout_init_stage3_common:
 	lda	#$004A
 	sta	a:bg2sc_shadow
@@ -406,11 +406,11 @@ layout_init_stage4_checkpoint:
 	lda	#$0063
 	jsl	f:queue_sound
 	lda	#$000D
-	sta	a:wram_0952
+	sta	a:obj_slots+29*OBJ_SIZE+OBJ_STATE
 	lda	#$000A
 	sta	hdma_preset
 	lda	#$0030
-	sta	a:wram_0978
+	sta	a:obj_slots+29*OBJ_SIZE+$38
 	bra	layout_init_stage4_common
 
 layout_init_stage4:
@@ -424,15 +424,15 @@ layout_init_stage4_common:
 	lda	#$0002
 	sta	a:wram_16B6
 	lda	#$0064
-	sta	a:wram_0950
+	sta	a:obj_slots+29*OBJ_SIZE+OBJ_TYPE
 	lda	#$00A0
-	sta	a:wram_0964
+	sta	a:obj_slots+29*OBJ_SIZE+OBJ_TIMER
 	lda	#$006D
-	sta	a:wram_0290
-	sta	a:wram_02D0
-	stz	a:wram_02B0
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+3*OBJ_SIZE+OBJ_TYPE
+	stz	a:obj_slots+2*OBJ_SIZE+$30
 	lda	#$0002
-	sta	a:wram_02F0
+	sta	a:obj_slots+3*OBJ_SIZE+$30
 	lda	#$004A
 	sta	a:bg2sc_shadow
 	lda	#$0004
@@ -446,7 +446,7 @@ layout_init_stage6:
 	sta	a:palette_anim_id
 	jsl	f:apply_palette_anim_once
 	lda	#$0055
-	sta	a:wram_08D0
+	sta	a:obj_slots+27*OBJ_SIZE+OBJ_TYPE
 	lda	#$004A
 	sta	a:bg2sc_shadow
 	lda	#$0062

@@ -174,7 +174,7 @@ alien_dog_check_player_close:
 	lda	$0A,x
 	sec
 	sbc	#$0020
-	cmp	a:wram_020A
+	cmp	a:player1_obj+OBJ_X
 	bcs	loc_01D0C5
 loc_01D0B4:
 	lda	a:p2_lives
@@ -182,7 +182,7 @@ loc_01D0B4:
 	lda	$0A,x
 	sec
 	sbc	#$0020
-	cmp	a:wram_024A
+	cmp	a:player2_obj+OBJ_X
 	bcs	loc_01D0C5
 loc_01D0C4:
 	clc
@@ -195,7 +195,7 @@ alien_dog_check_player_in_range:
 	lda	$0A,x
 	clc
 	adc	#$0050
-	cmp	a:wram_020A
+	cmp	a:player1_obj+OBJ_X
 	bcs	loc_01D0E7
 loc_01D0D6:
 	lda	a:p2_lives
@@ -203,7 +203,7 @@ loc_01D0D6:
 	lda	$0A,x
 	clc
 	adc	#$0050
-	cmp	a:wram_024A
+	cmp	a:player2_obj+OBJ_X
 	bcs	loc_01D0E7
 loc_01D0E6:
 	clc
@@ -1088,10 +1088,10 @@ object_type_34_state_00:
 	rtl
 
 object_type_34_state_01:
-	lda	a:wram_0910
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0017
 	bne	@return
-	lda	a:wram_0906
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_HP
 	bpl	loc_01D7BB
 	lda	#$001D
 	jsl	f:queue_sound
@@ -1842,7 +1842,7 @@ object_type_49_state_01:
 	lda	rng_lo
 	and	#$0001
 	beq	loc_01DD3E
-	lda	a:wram_0256
+	lda	a:player2_obj+OBJ_FLAGS
 	bit	#$0001
 	beq	loc_01DD3E
 	; (not executed in the CDL traces)
@@ -2376,14 +2376,14 @@ object_type_4E_state_0C:
 object_type_4E_pick_target:
 	lda	#$0200
 	sta	$34,x
-	lda	a:wram_0216
+	lda	a:player1_obj+OBJ_FLAGS
 	bit	#$0001
 	beq	loc_01E104
 	lda	rng_lo
 	and	#$0001
 	beq	loc_01E111
 loc_01E104:
-	lda	a:wram_0256
+	lda	a:player2_obj+OBJ_FLAGS
 	bit	#$0001
 	beq	loc_01E111
 	; (not executed in the CDL traces)
@@ -2565,14 +2565,14 @@ loc_01E260:
 	sta	a:$0012,y
 	lda	#$0200
 	sta	a:$0038,y
-	lda	a:wram_0216
+	lda	a:player1_obj+OBJ_FLAGS
 	bit	#$0001
 	beq	loc_01E290
 	lda	rng_lo
 	and	#$0001
 	beq	loc_01E29E
 loc_01E290:
-	lda	a:wram_0256
+	lda	a:player2_obj+OBJ_FLAGS
 	bit	#$0001
 	beq	loc_01E29E
 	; (not executed in the CDL traces)
@@ -2597,8 +2597,8 @@ object_type_4E_slant_to_target:
 	bit	#$0001
 	bne	loc_01E2D6
 	jsr	a:object_type_4E_pick_target
-	lda	a:wram_0216
-	ora	a:wram_0256
+	lda	a:player1_obj+OBJ_FLAGS
+	ora	a:player2_obj+OBJ_FLAGS
 	and	#$0001
 	bne	loc_01E2D6
 	lda	zp_04
@@ -2783,8 +2783,8 @@ object_type_4E_track_target:
 	bit	#$0001
 	bne	loc_01E408
 	jsr	a:object_type_4E_pick_target
-	lda	a:wram_0216
-	ora	a:wram_0256
+	lda	a:player1_obj+OBJ_FLAGS
+	ora	a:player2_obj+OBJ_FLAGS
 	and	#$0001
 	bne	loc_01E408
 	lda	#$0080
@@ -3360,14 +3360,14 @@ pick_random_player:
 pick_random_player_local:
 	lda	#$0200
 	tay
-	lda	a:wram_0216
+	lda	a:player1_obj+OBJ_FLAGS
 	bit	#$0001
 	beq	loc_01E877
 	lda	rng_lo
 	and	#$0001
 	beq	loc_01E883
 loc_01E877:
-	lda	a:wram_0256
+	lda	a:player2_obj+OBJ_FLAGS
 	bit	#$0001
 	beq	loc_01E883
 	lda	#$0240
@@ -3749,38 +3749,38 @@ stage3_spiked_climber_state_06:
 	lda	#$0002
 	sta	a:wram_1672
 	lda	#$0001
-	sta	a:wram_0356
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_FLAGS
 	lda	#$FFFB	; [num]
-	sta	a:wram_035E
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_Y_VEL
 	lda	#$0048
 	jsl	f:queue_sound
 @return:
 	rtl
 
 stage3_spiked_climber_state_07:
-	lda	a:wram_035E
+	lda	a:obj_slots+5*OBJ_SIZE+OBJ_Y_VEL
 	bne	loc_01EB69
 	inc	OBJ_STATE,x
-	stz	a:wram_035C
-	stz	a:wram_035E
-	stz	a:wram_0358
-	stz	a:wram_035A
+	stz	a:obj_slots+5*OBJ_SIZE+OBJ_Y_VEL_SUB
+	stz	a:obj_slots+5*OBJ_SIZE+OBJ_Y_VEL
+	stz	a:obj_slots+5*OBJ_SIZE+OBJ_X_VEL_SUB
+	stz	a:obj_slots+5*OBJ_SIZE+OBJ_X_VEL
 	rtl
 loc_01EB69:
 	clc
-	lda	a:wram_035C
+	lda	a:obj_slots+5*OBJ_SIZE+OBJ_Y_VEL_SUB
 	adc	#$1000
-	sta	a:wram_035C
-	lda	a:wram_035E
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_Y_VEL_SUB
+	lda	a:obj_slots+5*OBJ_SIZE+OBJ_Y_VEL
 	adc	#$0000
-	sta	a:wram_035E
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_Y_VEL
 	clc
-	lda	a:wram_0358
+	lda	a:obj_slots+5*OBJ_SIZE+OBJ_X_VEL_SUB
 	adc	#$EC00
-	sta	a:wram_0358
-	lda	a:wram_035A
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_X_VEL_SUB
+	lda	a:obj_slots+5*OBJ_SIZE+OBJ_X_VEL
 	adc	#$FFFF
-	sta	a:wram_035A
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_X_VEL
 	rtl
 
 ; Object type $3E: does nothing (rtl); stage 3 spiked climber's arm.
@@ -3795,8 +3795,8 @@ update_stage3_spiked_climber_core:
 	bpl	loc_01EBAD
 	inc	a:boss_work_6
 	lda	#$0030
-	sta	a:wram_0396
-	sta	a:wram_0356
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_FLAGS
 	lda	#$0019
 	jsl	f:queue_sound
 loc_01EBAD:
@@ -3805,8 +3805,8 @@ loc_01EBAD:
 	beq	loc_01EBB7
 	ldy	#$3200
 loc_01EBB7:
-	sty	a:wram_0342
-	sty	a:wram_0382
+	sty	a:obj_slots+5*OBJ_SIZE+OBJ_ATTR
+	sty	a:obj_slots+6*OBJ_SIZE+OBJ_ATTR
 	rtl
 
 ; Object type $3F: stage 3 spiked climber, spike arm.
@@ -3842,13 +3842,13 @@ spiked_climber_place_parts:
 	clc
 	lda	$0A,x
 	adc	#$0004
-	sta	a:wram_030A
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_X
 	clc
 	adc	#$FFF4
-	sta	a:wram_034A
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_X
 	clc
 	adc	#$000C
-	sta	a:wram_038A
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_X
 	lda	stage_frame_counter
 	and	#$001F
 	lsr	a
@@ -3874,16 +3874,16 @@ loc_01EC25:
 	clc
 	adc	#$0008
 	adc	zp_00
-	sta	a:wram_034E
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_Y
 	dec	a
 	dec	a
-	sta	a:wram_030E
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_Y
 	inc	a
 	inc	a
 	clc
 	adc	zp_02
 	adc	a:boss_work_0
-	sta	a:wram_038E
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_Y
 	rts
 
 object_type_3F_move_spikes:
@@ -3970,11 +3970,11 @@ spiked_climber_check_fallen:
 	cmp	#$0100
 	bcc	loc_01ED3E
 	lda	#$8000	; [num]
-	sta	a:wram_0316
-	sta	a:wram_0396
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_FLAGS
 	inc	$12,x
 	stz	$16,x
-	stz	a:wram_0340
+	stz	a:obj_slots+5*OBJ_SIZE+OBJ_SPRITE
 	lda	#$0001
 	sta	a:bg1_autoscroll
 	sta	a:wram_1666
@@ -3984,16 +3984,16 @@ spiked_climber_check_fallen:
 	lda	#$0007
 	sta	a:bg2_scroll_mode
 	lda	#.loword(anim_05CB49)
-	sta	a:wram_0360
-	stz	a:wram_0356
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_ANIM
+	stz	a:obj_slots+5*OBJ_SIZE+OBJ_FLAGS
 	lda	#$0080
-	sta	a:wram_034A
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_X
 	lda	#$0130
-	sta	a:wram_034E
-	stz	a:wram_0358
-	stz	a:wram_035A
-	stz	a:wram_035C
-	stz	a:wram_035E
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_Y
+	stz	a:obj_slots+5*OBJ_SIZE+OBJ_X_VEL_SUB
+	stz	a:obj_slots+5*OBJ_SIZE+OBJ_X_VEL
+	stz	a:obj_slots+5*OBJ_SIZE+OBJ_Y_VEL_SUB
+	stz	a:obj_slots+5*OBJ_SIZE+OBJ_Y_VEL
 	rts
 loc_01ED3E:
 	clc
@@ -4053,10 +4053,10 @@ update_object_type_59:
 	cmp	#$0640
 	bcc	@loop
 	lda	#.loword(metasprite_06B9EA)
-	sta	a:wram_03C0
-	sta	a:wram_0600
-	stz	a:wram_03E0
-	stz	a:wram_0620
+	sta	a:obj_slots+7*OBJ_SIZE+OBJ_SPRITE
+	sta	a:obj_slots+16*OBJ_SIZE+OBJ_SPRITE
+	stz	a:obj_slots+7*OBJ_SIZE+OBJ_ANIM
+	stz	a:obj_slots+16*OBJ_SIZE+OBJ_ANIM
 	ldx	#$0340
 	lda	zp_04
 	sta	$38,x
@@ -4083,28 +4083,28 @@ update_object_type_59:
 	rtl
 
 stage3_spiked_climber_state_09:
-	lda	a:wram_034A
+	lda	a:obj_slots+5*OBJ_SIZE+OBJ_X
 	bmi	loc_01EE22
 	cmp	#$007C
 	bcc	loc_01EE22
 	lda	#$0049
 	jsl	f:queue_sound
 	lda	#$007C
-	sta	a:wram_034A
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_X
 	lda	#$0003
 	sta	a:shake_timer
-	stz	a:wram_0358
-	stz	a:wram_035A
+	stz	a:obj_slots+5*OBJ_SIZE+OBJ_X_VEL_SUB
+	stz	a:obj_slots+5*OBJ_SIZE+OBJ_X_VEL
 	inc	$12,x
 	rtl
 loc_01EE22:
 	clc
-	lda	a:wram_0358
+	lda	a:obj_slots+5*OBJ_SIZE+OBJ_X_VEL_SUB
 	adc	#$2000
-	sta	a:wram_0358
-	lda	a:wram_035A
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_X_VEL_SUB
+	lda	a:obj_slots+5*OBJ_SIZE+OBJ_X_VEL
 	adc	#$0000
-	sta	a:wram_035A
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_X_VEL
 	rtl
 
 stage3_spiked_climber_state_0A:
@@ -4124,8 +4124,8 @@ loc_01EE50:
 	lda	#$FFFF	; [num]
 loc_01EE53:
 	clc
-	adc	a:wram_034A
-	sta	a:wram_034A
+	adc	a:obj_slots+5*OBJ_SIZE+OBJ_X
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_X
 	lda	$24,x
 	beq	loc_01EE7D
 	dec	$24,x
@@ -4147,7 +4147,7 @@ loc_01EE7D:
 	lda	#$0001
 	sta	a:boss_work_0
 	ldy	a:boss_work_2
-	lda	a:wram_034E
+	lda	a:obj_slots+5*OBJ_SIZE+OBJ_Y
 	bmi	loc_01EE7C
 	cmp	a:data_05CB7B,y
 	bcc	loc_01EE7C
@@ -4173,11 +4173,11 @@ loc_01EE7D:
 	lda	$30,x
 	eor	#$0016
 	sta	$30,x
-	sta	a:wram_03F0
+	sta	a:obj_slots+7*OBJ_SIZE+$30
 	lda	$32,x
 	eor	#$0002
 	sta	$32,x
-	sta	a:wram_03F2
+	sta	a:obj_slots+7*OBJ_SIZE+$32
 	bne	loc_01EEDA
 	lda	#$0040
 	ldx	#$03C0
@@ -4246,11 +4246,11 @@ tbl_object_type_5A_states:
 object_type_5A_state_00:
 	ldy	$38,x
 	clc
-	lda	a:wram_034A
+	lda	a:obj_slots+5*OBJ_SIZE+OBJ_X
 	adc	a:data_05CBAF,y
 	sta	OBJ_X,x
 	clc
-	lda	a:wram_034E
+	lda	a:obj_slots+5*OBJ_SIZE+OBJ_Y
 	adc	a:data_05CBC5,y
 	sta	OBJ_Y,x
 
@@ -4304,7 +4304,7 @@ loc_01EF9E:
 	rtl
 
 object_type_5A_state_02:
-	lda	a:wram_060A
+	lda	a:obj_slots+16*OBJ_SIZE+OBJ_X
 	cmp	OBJ_X,x
 	bcs	@return
 	sta	OBJ_X,x
@@ -4342,11 +4342,11 @@ stage3_spiked_climber_state_0C:
 
 stage3_spiked_climber_state_0D:
 	lda	#$00F0
-	sta	a:wram_03E8
-	sta	a:wram_0628
+	sta	a:obj_slots+7*OBJ_SIZE+OBJ_HITBOX_W
+	sta	a:obj_slots+16*OBJ_SIZE+OBJ_HITBOX_W
 	lda	#$FFE2	; [num]
-	sta	a:wram_03EA
-	sta	a:wram_062A
+	sta	a:obj_slots+7*OBJ_SIZE+OBJ_HITBOX_H
+	sta	a:obj_slots+16*OBJ_SIZE+OBJ_HITBOX_H
 	jsr	a:spiked_climber_init_hdma
 	inc	$12,x
 	clc
@@ -4375,11 +4375,11 @@ loc_01F039:
 	inc	a
 	sta	f:wram_7E3821
 	sta	f:wram_7E382A
-	lda	a:wram_03CA
+	lda	a:obj_slots+7*OBJ_SIZE+OBJ_X
 	dec	a
 	dec	a
-	sta	a:wram_03CA
-	sta	a:wram_060A
+	sta	a:obj_slots+7*OBJ_SIZE+OBJ_X
+	sta	a:obj_slots+16*OBJ_SIZE+OBJ_X
 	rtl
 
 stage3_spiked_climber_state_0F:
@@ -4387,23 +4387,23 @@ stage3_spiked_climber_state_0F:
 	lda	#$0003
 	sta	a:shake_timer
 	lda	#$8000	; [num]
-	sta	a:wram_0416
-	sta	a:wram_0456
-	sta	a:wram_0496
-	sta	a:wram_04D6
-	sta	a:wram_0516
-	sta	a:wram_0556
-	sta	a:wram_0596
-	sta	a:wram_05D6
+	sta	a:obj_slots+8*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+9*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+10*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+11*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+12*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+13*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+14*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+15*OBJ_SIZE+OBJ_FLAGS
 	sta	$16,x
-	stz	a:wram_03D6
-	stz	a:wram_0616
+	stz	a:obj_slots+7*OBJ_SIZE+OBJ_FLAGS
+	stz	a:obj_slots+16*OBJ_SIZE+OBJ_FLAGS
 	inc	$12,x
 	phx
 	lda	$10,x
-	sta	a:wram_0350
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_TYPE
 	lda	$12,x
-	sta	a:wram_0352
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_STATE
 	ldy	#$0002
 	ldx	#$0400
 	jsr	a:spiked_climber_init_hitbox
@@ -4437,11 +4437,11 @@ stage3_spiked_climber_state_10:
 	lda	#$0100
 	sta	$24,x
 	lda	#$8000	; [num]
-	sta	a:wram_03D6
-	sta	a:wram_0616
-	sta	a:wram_0416
-	sta	a:wram_0456
-	sta	a:wram_0396
+	sta	a:obj_slots+7*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+16*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+8*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+9*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_FLAGS
 	stz	$1A,x
 	stz	$18,x
 	stz	$1C,x
@@ -4724,32 +4724,32 @@ spiked_climber_place_bg:
 	sta	f:wram_7E3821
 	sta	f:wram_7E382A
 	lda	$0A,x
-	sta	a:wram_040A
-	sta	a:wram_044A
+	sta	a:obj_slots+8*OBJ_SIZE+OBJ_X
+	sta	a:obj_slots+9*OBJ_SIZE+OBJ_X
 	adc	#$0000
-	sta	a:wram_03CA
-	sta	a:wram_060A
+	sta	a:obj_slots+7*OBJ_SIZE+OBJ_X
+	sta	a:obj_slots+16*OBJ_SIZE+OBJ_X
 	lda	$0E,x
-	sta	a:wram_038E
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_Y
 	lda	$0A,x
 	cmp	#$0060
 	bcc	loc_01F336
 	clc
-	lda	a:wram_038A
+	lda	a:obj_slots+6*OBJ_SIZE+OBJ_X
 	adc	#$0006
-	sta	a:wram_038A
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_X
 	bra	loc_01F340
 loc_01F336:
 	sec
-	lda	a:wram_038A
+	lda	a:obj_slots+6*OBJ_SIZE+OBJ_X
 	sbc	#$0008
-	sta	a:wram_038A
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_X
 loc_01F340:
 	clc
 	lda	$0A,x
 	adc	#$000C
 	sec
-	sbc	a:wram_038A
+	sbc	a:obj_slots+6*OBJ_SIZE+OBJ_X
 	bpl	loc_01F356
 	cmp	#$FFE8	; [num]
 	bcs	loc_01F35F
@@ -4760,7 +4760,7 @@ loc_01F356:
 loc_01F359:
 	clc
 	adc	$0A,x
-	sta	a:wram_038A
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_X
 loc_01F35F:
 	rts
 

@@ -237,7 +237,7 @@ crush: two shot types, damage 4 and 0.
 - Respawn invulnerability: 96 frames (`respawn_player`);
   `make_players_invulnerable` is what bosses and stage ends use.
 - The stage 1 boss's body has 352 HP on every difficulty (`spawn_stage1_boss_parts`,
-  `lda #$0160 / sta a:wram_0406`); its shell has `stage1_boss_shell_hp` (128, 256,
+  `lda #$0160 / sta a:obj_slots+8*OBJ_SIZE+OBJ_HP`); its shell has `stage1_boss_shell_hp` (128, 256,
   and `$7FFF` on hard).
 - Unused debug code: `debug_player_keys` (Select + Up: difficulty, Select
   + X: lives, bombs and barrier `$8000`) has no caller.

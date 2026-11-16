@@ -1377,14 +1377,14 @@ stage5_boss_state_8:
 	sbc	#$0020
 	clc
 	adc	$0A,x
-	sta	a:wram_0B0A
+	sta	a:td_map_objects+1*OBJ_SIZE+OBJ_X
 	lda	rng_lo
 	and	#$003F
 	sec
 	sbc	#$0020
 	clc
 	adc	$0E,x
-	sta	a:wram_0B0E
+	sta	a:td_map_objects+1*OBJ_SIZE+OBJ_Y
 	phx
 	ldx	#$0B00
 	jsl	f:td_spawn_explosion_effect
@@ -1620,7 +1620,7 @@ loc_02F285:
 	sta	a:stage5_boss_spit_timer
 	lda	#$0300
 	jsr	a:stage5_boss_spawn_spit
-	stz	a:wram_0314
+	stz	a:td_enemy_shots+$14
 	lda	#$0001
 	sta	a:stage5_boss_spit_step
 
@@ -1654,14 +1654,14 @@ stage5_boss_spit_step_2:
 loc_02F2DC:
 	lda	#$0000
 	sta	a:stage5_boss_spit_timer
-	stz	a:wram_0314
-	stz	a:wram_0334
-	stz	a:wram_0354
-	stz	a:wram_0374
-	stz	a:wram_0394
-	stz	a:wram_03B4
-	stz	a:wram_03D4
-	stz	a:wram_03F4
+	stz	a:td_enemy_shots+$14
+	stz	a:td_enemy_shots+1*SHOT_SIZE+$14
+	stz	a:td_enemy_shots+2*SHOT_SIZE+$14
+	stz	a:td_enemy_shots+3*SHOT_SIZE+$14
+	stz	a:td_enemy_shots+4*SHOT_SIZE+$14
+	stz	a:td_enemy_shots+5*SHOT_SIZE+$14
+	stz	a:td_enemy_shots+6*SHOT_SIZE+$14
+	stz	a:td_enemy_shots+7*SHOT_SIZE+$14
 	lda	#$0003
 	sta	a:stage5_boss_spit_step
 
@@ -1674,14 +1674,14 @@ loc_02F306:
 	lda	#$0020
 	sta	a:stage5_boss_spit_timer
 	lda	#$0002
-	sta	a:wram_0312
-	sta	a:wram_0332
-	sta	a:wram_0352
-	sta	a:wram_0372
-	sta	a:wram_0392
-	sta	a:wram_03B2
-	sta	a:wram_03D2
-	sta	a:wram_03F2
+	sta	a:td_enemy_shots+OBJ_STATE
+	sta	a:td_enemy_shots+1*SHOT_SIZE+OBJ_STATE
+	sta	a:td_enemy_shots+2*SHOT_SIZE+OBJ_STATE
+	sta	a:td_enemy_shots+3*SHOT_SIZE+OBJ_STATE
+	sta	a:td_enemy_shots+4*SHOT_SIZE+OBJ_STATE
+	sta	a:td_enemy_shots+5*SHOT_SIZE+OBJ_STATE
+	sta	a:td_enemy_shots+6*SHOT_SIZE+OBJ_STATE
+	sta	a:td_enemy_shots+7*SHOT_SIZE+OBJ_STATE
 	lda	#$0004
 	sta	a:stage5_boss_spit_step
 
@@ -1786,7 +1786,7 @@ stage5_boss_spawn_arm:
 	sbc	$0E,x
 	sta	zp_0A
 	jsl	f:calc_angle
-	sta	a:wram_0B44
+	sta	a:td_map_objects+2*OBJ_SIZE+OBJ_ANGLE
 	clc
 	adc	#$0020
 	asl	a
@@ -1796,69 +1796,69 @@ stage5_boss_spawn_arm:
 	and	#$0006
 	tay
 	lda	a:data_05E6A6,y
-	sta	a:wram_0B4A
+	sta	a:td_map_objects+2*OBJ_SIZE+OBJ_X
 	lda	a:data_05E6AE,y
-	sta	a:wram_0B4E
+	sta	a:td_map_objects+2*OBJ_SIZE+OBJ_Y
 	lda	#TDT_STAGE5_BOSS_CLAW
-	sta	a:wram_0B50
+	sta	a:td_map_objects+2*OBJ_SIZE+OBJ_TYPE
 	lda	#TDT_STAGE5_BOSS_ARM_BASE
-	sta	a:wram_0B90
+	sta	a:td_map_objects+3*OBJ_SIZE+OBJ_TYPE
 	lda	#TDT_STAGE5_BOSS_ARM_SEGMENT
-	sta	a:wram_0BD0
-	sta	a:wram_0C10
-	sta	a:wram_0C50
-	sta	a:wram_0C90
-	sta	a:wram_0CD0
-	sta	a:wram_0D10
-	sta	a:wram_0D50
-	sta	a:wram_0D90
-	sta	a:wram_0DD0
-	sta	a:wram_0E10
-	sta	a:wram_0E50
-	sta	a:wram_0E90
-	stz	a:wram_0B52
-	stz	a:wram_0B92
-	stz	a:wram_0BD2
-	stz	a:wram_0C12
-	stz	a:wram_0C52
-	stz	a:wram_0C92
-	stz	a:wram_0CD2
-	stz	a:wram_0D12
-	stz	a:wram_0D52
-	stz	a:wram_0D92
-	stz	a:wram_0DD2
-	stz	a:wram_0E12
-	stz	a:wram_0E52
-	stz	a:wram_0E92
+	sta	a:td_map_objects+4*OBJ_SIZE+OBJ_TYPE
+	sta	a:td_map_objects+5*OBJ_SIZE+OBJ_TYPE
+	sta	a:td_map_objects+6*OBJ_SIZE+OBJ_TYPE
+	sta	a:td_map_objects+7*OBJ_SIZE+OBJ_TYPE
+	sta	a:td_map_objects+8*OBJ_SIZE+OBJ_TYPE
+	sta	a:td_map_objects+9*OBJ_SIZE+OBJ_TYPE
+	sta	a:td_enemies+OBJ_TYPE
+	sta	a:td_enemies+1*OBJ_SIZE+OBJ_TYPE
+	sta	a:td_enemies+2*OBJ_SIZE+OBJ_TYPE
+	sta	a:td_enemies+3*OBJ_SIZE+OBJ_TYPE
+	sta	a:td_enemies+4*OBJ_SIZE+OBJ_TYPE
+	sta	a:td_enemies+5*OBJ_SIZE+OBJ_TYPE
+	stz	a:td_map_objects+2*OBJ_SIZE+OBJ_STATE
+	stz	a:td_map_objects+3*OBJ_SIZE+OBJ_STATE
+	stz	a:td_map_objects+4*OBJ_SIZE+OBJ_STATE
+	stz	a:td_map_objects+5*OBJ_SIZE+OBJ_STATE
+	stz	a:td_map_objects+6*OBJ_SIZE+OBJ_STATE
+	stz	a:td_map_objects+7*OBJ_SIZE+OBJ_STATE
+	stz	a:td_map_objects+8*OBJ_SIZE+OBJ_STATE
+	stz	a:td_map_objects+9*OBJ_SIZE+OBJ_STATE
+	stz	a:td_enemies+OBJ_STATE
+	stz	a:td_enemies+1*OBJ_SIZE+OBJ_STATE
+	stz	a:td_enemies+2*OBJ_SIZE+OBJ_STATE
+	stz	a:td_enemies+3*OBJ_SIZE+OBJ_STATE
+	stz	a:td_enemies+4*OBJ_SIZE+OBJ_STATE
+	stz	a:td_enemies+5*OBJ_SIZE+OBJ_STATE
 	sec
 	lda	#$1900
-	sta	a:wram_0B7A
+	sta	a:td_map_objects+2*OBJ_SIZE+$3A
 	sbc	#$0020
-	sta	a:wram_0BFA
+	sta	a:td_map_objects+4*OBJ_SIZE+$3A
 	sbc	#$0020
-	sta	a:wram_0C3A
+	sta	a:td_map_objects+5*OBJ_SIZE+$3A
 	sbc	#$0020
-	sta	a:wram_0C7A
+	sta	a:td_map_objects+6*OBJ_SIZE+$3A
 	sbc	#$0020
-	sta	a:wram_0CBA
+	sta	a:td_map_objects+7*OBJ_SIZE+$3A
 	sbc	#$0020
-	sta	a:wram_0CFA
+	sta	a:td_map_objects+8*OBJ_SIZE+$3A
 	sbc	#$0020
-	sta	a:wram_0D3A
+	sta	a:td_map_objects+9*OBJ_SIZE+$3A
 	sbc	#$0020
-	sta	a:wram_0D7A
+	sta	a:td_enemies+$3A
 	sbc	#$0020
-	sta	a:wram_0DBA
+	sta	a:td_enemies+1*OBJ_SIZE+$3A
 	sbc	#$0020
-	sta	a:wram_0DFA
+	sta	a:td_enemies+2*OBJ_SIZE+$3A
 	sbc	#$0020
-	sta	a:wram_0E3A
+	sta	a:td_enemies+3*OBJ_SIZE+$3A
 	sbc	#$0020
-	sta	a:wram_0E7A
+	sta	a:td_enemies+4*OBJ_SIZE+$3A
 	sbc	#$0020
-	sta	a:wram_0EBA
+	sta	a:td_enemies+5*OBJ_SIZE+$3A
 	sbc	#$0020
-	sta	a:wram_0BBA
+	sta	a:td_map_objects+3*OBJ_SIZE+$3A
 	rts
 
 ; TDT_STAGE5_BOSS_CLAW ($0B40): the claw at the end of the stage 5 boss's
@@ -1970,7 +1970,7 @@ loc_02F575:
 	sta	$12,x
 
 stage5_boss_claw_state_4:
-	lda	a:wram_0AE4
+	lda	a:td_map_objects+$24
 	cmp	#$0010
 	bne	@return
 	jsl	f:stage5_boss_claw_fire
@@ -2017,7 +2017,7 @@ stage5_boss_claw_state_6:
 
 ; TDT_STAGE5_BOSS_ARM_BASE ($0B80): the end of the stage 5 boss's arm in the pit.
 update_stage5_boss_arm_base:
-	lda	a:wram_0B50
+	lda	a:td_map_objects+2*OBJ_SIZE+OBJ_TYPE
 	bne	loc_02F5E0
 	brl	clear_topdown_slot
 loc_02F5E0:
@@ -2109,7 +2109,7 @@ loc_02F675:
 ; TDT_STAGE5_BOSS_ARM_SEGMENT: one of the 12 segments of the stage 5 boss's
 ; arm; follows the claw's trail.
 update_stage5_boss_arm_segment:
-	lda	a:wram_0B50
+	lda	a:td_map_objects+2*OBJ_SIZE+OBJ_TYPE
 	bne	loc_02F684
 	; (not executed in the CDL traces)
 	brl	clear_topdown_slot
@@ -2150,7 +2150,7 @@ stage5_boss_arm_segment_state_0:
 	sta	$12,x
 
 stage5_boss_arm_segment_state_1:
-	lda	a:wram_0B52
+	lda	a:td_map_objects+2*OBJ_SIZE+OBJ_STATE
 	cmp	#$0002
 	bcc	@return
 	lda	$3A,x
@@ -2239,20 +2239,20 @@ stage5_boss_arm_pass_damage:
 	rts
 
 stage5_boss_check_arm_out:
-	lda	a:wram_0B50
-	ora	a:wram_0B90
-	ora	a:wram_0BD0
-	ora	a:wram_0C10
-	ora	a:wram_0C50
-	ora	a:wram_0C90
-	ora	a:wram_0CD0
-	ora	a:wram_0D10
-	ora	a:wram_0D50
-	ora	a:wram_0D90
-	ora	a:wram_0DD0
-	ora	a:wram_0E10
-	ora	a:wram_0E50
-	ora	a:wram_0E90
+	lda	a:td_map_objects+2*OBJ_SIZE+OBJ_TYPE
+	ora	a:td_map_objects+3*OBJ_SIZE+OBJ_TYPE
+	ora	a:td_map_objects+4*OBJ_SIZE+OBJ_TYPE
+	ora	a:td_map_objects+5*OBJ_SIZE+OBJ_TYPE
+	ora	a:td_map_objects+6*OBJ_SIZE+OBJ_TYPE
+	ora	a:td_map_objects+7*OBJ_SIZE+OBJ_TYPE
+	ora	a:td_map_objects+8*OBJ_SIZE+OBJ_TYPE
+	ora	a:td_map_objects+9*OBJ_SIZE+OBJ_TYPE
+	ora	a:td_enemies+OBJ_TYPE
+	ora	a:td_enemies+1*OBJ_SIZE+OBJ_TYPE
+	ora	a:td_enemies+2*OBJ_SIZE+OBJ_TYPE
+	ora	a:td_enemies+3*OBJ_SIZE+OBJ_TYPE
+	ora	a:td_enemies+4*OBJ_SIZE+OBJ_TYPE
+	ora	a:td_enemies+5*OBJ_SIZE+OBJ_TYPE
 	rts
 
 stage5_boss_claw_turn_to_target:
@@ -2282,11 +2282,11 @@ loc_02F7A5:
 
 stage5_boss_claw_angle_to_target:
 	sec
-	lda	a:wram_0AFE
+	lda	a:td_map_objects+$3E
 	sbc	$0A,x
 	sta	zp_08
 	sec
-	lda	a:wram_0AFC
+	lda	a:td_map_objects+$3C
 	sbc	$0E,x
 	sta	zp_0A
 	jsl	f:calc_angle
@@ -2295,11 +2295,11 @@ stage5_boss_claw_angle_to_target:
 stage5_boss_arm_angle_from_tail:
 	sec
 	lda	$0A,x
-	sbc	a:wram_0E8A
+	sbc	a:td_enemies+5*OBJ_SIZE+OBJ_X
 	sta	zp_08
 	sec
 	lda	$0E,x
-	sbc	a:wram_0E8E
+	sbc	a:td_enemies+5*OBJ_SIZE+OBJ_Y
 	sta	zp_0A
 	jsl	f:calc_angle
 	rts
@@ -2307,17 +2307,17 @@ stage5_boss_arm_angle_from_tail:
 stage5_boss_arm_angle_from_head:
 	sec
 	lda	$0A,x
-	sbc	a:wram_0BCA
+	sbc	a:td_map_objects+4*OBJ_SIZE+OBJ_X
 	sta	zp_08
 	sec
 	lda	$0E,x
-	sbc	a:wram_0BCE
+	sbc	a:td_map_objects+4*OBJ_SIZE+OBJ_Y
 	sta	zp_0A
 	jsl	f:calc_angle
 	rts
 
 stage5_boss_claw_record_trail:
-	lda	a:wram_0B52
+	lda	a:td_map_objects+2*OBJ_SIZE+OBJ_STATE
 	cmp	#$0005
 	beq	loc_02F821
 	cmp	#$0003
@@ -2359,7 +2359,7 @@ loc_02F821:
 	rts
 
 stage5_boss_arm_follow_trail:
-	lda	a:wram_0B52
+	lda	a:td_map_objects+2*OBJ_SIZE+OBJ_STATE
 	cmp	#$0005
 	beq	loc_02F85C
 	cmp	#$0003

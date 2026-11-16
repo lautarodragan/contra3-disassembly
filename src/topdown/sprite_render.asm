@@ -539,9 +539,9 @@ draw_map_view_sprites:
 	; (not executed in the CDL traces)
 	ldy	#$0FC0
 	lda	#$AAAA	; [num]
-	sta	a:wram_11C0
+	sta	a:oam_hi_table
 	lda	#$AAAA	; [num]
-	sta	a:wram_11C2
+	sta	a:oam_hi_table+2
 	lda	a:p1_lives
 	bne	loc_03E4BC
 	brl	loc_03E4C8
@@ -820,13 +820,13 @@ write_target_marker:
 draw_intro_sprites:
 	ldy	#$0FC0
 	lda	#$AAAA	; [num]
-	sta	a:wram_11C0
+	sta	a:oam_hi_table
 	lda	#$AAAA	; [num]
-	sta	a:wram_11C2
+	sta	a:oam_hi_table+2
 	lda	#$AAAA	; [num]
-	sta	a:wram_11C4
+	sta	a:oam_hi_table+4
 	lda	#$0002
-	sta	a:wram_11C6
+	sta	a:oam_hi_table+6
 	lda	a:intro_phase
 	dec	a
 	beq	loc_03E6A6
@@ -1302,7 +1302,7 @@ is_p1_view_falling:
 	dec	a
 	bne	loc_03E9E6
 loc_03E9DF:
-	lda	a:wram_0EEC
+	lda	a:td_p1_obj+$2C
 	beq	loc_03E9E6
 	sec
 	rts
@@ -1388,22 +1388,22 @@ loc_03EA3C:
 
 ; Copies the two target arrows (objects $0200 and $0240) to the first OAM entries.
 draw_target_arrows:
-	lda	a:wram_020A
-	sta	a:wram_0FC0
-	lda	a:wram_020E
-	sta	a:wram_0FC1
-	lda	a:player1_obj
-	sta	a:wram_0FC2
-	lda	a:wram_024A
-	sta	a:wram_0FC4
-	lda	a:wram_024E
-	sta	a:wram_0FC5
-	lda	a:player2_obj
-	sta	a:wram_0FC6
-	lda	a:wram_11C0
+	lda	a:td_arrow_objs+OBJ_X
+	sta	a:oam_buffer
+	lda	a:td_arrow_objs+OBJ_Y
+	sta	a:oam_buffer+1
+	lda	a:td_arrow_objs
+	sta	a:oam_buffer+2
+	lda	a:td_arrow_objs+1*OBJ_SIZE+OBJ_X
+	sta	a:oam_buffer+4
+	lda	a:td_arrow_objs+1*OBJ_SIZE+OBJ_Y
+	sta	a:oam_buffer+5
+	lda	a:td_arrow_objs+1*OBJ_SIZE
+	sta	a:oam_buffer+6
+	lda	a:oam_hi_table
 	and	#$FF00
 	ora	#$00AA
-	sta	a:wram_11C0
+	sta	a:oam_hi_table
 	rts
 
 ; OAM write pointer zp_10 = $0FD0, high table pointer zp_12 = $11C0.
@@ -1559,7 +1559,7 @@ draw_enemies:
 	dec	a
 	bne	loc_03EBAE
 loc_03EBA6:
-	lda	a:wram_0EEC
+	lda	a:td_p1_obj+$2C
 	beq	loc_03EBAE
 	brl	loc_03EC46
 loc_03EBAE:
@@ -1684,8 +1684,8 @@ loc_03EC77:
 loc_03EC86:
 	cpx	#$0EC0
 	beq	loc_03EC93
-	lda	a:wram_0EEC
-	ora	a:wram_0F2C
+	lda	a:td_p1_obj+$2C
+	ora	a:td_p2_obj+$2C
 	bne	loc_03ED04
 loc_03EC93:
 	lda	$00,x
@@ -2361,7 +2361,7 @@ loc_03F155:
 
 ; Screen positions (+$38/+$3C) of the smart bombs ($8000 when out of range).
 project_td_bombs:
-	lda	a:wram_0EEC
+	lda	a:td_p1_obj+$2C
 	bne	loc_03F188
 	ldx	#$0F40
 	lda	$10,x
@@ -2381,7 +2381,7 @@ loc_03F180:
 	lda	zp_02
 	sta	$3C,x
 loc_03F188:
-	lda	a:wram_0F2C
+	lda	a:td_p2_obj+$2C
 	bne	loc_03F1AF
 loc_03F18D:
 	ldx	#$0F80
@@ -2568,7 +2568,7 @@ is_p1_view_falling_2:
 	dec	a
 	bne	loc_03F2DF
 loc_03F2D7:
-	lda	a:wram_0EEC
+	lda	a:td_p1_obj+$2C
 	beq	loc_03F2DF
 	; (not executed in the CDL traces)
 	brl	loc_03F2E1
@@ -2807,7 +2807,7 @@ is_p2_view_falling:
 	dec	a
 	bne	loc_03F480
 loc_03F479:
-	lda	a:wram_0F2C
+	lda	a:td_p2_obj+$2C
 	beq	loc_03F480
 	sec
 	rts
@@ -2891,22 +2891,22 @@ loc_03F4D6:
 	rts
 
 draw_target_arrows_p2:
-	lda	a:wram_028A
-	sta	a:wram_0FC8
-	lda	a:wram_028E
-	sta	a:wram_0FC9
-	lda	a:wram_0280
-	sta	a:wram_0FCA
-	lda	a:wram_02CA
-	sta	a:wram_0FCC
-	lda	a:wram_02CE
-	sta	a:wram_0FCD
-	lda	a:wram_02C0
-	sta	a:wram_0FCE
-	lda	a:wram_11C0
+	lda	a:td_arrow_objs+2*OBJ_SIZE+OBJ_X
+	sta	a:oam_buffer+8
+	lda	a:td_arrow_objs+2*OBJ_SIZE+OBJ_Y
+	sta	a:oam_buffer+9
+	lda	a:td_arrow_objs+2*OBJ_SIZE
+	sta	a:oam_buffer+10
+	lda	a:td_arrow_objs+3*OBJ_SIZE+OBJ_X
+	sta	a:oam_buffer+12
+	lda	a:td_arrow_objs+3*OBJ_SIZE+OBJ_Y
+	sta	a:oam_buffer+13
+	lda	a:td_arrow_objs+3*OBJ_SIZE
+	sta	a:oam_buffer+14
+	lda	a:oam_hi_table
 	and	#$FF00
 	ora	#$00AA
-	sta	a:wram_11C0
+	sta	a:oam_hi_table
 	rts
 
 start_oam_list_p2:
@@ -3056,7 +3056,7 @@ draw_enemies_p2:
 	dec	a
 	bne	loc_03F648
 loc_03F640:
-	lda	a:wram_0F2C
+	lda	a:td_p2_obj+$2C
 	beq	loc_03F648
 	brl	loc_03F6E0
 loc_03F648:
@@ -3180,8 +3180,8 @@ loc_03F711:
 loc_03F720:
 	cpx	#$0F00
 	beq	loc_03F72D
-	lda	a:wram_0F2C
-	ora	a:wram_0EEC
+	lda	a:td_p2_obj+$2C
+	ora	a:td_p1_obj+$2C
 	bne	loc_03F79E
 loc_03F72D:
 	lda	$00,x
@@ -3852,7 +3852,7 @@ loc_03FBEF:
 	rts
 
 project_td_bombs_p2:
-	lda	a:wram_0F2C
+	lda	a:td_p2_obj+$2C
 	bne	loc_03FC22
 	ldx	#$0F40
 	lda	$10,x
@@ -3872,7 +3872,7 @@ loc_03FC1A:
 	lda	zp_02
 	sta	$3E,x
 loc_03FC22:
-	lda	a:wram_0EEC
+	lda	a:td_p1_obj+$2C
 	bne	loc_03FC49
 loc_03FC27:
 	ldx	#$0F80
@@ -4063,7 +4063,7 @@ is_p2_view_falling_2:
 	dec	a
 	bne	loc_03FD79
 loc_03FD71:
-	lda	a:wram_0F2C
+	lda	a:td_p2_obj+$2C
 	beq	loc_03FD79
 	brl	loc_03FD7B
 loc_03FD79:

@@ -446,13 +446,13 @@ fire_bullet_at_player:
 	lda	stage_frame_odd
 	bne	loc_01A0FA
 	ldy	#$0200
-	lda	a:wram_0216
+	lda	a:player1_obj+OBJ_FLAGS
 	bne	loc_01A105
 	ldy	#$0240
 	bra	loc_01A105
 loc_01A0FA:
 	ldy	#$0240
-	lda	a:wram_0256
+	lda	a:player2_obj+OBJ_FLAGS
 	bne	loc_01A105
 	ldy	#$0200
 loc_01A105:
@@ -508,14 +508,14 @@ loc_01A15B:
 pick_target_player:
 	and	stage_frame_counter
 	bne	loc_01A16C
-	lda	a:wram_0216
+	lda	a:player1_obj+OBJ_FLAGS
 	bmi	loc_01A173
 	beq	loc_01A173
 loc_01A168:
 	ldy	#$0200
 	rtl
 loc_01A16C:
-	lda	a:wram_0256
+	lda	a:player2_obj+OBJ_FLAGS
 	bmi	loc_01A168
 	beq	loc_01A168
 loc_01A173:

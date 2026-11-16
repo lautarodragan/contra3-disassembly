@@ -95,6 +95,24 @@ also have fields at slot + `$1300` and a stat block at slot + `$1D80`, so
 `p1_lives` (`$1F8A`) also appears as `lda a:PLAYER_LIVES,x` with X =
 `$0200`. See [Objects](objects.md) for the layout.
 
+Code that reads or writes a fixed slot directly (a boss and its parts,
+the stage 1 tank in slot 31, the ending's missile in slot 2) addresses
+`obj_slots + n*OBJ_SIZE + field` (`obj_slots` = `$0200`, so slot n is at
+`$0200 + n*$40`): for example `obj_slots+31*OBJ_SIZE+OBJ_HP` is `$09C6`.
+The player slots are written `player1_obj+field` / `player2_obj+field`.
+Offsets `$30-$3A` have no common meaning and stay numbers (`+$32`).
+
+The top-down stages lay the same RAM out differently (see
+[Top-down stages](topdown.md)); their direct accesses use the bases
+`td_arrow_objs` (`$0200`, the target arrows), `td_enemy_shots` (`$0300`),
+`td_p1_shots` (`$0480`), `td_p2_shots` (`$0700`) with `SHOT_SIZE` slots,
+and `td_items` (`$0980`), `td_map_objects` (`$0AC0`), `td_enemies`
+(`$0D40`), `td_p1_obj` / `td_p2_obj` (`$0EC0` / `$0F00`), `td_p1_bomb` /
+`td_p2_bomb` (`$0F40` / `$0F80`) with `OBJ_SIZE` slots. The common fields
+(`OBJ_ANGLE`, the position, `OBJ_TYPE`, `OBJ_STATE`, the velocity) keep
+their `OBJ_*` names; the others stay numbers. The OAM buffer is
+`oam_buffer` (`$0FC0`, 4 bytes per sprite) and `oam_hi_table` (`$11C0`).
+
 When you name a variable, rename its placeholder everywhere (src/ and book/), add
 it to the table above with how you know, and update its comment in
 `src/ram.inc`.

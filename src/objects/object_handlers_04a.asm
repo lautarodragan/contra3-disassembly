@@ -600,7 +600,7 @@ stage3_robot_cables_state_00:
 	rtl
 
 stage3_robot_cables_state_01:
-	lda	a:wram_0912
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 	cmp	#$0003
 	bcc	@return
 	lda	#$0018
@@ -872,7 +872,7 @@ loc_04867B:
 	rts
 
 stage3_boss_state_0A:
-	lda	a:wram_08D0
+	lda	a:obj_slots+27*OBJ_SIZE+OBJ_TYPE
 	bne	loc_048699
 	dec	OBJ_TIMER,x
 	bne	loc_048699
@@ -1809,7 +1809,7 @@ loc_048DEF:
 	jml	f:loc_00D5ED
 
 stage4_controller_state_0A:
-	lda	a:wram_0910
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
 	bne	loc_048E0D
 	lda	#$0002
 	sta	a:wram_1688
@@ -1821,7 +1821,7 @@ stage4_controller_state_09:
 	bpl	loc_048E0D
 	inc	OBJ_STATE,x
 	lda	#$006E
-	sta	a:wram_0910
+	sta	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
 loc_048E0D:
 	jsr	a:sub_049AC1
 	jml	f:loc_00D5ED
@@ -1928,7 +1928,7 @@ stage4_controller_state_0D:
 	dec	OBJ_TIMER,x
 	bpl	loc_048F01
 	lda	#$0079
-	sta	a:wram_0910
+	sta	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
 	lda	#$0001
 	sta	a:stage_checkpoint
 	inc	OBJ_STATE,x
@@ -1936,7 +1936,7 @@ loc_048F01:
 	jml	f:loc_00D5ED
 
 stage4_controller_state_0E:
-	lda	a:wram_0910
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0079
 	beq	loc_048F1D
 	inc	OBJ_STATE,x
@@ -1955,7 +1955,7 @@ stage4_controller_state_0F:
 	stz	OBJ_TIMER,x
 	inc	OBJ_STATE,x
 	lda	#$0084
-	sta	a:wram_0910
+	sta	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
 	lda	#$0004
 	sta	a:bg1_scroll_mode
 loc_048F35:
@@ -1985,13 +1985,13 @@ stage4_controller_state_10:
 stage4_controller_state_11:
 	sec
 	lda	#$0140
-	sbc	a:wram_080A
+	sbc	a:obj_slots+24*OBJ_SIZE+OBJ_X
 	sta	a:bg1_x
-	lda	a:wram_080A
+	lda	a:obj_slots+24*OBJ_SIZE+OBJ_X
 	bmi	loc_048F91
 	cmp	#$0040
 	bcc	loc_048F91
-	stz	a:wram_081A
+	stz	a:obj_slots+24*OBJ_SIZE+OBJ_X_VEL
 	inc	OBJ_STATE,x
 	lda	#$0006
 	sta	a:wram_1672
@@ -2014,9 +2014,9 @@ loc_048FA2:
 	bne	loc_048FC7
 loc_048FB4:
 	inc	OBJ_STATE,x
-	stz	a:wram_0820
-	stz	a:wram_0822
-	stz	a:wram_0800
+	stz	a:obj_slots+24*OBJ_SIZE+OBJ_ANIM
+	stz	a:obj_slots+24*OBJ_SIZE+OBJ_ANIM_TIMER
+	stz	a:obj_slots+24*OBJ_SIZE+OBJ_SPRITE
 	lda	#$000B
 	sta	a:bg2_scroll_mode
 	stz	$30,x
@@ -2039,21 +2039,21 @@ loc_048FE1:
 	cmp	#$0010
 	beq	loc_049000
 	lda	#$C000	; [num]
-	sta	a:wram_081C
+	sta	a:obj_slots+24*OBJ_SIZE+OBJ_Y_VEL_SUB
 	lda	#$FFFF	; [num]
-	sta	a:wram_081E
+	sta	a:obj_slots+24*OBJ_SIZE+OBJ_Y_VEL
 	sec
 	lda	#$0078
-	sbc	a:wram_080E
+	sbc	a:obj_slots+24*OBJ_SIZE+OBJ_Y
 	sta	a:bg1_y
 	rtl
 loc_049000:
-	stz	a:wram_081C
-	stz	a:wram_081E
+	stz	a:obj_slots+24*OBJ_SIZE+OBJ_Y_VEL_SUB
+	stz	a:obj_slots+24*OBJ_SIZE+OBJ_Y_VEL
 	rtl
 
 stage4_controller_state_15:
-	lda	a:wram_0910
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0084
 	beq	loc_049017
 	lda	#.loword(anim_05C558)
@@ -2132,11 +2132,11 @@ stage4_controller_state_17:
 	inc	OBJ_STATE,x
 	stz	a:bg2_scroll_mode
 	lda	#$0002
-	sta	a:wram_0812
+	sta	a:obj_slots+24*OBJ_SIZE+OBJ_STATE
 	lda	#$FFFC	; [num]
-	sta	a:wram_081A
+	sta	a:obj_slots+24*OBJ_SIZE+OBJ_X_VEL
 	lda	#$0001
-	sta	a:wram_081E
+	sta	a:obj_slots+24*OBJ_SIZE+OBJ_Y_VEL
 	lda	#$0050
 	jsl	f:queue_sound
 	phx
@@ -2163,7 +2163,7 @@ stage4_controller_state_19:
 	lda	#$0049
 	sta	a:bg2sc_shadow
 	lda	#$0069
-	sta	a:wram_0910
+	sta	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
 loc_049105:
 	lda	#$0004
 	sta	zp_02
@@ -2232,19 +2232,19 @@ stage4_controller_state_1C:
 	lda	#$000C
 	sta	hdma_preset
 	lda	#$8000	; [num]
-	sta	a:wram_0816
-	sta	a:wram_0856
-	sta	a:wram_0896
-	sta	a:wram_0916
+	sta	a:obj_slots+24*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+25*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+26*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+28*OBJ_SIZE+OBJ_FLAGS
 	lda	#$0008
-	sta	a:wram_07D2
-	stz	a:wram_07DA
+	sta	a:obj_slots+23*OBJ_SIZE+OBJ_STATE
+	stz	a:obj_slots+23*OBJ_SIZE+OBJ_X_VEL
 	lda	#$4000
-	sta	a:wram_07D8
+	sta	a:obj_slots+23*OBJ_SIZE+OBJ_X_VEL_SUB
 	lda	#$00A0
-	sta	a:wram_07CE
+	sta	a:obj_slots+23*OBJ_SIZE+OBJ_Y
 	lda	#$0000
-	sta	a:wram_07CA
+	sta	a:obj_slots+23*OBJ_SIZE+OBJ_X
 	phx
 	ldx	#$0200
 	jsr	a:sub_0497AB
@@ -2416,7 +2416,7 @@ rideable_missile_state_01:
 	ldy	stage_number
 	cpy	#$0004
 	beq	loc_049325
-	lda	a:wram_0912
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 	cmp	#$0017
 	bcc	loc_049322
 	cmp	#$0025
@@ -2526,10 +2526,10 @@ rideable_missile_state_05:
 	jsr	a:rideable_missile_carry_players
 	jsr	a:rideable_missile_set_hdma
 	jsr	a:rideable_missile_exhaust
-	lda	a:wram_0796
+	lda	a:obj_slots+22*OBJ_SIZE+OBJ_FLAGS
 	beq	loc_0493FD
 	clc
-	lda	a:wram_078A
+	lda	a:obj_slots+22*OBJ_SIZE+OBJ_X
 	adc	#$FF90
 	cmp	OBJ_X,x
 	bpl	loc_04941A
@@ -2537,16 +2537,16 @@ rideable_missile_state_05:
 	rtl
 loc_0493FD:
 	clc
-	lda	a:wram_090A
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_X
 	adc	#$FF90
 	cmp	OBJ_X,x
 	bpl	loc_04941A
 	lda	#$0200
-	sta	a:wram_0926
+	sta	a:obj_slots+28*OBJ_SIZE+OBJ_SAVED_ATTR
 	sec
-	lda	a:wram_0906
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_HP
 	sbc	#$0004
-	sta	a:wram_0906
+	sta	a:obj_slots+28*OBJ_SIZE+OBJ_HP
 	inc	OBJ_STATE,x
 loc_04941A:
 	rtl
@@ -2693,7 +2693,7 @@ loc_04952B:
 	sta	OBJ_TIMER,x
 loc_04953B:
 	jsr	a:sub_0498AF
-	lda	a:wram_0796
+	lda	a:obj_slots+22*OBJ_SIZE+OBJ_FLAGS
 	beq	loc_0495A1
 	inc	a:boss_work_1
 	lda	a:boss_work_1
@@ -2754,7 +2754,7 @@ loc_0495A1:
 stage4_boss_state_03:
 	dec	OBJ_TIMER,x
 	bne	stage4_boss_state_04
-	inc	a:wram_0952
+	inc	a:obj_slots+29*OBJ_SIZE+OBJ_STATE
 	inc	OBJ_STATE,x
 
 stage4_boss_state_04:
@@ -3202,13 +3202,13 @@ loc_049918:
 	lda	OBJ_X,x
 	sbc	#$0020
 	sta	zp_00
-	lda	a:wram_0796
+	lda	a:obj_slots+22*OBJ_SIZE+OBJ_FLAGS
 	beq	loc_049949
-	lda	a:wram_0716
-	ora	a:wram_0756
+	lda	a:obj_slots+20*OBJ_SIZE+OBJ_FLAGS
+	ora	a:obj_slots+21*OBJ_SIZE+OBJ_FLAGS
 	bne	loc_04994A
 	lda	#$8000	; [num]
-	sta	a:wram_0796
+	sta	a:obj_slots+22*OBJ_SIZE+OBJ_FLAGS
 	lda	#$4011
 	sta	OBJ_FLAGS,x
 	lda	#$00C8
@@ -3217,28 +3217,28 @@ loc_049949:
 	rts
 loc_04994A:
 	lda	zp_00
-	sta	a:wram_078A
+	sta	a:obj_slots+22*OBJ_SIZE+OBJ_X
 	sec
 	lda	#$00B0
 	sbc	zp_02
-	sta	a:wram_078E
-	lda	a:wram_0716
+	sta	a:obj_slots+22*OBJ_SIZE+OBJ_Y
+	lda	a:obj_slots+20*OBJ_SIZE+OBJ_FLAGS
 	beq	loc_04996B
 	lda	zp_00
-	sta	a:wram_070A
+	sta	a:obj_slots+20*OBJ_SIZE+OBJ_X
 	sec
 	lda	#$0030
 	sbc	zp_02
-	sta	a:wram_070E
+	sta	a:obj_slots+20*OBJ_SIZE+OBJ_Y
 loc_04996B:
-	lda	a:wram_0756
+	lda	a:obj_slots+21*OBJ_SIZE+OBJ_FLAGS
 	beq	loc_049949
 	lda	zp_00
-	sta	a:wram_074A
+	sta	a:obj_slots+21*OBJ_SIZE+OBJ_X
 	sec
 	lda	#$00C8
 	sbc	zp_02
-	sta	a:wram_074E
+	sta	a:obj_slots+21*OBJ_SIZE+OBJ_Y
 	rts
 
 rideable_missile_exhaust:
@@ -3633,16 +3633,16 @@ loc_049CA7:
 	lda	OBJ_Y_VEL_SUB,x
 	beq	loc_049CB9
 loc_049CAF:
-	inc	a:wram_07B8
-	inc	a:wram_07B8
+	inc	a:obj_slots+22*OBJ_SIZE+$38
+	inc	a:obj_slots+22*OBJ_SIZE+$38
 	jsr	a:sub_04A16E
 	rtl
 loc_049CB9:
 	inc	OBJ_STATE,x
 	lda	#$401D
 	sta	OBJ_FLAGS,x
-	inc	a:wram_07B8
-	inc	a:wram_07B8
+	inc	a:obj_slots+22*OBJ_SIZE+$38
+	inc	a:obj_slots+22*OBJ_SIZE+$38
 	jsr	a:sub_04A16E
 	rtl
 
@@ -3661,8 +3661,8 @@ loc_049CDA:
 	bcc	loc_049D26
 	lda	#$0055
 	jsl	f:queue_sound
-	lda	a:wram_0216
-	ora	a:wram_0256
+	lda	a:player1_obj+OBJ_FLAGS
+	ora	a:player2_obj+OBJ_FLAGS
 	and	#$0001
 	bne	loc_049CFC
 	lda	#$0078
@@ -3729,8 +3729,8 @@ loc_049D6B:
 	sta	$30,x
 	jsr	a:winged_alien_queue_tiles
 loc_049D70:
-	inc	a:wram_07B8
-	inc	a:wram_07B8
+	inc	a:obj_slots+22*OBJ_SIZE+$38
+	inc	a:obj_slots+22*OBJ_SIZE+$38
 	jsr	a:sub_04A16E
 	rtl
 
@@ -3791,9 +3791,9 @@ loc_049DDE:
 	stz	OBJ_Y_VEL,x
 	stz	OBJ_Y_VEL_SUB,x
 	lda	#$00D0
-	sta	a:wram_07B6
+	sta	a:obj_slots+22*OBJ_SIZE+$36
 	lda	#$01F2
-	sta	a:wram_07B8
+	sta	a:obj_slots+22*OBJ_SIZE+$38
 	inc	OBJ_STATE,x
 	stz	$3A,x
 	stz	OBJ_TIMER,x
@@ -3830,7 +3830,7 @@ tbl_winged_alien_steps:
 
 sub_049E26:
 	ldy	#$0000
-	lda	a:wram_07B6
+	lda	a:obj_slots+22*OBJ_SIZE+$36
 	cmp	#$00D0
 	bne	loc_049E34
 	iny
@@ -3838,7 +3838,7 @@ sub_049E26:
 loc_049E34:
 	clc
 	adc	#$0004
-	sta	a:wram_07B6
+	sta	a:obj_slots+22*OBJ_SIZE+$36
 	and	#$01FF
 	clc
 	sbc	#$00D0
@@ -3846,9 +3846,9 @@ loc_049E34:
 	bcs	loc_049E4D
 	; (not executed in the CDL traces)
 	lda	#$00D0
-	sta	a:wram_07B6
+	sta	a:obj_slots+22*OBJ_SIZE+$36
 loc_049E4D:
-	lda	a:wram_07B8
+	lda	a:obj_slots+22*OBJ_SIZE+$38
 	cmp	#$01F2
 	bne	loc_049E58
 	iny
@@ -3856,14 +3856,14 @@ loc_049E4D:
 loc_049E58:
 	sec
 	sbc	#$0001
-	sta	a:wram_07B8
+	sta	a:obj_slots+22*OBJ_SIZE+$38
 	and	#$01FF
 	clc
 	sbc	#$01F2
 	cmp	#$0002
 	bcs	loc_049E71
 	lda	#$01F2
-	sta	a:wram_07B8
+	sta	a:obj_slots+22*OBJ_SIZE+$38
 loc_049E71:
 	cpy	#$0002
 	beq	loc_049E78
@@ -3972,8 +3972,8 @@ winged_alien_step_5:
 	rts
 
 winged_alien_step_6:
-	lda	a:wram_0216
-	ora	a:wram_0256
+	lda	a:player1_obj+OBJ_FLAGS
+	ora	a:player2_obj+OBJ_FLAGS
 	and	#$0001
 	bne	loc_049F41
 	lda	#$0078
@@ -3994,9 +3994,9 @@ loc_049F4A:
 	lda	#$0090
 	sta	OBJ_X,x
 	lda	#$0080
-	sta	a:wram_07B6
+	sta	a:obj_slots+22*OBJ_SIZE+$36
 	lda	#$0040
-	sta	a:wram_07B8
+	sta	a:obj_slots+22*OBJ_SIZE+$38
 	inc	$3A,x
 	lda	#$0000
 	sta	f:wram_7EE823
@@ -4030,9 +4030,9 @@ winged_alien_step_8:
 	cmp	a:$000E,y
 	bcs	loc_049FB4
 	lda	#$0090
-	sta	a:wram_07B6
+	sta	a:obj_slots+22*OBJ_SIZE+$36
 loc_049FB4:
-	stz	a:wram_07B8
+	stz	a:obj_slots+22*OBJ_SIZE+$38
 	lda	#$FFFA	; [num]
 	sta	OBJ_X_VEL,x
 	stz	OBJ_X_VEL_SUB,x
@@ -4068,8 +4068,8 @@ loc_049FE2:
 winged_alien_state_06:
 	stz	hdma_preset
 	lda	#$8000	; [num]
-	sta	a:wram_0356
-	sta	a:wram_0316
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_FLAGS
 	phx
 	stz	zp_00
 @loop:
@@ -4087,11 +4087,11 @@ winged_alien_state_06:
 	bcc	@loop
 	plx
 	lda	#$0025
-	sta	a:wram_0790
+	sta	a:obj_slots+22*OBJ_SIZE+OBJ_TYPE
 	lda	#$0001
-	sta	a:wram_0792
+	sta	a:obj_slots+22*OBJ_SIZE+OBJ_STATE
 	lda	#$0001
-	sta	a:wram_0796
+	sta	a:obj_slots+22*OBJ_SIZE+OBJ_FLAGS
 	lda	#$0002
 	jsr	a:winged_alien_queue_tiles
 	lda	#$FFFF	; [num]
@@ -4162,33 +4162,33 @@ winged_alien_spawn_tail:
 	sta	OBJ_HITBOX_H,x
 	stz	$30,x
 	lda	#$0053
-	sta	a:wram_0350
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_TYPE
 	lda	#$003D
-	sta	a:wram_0356
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_FLAGS
 	lda	#$0012
-	sta	a:wram_0368
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_HITBOX_W
 	lda	#$FFC0	; [num]
-	sta	a:wram_036A
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_HITBOX_H
 	lda	#$0053
-	sta	a:wram_0310
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_TYPE
 	lda	#$003D
-	sta	a:wram_0316
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_FLAGS
 	lda	#$0053
-	sta	a:wram_0790
+	sta	a:obj_slots+22*OBJ_SIZE+OBJ_TYPE
 	lda	#$003D
-	sta	a:wram_0796
+	sta	a:obj_slots+22*OBJ_SIZE+OBJ_FLAGS
 	lda	#.loword(metasprite_06C46D)
-	sta	a:wram_0780
+	sta	a:obj_slots+22*OBJ_SIZE+OBJ_SPRITE
 	lda	#$3600
-	sta	a:wram_0782
+	sta	a:obj_slots+22*OBJ_SIZE+OBJ_ATTR
 	lda	#$0008
-	sta	a:wram_07A8
+	sta	a:obj_slots+22*OBJ_SIZE+OBJ_HITBOX_W
 	lda	#$FFF8	; [num]
-	sta	a:wram_07AA
+	sta	a:obj_slots+22*OBJ_SIZE+OBJ_HITBOX_H
 	lda	#$0080
-	sta	a:wram_07B6
+	sta	a:obj_slots+22*OBJ_SIZE+$36
 	lda	#$0010
-	sta	a:wram_07B8
+	sta	a:obj_slots+22*OBJ_SIZE+$38
 	phx
 	lda	#$0780
 	sta	zp_00
@@ -4229,26 +4229,26 @@ loc_04A13C:
 	bcc	loc_04A11F
 	plx
 	lda	#$008D
-	sta	a:wram_0390
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_TYPE
 	rts
 
 sub_04A16E:
 	lda	OBJ_X,x
 	sec
 	sbc	#$0028
-	sta	a:wram_034A
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_X
 	lda	OBJ_Y,x
 	clc
 	adc	#$0030
-	sta	a:wram_034E
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_Y
 	lda	OBJ_X,x
 	sec
 	sbc	#$0050
-	sta	a:wram_030A
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_X
 	lda	OBJ_Y,x
 	clc
 	adc	#$0010
-	sta	a:wram_030E
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_Y
 	phy
 	lda	$30,x
 	and	#$0001
@@ -4256,17 +4256,17 @@ sub_04A16E:
 	tay
 	lda	a:data_05ED20,y
 	ply
-	sta	a:wram_032A
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_HITBOX_H
 	lda	#$0040
-	sta	a:wram_0328
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_HITBOX_W
 	lda	OBJ_X,x
 	clc
 	adc	#$FFC8
-	sta	a:wram_078A
+	sta	a:obj_slots+22*OBJ_SIZE+OBJ_X
 	lda	OBJ_Y,x
 	clc
 	adc	#$0014
-	sta	a:wram_078E
+	sta	a:obj_slots+22*OBJ_SIZE+OBJ_Y
 
 winged_alien_set_bg2_scroll:
 	lda	#$00B8
@@ -4744,17 +4744,17 @@ loc_04A537:
 	sta	OBJ_STATE,x
 
 face_boss_state_03:
-	lda	a:wram_0410
+	lda	a:obj_slots+8*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
 	beq	loc_04A55E
-	lda	a:wram_0450
+	lda	a:obj_slots+9*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
 	bne	loc_04A586
 loc_04A55E:
 	dec	OBJ_TIMER,x
 	bpl	loc_04A573
-	lda	a:wram_0430
-	ora	a:wram_0470
+	lda	a:obj_slots+8*OBJ_SIZE+$30
+	ora	a:obj_slots+9*OBJ_SIZE+$30
 	bne	loc_04A56D
 	brl	loc_04A5CD
 loc_04A56D:
@@ -4852,11 +4852,11 @@ loc_04A626:
 	stz	OBJ_HP,x
 	stz	OBJ_FLAGS,x
 	lda	#$8000	; [num]
-	sta	a:wram_0316
-	sta	a:wram_0356
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_FLAGS
 	lda	#$FFFF	; [num]
-	sta	a:wram_0386
-	sta	a:wram_03C6
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_HP
+	sta	a:obj_slots+7*OBJ_SIZE+OBJ_HP
 	jsr	a:sub_04A74A
 	jsr	a:sub_04A907
 	lda	#$0300
@@ -4935,57 +4935,57 @@ sub_04A6CA:
 	jmp	a:loc_04A70D
 
 sub_04A6D0:
-	lda	a:wram_0410
+	lda	a:obj_slots+8*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
 	bne	loc_04A70C
-	lda	a:wram_0430
+	lda	a:obj_slots+8*OBJ_SIZE+$30
 	bne	loc_04A70C
-	lda	a:wram_0474
+	lda	a:obj_slots+9*OBJ_SIZE+$34
 	bne	loc_04A70C
 	lda	$38,x
 	bit	#$0001
 	beq	loc_04A70C
 	bit	#$0004
 	beq	loc_04A700
-	lda	a:wram_0470
+	lda	a:obj_slots+9*OBJ_SIZE+$30
 	bne	loc_04A70C
 	lda	#$0002
-	sta	a:wram_0430
-	stz	a:wram_0432
-	sta	a:wram_0434
+	sta	a:obj_slots+8*OBJ_SIZE+$30
+	stz	a:obj_slots+8*OBJ_SIZE+$32
+	sta	a:obj_slots+8*OBJ_SIZE+$34
 	rts
 loc_04A700:
 	lda	#$0002
-	sta	a:wram_0430
-	stz	a:wram_0432
-	stz	a:wram_0434
+	sta	a:obj_slots+8*OBJ_SIZE+$30
+	stz	a:obj_slots+8*OBJ_SIZE+$32
+	stz	a:obj_slots+8*OBJ_SIZE+$34
 loc_04A70C:
 	rts
 loc_04A70D:
-	lda	a:wram_0450
+	lda	a:obj_slots+9*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
 	bne	loc_04A749
-	lda	a:wram_0470
+	lda	a:obj_slots+9*OBJ_SIZE+$30
 	bne	loc_04A749
-	lda	a:wram_0434
+	lda	a:obj_slots+8*OBJ_SIZE+$34
 	bne	loc_04A749
 	lda	$38,x
 	bit	#$0002
 	beq	loc_04A749
 	bit	#$0004
 	beq	loc_04A73D
-	lda	a:wram_0430
+	lda	a:obj_slots+8*OBJ_SIZE+$30
 	bne	loc_04A749
 	lda	#$0002
-	sta	a:wram_0470
-	sta	a:wram_0472
-	sta	a:wram_0474
+	sta	a:obj_slots+9*OBJ_SIZE+$30
+	sta	a:obj_slots+9*OBJ_SIZE+$32
+	sta	a:obj_slots+9*OBJ_SIZE+$34
 	rts
 loc_04A73D:
 	lda	#$0002
-	sta	a:wram_0470
-	sta	a:wram_0472
-	stz	a:wram_0474
+	sta	a:obj_slots+9*OBJ_SIZE+$30
+	sta	a:obj_slots+9*OBJ_SIZE+$32
+	stz	a:obj_slots+9*OBJ_SIZE+$34
 loc_04A749:
 	rts
 
@@ -4995,10 +4995,10 @@ sub_04A74A:
 	rts
 
 sub_04A751:
-	lda	a:wram_0390
+	lda	a:obj_slots+6*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0053
 	bne	loc_04A779
-	lda	a:wram_0386
+	lda	a:obj_slots+6*OBJ_SIZE+OBJ_HP
 	bpl	loc_04A769
 	lda	#$8006	; [num]
 	sta	$30,x
@@ -5017,10 +5017,10 @@ loc_04A779:
 	rts
 
 sub_04A77A:
-	lda	a:wram_03D0
+	lda	a:obj_slots+7*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0053
 	bne	loc_04A7A2
-	lda	a:wram_03C6
+	lda	a:obj_slots+7*OBJ_SIZE+OBJ_HP
 	bpl	loc_04A792
 	lda	#$8006	; [num]
 	sta	$32,x
@@ -5106,50 +5106,50 @@ sub_04A810:
 	lda	#$FFF8	; [num]
 	sta	OBJ_HITBOX_H,x
 	lda	#$0053
-	sta	a:wram_0310
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_TYPE
 	lda	#$003D
-	sta	a:wram_0316
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_FLAGS
 	lda	#$0030
-	sta	a:wram_0328
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_HITBOX_W
 	lda	#$FFC0	; [num]
-	sta	a:wram_032A
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_HITBOX_H
 	lda	#$0053
-	sta	a:wram_0350
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_TYPE
 	lda	#$003D
-	sta	a:wram_0356
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_FLAGS
 	lda	#$0030
-	sta	a:wram_0368
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_HITBOX_W
 	lda	#$FFC0	; [num]
-	sta	a:wram_036A
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_HITBOX_H
 	lda	#$0053
-	sta	a:wram_0390
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_TYPE
 	ldy	difficulty
 	lda	a:data_05ED86,y
-	sta	a:wram_0386
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_HP
 	lda	#$4011
-	sta	a:wram_0396
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_FLAGS
 	lda	#$000C
-	sta	a:wram_03A8
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_HITBOX_W
 	lda	#$FFF4	; [num]
-	sta	a:wram_03AA
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_HITBOX_H
 	lda	#$0053
-	sta	a:wram_03D0
+	sta	a:obj_slots+7*OBJ_SIZE+OBJ_TYPE
 	ldy	difficulty
 	lda	a:data_05ED86,y
-	sta	a:wram_03C6
+	sta	a:obj_slots+7*OBJ_SIZE+OBJ_HP
 	lda	#$4011
-	sta	a:wram_03D6
+	sta	a:obj_slots+7*OBJ_SIZE+OBJ_FLAGS
 	lda	#$000C
-	sta	a:wram_03E8
+	sta	a:obj_slots+7*OBJ_SIZE+OBJ_HITBOX_W
 	lda	#$FFF4	; [num]
-	sta	a:wram_03EA
+	sta	a:obj_slots+7*OBJ_SIZE+OBJ_HITBOX_H
 	lda	#$0075
-	sta	a:wram_0410
-	stz	a:wram_0432
+	sta	a:obj_slots+8*OBJ_SIZE+OBJ_TYPE
+	stz	a:obj_slots+8*OBJ_SIZE+$32
 	lda	#$0075
-	sta	a:wram_0450
+	sta	a:obj_slots+9*OBJ_SIZE+OBJ_TYPE
 	lda	#$0002
-	sta	a:wram_0472
+	sta	a:obj_slots+9*OBJ_SIZE+$32
 	rts
 
 face_boss_place_parts:
@@ -5162,35 +5162,35 @@ face_boss_place_parts:
 	lda	OBJ_X,x
 	sec
 	sbc	#$0074
-	sta	a:wram_030A
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_X
 	lda	OBJ_Y,x
 	clc
 	adc	#$0018
-	sta	a:wram_030E
+	sta	a:obj_slots+4*OBJ_SIZE+OBJ_Y
 	lda	OBJ_X,x
 	clc
 	adc	#$0048
-	sta	a:wram_034A
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_X
 	lda	OBJ_Y,x
 	clc
 	adc	#$0018
-	sta	a:wram_034E
+	sta	a:obj_slots+5*OBJ_SIZE+OBJ_Y
 	lda	OBJ_X,x
 	sec
 	sbc	#$0006
-	sta	a:wram_038A
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_X
 	lda	OBJ_Y,x
 	clc
 	adc	#$0020
-	sta	a:wram_038E
+	sta	a:obj_slots+6*OBJ_SIZE+OBJ_Y
 	lda	OBJ_X,x
 	clc
 	adc	#$0006
-	sta	a:wram_03CA
+	sta	a:obj_slots+7*OBJ_SIZE+OBJ_X
 	lda	OBJ_Y,x
 	clc
 	adc	#$0020
-	sta	a:wram_03CE
+	sta	a:obj_slots+7*OBJ_SIZE+OBJ_Y
 	rts
 
 sub_04A907:
@@ -5280,18 +5280,18 @@ sub_04A997:
 	bit	#$001F
 	bne	@return
 	lda	#$0010
-	sta	a:wram_043A
-	sta	a:wram_047A
+	sta	a:obj_slots+8*OBJ_SIZE+$3A
+	sta	a:obj_slots+9*OBJ_SIZE+$3A
 @return:
 	rts
 
 sub_04A9A8:
-	lda	a:wram_0410
+	lda	a:obj_slots+8*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
 	beq	loc_04A9B2
 	bra	sub_04A9BD
 loc_04A9B2:
-	lda	a:wram_0450
+	lda	a:obj_slots+9*OBJ_SIZE+OBJ_TYPE
 	cmp	#$0075
 	beq	@return
 	; (not executed in the CDL traces)
@@ -5758,7 +5758,7 @@ floor_mouth_bug_state_08:
 ; Object type $63. Stage 6: larva spat by wall_worm (states shared with
 ; face_boss_larva). HP by difficulty: 4/8/16 (wall_worm_larva_hp).
 update_wall_worm_larva:
-	lda	a:wram_0912
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 	cmp	#$0003
 	bcc	loc_04ACF8
 	brl	loc_04AD6B
@@ -5888,7 +5888,7 @@ loc_04ADBE:
 ; Object type $21. Stage 6: larva spat by face_boss's central mouth; crawls
 ; toward a player. HP by difficulty: 2/4/8 (face_boss_larva_hp).
 update_face_boss_larva:
-	lda	a:wram_0906
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_HP
 	bpl	loc_04ADCE
 	brl	loc_04AD6B
 loc_04ADCE:
@@ -5961,13 +5961,13 @@ face_boss_larva_state_02:
 ; larva, probably going back to the mouth).
 face_boss_larva_turn_toward_boss:
 	sta	zp_00
-	lda	a:wram_090A
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_X
 	sec
 	sbc	#$0008
 	sec
 	sbc	OBJ_X,x
 	sta	zp_08
-	lda	a:wram_090E
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_Y
 	clc
 	adc	#$0004
 	sec
@@ -6000,7 +6000,7 @@ loc_04AE7E:
 ; ceiling pods (not identified exactly). HP by difficulty: 0/2/4
 ; (data_05EEA0).
 update_enemy_type_68:
-	lda	a:wram_0912
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 	cmp	#$0003
 	bcc	loc_04AE93
 	brl	loc_04AFE7
@@ -6456,7 +6456,7 @@ loc_04B1EE:
 ; Object type $67. Stage 6, heart_boss: crawling bugs. HP by difficulty:
 ; 32/64/128 (heart_boss_bug_hp).
 update_heart_boss_bug:
-	lda	a:wram_0912
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 	cmp	#$0003
 	bcc	loc_04B1FF
 	brl	loc_04B283
@@ -8052,7 +8052,7 @@ update_face_boss_side_head:
 	bpl	loc_04BE2B
 	brl	loc_04BFA2
 loc_04BE2B:
-	lda	a:wram_0906
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_HP
 	bpl	loc_04BE33
 	; (not executed in the CDL traces)
 	brl	loc_04BFA2
@@ -8093,7 +8093,7 @@ face_boss_side_head_state_00:
 	sta	OBJ_STATE,x
 
 face_boss_side_head_state_01:
-	lda	a:wram_0912
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 	cmp	#$0002
 	bcs	loc_04BE80
 	rtl
@@ -8111,11 +8111,11 @@ loc_04BE80:
 
 face_boss_side_head_state_02:
 	ldy	$32,x
-	lda	a:wram_090A
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_X
 	clc
 	adc	a:data_05F0E8,y
 	sta	OBJ_X,x
-	lda	a:wram_090E
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_Y
 	clc
 	adc	#$0034
 	sta	OBJ_Y,x
@@ -8283,132 +8283,132 @@ loc_04BFC8:
 	lda	$32,x
 	bne	loc_04C01E
 	lda	#$0077
-	sta	a:wram_0490
-	sta	a:wram_04D0
-	sta	a:wram_0510
-	sta	a:wram_0550
-	sta	a:wram_0590
-	stz	a:wram_04B0
-	stz	a:wram_04F0
-	stz	a:wram_0530
-	stz	a:wram_0570
-	stz	a:wram_05B0
+	sta	a:obj_slots+10*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+11*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+12*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+13*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+14*OBJ_SIZE+OBJ_TYPE
+	stz	a:obj_slots+10*OBJ_SIZE+$30
+	stz	a:obj_slots+11*OBJ_SIZE+$30
+	stz	a:obj_slots+12*OBJ_SIZE+$30
+	stz	a:obj_slots+13*OBJ_SIZE+$30
+	stz	a:obj_slots+14*OBJ_SIZE+$30
 	lda	#$1900
-	sta	a:wram_04B2
-	sta	a:wram_04F2
-	sta	a:wram_0532
-	sta	a:wram_0572
-	sta	a:wram_05B2
+	sta	a:obj_slots+10*OBJ_SIZE+$32
+	sta	a:obj_slots+11*OBJ_SIZE+$32
+	sta	a:obj_slots+12*OBJ_SIZE+$32
+	sta	a:obj_slots+13*OBJ_SIZE+$32
+	sta	a:obj_slots+14*OBJ_SIZE+$32
 	lda	#$0000
-	sta	a:wram_04B4
+	sta	a:obj_slots+10*OBJ_SIZE+$34
 	lda	#$000C
-	sta	a:wram_04F4
+	sta	a:obj_slots+11*OBJ_SIZE+$34
 	lda	#$0018
-	sta	a:wram_0534
+	sta	a:obj_slots+12*OBJ_SIZE+$34
 	lda	#$0024
-	sta	a:wram_0574
+	sta	a:obj_slots+13*OBJ_SIZE+$34
 	lda	#$0030
-	sta	a:wram_05B4
+	sta	a:obj_slots+14*OBJ_SIZE+$34
 	rts
 loc_04C01E:
 	lda	#$0077
-	sta	a:wram_05D0
-	sta	a:wram_0610
-	sta	a:wram_0650
-	sta	a:wram_0690
-	sta	a:wram_06D0
+	sta	a:obj_slots+15*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+16*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+17*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+18*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+19*OBJ_SIZE+OBJ_TYPE
 	lda	#$0002
-	sta	a:wram_05F0
-	sta	a:wram_0630
-	sta	a:wram_0670
-	sta	a:wram_06B0
-	sta	a:wram_06F0
+	sta	a:obj_slots+15*OBJ_SIZE+$30
+	sta	a:obj_slots+16*OBJ_SIZE+$30
+	sta	a:obj_slots+17*OBJ_SIZE+$30
+	sta	a:obj_slots+18*OBJ_SIZE+$30
+	sta	a:obj_slots+19*OBJ_SIZE+$30
 	lda	#$1A00
-	sta	a:wram_05F2
-	sta	a:wram_0632
-	sta	a:wram_0672
-	sta	a:wram_06B2
-	sta	a:wram_06F2
+	sta	a:obj_slots+15*OBJ_SIZE+$32
+	sta	a:obj_slots+16*OBJ_SIZE+$32
+	sta	a:obj_slots+17*OBJ_SIZE+$32
+	sta	a:obj_slots+18*OBJ_SIZE+$32
+	sta	a:obj_slots+19*OBJ_SIZE+$32
 	lda	#$0000
-	sta	a:wram_05F4
+	sta	a:obj_slots+15*OBJ_SIZE+$34
 	lda	#$000C
-	sta	a:wram_0634
+	sta	a:obj_slots+16*OBJ_SIZE+$34
 	lda	#$0018
-	sta	a:wram_0674
+	sta	a:obj_slots+17*OBJ_SIZE+$34
 	lda	#$0024
-	sta	a:wram_06B4
+	sta	a:obj_slots+18*OBJ_SIZE+$34
 	lda	#$0030
-	sta	a:wram_06F4
+	sta	a:obj_slots+19*OBJ_SIZE+$34
 	rts
 loc_04C073:
 	lda	$32,x
 	bne	loc_04C097
-	stz	a:wram_04B0
-	stz	a:wram_04F0
-	stz	a:wram_0530
-	stz	a:wram_0570
-	stz	a:wram_05B0
-	stz	a:wram_05F0
-	stz	a:wram_0630
-	stz	a:wram_0670
-	stz	a:wram_06B0
-	stz	a:wram_06F0
+	stz	a:obj_slots+10*OBJ_SIZE+$30
+	stz	a:obj_slots+11*OBJ_SIZE+$30
+	stz	a:obj_slots+12*OBJ_SIZE+$30
+	stz	a:obj_slots+13*OBJ_SIZE+$30
+	stz	a:obj_slots+14*OBJ_SIZE+$30
+	stz	a:obj_slots+15*OBJ_SIZE+$30
+	stz	a:obj_slots+16*OBJ_SIZE+$30
+	stz	a:obj_slots+17*OBJ_SIZE+$30
+	stz	a:obj_slots+18*OBJ_SIZE+$30
+	stz	a:obj_slots+19*OBJ_SIZE+$30
 	bra	loc_04C0B8
 loc_04C097:
 	lda	#$0002
-	sta	a:wram_04B0
-	sta	a:wram_04F0
-	sta	a:wram_0530
-	sta	a:wram_0570
-	sta	a:wram_05B0
-	sta	a:wram_05F0
-	sta	a:wram_0630
-	sta	a:wram_0670
-	sta	a:wram_06B0
-	sta	a:wram_06F0
+	sta	a:obj_slots+10*OBJ_SIZE+$30
+	sta	a:obj_slots+11*OBJ_SIZE+$30
+	sta	a:obj_slots+12*OBJ_SIZE+$30
+	sta	a:obj_slots+13*OBJ_SIZE+$30
+	sta	a:obj_slots+14*OBJ_SIZE+$30
+	sta	a:obj_slots+15*OBJ_SIZE+$30
+	sta	a:obj_slots+16*OBJ_SIZE+$30
+	sta	a:obj_slots+17*OBJ_SIZE+$30
+	sta	a:obj_slots+18*OBJ_SIZE+$30
+	sta	a:obj_slots+19*OBJ_SIZE+$30
 loc_04C0B8:
 	lda	#$0077
-	sta	a:wram_0490
-	sta	a:wram_04D0
-	sta	a:wram_0510
-	sta	a:wram_0550
-	sta	a:wram_0590
-	sta	a:wram_05D0
-	sta	a:wram_0610
-	sta	a:wram_0650
-	sta	a:wram_0690
-	sta	a:wram_06D0
+	sta	a:obj_slots+10*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+11*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+12*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+13*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+14*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+15*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+16*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+17*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+18*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+19*OBJ_SIZE+OBJ_TYPE
 	lda	#$1900
-	sta	a:wram_04B2
-	sta	a:wram_04F2
-	sta	a:wram_0532
-	sta	a:wram_0572
-	sta	a:wram_05B2
-	sta	a:wram_05F2
-	sta	a:wram_0632
-	sta	a:wram_0672
-	sta	a:wram_06B2
-	sta	a:wram_06F2
+	sta	a:obj_slots+10*OBJ_SIZE+$32
+	sta	a:obj_slots+11*OBJ_SIZE+$32
+	sta	a:obj_slots+12*OBJ_SIZE+$32
+	sta	a:obj_slots+13*OBJ_SIZE+$32
+	sta	a:obj_slots+14*OBJ_SIZE+$32
+	sta	a:obj_slots+15*OBJ_SIZE+$32
+	sta	a:obj_slots+16*OBJ_SIZE+$32
+	sta	a:obj_slots+17*OBJ_SIZE+$32
+	sta	a:obj_slots+18*OBJ_SIZE+$32
+	sta	a:obj_slots+19*OBJ_SIZE+$32
 	lda	#$0000
-	sta	a:wram_04B4
+	sta	a:obj_slots+10*OBJ_SIZE+$34
 	lda	#$000C
-	sta	a:wram_04F4
+	sta	a:obj_slots+11*OBJ_SIZE+$34
 	lda	#$0018
-	sta	a:wram_0534
+	sta	a:obj_slots+12*OBJ_SIZE+$34
 	lda	#$0024
-	sta	a:wram_0574
+	sta	a:obj_slots+13*OBJ_SIZE+$34
 	lda	#$0030
-	sta	a:wram_05B4
+	sta	a:obj_slots+14*OBJ_SIZE+$34
 	lda	#$003C
-	sta	a:wram_05F4
+	sta	a:obj_slots+15*OBJ_SIZE+$34
 	lda	#$0048
-	sta	a:wram_0634
+	sta	a:obj_slots+16*OBJ_SIZE+$34
 	lda	#$0054
-	sta	a:wram_0674
+	sta	a:obj_slots+17*OBJ_SIZE+$34
 	lda	#$0060
-	sta	a:wram_06B4
+	sta	a:obj_slots+18*OBJ_SIZE+$34
 	lda	#$006C
-	sta	a:wram_06F4
+	sta	a:obj_slots+19*OBJ_SIZE+$34
 	rts
 
 sub_04C137:
@@ -8416,37 +8416,37 @@ sub_04C137:
 	bne	loc_04C167
 	lda	$32,x
 	bne	loc_04C153
-	lda	a:wram_0490
-	ora	a:wram_04D0
-	ora	a:wram_0510
-	ora	a:wram_0550
-	ora	a:wram_0590
+	lda	a:obj_slots+10*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+11*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+12*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+13*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+14*OBJ_SIZE+OBJ_TYPE
 	clc
 	beq	loc_04C166
 	sec
 	rts
 loc_04C153:
-	lda	a:wram_05D0
-	ora	a:wram_0610
-	ora	a:wram_0650
-	ora	a:wram_0690
-	ora	a:wram_06D0
+	lda	a:obj_slots+15*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+16*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+17*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+18*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+19*OBJ_SIZE+OBJ_TYPE
 	clc
 	beq	loc_04C166
 	sec
 loc_04C166:
 	rts
 loc_04C167:
-	lda	a:wram_0490
-	ora	a:wram_04D0
-	ora	a:wram_0510
-	ora	a:wram_0550
-	ora	a:wram_0590
-	ora	a:wram_05D0
-	ora	a:wram_0610
-	ora	a:wram_0650
-	ora	a:wram_0690
-	ora	a:wram_06D0
+	lda	a:obj_slots+10*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+11*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+12*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+13*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+14*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+15*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+16*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+17*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+18*OBJ_SIZE+OBJ_TYPE
+	ora	a:obj_slots+19*OBJ_SIZE+OBJ_TYPE
 	clc
 	beq	loc_04C166
 	sec
@@ -8458,32 +8458,32 @@ sub_04C18A:
 	lda	$32,x
 	bne	loc_04C1A5
 	lda	#$0002
-	sta	a:wram_04B6
-	sta	a:wram_04F6
-	sta	a:wram_0536
-	sta	a:wram_0576
-	sta	a:wram_05B6
+	sta	a:obj_slots+10*OBJ_SIZE+$36
+	sta	a:obj_slots+11*OBJ_SIZE+$36
+	sta	a:obj_slots+12*OBJ_SIZE+$36
+	sta	a:obj_slots+13*OBJ_SIZE+$36
+	sta	a:obj_slots+14*OBJ_SIZE+$36
 	rts
 loc_04C1A5:
 	lda	#$0002
-	sta	a:wram_05F6
-	sta	a:wram_0636
-	sta	a:wram_0676
-	sta	a:wram_06B6
-	sta	a:wram_06F6
+	sta	a:obj_slots+15*OBJ_SIZE+$36
+	sta	a:obj_slots+16*OBJ_SIZE+$36
+	sta	a:obj_slots+17*OBJ_SIZE+$36
+	sta	a:obj_slots+18*OBJ_SIZE+$36
+	sta	a:obj_slots+19*OBJ_SIZE+$36
 	rts
 loc_04C1B8:
 	lda	#$0002
-	sta	a:wram_04B6
-	sta	a:wram_04F6
-	sta	a:wram_0536
-	sta	a:wram_0576
-	sta	a:wram_05B6
-	sta	a:wram_05F6
-	sta	a:wram_0636
-	sta	a:wram_0676
-	sta	a:wram_06B6
-	sta	a:wram_06F6
+	sta	a:obj_slots+10*OBJ_SIZE+$36
+	sta	a:obj_slots+11*OBJ_SIZE+$36
+	sta	a:obj_slots+12*OBJ_SIZE+$36
+	sta	a:obj_slots+13*OBJ_SIZE+$36
+	sta	a:obj_slots+14*OBJ_SIZE+$36
+	sta	a:obj_slots+15*OBJ_SIZE+$36
+	sta	a:obj_slots+16*OBJ_SIZE+$36
+	sta	a:obj_slots+17*OBJ_SIZE+$36
+	sta	a:obj_slots+18*OBJ_SIZE+$36
+	sta	a:obj_slots+19*OBJ_SIZE+$36
 	rts
 
 sub_04C1DA:
@@ -8546,7 +8546,7 @@ loc_04C26D:
 
 ; Object type $77. Stage 6, face_boss: neck segments of the side heads.
 update_face_boss_neck:
-	lda	a:wram_0906
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_HP
 	bpl	loc_04C276
 	; (not executed in the CDL traces)
 	brl	loc_04C383
@@ -8602,11 +8602,11 @@ loc_04C2BA:
 	lda	#$2600
 	sta	OBJ_ATTR,x
 	ldy	$30,x
-	lda	a:wram_090A
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_X
 	clc
 	adc	a:data_05F0E8,y
 	sta	OBJ_X,x
-	lda	a:wram_090E
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_Y
 	clc
 	adc	#$001C
 	sta	OBJ_Y,x
@@ -8631,7 +8631,7 @@ loc_04C2F7:
 	inc	a
 	inc	a
 	sta	OBJ_Y,x
-	lda	a:wram_090E
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_Y
 	clc
 	adc	#$0034
 	cmp	OBJ_Y,x
@@ -8699,7 +8699,7 @@ face_boss_neck_state_05:
 	dec	a
 	dec	a
 	sta	OBJ_Y,x
-	lda	a:wram_090E
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_Y
 	clc
 	adc	#$001C
 	cmp	OBJ_Y,x
@@ -10801,7 +10801,7 @@ loc_04D421:
 	rtl
 
 helicopter_rope_state_05:
-	lda	a:wram_0916
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_FLAGS
 	cmp	#$0001
 	bne	loc_04D43A
 	lda	#$8000	; [num]
@@ -10829,7 +10829,7 @@ sub_04D457:
 	jml	f:trail_pass_to_next
 
 helicopter_rope_state_04:
-	lda	a:wram_0916
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_FLAGS
 	cmp	#$0001
 	bne	loc_04D46F
 	lda	#$8000	; [num]
@@ -10883,15 +10883,15 @@ loc_04D4C8:
 	bpl	loc_04D4F5
 	lda	#$0001
 loc_04D4DA:
-	sta	a:wram_091A
+	sta	a:obj_slots+28*OBJ_SIZE+OBJ_X_VEL
 	stz	a:boss_work_1
 	lda	#$0004
 	sta	a:boss_work_5
 	lda	#$0006
-	sta	a:wram_0912
+	sta	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 	lda	#$FFFC	; [num]
-	sta	a:wram_091E
-	stz	a:wram_091C
+	sta	a:obj_slots+28*OBJ_SIZE+OBJ_Y_VEL
+	stz	a:obj_slots+28*OBJ_SIZE+OBJ_Y_VEL_SUB
 loc_04D4F5:
 	rtl
 loc_04D4F6:
@@ -11197,7 +11197,7 @@ sub_04D724:
 	rts
 
 sub_04D737:
-	lda	a:wram_091E
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_Y_VEL
 	bpl	loc_04D73D
 	rts
 loc_04D73D:
@@ -11239,14 +11239,14 @@ loc_04D78B:
 	lda	#$0080
 	ldy	#$0008
 loc_04D79B:
-	sty	a:wram_0912
+	sty	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 	sta	a:boss_work_2
-	stz	a:wram_0918
-	stz	a:wram_091A
-	stz	a:wram_091C
-	stz	a:wram_091E
-	stz	a:wram_0920
-	stz	a:wram_0922
+	stz	a:obj_slots+28*OBJ_SIZE+OBJ_X_VEL_SUB
+	stz	a:obj_slots+28*OBJ_SIZE+OBJ_X_VEL
+	stz	a:obj_slots+28*OBJ_SIZE+OBJ_Y_VEL_SUB
+	stz	a:obj_slots+28*OBJ_SIZE+OBJ_Y_VEL
+	stz	a:obj_slots+28*OBJ_SIZE+OBJ_ANIM
+	stz	a:obj_slots+28*OBJ_SIZE+OBJ_ANIM_TIMER
 	lda	#$0002
 	sta	a:boss_work_1
 	clc

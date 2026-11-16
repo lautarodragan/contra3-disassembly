@@ -36,7 +36,7 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $06 | `update_object_type_06` | stage 1 scripted scene (section 9): BG/HDMA effect with 9 states. Not identified |
 | $07 | `update_load_list_trigger` | stage trigger: loads the list `data_059E4A`[field `$3A`] with `load_data_list` |
 | $08 | `update_object_type_08` | stage trigger (stage 1 section 4): stops `bg1_autoscroll`, `bg1_scroll_mode` = 4 |
-| $09 | `update_player_tank` | the tank the players can drive (stage 1 sections 4-5; seen in the emulator), drawn on BG2: a player landing on its hatch enters it (`PLAYER_STATE_ENTER_TANK`, `PLAYER_STATE_TANK`); damage counter `wram_09C6` |
+| $09 | `update_player_tank` | the tank the players can drive (stage 1 sections 4-5; seen in the emulator), drawn on BG2: a player landing on its hatch enters it (`PLAYER_STATE_ENTER_TANK`, `PLAYER_STATE_TANK`); damage counter `obj_slots+31*OBJ_SIZE+OBJ_HP` (`$09C6`) |
 | $0A | `update_foot_soldier` | running foot soldier (stage 1; checked in the emulator). Killed: becomes type $1B (dying soldier) |
 | $0B | `update_soldier_spawner` | invisible spawner (stage 1): foot soldiers run in from the left and right edges at random intervals by difficulty (`data_05AFD2`, `data_05AFD8`) |
 | $0C | `update_bomber_bomb` | bomb dropped by the bomber plane (stage 1 section 10, seen in the emulator); falls with gravity, trailing type $1D fire effects |
@@ -59,7 +59,7 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $1D | `update_effect` | effect (explosion, spark, fire): plays `OBJ_ANIM` and frees itself when the script ends (`make_effect_object`) |
 | $1E | `update_alien_dog` | alien dog that jumps out at the player (stage 1 sections 2-3; seen in the emulator) |
 | $1F | `update_stage1_boss_head` | stage 1 boss: the head (invulnerable target, slot `$0440`; seen in the emulator): pushed back while shot (`boss_work_1`), comes out again otherwise |
-| $20 | `update_stage1_boss_part` | stage 1 boss (the giant turtle), a part with HP 256: explodes when destroyed or when the boss dies (`wram_0932`) |
+| $20 | `update_stage1_boss_part` | stage 1 boss (the giant turtle), a part with HP 256: explodes when destroyed or when the boss dies (`obj_slots+28*OBJ_SIZE+$32`) |
 | $22 | `update_stage1_boss_wall_chunk` | stage 1 boss: the four chunks of the metal wall it bursts through (slots `$0300-$03C0`; seen in the emulator) |
 | $23 | `update_falling_debris` | falling wall debris (stage 1 boss, the turtle breaking through the wall); explodes at y >= $C8 |
 | $24 | `update_object_type_24` | stage 6 alien soldier (seen in the emulator) |

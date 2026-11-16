@@ -543,7 +543,7 @@ loc_02E0EE:
 	rtl
 loc_02E0FD:
 	rep	#$30
-	lda	a:wram_0F50
+	lda	a:td_p1_bomb+OBJ_TYPE
 	dec	a
 	bne	loc_02E108
 	brl	loc_02E291
@@ -572,7 +572,7 @@ loc_02E108:
 loc_02E133:
 	; (not executed in the CDL traces)
 	ldy	#$0000
-	lda	a:wram_0EC2
+	lda	a:td_p1_obj+OBJ_ATTR
 	bit	#$2000
 	bne	loc_02E141
 	ldy	#$0002
@@ -591,7 +591,7 @@ loc_02E141:
 	sta	a:COLDATA
 	rep	#$20
 	.a16
-	lda	a:wram_0F46
+	lda	a:td_p1_bomb+$06
 	lsr	a
 	lsr	a
 	lsr	a
@@ -629,9 +629,9 @@ loc_02E173:
 loc_02E1A3:
 	lda	#$3C20
 	sta	zp_1C
-	lda	a:wram_0F70
+	lda	a:td_p1_bomb+$30
 	sta	zp_14
-	lda	a:wram_0F74
+	lda	a:td_p1_bomb+$34
 	sta	zp_16
 	lda	#$0018
 	sta	zp_18
@@ -640,7 +640,7 @@ loc_02E1A3:
 	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
 	bcs	loc_02E1D3
-	lda	a:wram_0EEC
+	lda	a:td_p1_obj+$2C
 	bne	loc_02E1D3
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_from_widths
@@ -650,9 +650,9 @@ loc_02E1D3:
 loc_02E1D8:
 	lda	#$3C20
 	sta	zp_1C
-	lda	a:wram_0F70
+	lda	a:td_p1_bomb+$30
 	sta	zp_14
-	lda	a:wram_0F74
+	lda	a:td_p1_bomb+$34
 	sta	zp_16
 	lda	#$0018
 	sta	zp_18
@@ -669,9 +669,9 @@ loc_02E203:
 loc_02E208:
 	lda	#$3C20
 	sta	zp_1C
-	lda	a:wram_0F70
+	lda	a:td_p1_bomb+$30
 	sta	zp_14
-	lda	a:wram_0F74
+	lda	a:td_p1_bomb+$34
 	sta	zp_16
 	lda	#$0000
 	sta	zp_18
@@ -685,8 +685,8 @@ loc_02E227:
 loc_02E22D:
 	lda	#$0000
 	beq	loc_02E23A
-	lda	a:wram_0EEC
-	ora	a:wram_0F2C
+	lda	a:td_p1_obj+$2C
+	ora	a:td_p2_obj+$2C
 	bne	loc_02E227
 loc_02E23A:
 	lda	zp_08
@@ -702,9 +702,9 @@ loc_02E24E:
 	jsl	f:add_window_off_16_lines
 	lda	#$3C20
 	sta	zp_1C
-	lda	a:wram_0F72
+	lda	a:td_p1_bomb+$32
 	sta	zp_14
-	lda	a:wram_0F76
+	lda	a:td_p1_bomb+$36
 	sta	zp_16
 	lda	#$0078
 	sta	zp_18
@@ -718,8 +718,8 @@ loc_02E271:
 loc_02E277:
 	lda	#$0000
 	bne	loc_02E284
-	lda	a:wram_0EEC
-	ora	a:wram_0F2C
+	lda	a:td_p1_obj+$2C
+	ora	a:td_p2_obj+$2C
 	bne	loc_02E271
 loc_02E284:
 	jsl	f:build_window_hdma_lines
@@ -742,7 +742,7 @@ loc_02E291:
 	sta	a:COLDATA
 	rep	#$20
 	.a16
-	lda	a:wram_0F64
+	lda	a:td_p1_bomb+$24
 	lsr	a
 	lsr	a
 	and	#$001F
@@ -754,7 +754,7 @@ loc_02E291:
 	.a16
 	lda	#$3C00
 	sta	zp_1E
-	lda	a:wram_0F64
+	lda	a:td_p1_bomb+$24
 	asl	a
 	and	#$00FF
 	sta	zp_10
@@ -767,9 +767,9 @@ loc_02E2DC:
 	; (not executed in the CDL traces)
 	lda	#$3C20
 	sta	zp_1C
-	lda	a:wram_0F78
+	lda	a:td_p1_bomb+$38
 	sta	zp_14
-	lda	a:wram_0F7C
+	lda	a:td_p1_bomb+$3C
 	sta	zp_16
 	lda	#$0018
 	sta	zp_18
@@ -786,9 +786,9 @@ loc_02E307:
 loc_02E30C:
 	lda	#$3C20
 	sta	zp_1C
-	lda	a:wram_0F78
+	lda	a:td_p1_bomb+$38
 	sta	zp_14
-	lda	a:wram_0F7C
+	lda	a:td_p1_bomb+$3C
 	sta	zp_16
 	lda	#$0018
 	sta	zp_18
@@ -797,7 +797,7 @@ loc_02E30C:
 	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
 	bcs	loc_02E33C
-	lda	a:wram_0EEC
+	lda	a:td_p1_obj+$2C
 	bne	loc_02E33C
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
@@ -807,9 +807,9 @@ loc_02E33C:
 loc_02E341:
 	lda	#$3C20
 	sta	zp_1C
-	lda	a:wram_0F78
+	lda	a:td_p1_bomb+$38
 	sta	zp_14
-	lda	a:wram_0F7C
+	lda	a:td_p1_bomb+$3C
 	sta	zp_16
 	lda	#$0000
 	sta	zp_18
@@ -821,7 +821,7 @@ loc_02E360:
 	jsl	f:add_window_off_span
 	bra	loc_02E373
 loc_02E366:
-	lda	a:wram_0EEC
+	lda	a:td_p1_obj+$2C
 	bne	loc_02E360
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
@@ -829,9 +829,9 @@ loc_02E373:
 	jsl	f:add_window_off_16_lines
 	lda	#$3C20
 	sta	zp_1C
-	lda	a:wram_0F7A
+	lda	a:td_p1_bomb+$3A
 	sta	zp_14
-	lda	a:wram_0F7E
+	lda	a:td_p1_bomb+$3E
 	sta	zp_16
 	lda	#$0078
 	sta	zp_18
@@ -843,7 +843,7 @@ loc_02E396:
 	jsl	f:add_window_off_span
 	bra	loc_02E3A9
 loc_02E39C:
-	lda	a:wram_0F2C
+	lda	a:td_p2_obj+$2C
 	bne	loc_02E396
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
@@ -852,7 +852,7 @@ loc_02E3A9:
 	rtl
 loc_02E3AE:
 	rep	#$30
-	lda	a:wram_0F90
+	lda	a:td_p2_bomb+OBJ_TYPE
 	dec	a
 	bne	loc_02E3B9
 	brl	loc_02E542
@@ -881,7 +881,7 @@ loc_02E3B9:
 loc_02E3E4:
 	; (not executed in the CDL traces)
 	ldy	#$0000
-	lda	a:wram_0F02
+	lda	a:td_p2_obj+OBJ_ATTR
 	bit	#$2000
 	bne	loc_02E3F2
 	ldy	#$0002
@@ -900,7 +900,7 @@ loc_02E3F2:
 	sta	a:COLDATA
 	rep	#$20
 	.a16
-	lda	a:wram_0F86
+	lda	a:td_p2_bomb+$06
 	lsr	a
 	lsr	a
 	lsr	a
@@ -938,9 +938,9 @@ loc_02E424:
 loc_02E454:
 	lda	#$3E20
 	sta	zp_1C
-	lda	a:wram_0FB0
+	lda	a:td_p2_bomb+$30
 	sta	zp_14
-	lda	a:wram_0FB4
+	lda	a:td_p2_bomb+$34
 	sta	zp_16
 	lda	#$0018
 	sta	zp_18
@@ -949,7 +949,7 @@ loc_02E454:
 	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
 	bcs	loc_02E484
-	lda	a:wram_0F2C
+	lda	a:td_p2_obj+$2C
 	bne	loc_02E484
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_from_widths
@@ -959,9 +959,9 @@ loc_02E484:
 loc_02E489:
 	lda	#$3E20
 	sta	zp_1C
-	lda	a:wram_0FB0
+	lda	a:td_p2_bomb+$30
 	sta	zp_14
-	lda	a:wram_0FB4
+	lda	a:td_p2_bomb+$34
 	sta	zp_16
 	lda	#$0018
 	sta	zp_18
@@ -978,9 +978,9 @@ loc_02E4B4:
 loc_02E4B9:
 	lda	#$3E20
 	sta	zp_1C
-	lda	a:wram_0FB0
+	lda	a:td_p2_bomb+$30
 	sta	zp_14
-	lda	a:wram_0FB4
+	lda	a:td_p2_bomb+$34
 	sta	zp_16
 	lda	#$0000
 	sta	zp_18
@@ -994,8 +994,8 @@ loc_02E4D8:
 loc_02E4DE:
 	lda	#$0002
 	beq	loc_02E4EB
-	lda	a:wram_0F2C
-	ora	a:wram_0EEC
+	lda	a:td_p2_obj+$2C
+	ora	a:td_p1_obj+$2C
 	bne	loc_02E4D8
 loc_02E4EB:
 	lda	zp_08
@@ -1011,9 +1011,9 @@ loc_02E4FF:
 	jsl	f:add_window_off_16_lines
 	lda	#$3E20
 	sta	zp_1C
-	lda	a:wram_0FB2
+	lda	a:td_p2_bomb+$32
 	sta	zp_14
-	lda	a:wram_0FB6
+	lda	a:td_p2_bomb+$36
 	sta	zp_16
 	lda	#$0078
 	sta	zp_18
@@ -1027,8 +1027,8 @@ loc_02E522:
 loc_02E528:
 	lda	#$0002
 	bne	loc_02E535
-	lda	a:wram_0F2C
-	ora	a:wram_0EEC
+	lda	a:td_p2_obj+$2C
+	ora	a:td_p1_obj+$2C
 	bne	loc_02E522
 loc_02E535:
 	jsl	f:build_window_hdma_lines
@@ -1051,7 +1051,7 @@ loc_02E542:
 	sta	a:COLDATA
 	rep	#$20
 	.a16
-	lda	a:wram_0FA4
+	lda	a:td_p2_bomb+$24
 	lsr	a
 	lsr	a
 	and	#$001F
@@ -1063,7 +1063,7 @@ loc_02E542:
 	.a16
 	lda	#$3E00
 	sta	zp_1E
-	lda	a:wram_0FA4
+	lda	a:td_p2_bomb+$24
 	asl	a
 	and	#$00FF
 	sta	zp_10
@@ -1076,9 +1076,9 @@ loc_02E58D:
 	; (not executed in the CDL traces)
 	lda	#$3E20
 	sta	zp_1C
-	lda	a:wram_0FB8
+	lda	a:td_p2_bomb+$38
 	sta	zp_14
-	lda	a:wram_0FBC
+	lda	a:td_p2_bomb+$3C
 	sta	zp_16
 	lda	#$0018
 	sta	zp_18
@@ -1095,9 +1095,9 @@ loc_02E5B8:
 loc_02E5BD:
 	lda	#$3E20
 	sta	zp_1C
-	lda	a:wram_0FB8
+	lda	a:td_p2_bomb+$38
 	sta	zp_14
-	lda	a:wram_0FBC
+	lda	a:td_p2_bomb+$3C
 	sta	zp_16
 	lda	#$0018
 	sta	zp_18
@@ -1106,7 +1106,7 @@ loc_02E5BD:
 	jsl	f:add_window_off_24_lines
 	jsl	f:clip_window_circle
 	bcs	loc_02E5ED
-	lda	a:wram_0F2C
+	lda	a:td_p2_obj+$2C
 	bne	loc_02E5ED
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
@@ -1116,9 +1116,9 @@ loc_02E5ED:
 loc_02E5F2:
 	lda	#$3E20
 	sta	zp_1C
-	lda	a:wram_0FB8
+	lda	a:td_p2_bomb+$38
 	sta	zp_14
-	lda	a:wram_0FBC
+	lda	a:td_p2_bomb+$3C
 	sta	zp_16
 	lda	#$0000
 	sta	zp_18
@@ -1130,7 +1130,7 @@ loc_02E611:
 	jsl	f:add_window_off_span
 	bra	loc_02E624
 loc_02E617:
-	lda	a:wram_0EEC
+	lda	a:td_p1_obj+$2C
 	bne	loc_02E611
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle
@@ -1138,9 +1138,9 @@ loc_02E624:
 	jsl	f:add_window_off_16_lines
 	lda	#$3E20
 	sta	zp_1C
-	lda	a:wram_0FBA
+	lda	a:td_p2_bomb+$3A
 	sta	zp_14
-	lda	a:wram_0FBE
+	lda	a:td_p2_bomb+$3E
 	sta	zp_16
 	lda	#$0078
 	sta	zp_18
@@ -1152,7 +1152,7 @@ loc_02E647:
 	jsl	f:add_window_off_span
 	bra	loc_02E65A
 loc_02E64D:
-	lda	a:wram_0F2C
+	lda	a:td_p2_obj+$2C
 	bne	loc_02E647
 	jsl	f:build_window_hdma_lines
 	jsl	f:build_window_circle

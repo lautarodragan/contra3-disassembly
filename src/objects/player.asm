@@ -420,26 +420,26 @@ loc_01A84E:
 ; the tank (sound $1F, state 3).
 input_tank:
 	lda	#$0040
-	sta	a:wram_09D6
-	stz	a:wram_09F4
+	sta	a:obj_slots+31*OBJ_SIZE+OBJ_FLAGS
+	stz	a:obj_slots+31*OBJ_SIZE+$34
 	stz	a:PLAYER_PLATFORM,x
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
-	lda	a:wram_09C6
+	lda	a:obj_slots+31*OBJ_SIZE+OBJ_HP
 	beq	loc_01A86F
 	lda	PLAYER_JOY_PRESSED,x
 	bit	button_jump
 	beq	loc_01A8A9
-	dec	a:wram_09D2
+	dec	a:obj_slots+31*OBJ_SIZE+OBJ_STATE
 loc_01A86F:
 	stz	a:wram_16AE
 	lda	#$001F
 	jsl	f:queue_sound
 	stz	a:wram_165C
-	stz	a:wram_09DA
-	stz	a:wram_09D8
+	stz	a:obj_slots+31*OBJ_SIZE+OBJ_X_VEL
+	stz	a:obj_slots+31*OBJ_SIZE+OBJ_X_VEL_SUB
 	lda	#$0041
-	sta	a:wram_09D6
+	sta	a:obj_slots+31*OBJ_SIZE+OBJ_FLAGS
 	lda	#$0003
 	sta	OBJ_STATE,x
 	inc	OBJ_X,x
@@ -515,11 +515,11 @@ loc_01A919:
 loc_01A924:
 	bpl	loc_01A92F
 	lda	#$0001
-	sta	a:wram_09F4
+	sta	a:obj_slots+31*OBJ_SIZE+$34
 	brl	move_player
 loc_01A92F:
 	lda	#$0002
-	sta	a:wram_09F4
+	sta	a:obj_slots+31*OBJ_SIZE+$34
 	brl	move_player
 
 ; Hanging (states 1, $0D): like input_ground, but fire also stops the

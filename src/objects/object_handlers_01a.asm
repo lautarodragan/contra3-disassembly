@@ -77,7 +77,7 @@ tbl_object_type_02_states:
 
 object_type_02_state_00:
 	lda	#$8000	; [num]
-	sta	a:wram_09D6
+	sta	a:obj_slots+31*OBJ_SIZE+OBJ_FLAGS
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
 	bne	@return
@@ -705,13 +705,13 @@ loc_01B6E9:
 ; through the HDMA table at $7E:3800, init_tank_hdma_table). A player who
 ; lands on its hatch (player_tank_check_boarding) enters it
 ; (PLAYER_STATE_ENTER_TANK, then PLAYER_STATE_TANK) and becomes tank_driver.
-; The tank's damage counter is wram_09C6 (OBJ_HP of slot $09C0): objects
+; The tank's damage counter is obj_slots+31*OBJ_SIZE+OBJ_HP (OBJ_HP of slot $09C0): objects
 ; with OBJ_FLAGS bit $1000 touching it decrement it.
 update_player_tank:
 	lda	OBJ_STATE,x
 	cmp	#$0003
 	beq	loc_01B723
-	lda	a:wram_09C6
+	lda	a:obj_slots+31*OBJ_SIZE+OBJ_HP
 	beq	loc_01B74B
 	cmp	#$0009
 	bcs	loc_01B74B
@@ -771,7 +771,7 @@ player_tank_state_00:
 	rtl
 
 player_tank_state_01:
-	lda	a:wram_0216
+	lda	a:player1_obj+OBJ_FLAGS
 	beq	loc_01B7A8
 	bmi	loc_01B7A8
 	ldy	#$0200
@@ -780,7 +780,7 @@ player_tank_state_01:
 	cmp	#$0009
 	beq	player_tank_state_02
 loc_01B7A8:
-	lda	a:wram_0256
+	lda	a:player2_obj+OBJ_FLAGS
 	beq	loc_01B7DD
 	bmi	loc_01B7DD
 	ldy	#$0240
@@ -830,18 +830,18 @@ loc_01B7F3:
 	beq	loc_01B81A
 	lda	#$0200
 	sta	a:$003C,y
-	dec	a:wram_09C6
+	dec	a:obj_slots+31*OBJ_SIZE+OBJ_HP
 	bne	loc_01B829
 loc_01B81A:
 	; (not executed in the CDL traces)
-	stz	a:wram_09C6
+	stz	a:obj_slots+31*OBJ_SIZE+OBJ_HP
 	lda	#$0080
 	sta	$24,x
 	lda	#$0003
 	sta	$12,x
 	bra	loc_01B831
 loc_01B829:
-	lda	a:wram_09C6
+	lda	a:obj_slots+31*OBJ_SIZE+OBJ_HP
 	cmp	#$0008
 	bne	loc_01B83E
 loc_01B831:
@@ -993,14 +993,14 @@ set_solid_push_flags:
 ; pushes foot soldiers (type $0A) and alien dogs (type $1E) out of it
 ; (solid_object_vs_object).
 solid_object_vs_players_and_soldiers:
-	lda	a:wram_0216
+	lda	a:player1_obj+OBJ_FLAGS
 	beq	loc_01B966
 	ldy	#$0200
 	stz	zp_0C
 	jsl	f:solid_object_vs_player
 	beq	loc_01B974
 loc_01B966:
-	lda	a:wram_0256
+	lda	a:player2_obj+OBJ_FLAGS
 	beq	loc_01B974
 	ldy	#$0240
 	stz	zp_0C
@@ -1026,7 +1026,7 @@ loc_01B987:
 
 player_tank_push_objects:
 	; (not executed in the CDL traces)
-	lda	a:wram_0216
+	lda	a:player1_obj+OBJ_FLAGS
 	beq	loc_01B9A5
 	bmi	loc_01B9A5
 	ldy	#$0200
@@ -1034,7 +1034,7 @@ player_tank_push_objects:
 	jsl	f:solid_object_vs_player
 	beq	loc_01B9B5
 loc_01B9A5:
-	lda	a:wram_0256
+	lda	a:player2_obj+OBJ_FLAGS
 	beq	loc_01B9B5
 	bmi	loc_01B9B5
 	ldy	#$0240
@@ -1927,8 +1927,8 @@ loc_01C045:
 	beq	loc_01C055
 	lda	#$0004
 	sta	a:wram_1688
-	inc	a:wram_0964
-	inc	a:wram_0964
+	inc	a:obj_slots+29*OBJ_SIZE+OBJ_TIMER
+	inc	a:obj_slots+29*OBJ_SIZE+OBJ_TIMER
 loc_01C055:
 	lda	#OBJT_DYING_SOLDIER
 	sta	$10,x
@@ -2602,76 +2602,76 @@ object_type_04_state_01:
 	.a16
 	inc	$12,x
 	lda	#$0014
-	sta	a:wram_08D0
+	sta	a:obj_slots+27*OBJ_SIZE+OBJ_TYPE
 	lda	#$4010
-	sta	a:wram_08D6
-	sta	a:wram_0856
-	sta	a:wram_0896
+	sta	a:obj_slots+27*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+25*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+26*OBJ_SIZE+OBJ_FLAGS
 	lda	#$00C0
-	sta	a:wram_08CA
+	sta	a:obj_slots+27*OBJ_SIZE+OBJ_X
 	lda	#$00B0
-	sta	a:wram_08CE
+	sta	a:obj_slots+27*OBJ_SIZE+OBJ_Y
 	lda	#$0010
-	sta	a:wram_08E8
-	sta	a:wram_0868
-	sta	a:wram_08A8
+	sta	a:obj_slots+27*OBJ_SIZE+OBJ_HITBOX_W
+	sta	a:obj_slots+25*OBJ_SIZE+OBJ_HITBOX_W
+	sta	a:obj_slots+26*OBJ_SIZE+OBJ_HITBOX_W
 	lda	#$FFF0	; [num]
-	sta	a:wram_08EA
-	sta	a:wram_086A
-	sta	a:wram_08AA
+	sta	a:obj_slots+27*OBJ_SIZE+OBJ_HITBOX_H
+	sta	a:obj_slots+25*OBJ_SIZE+OBJ_HITBOX_H
+	sta	a:obj_slots+26*OBJ_SIZE+OBJ_HITBOX_H
 	lda	#ENEMY_HP($0040)
-	sta	a:wram_08C6
+	sta	a:obj_slots+27*OBJ_SIZE+OBJ_HP
 	lda	#$0015
-	sta	a:wram_0850
-	sta	a:wram_0890
+	sta	a:obj_slots+25*OBJ_SIZE+OBJ_TYPE
+	sta	a:obj_slots+26*OBJ_SIZE+OBJ_TYPE
 	lda	#$00A8
-	sta	a:wram_084A
+	sta	a:obj_slots+25*OBJ_SIZE+OBJ_X
 	lda	#$00C8
-	sta	a:wram_088A
+	sta	a:obj_slots+26*OBJ_SIZE+OBJ_X
 	lda	#$0080
-	sta	a:wram_084E
-	sta	a:wram_088E
+	sta	a:obj_slots+25*OBJ_SIZE+OBJ_Y
+	sta	a:obj_slots+26*OBJ_SIZE+OBJ_Y
 	lda	#ENEMY_HP($0028)
-	sta	a:wram_0846
-	sta	a:wram_0886
+	sta	a:obj_slots+25*OBJ_SIZE+OBJ_HP
+	sta	a:obj_slots+26*OBJ_SIZE+OBJ_HP
 	lda	#$4194
-	sta	a:wram_0870
+	sta	a:obj_slots+25*OBJ_SIZE+$30
 	lda	#$4198
-	sta	a:wram_08B0
+	sta	a:obj_slots+26*OBJ_SIZE+$30
 	lda	#$7480
-	sta	a:wram_0872
+	sta	a:obj_slots+25*OBJ_SIZE+$32
 	lda	#$7560
-	sta	a:wram_0874
+	sta	a:obj_slots+25*OBJ_SIZE+$34
 	lda	#$7600
-	sta	a:wram_0876
+	sta	a:obj_slots+25*OBJ_SIZE+$36
 	lda	#$74A0
-	sta	a:wram_08B2
+	sta	a:obj_slots+26*OBJ_SIZE+$32
 	lda	#$75E0
-	sta	a:wram_08B4
+	sta	a:obj_slots+26*OBJ_SIZE+$34
 	lda	#$7620
-	sta	a:wram_08B6
+	sta	a:obj_slots+26*OBJ_SIZE+$36
 	lda	#$0000
-	sta	a:wram_0864
+	sta	a:obj_slots+25*OBJ_SIZE+OBJ_TIMER
 	lda	#$0018
-	sta	a:wram_08A4
-	stz	a:wram_08C0
-	stz	a:wram_0840
-	stz	a:wram_0880
-	stz	a:wram_08E0
-	stz	a:wram_0860
-	stz	a:wram_08A0
-	stz	a:wram_0852
-	stz	a:wram_0892
+	sta	a:obj_slots+26*OBJ_SIZE+OBJ_TIMER
+	stz	a:obj_slots+27*OBJ_SIZE+OBJ_SPRITE
+	stz	a:obj_slots+25*OBJ_SIZE+OBJ_SPRITE
+	stz	a:obj_slots+26*OBJ_SIZE+OBJ_SPRITE
+	stz	a:obj_slots+27*OBJ_SIZE+OBJ_ANIM
+	stz	a:obj_slots+25*OBJ_SIZE+OBJ_ANIM
+	stz	a:obj_slots+26*OBJ_SIZE+OBJ_ANIM
+	stz	a:obj_slots+25*OBJ_SIZE+OBJ_STATE
+	stz	a:obj_slots+26*OBJ_SIZE+OBJ_STATE
 	rtl
 
 object_type_04_state_02:
 	jsl	f:solid_object_vs_players_and_soldiers
-	lda	a:wram_08C6
+	lda	a:obj_slots+27*OBJ_SIZE+OBJ_HP
 	bpl	@return
 	lda	#$8000	; [num]
-	sta	a:wram_08D6
-	sta	a:wram_0856
-	sta	a:wram_0896
+	sta	a:obj_slots+27*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+25*OBJ_SIZE+OBJ_FLAGS
+	sta	a:obj_slots+26*OBJ_SIZE+OBJ_FLAGS
 	inc	$12,x
 @return:
 	rtl
@@ -3829,10 +3829,10 @@ window_sniper_aim_at_nearest_player:
 	lda	#$FFFF	; [num]
 	sta	zp_1C
 	sta	zp_1E
-	lda	a:wram_0216
+	lda	a:player1_obj+OBJ_FLAGS
 	beq	loc_01CEB5
 	sec
-	lda	a:wram_020A
+	lda	a:player1_obj+OBJ_X
 	sbc	$0A,x
 	sta	zp_18
 	bpl	loc_01CEB3
@@ -3841,10 +3841,10 @@ window_sniper_aim_at_nearest_player:
 loc_01CEB3:
 	sta	zp_1C
 loc_01CEB5:
-	lda	a:wram_0256
+	lda	a:player2_obj+OBJ_FLAGS
 	beq	loc_01CECA
 	sec
-	lda	a:wram_024A
+	lda	a:player2_obj+OBJ_X
 	sbc	$0A,x
 	sta	zp_1A
 	bpl	loc_01CEC8

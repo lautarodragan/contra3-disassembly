@@ -594,7 +594,7 @@ map_view_close:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:wram_0FC0
+	sta	f:oam_buffer
 	lda	#$021E
 	ldx	#$0FC0
 	txy

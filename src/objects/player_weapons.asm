@@ -3686,7 +3686,7 @@ loc_019BF5:
 ; $98).
 respawn_above_slot_0280:
 	sec
-	lda	a:wram_028E
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	sbc	#$0018
 	sta	OBJ_Y,x
 	lda	#$0058

@@ -492,7 +492,7 @@ loc_00D29A:
 	lda	#$0046
 	jsl	f:queue_sound
 	inc	$12,x
-	lda	a:wram_0290
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_TYPE
 	bne	object_type_06_state_05
 	phx
 	ldy	#$0300

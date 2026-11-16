@@ -38,7 +38,7 @@ loc_1DAF46:
 	lda	#$000F
 	sta	OBJ_STATE,x
 	lda	#$8000	; [num]
-	sta	a:wram_0956
+	sta	a:obj_slots+29*OBJ_SIZE+OBJ_FLAGS
 	lda	#$076F
 	sta	f:wram_7EE800
 	lda	#$0200
@@ -102,7 +102,7 @@ ending_sequence_state_00:
 	lda	#$0002
 	sta	a:wram_16B6
 	lda	#$8000	; [num]
-	sta	a:wram_08D6
+	sta	a:obj_slots+27*OBJ_SIZE+OBJ_FLAGS
 	lda	#$0002
 	sta	a:bg2_scroll_mode
 	lda	#$0480
@@ -119,21 +119,21 @@ ending_sequence_state_01:
 	inc	OBJ_STATE,x
 	stz	a:bg2_scroll_mode
 	lda	#OBJT_RIDEABLE_MISSILE
-	sta	a:wram_0290
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_TYPE
 	lda	#$0001
-	sta	a:wram_0296
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_FLAGS
 	lda	#$0078
-	sta	a:wram_02A8
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_HITBOX_W
 	lda	#$FFF8	; [num]
-	sta	a:wram_02AA
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_HITBOX_H
 	lda	#$0001
-	sta	a:wram_0292
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_STATE
 	lda	#$FFF0	; [num]
-	sta	a:wram_028E
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	lda	#$0042
-	sta	a:wram_028A
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_X
 	lda	#$8000	; [num]
-	sta	a:wram_029C
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
 	lda	#$076F
 	sta	f:wram_7EE800
 	lda	#$7FE8
@@ -154,12 +154,12 @@ ending_sequence_state_01:
 
 ending_sequence_state_02:
 	jsr	a:ending_set_missile_hdma
-	lda	a:wram_028E
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	bmi	@return
 	cmp	#$006C
 	bcc	@return
 	inc	OBJ_STATE,x
-	stz	a:wram_029C
+	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
 	lda	#$0001
 	sta	a:player_autopilot_mode
 	stz	a:wram_1666
@@ -192,21 +192,21 @@ ending_sequence_state_04:
 	dec	OBJ_TIMER,x
 	bpl	@return
 	lda	#$FFFF	; [num]
-	sta	a:wram_029E
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL
 	lda	#$8000	; [num]
-	sta	a:wram_029C
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
 	inc	OBJ_STATE,x
 @return:
 	rtl
 
 ending_sequence_state_05:
 	jsr	a:ending_set_missile_hdma
-	lda	a:wram_028E
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	bpl	@return
 	cmp	#$FFDD	; [num]
 	bcs	@return
-	stz	a:wram_029C
-	stz	a:wram_029E
+	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
+	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL
 	lda	#$0080
 	sta	OBJ_TIMER,x
 	inc	OBJ_STATE,x
@@ -313,8 +313,8 @@ ending_sequence_state_0A:
 	bit	#$0080
 	bne	loc_1DB1D0
 	inc	OBJ_STATE,x
-	stz	a:wram_029C
-	stz	a:wram_029E
+	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
+	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL
 	stz	OBJ_Y_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
 	lda	#$0004
@@ -328,7 +328,7 @@ ending_sequence_state_0B:
 	bpl	loc_1DB1D0
 	inc	OBJ_STATE,x
 	lda	#$8000	; [num]
-	sta	a:wram_029C
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
 loc_1DB1D0:
 	lda	stage_frame_odd
 	bne	loc_1DB1F2
@@ -355,7 +355,7 @@ loc_1DB1F2:
 	rtl
 
 ending_sequence_state_0C:
-	lda	a:wram_028E
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	bmi	loc_1DB237
 	cmp	#$0040
 	bcc	loc_1DB237
@@ -561,7 +561,7 @@ ending_sequence_state_22:
 	lda	#PLAYER_STATE_ENDING
 	sta	a:player1_state
 	lda	#$0040
-	sta	a:wram_0234
+	sta	a:player1_obj+$34
 loc_1DB3E2:
 	lda	a:p2_lives
 	beq	loc_1DB3F3
@@ -569,7 +569,7 @@ loc_1DB3E2:
 	lda	#PLAYER_STATE_ENDING
 	sta	a:player2_state
 	lda	#$0040
-	sta	a:wram_0274
+	sta	a:player2_obj+$34
 loc_1DB3F3:
 	stz	a:player_autopilot_mode
 	lda	#$01F0
@@ -584,7 +584,7 @@ ending_sequence_state_23:
 	inc	OBJ_STATE,x
 
 ending_sequence_state_24:
-	lda	a:wram_028E
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	bpl	loc_1DB412
 	jsl	f:spawn_ending_firework
 loc_1DB412:
@@ -597,9 +597,9 @@ loc_1DB412:
 ending_set_missile_hdma:
 	sec
 	lda	#$0077
-	sbc	a:wram_028E
+	sbc	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	sta	f:wram_7EE807
-	lda	a:wram_028E
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	bmi	loc_1DB434
 	cmp	#$0008
 	bcs	loc_1DB437
@@ -614,7 +614,7 @@ loc_1DB43E:
 ending_bg2_follow_missile:
 	sec
 	lda	#$0078
-	sbc	a:wram_028E
+	sbc	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	sta	a:bg2_y
 	rts
 
@@ -626,7 +626,7 @@ sub_1DB44A:
 	clc
 	lda	OBJ_Y,x
 	adc	#$FFF0
-	sta	a:wram_094E
+	sta	a:obj_slots+29*OBJ_SIZE+OBJ_Y
 	clc
 	adc	#$0010
 	sta	a:wram_169E
@@ -723,7 +723,7 @@ ending_creature_aim_arms:
 	rts
 
 ending_creature_aim_arm:
-	lda	a:wram_0936
+	lda	a:obj_slots+28*OBJ_SIZE+$36
 	cmp	#$03C0
 	bcs	loc_1DB55B
 	cmp	#$0040
@@ -731,7 +731,7 @@ ending_creature_aim_arm:
 	and	#$0040
 	eor	a:data_05F894,y
 	beq	loc_1DB55B
-	lda	a:wram_0936
+	lda	a:obj_slots+28*OBJ_SIZE+$36
 	and	#$003F
 	cmp	#$003F
 	bne	loc_1DB556
@@ -740,7 +740,7 @@ ending_creature_aim_arm:
 	jsl	f:pick_target_player
 	jsl	f:angle_to_player
 	ply
-	sta	a:wram_0938
+	sta	a:obj_slots+28*OBJ_SIZE+$38
 	lda	#$005C
 	jsl	f:queue_sound
 	rts
@@ -762,7 +762,7 @@ loc_1DB55B:
 	rts
 loc_1DB575:
 	sec
-	lda	a:wram_0938
+	lda	a:obj_slots+28*OBJ_SIZE+$38
 	sbc	a:$163E,y
 	bpl	loc_1DB582
 	eor	#$FFFF
@@ -875,11 +875,11 @@ ending_start_vertical_autoscroll:
 	lda	#$0004
 	sta	a:bg1_autoscroll_speed
 	lda	#$2000
-	sta	a:wram_029C
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
 	sta	a:boss_work_2
 	sta	OBJ_Y_VEL_SUB,x
 	lda	#$FFFF	; [num]
-	sta	a:wram_029E
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL
 	sta	a:boss_work_3
 	sta	OBJ_Y_VEL,x
 	rts
@@ -1014,63 +1014,63 @@ sub_1DB758:
 sub_1DB762:
 	ldy	$3A,x
 	bne	loc_1DB790
-	lda	a:wram_028E
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	bmi	loc_1DB790
 	cmp	zp_00
 	bcs	loc_1DB771
 	inc	$3A,x
 loc_1DB771:
-	lda	a:wram_029D
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB+1
 	bpl	loc_1DB77B
 	cmp	#$FF80	; [num]
 	bcc	loc_1DB7B8
 loc_1DB77B:
 	sec
-	lda	a:wram_029C
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
 	sbc	#$0400
-	sta	a:wram_029C
-	lda	a:wram_029E
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL
 	sbc	#$0000
-	sta	a:wram_029E
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL
 	bra	loc_1DB7B8
 loc_1DB790:
-	lda	a:wram_028E
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	bmi	loc_1DB79B
 	cmp	zp_02
 	bcc	loc_1DB79B
 	stz	$3A,x
 loc_1DB79B:
-	lda	a:wram_029D
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB+1
 	bmi	loc_1DB7A5
 	cmp	#$0080
 	bcs	loc_1DB7B8
 loc_1DB7A5:
 	clc
-	lda	a:wram_029C
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
 	adc	#$0400
-	sta	a:wram_029C
-	lda	a:wram_029E
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL
 	adc	#$0000
-	sta	a:wram_029E
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL
 loc_1DB7B8:
 	rts
 
 sub_1DB7B9:
-	lda	a:wram_028E
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	bpl	loc_1DB7CA
 	cmp	#$FFF0	; [num]
 	bcs	loc_1DB7CA
-	stz	a:wram_029C
-	stz	a:wram_029E
+	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
+	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL
 	rts
 loc_1DB7CA:
 	sec
-	lda	a:wram_029C
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
 	sbc	#$0400
-	sta	a:wram_029C
-	lda	a:wram_029E
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL
 	sbc	#$0000
-	sta	a:wram_029E
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL
 	rts
 
 ending_set_scroll_split:
@@ -1434,8 +1434,8 @@ loc_1DBAAA:
 	beq	loc_1DBAB4
 	bpl	loc_1DBAE9
 loc_1DBAB4:
-	stz	a:wram_029C
-	stz	a:wram_029E
+	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
+	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL
 	stz	a:tm_shadow
 	stz	hdma_preset
 	inc	OBJ_STATE,x
@@ -1471,19 +1471,19 @@ ending_sequence_state_17:
 	inc	OBJ_STATE,x
 	lda	#$0081
 	jsl	f:queue_sound
-	stz	a:wram_029C
-	stz	a:wram_029E
-	stz	a:wram_02BA
+	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
+	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL
+	stz	a:obj_slots+2*OBJ_SIZE+$3A
 	lda	#$FFDD	; [num]
-	sta	a:wram_028E
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	ldy	a:p1_lives
 	beq	loc_1DBB25
-	sta	a:wram_020E
+	sta	a:player1_obj+OBJ_Y
 loc_1DBB25:
 	ldy	a:p2_lives
 	beq	loc_1DBB2D
 	; (not executed in the CDL traces)
-	sta	a:wram_024E
+	sta	a:player2_obj+OBJ_Y
 loc_1DBB2D:
 	rtl
 
@@ -1679,8 +1679,8 @@ ending_sequence_state_26:
 	bit	#$0080
 	bne	loc_1DBCBB
 	inc	OBJ_STATE,x
-	stz	a:wram_029C
-	stz	a:wram_029E
+	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
+	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL
 	stz	OBJ_Y_VEL_SUB,x
 	stz	OBJ_Y_VEL,x
 	lda	#$0004
@@ -1696,11 +1696,11 @@ ending_sequence_state_27:
 	bpl	loc_1DBCBB
 	inc	OBJ_STATE,x
 	lda	#$8000	; [num]
-	sta	a:wram_029C
+	sta	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
 	bra	loc_1DBCBB
 
 ending_sequence_state_28:
-	lda	a:wram_028E
+	lda	a:obj_slots+2*OBJ_SIZE+OBJ_Y
 	bmi	loc_1DBCBB
 	cmp	#$0010
 	bcc	loc_1DBCBB
@@ -2892,11 +2892,11 @@ brain_boss_attack_start_4:
 	ldy	#$0580
 	jsr	a:brain_boss_fill_slots
 	lda	#$8000	; [num]
-	sta	a:wram_033A
-	sta	a:wram_047A
+	sta	a:obj_slots+4*OBJ_SIZE+$3A
+	sta	a:obj_slots+9*OBJ_SIZE+$3A
 	lda	#$0001
-	sta	a:wram_043A
-	sta	a:wram_057A
+	sta	a:obj_slots+8*OBJ_SIZE+$3A
+	sta	a:obj_slots+13*OBJ_SIZE+$3A
 	lda	#$0080
 	sta	a:boss_work_2
 	sta	a:boss_work_4
@@ -2988,12 +2988,12 @@ loc_1DC687:
 	ply
 	jsl	f:polar_to_xy
 	clc
-	lda	a:wram_090A
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_X
 	adc	#$001C
 	adc	zp_08
 	sta	OBJ_X,x
 	clc
-	lda	a:wram_090E
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_Y
 	adc	#$FFE4
 	adc	zp_0A
 	sta	OBJ_Y,x
@@ -3048,7 +3048,7 @@ brain_boss_chain_state_00:
 
 brain_boss_chain_state_02:
 	clc
-	lda	a:wram_090A
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_X
 	adc	#$001C
 	sec
 	sbc	OBJ_X,x
@@ -3060,7 +3060,7 @@ loc_1DC712:
 	stz	OBJ_X_VEL_SUB,x
 	stz	OBJ_X_VEL,x
 	clc
-	lda	a:wram_090E
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_Y
 	adc	#$FFE4
 	sec
 	sbc	OBJ_Y,x
@@ -3149,7 +3149,7 @@ loc_1DC79B:
 brain_boss_chain_state_03:
 	dec	OBJ_TIMER,x
 	bpl	loc_1DC7D2
-	inc	a:wram_0912
+	inc	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 loc_1DC7C9:
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
@@ -3253,12 +3253,12 @@ loc_1DC88A:
 	lda	OBJ_STATE,x
 	bne	loc_1DC8DE
 	clc
-	lda	a:wram_090A
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_X
 	adc	#$001C
 	sta	OBJ_X,x
 	sta	zp_FC
 	clc
-	lda	a:wram_090E
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_Y
 	adc	#$FFE0
 	sta	OBJ_Y,x
 	sta	zp_FE
@@ -3424,23 +3424,23 @@ loc_1DC9CA:
 	cpx	#$0440
 	bcc	loc_1DC9D8
 	clc
-	adc	a:wram_093E
+	adc	a:obj_slots+28*OBJ_SIZE+$3E
 	bra	loc_1DC9DC
 loc_1DC9D8:
 	sec
-	sbc	a:wram_093E
+	sbc	a:obj_slots+28*OBJ_SIZE+$3E
 loc_1DC9DC:
 	and	#$00FF
 	sta	a:boss_work_2
 	ldy	#$0014
 	jsl	f:polar_to_xy
 	clc
-	lda	a:wram_090A
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_X
 	adc	#$001C
 	adc	zp_08
 	sta	OBJ_X,x
 	clc
-	lda	a:wram_090E
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_Y
 	adc	#$FFE8
 	adc	zp_0A
 	sta	OBJ_Y,x
@@ -3545,11 +3545,11 @@ loc_1DCA7F:
 	lda	#$FFF8	; [num]
 	sta	OBJ_HITBOX_H,x
 	clc
-	lda	a:wram_090A
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_X
 	adc	#$001C
 	sta	OBJ_X,x
 	clc
-	lda	a:wram_090E
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_Y
 	adc	#$FFE4
 	sta	OBJ_Y,x
 	lda	a:boss_work_0
@@ -3781,10 +3781,10 @@ queue_brain_boss_tiles:
 
 brain_boss_launch_from_mouth:
 	clc
-	lda	a:wram_090A
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_X
 	adc	#$001C
 	sta	a:$000A,y
-	lda	a:wram_090E
+	lda	a:obj_slots+28*OBJ_SIZE+OBJ_Y
 	sta	a:$000E,y
 	lda	rng_lo
 	and	#$0003
