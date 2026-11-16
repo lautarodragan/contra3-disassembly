@@ -6400,7 +6400,7 @@ sub_04B14B:
 	inc	OBJ_ANIM_TIMER,x
 	bit	#$0007
 	bne	loc_04B17B
-	ldy	zp_B6
+	ldy	vram_block_queue_end
 	cpy	#$0010
 	bcc	loc_04B15E
 	; (not executed in the CDL traces)
@@ -6614,7 +6614,7 @@ sub_04B2E7:
 	beq	loc_04B32A
 	lda	$36,x
 	bne	loc_04B300
-	lda	zp_B6
+	lda	vram_block_queue_end
 	cmp	#$0040
 	bcs	loc_04B32A
 	lda	a:$0000,y
@@ -6624,7 +6624,7 @@ sub_04B2E7:
 loc_04B300:
 	dec	$36,x
 	bne	loc_04B32A
-	lda	zp_B6
+	lda	vram_block_queue_end
 	cmp	#$0040
 	bcc	loc_04B30E
 	; (not executed in the CDL traces)

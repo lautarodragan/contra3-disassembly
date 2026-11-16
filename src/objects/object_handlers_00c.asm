@@ -314,22 +314,22 @@ stage1_boss_queue_bg_block:
 	jml	f:loc_00F4EB
 loc_00F4EB:
 	ldy	#$0000
-	sta	a:$1800,y
+	sta	a:vram_block_queue,y
 	clc
 	adc	#$0010
-	sta	a:$1802,y
+	sta	a:vram_block_queue+2,y
 	clc
 	adc	#$0010
-	sta	a:$1804,y
+	sta	a:vram_block_queue+4,y
 	clc
 	adc	#$0010
-	sta	a:$1806,y
+	sta	a:vram_block_queue+6,y
 	lda	zp_00
-	sta	a:$1840,y
+	sta	a:vram_block_src,y
 	clc
-	lda	zp_B6
+	lda	vram_block_queue_end
 	adc	#$0008
-	sta	zp_B6
+	sta	vram_block_queue_end
 	rtl
 
 spawn_stage1_boss_wall_chunks:

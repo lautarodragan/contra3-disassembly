@@ -92,35 +92,35 @@ set_player_frame:
 	asl	a
 	tay
 	lda	a:player_frames,y
-	sta	a:wram_1780
+	sta	a:player_tile_src
 	clc
 	adc	#$0200
-	sta	a:wram_178C
+	sta	a:player_tile_src+12
 	lda	a:player_frames+2,y
-	sta	a:wram_1782
+	sta	a:player_tile_src+2
 	clc
 	adc	#$0200
-	sta	a:wram_178E
+	sta	a:player_tile_src+14
 	lda	a:player_frames+4,y
-	sta	a:wram_1784
+	sta	a:player_tile_src+4
 	clc
 	adc	#$0200
-	sta	a:wram_1790
+	sta	a:player_tile_src+16
 	lda	a:player_frames+6,y
-	sta	a:wram_1786
+	sta	a:player_tile_src+6
 	clc
 	adc	#$0200
-	sta	a:wram_1792
+	sta	a:player_tile_src+18
 	lda	a:player_frames+8,y
-	sta	a:wram_1788
+	sta	a:player_tile_src+8
 	clc
 	adc	#$0200
-	sta	a:wram_1794
+	sta	a:player_tile_src+20
 	lda	a:player_frames+10,y
-	sta	a:wram_178A
+	sta	a:player_tile_src+10
 	clc
 	adc	#$0200
-	sta	a:wram_1796
+	sta	a:player_tile_src+22
 	stz	$38,x
 	lda	OBJ_FACING,x
 	bne	loc_0180CB

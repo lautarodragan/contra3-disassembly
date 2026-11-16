@@ -8582,7 +8582,7 @@ loc_02CA5C:
 	bcs	loc_02CA64
 	brl	loc_02CAA5
 loc_02CA64:
-	lda	a:wram_18CC
+	lda	a:td_switch_events+2*SWEV_SIZE+SWEV_ACTIVE
 	beq	loc_02CA6A
 	rts
 loc_02CA6A:
@@ -8590,26 +8590,26 @@ loc_02CA6A:
 	sta	a:screen_shake_offset
 	sta	a:screen_shake_timer
 	lda	#$0001
-	sta	a:wram_18CC
+	sta	a:td_switch_events+2*SWEV_SIZE+SWEV_ACTIVE
 	lda	#$0008
-	sta	a:wram_18CE
-	stz	a:wram_18D0
+	sta	a:td_switch_events+2*SWEV_SIZE+SWEV_STEPS
+	stz	a:td_switch_events+2*SWEV_SIZE+SWEV_TIMER
 	ldy	#$0000
 	lda	$0A,x
 	cmp	#$0220
 	bcc	loc_02CA8F
 	ldy	#$0002
 loc_02CA8F:
-	sty	a:wram_18D2
+	sty	a:td_switch_events+2*SWEV_SIZE+SWEV_DIR
 	lda	a:td_switch2_vram_addrs,y
-	sta	a:wram_18D8
+	sta	a:td_switch_events+2*SWEV_SIZE+SWEV_VRAM
 	lda	a:td_switch2_x,y
-	sta	a:wram_18D4
+	sta	a:td_switch_events+2*SWEV_SIZE+SWEV_X
 	lda	#$0390
-	sta	a:wram_18D6
+	sta	a:td_switch_events+2*SWEV_SIZE+SWEV_Y
 	rts
 loc_02CAA5:
-	lda	a:wram_18BE
+	lda	a:td_switch_events+1*SWEV_SIZE+SWEV_ACTIVE
 	beq	loc_02CAAB
 	rts
 loc_02CAAB:
@@ -8617,26 +8617,26 @@ loc_02CAAB:
 	sta	a:screen_shake_offset
 	sta	a:screen_shake_timer
 	lda	#$0001
-	sta	a:wram_18BE
+	sta	a:td_switch_events+1*SWEV_SIZE+SWEV_ACTIVE
 	lda	#$0008
-	sta	a:wram_18C0
-	stz	a:wram_18C2
+	sta	a:td_switch_events+1*SWEV_SIZE+SWEV_STEPS
+	stz	a:td_switch_events+1*SWEV_SIZE+SWEV_TIMER
 	ldy	#$0000
 	lda	$0A,x
 	cmp	#$0140
 	bcc	loc_02CAD0
 	ldy	#$0002
 loc_02CAD0:
-	sty	a:wram_18C4
+	sty	a:td_switch_events+1*SWEV_SIZE+SWEV_DIR
 	lda	a:td_switch1_vram_addrs,y
-	sta	a:wram_18CA
+	sta	a:td_switch_events+1*SWEV_SIZE+SWEV_VRAM
 	lda	a:td_switch1_x,y
-	sta	a:wram_18C6
+	sta	a:td_switch_events+1*SWEV_SIZE+SWEV_X
 	lda	#$0230
-	sta	a:wram_18C8
+	sta	a:td_switch_events+1*SWEV_SIZE+SWEV_Y
 	rts
 loc_02CAE6:
-	lda	a:wram_18B0
+	lda	a:td_switch_events+SWEV_ACTIVE
 	beq	loc_02CAEC
 	rts
 loc_02CAEC:
@@ -8644,23 +8644,23 @@ loc_02CAEC:
 	sta	a:screen_shake_offset
 	sta	a:screen_shake_timer
 	lda	#$0001
-	sta	a:wram_18B0
+	sta	a:td_switch_events+SWEV_ACTIVE
 	lda	#$0008
-	sta	a:wram_18B2
-	stz	a:wram_18B4
+	sta	a:td_switch_events+SWEV_STEPS
+	stz	a:td_switch_events+SWEV_TIMER
 	ldy	#$0000
 	lda	$0A,x
 	cmp	#$0300
 	bcc	loc_02CB11
 	ldy	#$0002
 loc_02CB11:
-	sty	a:wram_18B6
+	sty	a:td_switch_events+SWEV_DIR
 	lda	a:td_switch0_vram_addrs,y
-	sta	a:wram_18BC
+	sta	a:td_switch_events+SWEV_VRAM
 	lda	a:td_switch0_x,y
-	sta	a:wram_18B8
+	sta	a:td_switch_events+SWEV_X
 	lda	#$0050
-	sta	a:wram_18BA
+	sta	a:td_switch_events+SWEV_Y
 	rts
 
 td_bomb_hits_map_object_tile:
@@ -10868,10 +10868,10 @@ loc_02DC2D:
 ; Stage 2: block animations of the map (four blocks a frame through the
 ; patch slots), and timers at $1880 that redraw a spot and spawn an object.
 td_update_stage2_map_events:
-	lda	a:wram_1800
-	ora	a:wram_1802
-	ora	a:wram_1804
-	ora	a:wram_1806
+	lda	a:m7_patch_flags
+	ora	a:m7_patch_flags+2
+	ora	a:m7_patch_flags+4
+	ora	a:m7_patch_flags+6
 	beq	loc_02DC4C
 	brl	loc_02DCC8
 loc_02DC4C:

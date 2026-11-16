@@ -1613,11 +1613,11 @@ loc_03EBD6:
 	ldy	a:td_enemy_stream_slots,x
 	tax
 	lda	a:$0000,x
-	sta	a:$1780,y
+	sta	a:td_gfx_stream+GFXS_SRC,y
 	lda	a:$0002,x
-	sta	a:$1782,y
+	sta	a:td_gfx_stream+GFXS_BANK,y
 	lda	a:$0004,x
-	sta	a:$1784,y
+	sta	a:td_gfx_stream+GFXS_SRC2,y
 	ply
 	jsr	a:draw_topdown_metasprite
 	plx
@@ -1736,11 +1736,11 @@ loc_03ECB7:
 	ldy	a:td_player_stream_slots,x
 	tax
 	lda	a:$0000,x
-	sta	a:$1780,y
+	sta	a:td_gfx_stream+GFXS_SRC,y
 	lda	a:$0002,x
-	sta	a:$1782,y
+	sta	a:td_gfx_stream+GFXS_BANK,y
 	lda	a:$0004,x
-	sta	a:$1784,y
+	sta	a:td_gfx_stream+GFXS_SRC2,y
 	ply
 	jsr	a:draw_topdown_metasprite
 	plx
@@ -1839,11 +1839,11 @@ loc_03ED6D:
 	ldy	a:td_enemy_stream_slots
 	tax
 	lda	a:$0000,x
-	sta	a:$1780,y
+	sta	a:td_gfx_stream+GFXS_SRC,y
 	lda	a:$0002,x
-	sta	a:$1782,y
+	sta	a:td_gfx_stream+GFXS_BANK,y
 	lda	a:$0004,x
-	sta	a:$1784,y
+	sta	a:td_gfx_stream+GFXS_SRC2,y
 	ply
 	jsr	a:draw_topdown_metasprite
 	plx
@@ -1938,11 +1938,11 @@ loc_03EE2E:
 	ldy	a:td_player_stream_slots,x
 	tax
 	lda	a:$0000,x
-	sta	a:$1780,y
+	sta	a:td_gfx_stream+GFXS_SRC,y
 	lda	a:$0002,x
-	sta	a:$1782,y
+	sta	a:td_gfx_stream+GFXS_BANK,y
 	lda	a:$0004,x
-	sta	a:$1784,y
+	sta	a:td_gfx_stream+GFXS_SRC2,y
 	ply
 	jsr	a:draw_topdown_metasprite
 	plx
@@ -2012,11 +2012,11 @@ loc_03EECB:
 	ldy	#$0020
 	tax
 	lda	a:$0000,x
-	sta	a:$1780,y
+	sta	a:td_gfx_stream+GFXS_SRC,y
 	lda	a:$0002,x
-	sta	a:$1782,y
+	sta	a:td_gfx_stream+GFXS_BANK,y
 	lda	a:$0004,x
-	sta	a:$1784,y
+	sta	a:td_gfx_stream+GFXS_SRC2,y
 	lda	zp_18
 	and	#$FF80
 	sta	zp_C4
@@ -2059,11 +2059,11 @@ loc_03EF46:
 	ldy	#$0018
 	tax
 	lda	a:$0000,x
-	sta	a:$1780,y
+	sta	a:td_gfx_stream+GFXS_SRC,y
 	lda	a:$0002,x
-	sta	a:$1782,y
+	sta	a:td_gfx_stream+GFXS_BANK,y
 	lda	a:$0004,x
-	sta	a:$1784,y
+	sta	a:td_gfx_stream+GFXS_SRC2,y
 	lda	zp_18
 	and	#$FF80
 	sta	zp_C4
@@ -2530,11 +2530,11 @@ loc_03F25E:
 	ldy	a:td_enemy_stream_slots,x
 	tax
 	lda	a:$0000,x
-	sta	a:$1780,y
+	sta	a:td_gfx_stream+GFXS_SRC,y
 	lda	a:$0002,x
-	sta	a:$1782,y
+	sta	a:td_gfx_stream+GFXS_BANK,y
 	lda	a:$0004,x
-	sta	a:$1784,y
+	sta	a:td_gfx_stream+GFXS_SRC2,y
 	ply
 	jsr	a:draw_topdown_metasprite
 	plx
@@ -3110,11 +3110,11 @@ loc_03F670:
 	ldy	a:td_enemy_stream_slots_p2_view,x
 	tax
 	lda	a:$0000,x
-	sta	a:$1780,y
+	sta	a:td_gfx_stream+GFXS_SRC,y
 	lda	a:$0002,x
-	sta	a:$1782,y
+	sta	a:td_gfx_stream+GFXS_BANK,y
 	lda	a:$0004,x
-	sta	a:$1784,y
+	sta	a:td_gfx_stream+GFXS_SRC2,y
 	ply
 	jsr	a:draw_topdown_metasprite_p2
 	plx
@@ -3232,11 +3232,11 @@ loc_03F751:
 	ldy	a:td_player_stream_slots_p2_view,x
 	tax
 	lda	a:$0000,x
-	sta	a:$1780,y
+	sta	a:td_gfx_stream+GFXS_SRC,y
 	lda	a:$0002,x
-	sta	a:$1782,y
+	sta	a:td_gfx_stream+GFXS_BANK,y
 	lda	a:$0004,x
-	sta	a:$1784,y
+	sta	a:td_gfx_stream+GFXS_SRC2,y
 	ply
 	jsr	a:draw_topdown_metasprite_p2
 	plx
@@ -3335,11 +3335,11 @@ loc_03F807:
 	ldy	a:td_enemy_stream_slots_p2_view
 	tax
 	lda	a:$0000,x
-	sta	a:$1780,y
+	sta	a:td_gfx_stream+GFXS_SRC,y
 	lda	a:$0002,x
-	sta	a:$1782,y
+	sta	a:td_gfx_stream+GFXS_BANK,y
 	lda	a:$0004,x
-	sta	a:$1784,y
+	sta	a:td_gfx_stream+GFXS_SRC2,y
 	ply
 	jsr	a:draw_topdown_metasprite_p2
 	plx
@@ -3434,11 +3434,11 @@ loc_03F8C8:
 	ldy	a:td_player_stream_slots_p2_view,x
 	tax
 	lda	a:$0000,x
-	sta	a:$1780,y
+	sta	a:td_gfx_stream+GFXS_SRC,y
 	lda	a:$0002,x
-	sta	a:$1782,y
+	sta	a:td_gfx_stream+GFXS_BANK,y
 	lda	a:$0004,x
-	sta	a:$1784,y
+	sta	a:td_gfx_stream+GFXS_SRC2,y
 	ply
 	jsr	a:draw_topdown_metasprite_p2
 	plx
@@ -3508,11 +3508,11 @@ loc_03F965:
 	ldy	#$0060
 	tax
 	lda	a:$0000,x
-	sta	a:$1780,y
+	sta	a:td_gfx_stream+GFXS_SRC,y
 	lda	a:$0002,x
-	sta	a:$1782,y
+	sta	a:td_gfx_stream+GFXS_BANK,y
 	lda	a:$0004,x
-	sta	a:$1784,y
+	sta	a:td_gfx_stream+GFXS_SRC2,y
 	lda	zp_18
 	and	#$FF80
 	sta	zp_C4
@@ -3555,11 +3555,11 @@ loc_03F9E0:
 	ldy	#$0058
 	tax
 	lda	a:$0000,x
-	sta	a:$1780,y
+	sta	a:td_gfx_stream+GFXS_SRC,y
 	lda	a:$0002,x
-	sta	a:$1782,y
+	sta	a:td_gfx_stream+GFXS_BANK,y
 	lda	a:$0004,x
-	sta	a:$1784,y
+	sta	a:td_gfx_stream+GFXS_SRC2,y
 	lda	zp_18
 	and	#$FF80
 	sta	zp_C4
@@ -4025,11 +4025,11 @@ loc_03FCF8:
 	ldy	a:td_enemy_stream_slots_p2_view,x
 	tax
 	lda	a:$0000,x
-	sta	a:$1780,y
+	sta	a:td_gfx_stream+GFXS_SRC,y
 	lda	a:$0002,x
-	sta	a:$1782,y
+	sta	a:td_gfx_stream+GFXS_BANK,y
 	lda	a:$0004,x
-	sta	a:$1784,y
+	sta	a:td_gfx_stream+GFXS_SRC2,y
 	ply
 	jsr	a:draw_topdown_metasprite_p2
 	plx

@@ -46,101 +46,101 @@ loc_009C46:
 	sta	a:VMADDL
 	lda	#$1801
 	sta	a:DMAP0
-	lda	a:wram_1780
+	lda	a:td_gfx_stream+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_1782
+	ldy	a:td_gfx_stream+GFXS_BANK
 	sty	a:A1B0
 	lda	#$0100
 	sta	a:DAS0L
 	ldx	#$01
 	stx	a:MDMAEN
-	lda	a:wram_1788
+	lda	a:td_gfx_stream+1*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_178A
+	ldy	a:td_gfx_stream+1*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_1784
+	lda	a:td_gfx_stream+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_1782
+	ldy	a:td_gfx_stream+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_178C
+	lda	a:td_gfx_stream+1*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_178A
+	ldy	a:td_gfx_stream+1*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_1790
+	lda	a:td_gfx_stream+2*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_1792
+	ldy	a:td_gfx_stream+2*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_1798
+	lda	a:td_gfx_stream+3*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_179A
+	ldy	a:td_gfx_stream+3*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_1794
+	lda	a:td_gfx_stream+2*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_1792
+	ldy	a:td_gfx_stream+2*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_179C
+	lda	a:td_gfx_stream+3*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_179A
+	ldy	a:td_gfx_stream+3*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17A0
+	lda	a:td_gfx_stream+4*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17A2
+	ldy	a:td_gfx_stream+4*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17A8
+	lda	a:td_gfx_stream+5*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17AA
+	ldy	a:td_gfx_stream+5*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17A4
+	lda	a:td_gfx_stream+4*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17A2
+	ldy	a:td_gfx_stream+4*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17AC
+	lda	a:td_gfx_stream+5*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17AA
+	ldy	a:td_gfx_stream+5*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17B0
+	lda	a:td_gfx_stream+6*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17B2
+	ldy	a:td_gfx_stream+6*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17B8
+	lda	a:td_gfx_stream+7*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17BA
+	ldy	a:td_gfx_stream+7*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17B4
+	lda	a:td_gfx_stream+6*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17B2
+	ldy	a:td_gfx_stream+6*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17BC
+	lda	a:td_gfx_stream+7*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17BA
+	ldy	a:td_gfx_stream+7*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
@@ -168,67 +168,67 @@ loc_009D81:
 	sta	a:VMADDL
 	lda	#$1801
 	sta	a:DMAP0
-	lda	a:wram_1780
+	lda	a:td_gfx_stream+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_1782
+	ldy	a:td_gfx_stream+GFXS_BANK
 	sty	a:A1B0
 	lda	#$0100
 	sta	a:DAS0L
 	ldx	#$01
 	stx	a:MDMAEN
-	lda	a:wram_1788
+	lda	a:td_gfx_stream+1*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_178A
+	ldy	a:td_gfx_stream+1*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_1784
+	lda	a:td_gfx_stream+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_1782
+	ldy	a:td_gfx_stream+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_178C
+	lda	a:td_gfx_stream+1*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_178A
+	ldy	a:td_gfx_stream+1*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_1790
+	lda	a:td_gfx_stream+2*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_1792
+	ldy	a:td_gfx_stream+2*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	ldy	#$80
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_1798
+	lda	a:td_gfx_stream+3*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_179A
+	ldy	a:td_gfx_stream+3*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	ldy	#$80
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_17A0
+	lda	a:td_gfx_stream+4*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_17A8
+	lda	a:td_gfx_stream+5*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_1794
+	lda	a:td_gfx_stream+2*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_179C
+	lda	a:td_gfx_stream+3*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_17A4
+	lda	a:td_gfx_stream+4*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_17AC
+	lda	a:td_gfx_stream+5*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
@@ -256,53 +256,53 @@ loc_009E77:
 	sta	a:VMADDL
 	lda	#$1801
 	sta	a:DMAP0
-	lda	a:wram_1780
+	lda	a:td_gfx_stream+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_1782
+	ldy	a:td_gfx_stream+GFXS_BANK
 	sty	a:A1B0
 	lda	#$0100
 	sta	a:DAS0L
 	ldx	#$01
 	stx	a:MDMAEN
-	lda	a:wram_1788
+	lda	a:td_gfx_stream+1*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_178A
+	ldy	a:td_gfx_stream+1*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_1784
+	lda	a:td_gfx_stream+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_1782
+	ldy	a:td_gfx_stream+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_178C
+	lda	a:td_gfx_stream+1*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_178A
+	ldy	a:td_gfx_stream+1*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_1790
+	lda	a:td_gfx_stream+2*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_1792
+	ldy	a:td_gfx_stream+2*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_1798
+	lda	a:td_gfx_stream+3*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_179A
+	ldy	a:td_gfx_stream+3*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_1794
+	lda	a:td_gfx_stream+2*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_1792
+	ldy	a:td_gfx_stream+2*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_179C
+	lda	a:td_gfx_stream+3*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_179A
+	ldy	a:td_gfx_stream+3*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
@@ -329,101 +329,101 @@ loc_009F58:
 	sta	a:VMADDL
 	lda	#$1801
 	sta	a:DMAP0
-	lda	a:wram_17C0
+	lda	a:td_gfx_stream+8*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17C2
+	ldy	a:td_gfx_stream+8*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	lda	#$0100
 	sta	a:DAS0L
 	ldx	#$01
 	stx	a:MDMAEN
-	lda	a:wram_17C8
+	lda	a:td_gfx_stream+9*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17CA
+	ldy	a:td_gfx_stream+9*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17C4
+	lda	a:td_gfx_stream+8*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17C2
+	ldy	a:td_gfx_stream+8*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17CC
+	lda	a:td_gfx_stream+9*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17CA
+	ldy	a:td_gfx_stream+9*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17D0
+	lda	a:td_gfx_stream+10*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17D2
+	ldy	a:td_gfx_stream+10*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17D8
+	lda	a:td_gfx_stream+11*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17DA
+	ldy	a:td_gfx_stream+11*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17D4
+	lda	a:td_gfx_stream+10*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17D2
+	ldy	a:td_gfx_stream+10*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17DC
+	lda	a:td_gfx_stream+11*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17DA
+	ldy	a:td_gfx_stream+11*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17E0
+	lda	a:td_gfx_stream+12*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17E2
+	ldy	a:td_gfx_stream+12*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17E8
+	lda	a:td_gfx_stream+13*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17EA
+	ldy	a:td_gfx_stream+13*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17E4
+	lda	a:td_gfx_stream+12*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17E2
+	ldy	a:td_gfx_stream+12*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17EC
+	lda	a:td_gfx_stream+13*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17EA
+	ldy	a:td_gfx_stream+13*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17F0
+	lda	a:td_gfx_stream+14*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17F2
+	ldy	a:td_gfx_stream+14*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17F8
+	lda	a:td_gfx_stream+15*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17FA
+	ldy	a:td_gfx_stream+15*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17F4
+	lda	a:td_gfx_stream+14*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17F2
+	ldy	a:td_gfx_stream+14*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17FC
+	lda	a:td_gfx_stream+15*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17FA
+	ldy	a:td_gfx_stream+15*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
@@ -452,67 +452,67 @@ loc_00A093:
 	sta	a:VMADDL
 	lda	#$1801
 	sta	a:DMAP0
-	lda	a:wram_17C0
+	lda	a:td_gfx_stream+8*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17C2
+	ldy	a:td_gfx_stream+8*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	lda	#$0100
 	sta	a:DAS0L
 	ldx	#$01
 	stx	a:MDMAEN
-	lda	a:wram_17C8
+	lda	a:td_gfx_stream+9*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17CA
+	ldy	a:td_gfx_stream+9*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17C4
+	lda	a:td_gfx_stream+8*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17C2
+	ldy	a:td_gfx_stream+8*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17CC
+	lda	a:td_gfx_stream+9*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17CA
+	ldy	a:td_gfx_stream+9*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17D0
+	lda	a:td_gfx_stream+10*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17D2
+	ldy	a:td_gfx_stream+10*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	ldy	#$80
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_17D8
+	lda	a:td_gfx_stream+11*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17DA
+	ldy	a:td_gfx_stream+11*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	ldy	#$80
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_17E0
+	lda	a:td_gfx_stream+12*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_17E8
+	lda	a:td_gfx_stream+13*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_17D4
+	lda	a:td_gfx_stream+10*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_17DC
+	lda	a:td_gfx_stream+11*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_17E4
+	lda	a:td_gfx_stream+12*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_17EC
+	lda	a:td_gfx_stream+13*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
@@ -540,53 +540,53 @@ loc_00A189:
 	sta	a:VMADDL
 	lda	#$1801
 	sta	a:DMAP0
-	lda	a:wram_17C0
+	lda	a:td_gfx_stream+8*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17C2
+	ldy	a:td_gfx_stream+8*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	lda	#$0100
 	sta	a:DAS0L
 	ldx	#$01
 	stx	a:MDMAEN
-	lda	a:wram_17C8
+	lda	a:td_gfx_stream+9*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17CA
+	ldy	a:td_gfx_stream+9*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17C4
+	lda	a:td_gfx_stream+8*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17C2
+	ldy	a:td_gfx_stream+8*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17CC
+	lda	a:td_gfx_stream+9*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17CA
+	ldy	a:td_gfx_stream+9*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17D0
+	lda	a:td_gfx_stream+10*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17D2
+	ldy	a:td_gfx_stream+10*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17D8
+	lda	a:td_gfx_stream+11*GFXS_SIZE+GFXS_SRC
 	sta	a:A1T0L
-	ldy	a:wram_17DA
+	ldy	a:td_gfx_stream+11*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17D4
+	lda	a:td_gfx_stream+10*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17D2
+	ldy	a:td_gfx_stream+10*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
-	lda	a:wram_17DC
+	lda	a:td_gfx_stream+11*GFXS_SIZE+GFXS_SRC2
 	sta	a:A1T0L
-	ldy	a:wram_17DA
+	ldy	a:td_gfx_stream+11*GFXS_SIZE+GFXS_BANK
 	sty	a:A1B0
 	stx	a:DAS0H
 	stx	a:MDMAEN
@@ -606,20 +606,20 @@ upload_m7_block_patches:
 	stz	a:A1B0
 	ldy	#$0004
 	lda	#$01
-	ldx	a:wram_1800
+	ldx	a:m7_patch_flags
 	jsr	(.loword(tbl_m7_block_patch_uploaders),x)
-	ldx	a:wram_1802
+	ldx	a:m7_patch_flags+2
 	jsr	(.loword(tbl_m7_block_patch_uploaders),x)
-	ldx	a:wram_1804
+	ldx	a:m7_patch_flags+4
 	jsr	(.loword(tbl_m7_block_patch_uploaders),x)
-	ldx	a:wram_1806
+	ldx	a:m7_patch_flags+6
 	jsr	(.loword(tbl_m7_block_patch_uploaders),x)
 	rep	#$20
 	.a16
-	stz	a:wram_1800
-	stz	a:wram_1802
-	stz	a:wram_1804
-	stz	a:wram_1806
+	stz	a:m7_patch_flags
+	stz	a:m7_patch_flags+2
+	stz	a:m7_patch_flags+4
+	stz	a:m7_patch_flags+6
 	rtl
 tbl_m7_block_patch_uploaders:
 	.addr	upload_m7_block_patch_0
@@ -634,19 +634,19 @@ upload_m7_block_patch_0:
 	ldx	#$1828
 	stx	a:A1T0L
 	sty	a:DAS0L
-	ldx	a:wram_1808
+	ldx	a:m7_patch_vram
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	sty	a:DAS0L
-	ldx	a:wram_180A
+	ldx	a:m7_patch_vram+2
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	sty	a:DAS0L
-	ldx	a:wram_180C
+	ldx	a:m7_patch_vram+4
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	sty	a:DAS0L
-	ldx	a:wram_180E
+	ldx	a:m7_patch_vram+6
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	rts
@@ -655,19 +655,19 @@ upload_m7_block_patch_1:
 	ldx	#$1838
 	stx	a:A1T0L
 	sty	a:DAS0L
-	ldx	a:wram_1810
+	ldx	a:m7_patch_vram+8
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	sty	a:DAS0L
-	ldx	a:wram_1812
+	ldx	a:m7_patch_vram+10
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	sty	a:DAS0L
-	ldx	a:wram_1814
+	ldx	a:m7_patch_vram+12
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	sty	a:DAS0L
-	ldx	a:wram_1816
+	ldx	a:m7_patch_vram+14
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	rts
@@ -676,19 +676,19 @@ upload_m7_block_patch_2:
 	ldx	#$1848
 	stx	a:A1T0L
 	sty	a:DAS0L
-	ldx	a:wram_1818
+	ldx	a:m7_patch_vram+16
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	sty	a:DAS0L
-	ldx	a:wram_181A
+	ldx	a:m7_patch_vram+18
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	sty	a:DAS0L
-	ldx	a:wram_181C
+	ldx	a:m7_patch_vram+20
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	sty	a:DAS0L
-	ldx	a:wram_181E
+	ldx	a:m7_patch_vram+22
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	rts
@@ -697,19 +697,19 @@ upload_m7_block_patch_3:
 	ldx	#$1858
 	stx	a:A1T0L
 	sty	a:DAS0L
-	ldx	a:wram_1820
+	ldx	a:m7_patch_vram+24
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	sty	a:DAS0L
-	ldx	a:wram_1822
+	ldx	a:m7_patch_vram+26
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	sty	a:DAS0L
-	ldx	a:wram_1824
+	ldx	a:m7_patch_vram+28
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	sty	a:DAS0L
-	ldx	a:wram_1826
+	ldx	a:m7_patch_vram+30
 	stx	a:VMADDL
 	sta	a:MDMAEN
 	rts

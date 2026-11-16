@@ -190,9 +190,9 @@ loc_01A687:
 	lda	stage_frame_odd
 	beq	loc_01A6B0
 	lda	#$6000
-	sta	zp_B8
+	sta	player_tiles_vram_top
 	lda	#$6100
-	sta	zp_BA
+	sta	player_tiles_vram_bottom
 	jsl	f:set_player_frame
 loc_01A6B0:
 	lda	a:p2_lives
@@ -202,9 +202,9 @@ loc_01A6B0:
 	lda	stage_frame_odd
 	bne	@return
 	lda	#$6200
-	sta	zp_B8
+	sta	player_tiles_vram_top
 	lda	#$6300
-	sta	zp_BA
+	sta	player_tiles_vram_bottom
 	jsl	f:set_player_frame
 @return:
 	rtl

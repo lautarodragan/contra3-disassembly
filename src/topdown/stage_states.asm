@@ -1488,22 +1488,22 @@ clear_topdown_ram:
 ; Points the four block patch slots at VRAM $6000, outside the Mode 7 data.
 reset_m7_block_patches:
 	lda	#$6000
-	sta	a:wram_1808
-	sta	a:wram_180A
-	sta	a:wram_180C
-	sta	a:wram_180E
-	sta	a:wram_1810
-	sta	a:wram_1812
-	sta	a:wram_1814
-	sta	a:wram_1816
-	sta	a:wram_1818
-	sta	a:wram_181A
-	sta	a:wram_181C
-	sta	a:wram_181E
-	sta	a:wram_1820
-	sta	a:wram_1822
-	sta	a:wram_1824
-	sta	a:wram_1826
+	sta	a:m7_patch_vram
+	sta	a:m7_patch_vram+2
+	sta	a:m7_patch_vram+4
+	sta	a:m7_patch_vram+6
+	sta	a:m7_patch_vram+8
+	sta	a:m7_patch_vram+10
+	sta	a:m7_patch_vram+12
+	sta	a:m7_patch_vram+14
+	sta	a:m7_patch_vram+16
+	sta	a:m7_patch_vram+18
+	sta	a:m7_patch_vram+20
+	sta	a:m7_patch_vram+22
+	sta	a:m7_patch_vram+24
+	sta	a:m7_patch_vram+26
+	sta	a:m7_patch_vram+28
+	sta	a:m7_patch_vram+30
 	rts
 
 ; Loads stage 2's graphics (loader list load_list_05CF2A) and palettes.
@@ -1617,7 +1617,7 @@ init_stage2_boss_vars:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:wram_1780
+	sta	f:td_gfx_stream+GFXS_SRC
 	lda	#$017E
 	ldx	#$1780
 	txy
@@ -1668,7 +1668,7 @@ init_stage5_boss_vars:
 	rep	#$30
 	phb
 	lda	#$0000
-	sta	f:wram_1780
+	sta	f:td_gfx_stream+GFXS_SRC
 	lda	#$017E
 	ldx	#$1780
 	txy

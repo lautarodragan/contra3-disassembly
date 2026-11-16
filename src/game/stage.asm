@@ -185,18 +185,18 @@ stage_setup_video:
 	stz	a:stage_exit_request
 	stz	a:stage_pause_disabled
 
-; Empties the per-frame VRAM update lists ($1800 list, zp_B6, bg_dma_vram_addr).
+; Empties the per-frame VRAM update lists ($1800 list, vram_block_queue_end, bg_dma_vram_addr).
 reset_vram_update_queues:
 	stz	bg_dma_vram_addr
-	stz	zp_B6
-	stz	a:wram_1800
-	stz	a:wram_1808
-	stz	a:wram_1810
-	stz	a:wram_1818
-	stz	a:wram_1820
-	stz	a:wram_1828
-	stz	a:wram_1830
-	stz	a:wram_1838
+	stz	vram_block_queue_end
+	stz	a:vram_block_queue
+	stz	a:vram_block_queue+8
+	stz	a:vram_block_queue+16
+	stz	a:vram_block_queue+24
+	stz	a:vram_block_queue+32
+	stz	a:vram_block_queue+40
+	stz	a:vram_block_queue+48
+	stz	a:vram_block_queue+56
 	lda	#$0008
 	sta	zp_E2
 	stz	cgram_upload_src

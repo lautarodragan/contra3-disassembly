@@ -148,31 +148,31 @@ queue_vram_block_at_map_position:
 	plx
 
 queue_vram_block:
-	ldy	zp_B6
+	ldy	vram_block_queue_end
 	cpy	#$0040
 	bcs	loc_00FEA2
 loc_00FE7D:
-	sta	a:$1800,y
+	sta	a:vram_block_queue,y
 	clc
 	adc	#$0020
-	sta	a:$1802,y
+	sta	a:vram_block_queue+2,y
 	clc
 	adc	#$0020
-	sta	a:$1804,y
+	sta	a:vram_block_queue+4,y
 	clc
 	adc	#$0020
-	sta	a:$1806,y
+	sta	a:vram_block_queue+6,y
 	lda	zp_00
-	sta	a:$1840,y
+	sta	a:vram_block_src,y
 	clc
-	lda	zp_B6
+	lda	vram_block_queue_end
 	adc	#$0008
-	sta	zp_B6
+	sta	vram_block_queue_end
 loc_00FEA2:
 	rtl
 
 queue_vram_blocks:
-	ldx	zp_B6
+	ldx	vram_block_queue_end
 	cpx	#$0040
 	bcs	loc_00FEA2
 
@@ -182,18 +182,18 @@ queue_vram_blocks_at_x:
 	sta	zp_04
 	lda	zp_00
 loc_00FEB2:
-	sta	a:$1800,x
+	sta	a:vram_block_queue,x
 	clc
 	adc	#$0020
-	sta	a:$1802,x
+	sta	a:vram_block_queue+2,x
 	clc
 	adc	#$0020
-	sta	a:$1804,x
+	sta	a:vram_block_queue+4,x
 	clc
 	adc	#$0020
-	sta	a:$1806,x
+	sta	a:vram_block_queue+6,x
 	lda	a:$0000,y
-	sta	a:$1840,x
+	sta	a:vram_block_src,x
 	dec	zp_02
 	bne	loc_00FEE2
 	lda	zp_04
@@ -205,7 +205,7 @@ loc_00FEB2:
 	bra	loc_00FEE9
 loc_00FEE2:
 	clc
-	lda	a:$1800,x
+	lda	a:vram_block_queue,x
 	adc	#$0004
 loc_00FEE9:
 	sta	zp_06
@@ -215,7 +215,7 @@ loc_00FEE9:
 	clc
 	adc	#$0008
 	tax
-	stx	zp_B6
+	stx	vram_block_queue_end
 	lda	zp_06
 	cpx	#$0040
 	bcs	@return

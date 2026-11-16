@@ -162,9 +162,17 @@ the view controls `p1_view_angle_frozen` / `p1_facing_in_view` (and
 player 2's), the map view's saved brightness (`map_view_saved_inidisp` ...),
 and the fields of fixed slots read directly (`td_p1_x`, `td_p1_hp`,
 `td_boss_hp`, `td_boss_core_hp` ...). The top-down stages reuse
-`$1780-$17FF` (sprite graphics stream list) and `$1800-$1867` (Mode 7 block
-patches) and the tile attribute map at `$7E:4000` differently from the
-side-view stages, so those addresses keep their placeholder names.
+`$1780-$17FF` and `$1800-$1867` differently from the side-view stages,
+so each use has its own base: in the side view `player_tile_src` (`$1780`,
+the sources of the player tiles DMAd this frame, with
+`player_tiles_vram_top` / `player_tiles_vram_bottom`), `vram_block_queue`
+(`$1800`, 8 tile blocks of 4 VRAM row addresses, `vram_block_queue_end`)
+and `vram_block_src` (`$1840`); in the top-down stages `td_gfx_stream`
+(`$1780`, the sprite graphics stream, `GFXS_*` entries), `m7_patch_flags`,
+`m7_patch_vram` and `m7_patch_tiles` (`$1800`, `$1808`, `$1828`: the four
+Mode 7 block patch slots), and `td_switch_events` (`$18B0`, stage 5's
+switch events, `SWEV_*` fields). The tile attribute map at `$7E:4000`
+is also used differently by the two kinds of stage.
 `$1500-$153F` / `$1540-$157F` are the players' top-down blocks in the
 top-down stages but the players' `PLAYER_*` parallel fields (slot +
 `$1300`) in the side view, where the code writes them

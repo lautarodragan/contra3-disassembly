@@ -75,7 +75,7 @@ opening_cinematic_init:
 	sta	a:tm_shadow
 	stz	a:p1_lives
 	stz	a:p2_lives
-	stz	zp_B8
+	stz	player_tiles_vram_top
 	stz	a:p1_view_x
 	stz	a:p2_view_x
 	stz	a:opening_scene

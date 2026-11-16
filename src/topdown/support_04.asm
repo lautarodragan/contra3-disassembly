@@ -412,17 +412,17 @@ build_tile_attr_rows_stage5_boss:
 ; Queues a 4x4-tile block (Y) at VRAM address A in the first free patch
 ; slot; carry set when all four are taken.
 queue_m7_block_patch:
-	ldx	a:wram_1800
+	ldx	a:m7_patch_flags
 	beq	set_m7_block_patch_0
-	ldx	a:wram_1802
+	ldx	a:m7_patch_flags+2
 	bne	loc_04DCDF
 	brl	set_m7_block_patch_1
 loc_04DCDF:
-	ldx	a:wram_1804
+	ldx	a:m7_patch_flags+4
 	bne	loc_04DCE7
 	brl	set_m7_block_patch_2
 loc_04DCE7:
-	ldx	a:wram_1806
+	ldx	a:m7_patch_flags+6
 	bne	loc_04DCEF
 	brl	set_m7_block_patch_3
 loc_04DCEF:
@@ -433,16 +433,16 @@ loc_04DCEF:
 set_m7_block_patch_0:
 	rep	#$30
 	sta	zp_FE
-	sta	a:wram_1808
+	sta	a:m7_patch_vram
 	clc
 	adc	#$0080
-	sta	a:wram_180A
+	sta	a:m7_patch_vram+2
 	clc
 	adc	#$0080
-	sta	a:wram_180C
+	sta	a:m7_patch_vram+4
 	clc
 	adc	#$0080
-	sta	a:wram_180E
+	sta	a:m7_patch_vram+6
 	tya
 	asl	a
 	asl	a
@@ -462,41 +462,41 @@ set_m7_block_patch_0:
 	sep	#$20
 	.a8
 	lda	a:$0000,y
-	sta	a:wram_1828
+	sta	a:m7_patch_tiles
 	lda	a:$0002,y
-	sta	a:wram_1829
+	sta	a:m7_patch_tiles+1
 	lda	a:$0004,y
-	sta	a:wram_182A
+	sta	a:m7_patch_tiles+2
 	lda	a:$0006,y
-	sta	a:wram_182B
+	sta	a:m7_patch_tiles+3
 	lda	a:$0008,y
-	sta	a:wram_182C
+	sta	a:m7_patch_tiles+4
 	lda	a:$000A,y
-	sta	a:wram_182D
+	sta	a:m7_patch_tiles+5
 	lda	a:$000C,y
-	sta	a:wram_182E
+	sta	a:m7_patch_tiles+6
 	lda	a:$000E,y
-	sta	a:wram_182F
+	sta	a:m7_patch_tiles+7
 	lda	a:$0010,y
-	sta	a:wram_1830
+	sta	a:m7_patch_tiles+8
 	lda	a:$0012,y
-	sta	a:wram_1831
+	sta	a:m7_patch_tiles+9
 	lda	a:$0014,y
-	sta	a:wram_1832
+	sta	a:m7_patch_tiles+10
 	lda	a:$0016,y
-	sta	a:wram_1833
+	sta	a:m7_patch_tiles+11
 	lda	a:$0018,y
-	sta	a:wram_1834
+	sta	a:m7_patch_tiles+12
 	lda	a:$001A,y
-	sta	a:wram_1835
+	sta	a:m7_patch_tiles+13
 	lda	a:$001C,y
-	sta	a:wram_1836
+	sta	a:m7_patch_tiles+14
 	lda	a:$001E,y
-	sta	a:wram_1837
+	sta	a:m7_patch_tiles+15
 	rep	#$20
 	.a16
 	lda	#$0002
-	sta	a:wram_1800
+	sta	a:m7_patch_flags
 loc_04DD8A:
 	lda	a:boss_centered_view
 	beq	loc_04DD99
@@ -866,16 +866,16 @@ loc_04DEF5:
 set_m7_block_patch_1:
 	rep	#$30
 	sta	zp_FE
-	sta	a:wram_1810
+	sta	a:m7_patch_vram+8
 	clc
 	adc	#$0080
-	sta	a:wram_1812
+	sta	a:m7_patch_vram+10
 	clc
 	adc	#$0080
-	sta	a:wram_1814
+	sta	a:m7_patch_vram+12
 	clc
 	adc	#$0080
-	sta	a:wram_1816
+	sta	a:m7_patch_vram+14
 	tya
 	asl	a
 	asl	a
@@ -895,56 +895,56 @@ set_m7_block_patch_1:
 	sep	#$20
 	.a8
 	lda	a:$0000,y
-	sta	a:wram_1838
+	sta	a:m7_patch_tiles+16
 	lda	a:$0002,y
-	sta	a:wram_1839
+	sta	a:m7_patch_tiles+17
 	lda	a:$0004,y
-	sta	a:wram_183A
+	sta	a:m7_patch_tiles+18
 	lda	a:$0006,y
-	sta	a:wram_183B
+	sta	a:m7_patch_tiles+19
 	lda	a:$0008,y
-	sta	a:wram_183C
+	sta	a:m7_patch_tiles+20
 	lda	a:$000A,y
-	sta	a:wram_183D
+	sta	a:m7_patch_tiles+21
 	lda	a:$000C,y
-	sta	a:wram_183E
+	sta	a:m7_patch_tiles+22
 	lda	a:$000E,y
-	sta	a:wram_183F
+	sta	a:m7_patch_tiles+23
 	lda	a:$0010,y
-	sta	a:wram_1840
+	sta	a:m7_patch_tiles+24
 	lda	a:$0012,y
-	sta	a:wram_1841
+	sta	a:m7_patch_tiles+25
 	lda	a:$0014,y
-	sta	a:wram_1842
+	sta	a:m7_patch_tiles+26
 	lda	a:$0016,y
-	sta	a:wram_1843
+	sta	a:m7_patch_tiles+27
 	lda	a:$0018,y
-	sta	a:wram_1844
+	sta	a:m7_patch_tiles+28
 	lda	a:$001A,y
-	sta	a:wram_1845
+	sta	a:m7_patch_tiles+29
 	lda	a:$001C,y
-	sta	a:wram_1846
+	sta	a:m7_patch_tiles+30
 	lda	a:$001E,y
-	sta	a:wram_1847
+	sta	a:m7_patch_tiles+31
 	rep	#$20
 	.a16
 	lda	#$0004
-	sta	a:wram_1802
+	sta	a:m7_patch_flags+2
 	jmp	a:loc_04DD8A
 
 set_m7_block_patch_2:
 	rep	#$30
 	sta	zp_FE
-	sta	a:wram_1818
+	sta	a:m7_patch_vram+16
 	clc
 	adc	#$0080
-	sta	a:wram_181A
+	sta	a:m7_patch_vram+18
 	clc
 	adc	#$0080
-	sta	a:wram_181C
+	sta	a:m7_patch_vram+20
 	clc
 	adc	#$0080
-	sta	a:wram_181E
+	sta	a:m7_patch_vram+22
 	tya
 	asl	a
 	asl	a
@@ -964,55 +964,55 @@ set_m7_block_patch_2:
 	sep	#$20
 	.a8
 	lda	a:$0000,y
-	sta	a:wram_1848
+	sta	a:m7_patch_tiles+32
 	lda	a:$0002,y
-	sta	a:wram_1849
+	sta	a:m7_patch_tiles+33
 	lda	a:$0004,y
-	sta	a:wram_184A
+	sta	a:m7_patch_tiles+34
 	lda	a:$0006,y
-	sta	a:wram_184B
+	sta	a:m7_patch_tiles+35
 	lda	a:$0008,y
-	sta	a:wram_184C
+	sta	a:m7_patch_tiles+36
 	lda	a:$000A,y
-	sta	a:wram_184D
+	sta	a:m7_patch_tiles+37
 	lda	a:$000C,y
-	sta	a:wram_184E
+	sta	a:m7_patch_tiles+38
 	lda	a:$000E,y
-	sta	a:wram_184F
+	sta	a:m7_patch_tiles+39
 	lda	a:$0010,y
-	sta	a:wram_1850
+	sta	a:m7_patch_tiles+40
 	lda	a:$0012,y
-	sta	a:wram_1851
+	sta	a:m7_patch_tiles+41
 	lda	a:$0014,y
-	sta	a:wram_1852
+	sta	a:m7_patch_tiles+42
 	lda	a:$0016,y
-	sta	a:wram_1853
+	sta	a:m7_patch_tiles+43
 	lda	a:$0018,y
-	sta	a:wram_1854
+	sta	a:m7_patch_tiles+44
 	lda	a:$001A,y
-	sta	a:wram_1855
+	sta	a:m7_patch_tiles+45
 	lda	a:$001C,y
-	sta	a:wram_1856
+	sta	a:m7_patch_tiles+46
 	lda	a:$001E,y
-	sta	a:wram_1857
+	sta	a:m7_patch_tiles+47
 	rep	#$20
 	.a16
 	lda	#$0006
-	sta	a:wram_1804
+	sta	a:m7_patch_flags+4
 	jmp	a:loc_04DD8A
 set_m7_block_patch_3:
 	rep	#$30
 	sta	zp_FE
-	sta	a:wram_1820
+	sta	a:m7_patch_vram+24
 	clc
 	adc	#$0080
-	sta	a:wram_1822
+	sta	a:m7_patch_vram+26
 	clc
 	adc	#$0080
-	sta	a:wram_1824
+	sta	a:m7_patch_vram+28
 	clc
 	adc	#$0080
-	sta	a:wram_1826
+	sta	a:m7_patch_vram+30
 	tya
 	asl	a
 	asl	a
@@ -1032,39 +1032,39 @@ set_m7_block_patch_3:
 	sep	#$20
 	.a8
 	lda	a:$0000,y
-	sta	a:wram_1858
+	sta	a:m7_patch_tiles+48
 	lda	a:$0002,y
-	sta	a:wram_1859
+	sta	a:m7_patch_tiles+49
 	lda	a:$0004,y
-	sta	a:wram_185A
+	sta	a:m7_patch_tiles+50
 	lda	a:$0006,y
-	sta	a:wram_185B
+	sta	a:m7_patch_tiles+51
 	lda	a:$0008,y
-	sta	a:wram_185C
+	sta	a:m7_patch_tiles+52
 	lda	a:$000A,y
-	sta	a:wram_185D
+	sta	a:m7_patch_tiles+53
 	lda	a:$000C,y
-	sta	a:wram_185E
+	sta	a:m7_patch_tiles+54
 	lda	a:$000E,y
-	sta	a:wram_185F
+	sta	a:m7_patch_tiles+55
 	lda	a:$0010,y
-	sta	a:wram_1860
+	sta	a:m7_patch_tiles+56
 	lda	a:$0012,y
-	sta	a:wram_1861
+	sta	a:m7_patch_tiles+57
 	lda	a:$0014,y
-	sta	a:wram_1862
+	sta	a:m7_patch_tiles+58
 	lda	a:$0016,y
-	sta	a:wram_1863
+	sta	a:m7_patch_tiles+59
 	lda	a:$0018,y
-	sta	a:wram_1864
+	sta	a:m7_patch_tiles+60
 	lda	a:$001A,y
-	sta	a:wram_1865
+	sta	a:m7_patch_tiles+61
 	lda	a:$001C,y
-	sta	a:wram_1866
+	sta	a:m7_patch_tiles+62
 	lda	a:$001E,y
-	sta	a:wram_1867
+	sta	a:m7_patch_tiles+63
 	rep	#$20
 	.a16
 	lda	#$0008
-	sta	a:wram_1806
+	sta	a:m7_patch_flags+6
 	jmp	a:loc_04DD8A

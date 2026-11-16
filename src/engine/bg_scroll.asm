@@ -24,13 +24,13 @@
 ; scrolls: per 256-pixel page, a list of 10-byte entries {position in the
 ; page ($FF end), type, first and last slot / $10, x, y, field $3A}.
 
-; NMI (side view). zp_B8/zp_BA: VRAM addresses of 6 rows each, sources at
+; NMI (side view). player_tiles_vram_top/player_tiles_vram_bottom: VRAM addresses of 6 rows each, sources at
 ; $1780; bg_dma_vram_addr: one DMA; $1800-$183E: up to 8 VRAM addresses of
 ; 4-row blocks (source pointers at $1840).
 dma_bg_tilemap_updates:
 	sep	#$10
 	.i8
-	lda	zp_B8
+	lda	player_tiles_vram_top
 	bne	@rows
 	brl	@extra_dma
 @rows:
@@ -39,7 +39,7 @@ dma_bg_tilemap_updates:
 	stx	a:VMAIN
 	lda	#$1801
 	sta	a:DMAP0
-	lda	a:wram_1780
+	lda	a:player_tile_src
 	sta	a:A1T0L
 	lda	#$007F
 	sta	a:A1B0
@@ -47,50 +47,50 @@ dma_bg_tilemap_updates:
 	sty	a:DAS0L
 	ldx	#$01
 	stx	a:MDMAEN
-	lda	a:wram_1782
+	lda	a:player_tile_src+2
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_1784
+	lda	a:player_tile_src+4
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_1786
+	lda	a:player_tile_src+6
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_1788
+	lda	a:player_tile_src+8
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_178A
+	lda	a:player_tile_src+10
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	zp_BA
+	lda	player_tiles_vram_bottom
 	sta	a:VMADDL
-	lda	a:wram_178C
+	lda	a:player_tile_src+12
 	sta	a:A1T0L
 	sty	a:DAS0L
 	ldx	#$01
 	stx	a:MDMAEN
-	lda	a:wram_178E
+	lda	a:player_tile_src+14
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_1790
+	lda	a:player_tile_src+16
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_1792
+	lda	a:player_tile_src+18
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_1794
+	lda	a:player_tile_src+20
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
-	lda	a:wram_1796
+	lda	a:player_tile_src+22
 	sta	a:A1T0L
 	sty	a:DAS0L
 	stx	a:MDMAEN
@@ -107,193 +107,193 @@ dma_bg_tilemap_updates:
 	sta	a:DAS0L
 	sty	a:MDMAEN
 @blocks0:
-	lda	a:wram_1800
+	lda	a:vram_block_queue
 	beq	@blocks1
 	sta	a:VMADDL
-	lda	a:wram_1840
+	lda	a:vram_block_src
 	sta	a:A1T0L
 	lda	zp_E2
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_1802
+	lda	a:vram_block_queue+2
 	sta	a:VMADDL
 	lda	zp_E2
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_1804
+	lda	a:vram_block_queue+4
 	sta	a:VMADDL
 	lda	zp_E2
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_1806
+	lda	a:vram_block_queue+6
 	sta	a:VMADDL
 	lda	zp_E2
 	sta	a:DAS0L
 	sty	a:MDMAEN
 @blocks1:
-	lda	a:wram_1808
+	lda	a:vram_block_queue+8
 	beq	@blocks2
 	sta	a:VMADDL
-	lda	a:wram_1848
+	lda	a:vram_block_src+1*8
 	sta	a:A1T0L
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_180A
+	lda	a:vram_block_queue+10
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_180C
+	lda	a:vram_block_queue+12
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_180E
+	lda	a:vram_block_queue+14
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
 @blocks2:
-	lda	a:wram_1810
+	lda	a:vram_block_queue+16
 	beq	@blocks3
 	sta	a:VMADDL
-	lda	a:wram_1850
+	lda	a:vram_block_src+2*8
 	sta	a:A1T0L
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_1812
+	lda	a:vram_block_queue+18
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_1814
+	lda	a:vram_block_queue+20
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_1816
+	lda	a:vram_block_queue+22
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
 @blocks3:
-	lda	a:wram_1818
+	lda	a:vram_block_queue+24
 	beq	@blocks4
 	sta	a:VMADDL
-	lda	a:wram_1858
+	lda	a:vram_block_src+3*8
 	sta	a:A1T0L
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_181A
+	lda	a:vram_block_queue+26
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_181C
+	lda	a:vram_block_queue+28
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_181E
+	lda	a:vram_block_queue+30
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
 @blocks4:
-	lda	a:wram_1820
+	lda	a:vram_block_queue+32
 	beq	@blocks5
 	sta	a:VMADDL
-	lda	a:wram_1860
+	lda	a:vram_block_src+4*8
 	sta	a:A1T0L
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_1822
+	lda	a:vram_block_queue+34
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_1824
+	lda	a:vram_block_queue+36
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_1826
+	lda	a:vram_block_queue+38
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
 @blocks5:
-	lda	a:wram_1828
+	lda	a:vram_block_queue+40
 	beq	@blocks6
 	sta	a:VMADDL
-	lda	a:wram_1868
+	lda	a:vram_block_src+5*8
 	sta	a:A1T0L
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_182A
+	lda	a:vram_block_queue+42
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_182C
+	lda	a:vram_block_queue+44
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_182E
+	lda	a:vram_block_queue+46
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
 @blocks6:
-	lda	a:wram_1830
+	lda	a:vram_block_queue+48
 	beq	@blocks7
 	sta	a:VMADDL
-	lda	a:wram_1870
+	lda	a:vram_block_src+6*8
 	sta	a:A1T0L
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_1832
+	lda	a:vram_block_queue+50
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_1834
+	lda	a:vram_block_queue+52
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_1836
+	lda	a:vram_block_queue+54
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
 @blocks7:
-	lda	a:wram_1838
+	lda	a:vram_block_queue+56
 	beq	@done
 	sta	a:VMADDL
-	lda	a:wram_1878
+	lda	a:vram_block_src+7*8
 	sta	a:A1T0L
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_183A
+	lda	a:vram_block_queue+58
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_183C
+	lda	a:vram_block_queue+60
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
 	sty	a:MDMAEN
-	lda	a:wram_183E
+	lda	a:vram_block_queue+62
 	sta	a:VMADDL
 	lda	#$0008
 	sta	a:DAS0L
