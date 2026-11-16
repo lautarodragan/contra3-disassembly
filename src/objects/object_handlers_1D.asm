@@ -237,11 +237,11 @@ loc_1DB0FF:
 	inc	OBJ_STATE,x
 	rtl
 loc_1DB102:
-	ldy	#$FF59	; [num]
+	ldy	#.loword(vram_blocks_05FF59)
 	lda	OBJ_TIMER,x
 	bit	#$0008
 	bne	loc_1DB10F
-	ldy	#$FF5D	; [num]
+	ldy	#.loword(vram_blocks_05FF5D)
 loc_1DB10F:
 	jsr	a:queue_brain_boss_tiles
 	rtl
@@ -2117,7 +2117,7 @@ loc_1DBFEE:
 	lsr	a
 	sta	a:boss_work_0
 	inc	a:boss_work_4
-	ldy	#$FF5D	; [num]
+	ldy	#.loword(vram_blocks_05FF5D)
 	jsr	a:queue_brain_boss_tiles
 loc_1DC004:
 	rtl
@@ -2246,7 +2246,7 @@ loc_1DC0E1:
 	ldy	a:boss_work_1
 	lda	a:data_05FF1B,y
 	sta	OBJ_Y,x
-	ldy	#$FF59	; [num]
+	ldy	#.loword(vram_blocks_05FF59)
 	jsr	a:queue_brain_boss_tiles
 	lda	#$0059
 	jsl	f:queue_sound

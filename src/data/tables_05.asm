@@ -6125,7 +6125,9 @@ data_05FF4D:
 hdma_list_05FF4E:
 	hdma_channel_ind	$4370, $42, $10, $7EEA00, $7E
 	hdma_channels_end	$80
+vram_blocks_05FF59:
 	.byte	$A0, $B3, $C0, $B3
+vram_blocks_05FF5D:
 	.byte	$C0, $BE, $E0, $BE
 data_05FF61:
 	; CDL: read by brain_boss_attack_3; partly not accessed
