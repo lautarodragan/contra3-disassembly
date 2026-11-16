@@ -760,7 +760,8 @@ game_mode_stage_play:
 	lda	#GAME_MODE_FINAL_SCORE
 	brl	set_game_mode
 @next_loop:
-	; (not executed in the CDL traces)
+	; (not executed in the CDL traces; run by the emulator plays
+	; stage6_ending_easy and stage6_boss: EASY -> NORMAL, NORMAL -> HARD)
 	sta	a:option_level
 	sta	difficulty
 	stz	a:stage_gfx_loaded

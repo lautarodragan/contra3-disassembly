@@ -1911,7 +1911,8 @@ ending_sequence_state_29:
 	jsr	a:ending_blink_push_start_key
 	bra	ending_sequence_state_2A
 @start_pressed:
-	; (not executed in the CDL traces)
+	; (not executed in the CDL traces; run by the emulator plays
+	; stage6_ending_easy and stage6_boss)
 	phx
 	ldx	#.loword(text_push_start_key_blank)
 	lda	#$0400

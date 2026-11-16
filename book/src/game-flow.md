@@ -50,15 +50,35 @@ A game: title (Start) → `GAME_MODE_GAME_START` (`init_new_game`,
 next stage → ... When both players are out of lives the stage ends and
 `game_mode_stage_play` goes to game over; with `continues_left` the
 continue menu restarts the same stage (from `stage_checkpoint`) after
-`init_players`. After stage 6, on HARD the game goes to the final score;
-on EASY and NORMAL the game restarts at stage 1 with `option_level` one
-step harder and the continues of that level. This path never ran in the
-emulator traces, but it is confirmed in play: after beating the game on
-EASY or NORMAL a "congratulations, but the battle has just begun" screen
-appears and the next loop starts at stage 1 on the next difficulty. The
-brain's last form, which chases the helicopter during the escape, only
-appears on HARD ([Enemies and bosses](enemies-late.md)), so only a HARD
-win shows the full ending.
+`init_players`.
+
+### After stage 6: the loop
+
+When stage 6 ends (`stage_exit_request`, set by the ending object),
+`game_mode_stage_play` sets `stage_number` to 1, clears
+`stage_checkpoint` and adds 2 to `option_level`: on EASY and NORMAL the
+result is stored in `option_level` and `difficulty`, `continues_left`
+starts again from `init_continues` (the new level's) and the game goes to
+the stage card of stage 1; on HARD (6) it goes
+to `GAME_MODE_FINAL_SCORE` instead. Before that, the ending object
+(`update_ending_sequence`, [Enemies and bosses](enemies-late.md#the-ending))
+shows a closing message, one BG3 map per difficulty
+(`ptrs_ending_message_loads`: `ending_message_easy`,
+`ending_message_normal`, `ending_message_hard`):
+
+| level | after the escape | closing message | then |
+|---|---|---|---|
+| EASY | the lair explodes behind the helicopter | "Congratulations! You've beaten the easy mode. Do you think you are sharp enough to beat the normal mode? Remember, this is not the end. It's just the beginning!" | PUSH START KEY (`ending_sequence_state_29`), Start: stage 1 on NORMAL, 4 continues instead of 2 |
+| NORMAL | the same | "You're getting better! But this Alien War only gets harder. So if you want to fully test your game play techniques prepare yourself for the ultimate challenge." | the same: stage 1 on HARD (4 continues) |
+| HARD | the brain's last, armoured form chases the helicopter and is shot down | "Way to go! You've conquered the toughest Contra challenge yet. Your heroic deeds have restored peace to a war torn world. The Alien forces have been destroyed by a gaming champion! Your efforts will not be forgotten....." | five pictures over the message, the staff credits over the helicopter, the crowd ("A Peaceful Time Will Come!") and fireworks, FINAL SCORE; Start there goes back to the opening (`GAME_MODE_OPENING`) |
+
+So only a HARD win shows the full ending. The CDL traces never pressed
+Start on the message, so the loop is marked "not executed" there, but
+the emulator plays run every row of this table
+([Emulator tests](emulator.md): `stage6_ending_easy`, `stage6_boss` on
+NORMAL, `stage6_ending_hard`, from stage 6's midpoint; `option_level`,
+`difficulty` and `continues_left` read after the Start press), and the
+same is seen on the real game.
 
 `title_menu_cursor` values are `TITLE_1_PLAYER`, `TITLE_2_PLAYERS_A`,
 `TITLE_2_PLAYERS_B`, `TITLE_OPTION`; it stays meaningful during play (0 =
@@ -197,7 +217,8 @@ animation chosen by objects with `start_palette_anim`.
   `lives_options`), LEVEL (`option_level`, `DIFFICULTY_*`), SOUND
   (`option_sound`, sent with `sound_mode_commands`), EXIT. The options, the
   high score and `demo_record_mode` survive a reset (see `boot_signature`).
-- FINAL SCORE (`run_final_score`) after the ending.
+- FINAL SCORE (`run_final_score`) after the ending on HARD; Start
+  (`final_score_wait_start`) goes back to the opening.
 - SOUND CHECK (`run_sound_check`, game mode 5): the d-pad picks
   `sound_check_id` (`$00-$6A`), Y plays it, B stops. No code enters this
   mode.

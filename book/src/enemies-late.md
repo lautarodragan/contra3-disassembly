@@ -135,7 +135,7 @@ when it is read from a table indexed by `difficulty`.
 
 | type | handler | what | HP |
 |---|---|---|---|
-| `$95` | `update_ending_sequence` | the escape: helicopter, players on the missile, the lair exploding; on HARD a last creature (the brain's final, armoured form) chases the helicopter; on EASY and NORMAL the game loops to stage 1 instead ([Game flow](game-flow.md)) | 384 (hard) |
+| `$95` | `update_ending_sequence` | the escape: helicopter, players on the missile, the lair exploding; on HARD only, a last creature (the brain's final, armoured form) chases the helicopter; the closing message; on HARD the pictures, credits and crowd (below) | 384 (hard) |
 | `$96` | `update_ending_creature_claw_segment` | (hard) segments of the claws of that creature (`ending_creature_spawn_claw`; seen in the emulator) | |
 | `$98` | `update_ending_explosion` | explosions along the floor of the lair | |
 | `$9A-$9D` | `update_ending_crowd_member` | the crowd cheering under the helicopter (one handler, four types) | |
@@ -143,8 +143,24 @@ when it is read from a table indexed by `difficulty`.
 | `$97` | `ending_init_text_screen` | not an object handler: the setup of the ending's text screen, called with `jsr` by `ending_sequence_state_1E`; it ends with `rts`, so run as a handler (`jsl`) it would crash. Never spawned | |
 | `$99` | `update_unused_type_99` | does nothing (rtl). Unused: no code creates it, never run in the CDL traces | |
 
+The ending object's states (`tbl_ending_sequence_states`), as the emulator
+plays `stage6_ending_easy`, `stage6_boss` (NORMAL) and `stage6_ending_hard`
+run them from the brain's death ([Emulator tests](emulator.md)):
+
+| states | what | difficulty |
+|---|---|---|
+| `$00-$07` | the helicopter comes down, the players grab the missile, it lifts them; `ending_sequence_state_07` branches on `difficulty` | all |
+| `$08-$0E` | the brain's last form rises and chases the helicopter, its claws (`$96`) reaching up; 384 HP, shot from the missile. When its HP goes below 0, `update_ending_sequence` jumps to `$0F` | HARD only |
+| `$25-$28` | instead: the lair shakes and explodes, the view scrolls up (`ending_shake_and_explode`, `ending_start_vertical_autoscroll`), then on to `$10` | EASY, NORMAL |
+| `$0F-$16` | (`$0F`: the last form falls away) the flight out of the lair, over the clouds and the sea, and the fade out | all |
+| `$17`, `$18` | the closing message: `ptrs_ending_message_loads` by `difficulty` (the BG3 maps `ending_message_easy`, `_normal`, `_hard`), faded in | all |
+| `$29`, `$2A` | PUSH START KEY; Start ends the stage, and the game loops to stage 1 one level up ([Game flow](game-flow.md#after-stage-6-the-loop)) | EASY, NORMAL |
+| `$19-$1D` | five pictures (`ptrs_05FDBC`, `boss_work_4` 0-8) over the message | HARD |
+| `$1E-$24` | the staff credits over the helicopter (`ending_init_text_screen`, `ending_run_text_script`), the crowd and the fireworks; then the stage ends and the game goes to FINAL SCORE | HARD |
+
+So the last form, the credits and the crowd are only seen on HARD.
 `spawn_ending_crowd` creates 6, 7 or 8 crowd members on easy, normal and
-hard (`ending_crowd_counts`): a bigger crowd for a harder game.
+hard (`ending_crowd_counts`), but only the HARD ending reaches it.
 
 The fireworks at the very end run in the *player-shot* list, which is free
 then: `spawn_ending_firework` (called by the ending once the helicopter has

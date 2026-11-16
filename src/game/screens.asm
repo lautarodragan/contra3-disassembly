@@ -843,7 +843,8 @@ final_score_wait_start:
 	ora	joy2_pressed
 	bit	#JOY_START
 	beq	@return
-	; (not executed in the CDL traces)
+	; (not executed in the CDL traces; run by the emulator play
+	; stage6_ending_hard)
 	inc	a:mode_step
 @return:
 	rtl
