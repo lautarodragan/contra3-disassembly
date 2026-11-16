@@ -1302,7 +1302,7 @@ update_stage1_boss:
 	sta	zp_00
 	ldy	#$0010
 	lda	#$4E94
-	jml	f:loc_00FE7D
+	jml	f:queue_vram_block_at_y
 
 ; Object type $20: stage 1 boss (the giant turtle), a part with HP 256:
 ; explodes when destroyed or when the boss dies (obj_slots+28*OBJ_SIZE+$32).
@@ -1328,7 +1328,7 @@ update_stage1_boss_part:
 	sta	zp_00
 	ldy	#$0008
 	lda	#$4D14
-	jml	f:loc_00FE7D
+	jml	f:queue_vram_block_at_y
 stage1_boss_play_hit_sound:
 	lda	$14,x
 	beq	@return

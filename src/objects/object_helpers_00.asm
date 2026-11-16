@@ -22,7 +22,7 @@ queue_sound_30_throttled:
 ; queue_sound_41_throttled, queue_sound_30_throttled are this with sounds $6E, $41, $30).
 queue_sound_throttled:
 	ldy	a:sound_throttle_timer
-	bpl	loc_00FDB0
+	bpl	@count_down
 	pha
 	lda	rng_lo
 	and	#$0007
@@ -30,16 +30,16 @@ queue_sound_throttled:
 	sta	a:sound_throttle_timer
 	pla
 	jsl	f:queue_sound
-loc_00FDB0:
+@count_down:
 	dec	a:sound_throttle_timer
 	rtl
 
 update_song_change:
 	lda	a:song_change_state
-	bne	loc_00FDBE
+	bne	@dispatch
 	ldy	a:song_change_mode
-	beq	loc_00FDD1
-loc_00FDBE:
+	beq	song_change_return
+@dispatch:
 	asl	a
 	tax
 	lda	f:tbl_song_change_states,x
@@ -50,12 +50,12 @@ tbl_song_change_states:
 	.addr	song_change_state_01
 	.addr	song_change_state_02
 	.addr	song_change_state_03
-loc_00FDD1:
+song_change_return:
 	rtl
 
 song_change_state_00:
 	cpy	#$0002
-	beq	loc_00FDEC
+	beq	song_change_stop_music
 	lda	a:data_05AB58,y
 	sta	a:song_change_mode
 	inc	a:song_change_state
@@ -64,8 +64,9 @@ song_change_state_00:
 
 song_change_state_01:
 	dec	a:song_change_mode
-	bpl	loc_00FDD1
-loc_00FDEC:
+	bpl	song_change_return
+; Delay over (or song_change_mode 2): state 2, queue SOUND_CMD_STOP.
+song_change_stop_music:
 	lda	#$0002
 	sta	a:song_change_state
 	stz	a:song_change_mode
@@ -82,15 +83,15 @@ song_change_state_02:
 
 song_change_state_03:
 	lda	a:song_change_wait
-	bmi	loc_00FE19
+	bmi	@wait_driver
 	dec	a:song_change_wait
-	bpl	loc_00FE23
-loc_00FE19:
+	bpl	@return
+@wait_driver:
 	lda	apu_pending_cmd
 	cmp	#$00FF
-	beq	loc_00FE23
+	beq	@return
 	stz	a:song_change_state
-loc_00FE23:
+@return:
 	rtl
 
 ; Never executed in the CDL traces (found by the unreferenced-routine heuristic).
@@ -150,8 +151,9 @@ queue_vram_block_at_map_position:
 queue_vram_block:
 	ldy	vram_block_queue_end
 	cpy	#$0040
-	bcs	loc_00FEA2
-loc_00FE7D:
+	bcs	queue_vram_block_return
+; Entered here with Y = queue offset already loaded (the stage 1 boss).
+queue_vram_block_at_y:
 	sta	a:vram_block_queue,y
 	clc
 	adc	#$0020
@@ -168,20 +170,20 @@ loc_00FE7D:
 	lda	vram_block_queue_end
 	adc	#$0008
 	sta	vram_block_queue_end
-loc_00FEA2:
+queue_vram_block_return:
 	rtl
 
 queue_vram_blocks:
 	ldx	vram_block_queue_end
 	cpx	#$0040
-	bcs	loc_00FEA2
+	bcs	queue_vram_block_return
 
 queue_vram_blocks_at_x:
 	sta	zp_00
 	lda	zp_02
 	sta	zp_04
 	lda	zp_00
-loc_00FEB2:
+@loop:
 	sta	a:vram_block_queue,x
 	clc
 	adc	#$0020
@@ -195,19 +197,19 @@ loc_00FEB2:
 	lda	a:$0000,y
 	sta	a:vram_block_src,x
 	dec	zp_02
-	bne	loc_00FEE2
+	bne	@same_row
 	lda	zp_04
 	sta	zp_02
 	clc
 	lda	zp_00
 	adc	#$0080
 	sta	zp_00
-	bra	loc_00FEE9
-loc_00FEE2:
+	bra	@next_block
+@same_row:
 	clc
 	lda	a:vram_block_queue,x
 	adc	#$0004
-loc_00FEE9:
+@next_block:
 	sta	zp_06
 	iny
 	iny
@@ -220,7 +222,7 @@ loc_00FEE9:
 	cpx	#$0040
 	bcs	@return
 	cpx	zp_08
-	bcc	loc_00FEB2
+	bcc	@loop
 @return:
 	rtl
 
@@ -229,28 +231,28 @@ loc_00FEE9:
 ; decremented every 16 frames; or 1 pixel while shake_continuous is set.
 update_shake_side_view:
 	lda	stage_frame_bit1
-	bne	loc_00FF28
+	bne	@off_frame
 	lda	a:shake_timer
-	beq	loc_00FF1D
+	beq	@no_timer
 	lda	stage_frame_counter
 	and	#$000F
-	bne	loc_00FF14
+	bne	@set_shake
 	dec	a:shake_timer
-loc_00FF14:
+@set_shake:
 	lda	a:shake_timer
 	sta	shake_bg1_y
 	lsr	a
 	sta	shake_bg2_y
 	rtl
-loc_00FF1D:
+@no_timer:
 	lda	a:shake_continuous
-	beq	loc_00FF2B
+	beq	@zero_shake
 	lda	#$0001
 	sta	shake_bg1_y
 	rtl
-loc_00FF28:
+@off_frame:
 	stz	a:shake_continuous
-loc_00FF2B:
+@zero_shake:
 	stz	shake_bg1_y
 	stz	shake_bg2_y
 	rtl
@@ -302,21 +304,21 @@ vector_length:
 	sta	zp_14
 	stz	zp_16
 	ldy	#$0008
-loc_00FF7F:
+@loop:
 	lda	zp_12
 	cmp	zp_16
-	beq	loc_00FF89
-	bcc	loc_00FF8F
-	bra	loc_00FF94
-loc_00FF89:
+	beq	@compare_low
+	bcc	@bit_zero
+	bra	@bit_one
+@compare_low:
 	lda	zp_10
 	cmp	zp_14
-	bcs	loc_00FF94
-loc_00FF8F:
+	bcs	@bit_one
+@bit_zero:
 	clc
 	rol	zp_16
-	bra	loc_00FFA4
-loc_00FF94:
+	bra	@next
+@bit_one:
 	sec
 	lda	zp_10
 	sbc	zp_14
@@ -326,13 +328,13 @@ loc_00FF94:
 	sta	zp_12
 	sec
 	rol	zp_16
-loc_00FFA4:
+@next:
 	asl	zp_10
 	rol	zp_12
 	asl	zp_10
 	rol	zp_12
 	dey
-	bne	loc_00FF7F
+	bne	@loop
 	lda	zp_16
 	rtl
 	; The rest of the bank is free: filled with $FF by the linker (contra3.cfg).
