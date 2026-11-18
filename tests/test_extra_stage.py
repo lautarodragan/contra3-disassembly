@@ -1,22 +1,30 @@
 """The extra-stage build (src/game/stages.inc; book: Adding a stage), in the
 emulator: `make cheats CHEATS=extra_stage` inserts a side-view stage as
-stage 2 and renumbers the original stages 2-6 as 3-7.  Until the stage is
-designed it is stage 1's data, so the game must play exactly as the
-original, one stage later:
+stage 2 (book: Stage 2: Collapsed Tower) and renumbers the original stages
+2-6 as 3-7.  The other stages must play exactly as the original, one stage
+later (their plays compared with the original's goldens):
 
-- `stage2_boss`: the new stage 2 from its midpoint (stage 1's boss), the
-  stage clear, then stage 3, the top-down stage, plays frame for frame as
-  the original's `stage1_boss` (its golden, tests/goldens/play/);
 - `stage3_boss`, `stage6_boss`: the top-down bosses (stages 3 and 6 now)
   and the next stages, as the original's `stage2_boss` and `stage5_boss`;
 - `stage1_boss`: stage 1's boss, then the card of stage 2 and the new
-  stage, side view, instead of the top-down stage;
+  stage, side view, instead of the top-down stage (compared up to the
+  new stage);
 - `stage7_ending_easy`: the last stage (stage 7) from its midpoint on EASY,
   the ending, the closing message and the next loop at stage 1 on NORMAL,
   as the original's `stage6_ending_easy`;
 - `attract`: the three attract demos (stages 1, 3 and 5 now), as the
   original's;
 - the stage select (with the `stage_select` cheat) cycles through 7 stages.
+
+The new stage itself has no golden: it is played by the scripted player of
+tools/c3emu/extra_stage.py (which climbs its vertical stretch; lives, bombs
+and barrier kept up as in the plays), and the run is checked by its
+milestones (ROUTES): from the start, the mid-boss (the tank in slot
+$0900), the checkpoint it sets, the climb (bg1_scroll_mode 3, bg1_y up to
+-768, the top page), the boss (type $01 in slot $0900) in its arena at
+bg1_x $0F00, the stage clear, the card "STAGE 3" and the top-down stage 3;
+the same from the checkpoint (a continue: page 8, the boss at bg1_x
+$0700); and with two players (2 PLAYERS A).
 
 The screens are compared with the original's goldens at every checkpoint
 except those on a stage card, whose number differs (the card's number is
@@ -33,7 +41,7 @@ import sys
 
 import pytest
 
-from tools.c3emu import game, plays, retro
+from tools.c3emu import extra_stage, game, plays, retro
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -54,7 +62,6 @@ CARD_DIGIT_VRAM = 0x5A6D + 6   # text_stage_n: "STAGE n" at BG3 $5A6D, the digit
 EXTRA = dict(topdown=plays.EXTRA_TOPDOWN_STAGES, last=plays.EXTRA_LAST_STAGE)
 # variant play -> (Play, golden of the original play it must reproduce)
 CASES = {
-    "stage2_boss": (plays.Play("x_stage2_boss", 2, 16000, 18, checkpoint=True, **EXTRA), "stage1_boss"),
     "stage3_boss": (plays.Play("x_stage3_boss", 3, 9000, 22, checkpoint=True, **EXTRA), "stage2_boss"),
     "stage6_boss": (plays.Play("x_stage6_boss", 6, 24000, 52, checkpoint=True, **EXTRA), "stage5_boss"),
     "stage1_boss": (plays.Play("x_stage1_boss", 1, 16000, 18, checkpoint=True, **EXTRA), "stage1_boss"),
@@ -123,8 +130,63 @@ def record(rom, core, case):
     return {"checks": checks, "cards": sorted(cards.items()), "seen": seen}
 
 
+# The new stage 2, played by tools/c3emu/extra_stage.py: (title menu entry,
+# start at the checkpoint, the arena's bg1_x, most frames)
+ROUTES = {
+    "stage2": (0, False, 0x0F00, 16000),
+    "stage2_checkpoint": (0, True, 0x0700, 12000),
+    "stage2_2p": (1, False, 0x0F00, 16000),
+}
+BG1_X, BG1_Y, BG1_SCROLL_MODE, BG1_MAP_OFFSET = 0x1380, 0x1398, 0x13BA, 0x13BC
+SLOT_0900_TYPE = 0x0900 + plays.OBJ_TYPE
+OBJT_STAGE1_BOSS_CONTROLLER, OBJT_MIDBOSS_TANK = 0x01, 0x02
+
+
+def record_route(rom, core, case):
+    """Plays the new stage 2 to the top-down stage 3 with the scripted
+    player; returns what was seen along the way."""
+    menu, checkpoint, _arena, frames = ROUTES[case]
+    c = retro.Console(rom, core=core)
+    game.start_game(c, stage=2, menu_downs=menu)
+    if checkpoint:
+        c.write_ram(plays.CHECKPOINT, 1)
+    p = extra_stage.Player(c, ports=(0, 1) if menu else (0,))
+    got = {"cards": {}, "slot_0900": set(), "modes": set(), "min_bg1_y": 0, "start_offset": None,
+           "arena_x": set(), "checkpoint": 0, "end": None, "frames": 0}
+    for n in range(frames):
+        p.step()
+        mode, stage = c.peek(GAME_MODE), c.peek(game.STAGE)
+        if mode == GAME_MODE_STAGE_CARD:
+            got["cards"][stage] = _card_digit(c)
+        if mode != GAME_MODE_STAGE_PLAY:
+            continue
+        if stage == 2:
+            scroll = c.peek16(BG1_SCROLL_MODE)
+            if got["start_offset"] is None and scroll == 1:
+                got["start_offset"] = c.peek16(BG1_MAP_OFFSET)
+            got["modes"].add(scroll)
+            y = c.peek16(BG1_Y)
+            got["min_bg1_y"] = min(got["min_bg1_y"], y - 0x10000 if y & 0x8000 else y)
+            got["slot_0900"].add(c.peek16(SLOT_0900_TYPE))
+            if c.peek16(SLOT_0900_TYPE) == OBJT_STAGE1_BOSS_CONTROLLER and scroll == 4:
+                got["arena_x"].add(c.peek16(BG1_X))
+            got["checkpoint"] = max(got["checkpoint"], c.peek(plays.CHECKPOINT))
+        elif stage == 3 and c.peek(NMI_MODE) == 4:     # the top-down frame
+            got["end"] = (stage, c.peek(STAGE_INDEX), c.peek(NMI_MODE))
+            got["frames"] = n
+            break
+    if got["end"] is None:
+        os.makedirs(os.path.join(ROOT, "out", "extra_stage"), exist_ok=True)
+        c.image().save(os.path.join(ROOT, "out", "extra_stage", case + ".png"))
+    c.close()
+    got["cards"] = sorted(got["cards"].items())
+    return got
+
+
 def _worker(args):
     rom, core, case = args
+    if case in ROUTES:
+        return case, record_route(rom, core, case)
     return case, record(rom, core, case)
 
 
@@ -136,7 +198,7 @@ def extra_rom():
 @pytest.fixture(scope="session")
 def runs(request, extra_rom, core):
     wanted = [item.callspec.params["case"] for item in request.session.items
-              if item.originalname == "test_extra_stage_play"]
+              if item.originalname in ("test_extra_stage_play", "test_extra_stage_route")]
     if not wanted:
         return {}
     jobs = int(os.environ.get("C3_JOBS", os.cpu_count() or 1))
@@ -182,12 +244,6 @@ def test_extra_stage_play(runs, case):
         bad, cards = _compare(got, golden)
     assert all(stage == shown for stage, shown in got["cards"]), got["cards"]
     assert not bad, "%s: differs from the original's %s at game frames %s" % (case, golden, bad[:8])
-    if case == "stage2_boss":
-        assert got["cards"] == [(2, 2), (3, 3)], got["cards"]
-        # stage 3 is the top-down stage (stage_index 2), not the side view
-        assert any(s[0] == 3 and s[1] == 2 and s[2] == GAME_MODE_STAGE_PLAY and s[3] == 4
-                   for s in seen), seen
-        assert cards > 0
     if case == "stage7_ending_easy":
         # the card of stage 7, then (EASY -> NORMAL) the next loop's stage 1
         assert got["cards"] == [(1, 1), (7, 7)], got["cards"]
@@ -195,6 +251,28 @@ def test_extra_stage_play(runs, case):
     if case == "attract":
         assert {s[0] for s in seen} >= {1, 3, 5}, seen
         assert not {2, 4, 6, 7} & {s[0] for s in seen if s[2] == 4}, seen
+
+
+@pytest.mark.parametrize("case", list(ROUTES))
+def test_extra_stage_route(runs, case):
+    """The new stage 2 from its start (or its checkpoint) to stage 3."""
+    got = runs[case]
+    _menu, checkpoint, arena, _frames = ROUTES[case]
+    # the start: page 0, or page 8 from the checkpoint (bg1_map_offset names
+    # the page after the one on screen)
+    assert got["start_offset"] == (0x0480 if checkpoint else 0x0080), got
+    if not checkpoint:
+        assert OBJT_MIDBOSS_TANK in got["slot_0900"], got
+    assert got["checkpoint"] == 1, got
+    # the climb: vertical scrolling up to the top page, 3 pages up
+    assert {2, 3} <= got["modes"] and -0x301 <= got["min_bg1_y"] <= -0x300, got
+    # the boss, in its arena (an odd page: stage1_boss_controller_state_00's
+    # wall column)
+    assert OBJT_STAGE1_BOSS_CONTROLLER in got["slot_0900"], got
+    assert got["arena_x"] == {arena}, got
+    # the stage clear, the card of stage 3, the top-down stage 3
+    assert got["cards"] == [(2, 2), (3, 3)], got
+    assert got["end"] == (3, 2, 4), got
 
 
 def test_stage_select_seven_stages(core):
