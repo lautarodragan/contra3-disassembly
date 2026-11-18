@@ -870,9 +870,9 @@ The stages' maps, drawn from the level texts (`.map`, `.metatiles`,
 the stage's load list puts in VRAM and the colours of its palette task
 (`level` lines of `assets/views.txt`), so editing a map, a metatile, a
 graphic or a palette changes the picture. A side-view map is drawn
-page by page in the order of its pages, 8 pages (2,048 pixels) per
-row: a horizontal stretch reads left to right, a vertical one (which
-the stage climbs page after page) is cut into its pages. A top-down
+page by page in the order of its pages, each to the right of the one
+before, or above it on a vertical stretch the stage climbs (`up=`),
+cut into bands of 8 columns (2,048 pixels). A top-down
 map is the 128x128-tile Mode 7 map `build_m7_tilemap` makes.
 
 ### stage1_bg1
@@ -887,6 +887,8 @@ Its palette is the CGRAM of the game at frame 600 of play `stage1` (`tests/test_
 
 16 pages: `assets/wram/stage1_bg2_map.map`, `assets/wram/stage1_bg2_metatiles.metatiles`. Drawn with `gfx_098000`, `gfx_09998E`, `gfx_09B32D`, `gfx_09CD49` and `palette_088150`, `palette_088F92`.
 
+The stage shows pages 0-5, 10 and 11 of this map only: BG2's page (`bg2_map_offset`) is set by the stage start (page 0, or 2 from the checkpoint, `stage_bg2_map_offsets`) and by the type `$03` triggers of the spawn lists (`update_bg2_scroll_mode_trigger`: pages 4, 2 and 10), and `bg2_draw_screen_step` draws two pages from there (traced in the plays `stage1` and `stage1_boss`: offsets $0000-$0280, $0500, $0580). Pages 6-9 (metatiles `$143`, `$160`-`$16B`, never defined) and 12-15 (zeros) are never drawn; in WRAM their metatiles would be read from `$7E:D860`-`$7E:DD7F`, past the `$1AA0` bytes of `stage1_bg2_metatiles`, which hold zeros in the plays.
+
 Its palette is the CGRAM of the game at frame 600 of play `stage1` (`tests/test_previews.py`).
 
 Cells naming a metatile past those defined (drawn as zero words): page 6: `143`; page 7: `143`, `160`, `161`, `162`, `163`, `164`, `165`, `166`, `167`, `168`, `169`, `16A`, `16B`; page 8: `143`; page 9: `143`.
@@ -896,6 +898,8 @@ Cells naming a metatile past those defined (drawn as zero words): page 6: `143`;
 ### stage3_bg1
 
 32 pages: `assets/wram/stage3_bg1_map.map`, `assets/wram/stage3_bg1_metatiles.metatiles`, `assets/wram/stage3_bg1_metatiles_2.metatiles`. Drawn with `gfx_0C8000`, `gfx_0C98A2`, `gfx_0CAFBF`, `gfx_0CC65E` and `palette_0882F8`, `palette_088F92`.
+
+Pages 10-14 and 21-23 are vertical stretches, drawn above the page before them (`up=` in the level line): the stage scrolls up through them (`bg1_scroll_mode` 3, `bg1_scroll_vertical`: the next page when the top of the screen enters a new 256-pixel row; `update_bg1_scroll_mode_trigger` switches the mode at pages 20 and 23), then right again from pages 15 and 24. Traced in the emulator from the stage's start through the boss (`bg1_scroll_mode`, `bg1_map_offset`). The boss is on page 26; pages 27-31 are not reached.
 
 Its palette is the CGRAM of the game at frame 600 of play `stage3` (`tests/test_previews.py`).
 
@@ -928,6 +932,8 @@ Its palette is the CGRAM of the game at frame 600 of play `stage4` (`tests/test_
 ### stage6_bg1
 
 32 pages: `assets/wram/stage6_bg1_map.map`, `assets/wram/stage6_bg1_metatiles.metatiles`, `assets/wram/stage6_bg1_metatiles_2.metatiles`. Drawn with `gfx_108000`, `gfx_109C17`, `gfx_10B927`, `gfx_10D5A2` and `palette_088540`, `palette_088F92`.
+
+Pages 14-15 are a vertical stretch (`update_bg1_scroll_mode_trigger`, then `winged_alien_state_07` resumes the climb), and pages 17-19 the climb with the helicopter after the last boss (`ending_start_vertical_autoscroll`, mode 6 `bg1_update_vertical`); both are drawn above the page before them (`up=`). Traced in the plays `stage6` and `stage6_boss`. Pages 20-31 are not reached.
 
 Its palette is the CGRAM of the game at frame 600 of play `stage6` (`tests/test_previews.py`).
 

@@ -146,9 +146,11 @@ it may change size. A
 CDL comment that fell inside a block is kept above the include with its
 offset (`; from +$1600: CDL: not accessed`).
 
-The WRAM streams are moved too although what they decompress to is not
-checked for pointers yet: the compressed bytes cannot hold a label either
-way, so moving them to a file changes nothing for shifting.
+The WRAM streams are moved too. What they decompress to holds no pointers:
+tiles and Mode 7 characters that are only copied to VRAM, metatiles (BG
+tilemap words), maps (metatile offsets from a WRAM base), block
+definitions and block maps (see [WRAM streams of bank $7E](#wram-streams-of-bank-7e)
+and the comment above each `.incbin`).
 
 Later, by the same rule: 48 palettes (3,908 bytes in the ROM, see
 [Palettes](#palettes-gimp-gpl)), and the 18 tilemaps among the streams
@@ -481,8 +483,8 @@ The block map is four streams of `$200` bytes, at `$7E:9000`, `$9400`,
 4 runs of 8 words `$80` bytes apart, and the block number is the low byte
 of the word (the high bytes are all 0). The block definitions at
 `$7E:8000` are `$20` bytes a block, the 16 tile numbers in the even bytes
-(`expand_m7_block`, `queue_m7_block_patch`); nothing found reads the odd
-bytes, which hold small values (`$00`, `$08`, `$0C`, ...). The sprite
+(`expand_m7_block`, `queue_m7_block_patch`); the odd bytes are not used
+(see [Level maps](#level-maps-text)). The sprite
 tiles at `$7E:A000`-`$7E:EFFF` are 4bpp, the sources of the `td_tiles`
 records that `stream_topdown_sprite_gfx` DMAs to sprite VRAM `$4000`; on
 the boss maps, the boss's Mode 7 characters at `$7E:C000` are DMAd to the
@@ -528,10 +530,22 @@ metatile base divided by `$20`: BG1's second stream, decompressed to
 `$7E:7000`, `$2000` after the first, starts at `$100` (`first=100` in the
 manifest). The number must be the line's place (the build stops at a
 line out of order, so a line lost or added is caught). A top-down
-block's word has the Mode 7 character in its low byte; the high byte is
-not read by any code found (`$08`, `$0C`, `$2C`, `$34`...: they look like
-the palette and priority bits of a BG tilemap word, which Mode 7 does not
-have) and is kept as it is. Of `stage2_m7_blocks`' 256 blocks the game
+block's word has the Mode 7 character in its low byte. The high byte is
+not used by the game: `$08`, `$0C`, `$2C`, `$34`... are the high byte of
+a BG tilemap word (`vhopppcc`: palette in bits 2-4, priority in bit 5, a
+flip in one `$70`, the character bits 0-1 always 0), which Mode 7 does not
+have, probably left by the tool that made the maps (they do not follow
+the colours of the characters' pixels). The only code that reads them is
+an overrun: the corner checks of the objects (`td_read_player_corner_tiles`,
+`td_read_enemy_corner_tiles`) read the tile attribute map's row below an
+object, and below row 127 that is `$7E:8000`-`$7E:8080`, blocks 0-3 (both
+bytes of each word) and the first byte of block 4 (see
+[Top-down stages](topdown.md#tile-attributes)). In the emulator, the plays
+of stages 2 and 5 (both maps, both bosses, 2-player) with every odd byte
+past `$7E:8080` set to `$00`, or to `$FF`, after each load run frame for
+frame as the original (screen and RAM); with blocks 0-3 changed too,
+enemies at the map's bottom edge are pushed differently. The text keeps
+the high byte as it is. Of `stage2_m7_blocks`' 256 blocks the game
 keeps 128: the block maps loaded after it at `$7E:9000` cover the rest.
 
 **Side-view maps**: one line per row of a page, 8 cells, and a comment
@@ -555,9 +569,15 @@ number past `$1FF` (the word has 14 bits of offset). The page is the unit
 of `BG_MAP_OFFSET`: the stage starts at the page that `stage_bg1_map_offsets`
 / `stage_bg2_map_offsets` give for its layout (a checkpoint layout starts
 further on), and scrolling right, or up on a vertical stretch, moves to the
-next page. Pages 6-9 of `stage1_bg2_map` name metatiles `$143` and
-`$160`-`$16B`, past the `$D5` that `stage1_bg2_metatiles` defines; they are
-kept as they are.
+next page (BG1: `bg1_scroll_horizontal`, `bg1_scroll_vertical`; the pages
+of stages 3 and 6 that are climbed are listed in the gallery, `up=` in
+their `level` line). BG2's page is set by the stage start and by the
+spawn lists' type `$03` triggers (`update_bg2_scroll_mode_trigger`), so a
+BG2 map is a set of screens rather than a path. Pages 6-9 of
+`stage1_bg2_map` name metatiles `$143` and `$160`-`$16B`, past the `$D5`
+that `stage1_bg2_metatiles` defines: the stage never shows them (it shows
+pages 0-5, 10 and 11; see the [gallery](gallery.md#stage1_bg2)), and they
+are kept as they are.
 
 **Top-down block maps**: 8 lines of 32 block numbers (two hex digits), the
 rows of the map in order: the four streams `_0` to `_3` are the rows 0-7,
@@ -589,8 +609,11 @@ type-3 character list and palette task, with the first frame of the
 boss's characters on the boss maps. Two of those palettes stay inline in
 `src/` (`palette_088C3E`, `palette_088ECA`; see [Palettes](#palettes-gimp-gpl)):
 a `level` line names them `asm:LABEL` and the tool reads their `.byte`
-lines. A side-view map is drawn page by page, 8 pages a row, so a
-vertical stretch shows as consecutive pages side by side.
+lines. A side-view map is drawn page by page, each page to the right of
+the one before, or above it for the pages of a vertical stretch (`up=N-M`
+in the `level` line: stage 3's pages 10-14 and 21-23, stage 6's 14-15 and
+17-19, traced in the emulator, `bg1_scroll_mode` and `bg1_map_offset`),
+in bands of 8 columns.
 
 The top-down maps are drawn through EXTBG (`extbg=1`), as the game shows
 them: `init_topdown_hdma`'s tables set SETINI `$40` and BG1 + BG2 on the
@@ -606,9 +629,10 @@ brightest: `animate_stage2_palettes` fades it out and in again every
 
 ## Editing a level
 
-1. Find the page: the [gallery](gallery.md#levels) shows the map 8 pages
-   a row (page N at row N / 8, column N % 8), and the `.map` file has a
-   `# page N` comment before each page. A page is 256x256 pixels, 8x8
+1. Find the page: the [gallery](gallery.md#levels) shows the map as the
+   stage scrolls through it (8 pages a row where it only goes right: page
+   N at row N / 8, column N % 8; a vertical stretch climbs), and the
+   `.map` file has a `# page N` comment before each page. A page is 256x256 pixels, 8x8
    metatiles of 32x32.
 2. Change cells: a cell names a metatile of the stage's `.metatiles`
    files (`1A7` is line `1A7:` of `stage1_bg1_metatiles_2.metatiles`),

@@ -90,6 +90,17 @@ def test_assets_and_previews():
     assert not mode7 and width == 256
 
 
+def test_page_positions_stack_vertical_stretches():
+    # 0-2 right, 3-4 up, 5 right; bands of 4 columns
+    where = levelmap.page_positions(8, per_row=4, up={3, 4})
+    assert where[0] == (0, 2) and where[2] == (2, 2)
+    assert where[3] == (2, 1) and where[4] == (2, 0) and where[5] == (3, 0)
+    assert where[6] == (0, 3) and where[7] == (1, 3)
+    cells, width = levelmap.side_tilemap(bytes(8 * levelmap.PAGE), bytes(0x20), 4, {3, 4})
+    assert width == 4 * 32 and len(cells) == width * 4 * 32
+    assert cells[0] is None and cells[2 * 32 * width] == 0
+
+
 def test_limit_note_counts_units():
     a = assets.Asset("wram/x", "lz-v1", {"level": "metatiles"})
     assert asset_limits._tiles_note(a, 0x2020) == " (257 metatiles)"

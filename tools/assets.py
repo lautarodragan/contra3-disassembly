@@ -632,8 +632,18 @@ def level_cells(view, manifest, root=ROOT):
         d = data_bytes(a, root)[:max(0, 0x4000 - start)]
         wram[start:start + len(d)] = d
     cells, width = levelmap.side_tilemap(data_bytes(maps[0], root), wram,
-                                         int(view.get("pages", 8)))
+                                         int(view.get("pages", 8)), pages_up(view))
     return cells, width, False
+
+
+def pages_up(view):
+    """The pages of a level line's up=N-M,... (a vertical stretch: each
+    drawn above the page before it)."""
+    out = set()
+    for item in filter(None, view.get("up", "").split(",")):
+        a, _, b = item.partition("-")
+        out |= set(range(int(a), int(b or a) + 1))
+    return out
 
 
 def level_undefined(view, manifest, root=ROOT):
@@ -662,6 +672,8 @@ def render_level(view, manifest, root=ROOT):
     defs=DEFS[,...] (its metatiles, or the block definitions)
     chars=ASSET@VRAMWORD[:LENGTH],... [base=VRAMWORD] bpp=4|8
     palette=PALETTE@CGRAMINDEX,... [pages=N] (pages per row)
+    [up=N-M,...] (side view: pages drawn above the one before, a vertical
+    stretch)
     [extbg=1] (Mode 7 shown through EXTBG: see EXTBG)."""
     cells, width, mode7 = level_cells(view, manifest, root)
     bpp = 8 if mode7 else int(view.get("bpp", 4))
@@ -669,7 +681,7 @@ def render_level(view, manifest, root=ROOT):
     size = 64 if mode7 else 8 * bpp
     base = 0 if mode7 else int(view.get("base", "0"), 16) * 2
     chars = {}
-    for v in set(cells):
+    for v in set(cells) - {None}:
         t = v if mode7 else v & 0x3FF
         if t not in chars:
             a = (base + t * size) % len(vram)
@@ -944,9 +956,9 @@ def gallery():
                 "the stage's load list puts in VRAM and the colours of its palette task",
                 "(`level` lines of `assets/views.txt`), so editing a map, a metatile, a",
                 "graphic or a palette changes the picture. A side-view map is drawn",
-                "page by page in the order of its pages, 8 pages (2,048 pixels) per",
-                "row: a horizontal stretch reads left to right, a vertical one (which",
-                "the stage climbs page after page) is cut into its pages. A top-down",
+                "page by page in the order of its pages, each to the right of the one",
+                "before, or above it on a vertical stretch the stage climbs (`up=`),",
+                "cut into bands of 8 columns (2,048 pixels). A top-down",
                 "map is the 128x128-tile Mode 7 map `build_m7_tilemap` makes.", ""]
         for name, view in levels:
             maps = view["map"].split(",")

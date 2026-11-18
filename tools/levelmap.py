@@ -11,8 +11,10 @@ streams of bank $7E).  Formats (FORMATS):
                $7E:7000, starts at $100).
     blocks     top-down block definitions: $20 bytes per block, 16 words
                row by row, 4x4 Mode 7 tiles: the low byte is the Mode 7
-               character (expand_m7_block); nothing found reads the high
-               byte.
+               character (expand_m7_block); the high byte is not used
+               (it looks like the palette / priority / flip bits of a BG
+               tilemap word, probably left by the tool that made the maps;
+               book: Assets, Level maps).
     bgmap      side-view map: one word per metatile, bits 0-13 the byte
                offset of the metatile (a multiple of $20), bit 14 a
                horizontal and bit 15 a vertical flip of the whole metatile;
@@ -73,8 +75,12 @@ BLOCKS_HELP = """\
 Top-down blocks: 4x4 Mode 7 tiles each, as expand_m7_block reads them.
 One line per block: its number (hex), then its 4 rows of 4 words, top row
 first, rows separated by "|". The low byte of a word is the Mode 7
-character (00-FF); the high byte is not read by any code found (it holds
-small values such as 08, 0C, 2C: kept as it is). The block map names a
+character (00-FF). The high byte is not used: it looks like the high byte
+of a BG tilemap word (vhopppcc: palette in bits 2-4, priority in bit 5,
+08 0C 2C 34 ...), which Mode 7 does not have, probably left by the tool that made
+the maps; kept as it is. (Only blocks 0-3 are ever read whole: as the tile
+attributes of a row below the map, by the corner checks of objects on its
+last row; book: Top-down stages.) The block map names a
 block by its number; the tile attributes (walls, holes) come from the
 characters (tile_attrs_stage2 ..., book: Top-down stages)."""
 BGMAP_HELP = """\
@@ -255,21 +261,49 @@ def read_text(path, fmt, first=0):
 
 # --------------------------------------------------------------- previews
 
-def side_tilemap(map_data, defs, per_row=8):
-    """A side-view map as a BG tilemap: (words, width in cells). defs: the
+def page_positions(pages, per_row=8, up=()):
+    """{page: (column, row)} in pages, for a preview: the pages in order,
+    each to the right of the one before, or above it for a page of `up`
+    (entered while the stage scrolls up: a vertical stretch). The path is
+    cut into bands of `per_row` columns (a band starts when a page going
+    right would pass the last column); a band is as tall as its highest
+    climb, and the bands are stacked top to bottom."""
+    bands, band, col, row = [], {}, 0, 0
+    for p in range(pages):
+        if p and p not in up:
+            col += 1
+            if col == per_row:
+                bands.append(band)
+                band, col, row = {}, 0, 0
+        elif p:
+            row -= 1
+        band[p] = (col, row)
+    bands.append(band)
+    out, top = {}, 0
+    for band in bands:
+        low = min(r for _, r in band.values())
+        for p, (c, r) in band.items():
+            out[p] = (c, top + r - low)
+        top += 1 - low
+    return out
+
+
+def side_tilemap(map_data, defs, per_row=8, up=()):
+    """A side-view map as a BG tilemap: (cells, width in cells). defs: the
     metatile definitions as WRAM holds them from the metatile base ($1000
     above the map base: BG1 $7E:5000, BG2 $7E:B000), up to $4000 bytes
-    (missing bytes are 0). Page N goes at column N % per_row, row N //
-    per_row, 32x32 tiles each."""
+    (missing bytes are 0). Pages are placed by page_positions(), 32x32
+    tiles each; a cell no page covers is None (drawn in colour 0)."""
     words = _words(map_data)
     pages = len(words) // 64
-    cols = min(per_row, pages)
-    rows = (pages + cols - 1) // cols
+    where = page_positions(pages, per_row, set(up))
+    cols = max(c for c, _ in where.values()) + 1
+    rows = max(r for _, r in where.values()) + 1
     width = cols * 32
-    out = [0] * (width * rows * 32)
+    out = [None] * (width * rows * 32)
     defs = bytes(defs) + bytes(max(0, 0x4000 + 0x20 - len(defs)))
     for p in range(pages):
-        px, py = p % cols * 32, p // cols * 32
+        px, py = where[p][0] * 32, where[p][1] * 32
         for i in range(64):
             w = words[p * 64 + i]
             off, flip = w & 0x3FFF, w & 0xC000
@@ -310,10 +344,12 @@ def render(cells, width, chars, bpp, palette, mode7=False):
     blank = bytes(64)
     cache = {}
     for i, v in enumerate(cells):
-        key = v if mode7 else v & 0xDFFF        # priority does not show
+        key = v if mode7 or v is None else v & 0xDFFF   # priority does not show
         tile = cache.get(key)
         if tile is None:
-            if mode7:
+            if v is None:               # no page there (side_tilemap)
+                tile = blank
+            elif mode7:
                 tile = bytes(chars.get(v, blank))
             else:
                 t, pal = v & 0x3FF, v >> 10 & 7

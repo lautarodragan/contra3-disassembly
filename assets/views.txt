@@ -216,10 +216,27 @@ level stage1_bg1  map=wram/stage1_bg1_map defs=wram/stage1_bg1_metatiles,wram/st
 level stage1_bg2  map=wram/stage1_bg2_map defs=wram/stage1_bg2_metatiles chars=gfx/gfx_098000@0000,gfx/gfx_09998E@1000,gfx/gfx_09B32D@2000,gfx/gfx_09CD49@3000 bpp=4 palette=palettes/palette_088150@32,palettes/palette_088F92@0
 cgram stage1_bg1  play=stage1 frame=600
 cgram stage1_bg2  play=stage1 frame=600
+note stage1_bg2 The stage shows pages 0-5, 10 and 11 of this map only: BG2's page
+note stage1_bg2 (`bg2_map_offset`) is set by the stage start (page 0, or 2 from the
+note stage1_bg2 checkpoint, `stage_bg2_map_offsets`) and by the type `$03` triggers of the
+note stage1_bg2 spawn lists (`update_bg2_scroll_mode_trigger`: pages 4, 2 and 10), and
+note stage1_bg2 `bg2_draw_screen_step` draws two pages from there (traced in the plays
+note stage1_bg2 `stage1` and `stage1_boss`: offsets $0000-$0280, $0500, $0580). Pages 6-9
+note stage1_bg2 (metatiles `$143`, `$160`-`$16B`, never defined) and 12-15 (zeros) are never
+note stage1_bg2 drawn; in WRAM their metatiles would be read from `$7E:D860`-`$7E:DD7F`,
+note stage1_bg2 past the `$1AA0` bytes of `stage1_bg2_metatiles`, which hold zeros in the
+note stage1_bg2 plays.
 # Stage 3: load_list_058B85, palette_task_058BE7
-level stage3_bg1  map=wram/stage3_bg1_map defs=wram/stage3_bg1_metatiles,wram/stage3_bg1_metatiles_2 chars=gfx/gfx_0C8000@0000,gfx/gfx_0C98A2@1000,gfx/gfx_0CAFBF@2000,gfx/gfx_0CC65E@3000 bpp=4 palette=palettes/palette_0882F8@32,palettes/palette_088F92@0
+level stage3_bg1  map=wram/stage3_bg1_map defs=wram/stage3_bg1_metatiles,wram/stage3_bg1_metatiles_2 chars=gfx/gfx_0C8000@0000,gfx/gfx_0C98A2@1000,gfx/gfx_0CAFBF@2000,gfx/gfx_0CC65E@3000 bpp=4 palette=palettes/palette_0882F8@32,palettes/palette_088F92@0 up=10-14,21-23
 level stage3_bg2  map=wram/stage3_bg2_map defs=wram/stage3_bg2_metatiles chars=gfx/gfx_0C8000@0000,gfx/gfx_0C98A2@1000,gfx/gfx_0CAFBF@2000,gfx/gfx_0CC65E@3000 bpp=4 palette=palettes/palette_0882F8@32,palettes/palette_088F92@0
 cgram stage3_bg1  play=stage3 frame=600
+note stage3_bg1 Pages 10-14 and 21-23 are vertical stretches, drawn above the page before
+note stage3_bg1 them (`up=` in the level line): the stage scrolls up through them
+note stage3_bg1 (`bg1_scroll_mode` 3, `bg1_scroll_vertical`: the next page when the top of
+note stage3_bg1 the screen enters a new 256-pixel row; `update_bg1_scroll_mode_trigger`
+note stage3_bg1 switches the mode at pages 20 and 23), then right again from pages 15 and 24. Traced in the
+note stage3_bg1 emulator from the stage's start through the boss (`bg1_scroll_mode`,
+note stage3_bg1 `bg1_map_offset`). The boss is on page 26; pages 27-31 are not reached.
 cgram stage3_bg2  play=stage3 frame=600
 # Stage 4: load_list_058C14, palette_task_058C62
 level stage4_bg1  map=wram/stage4_bg1_map defs=wram/stage4_bg1_metatiles chars=gfx/gfx_0F8000@0000,gfx/gfx_0F9460@1000,gfx/gfx_0FAC90@2000,gfx/gfx_0FC8E5@3000 bpp=4 palette=palettes/palette_08843E@0
@@ -227,9 +244,14 @@ level stage4_bg2  map=wram/stage4_bg2_map defs=wram/stage4_bg2_metatiles chars=g
 cgram stage4_bg1  play=stage4 frame=600
 cgram stage4_bg2  play=stage4 frame=600
 # Stage 6: load_list_058C97, palette_task_058CCD
-level stage6_bg1  map=wram/stage6_bg1_map defs=wram/stage6_bg1_metatiles,wram/stage6_bg1_metatiles_2 chars=gfx/gfx_108000@0000,gfx/gfx_109C17@1000,gfx/gfx_10B927@2000,gfx/gfx_10D5A2@3000 bpp=4 palette=palettes/palette_088540@32,palettes/palette_088F92@0
+level stage6_bg1  map=wram/stage6_bg1_map defs=wram/stage6_bg1_metatiles,wram/stage6_bg1_metatiles_2 chars=gfx/gfx_108000@0000,gfx/gfx_109C17@1000,gfx/gfx_10B927@2000,gfx/gfx_10D5A2@3000 bpp=4 palette=palettes/palette_088540@32,palettes/palette_088F92@0 up=14-15,17-19
 level stage6_bg2  map=wram/stage6_bg2_map defs=wram/stage6_bg2_metatiles chars=gfx/gfx_108000@0000,gfx/gfx_109C17@1000,gfx/gfx_10B927@2000,gfx/gfx_10D5A2@3000 bpp=4 palette=palettes/palette_088540@32,palettes/palette_088F92@0
 cgram stage6_bg1  play=stage6 frame=600
+note stage6_bg1 Pages 14-15 are a vertical stretch (`update_bg1_scroll_mode_trigger`, then
+note stage6_bg1 `winged_alien_state_07` resumes the climb), and pages 17-19 the climb with the
+note stage6_bg1 helicopter after the last boss (`ending_start_vertical_autoscroll`, mode 6
+note stage6_bg1 `bg1_update_vertical`); both are drawn above the page before them (`up=`).
+note stage6_bg1 Traced in the plays `stage6` and `stage6_boss`. Pages 20-31 are not reached.
 cgram stage6_bg2  play=stage6 frame=600
 # The opening (stage 0): load_list_05A84B's map and metatiles, the
 # characters of load_list_05A7DB, palette_task_05A815
