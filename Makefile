@@ -30,7 +30,7 @@ build/assets.mk: assets/manifest.txt tools/assets.py $(wildcard assets/sound/*.t
 
 assets: $(asset_targets)
 
-.PHONY: all assets assets-check compare clean disasm cores bsnes emu-test goldens trace shift-build shift-test book book-check cheats ips cheat-test compress-test symbols
+.PHONY: all assets assets-check compare clean coverage disasm cores bsnes emu-test goldens trace shift-build shift-test book book-check cheats ips cheat-test compress-test symbols
 
 all: compare
 
@@ -80,6 +80,16 @@ clean:
 #   make symbols
 symbols: compare
 	$(PYTHON) tools/symbols.py build
+
+# What the CDL traces never touched: every unknown byte of the committed CDL,
+# by category (free space, header, unreferenced blocks, assets, data, code),
+# per bank, with the free space of each bank (tools/coverage.py; book: What
+# the traces never touched).  COVERAGE_FLAGS: e.g. --list, --markdown.
+#   make coverage [COVERAGE_FLAGS="--banks --top 12"]
+COVERAGE_FLAGS ?= --banks
+
+coverage: compare
+	$(PYTHON) tools/coverage.py $(COVERAGE_FLAGS)
 
 # Run the generator (tools/disasm.py, a reference/research tool since src/ is
 # the source of truth) into build/disasm/: src/ is never overwritten.  Compare

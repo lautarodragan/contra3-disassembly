@@ -1,0 +1,43 @@
+{
+  "_doc": [
+    "What tools/coverage.py cannot work out alone (book: What the traces never touched).",
+    "regions: inclusive address ranges ($BB:AAAA) whose unknown bytes get this category and",
+    "  subcategory (and owner, if given) instead of the automatic one; note says what they are.",
+    "size_words: a regex; an unknown 2-byte data line right before a label it matches is one of",
+    "  the size words the ROM keeps before the sound CPU blocks (the upload lists carry the sizes).",
+    "code_groups / data_groups: [regex, group] tried in order on the routine (code never run)",
+    "  or the owner label (data); the first match names the group."
+  ],
+  "regions": [
+    {"start": "$00:FFC0", "end": "$00:FFDF", "category": "hardware", "subcategory": "cartridge header",
+     "note": "No code reads it, and neither does the console (emulators and copiers do)."},
+    {"start": "$00:FFE0", "end": "$00:FFFF", "category": "hardware", "subcategory": "interrupt vectors never taken",
+     "note": "COP, BRK, ABORT and the emulation-mode vectors are never taken; the power-on fetch of the reset vector is not in the traces (the CDL does mark the NMI and IRQ vectors read)."},
+    {"start": "$00:9B47", "end": "$00:9B49", "category": "unreferenced", "subcategory": "stray code bytes", "owner": "unused_start_vram_task_linked",
+     "note": "`ldx #$1280` after an rtl, with no label: unreachable."},
+    {"start": "$08:F04C", "end": "$08:F04D", "category": "data", "subcategory": "colours a palette's size word leaves out", "owner": "palette_08F032"},
+    {"start": "$08:F06C", "end": "$08:F06D", "category": "data", "subcategory": "colours a palette's size word leaves out", "owner": "palette_08F04E"},
+    {"start": "$08:8E68", "end": "$08:8E69", "category": "data", "subcategory": "size words never read", "owner": "palette_088E46",
+     "note": "The size word of the block at $08:8E68, whose three palettes stage5_boss_flash_on_hit copies without it."},
+    {"start": "$08:F08A", "end": "$08:F08B", "category": "leftover", "subcategory": "stale bytes at the end of a bank", "owner": "palette_08F06E",
+     "note": "One more colour ($529F) after the last palette block, then $FF."},
+    {"start": "$08:F08C", "end": "$08:F099", "category": "free", "subcategory": "padding in the source", "owner": "palette_08F06E"},
+    {"start": "$16:FAC5", "end": "$16:FAD0", "category": "free", "subcategory": "padding in the source", "owner": "demo_input_p1_2",
+     "note": "12 bytes of $FF after the last demo event (shorter than the 16 the automatic rule needs)."}
+  ],
+  "size_words": "^spc_",
+  "code_groups": [
+    ["^(debug_|td_debug_|sound_check|game_mode_sound_check|run_sound_check|title_result_sound_check|title_menu_unused_sound_check|game_mode_stage_select|check_stage_select_code|check_30_lives_code|check_button_code_unused|input_free_move|demo_record_)",
+     "debug and test features (sound check, stage select, button codes, debug keys, demo recording)"],
+    ["(^unused_|_unused)", "named unused: nothing in the game reaches it"],
+    ["map_view", "the top-down Select map view (never opened in the traces)"],
+    ["(_p2$|_p2_|^td_p2_|^td_aim_p2|p2_arrow)", "two-player situations the traces did not reach"]
+  ],
+  "data_groups": [
+    ["^demo_input", "demo inputs the demos end before reading"],
+    ["^(metasprite_|anim_|td_metasprites|td_tile_list|player_frames|td_small_object_tiles|map_view_player_marker_sprites)", "metasprites, animations and sprite tile lists"],
+    ["(sine|cosine|circle)", "trigonometry tables"],
+    ["^(sound_check|song_set_)", "sound check and song set lists"],
+    ["^demo_", "demo inputs the demos end before reading"]
+  ]
+}
