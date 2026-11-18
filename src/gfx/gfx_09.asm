@@ -25,7 +25,7 @@ gfx_09CD49:
 	.incbin	"gfx/gfx_09CD49.lz"
 stage1_bomber_m7_chars:
 	; Compressed data for WRAM $7E:A000, $09:E638-$09:EBB9 (from its length word), loaded by load_list_059EFC.
-	; Stage 1 bomber raid: Mode 7 characters (the bomber), the high bytes of VRAM $0000-$0FFF written by bomber_raid_state_02 (bomber_raid_attr_ptr).
+	; Stage 1 bomber raid: Mode 7 characters (the bomber), the high bytes of VRAM $0000-$0FFF written by bomber_raid_state_02 (bomber_raid_pixel_ptr).
 	; What it decompresses to is not checked for pointers (none known).
 	.incbin	"wram/stage1_bomber_m7_chars.lz"
 gfx_09EBBA:

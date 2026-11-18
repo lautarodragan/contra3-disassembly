@@ -33,7 +33,7 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $03 | `update_bg2_scroll_mode_trigger` | stage trigger: sets `bg2_map_offset` from field `$3A`, waits for `bg2_screen_drawn`, then sets `bg2_scroll_mode` |
 | $04, $54 | `update_barricade` | the armored barricade blocking the street (stage 1 section 4, twice; seen in the emulator), solid; once the scroll stops it makes its core (type `$14`) and two cannons (type `$15`), and collapses when the core is destroyed. Nothing creates a type `$54` |
 | $05 | `update_bg1_autoscroll_trigger` | stage trigger: turns `bg1_autoscroll` on |
-| $06 | `update_bomber_raid` | the bomber raid (stage 1 section 9, slot `$09C0`; seen in the emulator): a bomber plane in Mode 7 flies in, drops two bombs (type `$0C`), the street blows up and burns (`bomber_raid_animate_fire`; players falling into the fire die) through the fire section, until type `$2A` makes the fire dissolve |
+| $06 | `update_bomber_raid` | the bomber raid (stage 1 section 9, slot `$09C0`; seen in the emulator): writes the plane's Mode 7 picture into VRAM `$0000-$0FFF` over 128 frames (states 1-2, `bomber_raid_map_ptr`; the VRAM rendered as Mode 7 shows the plane), then the plane flies in, drops two bombs (type `$0C`), the street blows up and burns (`bomber_raid_animate_fire`; players falling into the fire die) through the fire section, until type `$2A` makes the fire dissolve |
 | $07 | `update_load_list_trigger` | stage trigger: loads the list `ptrs_trigger_load_lists`[field `$3A`] with `load_data_list` |
 | $08 | `update_scroll_stop_trigger` | stage trigger (stages 1, 3, 6, before mid-bosses and bosses): stops the BG1 scroll (`bg1_scroll_mode` = 4) and rounds the scroll position to a 256-pixel page |
 | $09 | `update_player_tank` | the tank the players can drive (stage 1 sections 4-5; seen in the emulator), drawn on BG2: a player landing on its hatch enters it (`PLAYER_STATE_ENTER_TANK`, `PLAYER_STATE_TANK`); damage counter `obj_slots+31*OBJ_SIZE+OBJ_HP` (`$09C6`) |
@@ -112,11 +112,11 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $6B, $6C | `update_destructible_part`, `update_destructible_part_2` | part of a bigger enemy that explodes when destroyed (`$6B` seen in stage 4 at the airship; `$6C` never created: no spawn list or code stores it, never run in the CDL traces) |
 | $6D | `update_player_bike` | stage 4: the hover bike under each player (slots `$0280`/`$02C0`); puts the player back in `PLAYER_STATE_BIKE` when it lands on it |
 | $6E | `update_stage4_tank` | stage 4: the tank at the start (HP 315; seen in the emulator) |
-| $73 | `update_jetpack_soldier` | stage 4, under the airship: jetpack soldier flying up from below the screen trailing flame, hovering and firing (HP 2/4/6; seen in the emulator); spawned by the hanging soldiers' leader (type `$7E`); dies as type $1B |
+| $73 | `update_jetpack_soldier` | stage 4, the hover-bike road before the airship: jetpack soldier flying up in an arc from below the screen trailing flame, then hovering and firing (HP 2/6/10; seen in the emulator); spawned by the stage controller (`stage4_spawn_jetpack_soldier`, type `$64` states 9-A); dies as type $1B |
 | $74 | `update_hoverbike_rider` | stage 4: enemy on a hover bike (HP 16; seen in the emulator) |
 | $76 | `update_hoverbike_rider_bomb` | stage 4: bomb dropped by a hover-bike rider (seen in the emulator): falls to the road, then burns along it |
 | $78 | `update_hoverbike_rider_shot` | stage 4: shot of a hover-bike rider (seen in the emulator), down at 45 degrees |
-| $7E | `update_airship_hanging_soldier` | stage 4: soldiers hanging from the airship's hull (seen in the emulator); the one from the airship spawn list (HP 128) spawns the others and type `$73`, and its death clears them; the others drop onto the road and run off; dies as type $1B |
+| $7E | `update_airship_hanging_soldier` | stage 4: soldiers hanging from the airship's hull (seen in the emulator); the one from the airship spawn list (HP 128) spawns the others, and its death clears them; the others drop onto the road and run off; dies as type $1B |
 | $86 | `update_trail_segment` | segment of a chain that follows the path of the one before it (`spawn_trail_chain`, ring buffers at `$7E:E000`): the skeleton robot's eye fireballs, the helicopter rope, the brain boss's chain |
 | $89 | `update_checkpoint_trigger` | stage trigger: sets `stage_checkpoint` (the midpoint a continue starts from); stage 3 spawn list, page 14 |
 
@@ -259,8 +259,6 @@ Unreachable code keeps an `unused_` name saying what it does
 
 ## Open questions
 
-- The stage 4 soldiers need a closer look in the emulator (the random
-  player's bombs flash the screen in most captures).
-- The bomber raid (type `$06`) redraws the BG through the VRAM queue before
-  the plane comes (states 1-2, `bomber_raid_map_ptr` ...); what that redraw
-  is for (the Mode 7 picture, probably) was not checked.
+None left: the stage 4 soldiers (types `$73`, `$7E`, `$74`) were checked
+in the emulator with the bombs taken away (no flash), and the bomber
+raid's redraw is the plane's Mode 7 picture (type `$06` above).

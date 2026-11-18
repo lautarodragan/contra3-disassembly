@@ -1823,7 +1823,7 @@ stage4_controller_state_09:
 	lda	#$006E
 	sta	a:obj_slots+28*OBJ_SIZE+OBJ_TYPE
 stage4_controller_drop_soldiers:
-	jsr	a:stage4_spawn_dropping_soldier
+	jsr	a:stage4_spawn_jetpack_soldier
 	jml	f:wobble_stage4_line_scroll
 
 stage4_controller_state_0B:
@@ -3396,10 +3396,12 @@ stage4_boss_pod_fire:
 @return:
 	rts
 
-; stage4_controller states 9-A: every 72-135 frames makes the first free of
-; slots $07C0/$0840/$0880 a type $73 soldier dropping onto the road (seen in
-; the emulator).
-stage4_spawn_dropping_soldier:
+; stage4_controller states 9-A (the hover-bike road, before the airship):
+; every 72-135 frames makes the first free of slots $07C0/$0840/$0880 a type
+; $73 jetpack soldier (field $30 = 0, 2, 4: its start x, rise speed and
+; palette); seen in the emulator: 7 of them in the stage4 play, none while
+; the airship is there.
+stage4_spawn_jetpack_soldier:
 	dec	$32,x
 	bpl	@return
 	phx

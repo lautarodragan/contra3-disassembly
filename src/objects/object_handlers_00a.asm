@@ -276,8 +276,11 @@ update_song_change_trigger:
 	rtl
 
 ; Object type $06: the bomber raid of stage 1 (section 9, slot $09C0; seen
-; in the emulator). Waits for the scroll stop (state 0), redraws the BG
-; through the VRAM queue (states 1-2), sets up Mode 7 and HDMA (state 3);
+; in the emulator). Waits for the scroll stop (state 0), writes the bomber
+; plane's Mode 7 picture through the VRAM queue (states 1-2: VRAM words
+; $0000-$0FFF, the map's first 32 rows of 128 in the low bytes, tiles 0-63
+; in the high bytes, over BG1/BG2 tiles; checked in the emulator by
+; rendering that VRAM as Mode 7), sets up Mode 7 and HDMA (state 3);
 ; a bomber plane drawn in Mode 7 flies in and grows (m7a/m7d, states 4-5),
 ; drops two bombs (type $0C) and the street blows up (state 6: shake,
 ; explosions); then the street burns (state 7: bomber_raid_animate_fire,
@@ -316,7 +319,7 @@ bomber_raid_state_01:
 	lda	#$003F
 	sta	a:bomber_raid_dither_step
 	lda	#$A000	; [num]
-	sta	a:bomber_raid_attr_ptr
+	sta	a:bomber_raid_pixel_ptr
 	lda	#$F300	; [num]
 	sta	a:bomber_raid_map_ptr
 	stz	a:bomber_raid_vram_offset
@@ -326,6 +329,8 @@ bomber_raid_state_01:
 	sta	a:bg2_scroll_mode
 	rtl
 
+; 32 words a frame (8 blocks of 4) for 128 frames: map bytes from the block
+; map at $7E:F300 through $7E:5000, pixels from $7E:A000.
 bomber_raid_state_02:
 	lda	#$0008
 	sta	zp_08
@@ -351,7 +356,7 @@ bomber_raid_state_02:
 	lda	a:$5000,y
 	and	#$00FF
 	sta	zp_0A
-	ldx	a:bomber_raid_attr_ptr
+	ldx	a:bomber_raid_pixel_ptr
 	lda	a:$0000,x
 	and	#$00FF
 	xba
@@ -360,7 +365,7 @@ bomber_raid_state_02:
 	sta	a:$0000,x
 	inc	vram_queue_data_ptr
 	inc	vram_queue_data_ptr
-	inc	a:bomber_raid_attr_ptr
+	inc	a:bomber_raid_pixel_ptr
 	iny
 	iny
 	tya

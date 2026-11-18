@@ -1707,10 +1707,12 @@ update_soldier_spawner:
 	plx
 	rtl
 
-; Object type $73: stage 4, under the airship: a jetpack soldier (seen in the
-; emulator): flies up from below the screen trailing flame (effects), hovers
-; and fires (HP 2/4/6); dies as type $1B. Spawned by the airship's hanging
-; soldier leader (update_airship_hanging_soldier).
+; Object type $73: stage 4, on the hover-bike road before the airship: a
+; jetpack soldier (seen in the emulator): flies up in an arc from below the
+; screen (y $F0) trailing flame (effects), then hovers, drifting left and
+; right, and fires; HP (difficulty + 1) * 2 = 2/6/10 (6 seen on NORMAL);
+; dies as type $1B. Spawned by stage4_spawn_jetpack_soldier
+; (update_stage4_controller, states 9-A).
 update_jetpack_soldier:
 	lda	a:clear_enemies_timer
 	bne	@clearing
@@ -1938,8 +1940,8 @@ jetpack_soldier_state_03:
 ; Object type $7E: stage 4: soldiers hanging from the airship's hull (seen in
 ; the emulator). The one placed by the airship spawn list (state 0, HP 128,
 ; field $34 = 1) swings along the hull, spawns more of them (they drop from
-; the top of the screen onto the hull, state 4) and jetpack soldiers (type
-; $73); killing it clears the others (clear_enemies_timer). The others hang,
+; the top of the screen onto the hull, state 4); killing it clears the
+; others (clear_enemies_timer). The others hang,
 ; move towards a player, drop onto the road and run off (states 4-7). Dies as
 ; type $1B.
 update_airship_hanging_soldier:
