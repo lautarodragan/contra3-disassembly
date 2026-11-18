@@ -64,7 +64,7 @@ def build():
             name = "-".join(o.replace("=", "").lower() for o in options)
             subprocess.run([sys.executable, tool, "build", *options], cwd=DISASM,
                            check=True, stdout=subprocess.DEVNULL)
-            cache[options] = os.path.join(DISASM, "build", "contra3-%s.sfc" % name)
+            cache[options] = os.path.join(DISASM, "build", "cheats", name, "contra3.sfc")
         return cache[options]
     return _build
 

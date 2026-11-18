@@ -56,8 +56,8 @@ jobs:
           path: |
             build/contra3.mlb
             build/contra3.cpu.sym
-            build/contra3-*.mlb
-            build/contra3-*.cpu.sym
+            build/cheats/*/contra3.mlb
+            build/cheats/*/contra3.cpu.sym
           if-no-files-found: error
 
       - name: Shift check

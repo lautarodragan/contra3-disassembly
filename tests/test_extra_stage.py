@@ -71,7 +71,8 @@ def build_extra_stage(*more):
     opts = ["extra_stage", *more]
     subprocess.run([sys.executable, os.path.join(ROOT, "tools", "cheats.py"), "build", *opts],
                    cwd=ROOT, check=True, stdout=subprocess.DEVNULL)
-    return os.path.join(ROOT, "build", "contra3-%s.sfc" % "-".join(o.replace("=", "") for o in opts))
+    return os.path.join(ROOT, "build", "cheats", "-".join(o.replace("=", "").lower() for o in opts),
+                        "contra3.sfc")
 
 
 def _digest(data):

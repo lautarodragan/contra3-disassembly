@@ -58,7 +58,7 @@ GENERATED = {"build", "build/contra3.sfc", "build/contra3.map", "build/contra3.l
              "build/src", "build/src/snes9x", "build/cores", "build/cores/snes9x_libretro.so",
              "build/cores/bsnes_libretro.so", "out", "out/screens", "out/play",
              "build/contra3.mlb", "build/contra3.cpu.sym", "build/symbols",
-             "build/contra3-god-mode.mlb"}
+             "build/contra3-mod.mlb", "build/contra3-mod.sfc", "build/contra3-mod.cpu.sym"}
 
 AUTO_LABEL = re.compile(r"^(?:sub|loc|tbl|ptrs|data)_[0-9A-F]{6}$")
 IDENT = re.compile(r"@?[A-Za-z_][A-Za-z0-9_]*")

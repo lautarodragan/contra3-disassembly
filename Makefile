@@ -74,9 +74,9 @@ clean:
 	rm -f build/main.o build/contra3.sfc build/contra3.map build/contra3.lbl
 	rm -rf build/assets build/assets.mk build/assets.limits build/ld65.log
 	rm -rf build/shift build/dbg build/cheats build/patches
-	rm -f build/contra3-*.sfc
+	rm -f build/contra3-mod.sfc
 	rm -rf build/symbols
-	rm -f build/contra3.mlb build/contra3.cpu.sym build/contra3-*.mlb build/contra3-*.cpu.sym
+	rm -f build/contra3.mlb build/contra3.cpu.sym build/contra3-mod.mlb build/contra3-mod.cpu.sym
 
 # Symbol files for debugging emulators (tools/symbols.py): ROM labels, the
 # RAM of src/ram.inc and the hardware registers, from ld65's debug info of a
@@ -192,8 +192,8 @@ book: book-check
 # Cheats (milestone 4): optional changes chosen at build time, defined in
 # src/cheats.inc (`python3 tools/cheats.py list`).  The default build above
 # never has any.  A word sets an option to 1, word=n to n; the ROM goes to
-# build/contra3-<options>.sfc (or build/contra3-<preset>.sfc) with its header
-# checksum recomputed.
+# build/contra3-mod.sfc (always that name; each build also stays in
+# build/cheats/<options or preset>/) with its header checksum recomputed.
 #   make cheats CHEATS="infinite_lives invincible damage_mult=2"
 #   make cheats PRESET=god-mode
 # ips: IPS patches of every preset (tools/cheats.py PRESETS) against the

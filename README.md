@@ -86,8 +86,8 @@ has any. Options are defined and documented in `src/cheats.inc`
 (`python3 tools/cheats.py list`); a bare word sets one to 1, `word=n` to n:
 
 ```
-make cheats CHEATS="infinite_lives invincible damage_mult=2"   # -> build/contra3-infinite_lives-invincible-damage_mult2.sfc
-make cheats PRESET=god-mode                                    # -> build/contra3-god-mode.sfc
+make cheats CHEATS="infinite_lives invincible damage_mult=2"   # -> build/contra3-mod.sfc
+make cheats PRESET=god-mode                                    # -> build/contra3-mod.sfc
 make ips                                                       # IPS patches of every preset -> build/patches/
 make cheat-test                                                # emulator tests of the cheats
 ```

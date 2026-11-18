@@ -9,7 +9,8 @@
 build/symbols/, checks that the ROM it links is build/contra3.sfc (the
 default build, `make` checks it is the original), writes the two files next
 to it and checks them.  tools/cheats.py writes the same files for each
-cheat ROM (build/contra3-<name>.mlb / .cpu.sym), from that ROM's own link.
+cheat ROM (build/cheats/<name>/contra3.mlb / .cpu.sym, copied to
+build/contra3-mod.mlb / .cpu.sym), from that ROM's own link.
 
 What goes in (book: Building, "Debugging in an emulator"):
 

@@ -9,11 +9,12 @@
 An option is a word of src/cheats.inc without the CHEAT_ prefix, in lower
 case: a bare word sets it to 1 (`infinite_lives` -> -D CHEAT_INFINITE_LIVES=1),
 `word=n` sets it to n.  `build` assembles src/ with those defines into
-build/cheats/<name>/, recomputes the header checksum (the normal build keeps
-the original's as data) and copies the ROM to build/contra3-<name>.sfc, where
-<name> is the options joined by '-' (`infinite_lives-damage_mult2`) or the
-preset's name, with its emulator symbol files build/contra3-<name>.mlb and
-.cpu.sym (tools/symbols.py: the addresses of that ROM, not the default's).
+build/cheats/<name>/ (contra3.sfc, with the header checksum recomputed: the
+normal build keeps the original's as data, and its emulator symbol files
+contra3.mlb and contra3.cpu.sym, tools/symbols.py: the addresses of that ROM,
+not the default's), where <name> is the options joined by '-'
+(`infinite_lives-damage_mult2`) or the preset's name; then copies the three
+to build/contra3-mod.sfc, .mlb and .cpu.sym, always that name.
 
 `ips` builds each preset (all by default) and writes
 build/patches/contra3-<preset>.ips against build/contra3.sfc, the default
@@ -107,9 +108,9 @@ def parse_options(words):
 
 
 def rom_name(words):
-    """build/contra3-<name>.sfc: the options joined; a long combination is
-    shortened to its first options plus a hash of all of them, so the file
-    name stays within the file system's limit."""
+    """The directory of a build, build/cheats/<name>/: the options joined; a
+    long combination is shortened to its first options plus a hash of all of
+    them, so the name stays within the file system's limit."""
     name = "-".join(w.replace("=", "").lower() for w in words)
     if len(name) > 80:
         import hashlib
@@ -133,7 +134,8 @@ def sha1(data):
 
 
 def build(words, name=None, quiet=False):
-    """Assemble src/ with the cheats' defines; returns the ROM's path."""
+    """Assemble src/ with the cheats' defines into build/cheats/<name>/
+    (contra3.sfc and its symbol files); returns the ROM's path there."""
     defs = parse_options(words)
     name = name or rom_name(words) or "none"
     out = os.path.join(ROOT, "build", "cheats", name)
@@ -156,19 +158,29 @@ def build(words, name=None, quiet=False):
     if defs:
         rom = fix_checksum(rom)
         open(sfc, "wb").write(rom)
-    dst = os.path.join(ROOT, "build", "contra3-%s.sfc" % name)
-    shutil.copyfile(sfc, dst)
     # the emulator symbol files of this ROM, from its own link (book:
     # Building, "Debugging in an emulator")
-    base = dst[:-len(".sfc")]
+    base = sfc[:-len(".sfc")]
     symbols.write(os.path.join(out, "contra3.dbg"), base, quiet=True)
     errors, _ = symbols.check(base, out)
     if errors:
         sys.exit("%s: %s" % (os.path.relpath(base, ROOT), "; ".join(errors[:5])))
     if not quiet:
-        print("%s: %s (%s)" % (os.path.relpath(dst, ROOT), sha1(rom),
+        print("%s: %s (%s)" % (os.path.relpath(sfc, ROOT), sha1(rom),
                                " ".join("%s=%d" % d for d in defs) or "no cheats"))
-    return dst
+    return sfc
+
+
+MOD = os.path.join(ROOT, "build", "contra3-mod")
+
+
+def publish(sfc):
+    """Copy a build to build/contra3-mod.sfc (+ .mlb, .cpu.sym): `make cheats`
+    always writes the same name, whatever the options."""
+    base = sfc[:-len(".sfc")]
+    for ext in (".sfc", ".mlb", ".cpu.sym"):
+        shutil.copyfile(base + ext, MOD + ext)
+    print("%s.sfc" % os.path.relpath(MOD, ROOT))
 
 
 def read_base():
@@ -194,9 +206,9 @@ def cmd_build(args):
     if args.preset:
         if args.preset not in PRESETS:
             sys.exit("unknown preset %r (%s)" % (args.preset, ", ".join(PRESETS)))
-        build(PRESETS[args.preset] + args.options, name=args.preset)
+        publish(build(PRESETS[args.preset] + args.options, name=args.preset))
     else:
-        build(args.options)
+        publish(build(args.options))
 
 
 def cmd_ips(args):

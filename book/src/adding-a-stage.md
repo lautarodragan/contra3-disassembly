@@ -6,7 +6,7 @@ is the original game (six stages, `make` checks its SHA-1); the
 original stages 2-6 become stages 3-7:
 
 ```sh
-make cheats CHEATS=extra_stage                  # build/contra3-extra_stage.sfc
+make cheats CHEATS=extra_stage                  # build/contra3-mod.sfc
 make cheats CHEATS="extra_stage stage_select"   # with the stage select (7 entries)
 make cheats CHEATS="extra_stage invincible infinite_lives"
 make stage-test                                 # tests/test_extra_stage.py

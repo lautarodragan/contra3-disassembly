@@ -108,7 +108,7 @@ The game has no save RAM, so there are no SRAM labels.
 Each file is then parsed back the way the emulator parses it, and every ROM
 label is checked against the label file and the segments of the map of the
 same link. `make cheats` writes the same two files for the cheat ROM
-(`build/contra3-god-mode.mlb` ...), from its own link: the cheats move code,
+(`build/contra3-mod.mlb` and `.cpu.sym`, also kept in `build/cheats/<name>/`), from its own link: the cheats move code,
 so the default build's files do not fit a cheat ROM. CI uploads the files of
 the default build and of every preset as the `symbols` artifact of the build
 workflow, and the release workflow attaches the default build's two files to
