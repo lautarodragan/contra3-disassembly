@@ -245,7 +245,11 @@ update_homing_shot:
 	sta	$02,x
 	rtl
 
-update_shot_type_05:
+; Shot type $05: the first slot of the flame chain (spawn_shots_flame), at
+; the gun: draws nothing (SHOT_ATTR 0), keeps the chain's state; the nine
+; visible flames are type $06. Checked in the emulator (WEAPON_FLAME poked
+; into p1_weapon_1, slots $0AC0-$0BFF dumped while firing).
+update_flame_base:
 	dec	$00,x
 	bpl	@return
 	lda	#$8000	; [num]
@@ -256,7 +260,11 @@ update_shot_type_05:
 @return:
 	rtl
 
-update_shot_type_06:
+; Shot type $06: the nine flame sprites of the chain, from the gun out to the
+; tip (tiles $62-$6A growing outward; the last two are the upper half of the
+; tip's big flame). When the chain is let go they become spent shots ($15)
+; flying up.
+update_flame_segment:
 	dec	$00,x
 	bpl	@animate
 	stz	$06,x

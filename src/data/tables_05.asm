@@ -1637,8 +1637,8 @@ tbl_shot_types:
 	.faraddr	update_spread_shot
 	.faraddr	update_crush_shot
 	.faraddr	update_homing_shot
-	.faraddr	update_shot_type_05
-	.faraddr	update_shot_type_06
+	.faraddr	update_flame_base
+	.faraddr	update_flame_segment
 	.faraddr	update_shot_type_07
 	.faraddr	update_shot_type_08
 	.faraddr	update_shot_type_09
@@ -3467,14 +3467,16 @@ rolling_mine_muzzle_y:
 	; CDL: read by rolling_mine_state_04
 	.byte	$D8, $FF, $D8, $FF, $E8, $FF, $EC, $FF, $F0, $FF, $EC, $FF, $E8, $FF, $D8, $FF
 ; stage3_searchlight_craft_state_05, by step (field $38): the block list it queues
-; (queue_vram_blocks).
-ptrs_stage3_searchlight_craft_tile_rows:
+; (queue_vram_blocks): a row of 8 blocks of the scaffolding behind the craft,
+; the same tiles as the stage map but without the priority bit, so that the
+; craft (BG2) shows in front of them (checked in the emulator).
+ptrs_stage3_scaffold_back_rows:
 	; CDL: read by stage3_searchlight_craft_state_05
 	.addr	vram_blocks_05CA0C, vram_blocks_05CA1C, vram_blocks_05CA2C, vram_blocks_05CA3C
 	.addr	vram_blocks_05CA4C
 ; stage3_searchlight_craft_state_05, by step: VRAM address of that block list (+$400 on
 ; the second BG1 screen).
-stage3_searchlight_craft_tile_row_vram_addrs:
+stage3_scaffold_back_row_vram_addrs:
 	; CDL: read by queue_vram_blocks_at_x, stage3_searchlight_craft_state_05
 	.byte	$00, $41, $80, $41, $00, $42, $80, $42, $00, $43
 vram_blocks_05CA0C:
@@ -3492,29 +3494,35 @@ vram_blocks_05CA3C:
 vram_blocks_05CA4C:
 	.byte	$C0, $5F, $E0, $5F, $80, $5F
 	.byte	$A0, $5E, $C0, $5F, $E0, $5F, $80, $5F, $A0, $5E
-; stage3_searchlight_craft_state_08: 8 bytes copied to $7E:A000 (probably an HDMA
-; table).
-stage3_searchlight_craft_buffer_init:
+; stage3_searchlight_craft_state_08: 8 bytes copied to $7E:A000: the HDMA table
+; of the beam's BG2 x scroll ($6D lines at the one value set by state $08,
+; then $60 lines through the per-line values at $7E:A100).
+stage3_searchlight_craft_hdma_header:
 	; CDL: read by stage3_searchlight_craft_state_08
 	.byte	$6D, $08, $A0, $E0, $00, $A1, $00, $00
 ; OBJ_HP of update_stage3_searchlight_craft (the first 3 words; other data follows) by difficulty (easy, normal, hard)
 stage3_searchlight_craft_hp:
 	; CDL: read by update_objects, queue_vram_blocks_at_x, stage3_searchlight_craft_state_09; DMA / HDMA; partly not accessed
 	.byte	$40, $00, $48, $00, $50, $00, $58, $00
-vram_blocks_05CA6C:
+; The craft's BG2 blocks (queue_vram_blocks, VRAM $4D8C: 2 blocks wide, 3
+; high, under the lamp; $4C8C: its top; $4D0C: its core), as seen in the
+; emulator: the searchlight beam on (states $0B, $11), off (states $0E,
+; $14, $19), the upper arms raised over the open red core (state $12),
+; closed again (state $15), the cracked core (state $18).
+stage3_searchlight_craft_beam_on_blocks:
 	.byte	$60, $B8, $80, $B8, $E0, $B8, $00, $B9
 	.byte	$20, $B9, $40, $B9
-vram_blocks_05CA78:
+stage3_searchlight_craft_beam_off_blocks:
 	.byte	$A0, $B7, $C0, $B7, $80, $C2, $80, $C2, $80, $C2, $80, $C2
 	.byte	$00, $00, $FF, $FF
-vram_blocks_05CA88:
+stage3_searchlight_craft_open_blocks:
 	.byte	$E0, $B7, $20, $B8, $00, $B8, $40, $B8
 hdma_table_05CA90:
 	.byte	$6D, $20, $60, $02
 	.byte	$00
-vram_blocks_05CA95:
+stage3_searchlight_craft_closed_blocks:
 	.byte	$80, $B6, $A0, $B6, $00, $B7, $20, $B7
-vram_blocks_05CA9D:
+stage3_searchlight_craft_wreck_blocks:
 	.byte	$A0, $B8, $C0, $B8
 anim_05CAA1:
 	anim_frame	$0001, metasprite_06B712, metasprite_06B873

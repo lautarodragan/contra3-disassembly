@@ -97,7 +97,7 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $4A | `update_rolling_mine` | stage 3: rolling disc (HP 6; seen in the emulator) |
 | $4B | `update_debris_spark` | becomes a type $1D effect flying in a random direction (stage 3 boss) |
 | $4D | `update_song_change_trigger` | stage trigger: starts a song change (`update_song_change`: `song_change_mode` / `song_change_set` from `song_change_trigger_modes`); never run in the CDL traces |
-| $4E | `update_stage3_searchlight_craft` | stage 3 sections 7-8: the mid-boss, a flying craft with a searchlight drawn on BG2 (slot `$0900`, 27 states; seen in the emulator): drops type `$51` soldiers, throws grenades, HP 64/72/80 |
+| $4E | `update_stage3_searchlight_craft` | stage 3 sections 7-8: the mid-boss, a flying craft with a searchlight drawn on BG2 (slot `$0900`; seen in the emulator): throws grenades, drops type `$51` soldiers, can only be hurt while open, HP 64/72/80; states [below](#the-searchlight-craft) |
 | $4F | `update_stage3_winged_bug` | stage 3: winged alien bug (HP 8; seen in the emulator) |
 | $50 | `update_wall_hatch` | stage 3: wall hatch (HP 8; seen in the emulator) |
 | $52 | `stage3_spiked_climber_state_0B` | not a type: state `$0B` of the spiked climber, also in the handler table; never created |
@@ -124,6 +124,31 @@ Several low types are invisible **stage triggers**: placed by the stage's
 object list, they copy their parameter (fields `$3A`/`$3B`) into a stage
 variable (scroll limits, the section, loader lists) and delete themselves at
 once (`OBJF_DELETE`): `$03`, `$05`, `$07`, `$08`, `$0E`, `$3B`, `$42`, `$4D`, `$57`, `$89`.
+
+## The searchlight craft
+
+The stage 3 mid-boss (type `$4E`) has 27 states, `$11`, `$14`, `$16` and
+`$19` reusing the routines of other states. As the emulator shows them
+(a stage 3 play run to the craft, then the craft left to cycle with the
+player standing still, and its `OBJ_HP` poked negative to see the end):
+
+| states | on screen |
+|---|---|
+| `$00`, `$01` | nothing yet; waits for the scroll to stop (type `$08`) |
+| `$02`, `$03` | rises from below the screen (y `$180`) to the top (y `$20`), behind the scaffolding |
+| `$04`, `$05` | redraws the scaffolding of the screen in view (5 rows of 8 blocks, `ptrs_stage3_scaffold_back_rows`) without the priority bit: nothing changes on screen, but from now on the craft (BG2) is in front of it |
+| `$06`, `$07` | comes down in front of the scaffolding to y `$43` |
+| `$08`, `$09` | sets up the HDMA that slants the beam (per-line BG2 x scroll), becomes harmful and gets its HP; shots clang off it |
+| `$0A`, `$0B`, `$0C` | the searchlight comes on (BG2 blocks under the lamp), straight down; picks a player to follow |
+| `$0D` | 240 frames: the beam sways and follows the player, the craft drifts after it and throws a grenade (type `$13`) every 16 frames |
+| `$0E`, `$0F` | the light goes off; hovers 120 frames |
+| `$10`, `$11` | aims at a player, the light comes on again |
+| `$12`, `$13` | opens: the two upper arms rise over the red core, it becomes a target and drifts to the middle; for 600 frames it drops a jumping soldier (type `$51`) every 32 frames, alternately left and right, the beam on the player |
+| `$14`, `$15`, `$16`, `$17` | light off, closes (no longer a target), hovers 120 frames, back to `$0A` |
+| `$18`, `$19`, `$1A` | destroyed: the core cracks, the light goes off, it falls exploding with the screen shaking and frees itself below the screen; the scroll resumes |
+
+So it can only be hurt in states `$12`-`$14`: 600 frames of every cycle
+of about 1090 (10 seconds out of 18; measured in the emulator).
 
 ## Shared helpers
 
@@ -228,7 +253,7 @@ Unreachable code keeps an `unused_` name saying what it does
 | `$03` | `update_crush_shot` | crush missile | 4 |
 | `$0D` | `update_crush_blast` | crush missile's blast | 4 (8 from type `$07`) |
 | `$04` | `update_homing_shot` | homing missile | 2 |
-| `$05`, `$06` | `update_shot_type_05`, `update_shot_type_06` | flame (head, trail; not checked which is which) | |
+| `$05`, `$06` | `update_flame_base`, `update_flame_segment` | flame: `$05` is the chain's first slot, at the gun, invisible (it keeps the chain's state); `$06` are the nine flames out to the tip (checked in the emulator) | 0; 1 per flame |
 | `$0A`, `$0B` | `update_laser_shot` | laser segments (delayed, then 3) | 3 |
 | `$15` | `update_spent_shot` | any shot that hit without killing, bouncing back | 0 |
 

@@ -2151,9 +2151,14 @@ rolling_mine_check_wall:
 	rts
 
 ; Object type $4E: stage 3 sections 7-8: the mid-boss flying craft with a
-; searchlight (seen in the emulator), drawn on BG2 (slot $0900, 27 states):
-; it flies in, shines its searchlight on the floor, drops jumping soldiers
-; (type $51) and throws grenades (type $13); explodes when its HP runs out.
+; searchlight (seen in the emulator), drawn on BG2 (slot $0900, 27 states,
+; each described above its routine; $11, $14, $16 and $19 reuse other
+; states' routines): it rises behind the scaffolding, comes down in front of
+; it, then repeats a cycle (states $0A-$17): searchlight on, sweeping after a
+; player while throwing grenades (type $13), light off, hover; light on,
+; opens its core (the only time it can be hurt) and drops jumping soldiers
+; (type $51), light off, closes, hover. Destroyed (states $18-$1A), it falls
+; exploding.
 update_stage3_searchlight_craft:
 	lda	OBJ_HP,x
 	bpl	@flash
@@ -2206,6 +2211,7 @@ tbl_stage3_searchlight_craft_states:
 	; CDL: not accessed
 	.byte	$6B
 
+; State $00: clears its fields; draws nothing yet.
 stage3_searchlight_craft_state_00:
 	lda	#$0000
 	sta	OBJ_FLAGS,x
@@ -2229,6 +2235,8 @@ stage3_searchlight_craft_state_00:
 	inc	OBJ_STATE,x
 	rtl
 
+; State $01: waits for the scroll to stop (bg1_scroll_mode >= 4, the scroll stop
+; trigger, type $08).
 stage3_searchlight_craft_state_01:
 	lda	a:bg1_scroll_mode
 	cmp	#$0004
@@ -2237,12 +2245,18 @@ stage3_searchlight_craft_state_01:
 @return:
 	rtl
 
+; State $04: resets the row counter of state $05.
 stage3_searchlight_craft_state_04:
 	stz	$36,x
 	stz	$38,x
 	inc	OBJ_STATE,x
 	rtl
 
+; State $05: one row per frame (5 rows of 8 blocks, VRAM $4100-$435F of the
+; BG1 screen in view), redraws the scaffolding without the priority bit
+; (ptrs_stage3_scaffold_back_rows), so that the craft comes down in front of
+; it. Checked in the emulator: the BG1 map words lose bit $2000 and the
+; screen does not change.
 stage3_searchlight_craft_state_05:
 	lda	#$0008
 	sta	zp_02
@@ -2256,12 +2270,12 @@ stage3_searchlight_craft_state_05:
 	asl	a
 	asl	a
 	clc
-	adc	a:stage3_searchlight_craft_tile_row_vram_addrs,y
+	adc	a:stage3_scaffold_back_row_vram_addrs,y
 	pha
 	lda	$38,x
 	asl	a
 	tay
-	lda	a:ptrs_stage3_searchlight_craft_tile_rows,y
+	lda	a:ptrs_stage3_scaffold_back_rows,y
 	tay
 	pla
 	phx
@@ -2275,6 +2289,7 @@ stage3_searchlight_craft_state_05:
 @return:
 	rtl
 
+; State $02: starts rising (y velocity -1) from below the screen (y $180).
 stage3_searchlight_craft_state_02:
 	lda	#$0001
 	sta	OBJ_FLAGS,x
@@ -2285,6 +2300,9 @@ stage3_searchlight_craft_state_02:
 	inc	OBJ_STATE,x
 	rtl
 
+; State $03: rises through the screen, behind the scaffolding (BG1 tiles have
+; priority), to y $20 at the top; BG2 follows the object
+; (stage3_searchlight_craft_set_bg2_scroll).
 stage3_searchlight_craft_state_03:
 	jsr	a:stage3_searchlight_craft_set_bg2_scroll
 	lda	$0E,x
@@ -2311,6 +2329,7 @@ stage3_searchlight_craft_set_bg2_scroll:
 	sta	a:bg2_y
 	rts
 
+; State $06: starts coming down (y velocity +1).
 stage3_searchlight_craft_state_06:
 	lda	#$0001
 	sta	OBJ_FLAGS,x
@@ -2319,6 +2338,7 @@ stage3_searchlight_craft_state_06:
 	inc	OBJ_STATE,x
 	rtl
 
+; State $07: comes down in front of the scaffolding to y $43.
 stage3_searchlight_craft_state_07:
 	jsr	a:stage3_searchlight_craft_set_bg2_scroll
 	lda	$0E,x
@@ -2330,11 +2350,13 @@ stage3_searchlight_craft_state_07:
 @return:
 	rtl
 
+; State $08: sets up the HDMA table of the BG2 x scroll per line ($7E:A000
+; header, $7E:A100 lines) used to slant the searchlight beam.
 stage3_searchlight_craft_state_08:
 	phx
 	ldx	#$0000
 @loop:
-	lda	a:stage3_searchlight_craft_buffer_init,x
+	lda	a:stage3_searchlight_craft_hdma_header,x
 	sta	f:$7EA000,x
 	inx
 	inx
@@ -2353,6 +2375,9 @@ stage3_searchlight_craft_state_08:
 	inc	$12,x
 	rtl
 
+; State $09: becomes harmful and solid to shots (OBJF_CLANG, not a target),
+; sets OBJ_HP (stage3_searchlight_craft_hp) and turns on the beam's HDMA
+; (hdma_preset 8).
 stage3_searchlight_craft_state_09:
 	lda	#$400D
 	sta	OBJ_FLAGS,x
@@ -2367,6 +2392,7 @@ stage3_searchlight_craft_state_09:
 	sta	hdma_preset
 	rtl
 
+; State $0A (and again after $17): the beam straight down.
 stage3_searchlight_craft_state_0A:
 	lda	#$006D
 	sta	zp_06
@@ -2383,12 +2409,14 @@ stage3_searchlight_craft_state_0A:
 	inc	$12,x
 	rtl
 
+; State $0B (and $11): the searchlight beam on: BG2 blocks under the lamp
+; (stage3_searchlight_craft_beam_on_blocks).
 stage3_searchlight_craft_state_0B:
 	lda	#$0002
 	sta	zp_02
 	lda	#$0030
 	sta	zp_08
-	ldy	#.loword(vram_blocks_05CA6C)
+	ldy	#.loword(stage3_searchlight_craft_beam_on_blocks)
 	lda	#$4D8C
 	phx
 	jsl	f:queue_vram_blocks
@@ -2396,12 +2424,14 @@ stage3_searchlight_craft_state_0B:
 	inc	$12,x
 	rtl
 
+; State $0E (and $14, $19): the searchlight beam off
+; (stage3_searchlight_craft_beam_off_blocks).
 stage3_searchlight_craft_state_0E:
 	lda	#$0002
 	sta	zp_02
 	lda	#$0030
 	sta	zp_08
-	ldy	#.loword(vram_blocks_05CA78)
+	ldy	#.loword(stage3_searchlight_craft_beam_off_blocks)
 	lda	#$4D8C
 	phx
 	jsl	f:queue_vram_blocks
@@ -2409,6 +2439,7 @@ stage3_searchlight_craft_state_0E:
 	inc	$12,x
 	rtl
 
+; State $0C: picks the player the searchlight follows (field $34).
 stage3_searchlight_craft_state_0C:
 	jsr	a:stage3_searchlight_craft_pick_target
 	inc	$12,x
@@ -2433,6 +2464,8 @@ stage3_searchlight_craft_pick_target:
 @return:
 	rts
 
+; State $0D: 240 frames: the beam sways and follows the player, the craft
+; drifts after it, a grenade (type $13) is thrown every 16 frames.
 stage3_searchlight_craft_state_0D:
 	jsr	a:stage3_searchlight_craft_set_bg2_scroll
 	lda	a:bg2_x
@@ -2520,6 +2553,7 @@ stage3_searchlight_craft_state_0D:
 @return:
 	rtl
 
+; State $0F (and $16): hovers for 120 frames, beam off.
 stage3_searchlight_craft_state_0F:
 	jsr	a:stage3_searchlight_craft_set_bg2_scroll
 	lda	a:bg2_x
@@ -2536,6 +2570,9 @@ stage3_searchlight_craft_state_0F:
 @return:
 	rtl
 
+; State $12: opens: raises its two upper arms, uncovering the red core
+; (stage3_searchlight_craft_open_blocks); becomes a target (OBJF_TARGET)
+; and drifts towards the middle of the screen.
 stage3_searchlight_craft_state_12:
 	lda	OBJ_FLAGS,x
 	ora	#$0010
@@ -2556,7 +2593,7 @@ stage3_searchlight_craft_state_12:
 	sta	zp_02
 	lda	#$0020
 	sta	zp_08
-	ldy	#.loword(vram_blocks_05CA88)
+	ldy	#.loword(stage3_searchlight_craft_open_blocks)
 	lda	#$4C8C
 	phx
 	jsl	f:queue_vram_blocks
@@ -2564,6 +2601,9 @@ stage3_searchlight_craft_state_12:
 	inc	$12,x
 	rtl
 
+; State $13: 600 frames open, the beam on the player: every 32 frames drops a
+; jumping soldier (type $51) to one side, alternately; the only state in
+; which shots hurt it.
 stage3_searchlight_craft_state_13:
 	inc	OBJ_TIMER,x
 	lda	OBJ_TIMER,x
@@ -2655,12 +2695,15 @@ stage3_searchlight_craft_slant_to_target:
 	plx
 	rtl
 
+; State $10: picks a player again and aims the beam at it.
 stage3_searchlight_craft_state_10:
 	jsr	a:stage3_searchlight_craft_pick_target
 	jsl	f:stage3_searchlight_craft_slant_to_target
 	inc	$12,x
 	rtl
 
+; State $15: closes (stage3_searchlight_craft_closed_blocks), no longer a
+; target.
 stage3_searchlight_craft_state_15:
 	lda	OBJ_FLAGS,x
 	and	#$FFEF
@@ -2669,7 +2712,7 @@ stage3_searchlight_craft_state_15:
 	sta	zp_02
 	lda	#$0020
 	sta	zp_08
-	ldy	#.loword(vram_blocks_05CA95)
+	ldy	#.loword(stage3_searchlight_craft_closed_blocks)
 	lda	#$4C8C
 	phx
 	jsl	f:queue_vram_blocks
@@ -2679,6 +2722,7 @@ stage3_searchlight_craft_state_15:
 	inc	$12,x
 	rtl
 
+; State $17: back to state $0A (the cycle $0A-$17 repeats until it dies).
 stage3_searchlight_craft_state_17:
 	lda	#$000A
 	sta	OBJ_STATE,x
@@ -2875,12 +2919,15 @@ stage3_searchlight_craft_bob:
 	sta	$0E,x
 	rts
 
+; State $18 (OBJ_HP below 0, set by the handler): the cracked core
+; (stage3_searchlight_craft_wreck_blocks), the beam's HDMA off, sound $30,
+; starts falling; then state $19 turns the beam off.
 stage3_searchlight_craft_state_18:
 	lda	#$0002
 	sta	zp_02
 	lda	#$0010
 	sta	zp_08
-	ldy	#.loword(vram_blocks_05CA9D)
+	ldy	#.loword(stage3_searchlight_craft_wreck_blocks)
 	lda	#$4D0C
 	phx
 	jsl	f:queue_vram_blocks
@@ -2904,6 +2951,9 @@ stage3_searchlight_craft_state_18:
 	jsl	f:queue_sound
 	rtl
 
+; State $1A: falls, accelerating, in explosions with the screen shaking; at y
+; $140 it frees itself and the scroll resumes (bg1_scroll_mode,
+; bg2_scroll_mode 0).
 stage3_searchlight_craft_state_1A:
 	jsr	a:stage3_searchlight_craft_set_bg2_scroll
 	jsl	f:queue_sound_41_throttled
