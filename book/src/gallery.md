@@ -791,9 +791,9 @@ Drawn with `gfx_089D7E` and `palette_08F01A`. Its palette is the CGRAM of the ga
 
 `assets/gfx/unused_warning_message.tilemap`: bg, 32x32 cells, lz-v1.
 
-Nothing loads this map (book: [What the traces never touched](coverage.md)): a legal notice of the Japanese release, drawn here with the font and colours of the closing messages; the logo cells use palette 6, which that screen does not set.
+Nothing loads this map (book: [What the traces never touched](coverage.md)): a legal notice of the Japanese release, drawn here with the font and colours of the closing message's screen; the font has the Konami logo too (the cells in palette 6).
 
-Drawn with `gfx_089D7E` and `palette_08F01A`.
+Drawn with `gfx_089D7E` and `palette_088F92`, `palette_08F01A`. Its palette is the CGRAM of the game at frame 43900 of play `stage6_ending_easy` (`tests/test_previews.py`).
 
 <img src="gallery/gfx/unused_warning_message.png" alt="unused_warning_message" width="512" style="image-rendering: pixelated">
 

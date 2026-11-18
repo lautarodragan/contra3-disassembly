@@ -202,7 +202,7 @@ refers to; the most curious of those:
   load list refers to (`unused_warning_message`): "WARNING / THIS GAME IS
   FOR SALE AND USE IN JAPAN ONLY. ..." and "(c) 1992 KONAMI", typo
   included ("ART WORKS IN THIS GAME AER SEPARATELY OWNED"). In the font
-  and colours of the closing messages:
+  and colours of the closing messages, which have the Konami logo too:
 
   <img src="gallery/gfx/unused_warning_message.png" alt="unused_warning_message" width="512" style="image-rendering: pixelated">
 

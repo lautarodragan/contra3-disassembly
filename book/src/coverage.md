@@ -262,12 +262,13 @@ the same numbering as `ending_message_easy`):
 > PROHIBITED BY LAWS AND THE VIOLATOR&nbsp; MAY BE SUBJECT TO
 > SEVERE PENALTIES UNLESS SPECIALLY AUTHORIZED BY THEM.
 >
-> (a logo) &copy; 1992 KONAMI
+> (the Konami logo) &copy; 1992 KONAMI
 
 (typos as in the ROM: "AER", the double space). "WARNING" uses palette 1,
-the logo cells palette 6, which nothing of that screen sets. The US game
-never shows it: probably a screen of the Japanese release left in this
-ROM. Drawn with the font and colours of the closing messages:
+the Konami logo (characters of the same font) palette 6. The US game never
+shows it: probably a screen of the Japanese release left in this ROM. Drawn
+with the font and the CGRAM of the easy closing message's screen (checked
+in the emulator, `tests/test_previews.py`):
 
 <img src="gallery/gfx/unused_warning_message.png" alt="unused_warning_message" width="512" style="image-rendering: pixelated">
 
