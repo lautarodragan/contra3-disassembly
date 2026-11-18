@@ -139,6 +139,13 @@ CHEAT_DEBUG_KEYS = 0
 CHEAT_BUTTON_CODES = 0
 .endif
 
+; 1: the unused title screen code Right, Down, Down+Right, X
+; (check_button_code_unused) is checked by title_menu_input and enters the
+; sound check (title_menu_unused_sound_check, GAME_MODE_SOUND_CHECK).
+.ifndef CHEAT_SOUND_CHECK
+CHEAT_SOUND_CHECK = 0
+.endif
+
 ; --- checks ---------------------------------------------------------------
 
 .assert CHEAT_START_WEAPON >= 0 && CHEAT_START_WEAPON <= WEAPON_LASER, error, "CHEAT_START_WEAPON: 0-5"

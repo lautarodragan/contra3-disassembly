@@ -580,6 +580,10 @@ title_menu_fade_in:
 
 ; mode_result = 1 when title_menu_timeout runs out (demo), 2 on Start.
 title_menu_input:
+.if CHEAT_SOUND_CHECK
+	jsr	a:check_button_code_unused	; Right, Down, Down+Right, X: carry set
+	bcs	title_menu_unused_sound_check	; fade out, mode_result 3: the sound check
+.endif
 .if CHEAT_BUTTON_CODES
 	jsr	a:check_30_lives_code
 	jsr	a:check_stage_select_code
@@ -598,6 +602,9 @@ title_menu_input:
 	rtl
 
 ; (no caller found; decoded because it follows the end of a routine)
+; Fades the title out with mode_result 3, which game_mode_title turns into
+; GAME_MODE_SOUND_CHECK. Probably the target of check_button_code_unused's
+; carry (the sound_check cheat branches here from title_menu_input).
 title_menu_unused_sound_check:
 	; (not executed in the CDL traces)
 	lda	#$0003

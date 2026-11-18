@@ -61,7 +61,8 @@ PRESETS = {
     "one-hit-kills": ["enemy_hp=0"],
     "stage-select": ["stage_select"],
     "30-lives": ["start_lives=30", "option_30_lives", "infinite_continues"],
-    "debug-keys": ["debug_keys", "button_codes"],
+    "sound-check": ["sound_check"],
+    "debug-keys": ["debug_keys", "button_codes", "sound_check"],
 }
 
 

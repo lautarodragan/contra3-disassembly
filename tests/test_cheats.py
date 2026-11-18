@@ -34,10 +34,15 @@ GAME_MODE = 0x0032
 CONTINUES = 0x1E62         # continues_left
 OPTION_LIVES = 0x1E3C
 STAGE_SELECT = 0x1E60      # stage_select_enabled
+SOUND_CHECK_ID = 0x1C02    # sound_check_id: entry of sound_check_sound_ids
+SOUND_QUEUE = 0x0100       # sound_queue (ring), written at sound_queue_write
+SOUND_QUEUE_WRITE = 0x56
 TD_P1_STATE = 0x0ED2       # top-down player 1 +$12
 PLAYER_STATE_DYING = 0x07
 PLAYER_STATE_OUT = 0x0E
 TD_STATE_DYING = 8
+GAME_MODE_TITLE = 3
+GAME_MODE_SOUND_CHECK = 5
 GAME_MODE_STAGE_SELECT = 7
 GAME_MODE_STAGE_PLAY = 9
 GAME_MODE_GAME_OVER = 0x0B
@@ -352,6 +357,45 @@ def test_button_codes(rom, build, core, direction, effect):
         assert (lives, select, mode) == (30, 0, GAME_MODE_STAGE_PLAY)
     else:
         assert (lives, select, mode) == (3, 1, GAME_MODE_STAGE_SELECT)
+
+
+def test_sound_check(rom, build, core):
+    """Right, Down, Down+Right, X on the title enters SOUND CHECK MODE;
+    Down x5 then Y queues entry 5 of sound_check_sound_ids ($06, a sound
+    the game never queues), B queues the stop command, Start goes back
+    to the title."""
+    def enter(path):
+        c = retro.Console(path, core=core)
+        c.run(game.TITLE_READY)
+        c.hold("right"); c.run(3)
+        c.hold("down"); c.run(3)
+        c.hold("down", "right"); c.run(3)
+        c.hold(); c.run(1)
+        c.press("x", frames=2, after=180)
+        return c
+
+    def last_queued(c):
+        return c.peek(SOUND_QUEUE + ((c.peek(SOUND_QUEUE_WRITE) - 1) & 0xFF))
+
+    c = enter(rom)
+    try:
+        assert c.peek(GAME_MODE) == GAME_MODE_TITLE
+    finally:
+        c.close()
+    c = enter(build("sound_check"))
+    try:
+        assert c.peek(GAME_MODE) == GAME_MODE_SOUND_CHECK
+        for _ in range(5):
+            c.press("down", frames=2, after=4)
+        assert c.peek16(SOUND_CHECK_ID) == 5
+        c.press("y", frames=2, after=2)
+        assert last_queued(c) == 0x06
+        c.press("b", frames=2, after=2)
+        assert last_queued(c) == 0x84                    # SOUND_CMD_STOP
+        c.press("start", frames=2, after=300)
+        assert c.peek(GAME_MODE) == GAME_MODE_TITLE
+    finally:
+        c.close()
 
 
 def test_debug_keys(build, core):
