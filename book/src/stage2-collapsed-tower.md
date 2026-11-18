@@ -1,0 +1,135 @@
+# Stage 2: Collapsed Tower
+
+The stage that the extra-stage build (`make cheats CHEATS=extra_stage`,
+see [Adding a stage](adding-a-stage.md)) inserts as stage 2, between the
+city of stage 1 and the top-down highway (now stage 3). The default ROM
+does not have it: everything below is assembled only with
+`CHEAT_EXTRA_STAGE`.
+
+```sh
+make cheats CHEATS=extra_stage                        # build/contra3-mod.sfc
+make cheats CHEATS="extra_stage start_stage=2"         # straight to it
+make cheats CHEATS="extra_stage start_stage=2 invincible no_pit_death infinite_lives"
+make stage-test                                       # tests/test_extra_stage.py
+```
+
+![The stage in the emulator: the card, the street, the mid-boss tank, the ruins, the climb (twice), the top, the boss](img/extra-stage-play.png)
+
+## The route
+
+Past stage 1's burning city, the soldiers fall back through the industrial
+district into the ruins of a skyscraper district, climb the shell of a
+tower that came down across the street, cross the rubble on top and meet
+the turtle again, this time in its home block.
+
+Nineteen pages of BG1 (`assets/wram/extra_bg1_map.map`, page 19 is blank):
+
+| pages | section | what happens |
+|---|---|---|
+| 0-4 | the industrial street | girder decks over the street (two levels to fight on), the cafe, pipe towers; grenade soldiers on the decks, a window sniper, pop-up turrets, alien dogs, foot soldiers from both edges (`OBJT_SOLDIER_SPAWNER`, deleted on page 4), three weapon capsules |
+| 5-7 | the mid-boss | the brick block of stage 1; flame geysers in the cracked street, then the mid-boss tank crashes down through the building (`OBJT_MIDBOSS_TANK`, its arena on page 7). Its death resumes the scroll and sets the checkpoint |
+| 8-9 | the ruins | the continue starts on page 8; the green block gives way to rubble, power lines and a broken concrete pillar to climb over; more foot soldiers, a pop-up turret |
+| 10-13 | the climb | at the end of page 9 the screen locks on page 10 and scrolls up (`bg1_scroll_mode` 2, then 3) through pages 11, 12 and 13: broken floor slabs to jump up through, two concrete pillars to climb, a power line to hang from; window snipers and grenade soldiers drop in from above, a capsule flies across. The skyline (BG2) stays behind as the tower is climbed |
+| 13-16 | on top | at the top of page 13 the stage scrolls right again over the fallen slabs, power poles and pillars of the ruins; grenade soldiers, dogs, a turret, a capsule |
+| 17-18 | the boss | stage 1's boss block: the turtle bursts through the wall (`OBJT_STAGE1_BOSS_CONTROLLER`, its arena on page 18); its death ends the stage |
+
+The whole map as the stage travels it, with the spawn markers (the
+gallery's [extra_bg1](gallery.md#extra_bg1); pages 11-13 are drawn above
+page 10):
+
+<div style="overflow-x: auto"><a href="gallery/levels/extra_bg1.png"><img src="gallery/levels/extra_bg1.png" alt="extra_bg1" width="1024" height="256" style="image-rendering: pixelated; max-width: none"></a></div>
+
+## Design
+
+- **Pace.** Two flat sections (the street, the ruins on top), each with a
+  set piece at its end (the tank, the turtle), around a vertical stretch in
+  the middle, so that the stage does not feel like stage 1 played again
+  although it uses its graphics: stage 1 never leaves the street.
+- **The climb** (pages 10-13) is built on the jump: the players jump 69
+  pixels (measured in the emulator from the street), so every slab is 64
+  pixels above the one before, and either overlaps it (jumped through from
+  below: the slabs are `TILE_PLATFORM`, collision class 2) or starts where
+  it ends (a jump to the side). Two routes cross it: the slabs, and the
+  concrete pillars (`TILE_CLIMBABLE`, class 1), climbed with Up to their
+  tops; one pillar stops more than 100 pixels below the next, so that the
+  next one is not grabbed from the first one's top as a ceiling (the first
+  draft had them 48 pixels apart, and the player hung under it). The last slab is high on page 13, so
+  that standing on it pulls the screen to the top (`bg1_scroll_vertical`
+  scrolls while a player is above `scroll_threshold`), where the stage
+  turns right again. A fall off the bottom of the screen kills, as on
+  stage 3's climbs, and as there `respawn_mode` is 4 during the climb
+  (`OBJT_RESPAWN_CLAMP_TRIGGER` on page 10, back to 0 on page 13).
+- **Fairness.** Enemies come in one at a time at first, the alien dogs at
+  least 1.5 pages apart (they all take the one slot `$0280`: see below),
+  weapon capsules in every section (nine in the stage's lists, three more
+  in the lists of stage 1's it reuses), and the checkpoint right after the
+  mid-boss.
+  The same simple scripted player that runs and fires dies on stage 1 and
+  on this stage alike (three lives lost by stage 1's page 4, by this
+  stage's page 2: its first section is a little busier).
+
+## How it is built
+
+All of it goes through the asset pipeline and the per-stage tables of
+`src/game/stages.inc` (the arguments for the extra stage, see
+[Adding a stage](adding-a-stage.md)):
+
+| what | the extra stage's | reused from |
+|---|---|---|
+| BG1 map | `assets/wram/extra_bg1_map.map` (`extra_bg1_map`, in bank `$04`: `src/game/extra_stage.asm`) | arranged from stage 1's metatiles; pages 6-7 and 17-18 are stage 1's 16-17 and 26-27, the arenas the mid-boss and the boss write into (`vram_blocks_05ACDF`, the boss's wall blocks and its `TILE_WALL` column) |
+| metatiles, BG2 map | `load_list_extra_maps` | stage 1's (`stage1_bg1_metatiles`, `stage1_bg1_metatiles_2`, `stage1_bg2_metatiles`, `stage1_bg2_map`) |
+| BG and sprite tiles, start and checkpoint | `load_list_extra_vram` | stage 1's BG tiles, and the sprites stage 1 has from its page 1 on (it loads `load_list_059E62` there), so every enemy used is drawn in both halves |
+| spawn lists | `assets/stages/extra.spawns` (`spawn_pages_extra`) | pages 6, 17 and 18 use stage 1's lists of its pages 16, 26 and 27 (`spawn_list_0596CA`, `spawn_list_05979C`, `spawn_list_0597DA`: the tank, the boss and its scroll stop) |
+| start | `layout_init_extra` (bank `$00`, 4 bytes) and `layout_init_extra_far` (bank `$04`) | stage 1's set-up: the BG2 tank's HDMA and `bg2_scroll_mode` 4; from the checkpoint `bg2_scroll_mode` 5 |
+| map offsets | BG1 page 0, page 8 from the checkpoint; BG2 page 0 | |
+| music | `stage_songs`: entry 5 | stage 5's song set (`song_set_stage5`, its samples) and song (`SOUND_SONG_STAGE5`): the sound effects and the boss song use only the common instruments (`$00`-`$13`), so they sound the same over any stage's samples |
+| direct page parameters (collision thresholds), palettes, respawn mode, stage clear picture | | stage 1's |
+
+The sections' graphics follow what stage 1 loads as it goes: the BG
+characters `$80`-`$FF` are replaced at the mid-boss
+(`OBJT_LOAD_LIST_TRIGGER` `0002`, the tank's building on BG2), so every
+page after it uses metatiles without those characters (the ruins' are all
+above `$180`); the boss's `0000` replaces `$000`-`$17F` for its block. The
+BG2 screens are stage 1's in the same order (page 0 at the start, the
+tank's screen, page 0 again after it, with parallax, the boss's screen).
+
+**Bank `$05`.** The spawn lists and the two load lists take 678 bytes of
+bank `$05`, more than the room the move of `half_turn_sine` had made: the
+extra-stage build also moves `td_spawn_offsets_y` and
+`td_spawn_offsets_x` (640 bytes, read only by
+`td_place_enemy_near_player`) to bank `$04` and reads them there with long
+addressing. Bank `$05` keeps 530 bytes free.
+
+**The arenas' page parity.** `stage1_boss_controller_state_00` writes the
+boss's wall column at a fixed place of the collision map (`$7E:4830`,
+which is in the half of an odd page): the boss's arena must be at an odd
+`bg1_x` page, from the start and from the checkpoint. The climb does not
+move `bg1_x`, so the stage has 15 pages across to the arena (`bg1_x`
+`$0F00`) and 7 from the checkpoint (`$0700`); after the climb `bg1_y` is
+-768, a multiple of 256, so the boss's tilemap blocks land where they do
+on stage 1.
+
+## Slots, triggers and what to keep when editing
+
+- The climb's lists follow `bg1_y`: on a climb, the entries of a list not
+  spawned when the screen moves on to the next page freeze the game
+  (`spawn_stage_objects` flushes only positions 0 and 1 there), so an
+  entry must find a free slot before its page ends.
+- `OBJT_ALIEN_DOG` takes slot `$0280` only: two dogs close together freeze
+  the game at the end of the page (found by the first play of the stage:
+  `frame_counter` stopped at a page boundary).
+- The end of page 9 (`OBJT_SCROLL_MODES_TRIGGER` `0002` at `FE`) starts
+  the climb with BG2 still; position `00` of page 13
+  (`OBJT_SCROLL_MODES_TRIGGER` `0500`) turns right again, BG2 at 1/8.
+
+## Testing
+
+`tests/test_extra_stage.py` plays the stage with the scripted player of
+`tools/c3emu/extra_stage.py` (run and fire, fight the arenas from the left,
+the climb by waypoints; lives, bombs and the barrier kept up as in the
+plays): from its start, from its checkpoint, with two players (2 PLAYERS
+A), and from the start through a game over after the checkpoint and the
+continue. Each run must see the mid-boss, the checkpoint, the climb to
+`bg1_y` -768, the boss in its arena, the stage clear, the card "STAGE 3"
+and the top-down stage 3. The other stages of the build play as the
+original's, one stage later (their goldens).

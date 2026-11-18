@@ -220,9 +220,9 @@ the option; `infinite_continues` replaces the `dec a:continues_left` of
 `game_over_fade_in` by a load, so the count never goes negative.
 
 **Extra stage.** `extra_stage` is not a cheat but a variant of the game
-built the same way: a new stage inserted as stage 2 (for now a copy of
-stage 1), the original stages 2-6 becoming 3-7. See
-[Adding a stage](adding-a-stage.md).
+built the same way: a new stage inserted as stage 2
+([Collapsed Tower](stage2-collapsed-tower.md)), the original stages 2-6
+becoming 3-7. See [Adding a stage](adding-a-stage.md).
 
 ### Leftovers of the developers
 

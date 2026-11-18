@@ -16,6 +16,7 @@
   - [Graphics gallery](gallery.md)
 - [Cheats](cheats.md)
   - [Adding a stage](adding-a-stage.md)
+    - [Stage 2: Collapsed Tower](stage2-collapsed-tower.md)
 - [Contributing: naming](contributing.md)
 
 # The game
