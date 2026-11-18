@@ -103,7 +103,7 @@ player_state_tank:
 	sta	$36,x
 	lda	#$0004
 	sta	a:shake_timer
-	lda	#$0020
+	lda	#SOUND_TANK_CANNON
 	jsl	f:queue_sound
 @recoil:
 	lda	$36,x
@@ -433,7 +433,7 @@ input_tank:
 	dec	a:obj_slots+31*OBJ_SIZE+OBJ_STATE
 @leave_tank:
 	stz	a:tank_moving
-	lda	#$001F
+	lda	#SOUND_TANK_STOP
 	jsl	f:queue_sound
 	stz	a:tank_move_dx
 	stz	a:obj_slots+31*OBJ_SIZE+OBJ_X_VEL
@@ -476,14 +476,14 @@ input_tank:
 	lda	a:tank_moving
 	bne	@apply_recoil
 	inc	a:tank_moving
-	lda	#$001E
+	lda	#SOUND_TANK_ENGINE
 	jsl	f:queue_sound
 	bra	@apply_recoil
 @stopped:
 	lda	a:tank_moving
 	beq	@apply_recoil
 	stz	a:tank_moving
-	lda	#$001F
+	lda	#SOUND_TANK_STOP
 	jsl	f:queue_sound
 @apply_recoil:
 	clc

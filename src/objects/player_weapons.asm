@@ -54,7 +54,7 @@ check_bomb_button:
 	sta	a:PLAYER_BOMB_X,x
 	lda	a:PLAYER_CENTER_Y,x
 	sta	a:PLAYER_BOMB_Y,x
-	lda	#$005A
+	lda	#SOUND_SMART_BOMB
 	jsl	f:queue_sound
 @return:
 	rtl
@@ -3536,12 +3536,12 @@ kill_player:
 .if CHEAT_INVINCIBLE | CHEAT_NO_PIT_DEATH
 	jsr	a:cheat_filter_death	; returns only if the player dies
 .endif
-	lda	#$003F
+	lda	#SOUND_PLAYER_DIE
 	ldy	OBJ_Y,x
 	cpy	#$00F8
 	bcc	@play_sound
 	bmi	@play_sound
-	lda	#$0043
+	lda	#SOUND_PLAYER_FALL
 @play_sound:
 	jsl	f:queue_sound
 	stz	$30,x

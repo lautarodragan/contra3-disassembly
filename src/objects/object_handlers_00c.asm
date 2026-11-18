@@ -97,7 +97,7 @@ stage1_boss_controller_state_02:
 @wait_song:
 	lda	a:song_change_state
 	bne	@return
-	lda	#$0068
+	lda	#SOUND_SONG_BOSS
 	jsl	f:queue_sound
 	lda	#$0058
 	jsl	f:queue_sound
@@ -552,7 +552,7 @@ stage1_boss_attack_fire:
 	sta	$3E,x
 	dec	$38,x
 	bne	@spawn_fire
-	lda	#$0025
+	lda	#SOUND_STAGE1_BOSS_FIRE
 	jsl	f:queue_sound
 	inc	$36,x
 	ldy	difficulty
@@ -1085,7 +1085,7 @@ stage1_boss_fire_falling_shot:
 update_stage1_boss_tracking_shot:
 	lda	OBJ_HP,x
 	bpl	@alive
-	lda	#$000C
+	lda	#SOUND_SHOT_DOWN
 	jsl	f:queue_sound
 	txy
 	lda	#.loword(anim_05C59A)
@@ -1132,7 +1132,7 @@ update_stage1_boss_tracking_shot:
 update_stage1_boss_falling_shot:
 	lda	OBJ_HP,x
 	bpl	@alive
-	lda	#$000C
+	lda	#SOUND_SHOT_DOWN
 	jsl	f:queue_sound
 	stz	$04,x
 	txy
@@ -1284,7 +1284,7 @@ update_stage1_boss:
 	sta	cgram_upload_src
 	lda	#$0060
 	sta	cgram_upload_addr
-	lda	#$000F
+	lda	#SOUND_BOSS_HIT
 	jsl	f:queue_sound
 @check_hp:
 	lda	$06,x
@@ -1319,7 +1319,7 @@ update_stage1_boss_part:
 	lda	OBJ_HP,x
 	bpl	stage1_boss_play_hit_sound
 @explode:
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	lda	#$0040
 	sta	$24,x
@@ -1332,7 +1332,7 @@ update_stage1_boss_part:
 stage1_boss_play_hit_sound:
 	lda	$14,x
 	beq	@return
-	lda	#$000F
+	lda	#SOUND_BOSS_HIT
 	jml	f:queue_sound
 @return:
 	rtl

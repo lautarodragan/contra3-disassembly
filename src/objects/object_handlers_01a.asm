@@ -21,7 +21,7 @@ update_midboss_tank:
 	lda	OBJ_HP,x
 	bpl	@alive
 	pla
-	lda	#$0042
+	lda	#SOUND_VEHICLE_EXPLODE
 	jsl	f:queue_sound
 	stz	$18,x
 	stz	$1A,x
@@ -203,7 +203,7 @@ midboss_tank_state_02:
 	sta	OBJ_X_VEL,x
 	lda	#$0001
 	sta	OBJ_FACING,x
-	lda	#$001E
+	lda	#SOUND_TANK_ENGINE
 	jsl	f:queue_sound
 @return:
 	rtl
@@ -288,7 +288,7 @@ midboss_tank_state_06:
 @stop:
 	lda	#$0100
 	sta	$30,x
-	lda	#$001F
+	lda	#SOUND_TANK_STOP
 	jsl	f:queue_sound
 	stz	$18,x
 	stz	$1A,x
@@ -351,7 +351,7 @@ midboss_tank_state_07:
 	sta	$18,x
 	lda	#$0006
 	sta	$12,x
-	lda	#$001E
+	lda	#SOUND_TANK_ENGINE
 	jsl	f:queue_sound
 	bra	loc_01B4D0
 @wait:
@@ -404,7 +404,7 @@ midboss_tank_throw_shells:
 	lda	a:midboss_tank_shell_x_vels,x
 	sta	a:$001A,y
 	plx
-	lda	#$001A
+	lda	#SOUND_ENEMY_FIRE
 	jsl	f:queue_sound
 @pick_tile:
 	lda	rng_temp
@@ -1502,7 +1502,7 @@ window_jumper_state_02:
 	dex
 	bpl	@loop
 	plx
-	lda	#$001B
+	lda	#SOUND_WINDOW_CRASH
 	jsl	f:queue_sound
 	inc	$12,x
 	rtl
@@ -2205,7 +2205,7 @@ update_popup_turret:
 	lda	OBJ_HP,x
 	bpl	@dispatch
 @destroyed:
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	stz	$3E,x
 	stz	$06,x
@@ -2372,7 +2372,7 @@ update_wall_hatch:
 	inc	$34,x
 	lda	OBJ_HP,x
 	bpl	@dispatch
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	stz	$04,x
 	txy
@@ -2875,7 +2875,7 @@ update_barricade_cannon:
 @alive:
 	lda	$06,x
 	bpl	@animate
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	inc	$12,x
 	lda	#$0008
@@ -3051,7 +3051,7 @@ weapon_capsule_state_01:
 weapon_capsule_state_02:
 	ldy	OBJ_TOUCHED_BY,x
 	beq	@not_touched
-	lda	#$0012
+	lda	#SOUND_WEAPON_PICKUP
 	jsl	f:queue_sound
 	lda	#$8000	; [num]
 	sta	$16,x
@@ -3074,7 +3074,7 @@ weapon_capsule_state_02:
 weapon_capsule_state_03:
 	ldy	OBJ_TOUCHED_BY,x
 	beq	@not_touched
-	lda	#$0012
+	lda	#SOUND_WEAPON_PICKUP
 	jsl	f:queue_sound
 	lda	#$8000	; [num]
 	sta	$16,x
@@ -3094,7 +3094,7 @@ weapon_capsule_state_04:
 	beq	@not_touched
 	lda	#$8000	; [num]
 	sta	$16,x
-	lda	#$0012
+	lda	#SOUND_WEAPON_PICKUP
 	jsl	f:queue_sound
 	lda	a:$1D8C,y
 	inc	a
@@ -3293,7 +3293,7 @@ wrecked_car_solid:
 wrecked_car_state_01:
 	lda	OBJ_HP,x
 	bpl	wrecked_car_solid
-	lda	#$0042
+	lda	#SOUND_VEHICLE_EXPLODE
 	jsl	f:queue_sound
 	inc	$12,x
 	lda	#$0003
@@ -3485,7 +3485,7 @@ update_stage3_breakable_wall:
 	jsl	f:solid_object_vs_players
 	lda	$06,x
 	bpl	@flash
-	lda	#$0041
+	lda	#SOUND_BIG_EXPLOSION
 	jsl	f:queue_sound
 	lda	#$0005
 	sta	a:shake_timer
@@ -3602,7 +3602,7 @@ grenade_soldier_state_03:
 	sta	OBJ_TIMER,x
 	lda	#$0004
 	sta	OBJ_STATE,x
-	lda	#$0016
+	lda	#SOUND_THROW
 	jml	f:queue_sound
 
 grenade_soldier_state_05:
@@ -3748,7 +3748,7 @@ update_grenade:
 	sec
 	sbc	#$0010
 	lda	$0E,x
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	jml	f:start_grenade_blast
 @fall:

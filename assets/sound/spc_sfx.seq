@@ -5,7 +5,7 @@
 # change size: the labels follow, up to $3000 (the song of the set).
 at $1B37
 
-# sound $01
+# sound $01, SOUND_CURSOR: a menu cursor moves (title menu, OPTION, CONTINUE, stage select, top-down start positions)
 sound_01:
 	song sound_01_ch0
 sound_01_ch0:
@@ -22,7 +22,7 @@ sound_01_ch0:
 	slide $00 $05 $40
 	end
 
-# sound $02
+# sound $02, SOUND_SELECT: a menu choice is confirmed (title menu, OPTION, CONTINUE, top-down start positions)
 sound_02:
 	song sound_02_ch0
 sound_02_ch0:
@@ -45,7 +45,7 @@ sound_02_ch0:
 	repeat
 	end
 
-# sound $03
+# sound $03, SOUND_BONUS_COUNT: stage clear screen: each step of the bonus count (stage_clear_count_bonus)
 sound_03:
 	song sound_03_ch0
 sound_03_ch0:
@@ -69,7 +69,7 @@ sound_03_ch0:
 	repeat
 	end
 
-# sound $04: the default gun's shot (spawn_shot_default)
+# sound $04, SOUND_SHOT_DEFAULT: the default gun fires (spawn_shot_default, fire_td_default)
 sound_04:
 	song sound_04_ch0
 sound_04_ch0:
@@ -89,7 +89,7 @@ sound_04_ch0:
 	loop1 $03 $CE $00
 	end
 
-# sound $05: the laser (spawn_shot_laser_in_slots)
+# sound $05, SOUND_SHOT_LASER: the laser (spawn_shot_laser_in_slots, fire_td_laser)
 sound_05:
 	song sound_05_ch0
 sound_05_ch0:
@@ -109,7 +109,7 @@ sound_05_ch0:
 	loop1 $78 $FF $F6
 	end
 
-# sound $07: the crush gun (spawn_shot_crush_in_slot)
+# sound $07, SOUND_SHOT_CRUSH: the crush gun (spawn_shot_crush_in_slot, fire_td_crush)
 sound_07:
 	song sound_07_ch0
 sound_07_ch0:
@@ -126,7 +126,7 @@ sound_07_ch0:
 	loop1 $64 $FF $EC
 	end
 
-# sound $08: the homing gun (spawn_shot_homing_in_slot)
+# sound $08, SOUND_SHOT_HOMING: the homing gun (spawn_shot_homing_in_slot, fire_td_homing)
 sound_08:
 	song sound_08_ch0
 sound_08_ch0:
@@ -158,7 +158,7 @@ sound_06_ch0:
 	loop1 $14 $00 $00
 	end
 
-# sound $09: the spread gun (spawn_shots_spread_in_slots)
+# sound $09, SOUND_SHOT_SPREAD: the spread gun (spawn_shots_spread_in_slots, fire_td_spread)
 sound_09:
 	song sound_09_ch0
 sound_09_ch0:
@@ -186,7 +186,7 @@ sound_09_ch0:
 	loop2 $03 $EA $00
 	end
 
-# sound $0A: the flame thrower (spawn_shots_flame)
+# sound $0A, SOUND_SHOT_FLAME: the flame thrower (spawn_shots_flame, td_play_flame_sound)
 sound_0A:
 	song sound_0A_ch0
 sound_0A_ch0:
@@ -200,7 +200,7 @@ sound_0A_ch0:
 	note $16 $14 $64 $5A
 	end
 
-# sound $0D
+# sound $0D, SOUND_HANGING_SOLDIER_DIE: stage 4: a soldier hanging from the airship is killed (start_dying_soldier_sound_0D)
 sound_0D:
 	song sound_0D_ch0
 sound_0D_ch0:
@@ -214,7 +214,7 @@ sound_0D_ch0:
 	note $2B $3C $0A $7F
 	end
 
-# sound $0B
+# sound $0B, SOUND_ENEMY_DIE: a soldier, alien dog, floor bug or top-down runner, gunner or crawler is killed
 sound_0B:
 	song sound_0B_ch0
 sound_0B_ch0:
@@ -231,7 +231,7 @@ sound_0B_ch0:
 	slide $00 $0A $1D
 	end
 
-# sound $0F
+# sound $0F, SOUND_BOSS_HIT: a shot hits the stage 1 boss (or a part) or the cave beast, while it flashes
 sound_0F:
 	song sound_0F_ch0
 sound_0F_ch0:
@@ -256,7 +256,7 @@ sound_0F_ch0:
 	slide $00 $0B $1C
 	end
 
-# sound $10
+# sound $10, SOUND_CLANG: a shot hits an armoured target (OBJF_CLANG, update_shots); a top-down target flashes when hit
 sound_10:
 	song sound_10_ch0
 sound_10_ch0:
@@ -279,7 +279,7 @@ sound_10_ch0:
 	note $46 . . $10
 	end
 
-# sound $12
+# sound $12, SOUND_WEAPON_PICKUP: a player touches a weapon item (weapon_capsule states 2-4, td_p1_vs_items, td_p2_vs_items)
 sound_12:
 	song sound_12_ch0
 sound_12_ch0:
@@ -301,7 +301,7 @@ sound_12_ch0:
 	loop1 $06 $F3 $7F
 	end
 
-# sound $1A
+# sound $1A, SOUND_ENEMY_FIRE: an enemy fires a shell or fireball (mid-boss tank, hover-bike rider, stage 4 boss pods, stage 3 robot debris)
 sound_1A:
 	song sound_1A_ch0
 sound_1A_ch0:
@@ -320,8 +320,8 @@ sound_1A_ch0:
 	loop1 $03 $CE $00
 	end
 
-# sound $31
-# sound $5F
+# sound $31, SOUND_RIDEABLE_MISSILE: stage 4: the missiles the players ride, every 64 frames (rideable_missile_state_01)
+# sound $5F, SOUND_RIDEABLE_MISSILE_ENDING: the ending's missile under the helicopter: $31's sequence on music channel 4
 sound_31:
 	song sound_31_ch0
 sound_31_ch0:
@@ -338,7 +338,7 @@ sound_31_ch0:
 	loop1 $32 $00 $00
 	end
 
-# sound $3F
+# sound $3F, SOUND_PLAYER_DIE: a player is killed (kill_player, td_player_state_dying)
 sound_3F:
 	song sound_3F_ch0
 sound_3F_ch0:
@@ -353,7 +353,7 @@ sound_3F_ch0:
 	slide $05 $FF $0E
 	end
 
-# sound $3E: an extra life (add_score)
+# sound $3E, SOUND_EXTRA_LIFE: an extra life from the score (add_score)
 sound_3E:
 	song sound_3E_ch0
 sound_3E_ch0:
@@ -388,7 +388,7 @@ sound_3E_ch0:
 	repeat
 	end
 
-# sound $43
+# sound $43, SOUND_PLAYER_FALL: a player dies below the screen (kill_player) or falls in the top-down view (td_player_state_falling)
 sound_43:
 	song sound_43_ch0 sound_43_ch1
 sound_43_ch0:
@@ -430,7 +430,7 @@ sound_43_ch1:
 	slide $46 $1E $26
 	end
 
-# sound $1B
+# sound $1B, SOUND_WINDOW_CRASH: stage 1: a soldier crashes out through a window (window_jumper_state_02)
 sound_1B:
 	song sound_1B_ch0
 sound_1B_ch0:
@@ -441,7 +441,7 @@ sound_1B_ch0:
 	note $2B $46 $64 $7F
 	end
 
-# sound $1E
+# sound $1E, SOUND_TANK_ENGINE: stage 1 tank driving (input_tank; also the mid-boss tank moving): loops until $1F replaces it
 sound_1E:
 	song sound_1E_ch0
 sound_1E_ch0:
@@ -458,7 +458,7 @@ sound_1E_ch0:
 	loop1 $00 $00 $00
 	end
 
-# sound $1F
+# sound $1F, SOUND_TANK_STOP: the tank stops or the player leaves it (input_tank, midboss_tank_state_06); takes $1E's channel
 sound_1F:
 	song sound_1F_ch0
 sound_1F_ch0:
@@ -475,7 +475,7 @@ sound_1F_ch0:
 	loop1 $05 $EE $C4
 	end
 
-# sound $20
+# sound $20, SOUND_TANK_CANNON: the player's tank fires its cannon (player_state_tank: recoil and screen shake)
 sound_20:
 	song sound_20_ch0
 sound_20_ch0:
@@ -487,7 +487,7 @@ sound_20_ch0:
 	note $29 $9B $64 $7F
 	end
 
-# sound $1D
+# sound $1D, SOUND_SNIPER_KILLED: stage 1: the window sniper's bunker sees the sniper dead (sniper_bunker_state_01)
 # Its header has two sequences, but sound_table gives it one channel: the
 # driver never plays sound_1D_ch1 (a lower, looping part).
 sound_1D:
@@ -572,11 +572,11 @@ sound_56_ch1:
 	loop1 $04 $D8 $00
 	end
 
-# sound $5A
+# sound $5A, SOUND_SMART_BOMB: a player's bomb (check_bomb_button, td_check_smart_bomb)
 sound_5A:
 	song sound_5A_ch0 sound_5A_ch1
 
-# sound $5B
+# sound $5B, SOUND_BOMB_FLASH: the game sets off a bomb blast itself, setting the players' bomb fields (opening_beam_start_flash, stage4_controller_state_1C)
 sound_5B:
 	song sound_5B_ch0 sound_5B_ch1
 sound_5A_ch0:
@@ -643,7 +643,7 @@ sound_5B_ch1:
 	note $16 $2F . $46
 	end
 
-# sound $30
+# sound $30, SOUND_EXPLOSION: an explosion (grenades, turrets, mines, bombs, orbs, top-down targets...; queue_sound_30_throttled)
 sound_30:
 	song sound_30_ch0
 sound_30_ch0:
@@ -663,7 +663,7 @@ sound_30_ch0:
 	slide $00 $14 $26
 	end
 
-# sound $41
+# sound $41, SOUND_BIG_EXPLOSION: a boss part or a big target explodes (queue_sound_41_throttled during boss deaths)
 sound_41:
 	song sound_41_ch0 sound_41_ch1
 sound_41_ch0:
@@ -707,7 +707,7 @@ sound_41_ch1:
 	loop1 $04 $00 $00
 	end
 
-# sound $6E
+# sound $6E, SOUND_BOSS_EXPLOSIONS: a boss's death explosions, again and again (queue_sound_6E_throttled, td_play_rumble_sound)
 sound_6E:
 	song sound_6E_ch0 sound_6E_ch1 sound_6E_ch2 sound_6E_ch3 sound_6E_ch4 sound_6E_ch5
 sound_6E_ch0:
@@ -814,7 +814,7 @@ L21E1:
 	note $21 . . $7F
 	end
 
-# sound $42
+# sound $42, SOUND_VEHICLE_EXPLODE: stage 1: the wrecked car or the mid-boss tank is destroyed
 sound_42:
 	song sound_42_ch0 sound_42_ch1
 sound_42_ch0:
@@ -980,7 +980,7 @@ sound_44_ch1:
 	note $1C . . $7F
 	end
 
-# sound $21
+# sound $21, SOUND_FLAME_GEYSER: stage 1: a flame geyser fires (update_flame_geyser)
 sound_21:
 	song sound_21_ch0
 sound_21_ch0:
@@ -995,7 +995,7 @@ sound_21_ch0:
 	slide $00 $0A $21
 	end
 
-# sound $22
+# sound $22, SOUND_FIRE_JET: stage 1: a fire jet spews flames (update_fire_jet)
 sound_22:
 	song sound_22_ch0
 sound_22_ch0:
@@ -1013,7 +1013,7 @@ sound_22_ch0:
 	slide $32 $28 $07
 	end
 
-# sound $23
+# sound $23, SOUND_FIREBALL_JUMP: stage 1: a hopping fireball's big jump (update_hopping_fireball)
 sound_23:
 	song sound_23_ch0
 sound_23_ch0:
@@ -1031,7 +1031,7 @@ sound_23_ch0:
 	slide $00 $10 $07
 	end
 
-# sound $25
+# sound $25, SOUND_STAGE1_BOSS_FIRE: stage 1 boss: its fire attack (stage1_boss_attack_fire)
 sound_25:
 	song sound_25_ch0
 sound_25_ch0:
@@ -1049,7 +1049,7 @@ sound_25_ch0:
 	slide $1E $28 $07
 	end
 
-# sound $24
+# sound $24, SOUND_FIRE_ERUPTION: stage 1: the fire eruption (update_fire_eruption)
 sound_24:
 	song sound_24_ch0
 sound_24_ch0:
@@ -1315,7 +1315,7 @@ L2632:
 	envelope $9D $DE $00
 	end
 
-# sound $2E
+# sound $2E, SOUND_STAGE2_BOSS_TAKE_OFF: the stage 2 boss takes off (stage2_boss_state_08)
 sound_2E:
 	song sound_2E_ch0
 sound_2E_ch0:
@@ -1328,7 +1328,7 @@ sound_2E_ch0:
 	slide $00 $FF $48
 	end
 
-# sound $2F
+# sound $2F, SOUND_STAGE2_BOSS_DROP: the stage 2 boss falls back or drops onto a player (stage2_boss_state_01, _0A)
 sound_2F:
 	song sound_2F_ch0
 sound_2F_ch0:
@@ -1342,7 +1342,7 @@ sound_2F_ch0:
 	slide $00 $96 $0C
 	end
 
-# sound $0C
+# sound $0C, SOUND_SHOT_DOWN: an enemy projectile or small flier is shot down (stage 1 boss shots, winged bugs, larvae)
 sound_0C:
 	song sound_0C_ch0
 sound_0C_ch0:
@@ -1357,7 +1357,7 @@ sound_0C_ch0:
 	loop1 $03 $C9 $00
 	end
 
-# sound $18
+# sound $18, SOUND_SPIKE_EXTEND: stage 3: the spiked climber thrusts its spike up (stage3_spiked_climber_move_spike)
 sound_18:
 	song sound_18_ch0
 sound_18_ch0:
@@ -1375,7 +1375,7 @@ sound_18_ch0:
 	loop1 $00 $00 $00
 	end
 
-# sound $19
+# sound $19, SOUND_SPIKE_RETRACT: the spike retracts (also when the climber's core dies); takes $18's channel
 sound_19:
 	song sound_19_ch0
 sound_19_ch0:
@@ -1500,7 +1500,7 @@ sound_4B_ch1:
 	note $33 $5A $63 $7F
 	end
 
-# sound $32
+# sound $32, SOUND_STAGE3_ROBOT_LAND: stage 3 boss room: the second robot lands (stage3_robot_update_jump)
 sound_32:
 	song sound_32_ch0
 sound_32_ch0:
@@ -1512,7 +1512,7 @@ sound_32_ch0:
 	note $30 $28 . $28
 	end
 
-# sound $33
+# sound $33, SOUND_BUMP: the second robot bumps (stage3_robot_state_05, _update_jump); the helicopter rope touches the missile
 sound_33:
 	song sound_33_ch0
 sound_33_ch0:
@@ -1524,7 +1524,7 @@ sound_33_ch0:
 	note $30 $28 . $32
 	end
 
-# sound $34
+# sound $34, SOUND_STAGE3_ROBOT_JUMP: the second robot jumps (stage3_robot_state_08)
 sound_34:
 	song sound_34_ch0
 sound_34_ch0:
@@ -1683,7 +1683,7 @@ L290C:
 	envelope $9F $DE $00
 	end
 
-# sound $36
+# sound $36, SOUND_COUNTDOWN_BOMB: stage 3: a numbered countdown bomb (update_countdown_bomb)
 sound_36:
 	song sound_36_ch0
 sound_36_ch0:
@@ -1697,7 +1697,7 @@ sound_36_ch0:
 	note $43 . . $0C
 	end
 
-# sound $4F
+# sound $4F, SOUND_STAGE4_INTRO: stage 4 start, after SOUND_CMD_STOP (layout_init_stage4); the stage's song follows ($63)
 sound_4F:
 	song sound_4F_ch0 sound_4F_ch1
 sound_4F_ch0:
@@ -1732,7 +1732,7 @@ sound_4F_ch1:
 	slide $14 $E6 $3C
 	end
 
-# sound $13
+# sound $13, SOUND_HOVERBIKE_RIDER_DIE: stage 4: a hover-bike rider is killed (update_hoverbike_rider)
 sound_13:
 	song sound_13_ch0
 sound_13_ch0:
@@ -1831,7 +1831,7 @@ sound_37_ch0:
 	slide $00 $14 $3B
 	end
 
-# sound $38
+# sound $38, SOUND_HARD_LANDING: stage 4: the snake robot lands fast (snake_robot_state_03; $39 when slow)
 sound_38:
 	song sound_38_ch0
 sound_38_ch0:
@@ -1881,7 +1881,7 @@ sound_14_ch0:
 	loop1 $05 $00 $F6
 	end
 
-# sound $16
+# sound $16, SOUND_THROW: a grenade or bomb is thrown (grenade soldier, searchlight craft, hover-bike rider)
 sound_16:
 	song sound_16_ch0
 sound_16_ch0:
@@ -1907,7 +1907,7 @@ sound_16_ch0:
 	loop1 $50 $00 $F9
 	end
 
-# sound $17
+# sound $17, SOUND_MISSILE_EXPLODE: a homing missile or a stage 4 boss shot explodes (homing_missile_fly, update_stage4_boss_shot)
 sound_17:
 	song sound_17_ch0
 sound_17_ch0:
@@ -1926,7 +1926,7 @@ sound_17_ch0:
 	slide $00 $09 $4D
 	end
 
-# sound $3A
+# sound $3A, SOUND_STAGE5_BOSS_SPIT: the stage 5 boss spits (stage5_boss_spit_step_0)
 sound_3A:
 	song sound_3A_ch0
 sound_3A_ch0:
@@ -1947,7 +1947,7 @@ sound_3A_ch0:
 	slide $1E $28 $07
 	end
 
-# sound $0E
+# sound $0E, SOUND_ALIEN_SOLDIER_DIE: stage 6: an alien soldier or a heart boss crawler is killed (start_dying_soldier_sound_0E, heart_boss_crawler_die)
 sound_0E:
 	song sound_0E_ch0
 sound_0E_ch0:
@@ -1960,7 +1960,7 @@ sound_0E_ch0:
 	loop1 $02 $9D $00
 	end
 
-# sound $51
+# sound $51, SOUND_WALL_WORM_DIE: stage 6: the wall worm dies (wall_worm_die)
 sound_51:
 	song sound_51_ch0 sound_51_ch1
 sound_51_ch0:
@@ -1979,7 +1979,7 @@ sound_51_ch1:
 	loop1 $08 $EF $00
 	end
 
-# sound $3B
+# sound $3B, SOUND_HEART_BOSS_BUG_DIE: stage 6: a heart boss bug is killed (heart_boss_bug_die)
 sound_3B:
 	song sound_3B_ch0
 sound_3B_ch0:
@@ -1993,7 +1993,7 @@ sound_3B_ch0:
 	loop1 $02 $9D $00
 	end
 
-# sound $3C
+# sound $3C, SOUND_BOSS_HIT_2: a shot hits the heart boss or the brain boss (boss_hit_sound_timer)
 sound_3C:
 	song sound_3C_ch0
 sound_3C_ch0:
@@ -2007,7 +2007,7 @@ sound_3C_ch0:
 	slide $00 $14 $18
 	end
 
-# sound $52
+# sound $52, SOUND_HEART_BOSS_DIE: stage 6: the heart boss dies (heart_boss_die)
 sound_52:
 	song sound_52_ch0 sound_52_ch1
 sound_52_ch0:

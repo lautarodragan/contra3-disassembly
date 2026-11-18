@@ -289,7 +289,7 @@ text_058490:
 	.byte	$5A, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $FF
 pause_sounds:
 	; CDL: read by run_stage
-	.byte	$7D, $00, $7C, $00
+	.word	SOUND_CMD_UNPAUSE, SOUND_CMD_PAUSE
 demo_stages:
 	; CDL: read by demo_init
 	.byte	$01, $00, $02, $00
@@ -636,7 +636,7 @@ text_hard:
 	.byte	$4C, $3F, $00, $00, $00, $00, $FF
 sound_mode_commands:
 	; CDL: read by draw_text; partly not accessed
-	.byte	$7F, $00, $7E, $00
+	.word	SOUND_CMD_STEREO, SOUND_CMD_MONO
 ; STEREO / MONAURAL by option_sound (options_draw_sound).
 ptrs_sound_mode_texts:
 	; CDL: read by draw_text, options_apply_sound_mode; partly not accessed
@@ -3815,7 +3815,7 @@ hdma_table_05CD63:
 	.byte	$18, $01, $00, $01, $18, $E8, $00
 topdown_stage_songs:
 	; CDL: read by intro_play_music
-	.byte	$63, $00, $66, $00
+	.word	SOUND_SONG_STAGE2_4, SOUND_SONG_STAGE5
 ; BG3VOFS (low byte; the high byte is the next byte) for the status bar, by
 ; mode: 0 for one view (1P, mode B), 2 for the split screen of mode A
 ; (set_status_bar_scroll).
@@ -4667,8 +4667,9 @@ td_turn_sound_thresholds:
 td_turn_sounds:
 	; LAYOUT: read on from td_turn_sound_thresholds (cmp a:td_turn_sound_thresholds,y)
 	; CDL: read by td_play_turn_sound; partly not accessed
-	.byte	$40, $00, $26, $00, $27, $00, $28, $00, $29, $00, $2A, $00, $2B, $00, $2C, $00
-	.byte	$2D, $00
+	.byte	$40, $00
+	.word	SOUND_TURN_1, SOUND_TURN_2, SOUND_TURN_3, SOUND_TURN_4
+	.word	SOUND_TURN_5, SOUND_TURN_6, SOUND_TURN_7, SOUND_TURN_8
 ; Palette bits ORed into the attributes of an enemy bullet by its timer
 ; (update_td_enemy_bullet: it changes colour).
 td_enemy_bullet_palettes:

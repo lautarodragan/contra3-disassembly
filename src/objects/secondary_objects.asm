@@ -164,7 +164,7 @@ update_shots:
 	lda	OBJ_FLAGS,x
 	bit	#OBJF_CLANG
 	beq	@set_hit
-	lda	#$0010
+	lda	#SOUND_CLANG
 	jsl	f:queue_sound
 @set_hit:
 	lda	#$0001

@@ -269,7 +269,7 @@ alien_dog_state_04:
 	rtl
 ; Killed: sound $0B, thrown back (state 5), then an explosion.
 kill_alien_dog:
-	lda	#$000B
+	lda	#SOUND_ENEMY_DIE
 	jsl	f:queue_sound
 	stz	$06,x
 	lda	#$0007
@@ -362,11 +362,11 @@ update_dying_soldier:
 ; dying_soldier_sprites by OBJ_FACING.
 start_dying_soldier_sound_0E:
 	sta	$00,x
-	lda	#$000E
+	lda	#SOUND_ALIEN_SOLDIER_DIE
 	bra	start_dying_soldier_with_sound
 start_dying_soldier_sound_0D:
 	sta	$00,x
-	lda	#$000D
+	lda	#SOUND_HANGING_SOLDIER_DIE
 start_dying_soldier_with_sound:
 	jsl	f:queue_sound
 	bra	start_dying_soldier_common
@@ -378,7 +378,7 @@ start_dying_soldier:
 	lda	a:dying_soldier_sprites,y
 	sta	$00,x
 start_dying_soldier_sound_0B:
-	lda	#$000B
+	lda	#SOUND_ENEMY_DIE
 	jsl	f:queue_sound
 start_dying_soldier_common:
 	ldy	$04,x
@@ -608,7 +608,7 @@ update_fire_jet:
 	sta	$32,x
 	lda	a:fire_jet_delays,y
 	sta	$24,x
-	lda	#$0022
+	lda	#SOUND_FIRE_JET
 	jsl	f:queue_sound
 @spawn_fire:
 	lda	stage_frame_mod4
@@ -665,7 +665,7 @@ update_hopping_fireball:
 	bne	@set_y_vel
 	lda	$3A,x
 	sta	$24,x
-	lda	#$0023
+	lda	#SOUND_FIREBALL_JUMP
 	jsl	f:queue_sound
 	lda	#$FFFA	; [num]
 @set_y_vel:
@@ -922,7 +922,7 @@ update_fire_eruption:
 	bne	@set_y_vel
 	bit	#$00FF
 	bne	@shake
-	lda	#$0024
+	lda	#SOUND_FIRE_ERUPTION
 	jsl	f:queue_sound
 @shake:
 	lda	#$0004
@@ -1041,7 +1041,7 @@ update_flame_geyser:
 	sta	$24,x
 	lda	#$0001
 	sta	$32,x
-	lda	#$0021
+	lda	#SOUND_FLAME_GEYSER
 	jsl	f:queue_sound
 @spawn_fire:
 	lda	stage_frame_mod4
@@ -1123,7 +1123,7 @@ sniper_bunker_state_01:
 	bne	@return
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_HP
 	bpl	@spawn_soldiers
-	lda	#$001D
+	lda	#SOUND_SNIPER_KILLED
 	jsl	f:queue_sound
 	inc	$12,x
 	lda	#.loword(vram_blocks_05C848)
@@ -1918,7 +1918,7 @@ jumping_soldier_spawner_state_02:
 update_rolling_mine:
 	lda	OBJ_HP,x
 	bpl	@dispatch
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	txy
 	lda	#$FFFE	; [num]
@@ -2478,7 +2478,7 @@ stage3_searchlight_craft_state_0D:
 	lda	stage_frame_counter
 	and	#$0010
 	bne	@spawn_grenade
-	lda	#$0016
+	lda	#SOUND_THROW
 	jsl	f:queue_sound
 @spawn_grenade:
 	lda	#OBJT_GRENADE
@@ -2947,7 +2947,7 @@ stage3_searchlight_craft_state_18:
 	lda	#$FFFE	; [num]
 	sta	$1E,x
 	inc	$12,x
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	rtl
 
@@ -3008,7 +3008,7 @@ update_stage3_winged_bug:
 	lda	OBJ_HP,x
 	bpl	@dispatch
 @die:
-	lda	#$000C
+	lda	#SOUND_SHOT_DOWN
 	jsl	f:queue_sound
 	ldy	#$0200
 	jsr	a:stage3_winged_bug_release_player
@@ -3901,7 +3901,7 @@ update_stage3_spiked_climber_core:
 	lda	#$0030
 	sta	a:obj_slots+6*OBJ_SIZE+OBJ_FLAGS
 	sta	a:obj_slots+5*OBJ_SIZE+OBJ_FLAGS
-	lda	#$0019
+	lda	#SOUND_SPIKE_RETRACT
 	jsl	f:queue_sound
 @flash:
 	ldy	#$3E00
@@ -4006,7 +4006,7 @@ stage3_spiked_climber_move_spike:
 	and	#$03FF
 	cmp	#$0100
 	bne	@retract_step
-	lda	#$0019
+	lda	#SOUND_SPIKE_RETRACT
 	jsl	f:queue_sound
 @retract_step:
 	lda	a:boss_work_0
@@ -4022,7 +4022,7 @@ stage3_spiked_climber_move_spike:
 @extend:
 	and	#$00FF
 	bne	@extend_step
-	lda	#$0018
+	lda	#SOUND_SPIKE_EXTEND
 	jsl	f:queue_sound
 @extend_step:
 	lda	a:boss_work_0
@@ -4963,7 +4963,7 @@ spiked_climber_kill_players_outside:
 update_hoverbike_rider:
 	lda	OBJ_HP,x
 	bpl	@timer
-	lda	#$0013
+	lda	#SOUND_HOVERBIKE_RIDER_DIE
 	jsl	f:queue_sound
 	lda	#$0004
 	sta	$12,x
@@ -5176,7 +5176,7 @@ hoverbike_rider_fire:
 	sta	a:$000A,y
 	lda	$0E,x
 	sta	a:$000E,y
-	lda	#$001A
+	lda	#SOUND_ENEMY_FIRE
 	jsl	f:queue_sound
 @return:
 	rts
@@ -5204,7 +5204,7 @@ hoverbike_rider_drop_bomb:
 	sta	a:$000E,y
 	lda	#.loword(anim_05CD0B)
 	sta	$20,x
-	lda	#$0016
+	lda	#SOUND_THROW
 	jsl	f:queue_sound
 @return:
 	rts
@@ -5235,7 +5235,7 @@ update_hoverbike_rider_bomb:
 	lda	$0E,x
 	cmp	#$00AC
 	bcc	@fall
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	inc	$12,x
 	stz	$1C,x

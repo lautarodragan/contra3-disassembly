@@ -224,7 +224,7 @@ spawn_shot_default:
 	tyx
 	lda	#$0001
 	sta	PLAYER_SHOT_POSE,x
-	lda	#$0004
+	lda	#SOUND_SHOT_DEFAULT
 	jsl	f:queue_sound
 	rtl
 
@@ -338,7 +338,7 @@ spawn_shots_spread_in_slots:
 	tyx
 	lda	#$0001
 	sta	PLAYER_SHOT_POSE,x
-	lda	#$0009
+	lda	#SOUND_SHOT_SPREAD
 	jsl	f:queue_sound
 	rtl
 
@@ -437,7 +437,7 @@ spawn_shot_crush_in_slot:
 	tyx
 	lda	#$0001
 	sta	PLAYER_SHOT_POSE,x
-	lda	#$0007
+	lda	#SOUND_SHOT_CRUSH
 	jsl	f:queue_sound
 	rtl
 
@@ -523,7 +523,7 @@ spawn_shot_homing_in_slot:
 	tyx
 	lda	#$0001
 	sta	PLAYER_SHOT_POSE,x
-	lda	#$0008
+	lda	#SOUND_SHOT_HOMING
 	jsl	f:queue_sound
 	rtl
 
@@ -620,7 +620,7 @@ spawn_shots_flame:
 	lda	stage_frame_counter
 	bit	#$000F
 	bne	@shift_angles
-	lda	#$000A
+	lda	#SOUND_SHOT_FLAME
 	jsl	f:queue_sound
 @shift_angles:
 	lda	$D4,x
@@ -1063,6 +1063,6 @@ spawn_shot_laser_in_slots:
 	tyx
 	lda	#$0001
 	sta	PLAYER_SHOT_POSE,x
-	lda	#$0005
+	lda	#SOUND_SHOT_LASER
 	jsl	f:queue_sound
 	rtl

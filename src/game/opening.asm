@@ -44,7 +44,7 @@ tbl_opening_states:
 	.addr	opening_cinematic_done
 
 opening_cinematic_init:
-	lda	#$0061
+	lda	#SOUND_SONG_OPENING
 	jsl	f:queue_sound
 	ldx	#.loword(load_list_05A84B)
 	jsl	f:load_data_list
@@ -405,7 +405,7 @@ opening_beam_start_flash:
 	sta	a:player1_obj+PLAYER_BOMB_X
 	sta	a:player2_obj+PLAYER_BOMB_Y
 	sta	a:player2_obj+PLAYER_BOMB_X
-	lda	#$005B
+	lda	#SOUND_BOMB_FLASH
 	jsl	f:queue_sound
 	inc	a:opening_step
 	jsr	a:opening_update_parallax

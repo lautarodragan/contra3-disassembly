@@ -69,7 +69,7 @@ stage_clear_fade_in:
 	rtl
 @faded_in:
 	plp
-	lda	#$006A
+	lda	#SOUND_SONG_STAGE_CLEAR
 	jsl	f:queue_sound
 	inc	a:mode_step
 	rtl
@@ -121,7 +121,7 @@ stage_clear_count_bonus:
 	lda	a:stage_bonus
 	bit	#$0100
 	bne	@check_end
-	lda	#$0003
+	lda	#SOUND_BONUS_COUNT
 	jsl	f:queue_sound
 @check_end:
 	lda	a:stage_bonus
@@ -254,7 +254,7 @@ add_score:
 	ora	$38,x
 	bne	@add_points
 @extra_life:
-	lda	#$003E
+	lda	#SOUND_EXTRA_LIFE
 	jsl	f:queue_sound
 	lda	$0A,x
 	inc	a
@@ -503,7 +503,7 @@ options_input:
 	bne	@exit
 	rtl
 @exit:
-	lda	#$0002
+	lda	#SOUND_SELECT
 	jsl	f:queue_sound
 	inc	a:mode_step
 	rtl
@@ -532,7 +532,7 @@ options_move_cursor:
 	bit	#JOY_UP|JOY_DOWN
 	beq	@return
 	pha
-	lda	#$0001
+	lda	#SOUND_CURSOR
 	jsl	f:queue_sound
 	pla
 	bit	#JOY_UP
@@ -626,7 +626,7 @@ options_change_lives:
 	beq	@return
 	; (not executed in the CDL traces)
 	pha
-	lda	#$0001
+	lda	#SOUND_CURSOR
 	jsl	f:queue_sound
 	pla
 	bit	#JOY_RIGHT
@@ -708,7 +708,7 @@ options_change_level:
 	bit	#JOY_LEFT|JOY_RIGHT
 	beq	@return
 	pha
-	lda	#$0001
+	lda	#SOUND_CURSOR
 	jsl	f:queue_sound
 	pla
 	bit	#JOY_RIGHT
@@ -746,7 +746,7 @@ options_change_sound:
 	beq	@return
 	; (not executed in the CDL traces)
 	pha
-	lda	#$0001
+	lda	#SOUND_CURSOR
 	jsl	f:queue_sound
 	pla
 	bit	#JOY_RIGHT

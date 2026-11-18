@@ -1481,7 +1481,7 @@ ending_sequence_state_16:
 	jsl	f:start_palette_task_at
 	plx
 	stz	a:boss_work_4
-	lda	#$0081
+	lda	#SOUND_CMD_FADE_OUT
 	jsl	f:queue_sound
 @return:
 	rtl
@@ -1499,7 +1499,7 @@ ending_sequence_state_17:
 	jsl	f:start_palette_task
 	plx
 	inc	OBJ_STATE,x
-	lda	#$0081
+	lda	#SOUND_CMD_FADE_OUT
 	jsl	f:queue_sound
 	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL_SUB
 	stz	a:obj_slots+2*OBJ_SIZE+OBJ_Y_VEL
@@ -1534,7 +1534,7 @@ ending_sequence_state_18:
 	phx
 	ldx	#.loword(song_set_ending)
 	jsl	f:load_song_set
-	lda	#$0071
+	lda	#SOUND_SONG_ENDING
 	jsl	f:queue_sound
 	ldy	#.loword(palette_task_05FEC7)
 	jsl	f:start_palette_task
@@ -1918,7 +1918,7 @@ ending_sequence_state_29:
 	plx
 	lda	#$0100
 	sta	a:stage_exit_request
-	lda	#$0084
+	lda	#SOUND_CMD_STOP
 	jsl	f:queue_sound
 	inc	OBJ_STATE,x
 
@@ -1989,7 +1989,7 @@ update_brain_boss:
 	dec	a:boss_hit_sound_timer
 	bra	@check_hp
 @hit_sound:
-	lda	#$003C
+	lda	#SOUND_BOSS_HIT_2
 	jsl	f:queue_sound
 	lda	#$0004
 	sta	a:boss_hit_sound_timer
@@ -3018,7 +3018,7 @@ brain_orb_burst:
 	lda	#$0004
 	sta	a:shake_timer
 	jsr	a:brain_orb_set_velocity
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	lda	#.loword(anim_05C4CE)
 	txy
@@ -3220,7 +3220,7 @@ update_brain_boss_spiked_ball:
 	lda	OBJ_Y,x
 	cmp	#$00B4
 	bcc	@fall
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	lda	#$FFFC	; [num]
 	sta	OBJ_Y_VEL,x
@@ -3269,7 +3269,7 @@ update_brain_boss_encircling_orb:
 	bpl	@place
 @burst:
 	jsr	a:brain_orb_set_velocity
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	lda	#.loword(anim_05C4CE)
 	txy
@@ -3302,7 +3302,7 @@ update_brain_boss_eyeball:
 	lda	a:boss_work_7
 	bpl	@alive
 @destroy:
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	txy
 	lda	#.loword(anim_05C516)
@@ -3511,7 +3511,7 @@ update_brain_boss_orb:
 	lda	a:clear_enemies_timer
 	beq	@alive
 @destroy:
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	txy
 	lda	#.loword(anim_05C4CE)

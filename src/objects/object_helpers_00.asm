@@ -7,11 +7,11 @@
 ; up to the header.
 
 queue_sound_6E_throttled:
-	lda	#$006E
+	lda	#SOUND_BOSS_EXPLOSIONS
 	bra	queue_sound_throttled
 
 queue_sound_41_throttled:
-	lda	#$0041
+	lda	#SOUND_BIG_EXPLOSION
 	bra	queue_sound_throttled
 
 queue_sound_30_throttled:
@@ -59,7 +59,7 @@ song_change_state_00:
 	lda	a:data_05AB58,y
 	sta	a:song_change_mode
 	inc	a:song_change_state
-	lda	#$0081
+	lda	#SOUND_CMD_FADE_OUT
 	jml	f:queue_sound
 
 song_change_state_01:
@@ -70,7 +70,7 @@ song_change_stop_music:
 	lda	#$0002
 	sta	a:song_change_state
 	stz	a:song_change_mode
-	lda	#$0084
+	lda	#SOUND_CMD_STOP
 	jml	f:queue_sound
 
 song_change_state_02:

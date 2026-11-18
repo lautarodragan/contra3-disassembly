@@ -132,7 +132,7 @@ check_topdown_game_over:
 	cmp	#$000F
 	bne	@return_sec
 	stz	a:fade_target_brightness
-	lda	#$0081
+	lda	#SOUND_CMD_FADE_OUT
 	jsl	f:queue_sound
 	bra	@return_sec
 @leave_stage:
@@ -155,7 +155,7 @@ check_targets_destroyed:
 	lda	a:topdown_timer
 	cmp	#$0080
 	bne	@count_down
-	lda	#$0081
+	lda	#SOUND_CMD_FADE_OUT
 	jsl	f:queue_sound
 @count_down:
 	dec	a:topdown_timer
@@ -165,7 +165,7 @@ check_targets_destroyed:
 	cmp	#$000F
 	bne	@return
 	stz	a:fade_target_brightness
-	lda	#$0081
+	lda	#SOUND_CMD_FADE_OUT
 	jsl	f:queue_sound
 	bra	@return
 @next_state:
@@ -184,7 +184,7 @@ stage2_state_boss_setup:
 	jsl	f:spawn_stage2_boss
 	jsr	a:reset_m7_block_patches
 	jsr	a:load_stage2_boss_assets
-	lda	#$0068
+	lda	#SOUND_SONG_BOSS
 	jsl	f:queue_sound
 	jsl	f:init_topdown_hdma
 	jsl	f:init_topdown_irq
@@ -236,7 +236,7 @@ stage2_boss_wait_defeat:
 	lda	a:td_boss_state
 	cmp	#$0012
 	bne	stage2_boss_end_return
-	lda	#$0081
+	lda	#SOUND_CMD_FADE_OUT
 	jsl	f:queue_sound
 	lda	#$0080
 	sta	a:topdown_timer
@@ -324,7 +324,7 @@ stage5_state_boss_setup:
 	jsl	f:spawn_stage5_boss
 	jsr	a:reset_m7_block_patches
 	jsr	a:load_stage5_boss_assets
-	lda	#$0068
+	lda	#SOUND_SONG_BOSS
 	jsl	f:queue_sound
 	jsl	f:init_topdown_hdma
 	jsl	f:init_topdown_irq
@@ -377,7 +377,7 @@ stage5_boss_wait_defeat:
 	lda	a:td_boss_state
 	cmp	#$0009
 	bne	stage5_boss_end_return
-	lda	#$0081
+	lda	#SOUND_CMD_FADE_OUT
 	jsl	f:queue_sound
 	lda	#$0040
 	sta	a:topdown_timer
@@ -669,7 +669,7 @@ tbl_intro_steps:
 
 ; Step 0: map zoomed out, random cursors, PPU and colour math setup, sound $6F.
 intro_init:
-	lda	#$006F
+	lda	#SOUND_SONG_TOPDOWN_INTRO
 	jsl	f:queue_sound
 	stz	a:topdown_window_update_on
 	lda	#$0001
@@ -897,7 +897,7 @@ move_start_cursors:
 	rts
 @b_move:
 	pha
-	lda	#$0001
+	lda	#SOUND_CURSOR
 	jsl	f:queue_sound
 	pla
 	bit	#$0800
@@ -909,7 +909,7 @@ move_start_cursors:
 	bne	@b_right
 	bra	@b_left
 @b_chosen:
-	lda	#$0002
+	lda	#SOUND_SELECT
 	jsl	f:queue_sound
 	lda	#$0002
 	sta	a:p1_start_chosen
@@ -971,7 +971,7 @@ move_start_cursors:
 	rts
 @move:
 	pha
-	lda	#$0001
+	lda	#SOUND_CURSOR
 	jsl	f:queue_sound
 	pla
 	bit	#$0800
@@ -987,7 +987,7 @@ move_start_cursors:
 	lda	#$0002
 	sta	a:p2_start_chosen
 @confirm:
-	lda	#$0002
+	lda	#SOUND_SELECT
 	jsl	f:queue_sound
 	lda	#$0002
 	sta	a:p1_start_chosen
@@ -1043,7 +1043,7 @@ move_p2_start_cursor:
 	rts
 @move:
 	pha
-	lda	#$0001
+	lda	#SOUND_CURSOR
 	jsl	f:queue_sound
 	pla
 	bit	#$0800
@@ -1061,7 +1061,7 @@ move_p2_start_cursor:
 	lda	#$0002
 	sta	a:p1_start_chosen
 @confirm:
-	lda	#$0002
+	lda	#SOUND_SELECT
 	jsl	f:queue_sound
 	lda	#$0002
 	sta	a:p2_start_chosen

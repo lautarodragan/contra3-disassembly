@@ -813,7 +813,7 @@ homing_missile_fly:
 	lda	$06,x
 	bpl	@steer
 @explode:
-	lda	#$0017
+	lda	#SOUND_MISSILE_EXPLODE
 	jsl	f:queue_sound
 	stz	$04,x
 	txy

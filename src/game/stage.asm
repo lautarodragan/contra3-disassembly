@@ -380,7 +380,7 @@ layout_init_stage1_common:
 	lda	#$00C1
 	sta	a:m7sel_shadow
 	stz	a:clamp_player_top
-	lda	#$0064
+	lda	#SOUND_SONG_STAGE1
 	jml	f:queue_sound
 
 layout_init_stage3_checkpoint:
@@ -397,11 +397,11 @@ layout_init_stage3:
 layout_init_stage3_common:
 	lda	#$004A
 	sta	a:bg2sc_shadow
-	lda	#$0062
+	lda	#SOUND_SONG_STAGE3_6
 	jml	f:queue_sound
 
 layout_init_stage4_checkpoint:
-	lda	#$0063
+	lda	#SOUND_SONG_STAGE2_4
 	jsl	f:queue_sound
 	lda	#$000D
 	sta	a:obj_slots+29*OBJ_SIZE+OBJ_STATE
@@ -412,9 +412,9 @@ layout_init_stage4_checkpoint:
 	bra	layout_init_stage4_common
 
 layout_init_stage4:
-	lda	#$0084
+	lda	#SOUND_CMD_STOP
 	jsl	f:queue_sound
-	lda	#$004F
+	lda	#SOUND_STAGE4_INTRO
 	jsl	f:queue_sound
 	lda	#$0040
 	sta	a:bg1sc_shadow
@@ -447,7 +447,7 @@ layout_init_stage6:
 	sta	a:obj_slots+27*OBJ_SIZE+OBJ_TYPE
 	lda	#$004A
 	sta	a:bg2sc_shadow
-	lda	#$0062
+	lda	#SOUND_SONG_STAGE3_6
 	jml	f:queue_sound
 
 ; Copies 12 words from X to zp_C8-zp_DF (per-layout parameters, ptrs_stage_dp_params).

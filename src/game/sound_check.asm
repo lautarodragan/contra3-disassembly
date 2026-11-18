@@ -68,7 +68,7 @@ sound_check_input:
 	jsr	a:sound_check_draw_id
 	rtl
 @b_pressed:
-	lda	#$0084
+	lda	#SOUND_CMD_STOP
 	jsl	f:queue_sound
 	rtl
 @start_pressed:

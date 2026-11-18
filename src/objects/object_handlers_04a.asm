@@ -353,7 +353,7 @@ stage3_robot_state_05:
 	lda	#$0001
 	sta	OBJ_FACING,x
 @bump:
-	lda	#$0033
+	lda	#SOUND_BUMP
 	jsl	f:queue_sound
 	lda	#.loword(anim_05E841)
 	sta	OBJ_ANIM,x
@@ -365,7 +365,7 @@ stage3_robot_update_jump:
 	lda	OBJ_Y,x
 	cmp	#$0090
 	bcs	stage3_robot_apply_gravity
-	lda	#$0033
+	lda	#SOUND_BUMP
 	jsl	f:queue_sound
 	lda	#$0090
 	sta	OBJ_Y,x
@@ -384,7 +384,7 @@ stage3_robot_update_jump:
 	lda	OBJ_Y,x
 	cmp	#$00D0
 	bcc	stage3_robot_apply_gravity
-	lda	#$0032
+	lda	#SOUND_STAGE3_ROBOT_LAND
 	jsl	f:queue_sound
 	lda	#$00D0
 	sta	OBJ_Y,x
@@ -552,7 +552,7 @@ stage3_robot_state_08:
 	stz	OBJ_ANIM_TIMER,x
 	lda	#$FFF9	; [num]
 	sta	OBJ_Y_VEL,x
-	lda	#$0034
+	lda	#SOUND_STAGE3_ROBOT_JUMP
 	jsl	f:queue_sound
 @return:
 	rtl
@@ -800,7 +800,7 @@ stage3_second_robot_spawn_debris:
 	plx
 	lda	stage_frame_mod8
 	bne	@return
-	lda	#$001A
+	lda	#SOUND_ENEMY_FIRE
 	jsl	f:queue_sound
 @return:
 	rts
@@ -889,7 +889,7 @@ stage3_boss_return:
 stage3_boss_state_0B:
 	lda	a:song_change_state
 	bne	stage3_boss_return
-	lda	#$0068
+	lda	#SOUND_SONG_BOSS
 	jsl	f:queue_sound
 	inc	OBJ_STATE,x
 	lda	#$0100
@@ -1001,7 +1001,7 @@ stage3_boss_state_18:
 	jsr	a:stage3_boss_break_wall
 	lda	a:boss_work_1
 	bne	@palette
-	lda	#$0083
+	lda	#SOUND_CMD_STOP_MUSIC
 	jsl	f:queue_sound
 	inc	OBJ_STATE,x
 	lda	#$0100
@@ -1458,7 +1458,7 @@ update_countdown_bomb:
 	cmp	$34,x
 	beq	@wait_anim
 	sta	$34,x
-	lda	#$0036
+	lda	#SOUND_COUNTDOWN_BOMB
 	jsl	f:queue_sound
 @wait_anim:
 	lda	OBJ_ANIM,x
@@ -1475,7 +1475,7 @@ update_countdown_bomb:
 	sta	OBJ_FLAGS,x
 	rtl
 @explode:
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound_throttled
 	lda	stage_frame_mod4
 	bne	@return3
@@ -1687,7 +1687,7 @@ stage4_controller_state_01:
 	dec	OBJ_TIMER,x
 	bpl	@check_rider
 	inc	OBJ_STATE,x
-	lda	#$0063
+	lda	#SOUND_SONG_STAGE2_4
 	jsl	f:queue_sound
 	stz	OBJ_TIMER,x
 @check_rider:
@@ -2216,7 +2216,7 @@ stage4_controller_state_1C:
 	stz	a:player2_obj+PLAYER_BOMB_SPEED_SUB
 	stz	a:player1_obj+PLAYER_BOMB_SPEED
 	stz	a:player2_obj+PLAYER_BOMB_SPEED
-	lda	#$005B
+	lda	#SOUND_BOMB_FLASH
 	jsl	f:queue_sound
 	lda	#$0002
 	sta	a:life_transfer_disabled
@@ -2412,7 +2412,7 @@ rideable_missile_state_01:
 	lda	stage_frame_counter
 	bit	#$003F
 	bne	@carry
-	lda	#$0031
+	lda	#SOUND_RIDEABLE_MISSILE
 	ldy	stage_number
 	cpy	#$0004
 	beq	@play_sound
@@ -2424,7 +2424,7 @@ rideable_missile_state_01:
 	cmp	#$0029
 	bcs	@carry
 @sound_5f:
-	lda	#$005F
+	lda	#SOUND_RIDEABLE_MISSILE_ENDING
 @play_sound:
 	jsl	f:queue_sound
 @carry:
@@ -2580,7 +2580,7 @@ rideable_missile_state_06:
 @done:
 	plx
 	inc	OBJ_STATE,x
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jml	f:queue_sound
 
 rideable_missile_state_08:
@@ -2794,7 +2794,7 @@ update_stage4_boss_pod:
 	lda	a:stage4_boss_pod_wreck_vram_addrs,x
 	jsl	f:queue_vram_blocks
 	plx
-	lda	#$0041
+	lda	#SOUND_BIG_EXPLOSION
 	jsl	f:queue_sound
 	ldy	$30,x
 	lda	#$FFFC	; [num]
@@ -2817,7 +2817,7 @@ update_stage4_boss_shot:
 	lda	OBJ_HP,x
 	bpl	@alive
 @explode:
-	lda	#$0017
+	lda	#SOUND_MISSILE_EXPLODE
 	jsl	f:queue_sound
 	lda	#$FFF8	; [num]
 	sta	OBJ_X_VEL,x
@@ -3391,7 +3391,7 @@ stage4_boss_pod_fire:
 	lda	OBJ_Y,x
 	adc	#$0000
 	sta	a:$000E,y
-	lda	#$001A
+	lda	#SOUND_ENEMY_FIRE
 	jsl	f:queue_sound
 @return:
 	rts
@@ -3510,7 +3510,7 @@ scroll_with_airship:
 	rts
 
 airship_part_explode:
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound_throttled
 	lda	stage_frame_odd
 	bne	@return
@@ -4172,7 +4172,7 @@ winged_alien_state_07:
 	sta	a:bg2sc_shadow
 	stz	a:bg2_x
 	stz	a:bg2_y
-	lda	#$0082
+	lda	#SOUND_CMD_BRANCH
 	jsl	f:queue_sound
 	lda	#$8000	; [num]
 	sta	OBJ_FLAGS,x
@@ -5106,7 +5106,7 @@ face_boss_eye_frame_toward_player:
 	lda	a:face_boss_eye_frames,y
 	rts
 face_boss_eye_explode:
-	lda	#$0041
+	lda	#SOUND_BIG_EXPLOSION
 	jsl	f:queue_sound
 	lda	#$FFFF	; [num]
 	sta	a:$001E,y
@@ -5576,7 +5576,7 @@ floor_mouth_state_07:
 floor_mouth_state_08:
 	lda	#$0002
 	jsr	a:floor_mouth_set_tiles
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	lda	#$0003
 	sta	OBJ_FLAGS,x
@@ -5807,7 +5807,7 @@ floor_mouth_bug_state_06:
 
 floor_mouth_bug_state_07:
 	stz	OBJ_HP,x
-	lda	#$000B
+	lda	#SOUND_ENEMY_DIE
 	jsl	f:queue_sound
 	lda	#$0003
 	sta	OBJ_FLAGS,x
@@ -5897,7 +5897,7 @@ larva_state_02:
 	lda	#$0010
 	jml	f:set_velocity_from_angle
 larva_die:
-	lda	#$000C
+	lda	#SOUND_SHOT_DOWN
 	jsl	f:queue_sound
 	lda	#$FFFF	; [num]
 	sta	OBJ_Y_VEL,x
@@ -6266,7 +6266,7 @@ heart_boss_crawler_state_04:
 @return:
 	rtl
 heart_boss_crawler_die:
-	lda	#$000E
+	lda	#SOUND_ALIEN_SOLDIER_DIE
 	jsl	f:queue_sound
 	lda	#$001D
 	sta	OBJ_TYPE,x
@@ -6295,7 +6295,7 @@ update_heart_boss:
 	beq	@check_hp
 	lda	a:boss_hit_sound_timer
 	bne	@check_hp
-	lda	#$003C
+	lda	#SOUND_BOSS_HIT_2
 	jsl	f:queue_sound
 	lda	#$0004
 	sta	a:boss_hit_sound_timer
@@ -6351,7 +6351,7 @@ heart_boss_state_02:
 	jsr	a:heart_boss_beat
 	rtl
 heart_boss_die:
-	lda	#$0052
+	lda	#SOUND_HEART_BOSS_DIE
 	jsl	f:queue_sound
 	stz	OBJ_HP,x
 	stz	OBJ_FLAGS,x
@@ -6395,7 +6395,7 @@ heart_boss_state_04:
 	beq	@tiles_done
 	rtl
 @tiles_done:
-	lda	#$0081
+	lda	#SOUND_CMD_FADE_OUT
 	jsl	f:queue_sound
 	phx
 	ldx	#.loword(load_list_059EC9)
@@ -6409,7 +6409,7 @@ heart_boss_state_05:
 	dec	OBJ_TIMER,x
 	bmi	@request_song
 	bne	@return
-	lda	#$0083
+	lda	#SOUND_CMD_STOP_MUSIC
 	jsl	f:queue_sound
 @return:
 	rtl
@@ -6424,7 +6424,7 @@ heart_boss_state_06:
 	lda	apu_pending_cmd
 	cmp	#$00FF
 	beq	@return
-	lda	#$0069
+	lda	#SOUND_SONG_HEART_BOSS
 	jsl	f:queue_sound
 	stz	a:bg1_scroll_mode
 	lda	#$8000	; [num]
@@ -6620,7 +6620,7 @@ heart_boss_bug_state_02:
 @return:
 	rtl
 heart_boss_bug_die:
-	lda	#$003B
+	lda	#SOUND_HEART_BOSS_BUG_DIE
 	jsl	f:queue_sound
 	lda	#$0003
 	sta	OBJ_STATE,x
@@ -6770,7 +6770,7 @@ wall_worm_state_02:
 	jsr	a:wall_worm_draw_anim_frame
 	rtl
 wall_worm_die:
-	lda	#$0051
+	lda	#SOUND_WALL_WORM_DIE
 	jsl	f:queue_sound
 	stz	OBJ_HP,x
 	stz	OBJ_FLAGS,x
@@ -7005,7 +7005,7 @@ update_cave_beast:
 	sta	cgram_upload_src
 	lda	#$0020
 	sta	cgram_upload_addr
-	lda	#$000F
+	lda	#SOUND_BOSS_HIT
 	jsl	f:queue_sound
 @dispatch:
 	lda	OBJ_STATE,x
@@ -7780,7 +7780,7 @@ cave_beast_state_27:
 	ldy	#$0880
 	sta	a:$0016,y
 	stz	a:respawn_mode
-	lda	#$0082
+	lda	#SOUND_CMD_BRANCH
 	jsl	f:queue_sound
 	rtl
 
@@ -9089,7 +9089,7 @@ snake_robot_state_03:
 	lda	OBJ_Y_VEL,x
 	cmp	#$0002
 	bcc	@soft_landing
-	lda	#$0038
+	lda	#SOUND_HARD_LANDING
 	bra	@play_sound
 @soft_landing:
 	lda	#$0039
@@ -9684,7 +9684,7 @@ snake_robot_state_10:
 	lda	zp_00
 	cmp	#$0010
 	bcc	@loop
-	lda	#$0041
+	lda	#SOUND_BIG_EXPLOSION
 	jsl	f:queue_sound
 	stz	$30,x
 	inc	OBJ_STATE,x
@@ -11367,7 +11367,7 @@ helicopter_rope_check_missile_contact:
 	ldy	#$04C0
 	jsl	f:find_free_slot_y_down
 	bcc	@hit_enemy
-	lda	#$0033
+	lda	#SOUND_BUMP
 	jsl	f:queue_sound
 	lda	#.loword(anim_05C6BA)
 	jsl	f:make_effect_object

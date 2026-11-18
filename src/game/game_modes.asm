@@ -580,7 +580,7 @@ game_mode_stage_select:
 	ora	joy2_pressed
 	bit	#JOY_START
 	beq	@check_move
-	lda	#$0002
+	lda	#SOUND_SELECT
 	jsl	f:queue_sound
 	brl	next_submode
 @check_move:
@@ -589,7 +589,7 @@ game_mode_stage_select:
 	rtl
 @move:
 	pha
-	lda	#$0001
+	lda	#SOUND_CURSOR
 	jsl	f:queue_sound
 	pla
 	bit	#JOY_UP
@@ -845,7 +845,7 @@ game_over_fade_in:
 	rtl
 @faded_in:
 	plp
-	lda	#$006B
+	lda	#SOUND_SONG_GAME_OVER
 	jsl	f:queue_sound
 .if CHEAT_INFINITE_CONTINUES
 	lda	a:continues_left	; cheat: none spent (never negative)
@@ -924,7 +924,7 @@ continue_menu:
 	ora	joy2_pressed
 	bit	#JOY_START
 	beq	@return
-	lda	#$0002
+	lda	#SOUND_SELECT
 	jsl	f:queue_sound
 	lda	a:continue_cursor
 	beq	@continue_chosen
@@ -949,7 +949,7 @@ continue_player_menu:
 	ora	joy2_pressed
 	bit	#JOY_START
 	beq	@return
-	lda	#$0002
+	lda	#SOUND_SELECT
 	jsl	f:queue_sound
 	lda	a:continue_cursor
 	sta	a:title_menu_cursor
@@ -990,7 +990,7 @@ continue_move_cursor:
 	bit	#JOY_SELECT|JOY_UP|JOY_DOWN
 	beq	@return
 	pha
-	lda	#$0001
+	lda	#SOUND_CURSOR
 	jsl	f:queue_sound
 	pla
 	bit	#JOY_UP

@@ -633,7 +633,7 @@ title_menu_update_cursor:
 	beq	draw_title_menu_cursor
 	lda	#$0300
 	sta	a:title_menu_timeout
-	lda	#$0001
+	lda	#SOUND_CURSOR
 	jsl	f:queue_sound
 	lda	joy1_pressed
 	ora	joy2_pressed
@@ -687,7 +687,7 @@ title_menu_start_pressed:
 	sec
 	rtl
 @option_chosen:
-	lda	#$0002
+	lda	#SOUND_SELECT
 	jsl	f:queue_sound
 	sec
 	rtl
@@ -753,7 +753,7 @@ check_button_code_unused:
 	clc
 	rts
 @entered:
-	lda	#$003E
+	lda	#SOUND_EXTRA_LIFE
 	jsl	f:queue_sound
 	sec
 	rts
@@ -799,7 +799,7 @@ check_30_lives_code:
 	clc
 	rts
 @entered:
-	lda	#$0043
+	lda	#SOUND_PLAYER_FALL
 	jsl	f:queue_sound
 	lda	#$001E
 	sta	a:option_lives
@@ -1077,7 +1077,7 @@ konami_logo_start_shine:
 	sta	a:konami_logo_count3
 	ldy	#.loword(palette_task_0587E1)
 	jsl	f:start_palette_task
-	lda	#$0072
+	lda	#SOUND_SONG_KONAMI_LOGO
 	jsl	f:queue_sound
 	inc	a:konami_logo_step
 konami_logo_step_return:

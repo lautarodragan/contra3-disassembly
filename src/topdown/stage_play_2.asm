@@ -1604,7 +1604,7 @@ stage5_boss_spit_step_0:
 	beq	@start
 	rts
 @start:
-	lda	#$003A
+	lda	#SOUND_STAGE5_BOSS_SPIT
 	jsl	f:queue_sound
 	lda	rng_lo
 	and	#$0006
@@ -1737,7 +1737,7 @@ stage5_boss_flash_on_hit:
 	sta	$2E,x
 	lda	#$0004
 	sta	$2A,x
-	lda	#$0010
+	lda	#SOUND_CLANG
 	jsl	f:queue_sound
 	phx
 	phb
@@ -1996,7 +1996,7 @@ stage5_boss_claw_enter_state_6:
 	cmp	$12,x
 	beq	stage5_boss_claw_state_6
 	sta	$12,x
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	stz	$16,x
 
@@ -2538,7 +2538,7 @@ td_nest_state_4:
 	rtl
 ; Destroyed: sound $30, explosions for $40 frames (state 5).
 td_nest_explode:
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	stz	$06,x
 	stz	$16,x
@@ -2573,7 +2573,7 @@ td_nest_flash_on_hit:
 	lda	$2E,x
 	bit	#$0040
 	beq	@return
-	lda	#$0010
+	lda	#SOUND_CLANG
 	jsl	f:queue_sound
 	lda	$20,x
 	sta	$2A,x
@@ -2698,7 +2698,7 @@ gun_hatch_state_4:
 	rtl
 ; Destroyed: sound $30, explosions for $40 frames (state 5), block $57.
 gun_hatch_explode:
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	stz	$06,x
 	stz	$16,x
@@ -3006,7 +3006,7 @@ gun_hatch_flash_on_hit:
 	lda	$2E,x
 	bit	#$0040
 	beq	@return
-	lda	#$0010
+	lda	#SOUND_CLANG
 	jsl	f:queue_sound
 	lda	$20,x
 	sta	$2A,x

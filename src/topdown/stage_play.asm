@@ -506,7 +506,7 @@ td_check_smart_bomb:
 	lda	a:$0090,x
 	dec	a
 	beq	@return
-	lda	#$005A
+	lda	#SOUND_SMART_BOMB
 	jsl	f:queue_sound
 .if !CHEAT_INFINITE_BOMBS
 	dec	a:$10CC,x
@@ -772,7 +772,7 @@ td_player_state_dying:
 	jsr	a:topdown_lose_life
 	pla
 	sta	$12,x
-	lda	#$003F
+	lda	#SOUND_PLAYER_DIE
 	jsl	f:queue_sound
 	lda	#$0020
 	jsl	f:set_velocity_from_angle
@@ -874,7 +874,7 @@ td_player_state_falling:
 	jsr	a:topdown_lose_life
 	pla
 	sta	$12,x
-	lda	#$0043
+	lda	#SOUND_PLAYER_FALL
 	jsl	f:queue_sound
 	stz	$24,x
 	stz	a:$064A,x
@@ -1324,7 +1324,7 @@ fire_td_default:
 	lda	a:$0646,x
 	and	#$0003
 	bne	@no_sound
-	lda	#$0004
+	lda	#SOUND_SHOT_DEFAULT
 	jsl	f:queue_sound
 @no_sound:
 	lda	#$0000
@@ -1351,7 +1351,7 @@ fire_td_spread:
 	lda	a:$0646,x
 	and	#$0007
 	bne	@no_sound
-	lda	#$0009
+	lda	#SOUND_SHOT_SPREAD
 	jsl	f:queue_sound
 @no_sound:
 	lda	#$0005
@@ -1394,7 +1394,7 @@ fire_td_homing:
 @return:
 	rtl
 @fire:
-	lda	#$0008
+	lda	#SOUND_SHOT_HOMING
 	jsl	f:queue_sound
 	lda	#$0000
 	sta	a:$0012,y
@@ -1416,7 +1416,7 @@ fire_td_laser:
 	lda	a:$0646,x
 	and	#$000F
 	bne	@no_sound
-	lda	#$0005
+	lda	#SOUND_SHOT_LASER
 	jsl	f:queue_sound
 @no_sound:
 	lda	#$0000
@@ -1457,7 +1457,7 @@ td_play_flame_sound:
 	lda	a:$0646,x
 	and	#$000F
 	bne	@return
-	lda	#$000A
+	lda	#SOUND_SHOT_FLAME
 	jsl	f:queue_sound
 @return:
 	rts
@@ -1471,7 +1471,7 @@ fire_td_crush:
 @return:
 	rtl
 @fire:
-	lda	#$0007
+	lda	#SOUND_SHOT_CRUSH
 	jsl	f:queue_sound
 	lda	#$0000
 	sta	a:$0012,y
@@ -2048,7 +2048,7 @@ td_flash_boss_palette_on_hit:
 	sta	$2E,x
 	lda	#$0004
 	sta	$2A,x
-	lda	#$0010
+	lda	#SOUND_CLANG
 	jsl	f:queue_sound
 	phx
 	phb
@@ -2318,7 +2318,7 @@ td_play_hit_sound:
 	lda	$2E,x
 	bit	#$0040
 	beq	@return
-	lda	#$0010
+	lda	#SOUND_CLANG
 	jsl	f:queue_sound
 @return:
 	rtl
@@ -2542,7 +2542,7 @@ td_runner_state_3:
 	rtl
 @killed:
 	stz	$06,x
-	lda	#$000B
+	lda	#SOUND_ENEMY_DIE
 	jsl	f:queue_sound
 	lda	#$0004
 	sta	$12,x
@@ -2660,7 +2660,7 @@ td_gunner_state_4:
 @return:
 	rtl
 td_gunner_explode:
-	lda	#$000B
+	lda	#SOUND_ENEMY_DIE
 	jsl	f:queue_sound
 	jmp	a:td_start_explosion
 
@@ -2771,7 +2771,7 @@ hatch_turret_state_3:
 	rtl
 hatch_turret_explode:
 	stz	$06,x
-	lda	#$000B
+	lda	#SOUND_ENEMY_DIE
 	jsl	f:queue_sound
 	lda	#$0004
 	sta	$12,x
@@ -3073,7 +3073,7 @@ td_centipede_unused_state_3:
 	jsr	a:td_centipede_record_trail
 	rtl
 td_centipede_killed:
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	lda	#$0004
 	sta	$12,x
@@ -3342,7 +3342,7 @@ td_bug_centipede_state_3:
 	jsr	a:td_centipede_record_trail
 	rtl
 @split:
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	lda	#TDT_CENTIPEDE_BUG
 	sta	a:td_enemies+2*OBJ_SIZE+OBJ_TYPE
@@ -3532,7 +3532,7 @@ td_centipede_bug_state_3:
 	jsl	f:td_walk_towards_nearest_player
 	rtl
 td_centipede_bug_explode:
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	jmp	a:td_start_explosion
 
@@ -3654,7 +3654,7 @@ td_centipede_state_4:
 ; (no caller found; decoded because it follows the end of a routine)
 td_centipede_start_death_unused:
 	; (not executed in the CDL traces)
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	lda	#$0005
 	sta	$12,x
@@ -3792,7 +3792,7 @@ td_nest_crawler_state_4:
 	jsl	f:td_enemy_tile_collision
 	rtl
 td_nest_crawler_explode:
-	lda	#$000B
+	lda	#SOUND_ENEMY_DIE
 	jsl	f:queue_sound
 	jmp	a:td_start_explosion
 
@@ -3854,7 +3854,7 @@ td_crawler_state_3:
 	rtl
 td_crawler_explode:
 	stz	$06,x
-	lda	#$000B
+	lda	#SOUND_ENEMY_DIE
 	jsl	f:queue_sound
 	jmp	a:td_start_explosion
 
@@ -4562,7 +4562,7 @@ stage2_boss_state_01:
 	bmi	@fall
 	rtl
 @fall:
-	lda	#$002F
+	lda	#SOUND_STAGE2_BOSS_DROP
 	jsl	f:queue_sound
 	stz	$20,x
 	stz	$28,x
@@ -4723,7 +4723,7 @@ stage2_boss_state_08:
 	sta	a:td_boss_angle
 	rtl
 @take_off:
-	lda	#$002E
+	lda	#SOUND_STAGE2_BOSS_TAKE_OFF
 	jsl	f:queue_sound
 	stz	$16,x
 	jsr	a:td_set_players_priority_1
@@ -4763,7 +4763,7 @@ stage2_boss_state_0A:
 	bmi	@drop_on_player
 	rtl
 @drop_on_player:
-	lda	#$002F
+	lda	#SOUND_STAGE2_BOSS_DROP
 	jsl	f:queue_sound
 	stz	a:p1_m7_scale_x
 	stz	a:p2_m7_scale_x
@@ -5421,7 +5421,7 @@ stage2_boss_core_start_death:
 	stz	$16,x
 	lda	#$0040
 	sta	$24,x
-	lda	#$0041
+	lda	#SOUND_BIG_EXPLOSION
 	jsl	f:queue_sound
 	lda	#$0004
 	sta	$12,x
@@ -5479,7 +5479,7 @@ update_stage2_boss_pod:
 	lda	$2E,x
 	and	#$FFBF
 	sta	$2E,x
-	lda	#$0010
+	lda	#SOUND_CLANG
 	jsl	f:queue_sound
 	rtl
 @end_flash:
@@ -5602,7 +5602,7 @@ stage2_boss_pod_start_death:
 	beq	stage2_boss_pod_state_7
 	sta	$12,x
 	stz	$16,x
-	lda	#$0041
+	lda	#SOUND_BIG_EXPLOSION
 	jsl	f:queue_sound
 	lda	#$0040
 	sta	$24,x
@@ -5794,7 +5794,7 @@ stage2_boss_cannon_start_death:
 	beq	stage2_boss_cannon_state_4
 	sta	$12,x
 	stz	$16,x
-	lda	#$0041
+	lda	#SOUND_BIG_EXPLOSION
 	jsl	f:queue_sound
 	lda	#$0040
 	sta	$24,x
@@ -5983,7 +5983,7 @@ td_play_turn_sound:
 	rts
 
 td_play_rumble_sound:
-	lda	#$006E
+	lda	#SOUND_BOSS_EXPLOSIONS
 	ldy	a:rumble_sound_timer
 	bpl	@count_down
 	pha
@@ -9124,7 +9124,7 @@ td_p1_vs_items:
 @barrier:
 	bra	@next
 @pick_up:
-	lda	#$0012
+	lda	#SOUND_WEAPON_PICKUP
 	jsl	f:queue_sound
 	lda	$14,x
 	cmp	#TDIK_BARRIER
@@ -10131,7 +10131,7 @@ td_p2_vs_items:
 @barrier:
 	bra	@next
 @pick_up:
-	lda	#$0012
+	lda	#SOUND_WEAPON_PICKUP
 	jsl	f:queue_sound
 	lda	$14,x
 	cmp	#TDIK_BARRIER
@@ -10932,7 +10932,7 @@ td_update_stage2_map_events:
 	cmp	#$0020
 	bne	@next
 	pha
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	pla
 	jsl	f:td_find_free_item_slot
@@ -10992,7 +10992,7 @@ td_step_switch_event:
 @next_step:
 	jsr	a:td_patch_switch_event_block
 	bcs	@return
-	lda	#$0030
+	lda	#SOUND_EXPLOSION
 	jsl	f:queue_sound
 	dec	$02,x
 	beq	@finished
