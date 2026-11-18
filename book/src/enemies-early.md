@@ -102,7 +102,7 @@ object_type_XX_state_NN. Handlers dispatch on `OBJ_STATE` through
 | $50 | `update_wall_hatch` | stage 3: wall hatch (HP 8; seen in the emulator) |
 | $52 | `stage3_spiked_climber_state_0B` | not a type: state `$0B` of the spiked climber, also in the handler table; never created |
 | $53 | `update_passive_part` | does nothing: a hitbox moved by another object (the spiked climber's body, stage 3; also stages 4 and 6) |
-| $55 | `update_stage6_bg_tile_animator` | stage 6 (slot 27, from `layout_init_stage6`): every 8 frames DMAs the next of 4 frames of the organic background tiles to VRAM `$3A90` (`stage6_bg_tile_animator_tile_frames`) |
+| $55 | `update_stage6_bg_tile_animator` | stage 6 (slot 27, from `layout_init_stage6`): every 8 frames DMAs the next of 4 frames of 32 BG1 tiles to VRAM `$3A90` (`stage6_bg_tile_animator_tile_frames`): in the emulator they are the purple fibrous wall behind the corridor to the giant heart and in its room, and the flesh of its ceiling and floor, which ripple |
 | $56 | `update_alien_soldier` | stage 6: alien soldier running along the floor and jumping off ledges (seen in the emulator), sent by type `$5C` |
 | $57 | `update_bg2_screen_size_trigger` | stage trigger: puts field `$3A` in the screen size bits of BG2SC (`bg2sc_shadow`). Unused: no spawn list or code creates it, never run in the CDL traces |
 | $59 | `stage3_spiked_climber_state_08` | not a type: state 8 of the spiked climber (makes its arms, type `$5A`), also in the handler table; never created |

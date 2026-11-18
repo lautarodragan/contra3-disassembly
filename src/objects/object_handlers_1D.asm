@@ -237,11 +237,11 @@ ending_sequence_state_07:
 	inc	OBJ_STATE,x
 	rtl
 @blink:
-	ldy	#.loword(vram_blocks_05FF59)
+	ldy	#.loword(brain_boss_eye_closed_blocks)
 	lda	OBJ_TIMER,x
 	bit	#$0008
 	bne	@queue
-	ldy	#.loword(vram_blocks_05FF5D)
+	ldy	#.loword(brain_boss_eye_open_blocks)
 @queue:
 	jsr	a:queue_brain_boss_tiles
 	rtl
@@ -2161,7 +2161,7 @@ brain_boss_state_04:
 	lsr	a
 	sta	a:boss_work_0
 	inc	a:boss_work_4
-	ldy	#.loword(vram_blocks_05FF5D)
+	ldy	#.loword(brain_boss_eye_open_blocks)
 	jsr	a:queue_brain_boss_tiles
 @return:
 	rtl
@@ -2290,7 +2290,7 @@ brain_boss_state_07:
 	ldy	a:boss_work_1
 	lda	a:brain_boss_reappear_y,y
 	sta	OBJ_Y,x
-	ldy	#.loword(vram_blocks_05FF59)
+	ldy	#.loword(brain_boss_eye_closed_blocks)
 	jsr	a:queue_brain_boss_tiles
 	lda	#$0059
 	jsl	f:queue_sound

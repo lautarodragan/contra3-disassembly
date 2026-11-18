@@ -5387,13 +5387,14 @@ stage3_robot_bullet_dirs_3:
 stage3_robot_gun_x_offsets:
 	; CDL: read by stage3_boss_state_06
 	.byte	$1E, $00, $FC, $FF
-; stage3_boss_state_0C: frames before each step of its VRAM block updates
-; (field $32 counts the steps down by 2) and the BG VRAM address by step
-; parity (stage3_boss_state_0C_vram_addrs).
-stage3_boss_state_0C_delays:
+; stage3_boss_state_0C: the skeleton robot's fingers poking through the back
+; wall before it breaks out (seen in the emulator): frames before each of the
+; 4 steps (field $32 counts them down by 2), and the BG1 VRAM address by step
+; parity (stage3_skeleton_fingers_vram_addrs: the lower and the upper fingers).
+stage3_skeleton_fingers_delays:
 	; CDL: read by stage3_boss_state_0C
 	.byte	$40, $00, $0B, $00, $40, $00, $0B, $00
-stage3_boss_state_0C_vram_addrs:
+stage3_skeleton_fingers_vram_addrs:
 	; CDL: read by stage3_boss_state_0C
 	.byte	$8C, $41, $0C, $42
 ; skeleton_eye_fireball_state_01: sprite and velocity by the angle to the
@@ -5410,25 +5411,28 @@ skeleton_eye_fireball_x_vels:
 	; LAYOUT: read on from skeleton_eye_fireball_y_vels (lda a:skeleton_eye_fireball_y_vels,y)
 	; CDL: read by skeleton_eye_fireball_state_01
 	.byte	$00, $00, $02, $00, $03, $00, $02, $00, $00, $00, $FE, $FF, $FD, $FF, $FE, $FF
-; stage3_boss_break_wall: frames per step (by boss_work_2) and the step added
-; to boss_work_1 (-1/+1, clamped to 0-8); ptrs_stage3_boss_wall_blocks and the
-; two VRAM address tables (_a: one $20-byte block, _b: one $40-byte block 8
-; bytes further) pick what is redrawn.
+; stage3_boss_break_wall: the hole the skeleton robot breaks in the back wall
+; (seen in the emulator: it opens from the middle outwards). Frames per step
+; (by boss_work_2) and the step added to boss_work_1 (-1/+1, clamped to 0-8);
+; ptrs_stage3_boss_wall_hole_blocks (by column pair, boss_work_3 0-2; 16 bytes
+; per step: a column of 4 blocks left of the middle, then one right of it)
+; and the BG1 VRAM addresses of those columns (_left: going left from the
+; middle, _right: going right).
 stage3_boss_wall_step_delays:
 	; CDL: read by stage3_boss_break_wall
 	.byte	$04, $00, $10, $00
 stage3_boss_wall_step_dirs:
 	; CDL: read by stage3_boss_break_wall
 	.byte	$FF, $FF, $01, $00
-ptrs_stage3_boss_wall_blocks:
+ptrs_stage3_boss_wall_hole_blocks:
 	; CDL: read by stage3_boss_break_wall
 	.addr	vram_blocks_05E901
 	.addr	vram_blocks_05E971
 	.addr	vram_blocks_05EA01
-stage3_boss_wall_vram_addrs_a:
+stage3_boss_wall_hole_left_vram_addrs:
 	; CDL: read by stage3_boss_break_wall
 	.byte	$0C, $41, $08, $41, $04, $41
-stage3_boss_wall_vram_addrs_b:
+stage3_boss_wall_hole_right_vram_addrs:
 	; CDL: read by queue_vram_blocks_at_x, stage3_boss_break_wall
 	.byte	$10, $41, $14, $41, $18, $41
 vram_blocks_05E901:
@@ -5495,7 +5499,8 @@ vram_blocks_05EAF1:
 vram_blocks_05EB09:
 	.byte	$40, $C0, $60, $C0, $C0, $C0, $E0, $C0
 	.byte	$40, $C1, $60, $C1, $C0, $C1, $E0, $C1, $00, $C2, $20, $C2, $40, $C2, $60, $C2
-vram_blocks_05EB21:
+; stage3_boss_state_0C: the skeleton robot's fingers, 2 blocks per step.
+stage3_skeleton_fingers_blocks:
 	.byte	$20, $60, $20, $61, $E0, $6F, $E0, $5C, $A0, $62, $40, $75, $A0, $5F, $00, $71
 stage3_boss_debris_rates:
 	; CDL: read by update_objects, stage3_boss_spawn_debris_sparks; partly not accessed
@@ -5598,9 +5603,12 @@ vram_blocks_05EC26:
 vram_blocks_05EC34:
 	.byte	$00, $50
 	.byte	$00, $50, $00, $50, $00, $50
-; rideable_missile_state_01: two BG block animations of the missiles, by field
-; $30 and field $32 (VRAM $4404/$4480 on stage 4, $4804/$4880 in the ending).
-ptrs_rideable_missile_anim_blocks:
+; rideable_missile_state_01, while the helicopter carries the missile: the
+; helicopter's BG rotors (seen in the emulator): the main rotor (6 blocks
+; across the top, 4 frames by field $30) and the tail rotor (2 blocks, 3
+; frames by field $32, ptrs_helicopter_tail_rotor_blocks); VRAM $4404/$4480
+; on stage 4, $4804/$4880 in the ending.
+ptrs_helicopter_main_rotor_blocks:
 	; CDL: read by queue_vram_blocks_at_x, rideable_missile_state_01
 	.addr	vram_blocks_05EC44, vram_blocks_05EC50, vram_blocks_05EC5C, vram_blocks_05EC68
 vram_blocks_05EC44:
@@ -5613,7 +5621,7 @@ vram_blocks_05EC5C:
 vram_blocks_05EC68:
 	.byte	$00, $50, $E0, $54
 	.byte	$00, $55, $20, $55, $C0, $54, $00, $50
-ptrs_rideable_missile_anim_blocks_2:
+ptrs_helicopter_tail_rotor_blocks:
 	; CDL: read by queue_vram_blocks_at_x, rideable_missile_state_01
 	.addr	vram_blocks_05EC7A, vram_blocks_05EC7E, vram_blocks_05EC82
 vram_blocks_05EC7A:
@@ -7046,9 +7054,13 @@ brain_boss_minion_flags:
 hdma_list_05FF4E:
 	hdma_channel_ind	$4370, $42, $10, $7EEA00, $7E
 	hdma_channels_end	$80
-vram_blocks_05FF59:
+; queue_brain_boss_tiles (2 BG2 blocks at VRAM $4C0C, the middle of the
+; brain), seen in the emulator: the eye in the middle of the brain closed
+; (when it reappears, brain_boss_state_07) and open (when the roulette of
+; state 4 stops and the attack starts); ending_sequence_state_07 blinks it.
+brain_boss_eye_closed_blocks:
 	.byte	$A0, $B3, $C0, $B3
-vram_blocks_05FF5D:
+brain_boss_eye_open_blocks:
 	.byte	$C0, $BE, $E0, $BE
 ; brain_boss_attack_3: y the brain rises to, by difficulty.
 brain_boss_attack_3_min_y:

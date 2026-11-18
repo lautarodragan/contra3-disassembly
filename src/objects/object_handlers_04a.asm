@@ -939,9 +939,9 @@ stage3_boss_state_0C:
 	tay
 	asl	a
 	clc
-	adc	#.loword(vram_blocks_05EB21)
+	adc	#.loword(stage3_skeleton_fingers_blocks)
 	pha
-	lda	a:stage3_boss_state_0C_delays,y
+	lda	a:stage3_skeleton_fingers_delays,y
 	sta	$30,x
 	tya
 	lsr	a
@@ -952,7 +952,7 @@ stage3_boss_state_0C:
 	asl	a
 	asl	a
 	clc
-	adc	a:stage3_boss_state_0C_vram_addrs,y
+	adc	a:stage3_skeleton_fingers_vram_addrs,y
 	ply
 	phx
 	jsl	f:queue_vram_blocks
@@ -1241,7 +1241,7 @@ stage3_boss_break_wall:
 	asl	a
 	asl	a
 	clc
-	adc	a:ptrs_stage3_boss_wall_blocks,x
+	adc	a:ptrs_stage3_boss_wall_hole_blocks,x
 	tay
 	clc
 	adc	#$0008
@@ -1252,11 +1252,11 @@ stage3_boss_break_wall:
 	asl	a
 	pha
 	clc
-	adc	a:stage3_boss_wall_vram_addrs_b,x
+	adc	a:stage3_boss_wall_hole_right_vram_addrs,x
 	sta	zp_FC
 	pla
 	clc
-	adc	a:stage3_boss_wall_vram_addrs_a,x
+	adc	a:stage3_boss_wall_hole_left_vram_addrs,x
 	jsl	f:queue_vram_blocks
 	ldx	#$0001
 	stx	zp_02
@@ -2458,7 +2458,7 @@ rideable_missile_state_01:
 @have_vram_addr:
 	ply
 	pha
-	lda	a:ptrs_rideable_missile_anim_blocks,y
+	lda	a:ptrs_helicopter_main_rotor_blocks,y
 	tay
 	pla
 	phx
@@ -2477,7 +2477,7 @@ rideable_missile_state_01:
 @have_vram_addr2:
 	ply
 	pha
-	lda	a:ptrs_rideable_missile_anim_blocks_2,y
+	lda	a:ptrs_helicopter_tail_rotor_blocks,y
 	tay
 	pla
 	ldx	#$0030

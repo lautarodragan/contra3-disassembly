@@ -62,7 +62,11 @@ scroll_bg1_by_velocity_and_spawn:
 
 ; Object type $55: stage 6 (placed in slot 27 by layout_init_stage6): animates
 ; BG tiles of the organic background: every 8 frames DMAs $400 bytes, one of
-; the frames stage6_bg_tile_animator_tile_frames, to VRAM $3A90.
+; the frames stage6_bg_tile_animator_tile_frames, to VRAM $3A90 (BG1 tiles
+; $3A9-$3C8). Seen in the emulator: these tiles are the purple fibrous wall
+; behind the corridor before the giant heart (type $58) and in its room, and
+; the flesh along its ceiling and floor; none of them is on BG1 in the
+; stage's first part (the wall worm, the floor mouths).
 update_stage6_bg_tile_animator:
 	lda	stage_frame_counter
 	and	#$0007

@@ -61,9 +61,12 @@ before `start_grenade_blast`:
   (the two opcodes differ by one bit, `$B5` / `$95`).
 - **Does:** nothing; the results are never stored and A is overwritten
   by the next load.
-- **Effect:** the blast appears where the grenade is. This follows from
-  the code; it was not checked in the emulator, and there is no way to see
-  in the game where the blast "should" have been.
+- **Effect:** the blast appears where the grenade is. Checked in the
+  emulator (the `stage1` play, the slots compared on the frame a type
+  `$13` becomes `$1A`): a grenade at (102, 199) moving (-2, +6) became a
+  blast at (99, 206), one frame's movement further, not 8 pixels right and
+  16 up. There is no way to see in the game where the blast "should" have
+  been.
 
 ### The hover-bike riders' random delay is thrown away
 
@@ -83,8 +86,11 @@ to the next rider like this:
   `rng_lo`).
 - **Does:** the random value is lost; the delay is always 56, 48 or 40
   frames (EASY, NORMAL, HARD).
-- **Effect:** the riders come at a fixed rhythm. Follows from the code;
-  not checked in the emulator.
+- **Effect:** the riders come at a fixed rhythm. Checked in the emulator
+  (the `stage4` play on NORMAL): in some 30 spawns by
+  `stage4_spawn_hoverbike_rider`, the delay field read 47 on the next frame
+  every time (48 minus that frame's decrement), and a rider came every 49
+  frames.
 
 ### The brain boss can leave X on the stack (latent)
 

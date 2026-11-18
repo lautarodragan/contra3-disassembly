@@ -247,7 +247,14 @@ Oddities:
 
 - Types `$6F` and `$99` are never created (`$97` is not a real object
   type, see the table).
-- The helpers and tables of these handlers are named, except `sub_04C3A2`
-  (never called). Many names of BG block tables say what the code does with
-  them (`stage3_boss_state_0C_delays`, `ptrs_rideable_missile_anim_blocks`)
-  but not what the blocks show.
+- The helpers and tables of these handlers are named, except `sub_04C3A2`:
+  nothing calls it (no `jsr`/`jsl` or pointer to `$04:C3A2` in the ROM, not
+  executed in the CDL traces), so it keeps its address name. The BG block
+  tables that were named after the code are now named after what the
+  emulator shows them drawing (the skeleton robot's fingers through the wall
+  and the hole it breaks, `stage3_skeleton_fingers_blocks`,
+  `ptrs_stage3_boss_wall_hole_blocks`; the helicopter's rotors,
+  `ptrs_helicopter_main_rotor_blocks`; the brain's eye,
+  `brain_boss_eye_open_blocks`); a few block lists are still placeholders
+  (`vram_blocks_05E7C8`, `vram_blocks_05ECC6`, `vram_blocks_05946A`,
+  `vram_blocks_05F272`, `vram_blocks_05F914` ...).
