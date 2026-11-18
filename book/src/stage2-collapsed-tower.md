@@ -133,3 +133,9 @@ continue. Each run must see the mid-boss, the checkpoint, the climb to
 `bg1_y` -768, the boss in its arena, the stage clear, the card "STAGE 3"
 and the top-down stage 3. The other stages of the build play as the
 original's, one stage later (their goldens).
+
+**On real hardware.** The extra-stage build was played on a real SNES with
+an FXPAK flash cartridge: stage 1, this stage 2 and the top-down stage 3
+(the original stage 2), with no problems, and the stage was fun to play.
+That checks the inserted stage, the renumbered stages and the variant's
+moved tables on the console, not only in the emulator.
