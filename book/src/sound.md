@@ -196,8 +196,20 @@ blocks and directories the build makes, cut again, give the same files and
 lists. With the ROM's hash check, that is a round trip in both directions.
 
 **Listening.** The [Sound samples](sound-samples.md) page has every
-sample as a WAV, decoded as the DSP decodes it (`python3 tools/brr.py wav
-DIR` writes them; `make book` does it for the book).
+sample as a WAV, as the DSP plays it at pitch `$1000` (`python3
+tools/brr.py wav DIR` writes them; `make book` does it for the book).
+`tools/brr.py` decodes a sample as the DSP does, which
+`tests/test_brr_dsp.py` checks against snes9x's DSP itself (blargg's
+`SPC_DSP.cpp` from the core's source, compiled alone, `make cores`): six
+samples (looped and not, every filter) on a voice at pitch `$1000`, and
+the decoded samples are the DSP's sample for sample (all 30 samples were
+compared once). The DSP does not output its decoded samples as they are,
+though: every voice goes through its Gaussian interpolation, which at
+pitch `$1000` mixes each sample with its neighbours (370, 1305 and 374
+2048ths: a low-pass, about -11 dB at 16 kHz). The first WAVs left that
+out and sounded brighter than the game; `gaussian()` now applies it, and
+the test checks the voice's output (after GAIN and volumes) against it
+too, sample for sample.
 
 **Editing a sample.** Replace its `.brr` file with BRR data and run
 `make`. There is no WAV to BRR encoder here: BRR encoding is lossy (an
