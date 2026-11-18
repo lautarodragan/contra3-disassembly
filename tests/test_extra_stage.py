@@ -131,12 +131,17 @@ def record(rom, core, case):
 
 
 # The new stage 2, played by tools/c3emu/extra_stage.py: (title menu entry,
-# start at the checkpoint, the arena's bg1_x, most frames)
+# start at the checkpoint, the arena's bg1_x, most frames).  stage2_continue:
+# once the mid-boss has set the checkpoint, the player's last life is lost
+# (lives and barrier no longer kept up) and the game continued (Start on
+# the continue screen): the stage starts again at its checkpoint.
 ROUTES = {
     "stage2": (0, False, 0x0F00, 16000),
     "stage2_checkpoint": (0, True, 0x0700, 12000),
     "stage2_2p": (1, False, 0x0F00, 16000),
+    "stage2_continue": (0, False, 0x0700, 24000),
 }
+GAME_MODE_GAME_OVER = 0x0B
 BG1_X, BG1_Y, BG1_SCROLL_MODE, BG1_MAP_OFFSET = 0x1380, 0x1398, 0x13BA, 0x13BC
 SLOT_0900_TYPE = 0x0900 + plays.OBJ_TYPE
 OBJT_STAGE1_BOSS_CONTROLLER, OBJT_MIDBOSS_TANK = 0x01, 0x02
@@ -152,8 +157,24 @@ def record_route(rom, core, case):
         c.write_ram(plays.CHECKPOINT, 1)
     p = extra_stage.Player(c, ports=(0, 1) if menu else (0,))
     got = {"cards": {}, "slot_0900": set(), "modes": set(), "min_bg1_y": 0, "start_offset": None,
-           "arena_x": set(), "checkpoint": 0, "end": None, "frames": 0}
+           "arena_x": set(), "checkpoint": 0, "end": None, "frames": 0, "game_over": False,
+           "restart_offset": None}
+    dying = False
     for n in range(frames):
+        if case == "stage2_continue" and c.peek(GAME_MODE) == GAME_MODE_STAGE_PLAY:
+            if not dying and got["checkpoint"] and not got["game_over"]:
+                dying, p.keep_alive = True, False
+                c.write_ram(game.LIVES_P1, 0)
+                c.write_ram(game.BARRIER_P1, 0)
+            elif dying and got["game_over"] and c.peek16(BG1_SCROLL_MODE) == 1:
+                dying, p.keep_alive = False, True
+                got["restart_offset"] = c.peek16(BG1_MAP_OFFSET)
+                got["arena_x"].clear()
+        if dying and c.peek(GAME_MODE) != GAME_MODE_STAGE_PLAY:
+            c.hold(*(("start",) if n % 40 < 3 else ()))
+            c.run(1)
+            got["game_over"] |= c.peek(GAME_MODE) == GAME_MODE_GAME_OVER
+            continue
         p.step()
         mode, stage = c.peek(GAME_MODE), c.peek(game.STAGE)
         if mode == GAME_MODE_STAGE_CARD:
@@ -258,6 +279,7 @@ def test_extra_stage_route(runs, case):
     """The new stage 2 from its start (or its checkpoint) to stage 3."""
     got = runs[case]
     _menu, checkpoint, arena, _frames = ROUTES[case]
+    checkpoint = checkpoint and case != "stage2_continue"
     # the start: page 0, or page 8 from the checkpoint (bg1_map_offset names
     # the page after the one on screen)
     assert got["start_offset"] == (0x0480 if checkpoint else 0x0080), got
@@ -273,6 +295,9 @@ def test_extra_stage_route(runs, case):
     # the stage clear, the card of stage 3, the top-down stage 3
     assert got["cards"] == [(2, 2), (3, 3)], got
     assert got["end"] == (3, 2, 4), got
+    if case == "stage2_continue":
+        # game over, the continue, page 8 again
+        assert got["game_over"] and got["restart_offset"] == 0x0480, got
 
 
 def test_stage_select_seven_stages(core):
