@@ -118,7 +118,7 @@ to the next rider like this:
 ## Developer leftovers
 
 Code and data that nothing in the game reaches. 73 routines in `src/` have
-the note "no caller found", and 75 labels start with `unused_`
+the note "no caller found", and 82 labels start with `unused_`
 (`unused_apply_hit_flash`, `unused_typewriter_step`, ...); the source
 comments describe each of them. The most interesting ones:
 
@@ -194,8 +194,26 @@ text routines (`unused_start_typewriter_text`), the
 `unused_check_start_skip` pause/exit check, `stop_demo_and_reset_display`
 and other routines of the engine that nothing calls.
 
-**Data never read.**
+**Data never read.** [What the traces never touched](coverage.md) counts
+every byte the traces never ran or read, and identifies the blocks nothing
+refers to; the most curious of those:
 
+- A legal notice for a Japan-only release, a compressed BG map that no
+  load list refers to (`unused_warning_message`): "WARNING / THIS GAME IS
+  FOR SALE AND USE IN JAPAN ONLY. ..." and "(c) 1992 KONAMI", typo
+  included ("ART WORKS IN THIS GAME AER SEPARATELY OWNED"). In the font
+  and colours of the closing messages:
+
+  <img src="gallery/gfx/unused_warning_message.png" alt="unused_warning_message" width="512" style="image-rendering: pixelated">
+
+- A 16x16 ball sprite nothing draws (`unused_tiles_16BE11`), whose first
+  two bitplanes are also in a compressed stream nothing loads
+  (`unused_gfx_13F58D`); three palette blocks no palette task names
+  (`unused_palette_08810C`, `unused_palette_08812E`,
+  `unused_palette_088212`); a table of 324 long pointers into WRAM `$7F`
+  and bank `$08` at the start of bank `$06`
+  (`unused_long_pointers_068000`); and the three bytes of an `ldx #$1280`
+  after the `rtl` of `unused_start_vram_task_linked`.
 - Code bytes left inside a data list in bank `$05` (a `jsl
   reset_video_state` / `ldx` / `jsl load_data_list` sequence after a
   palette list's end).

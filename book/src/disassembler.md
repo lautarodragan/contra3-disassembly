@@ -215,6 +215,11 @@ The report's "Comparison with the CDL" table has the numbers. In short:
 - **D.** The direct page is `$0000` almost everywhere; 207 instructions run
   with D `$1300`, `$1340` or `$1F00` (some with more than one) and are
   annotated.
+- **Unknown bytes.** The 100,317 bytes the CDL never saw run or read are
+  accounted for in [What the traces never touched](coverage.md)
+  (`tools/coverage.py`, `make coverage`): two thirds are free space, the
+  rest code that never ran, data the traces did not reach, and a few
+  blocks nothing refers to (an unused BG map, sprite tiles and palettes).
 - **False pointers.** Five immediate pairs were no pointers (for example
   `$AAAA`/`$02`, an OAM fill value, and `$FFF6`/`$00`, which had created a
   label inside the vector table), and one pair joined two unrelated

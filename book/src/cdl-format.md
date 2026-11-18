@@ -115,7 +115,8 @@ vector fetches have no reader (0). Use it to find the code that owns a table.
 
 `code` = OPCODE|OPERAND, `data` = DATA|DMA (plane A) or PTRTAB (plane B),
 `both` = both, `unknown` = neither. Unknown bytes are code or data that the
-traces never reached, or padding.
+traces never reached, or padding; [What the traces never
+touched](coverage.md) accounts for every one of them (`make coverage`).
 
 ## Merging
 

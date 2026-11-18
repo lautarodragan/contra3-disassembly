@@ -9,6 +9,7 @@
   - [CDL format](cdl-format.md)
 - [Source layout](layout.md)
 - [The disassembler](disassembler.md)
+  - [What the traces never touched](coverage.md)
 - [Progress](progress.md)
 - [Shiftability](shiftability.md)
 - [Assets](assets.md)
