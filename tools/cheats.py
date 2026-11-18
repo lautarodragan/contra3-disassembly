@@ -107,7 +107,15 @@ def parse_options(words):
 
 
 def rom_name(words):
-    return "-".join(w.replace("=", "").lower() for w in words)
+    """build/contra3-<name>.sfc: the options joined; a long combination is
+    shortened to its first options plus a hash of all of them, so the file
+    name stays within the file system's limit."""
+    name = "-".join(w.replace("=", "").lower() for w in words)
+    if len(name) > 80:
+        import hashlib
+        digest = hashlib.sha1(name.encode()).hexdigest()[:8]
+        name = name[:60].rstrip("-") + "-" + digest
+    return name
 
 
 def fix_checksum(rom):
