@@ -1,0 +1,125 @@
+# Stage 6's spawn lists: the enemies, items and triggers of the side view,
+# spawned as BG1 scrolls (tools/spawns.py; book: Assets, Spawn lists). The
+# build makes them into build/assets/stages/stage6_spawns.inc, which
+# src/data/tables_05.asm includes (bank $05). CDL: read by
+# spawn_next_stage_object, find_free_object_slot_in_range; partly not accessed.
+#
+# `table LABEL`: the page table (ptrs_stage_spawn_pages[stage_number] points
+# to it), one list per 256-pixel page of the BG1 map, from page 0 to the
+# last page the stage scrolls to. `list LABEL page N[,N]` starts a list
+# (`list -`: a list nothing points to); `page N LABEL`: page N uses a list
+# defined in another file. `end` closes a list; a list without it runs on
+# into the next. One entry per line, in the order they spawn (one a frame):
+#
+#   pos    hex 00-FE: spawned when the scroll is at the page's start + pos
+#          (bg1_x); on a page whose next page is above it (a climb), when
+#          bg1_y is at the page's top - pos. Must not go down in a list.
+#   type   an OBJT_ constant of src/object_types.inc, or $XX
+#   x y    signed decimal: where it appears on the screen at that scroll
+#          (256: just past the right edge; -16 past the left)
+#   param  hex word: its field $3A (the meaning depends on the type)
+#   slots  hex START-END (END excluded): the object slots it may take, the
+#          first free one. While none is free it waits; if its page is left
+#          before then, the game freezes (book: Assets, Adding an enemy).
+level stage6_bg1
+table spawn_pages_059C2E
+
+list spawn_list_059C54 page 0
+  end
+
+list spawn_list_059C56 page 1
+  80  OBJT_WEAPON_CAPSULE                  272    96  0007  280-300  # flying weapon capsule
+  A0  OBJT_ALIEN_SOLDIER_SPAWNER           248   128  0000  780-840  # stage 6: sends alien soldiers (type $56) in from the edges
+  end
+
+list spawn_list_059C6C page 2
+  60  OBJT_WEAPON_CAPSULE                  272    96  0001  280-300  # flying weapon capsule
+  80  OBJT_WALL_WORM                       128   384  0100  900-940
+  80  OBJT_BG1_AUTOSCROLL_TRIGGER            0     0  0000  9C0-AC0  # stage trigger: turns bg1_autoscroll on (update_bg1_autoscroll_trigger)
+  end
+
+list spawn_list_059C8C page 3
+  00  OBJT_SCROLL_STOP_TRIGGER               0     0  0000  9C0-AC0  # stage trigger: stops the BG1 scroll (bg1_scroll_mode 4)
+  80  OBJT_WEAPON_CAPSULE                  272    96  0002  280-300  # flying weapon capsule
+  C8  OBJT_FLOOR_MOUTH                     248   224  0000  780-840
+  end
+
+list spawn_list_059CAC page 4
+  10  OBJT_ALIEN_SOLDIER_SPAWNER           248   128  0000  780-840  # stage 6: sends alien soldiers (type $56) in from the edges
+  28  OBJT_FLOOR_MOUTH                     248    64  0000  580-640
+  80  OBJT_WEAPON_CAPSULE                  272    96  0003  280-300  # flying weapon capsule
+  C8  OBJT_FLOOR_MOUTH                     248   192  0000  780-840
+  end
+
+list spawn_list_059CD6 page 5
+  10  OBJT_ALIEN_SOLDIER_SPAWNER           248   128  0000  780-840  # stage 6: sends alien soldiers (type $56) in from the edges
+  48  OBJT_FLOOR_MOUTH                     248   224  0000  680-740
+  80  OBJT_WEAPON_CAPSULE                  272    96  0004  280-300  # flying weapon capsule
+  C8  OBJT_FLOOR_MOUTH                     248    64  0000  780-840
+  end
+
+list spawn_list_059D00 page 6
+  10  OBJT_ALIEN_SOLDIER_SPAWNER           248   128  0000  780-840  # stage 6: sends alien soldiers (type $56) in from the edges
+  28  OBJT_FLOOR_MOUTH                     248   160  0000  580-640
+  80  OBJT_WEAPON_CAPSULE                  272    96  0005  280-300  # flying weapon capsule
+  end
+
+list spawn_list_059D20 page 7
+  end
+
+list spawn_list_059D22 page 8
+  00  OBJT_BG2_SCROLL_MODE_TRIGGER           0     0  0000  9C0-AC0  # stage trigger: bg2_map_offset and bg2_scroll_mode from field $3A (update_bg2_scroll_mode_trigger)
+  50  OBJT_WEAPON_CAPSULE                  272    80  0001  280-300  # flying weapon capsule
+  80  OBJT_HEART_BOSS                      128   384  0100  900-940
+  80  OBJT_BG1_AUTOSCROLL_TRIGGER            0     0  0000  9C0-AC0  # stage trigger: turns bg1_autoscroll on (update_bg1_autoscroll_trigger)
+  end
+
+list spawn_list_059D4C page 9
+  00  OBJT_SCROLL_STOP_TRIGGER               0     0  0000  9C0-AC0  # stage trigger: stops the BG1 scroll (bg1_scroll_mode 4)
+  80  OBJT_WEAPON_CAPSULE                  272    96  0007  280-300  # flying weapon capsule
+  C0  OBJT_WEAPON_CAPSULE                  272    80  0005  280-300  # flying weapon capsule
+  end
+
+list spawn_list_059D6C page 10
+  20  OBJT_BG2_SCROLL_MODE_TRIGGER           0     0  0100  9C0-AC0  # stage trigger: bg2_map_offset and bg2_scroll_mode from field $3A (update_bg2_scroll_mode_trigger)
+  80  OBJT_CAVE_BEAST                      128   384  0100  900-940
+  end
+
+list spawn_list_059D82 page 11
+  00  OBJT_SCROLL_STOP_TRIGGER               0     0  0000  9C0-AC0  # stage trigger: stops the BG1 scroll (bg1_scroll_mode 4)
+  80  OBJT_WEAPON_CAPSULE                  272    80  0002  280-300  # flying weapon capsule
+  FE  OBJT_SCROLL_MODES_TRIGGER              0     0  0002  9C0-AC0  # stage trigger: bg2_scroll_mode from field $3B, then as type $0E (update_scroll_modes_trigger)
+  end
+
+list spawn_list_059DA2 page 12
+  01  OBJT_RESPAWN_CLAMP_TRIGGER           512     0  0201  9C0-AC0  # stage trigger: clamp_player_top, respawn_mode from fields $3A/$3B
+  20  OBJT_BG2_SCROLL_MODE_TRIGGER           0     0  0200  300-780  # stage trigger: bg2_map_offset and bg2_scroll_mode from field $3A (update_bg2_scroll_mode_trigger)
+  78  OBJT_WINGED_ALIEN                    128   384  0100  900-940
+  C0  OBJT_BG1_AUTOSCROLL_TRIGGER            0     0  0000  9C0-AC0  # stage trigger: turns bg1_autoscroll on (update_bg1_autoscroll_trigger)
+  FE  OBJT_SCROLL_STOP_TRIGGER               0     0  0000  9C0-AC0  # stage trigger: stops the BG1 scroll (bg1_scroll_mode 4)
+  end
+
+list spawn_list_059DD6 page 13
+  80  OBJT_BG1_AUTOSCROLL_TRIGGER            0     0  0000  9C0-AC0  # stage trigger: turns bg1_autoscroll on (update_bg1_autoscroll_trigger)
+  81  OBJT_RESPAWN_CLAMP_TRIGGER             0     0  0001  9C0-AC0  # stage trigger: clamp_player_top, respawn_mode from fields $3A/$3B
+  end
+
+list spawn_list_059DEC page 14
+  00  OBJT_SCROLL_MODES_TRIGGER              0     0  0000  9C0-AC0  # stage trigger: bg2_scroll_mode from field $3B, then as type $0E (update_scroll_modes_trigger)
+  10  OBJT_WEAPON_CAPSULE                   -1    80  0004  280-300  # flying weapon capsule
+  20  OBJT_BG2_SCROLL_MODE_TRIGGER           0     0  0300  9C0-AC0  # stage trigger: bg2_map_offset and bg2_scroll_mode from field $3A (update_bg2_scroll_mode_trigger)
+  80  OBJT_FACE_BOSS                       128   384  0100  900-940
+  D8  OBJT_BG1_AUTOSCROLL_TRIGGER            0     0  0000  9C0-AC0  # stage trigger: turns bg1_autoscroll on (update_bg1_autoscroll_trigger)
+  end
+
+list spawn_list_059E20 page 15
+  00  OBJT_SCROLL_STOP_TRIGGER               0     0  0000  9C0-AC0  # stage trigger: stops the BG1 scroll (bg1_scroll_mode 4)
+  01  OBJT_RESPAWN_CLAMP_TRIGGER           512     0  0201  9C0-AC0  # stage trigger: clamp_player_top, respawn_mode from fields $3A/$3B
+  end
+
+list spawn_list_059E36 page 16
+  10  OBJT_LOAD_LIST_TRIGGER                 0     0  0010  9C0-AC0  # stage trigger: loads ptrs_trigger_load_lists[field $3A] (update_load_list_trigger)
+  # (no end: runs on into the next list)
+
+list spawn_list_059E40 page 17,18
+  end

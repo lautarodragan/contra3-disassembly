@@ -78,6 +78,7 @@ import brr  # noqa: E402
 import spcseq  # noqa: E402
 import levelmap  # noqa: E402
 import spcasm  # noqa: E402
+import spawns  # noqa: E402
 
 ROOT = os.path.dirname(HERE)
 ASSETS = "assets"
@@ -330,7 +331,9 @@ def ca65_args(root=ROOT):
     args = []
     for d in INCLUDE_DIRS:
         args += ["--bin-include-dir", os.path.join(root, d)]
-    return args
+    # the spawn lists' includes (tools/spawns.py), found with .include
+    spawns.build(root)
+    return args + ["-I", os.path.join(root, BUILD)]
 
 
 def check_limits(root=ROOT):
@@ -1082,7 +1085,13 @@ def gallery_copy(dest):
     for name, view in read_levels():
         out = os.path.join(dest, "gallery", "levels", name + ".png")
         os.makedirs(os.path.dirname(out), exist_ok=True)
-        snesgfx.write_png(out, *render_level(view, manifest))
+        picture = render_level(view, manifest)
+        got = spawns.for_level(name)
+        if got:     # the stage's spawn lists, as markers (tools/spawns.py)
+            pages = len(data_bytes(manifest[view["map"].split(",")[0]])) // levelmap.PAGE
+            picture = spawns.draw(*picture, got[1], level_route(view, pages)[0],
+                                  page_list(view.get("up", "")))
+        snesgfx.write_png(out, *picture)
         left = render_level(view, manifest, unreached=True)
         if left:
             snesgfx.write_png(out[:-4] + "_unreached.png", *left)

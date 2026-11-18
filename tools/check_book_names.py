@@ -101,6 +101,12 @@ def asm_symbols():
                 line = strip_comment(line)
                 for rx in DEFINITIONS:
                     names.update(rx.findall(line))
+    # the labels of the spawn lists (tools/spawns.py: `table NAME`, `list NAME`)
+    for f in ROOT.glob("assets/stages/*.spawns"):
+        for line in f.read_text(errors="replace").splitlines():
+            m = re.match(r"(?:table|list)\s+([A-Za-z_]\w*)", line)
+            if m:
+                names.add(m.group(1))
     return names
 
 

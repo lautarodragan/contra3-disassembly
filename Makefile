@@ -7,7 +7,7 @@ CA65   ?= ca65
 LD65   ?= ld65
 PYTHON ?= python3
 
-CA65FLAGS := --cpu 65816 -I src --bin-include-dir assets --bin-include-dir build/assets
+CA65FLAGS := --cpu 65816 -I src -I build/assets --bin-include-dir assets --bin-include-dir build/assets
 LD65FLAGS := -C src/contra3.cfg
 
 # src/main.asm includes every bank file, so it is the only translation unit;
@@ -42,7 +42,15 @@ $(rom): build/main.o src/contra3.cfg
 	 s=$$?; cat build/ld65.log >&2; \
 	 if [ $$s != 0 ]; then $(PYTHON) tools/assets.py overflow build/ld65.log; exit $$s; fi
 
-build/main.o: $(src_files) $(asset_files) $(asset_targets) build/assets.limits | build
+# The side-view stages' spawn lists: assets/stages/<name>.spawns (text) ->
+# build/assets/stages/<name>_spawns.inc, included by src/data/tables_05.asm
+# (tools/spawns.py; book: Assets, Spawn lists).
+spawn_incs := $(patsubst assets/stages/%.spawns,build/assets/stages/%_spawns.inc,$(wildcard assets/stages/*.spawns))
+
+build/assets/stages/%_spawns.inc: assets/stages/%.spawns tools/spawns.py src/object_types.inc
+	$(PYTHON) tools/spawns.py inc $< $@
+
+build/main.o: $(src_files) $(asset_files) $(asset_targets) $(spawn_incs) build/assets.limits | build
 	$(CA65) $(CA65FLAGS) -o $@ src/main.asm
 
 # Every asset fits where the game decompresses it (its max= in the manifest,

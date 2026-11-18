@@ -1,0 +1,194 @@
+# Stage 3's spawn lists: the enemies, items and triggers of the side view,
+# spawned as BG1 scrolls (tools/spawns.py; book: Assets, Spawn lists). The
+# build makes them into build/assets/stages/stage3_spawns.inc, which
+# src/data/tables_05.asm includes (bank $05). CDL: read by
+# spawn_next_stage_object, find_free_object_slot_in_range; partly not accessed.
+#
+# `table LABEL`: the page table (ptrs_stage_spawn_pages[stage_number] points
+# to it), one list per 256-pixel page of the BG1 map, from page 0 to the
+# last page the stage scrolls to. `list LABEL page N[,N]` starts a list
+# (`list -`: a list nothing points to); `page N LABEL`: page N uses a list
+# defined in another file. `end` closes a list; a list without it runs on
+# into the next. One entry per line, in the order they spawn (one a frame):
+#
+#   pos    hex 00-FE: spawned when the scroll is at the page's start + pos
+#          (bg1_x); on a page whose next page is above it (a climb), when
+#          bg1_y is at the page's top - pos. Must not go down in a list.
+#   type   an OBJT_ constant of src/object_types.inc, or $XX
+#   x y    signed decimal: where it appears on the screen at that scroll
+#          (256: just past the right edge; -16 past the left)
+#   param  hex word: its field $3A (the meaning depends on the type)
+#   slots  hex START-END (END excluded): the object slots it may take, the
+#          first free one. While none is free it waits; if its page is left
+#          before then, the game freezes (book: Assets, Adding an enemy).
+level stage3_bg1
+table spawn_pages_0597E6
+
+list spawn_list_05981A page 0
+  40  OBJT_WEAPON_CAPSULE                  272    96  0004  300-780  # flying weapon capsule
+  98  OBJT_WEAPON_CAPSULE                  -16    64  0007  300-780  # flying weapon capsule
+  A0  OBJT_ROLLING_MINE                    -16   176  0000  300-780  # rolling disc (stage 3)
+  DC  OBJT_WINDOW_SNIPER                   256    80  0000  300-780  # sniper in a window (stages 1, 3)
+  end
+
+list spawn_list_059844 page 1
+  20  OBJT_ROLLING_MINE                    -16     0  0000  300-780  # rolling disc (stage 3)
+  70  OBJT_ROLLING_MINE                    256   144  0002  300-780  # rolling disc (stage 3)
+  A0  OBJT_ROLLING_MINE                    256   144  0002  300-780  # rolling disc (stage 3)
+  C8  OBJT_ROLLING_MINE                    256   144  0002  300-780  # rolling disc (stage 3)
+  end
+
+list spawn_list_05986E page 2
+  08  OBJT_ROLLING_MINE                    256   144  0002  300-780  # rolling disc (stage 3)
+  48  OBJT_ROLLING_MINE                    256   144  0002  300-780  # rolling disc (stage 3)
+  68  OBJT_WINDOW_SNIPER                   256    64  0000  300-780  # sniper in a window (stages 1, 3)
+  E8  OBJT_ROLLING_MINE                    -16     0  0000  300-780  # rolling disc (stage 3)
+  end
+
+list spawn_list_059898 page 3
+  28  OBJT_WEAPON_CAPSULE                  272    80  0005  300-780  # flying weapon capsule
+  80  OBJT_ROLLING_MINE                    256   144  0002  300-780  # rolling disc (stage 3)
+  C0  OBJT_ROLLING_MINE                    256   176  0002  300-780  # rolling disc (stage 3)
+  E8  OBJT_ROLLING_MINE                    -16    96  0000  300-780  # rolling disc (stage 3)
+  end
+
+list spawn_list_0598C2 page 4
+  00  OBJT_SWING_PIVOT                     286    80  0000  280-300  # stage 3: pivot of a rotating swing the players hang from
+  50  OBJT_WINDOW_SNIPER                   256   176  0000  300-780  # sniper in a window (stages 1, 3)
+  C0  OBJT_ROLLING_MINE                    -16   176  0000  300-780  # rolling disc (stage 3)
+  end
+
+list spawn_list_0598E2 page 5
+  20  OBJT_STAGE3_WINGED_BUG               128     0  6040  300-800  # winged alien bug (stage 3)
+  end
+
+list spawn_list_0598EE page 7
+  80  OBJT_STAGE3_SPIKED_CLIMBER           384   128  0000  280-300  # stage 3 mid-boss climbing the girder, HP 160
+  FE  OBJT_SCROLL_STOP_TRIGGER               0     0  0000  9C0-AC0  # stage trigger: stops the BG1 scroll (bg1_scroll_mode 4)
+  end
+
+list spawn_list_059904 page 8
+  04  OBJT_HOMING_MISSILE                   32   256  0002  300-780  # small missile homing on a player (update_homing_missile)
+  0C  OBJT_HOMING_MISSILE                   64   256  0002  300-780  # small missile homing on a player (update_homing_missile)
+  14  OBJT_HOMING_MISSILE                   96   256  0002  300-780  # small missile homing on a player (update_homing_missile)
+  1C  OBJT_HOMING_MISSILE                  128   256  0002  300-780  # small missile homing on a player (update_homing_missile)
+  24  OBJT_HOMING_MISSILE                  160   256  0002  300-780  # small missile homing on a player (update_homing_missile)
+  30  OBJT_WEAPON_CAPSULE                   -1    80  0002  800-8C0  # flying weapon capsule
+  48  OBJT_WEAPON_CAPSULE                  272    80  0001  800-8C0  # flying weapon capsule
+  end
+
+list spawn_list_05994C page 10
+  FE  OBJT_SCROLL_STOP_TRIGGER               0     0  0000  9C0-AC0  # stage trigger: stops the BG1 scroll (bg1_scroll_mode 4)
+  end
+
+list spawn_list_059958 page 11
+  60  OBJT_WINDOW_SNIPER                    16    -1  0000  300-780  # sniper in a window (stages 1, 3)
+  A0  OBJT_WINDOW_SNIPER                    20    -1  0000  300-780  # sniper in a window (stages 1, 3)
+  E0  OBJT_WINDOW_SNIPER                    16    -1  0000  300-780  # sniper in a window (stages 1, 3)
+  end
+
+list spawn_list_059978 page 12
+  80  OBJT_BG1_AUTOSCROLL_TRIGGER            0     0  0000  9C0-AC0  # stage trigger: turns bg1_autoscroll on (update_bg1_autoscroll_trigger)
+  81  OBJT_RESPAWN_CLAMP_TRIGGER             0     0  0001  9C0-AC0  # stage trigger: clamp_player_top, respawn_mode from fields $3A/$3B
+  end
+
+list spawn_list_05998E page 13
+  00  OBJT_SCROLL_MODES_TRIGGER              0     0  0500  9C0-AC0  # stage trigger: bg2_scroll_mode from field $3B, then as type $0E (update_scroll_modes_trigger)
+  30  OBJT_WEAPON_CAPSULE                  256    48  0005  300-780  # flying weapon capsule
+  end
+
+list spawn_list_0599A4 page 14
+  10  OBJT_CHECKPOINT_TRIGGER                0     0  0000  300-780  # stage trigger: sets stage_checkpoint (stage 3)
+  40  OBJT_BG2_SCROLL_MODE_TRIGGER           0     0  0100  9C0-AC0  # stage trigger: bg2_map_offset and bg2_scroll_mode from field $3A (update_bg2_scroll_mode_trigger)
+  42  OBJT_STAGE3_SEARCHLIGHT_CRAFT        128   384  0100  900-940  # stage 3 mid-boss: flying craft with a searchlight (BG2)
+  end
+
+list spawn_list_0599C4 page 15
+  00  OBJT_SCROLL_STOP_TRIGGER               0     0  0000  9C0-AC0  # stage trigger: stops the BG1 scroll (bg1_scroll_mode 4)
+  02  OBJT_WEAPON_CAPSULE                  272    48  0006  300-780  # flying weapon capsule
+  50  OBJT_WINDOW_SNIPER                   256   128  0000  300-780  # sniper in a window (stages 1, 3)
+  98  OBJT_WINDOW_SNIPER                   256    64  0000  300-780  # sniper in a window (stages 1, 3)
+  end
+
+list spawn_list_0599EE page 16
+  01  OBJT_HOMING_MISSILE                  256    72  0000  300-780  # small missile homing on a player (update_homing_missile)
+  11  OBJT_HOMING_MISSILE                  256   104  0000  300-780  # small missile homing on a player (update_homing_missile)
+  21  OBJT_HOMING_MISSILE                  256   136  0000  300-780  # small missile homing on a player (update_homing_missile)
+  31  OBJT_HOMING_MISSILE                  256   168  0000  300-780  # small missile homing on a player (update_homing_missile)
+  80  OBJT_BG1_AUTOSCROLL_TRIGGER            0     0  0000  9C0-AC0  # stage trigger: turns bg1_autoscroll on (update_bg1_autoscroll_trigger)
+  84  OBJT_HOMING_MISSILE                  256   168  0000  300-780  # small missile homing on a player (update_homing_missile)
+  8C  OBJT_HOMING_MISSILE                  256   168  0000  300-780  # small missile homing on a player (update_homing_missile)
+  94  OBJT_HOMING_MISSILE                  256   168  0000  300-780  # small missile homing on a player (update_homing_missile)
+  A0  OBJT_WINDOW_SNIPER                   256   176  0000  300-780  # sniper in a window (stages 1, 3)
+  BC  OBJT_WINDOW_SNIPER                   256   176  0000  300-780  # sniper in a window (stages 1, 3)
+  C0  OBJT_STAGE3_BREAKABLE_WALL           286   192  0000  900-940  # stage 3: wall closing the way into the building, HP 64
+  end
+
+list spawn_list_059A5E page 17
+  00  OBJT_SCROLL_STOP_TRIGGER               0     0  0000  9C0-AC0  # stage trigger: stops the BG1 scroll (bg1_scroll_mode 4)
+  40  OBJT_WALL_HATCH                      256    96  4508  300-8C0  # wall hatch (stage 3)
+  50  OBJT_WEAPON_CAPSULE                   -1    48  0002  300-780  # flying weapon capsule
+  A0  OBJT_WALL_HATCH                      256    96  4514  300-8C0  # wall hatch (stage 3)
+  end
+
+list spawn_list_059A88 page 18
+  47  OBJT_SWING_PIVOT                     286    88  0002  280-300  # stage 3: pivot of a rotating swing the players hang from
+  80  OBJT_BG1_AUTOSCROLL_TRIGGER            0     0  0000  9C0-AC0  # stage trigger: turns bg1_autoscroll on (update_bg1_autoscroll_trigger)
+  BD  OBJT_WALL_HATCH                      256    96  4518  300-8C0  # wall hatch (stage 3)
+  FE  OBJT_SCROLL_MODES_TRIGGER              0     0  0002  9C0-AC0  # stage trigger: bg2_scroll_mode from field $3B, then as type $0E (update_scroll_modes_trigger)
+  end
+
+list spawn_list_059AB2 page 19
+  01  OBJT_RESPAWN_CLAMP_TRIGGER             0     0  0400  9C0-AC0  # stage trigger: clamp_player_top, respawn_mode from fields $3A/$3B
+  4C  OBJT_JUMPING_SOLDIER_SPAWNER          32    16  0000  300-780  # stage 3: invisible, lets out type $48 in bursts
+  60  OBJT_WALL_HATCH                      192     0  4218  300-8C0  # wall hatch (stage 3)
+  CC  OBJT_JUMPING_SOLDIER_SPAWNER         224    16  0000  300-780  # stage 3: invisible, lets out type $48 in bursts
+  end
+
+list spawn_list_059ADC page 20
+  00  OBJT_WALL_HATCH                      192     0  4398  300-8C0  # wall hatch (stage 3)
+  40  OBJT_WALL_HATCH                      192     0  4298  300-8C0  # wall hatch (stage 3)
+  80  OBJT_WALL_HATCH                      192     0  4198  300-8C0  # wall hatch (stage 3)
+  90  OBJT_WEAPON_CAPSULE                   -1    48  0001  300-780  # flying weapon capsule
+  C0  OBJT_WALL_HATCH                      192     0  4098  300-8C0  # wall hatch (stage 3)
+  end
+
+list spawn_list_059B10 page 21
+  4B  OBJT_SWING_PIVOT                     168   -30  0004  280-300  # stage 3: pivot of a rotating swing the players hang from
+  6B  OBJT_SWING_PIVOT                     264   -30  0006  280-300  # stage 3: pivot of a rotating swing the players hang from
+  80  OBJT_BG1_AUTOSCROLL_TRIGGER            0     0  0000  9C0-AC0  # stage trigger: turns bg1_autoscroll on (update_bg1_autoscroll_trigger)
+  C0  OBJT_WALL_HATCH                       32     0  4084  300-8C0  # wall hatch (stage 3)
+  C1  OBJT_WALL_HATCH                      160     1  4094  300-8C0  # wall hatch (stage 3)
+  end
+
+list spawn_list_059B44 page 22
+  00  OBJT_SCROLL_MODES_TRIGGER              0     0  0000  9C0-AC0  # stage trigger: bg2_scroll_mode from field $3B, then as type $0E (update_scroll_modes_trigger)
+  end
+
+list spawn_list_059B50 page 23
+  02  OBJT_RESPAWN_CLAMP_TRIGGER             0     0  0401  300-780  # stage trigger: clamp_player_top, respawn_mode from fields $3A/$3B
+  34  OBJT_LOAD_LIST_TRIGGER                 0     0  000A  9C0-AC0  # stage trigger: loads ptrs_trigger_load_lists[field $3A] (update_load_list_trigger)
+  48  OBJT_RESPAWN_CLAMP_TRIGGER             0     0  0301  9C0-AC0  # stage trigger: clamp_player_top, respawn_mode from fields $3A/$3B
+  81  OBJT_WEAPON_CAPSULE                  272   160  0003  300-780  # flying weapon capsule
+  end
+
+list spawn_list_059B7A page 24
+  20  OBJT_BG2_SCROLL_MODE_TRIGGER           0     0  0200  9C0-AC0  # stage trigger: bg2_map_offset and bg2_scroll_mode from field $3A (update_bg2_scroll_mode_trigger)
+  6E  OBJT_STAGE3_BOSS                     286   172  0000  900-940
+  78  OBJT_STAGE3_SECOND_ROBOT             286   172  0002  8C0-900
+  80  OBJT_BG1_AUTOSCROLL_TRIGGER            0     0  0000  9C0-AC0  # stage trigger: turns bg1_autoscroll on (update_bg1_autoscroll_trigger)
+  82  OBJT_STAGE3_ROBOT_CABLES             286    32  0000  300-700
+  end
+
+list -    # not referenced
+  80  OBJT_BG1_AUTOSCROLL_TRIGGER            0     0  0000  9C0-AC0  # stage trigger: turns bg1_autoscroll on (update_bg1_autoscroll_trigger)
+  end
+
+list -    # not referenced
+  00  OBJT_SCROLL_STOP_TRIGGER               0     0  0000  9C0-AC0  # stage trigger: stops the BG1 scroll (bg1_scroll_mode 4)
+  end
+
+list spawn_list_059BC6 page 6,9
+  end
+
+page 25 spawn_list_0597DA

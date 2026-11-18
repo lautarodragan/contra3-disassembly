@@ -1,0 +1,184 @@
+# Stage 1's spawn lists: the enemies, items and triggers of the side view,
+# spawned as BG1 scrolls (tools/spawns.py; book: Assets, Spawn lists). The
+# build makes them into build/assets/stages/stage1_spawns.inc, which
+# src/data/tables_05.asm includes (bank $05). CDL: read by
+# spawn_next_stage_object, find_free_object_slot_in_range; partly not accessed.
+#
+# `table LABEL`: the page table (ptrs_stage_spawn_pages[stage_number] points
+# to it), one list per 256-pixel page of the BG1 map, from page 0 to the
+# last page the stage scrolls to. `list LABEL page N[,N]` starts a list
+# (`list -`: a list nothing points to); `page N LABEL`: page N uses a list
+# defined in another file. `end` closes a list; a list without it runs on
+# into the next. One entry per line, in the order they spawn (one a frame):
+#
+#   pos    hex 00-FE: spawned when the scroll is at the page's start + pos
+#          (bg1_x); on a page whose next page is above it (a climb), when
+#          bg1_y is at the page's top - pos. Must not go down in a list.
+#   type   an OBJT_ constant of src/object_types.inc, or $XX
+#   x y    signed decimal: where it appears on the screen at that scroll
+#          (256: just past the right edge; -16 past the left)
+#   param  hex word: its field $3A (the meaning depends on the type)
+#   slots  hex START-END (END excluded): the object slots it may take, the
+#          first free one. While none is free it waits; if its page is left
+#          before then, the game freezes (book: Assets, Adding an enemy).
+level stage1_bg1
+table spawn_pages_059488
+
+list spawn_list_0594C0 page 0
+  10  OBJT_WEAPON_CAPSULE                  -16    48  0006  300-780  # flying weapon capsule
+  20  OBJT_WRECKED_CAR                     272   208  0000  280-300  # stage 1: wrecked car, solid, HP 16; explodes into debris
+  70  OBJT_GRENADE_SOLDIER                 256   200  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
+  80  OBJT_WEAPON_CAPSULE                  272    96  0007  300-780  # flying weapon capsule
+  A0  OBJT_SOLDIER_SPAWNER                   0     0  0000  780-840  # invisible: sends foot soldiers in from the screen edges
+  end
+
+list spawn_list_0594F4 page 1
+  68  OBJT_WEAPON_CAPSULE                  -16    48  0001  300-780  # flying weapon capsule
+  78  OBJT_WEAPON_CAPSULE                  272    96  0001  300-780  # flying weapon capsule
+  80  OBJT_LOAD_LIST_TRIGGER                 0     0  0004  9C0-AC0  # stage trigger: loads ptrs_trigger_load_lists[field $3A] (update_load_list_trigger)
+  E0  OBJT_POPUP_TURRET                    256   200  0000  780-840  # gun turret rising from the rubble (stage 1)
+  end
+
+list spawn_list_05951E page 2
+  50  OBJT_WINDOW_SNIPER                   256    72  0000  900-940  # sniper in a window (stages 1, 3)
+  E0  OBJT_POPUP_TURRET                    256   200  0002  780-840  # gun turret rising from the rubble (stage 1)
+  end
+
+list spawn_list_059534 page 3
+  30  OBJT_WEAPON_CAPSULE                  272    64  0003  300-780  # flying weapon capsule
+  48  OBJT_ALIEN_DOG                       256   190  0000  280-300  # alien dog (stage 1)
+  80  OBJT_WEAPON_CAPSULE                  -16    96  0005  300-780  # flying weapon capsule
+  C0  OBJT_WINDOW_JUMPER                   256   152  0008  300-780  # stage 1: soldier crashing out through a window, then a foot soldier
+  end
+
+list spawn_list_05955E page 4
+  00  OBJT_WINDOW_JUMPER                   256   152  000A  300-780  # stage 1: soldier crashing out through a window, then a foot soldier
+  48  OBJT_ALIEN_DOG                       256   190  0000  280-300  # alien dog (stage 1)
+  D0  OBJT_SNIPER_BUNKER                   256    96  0000  780-840  # stage 1: bunker of a window sniper; sends soldiers out, blown up with the sniper
+  end
+
+list spawn_list_05957E page 5
+  1C  OBJT_WINDOW_SNIPER                   244   104  0000  900-940  # sniper in a window (stages 1, 3)
+  C8  OBJT_ALIEN_DOG                       256   190  0000  280-300  # alien dog (stage 1)
+  end
+
+list spawn_list_059594 page 6
+  48  OBJT_GRENADE_SOLDIER                 256   104  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
+  58  OBJT_WINDOW_SNIPER                   256   200  0000  300-740  # sniper in a window (stages 1, 3)
+  end
+
+list spawn_list_0595AA page 7
+  80  OBJT_BG1_AUTOSCROLL_TRIGGER            0     0  0000  9C0-AC0  # stage trigger: turns bg1_autoscroll on (update_bg1_autoscroll_trigger)
+  B0  OBJT_BARRICADE                       256   192  0000  900-940  # stage 1 section 4: armored barricade, collapses when its core (type $14) is destroyed
+  C4  OBJT_WINDOW_SNIPER                   256    92  0000  300-740  # sniper in a window (stages 1, 3)
+  end
+
+list spawn_list_0595CA page 8
+  00  OBJT_SCROLL_STOP_TRIGGER               0     0  0000  9C0-AC0  # stage trigger: stops the BG1 scroll (bg1_scroll_mode 4)
+  80  OBJT_PLAYER_TANK                     256   200  0000  9C0-A00  # tank the players can drive (stage 1)
+  end
+
+list spawn_list_0595E0 page 9
+  60  OBJT_WINDOW_JUMPER                   256   152  000C  300-780  # stage 1: soldier crashing out through a window, then a foot soldier
+  C0  OBJT_WINDOW_JUMPER                   256   152  000E  300-780  # stage 1: soldier crashing out through a window, then a foot soldier
+  end
+
+list spawn_list_0595F6 page 10
+  00  OBJT_POPUP_TURRET                    256   200  0004  780-840  # gun turret rising from the rubble (stage 1)
+  40  OBJT_WINDOW_SNIPER                   256   104  0000  300-740  # sniper in a window (stages 1, 3)
+  88  OBJT_GRENADE_SOLDIER                 256    72  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
+  end
+
+list spawn_list_059616 page 11
+  28  OBJT_GRENADE_SOLDIER                 256   104  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
+  80  OBJT_BG1_AUTOSCROLL_TRIGGER            0     0  0000  9C0-AC0  # stage trigger: turns bg1_autoscroll on (update_bg1_autoscroll_trigger)
+  B0  OBJT_BARRICADE                       256   192  0000  900-940  # stage 1 section 4: armored barricade, collapses when its core (type $14) is destroyed
+  C4  OBJT_WINDOW_SNIPER                   256    92  0000  300-740  # sniper in a window (stages 1, 3)
+  end
+
+list spawn_list_059640 page 12
+  00  OBJT_SCROLL_STOP_TRIGGER               0     0  0000  9C0-AC0  # stage trigger: stops the BG1 scroll (bg1_scroll_mode 4)
+  30  OBJT_WEAPON_CAPSULE                  -16    96  0002  300-780  # flying weapon capsule
+  40  OBJT_POPUP_TURRET                    256   200  0006  780-800  # gun turret rising from the rubble (stage 1)
+  80  OBJT_DELETE_OBJECT_TRIGGER             0     0  000B  9C0-AC0  # stage trigger: deletes the first object (from $0280) of the type in field $3A (delete_self_and_linked)
+  end
+
+list spawn_list_05966A page 13
+  10  OBJT_WEAPON_CAPSULE                  -16    48  0007  300-780  # flying weapon capsule
+  48  OBJT_WEAPON_CAPSULE                  272    96  0007  300-780  # flying weapon capsule
+  80  OBJT_WEAPON_CAPSULE                  -16    48  0006  300-780  # flying weapon capsule
+  end
+
+list spawn_list_05968A page 14
+  42  OBJT_FLAME_GEYSER                    256     0  0080  780-8C0  # stage 1: invisible, shoots flames (type $2D) up from the floor
+  A4  OBJT_FLAME_GEYSER                    256     0  0050  780-8C0  # stage 1: invisible, shoots flames (type $2D) up from the floor
+  end
+
+list spawn_list_0596A0 page 15
+  80  OBJT_LOAD_LIST_TRIGGER                 0     0  0002  9C0-AC0  # stage trigger: loads ptrs_trigger_load_lists[field $3A] (update_load_list_trigger)
+  84  OBJT_FLAME_GEYSER                    256     0  00A0  780-8C0  # stage 1: invisible, shoots flames (type $2D) up from the floor
+  C4  OBJT_FLAME_GEYSER                    256     0  0050  780-8C0  # stage 1: invisible, shoots flames (type $2D) up from the floor
+  F0  OBJT_BG2_SCROLL_MODE_TRIGGER           0     0  0200  9C0-AC0  # stage trigger: bg2_map_offset and bg2_scroll_mode from field $3A (update_bg2_scroll_mode_trigger)
+  end
+
+list spawn_list_0596CA page 16
+  80  OBJT_MIDBOSS_TANK                      0     0  0000  900-940  # stage 1 mid-boss: tank crashing down through a building (BG2), HP 256
+  C0  OBJT_WEAPON_CAPSULE                  -16    96  0005  300-780  # flying weapon capsule
+  end
+
+list spawn_list_0596E0 page 17
+  00  OBJT_SCROLL_STOP_TRIGGER               0     0  0000  9C0-AC0  # stage trigger: stops the BG1 scroll (bg1_scroll_mode 4)
+  20  OBJT_BG2_SCROLL_MODE_TRIGGER           0     0  0100  9C0-AC0  # stage trigger: bg2_map_offset and bg2_scroll_mode from field $3A (update_bg2_scroll_mode_trigger)
+  80  OBJT_LOAD_LIST_TRIGGER                 0     0  0006  9C0-AC0  # stage trigger: loads ptrs_trigger_load_lists[field $3A] (update_load_list_trigger)
+  90  OBJT_WEAPON_CAPSULE                  272    96  0003  300-780  # flying weapon capsule
+  end
+
+list spawn_list_05970A page 18
+  02  OBJT_LOAD_LIST_TRIGGER                 0     0  0016  9C0-AC0  # stage trigger: loads ptrs_trigger_load_lists[field $3A] (update_load_list_trigger)
+  1C  OBJT_WEAPON_CAPSULE                  272   112  0002  300-780  # flying weapon capsule
+  80  OBJT_BOMBER_RAID                     256     0  0000  9C0-AC0  # stage 1: Mode 7 bomber plane, then the burning street (scene controller)
+  end
+
+list spawn_list_05972A page 19
+  00  OBJT_SCROLL_STOP_TRIGGER               0     0  0000  9C0-AC0  # stage trigger: stops the BG1 scroll (bg1_scroll_mode 4)
+  end
+
+list spawn_list_059736 page 20
+  08  OBJT_FIRE_ERUPTION                   272   184  0000  280-300  # stage 1 fire: invisible, throws fireballs (type $32) up, shakes the screen
+  98  OBJT_LEAPING_FIREBALL                272   184  F988  300-900  # stage 1 fire: fireball leaping out of the fire, HP 64
+  end
+
+list spawn_list_05974C page 21
+  08  OBJT_HOPPING_FIREBALL                256   200  0002  280-300  # stage 1 fire: fireball hopping out of the fire, trailing type $2E
+  3C  OBJT_LEAPING_FIREBALL                272   184  FA20  300-900  # stage 1 fire: fireball leaping out of the fire, HP 64
+  6C  OBJT_LEAPING_FIREBALL                272   184  F910  300-900  # stage 1 fire: fireball leaping out of the fire, HP 64
+  E8  OBJT_HOPPING_FIREBALL                256   200  0002  280-300  # stage 1 fire: fireball hopping out of the fire, trailing type $2E
+  end
+
+list spawn_list_059776 page 22
+  end
+
+list spawn_list_059778 page 23
+  20  OBJT_WEAPON_CAPSULE                  272    48  0001  280-300  # flying weapon capsule
+  B4  OBJT_FIRE_JET                        256   188  0000  280-300  # stage 1 fire: invisible, spews arcs of flames (type $30)
+  end
+
+list spawn_list_05978E page 24
+  end
+
+list spawn_list_059790 page 25
+  18  OBJT_BOMBER_RAID_END_TRIGGER           0     0  0000  9C0-AC0  # stage trigger: puts the fire out (bomber raid state 8), deletes the fire jet
+  end
+
+list spawn_list_05979C page 26
+  00  OBJT_LOAD_LIST_TRIGGER                 0     0  0000  9C0-AC0  # stage trigger: loads ptrs_trigger_load_lists[field $3A] (update_load_list_trigger)
+  20  OBJT_WEAPON_CAPSULE                  272    48  0007  280-300  # flying weapon capsule
+  38  OBJT_WEAPON_CAPSULE                  272    96  0007  280-300  # flying weapon capsule
+  70  OBJT_BG2_SCROLL_MODE_TRIGGER           0     0  0500  9C0-AC0  # stage trigger: bg2_map_offset and bg2_scroll_mode from field $3A (update_bg2_scroll_mode_trigger)
+  80  OBJT_BG1_AUTOSCROLL_TRIGGER            0     0  0000  9C0-AC0  # stage trigger: turns bg1_autoscroll on (update_bg1_autoscroll_trigger)
+  F0  OBJT_STAGE1_BOSS_CONTROLLER            0     0  0000  900-940  # stage 1 boss (giant turtle): invisible controller (update_stage1_boss_controller)
+  end
+
+list spawn_list_0597DA page 27
+  00  OBJT_SCROLL_STOP_TRIGGER               0     0  0000  9C0-AC0  # stage trigger: stops the BG1 scroll (bg1_scroll_mode 4)
+  end
