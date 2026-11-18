@@ -20,6 +20,7 @@ file give its title, its address range and what is known about its contents.
 | `src/gfx/` | data-only files of the graphics banks (`$08-$19`, `$1C`) |
 | `src/header.asm` | the internal header and the vectors (segment `HEADER`, at `$00:FFC0`) |
 | `src/data_macros.inc` | macros for the data formats with pointers (animation scripts, data lists, palette tasks, HDMA lists, player frames) |
+| `src/game/stages.inc` | the number and order of the stages (`STAGE_*`, `LAYOUT_*`) and the macros of the per-stage tables; the extra-stage build option; see [Adding a stage](adding-a-stage.md) |
 | `src/cheats.inc` | the build-time cheat options (`CHEAT_*`, all off by default) and their helpers; see [Cheats](cheats.md) |
 
 The names of the files are as specific as the code allowed so far: where it

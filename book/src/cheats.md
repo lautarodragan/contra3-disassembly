@@ -199,7 +199,7 @@ immediates found (shots that can be shot down, for example).
 
 | option | default | effect |
 |---|---|---|
-| `start_stage` | 1 | 1-6: the stage a new game starts at |
+| `start_stage` | 1 | 1-6 (1-7 with `extra_stage`): the stage a new game starts at |
 | `stage_select` | 0 | the stage select screen after the title |
 | `continues` | 0 | n > 0: continues on every difficulty |
 | `infinite_continues` | 0 | game over does not spend a continue |
@@ -217,6 +217,11 @@ stage card (checked in the emulator).
 **Continues.** `continues_per_difficulty` (2, 4, 4) becomes three times
 the option; `infinite_continues` replaces the `dec a:continues_left` of
 `game_over_fade_in` by a load, so the count never goes negative.
+
+**Extra stage.** `extra_stage` is not a cheat but a variant of the game
+built the same way: a new stage inserted as stage 2 (for now a copy of
+stage 1), the original stages 2-6 becoming 3-7. See
+[Adding a stage](adding-a-stage.md).
 
 ### Leftovers of the developers
 

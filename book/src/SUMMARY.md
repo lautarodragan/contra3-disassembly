@@ -15,6 +15,7 @@
 - [Assets](assets.md)
   - [Graphics gallery](gallery.md)
 - [Cheats](cheats.md)
+  - [Adding a stage](adding-a-stage.md)
 - [Contributing: naming](contributing.md)
 
 # The game
