@@ -1005,6 +1005,12 @@ def gallery():
                 out += [notes[name], ""]
             if name in checked:
                 out += [checked[name], ""]
+            got = spawns.for_level(name)
+            if got:
+                n = sum(len(lst.entries) for lst in got[1].lists)
+                out += [f"With the {n} entries of `{got[0]}` (see [Assets](assets.md#spawn-lists-text)): "
+                        "a yellow box where an object appears, with its type and parameter; a "
+                        "cyan dotted line where the screen's edge is when a trigger fires.", ""]
             missing = level_undefined(view, manifest)
             if missing:
                 where = "; ".join(f"page {pg}: " + ", ".join(f"`{n:03X}`" for n in ns)

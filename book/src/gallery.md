@@ -909,6 +909,8 @@ The stage goes right all the way: the screen shows the page before `bg1_map_offs
 
 Its palette is the CGRAM of the game at frame 600 of play `stage1` (`tests/test_previews.py`).
 
+With the 75 entries of `assets/stages/stage1.spawns` (see [Assets](assets.md#spawn-lists-text)): a yellow box where an object appears, with its type and parameter; a cyan dotted line where the screen's edge is when a trigger fires.
+
 <div style="overflow-x: auto"><a href="gallery/levels/stage1_bg1.png"><img src="gallery/levels/stage1_bg1.png" alt="stage1_bg1" width="1792" height="64" style="image-rendering: pixelated; max-width: none"></a></div>
 
 Pages not shown by the stage (dimmed): 28-31.
@@ -938,6 +940,8 @@ Pages not shown by the stage (dimmed): 6-9, 12-15.
 Pages 9-13 and 20-22 are vertical stretches, drawn above the page before them (`up=` in the level line): the stage scrolls right to page 8 (`bg1_x` $0800), up through 9-13 (`bg1_scroll_mode` 3, `bg1_scroll_vertical`: the next page when the top of the screen enters a new 256-pixel row), right from 13 through 19, up through 20-22, then right from 22 to the boss on page 25. The screen shows the page before `bg1_map_offset`, which names the page being drawn past the right edge (going right) or above the top (going up); traced in the emulator from the stage's start (a play with seed 35) and in `stage3_boss`, and checked against screenshots of the climb. Page 26 only has its first two tile columns drawn, off screen, at the boss; 26-31 are not shown.
 
 Its palette is the CGRAM of the game at frame 600 of play `stage3` (`tests/test_previews.py`).
+
+With the 89 entries of `assets/stages/stage3.spawns` (see [Assets](assets.md#spawn-lists-text)): a yellow box where an object appears, with its type and parameter; a cyan dotted line where the screen's edge is when a trigger fires.
 
 <div style="overflow-x: auto"><a href="gallery/levels/stage3_bg1.png"><img src="gallery/levels/stage3_bg1.png" alt="stage3_bg1" width="1152" height="576" style="image-rendering: pixelated; max-width: none"></a></div>
 
@@ -994,6 +998,8 @@ Pages not shown by the stage (dimmed): 5-15.
 The stage goes right to page 12, up through 13-14 (`update_bg1_scroll_mode_trigger`, then `winged_alien_state_07` resumes the climb), right to page 15, and up through 16-19: the start of the climb after the last boss, then the climb with the helicopter (`ending_start_vertical_autoscroll`, mode 6 `bg1_update_vertical`); page 19 only on HARD, where the last form chases the helicopter. The screen shows the page before `bg1_map_offset`; traced in the plays `stage6`, `stage6_boss`, `stage6_ending_easy` and `stage6_ending_hard`, and checked against screenshots. Pages 20-31 are not shown.
 
 Its palette is the CGRAM of the game at frame 600 of play `stage6` (`tests/test_previews.py`).
+
+With the 46 entries of `assets/stages/stage6.spawns` (see [Assets](assets.md#spawn-lists-text)): a yellow box where an object appears, with its type and parameter; a cyan dotted line where the screen's edge is when a trigger fires.
 
 <div style="overflow-x: auto"><a href="gallery/levels/stage6_bg1.png"><img src="gallery/levels/stage6_bg1.png" alt="stage6_bg1" width="896" height="448" style="image-rendering: pixelated; max-width: none"></a></div>
 

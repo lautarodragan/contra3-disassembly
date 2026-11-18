@@ -12,6 +12,7 @@ on:
       - 'docs/disasm_report.md'
       - 'tools/check_book_names.py'
       - 'tools/assets.py'
+      - 'tools/spawns.py'
       - 'assets/**'
       - '.github/workflows/book.yml'
   workflow_dispatch:

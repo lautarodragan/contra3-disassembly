@@ -387,6 +387,17 @@ def size(sp):
     return 2 * len(sp.page_labels()) + len(table_bytes(sp))
 
 
+def rom_size(path, root=ROOT):
+    """(bytes in the ROM, the original's or None) of a .spawns file."""
+    sp = read(os.path.join(root, path))
+    m = re.match(r"stage(\d+)\.spawns$", os.path.basename(path))
+    orig = None
+    for stage, table, _pages in ORIGINAL:
+        if m and int(m.group(1)) == stage and sp.table == f"spawn_pages_{table:06X}":
+            orig = ORIGINAL_END[stage] - table
+    return size(sp), orig
+
+
 def files(root=ROOT):
     d = os.path.join(root, STAGES)
     if not os.path.isdir(d):
@@ -540,23 +551,28 @@ def draw(W, H, pixels, pal, sp, route, up=()):
         boxes.append((x, yy, x + w, yy + LINE))
         return yy
 
+    labels = []
     for e, _page, x, y, sx, sy, vertical in placements(sp, route, up):
         s = label_of(e)
         if is_trigger(e):
             if vertical:
                 for xx in range(sx, sx + 256, 4):
                     rect(xx, sy, xx + 2, sy + 2, TRIGGER)
-                text_at(sx + 4, place(sx + 4, sy + 4, ADVANCE * len(s)), s, TRIGGER)
             else:
                 for yy in range(sy, sy + 224, 4):
                     rect(sx, yy, sx + 2, yy + 2, TRIGGER)
-                text_at(sx + 4, place(sx + 4, sy + 4, ADVANCE * len(s)), s, TRIGGER)
+            labels.append((sx + 4, sy + 4, s, TRIGGER))
             continue
         for d in range(-4, 5):
             for c, v in ((INK, 1), (OBJECT, 0)):
-                put(x + d, y - 4 - v, c); put(x + d, y + 4 + v, c)
-                put(x - 4 - v, y + d, c); put(x + 4 + v, y + d, c)
-        text_at(x + 7, place(x + 7, y - 2, ADVANCE * len(s)), s, OBJECT)
+                put(x + d, y - 4 - v, c)
+                put(x + d, y + 4 + v, c)
+                put(x - 4 - v, y + d, c)
+                put(x + 4 + v, y + d, c)
+        labels.append((x + 7, y - 2, s, OBJECT))
+    # the labels last, so that no marker covers one
+    for x, y, s, c in labels:
+        text_at(x, place(x, y, ADVANCE * len(s)), s, c)
     return W, H, bytes(px), pal
 
 

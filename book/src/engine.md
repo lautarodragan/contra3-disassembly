@@ -196,9 +196,11 @@ object loop subtracts from objects that move with the background.
 
 The stage's enemies are placed as BG1 scrolls (`init_stage_spawns`,
 `spawn_stage_objects`): per 256-pixel page, a list of 10-byte entries
-{position in the page, type, slot range, x, y, parameter}; an entry is
-spawned when the scroll position reaches it, into a free slot of its range
-(`find_free_object_slot_in_range`).
+{position in the page, type, slot range end and start / `$10`, x, y,
+parameter}, ended by the word `$00FF`; an entry is spawned when the scroll
+position reaches it, one a frame, into a free slot of its range
+(`find_free_object_slot_in_range`). The lists are text files,
+`assets/stages/*.spawns` (see [Assets: Spawn lists](assets.md#spawn-lists-text)).
 
 ## HUD and HDMA
 

@@ -19,6 +19,7 @@ assets/wram/<label>.png      graphics decompressed to WRAM, copied to VRAM later
 assets/wram/<label>.map     the stages' maps, decompressed to WRAM (text)
 assets/wram/<label>.metatiles  side-view metatile definitions (text)
 assets/wram/<label>.blocks   top-down block definitions (text)
+assets/stages/<name>.spawns  the side-view stages' spawn lists (text, tools/spawns.py)
 assets/sound/spc_driver.s    the sound driver (SPC700 assembly, tools/spcasm.py)
 assets/sound/spc_sfx.seq     its sound effects (sequences as text, included by spc_driver.s)
 assets/sound/<label>.seq     the songs (sequences as text)
@@ -675,7 +676,8 @@ tiles do. On the top-down maps the tile attributes come from the Mode 7
 characters (`tile_attrs_stage2` ..., see
 [Top-down stages](topdown.md#the-map-blocks-tile-attributes-and-patches)).
 The enemies are not in the map either: they are spawned by page from the
-stage's spawn lists (`spawn_stage_objects`, see [Engine](engine.md)).
+stage's spawn lists (`spawn_stage_objects`, see [Engine](engine.md)), text
+files too ([Spawn lists](#spawn-lists-text)).
 
 An example, in a throwaway copy of the repository: in
 `assets/wram/stage1_bg1_map.map`, page 0, row 2, cells 1-6 changed from
@@ -692,6 +694,195 @@ in at the start, lands on it and walks on it. Left the original, right the
 edit, at the start of the stage and a few seconds later:
 
 ![Stage 1 with an edited map: a ledge of street in the air](img/level-edit-demo.png)
+
+## Spawn lists (text)
+
+The enemies, items and stage triggers of the side-view stages are not in
+the maps: `init_stage_spawns` and `spawn_stage_objects` (see
+[Engine](engine.md)) create them as BG1 scrolls, from a page table per
+stage (`ptrs_stage_spawn_pages[stage_number]`: stages 1, 3 and 6; the other
+entries point to stage 1's, unused: stage 4 sets `spawn_disabled` in
+`layout_init_stage4_common`, and the opening's frame, `stage_cinematic`,
+does not spawn) and a list per page. Each stage's table and lists are a text file,
+`assets/stages/stage1.spawns`, `stage3.spawns` and `stage6.spawns`, which
+the build makes into `build/assets/stages/stage1_spawns.inc` ... (ca65 source:
+the labels, the page table as `.addr` of the labels, the entries) with
+`tools/spawns.py`; `src/data/tables_05.asm` includes it where the data was,
+so the labels stay labels and the ROM is the original byte for byte. The
+top-down stages do not use this: their enemies come from generators and
+target sets in code and tables (see [Top-down stages](topdown.md)), and
+stage 4's airship has a list of its own (`airship_spawn_x`).
+
+```
+table spawn_pages_059488
+
+list spawn_list_0594C0 page 0
+  10  OBJT_WEAPON_CAPSULE                  -16    48  0006  300-780  # flying weapon capsule
+  20  OBJT_WRECKED_CAR                     272   208  0000  280-300  # stage 1: wrecked car, ...
+  ...
+  A0  OBJT_SOLDIER_SPAWNER                   0     0  0000  780-840  # invisible: sends foot ...
+  end
+```
+
+`table` names the page table; `list LABEL page N` starts the list of page
+N (`page 6,9`: two pages share it; `list -`: bytes nothing points to, kept
+as they are); `page N LABEL` gives a page a list of another file (stage 3's
+last page uses stage 1's `spawn_list_0597DA`); `end` is the list's
+terminator (the bytes `$FF, $00`: `spawn_stage_objects` compares the whole
+word with `$00FF`); a list without `end` runs on into the next one
+(stage 6's `spawn_list_059E36` ends in `spawn_list_059E40`'s). `level`
+names the gallery preview the entries are drawn on. An entry is 10 bytes,
+one line, in this order:
+
+| column | bytes | meaning |
+|---|---|---|
+| position | +0 | hex `00`-`FE`: the entry is spawned once the low byte of the scroll reaches it (`FF` is the terminator) |
+| type | +1 | `OBJ_TYPE`: an `OBJT_` constant of `src/object_types.inc`, or `$XX` |
+| x, y | +4, +6 | signed decimal: where the object is on the screen when the scroll is at the position (256 is just past the right edge, -16 past the left); a late spawn is moved back by the pixels the scroll went past |
+| parameter | +8 | hex word: the object's field `$3A` (a window number, a load list, a scroll mode...) |
+| slots | +3, +2 | hex `START-END` (`END` excluded): the first free object slot in that range is taken (`find_free_object_slot_in_range`; stored /`$10`) |
+
+**Pages and positions.** List N is the one read while BG1 is on page N of
+its map: the stage starts at the list of its first page
+(`bg1_map_offset`, so a checkpoint start reads from the middle of the
+table), and the next list follows each time the scroll crosses a page
+boundary. Going right, an entry spawns when `bg1_x` is the page's left
+edge plus its position; on a climb (a page whose next page is above it,
+`up=` in the gallery's level line) the positions count upwards: when
+`bg1_y` is the page's top minus the position, the screen's top edge then
+being on the page above. Traced in the plays (`stage1`, `stage1_boss`,
+`stage3_boss`, `stage6`, `stage6_boss`): the list changed at every
+`bg1_x` page from the start and from the checkpoints, and on the climbs of
+stages 3 and 6 when `bg1_y` crossed below 0, -256, -512. Within a list
+the entries are spawned in order, one a frame, so a position lower than
+the one before spawns right after it; `tools/spawns.py` refuses positions
+that go down. When the scroll leaves a page, the entries of its list not
+spawned yet are all spawned at once (horizontally; on a climb, by the
+code, only those at positions 0 and 1, and the game would freeze on the
+others).
+
+**Checks.** The build refuses a file with an unknown type, a position
+`FF`, a page with no list (every page from 0 to the last one in the
+table), more than 32 pages, a slot range outside `$0280-$0ABF` or not on
+slot boundaries, and positions that go down, naming the line.
+`python3 tools/spawns.py check` reads every file back from its own text,
+`python3 tools/spawns.py list` prints each entry where the gallery draws
+it, and `tests/test_spawns.py` checks the text against the ROM's bytes.
+
+**Previews.** The gallery draws the spawns on the side-view BG1 routes
+([gallery](gallery.md#levels)): a yellow box where each object appears,
+with its type (without `OBJT_`) and its parameter, and a cyan dotted line
+where the screen's left edge (on a climb its top) is when a trigger
+fires.
+
+**Limits.** All of it is in bank `$05` (the spawn code reads the lists
+with 16-bit pointers through the data bank) and the bank has 75 bytes
+free: seven more entries in all, before the build stops with ld65's
+overflow, which `tools/assets.py overflow` reports with the size of each
+`.spawns` file and its original. More room means moving other data out of
+bank `$05`. The table must have a list for every page the stage scrolls
+to: past its end the code reads whatever words follow as pointers.
+
+## Adding an enemy to a level
+
+1. Find the page and the place in the [gallery](gallery.md#levels):
+   a page is 256 pixels; the markers show where the lists put things. The
+   list of page N is `list ... page N` in the stage's `.spawns` file (`assets/stages/stage1.spawns` ...).
+2. Add a line in the list, at its place in position order. To have the
+   enemy walk in from the right when the screen's left edge is 128 pixels
+   into the page, use position `80` and x `256`; y is the screen line of
+   its feet (the stage's street is at about 200 on stage 1). Copy the slot
+   range and the parameter of an entry of the same type (`300-780` is the
+   range of ordinary enemies, `9C0-AC0` of triggers).
+3. Run `make` (`make build/contra3.sfc` to skip the hash check), `make
+   book` for the gallery, and run the ROM.
+
+An example, in a throwaway copy: stage 1, page 0, the wrecked car moved
+from x 272 at position `20` (it arrived from the right) to x 176 at
+position `00` (there when the stage starts), and two grenade soldiers and
+an alien dog added:
+
+```
+list spawn_list_0594C0 page 0
+  00  OBJT_WRECKED_CAR  176  208  0000  280-300
+  10  OBJT_WEAPON_CAPSULE                  -16    48  0006  300-780  # flying weapon capsule
+  30  OBJT_GRENADE_SOLDIER  256  200  0000  300-780
+  40  OBJT_GRENADE_SOLDIER  272  200  0000  300-780
+  58  OBJT_ALIEN_DOG  256  190  0000  280-300
+  70  OBJT_GRENADE_SOLDIER                 256   200  0000  300-780  # stage 1: soldier throwing ...
+  ...
+```
+
+The gallery's route, the original above, the edit below:
+
+![The start of stage 1's route in the gallery, with the spawn markers, before and after the edit](img/spawn-edit-gallery.png)
+
+and in the emulator, walking right and firing, the original left and the
+edit right, at `bg1_x` `$10`, `$80` and `$100`:
+
+![Stage 1 with an edited spawn list: the car at the start, more soldiers and a dog](img/spawn-edit-demo.png)
+
+What an entry needs besides its line:
+
+- **A free slot when its page ends.** An entry waits while every slot of
+  its range is taken (one try a frame); if the screen crosses into the
+  next page first, the page's remaining entries are spawned in a loop
+  that does not end until a slot frees, and nothing frees one: the game
+  freezes. Two `OBJT_SOLDIER_SPAWNER` entries on page 0 of stage 1 with
+  the one-slot range `780-7C0` froze the game (`frame_counter` stopped) as
+  `bg1_x` reached `$100`. The 30 slots `$0300-$0ABF` are shared:
+  `300-780` with the enemy bullets, effects and debris (`find_free_slot`
+  allocates there too), the slots above with what the stage puts at fixed
+  places, so ranges are what keeps a boss's slot free.
+- **Fixed slots.** Some objects work only in one slot, because other code
+  reads them there: the stage 1 boss controller, the mid-boss tank, the
+  stage 3 searchlight craft and the bosses of stage 6 in `900-940`
+  (`$0900`, slot 28); the player tank in `9C0-A00` (slot 31, whose
+  damage counter the tank code reads); the sniper of a sniper bunker
+  (`OBJT_SNIPER_BUNKER` watches the `OBJT_WINDOW_SNIPER` in `$0900`);
+  the barricade puts its core and cannons in slots 25-27 (`$0840-$08FF`)
+  and stage 3 and 6 put their stage animators in slot 27
+  (`layout_init_stage3`, `layout_init_stage6`). See
+  [Enemies and bosses](enemies-early.md).
+- **Parents.** Parts are created by their parent, not by lists: the
+  barricade's core and cannons, the bosses' parts, the bullets and
+  effects. `OBJT_STAGE3_SECOND_ROBOT` and `OBJT_STAGE3_ROBOT_CABLES` are
+  listed next to `OBJT_STAGE3_BOSS`, `OBJT_BOMBER_RAID_END_TRIGGER` ends
+  the `OBJT_BOMBER_RAID`'s fire section, `OBJT_SNIPER_BUNKER` needs its
+  sniper.
+- **Graphics.** An object is drawn with the sprite characters and colours
+  the stage has loaded at the places its metasprites name: a type from
+  another stage needs its graphics loaded, by the stage's load list or by
+  an `OBJT_LOAD_LIST_TRIGGER` entry (parameter: 2 x the list's number in
+  `ptrs_trigger_load_lists`). Not checked by the build.
+- **Arenas.** `OBJT_SCROLL_STOP_TRIGGER` stops the scroll (rounding it to
+  the nearest page start: put it at position `00` to stop on that page);
+  the barricade, the mid-boss tank, the bomber raid and the spiked climber
+  wait for that stop (`bg1_scroll_mode` 4), and their death starts it
+  again (`midboss_tank_state_08`, `barricade_collapse_queue`,
+  `update_stage3_breakable_wall`: mode 1, right; `spiked_climber_check_fallen`:
+  mode 2, a climb). An arena whose enemy never sets the mode keeps the
+  screen stopped. The bosses are spawned like the rest (stage 1's
+  controller at page 26, `F0`, then the stop at page 27).
+- **Scrolling.** `OBJT_BG1_SCROLL_MODE_TRIGGER` (parameter: the
+  `bg1_scroll_mode`, 0 right, 2 a climb, 4 stopped) and
+  `OBJT_SCROLL_MODES_TRIGGER` (low byte BG1's mode, high byte BG2's) round
+  the scroll up to the next page and change the mode; the original puts
+  them at `FE` or `00`. A stop at `FE` (stage 3 page 7) moves the screen
+  to the next page without moving on to its list; a climb follows there,
+  whose lists then follow `bg1_y`. `OBJT_BG1_AUTOSCROLL_TRIGGER` starts
+  the automatic scroll, `OBJT_BG2_SCROLL_MODE_TRIGGER` changes BG2's map
+  page and mode (parameter: `bg2_map_offset` and the mode in its low 4
+  bits), `OBJT_RESPAWN_CLAMP_TRIGGER` how players come back on a climb
+  (low byte `clamp_player_top`, high byte `respawn_mode`).
+- **Checkpoints.** `OBJT_CHECKPOINT_TRIGGER` (stage 3) sets
+  `stage_checkpoint`, as the stage 1 mid-boss's death does; where a
+  continue then starts is the checkpoint layout's (`stage_layout` + `$0A`:
+  its map offsets, not the spawn list), and the spawns start from the list
+  of that page.
+- **A new stage** needs its page table in `ptrs_stage_spawn_pages` (by
+  `stage_number`) and its file in `assets/stages/`; its lists must fit in
+  bank `$05` (see Limits above).
 
 ## Palettes (GIMP .gpl)
 
@@ -913,6 +1104,11 @@ so a changed data list cannot leave a stale limit behind, that every
 asset a list loads has one, and that a limit the source cannot give (the
 original size above) has its `# limit:` comment. 92 assets have room
 (their limit is larger than their data); the others are full.
+
+The spawn lists ([Spawn lists](#spawn-lists-text)) are not loaded
+anywhere: they are read in place, in bank `$05`, so their limit is the
+bank's free space, and the overflow report names each `.spawns` file
+with its size and its original.
 
 Some sizes are fixed rather than limited, and must match exactly:
 

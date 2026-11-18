@@ -173,6 +173,8 @@ def main():
         if (ROOT / "assets" / rest).is_dir():  # a directory of generated files
             return True
         stem = rest.rsplit(".", 1)[0]
+        if stem.endswith("_spawns") and (ROOT / "assets" / (stem[:-7] + ".spawns")).exists():
+            return True     # build/assets/stages/<name>_spawns.inc (tools/spawns.py)
         return any((ROOT / "assets" / (stem + ext)).exists()
                    for ext in (".bin", ".png", ".gpl", ".tilemap", ".seq", ".txt", ".s"))
 

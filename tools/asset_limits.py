@@ -718,6 +718,10 @@ def bank_assets(srcdir):
             continue
         comments = []
         for text in open(os.path.join(srcdir, m.group(1))):
+            # the spawn lists (tools/spawns.py): their text, its size in the ROM
+            spawn = re.match(r'\s*\.include\s+"stages/(\w+)_spawns\.inc"', text)
+            if spawn:
+                out.setdefault(bank, []).append((f"assets/stages/{spawn.group(1)}.spawns", None))
             # (tools/shift.py includes some through a macro)
             inc = re.match(r'\s*(?:\.incbin|shift_incbin_filler)\s+"([^"]+)"', text)
             if inc:
@@ -743,6 +747,12 @@ def ld65_diagnosis(output, srcdir, include_dirs):
         lines.append(f"bank ${bank:02X} is {over:,} bytes too full. Its assets (in the ROM; "
                      "the original in brackets where its source comment gives it):")
         for path, orig in banks.get(bank, []):
+            if path.endswith(".spawns"):
+                import spawns
+                size, orig = spawns.rom_size(path)
+                grew = f" (original {orig:,}, {size - orig:+,})" if orig and size != orig else ""
+                lines.append(f"    {path:36} {size:>8,}{grew}")
+                continue
             size = None
             for d in include_dirs:
                 if os.path.exists(os.path.join(d, path)):
