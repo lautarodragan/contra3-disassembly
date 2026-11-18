@@ -86,8 +86,15 @@ prints the table and decodes the sequences of the sound effects.
 The sequences of sounds `$01`-`$5F`, `$6D` and `$6E` are in the driver,
 `$1B37`-`$2DAB` (`assets/sound/spc_sfx.seq`, see
 [Sound effects as text](#sound-effects-as-text)). Sound `$58` has two
-channels but its second sequence address is 0 (an unreached sequence
-follows its header); sounds `$31` and `$5F` share a header.
+channels but its second sequence address is 0: the driver starts
+channel 7 there anyway (the code that starts a sound does not check), so
+it reads the driver's variables at ARAM `$0000` as a sequence. A sequence
+that nothing reaches follows `$58`'s first one, much like it (another pan
+and note, its own `call` into the shared part): probably the second
+channel the header was meant to point at (`sound_58_ch1_unused`). Sound
+`$1D`'s header has a second sequence address too (`sound_1D_ch1`, a
+lower looping part), but the table gives `$1D` one channel, so it is
+never played. Sounds `$31` and `$5F` share a header.
 
 ## Instruments
 
@@ -123,6 +130,12 @@ filter is always the table at `$1199` (`$0C $21 $2B $2B $13 $FE $F3 $F9`).
 `echo m l r` sets EON = *m* (the voices that echo) and the echo volumes;
 *m* = 0 turns the echo off. The songs use delays 3 and 5: the buffer is
 `$D800`-`$FFFF`, just above the stage samples (the largest ends at `$D78A`).
+The address comes from the code `echo_setup` calls (`L11A1`, which
+writes EDL and then ESA = `$00` - *d* x 8 pages, `asl a` three times,
+`eor a, #$FF`, `inc a`, `adc a, #$00`); `tools/asset_limits.py`
+(`echo_buffer`) reads that code and the largest delay of all the `.seq`
+files, so the stage sample blocks' limit follows a song that changes its
+delay (see [Assets: size limits](assets.md#size-limits)).
 
 ## Sequences
 
@@ -295,7 +308,11 @@ sound_3E_ch0:
 
 `sound_NN:` is the header of sound `$NN` (one `song` address per channel),
 `sound_NN_chK` the sequence of its channel *K*, `Lxxxx` the other jump
-targets; bytes no sequence reaches are `.byte` lines. The driver's source
+targets. Every byte of the file is now a statement: the two sequences no
+channel plays (`sound_1D_ch1`, `sound_58_ch1_unused`, see
+[The sound table](#the-sound-table)) are written out too, so that their
+addresses (`$1D`'s header word, the `call` in `$58`'s) are labels that
+follow edits. The driver's source
 includes the file at `$1B37` and `sound_table` points at the `sound_NN`
 labels, so the two share their labels: a sound effect may grow or shrink,
 the sounds after it move and the table follows. What is known of the

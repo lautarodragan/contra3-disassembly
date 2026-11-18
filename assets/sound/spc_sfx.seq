@@ -488,9 +488,10 @@ sound_20_ch0:
 	end
 
 # sound $1D
+# Its header has two sequences, but sound_table gives it one channel: the
+# driver never plays sound_1D_ch1 (a lower, looping part).
 sound_1D:
-	song sound_1D_ch0
-	.byte $2E $1F
+	song sound_1D_ch0 sound_1D_ch1
 sound_1D_ch0:
 	inst $0F
 	channel_volume $7F
@@ -513,8 +514,19 @@ sound_1D_ch0:
 	note $26 . . $7F
 	note $24 . . $7F
 	end
-	.byte $E2 $0A $EE $50 $E4 $00 $BE $C8 $E3 $00 $EC $00 $E6 $24 $0A $63
-	.byte $7F $26 $0F $FF $1D $14 $FF $21 $0F $FF $E7 $08 $F1 $00 $FF
+sound_1D_ch1:	# never played (see the header)
+	inst $0A
+	channel_volume $50
+	vibrato $00 $BE $C8
+	pan $00
+	transpose $00
+	loop1_start
+	note $24 $0A $63 $7F
+	note $26 $0F . $7F
+	note $1D $14 . $7F
+	note $21 $0F . $7F
+	loop1 $08 $F1 $00
+	end
 
 # sound $1C
 sound_1C:
@@ -1142,9 +1154,24 @@ sound_58_ch0:
 	call L2540
 	loop1 $03 $CE $F6
 	end
-	.byte $E2 $0B $EE $7F $EA $96 $E3 $00 $24 $0A $63 $7F $F3 $00 $0A $3C
-	.byte $E2 $0F $A4 $FF $E4 $14 $64 $FF $E5 $64 $FA $96 $E6 $FE $40 $25
-	.byte $E7 $03 $CE $F6 $FF
+# Probably meant as sound $58's second channel: sound_58's header has 0 in
+# its place (the driver then reads channel 7's sequence from ARAM $0000, its
+# variables), so nothing plays this. Its call is a label, so it follows edits.
+sound_58_ch1_unused:
+	inst $0B
+	channel_volume $7F
+	tempo $96
+	pan $00
+	note $24 $0A $63 $7F
+	slide $00 $0A $3C
+	inst $0F
+	note $24 . . $7F
+	vibrato $14 $64 $FF
+	pitch_noise $64 $FA $96
+	loop1_start
+	call L2540
+	loop1 $03 $CE $F6
+	end
 L2540:
 	transpose $FA
 	note $30 $02 $64 $7F
