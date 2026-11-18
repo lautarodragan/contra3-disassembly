@@ -135,7 +135,7 @@ calls them; see [Cheats](cheats.md#leftovers-of-the-developers).
 **Button codes on the title.** `check_button_code_unused` (only plays a
 sound), `check_30_lives_code` (30 lives) and `check_stage_select_code` (the
 stage select) are never called. The `button_codes` cheat option calls
-them; see [Game flow](game-flow.md#the-opening-and-the-title) and
+the last two, `sound_check` the first; see [Game flow](game-flow.md#the-opening-and-the-title) and
 [Cheats](cheats.md#leftovers-of-the-developers).
 
 **The hidden 30 lives option.** `lives_options` has a fourth entry, 30,
@@ -151,7 +151,10 @@ uncalled button code does ([Game flow](game-flow.md)).
 MODE") is a working sound test that nothing enters. The title menu still
 has the way in: `title_menu_unused_sound_check` fades the title out and
 returns mode result 3, which `game_mode_title` turns into the sound check,
-but nothing jumps to it.
+but nothing jumps to it. Probably the uncalled title code
+`check_button_code_unused` (Right, Down, Down+Right, X) did; the
+`sound_check` cheat option wires it that way and makes the screen
+reachable ([Cheats](cheats.md#leftovers-of-the-developers)).
 
 **An empty game mode.** `GAME_MODE_UNUSED_1` (`game_mode_unused_1`) only
 returns and is never entered ([Game flow](game-flow.md)).

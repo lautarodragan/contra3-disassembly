@@ -176,7 +176,9 @@ Notes:
   only the sets of stages 2 and 5 have (silent elsewhere).
 - Never queued: `$06`, `$1C`, `$4C`,
   and the song numbers `$65`, `$67`; `sound_check_play` (the unreachable
-  sound check screen) can play any number.
+  sound check screen, reachable with the `sound_check` cheat) plays every
+  sound and song but `$18`, `$19`, `$1E` and `$1F`
+  ([Cheats](cheats.md#leftovers-of-the-developers)).
 - `$31` and `$5F` share their sequence (`$5F` plays it on music channel
   4: the ending's missile, `$31` stage 4's).
 - `$3E`, `$43` and `$59` also acknowledge the title screen's button codes

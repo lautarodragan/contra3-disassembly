@@ -229,6 +229,7 @@ stage 1), the original stages 2-6 becoming 3-7. See
 |---|---|---|
 | `debug_keys` | 0 | the unused debug keys run every frame |
 | `button_codes` | 0 | the unused title screen codes work |
+| `sound_check` | 0 | the unused title screen code Right, Down, Down+Right, X enters the sound check |
 
 **Debug keys.** Two routines with no caller: `debug_player_keys` (side
 view), now called (`JSR`) at the top of `run_player_state` for each
@@ -256,8 +257,66 @@ Right, then Start sets `option_lives` to 30 (it survives a reset, like the
 other options); Down, Down+Left, Left, then Start (not on OPTION) sets
 `stage_select_enabled`. The three directions must come within 16 frames
 and Start within 12 more. The Down also moves the menu cursor one entry
-down: entered on 1 PLAYER, the codes start a 2 PLAYERS A game. `check_button_code_unused` (Down, Down+Right... then X: a sound) is left
-uncalled.
+down: entered on 1 PLAYER, the codes start a 2 PLAYERS A game. The third
+code, `check_button_code_unused`, belongs to `sound_check`.
+
+**Sound check.** "SOUND CHECK MODE" (`run_sound_check`,
+`GAME_MODE_SOUND_CHECK`) is complete, and so is the way in from the title:
+`title_menu_unused_sound_check` sets the title menu's step to its fade-out,
+which ends with `mode_result` 3, and `game_mode_title` turns result 3 into
+the sound check. Only the call is missing. The cheat adds it as the first
+thing in `title_menu_input` (5 bytes of bank `$00`; every option together
+still leaves 4 of its free bytes):
+
+```
+.if CHEAT_SOUND_CHECK
+	jsr	a:check_button_code_unused
+	bcs	title_menu_unused_sound_check
+.endif
+```
+
+`check_button_code_unused` is very probably how the developers came in.
+It is one of the three title codes, whose state `title_menu_init` clears
+on every title (`code1_progress` and `code1_timer`, next to the other
+two codes'), so it was once checked by the title menu. Its only effect is
+a sound and the carry, so its caller must have done the rest, and the sound
+check is the only title result that nothing produces.
+`title_menu_unused_sound_check` sits just after `title_menu_input` and
+is not a routine of its own: it sets `mode_step` and falls into the
+fade-out step, which is what a branch from the input step does. Nothing
+in the ROM says this for certain. The code's d-pad sequence is
+`code_unused_dpad_sequence`: Right, Down, Down+Right (within 16 frames),
+then X within 12 more, on either pad. X does nothing else on the title,
+and the sequence does not start like the other two codes (both start with
+Down), so the three can be on together (the `debug-keys` preset). The Down
+moves the title cursor, which does not matter: the title is redrawn with
+the cursor on 1 PLAYER when the sound check ends.
+
+The screen works as the code says (checked in the emulator): the d-pad
+picks an entry from `$00` to `$6A` (Down/Right next, Up/Left previous,
+wrapping, with auto-repeat when held), Y plays it, B queues
+`SOUND_CMD_STOP`, Start fades out and goes back to the title, where a
+game starts normally. No exit had to be added.
+
+![SOUND CHECK MODE, entry 05](img/sound-check.png)
+
+The number on the screen is the entry, not the sound:
+`sound_check_sound_ids` gives each of the 107 entries the command it
+plays (entry `$05` plays sound `$06`, entry `$5D` the song `$62`).
+Commands `$60`-`$73` are songs: the entry first loads a song set
+(`song_lists`, as `load_stage_music` does), sends its start command, then
+the number. The table has every sound and song of `$01`-`$72` except
+the empty entries (`$40`, `$60`, `$6C`, `$70`; `$00` and `$73` are not
+in it either) and two pairs of looping sounds with their stoppers: `$18`
+/ `$19` (`SOUND_SPIKE_EXTEND` / `SOUND_SPIKE_RETRACT`) and `$1E` / `$1F`
+(`SOUND_TANK_ENGINE` / `SOUND_TANK_STOP`). In their place it has the
+driver command `$82` (`SOUND_CMD_BRANCH`, entry `$65`, silent with no song
+playing). It does play the numbers the game never queues: `$06`, `$1C`,
+`$4C`, and the songs `$65` and `$67` (the song sets of stages 4 and 6).
+Every entry is a valid command, so there is nothing it cannot play; the
+ids it lacks simply have no entry. `$6D` and `$6E`, which are sound
+effects, also take the song path (they are below `$74`) and load the
+stage 3 set first.
 
 ## Presets and patches
 
@@ -282,7 +341,8 @@ base and compared with the cheat ROM before it is written.
 | `one-hit-kills` | `enemy_hp=0` |
 | `stage-select` | `stage_select` |
 | `30-lives` | `start_lives=30 option_30_lives infinite_continues` |
-| `debug-keys` | `debug_keys button_codes` |
+| `sound-check` | `sound_check` |
+| `debug-keys` | `debug_keys button_codes sound_check` |
 
 The patches apply to the original ROM (SHA-1
 `265886e3f665adf2507e7b2f08b6b2ed9d0018b2`, 1 MiB, no copier header) and
@@ -300,7 +360,7 @@ with `tools/cheats.py` and checks them through
 RAM reads: lives that do not go down after deaths (side view and
 top-down), no death while walking into stage 1, bombs that stay, the
 weapons at the start, the stage select screen, scaled HP tables, doubled
-damage, the button codes, the debug keys, the 30 lives in OPTION. `make cheat-test` runs it (about 3 minutes):
+damage, the button codes, the sound check, the debug keys, the 30 lives in OPTION. `make cheat-test` runs it (about 3 minutes):
 
 ```sh
 make cheat-test

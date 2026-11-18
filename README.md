@@ -110,6 +110,7 @@ make cheat-test                                                # emulator tests 
 | `continues=n`, `infinite_continues` | continues per game / none spent |
 | `debug_keys` | the developers' unused debug keys (Select + Up/A/B/X; top-down X + L/R/A/Y/B) |
 | `button_codes` | the unused title codes: Down, Down+Right, Right, Start = 30 lives; Down, Down+Left, Left, Start = stage select |
+| `sound_check` | the unused title code Right, Down, Down+Right, X enters the unused SOUND CHECK MODE (d-pad, Y plays, B stops, Start leaves) |
 
 The book's [Cheats](https://lautarodragan.github.io/contra3-disassembly/cheats.html)
 page explains where each one hooks into the code.
@@ -139,7 +140,8 @@ SHA-1 `265886e3f665adf2507e7b2f08b6b2ed9d0018b2`, with any IPS patcher
 | `contra3-one-hit-kills.ips` | `enemy_hp=0` |
 | `contra3-stage-select.ips` | `stage_select` |
 | `contra3-30-lives.ips` | `start_lives=30 option_30_lives infinite_continues` |
-| `contra3-debug-keys.ips` | `debug_keys button_codes` |
+| `contra3-sound-check.ips` | `sound_check` |
+| `contra3-debug-keys.ips` | `debug_keys button_codes sound_check` |
 
 Pre-built patches are published on the [Releases](../../releases) page:
 pushing a `v*` tag runs `.github/workflows/release.yml`, which builds the

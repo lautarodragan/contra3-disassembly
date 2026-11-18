@@ -130,7 +130,9 @@ the continue menus do the same (`continue_menu_attrs`,
 loads the graphics of the next demo's stage.
 
 Three button codes are in the ROM but nothing calls them:
-`check_button_code_unused` (only plays a sound), `check_30_lives_code`
+`check_button_code_unused` (Right, Down, Down+Right, X: only plays a
+sound and returns with the carry set, probably once the way into the sound
+check), `check_30_lives_code`
 (`option_lives` = 30) and `check_stage_select_code` (sets
 `stage_select_enabled`, which makes `game_mode_game_start` go to
 `game_mode_stage_select`). Each compares the d-pad against a three-step
@@ -221,8 +223,9 @@ animation chosen by objects with `start_palette_anim`.
 - FINAL SCORE (`run_final_score`) after the ending on HARD; Start
   (`final_score_wait_start`) goes back to the opening.
 - SOUND CHECK (`run_sound_check`, game mode 5): the d-pad picks
-  `sound_check_id` (`$00-$6A`), Y plays it, B stops. No code enters this
-  mode.
+  `sound_check_id` (`$00-$6A`), Y plays it, B stops, Start goes back to
+  the title. No code enters this mode; the `sound_check` cheat option
+  enters it from the title ([Cheats](cheats.md#leftovers-of-the-developers)).
 
 ## Scores and extra lives
 
