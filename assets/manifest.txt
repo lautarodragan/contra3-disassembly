@@ -25,6 +25,7 @@ gfx/ending_message_easy          lz-v1  max=$0800 tilemap=bg
 gfx/ending_message_normal        lz-v1  max=$0800 tilemap=bg
 gfx/gfx_06FADF                   lz-v1  max=$4000 tilemap=mode7
 gfx/ending_message_hard          lz-v1  max=$0800 tilemap=bg
+gfx/unused_warning_message       lz-v1  max=$0800 tilemap=bg  # limit: original size, capacity unknown (nothing loads it)
 gfx/gfx_07E9FE                   lz-v2  png=4bpp tiles=160 max=$2000
 gfx/gfx_088FD4                   lz-v1  max=$2000 tilemap=bg
 gfx/gfx_0891DE                   lz-v2  max=$0200 tilemap=bg
@@ -118,6 +119,8 @@ gfx/gfx_1FE855                   lz-v2  png=4bpp tiles=256 max=$2000
 gfx/td_sprite_tiles_13           raw    png=4bpp tiles=80
 gfx/td_sprite_tiles_14           raw    png=4bpp tiles=256
 gfx/td_sprite_tiles_16           raw    png=4bpp tiles=192
+gfx/unused_tiles_16BE11          raw    png=4bpp tiles=4 width=2
+gfx/unused_gfx_13F58D            lz-v2  png=2bpp tiles=32 width=2 max=$0200  # limit: original size, capacity unknown (nothing loads it)
 sound/spc_sample_dir_boot        raw    dir=sound/spc_samples_common,sound/spc_samples_stage3 max=$0100
 sound/spc_song_boss              raw    max=$2000 seq=text
 sound/spc_song_heart_boss        raw    max=$2000 seq=text
@@ -225,6 +228,9 @@ palettes/palette_088066          raw    gpl=block max=$0022
 palettes/palette_088088          raw    gpl=block max=$0022
 palettes/palette_0880AA          raw    gpl=block max=$0062
 palettes/palette_088150          raw    gpl=block max=$00C2
+palettes/unused_palette_08810C   raw    gpl=block max=$0022  # limit: original size, capacity unknown (nothing uses it)
+palettes/unused_palette_08812E   raw    gpl=block max=$0022  # limit: original size, capacity unknown (nothing uses it)
+palettes/unused_palette_088212   raw    gpl=block max=$0042  # limit: original size, capacity unknown (nothing uses it)
 palettes/palette_088254          raw    gpl=block max=$0062
 palettes/palette_0882B6          raw    gpl=block max=$0042
 palettes/palette_0882F8          raw    gpl=block max=$00C2

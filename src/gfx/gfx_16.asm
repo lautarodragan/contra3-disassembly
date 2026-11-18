@@ -50,14 +50,13 @@ stage5_boss_sprite_tiles:
 	; No pointers: it decompresses to 4bpp tiles, which the game only copies to VRAM.
 	.incbin	"wram/stage5_boss_sprite_tiles.lz"
 	; CDL: not accessed
-	.byte	$03, $00, $0C, $03, $13, $0F, $2D, $1D, $5B, $33, $74, $11, $A9, $7B, $D9, $32
-	.byte	$00, $00, $00, $00, $00, $00, $02, $00, $0C, $00, $0F, $00, $07, $00, $0F, $00
-	.byte	$C0, $00, $B0, $40, $28, $90, $D4, $78, $0A, $5C, $B2, $BC, $6D, $AE, $4B, $5C
-	.byte	$00, $00, $00, $00, $40, $00, $80, $00, $E0, $00, $40, $00, $D0, $00, $F0, $00
-	.byte	$B4, $55, $A9, $6B, $54, $38, $6E, $1F, $24, $1A, $19, $0F, $0E, $01, $03, $00
-	.byte	$2F, $00, $17, $00, $07, $00, $01, $00, $05, $00, $00, $00, $00, $00, $00, $00
-	.byte	$B5, $F6, $49, $3E, $96, $D8, $EA, $6C, $D4, $B8, $68, $50, $30, $C0, $C0, $00
-	.byte	$E8, $00, $E0, $00, $E0, $00, $90, $00, $40, $00, $80, $00, $00, $00, $00, $00
+; Four 4bpp tiles (a 16x16 sprite, tiles 0 1 / 2 3: a round, shaded
+; ball) that nothing reads: no label, pointer or td_tiles record refers to
+; them, the CDL never read them, and no other block of the ROM holds these
+; tiles, except their bitplanes 0-1 in unused_gfx_13F58D (book: What the
+; traces never touched).
+unused_tiles_16BE11:
+	.incbin	"gfx/unused_tiles_16BE11.bin"
 	; CDL: read by decompress_chunk
 gfx_16BE91:
 	; ASSET: compressed graphics (VRAM), $16:BE91-$16:C751 (from its length word), loaded by load_list_05CF33

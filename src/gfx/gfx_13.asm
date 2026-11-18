@@ -85,10 +85,11 @@ stage2_boss_block_map_3:
 	; No pointers: it decompresses to block numbers (build_m7_tilemap).
 	.incbin	"wram/stage2_boss_block_map_3.lz"
 	; CDL: not accessed
-	.byte	$52, $00, $9F, $03, $00, $0C, $03, $13, $0F, $2D, $1D, $5B, $33, $74, $11, $A9
-	.byte	$7B, $D9, $32, $C0, $00, $B0, $40, $28, $90, $D4, $78, $0A, $5C, $B2, $BC, $6D
-	.byte	$AE, $4B, $8F, $5C, $B4, $55, $A9, $6B, $54, $38, $6E, $1F, $24, $1A, $19, $0F
-	.byte	$0E, $01, $03, $DF, $8D, $B5, $F6, $49, $3E, $96, $D8, $EA, $6C, $D4, $B8, $68
-	.byte	$50, $30, $C0, $C0, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte	$FF, $F2, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+; A compressed stream that nothing loads (no load list or pointer refers to
+; it): 512 bytes of 2bpp tiles, of which only the first four are not blank:
+; bitplanes 0-1 of the four tiles of unused_tiles_16BE11 (book: What the
+; traces never touched).
+unused_gfx_13F58D:
+	; ASSET: compressed graphics, $13:F58D-$13:F5DE (from its length word), loaded by nothing
+	.incbin	"gfx/unused_gfx_13F58D.lz"
 	; The rest of the bank is free: filled with $FF by the linker (contra3.cfg).

@@ -519,6 +519,18 @@ drawn where it is known how the game shows them, and the palettes.
 
 <img src="gallery/gfx/td_sprite_tiles_16.png" alt="td_sprite_tiles_16" width="256" style="image-rendering: pixelated">
 
+### unused_tiles_16BE11
+
+`assets/gfx/unused_tiles_16BE11.png`: 4bpp, 4 tiles, raw.
+
+<img src="gallery/gfx/unused_tiles_16BE11.png" alt="unused_tiles_16BE11" width="32" style="image-rendering: pixelated">
+
+### unused_gfx_13F58D
+
+`assets/gfx/unused_gfx_13F58D.png`: 2bpp, 32 tiles, lz-v2.
+
+<img src="gallery/gfx/unused_gfx_13F58D.png" alt="unused_gfx_13F58D" width="32" style="image-rendering: pixelated">
+
 ## Sprite tiles decompressed to WRAM
 
 ### stage1_bomber_m7_chars
@@ -774,6 +786,16 @@ Drawn with `gfx_089249` and `palette_0880AA`. Its palette is the CGRAM of the ga
 Drawn with `gfx_089D7E` and `palette_08F01A`. Its palette is the CGRAM of the game at frame 68500 of play `stage6_ending_hard` (`tests/test_previews.py`).
 
 <img src="gallery/gfx/ending_message_hard.png" alt="ending_message_hard" width="512" style="image-rendering: pixelated">
+
+### unused_warning_message
+
+`assets/gfx/unused_warning_message.tilemap`: bg, 32x32 cells, lz-v1.
+
+Nothing loads this map (book: [What the traces never touched](coverage.md)): a legal notice of the Japanese release, drawn here with the font and colours of the closing messages; the logo cells use palette 6, which that screen does not set.
+
+Drawn with `gfx_089D7E` and `palette_08F01A`.
+
+<img src="gallery/gfx/unused_warning_message.png" alt="unused_warning_message" width="512" style="image-rendering: pixelated">
 
 ### gfx_088FD4
 
@@ -1094,6 +1116,24 @@ colours are those of one of them (`assets/views.txt`) take its colours
 `assets/palettes/palette_088150.gpl`: 96 colours (block). Colours of `gfx_098000`, `gfx_09998E`, `gfx_09B32D`, `gfx_09CD49`, `gfx_09EBBA`, `gfx_0AA37C`, `gfx_17E599`.
 
 <img src="gallery/palettes/palette_088150.png" alt="palette_088150" width="256" style="image-rendering: pixelated">
+
+### unused_palette_08810C
+
+`assets/palettes/unused_palette_08810C.gpl`: 16 colours (block).
+
+<img src="gallery/palettes/unused_palette_08810C.png" alt="unused_palette_08810C" width="256" style="image-rendering: pixelated">
+
+### unused_palette_08812E
+
+`assets/palettes/unused_palette_08812E.gpl`: 16 colours (block).
+
+<img src="gallery/palettes/unused_palette_08812E.png" alt="unused_palette_08812E" width="256" style="image-rendering: pixelated">
+
+### unused_palette_088212
+
+`assets/palettes/unused_palette_088212.gpl`: 32 colours (block).
+
+<img src="gallery/palettes/unused_palette_088212.png" alt="unused_palette_088212" width="256" style="image-rendering: pixelated">
 
 ### palette_088254
 

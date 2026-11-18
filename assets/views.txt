@@ -193,6 +193,14 @@ preview gfx/ending_message_hard  chars=gfx/gfx_089D7E@5000 base=5000 bpp=2 palet
 cgram gfx/ending_message_easy  play=stage6_ending_easy frame=43900
 cgram gfx/ending_message_normal  play=stage6_boss frame=48500
 cgram gfx/ending_message_hard  play=stage6_ending_hard frame=68500
+# A BG3 map nothing loads (unused_warning_message, the Japanese release's
+# legal notice), drawn like the closing messages: their font at $5000 and
+# palette_08F01A at CGRAM 1 (palettes 0 and 1); its logo cells use palette 6,
+# which no palette task of that screen sets.
+preview gfx/unused_warning_message  chars=gfx/gfx_089D7E@5000 base=5000 bpp=2 palette=palettes/palette_08F01A@1
+note gfx/unused_warning_message Nothing loads this map (book: [What the traces never touched](coverage.md)):
+note gfx/unused_warning_message a legal notice of the Japanese release, drawn here with the font and colours of the closing
+note gfx/unused_warning_message messages; the logo cells use palette 6, which that screen does not set.
 # level NAME map=MAP[,MAP...] defs=DEFS[,...] chars=ASSET@VRAMWORD[:LENGTH],... [base=VRAMWORD] bpp=N palette=PALETTE@INDEX,... [route=N-M,...] [up=N-M,...]
 #   a level preview in the gallery (book: Assets, Editing a level): the
 #   side-view map MAP drawn through its metatiles DEFS (each placed by its

@@ -125,17 +125,17 @@ reads into it or past it:
 - the block's `.byte` lines hold only those bytes (no code, no other label,
   no `LAYOUT` comment saying that something reads across its bounds).
 
-That is 203 blocks, 728,408 bytes in the ROM:
+That is 206 blocks, 729,146 bytes in the ROM:
 
 | assets | blocks | in the ROM | stored |
 |---|---|---|---|
-| `gfx/`, compressed | 100 | 384,480 | 560,895 decompressed |
-| `gfx/`, raw sprite tiles (`td_sprite_tiles_13`, `_14`, `_16`) | 3 | 16,896 | 16,896 |
+| `gfx/`, compressed | 102 | 385,090 | 563,455 decompressed |
+| `gfx/`, raw sprite tiles (`td_sprite_tiles_13`, `_14`, `_16`, `unused_tiles_16BE11`) | 4 | 17,024 | 17,024 |
 | `wram/`, compressed | 70 | 172,344 | 321,032 decompressed |
 | `sound/`, compressed | 11 | 43,951 | 59,454 decompressed |
 | `sound/`, uncompressed | 19 | 110,737 | 110,737 |
 
-Of the 181 streams, 40 need `lz-v1` and 141 are made with `lz-v2` (66 of
+Of the 183 streams, 41 need `lz-v1` and 142 are made with `lz-v2` (66 of
 these come out the same with either).
 
 The two bytes that follow some sound blocks on the same `.byte` line (the
@@ -202,12 +202,12 @@ Four blocks stayed inline longer, for reasons that turned out not to hold:
 
 ## Graphics (PNG)
 
-114 assets are graphics whose format is known, stored as indexed PNGs:
+116 assets are graphics whose format is known, stored as indexed PNGs:
 
 | format | assets | what |
 |---|---|---|
-| `4bpp` | 76 VRAM streams, `td_sprite_tiles_13`, `_14`, `_16`, 26 WRAM streams | BG1/BG2 characters and sprites: 32 bytes per 8x8 tile, 16 colours |
-| `2bpp` | 1 (`gfx_089D7E`, the font) | BG3 characters: 16 bytes per tile, 4 colours |
+| `4bpp` | 76 VRAM streams, `td_sprite_tiles_13`, `_14`, `_16`, `unused_tiles_16BE11`, 26 WRAM streams | BG1/BG2 characters and sprites: 32 bytes per 8x8 tile, 16 colours |
+| `2bpp` | 2 (`gfx_089D7E`, the font; `unused_gfx_13F58D`) | BG3 characters: 16 bytes per tile, 4 colours |
 | `mode7` | 5 VRAM streams (`gfx_089249`, `gfx_13CC02`, `gfx_148000`, `gfx_158000`, `gfx_168000`), 3 WRAM streams (`stage1_bomber_m7_chars`, `stage2_boss_m7_chars`, `stage5_boss_m7_chars`) | Mode 7 characters: 64 bytes per tile, one byte per pixel, 256 colours |
 
 `tools/snesgfx.py` converts both ways. The SNES planar formats (`2bpp`,
@@ -337,7 +337,7 @@ The 18 tilemaps loaded to VRAM are text files, `assets/gfx/<label>.tilemap`
 
 | format | assets | what |
 |---|---|---|
-| `bg` | 17 | BG maps (Mode 1): one VRAM word per 8x8 cell, 32 cells per row |
+| `bg` | 18 | BG maps (Mode 1): one VRAM word per 8x8 cell, 32 cells per row |
 | `mode7` | 1 (`gfx_06FADF`) | the Mode 7 map of the title logo: one byte per cell, 128x128 |
 
 - `gfx_06EF5C`, `gfx_06EC94` (BG1, `$4000` and `$4400`) and `gfx_06F184`
@@ -712,13 +712,14 @@ unused). The game keeps them in two places:
   `nmi_frame_side_view` DMAs to CGRAM, 32 bytes, from `cgram_upload_src`
   (the flashing of hit bosses).
 
-48 are files: 44 blocks of bank `$08` (`gpl=block`) and the 4 of bank
+51 are files: 47 blocks of bank `$08` (`gpl=block`) and the 4 of bank
 `$05` (`gpl=colours colours=16`: the DMA copies 32 bytes, so the build
-stops if the file does not have 16 colours). The first block,
-`palette_088000`, is at `gfx_08`, the label of the bank. Left inline:
+stops if the file does not have 16 colours). Three of the blocks,
+`unused_palette_08810C`, `unused_palette_08812E` and
+`unused_palette_088212`, are in the chain but nothing points to them (CDL:
+not accessed; see [What the traces never touched](coverage.md)). The first
+block, `palette_088000`, is at `gfx_08`, the label of the bank. Left inline:
 
-- `$08:810C`, `$08:812E`, `$08:8212`: blocks that nothing points to
-  (CDL: not accessed);
 - `palette_088C3E`: `palette_088C60` is inside it
   (`update_stage2_boss_core` copies `$71` bytes from there);
 - the block at `$08:8E68`: its 48 colours are three palettes,

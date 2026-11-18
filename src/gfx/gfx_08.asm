@@ -45,21 +45,23 @@ palette_0880AA:
 	; ASSET: palette: a size-1 word and 48 colours, $08:80AA-$08:810B (from its size word), used by palette_task_05854B
 	.incbin	"palettes/palette_0880AA.bin"
 	; CDL: not accessed
-	.byte	$1F, $00, $00, $00, $13, $50, $11, $50, $0E, $54, $0B, $54, $09, $54, $06, $54
-	.byte	$00, $54, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00, $1F, $00, $00, $00, $D5, $46, $CD, $09, $65, $08, $00, $00, $CD, $5D
-	.byte	$E7, $2C, $21, $0C, $00, $00, $42, $18, $D6, $7C, $B2, $08, $00, $00, $3B, $1A
-	.byte	$F6, $10, $44, $10
+; Two more blocks of the chain (each starts where the one before ends, its
+; size word gives its end) that no palette task names and the CDL never
+; read: unused palettes (book: What the traces never touched).
+unused_palette_08810C:
+	.incbin	"palettes/unused_palette_08810C.bin"
+unused_palette_08812E:
+	.incbin	"palettes/unused_palette_08812E.bin"
 	; CDL: read by palette_task_animate
 palette_088150:
 	; ASSET: palette: a size-1 word and 96 colours, $08:8150-$08:8211 (from its size word), used by palette_task_058B4C
 	.incbin	"palettes/palette_088150.bin"
 	; CDL: not accessed
-	.byte	$3F, $00, $0E, $5E, $00, $44, $B5, $7E, $FF, $7F, $0E, $5E, $11, $00, $BF, $56
-	.byte	$FF, $7F, $0E, $5E, $7F, $02, $00, $50, $1F, $00, $0E, $5E, $B5, $11, $19, $00
-	.byte	$00, $00, $0E, $5E, $A5, $14, $31, $46, $FF, $7F, $0E, $5E, $50, $66, $92, $6E
-	.byte	$D4, $76, $0E, $5E, $1D, $2C, $FF, $01, $74, $4E, $00, $00, $00, $00, $00, $00
-	.byte	$00, $00
+; One more block of the chain that no palette task names and the CDL never
+; read: an unused palette (eight 4-colour palettes; its first 24 colours are
+; also the first 24 of palette_08843E).
+unused_palette_088212:
+	.incbin	"palettes/unused_palette_088212.bin"
 	; CDL: read by palette_task_animate, palette_task_fade_in
 palette_088254:
 	; ASSET: palette: a size-1 word and 48 colours, $08:8254-$08:82B5 (from its size word), used by palette_task_058AC7, palette_task_05A815, palette_task_05A830 (+2 more)
