@@ -260,6 +260,10 @@ note extra_bg1 player of `tools/c3emu/extra_stage.py` (tests/test_extra_stage.py
 note extra_bg1 17-18 are stage 1's 26-27: like those, page 18 is drawn here with the
 note extra_bg1 stage's first characters, not those `load_list_059E79` loads for the boss.
 note extra_bg1 Page 19 is blank and not shown.
+# The extra stage has stage 1's palette task (palette_task_058B4C), so its
+# colours are those of stage 1's start (the extra stage is not in the
+# default ROM that the previews' plays run).
+cgram extra_bg1  play=stage1 frame=600
 # Stage 3: load_list_058B85, palette_task_058BE7
 level stage3_bg1  map=wram/stage3_bg1_map defs=wram/stage3_bg1_metatiles,wram/stage3_bg1_metatiles_2 chars=gfx/gfx_0C8000@0000,gfx/gfx_0C98A2@1000,gfx/gfx_0CAFBF@2000,gfx/gfx_0CC65E@3000 bpp=4 palette=palettes/palette_0882F8@32,palettes/palette_088F92@0 route=0-25 up=9-13,20-22
 level stage3_bg2  map=wram/stage3_bg2_map defs=wram/stage3_bg2_metatiles chars=gfx/gfx_0C8000@0000,gfx/gfx_0C98A2@1000,gfx/gfx_0CAFBF@2000,gfx/gfx_0CC65E@3000 bpp=4 palette=palettes/palette_0882F8@32,palettes/palette_088F92@0 route=0-5

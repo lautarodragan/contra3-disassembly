@@ -939,6 +939,8 @@ Pages not shown by the stage (dimmed): 6-9, 12-15.
 
 The extra stage goes right through pages 0-10 (the mid-boss's arena on page 7, the checkpoint's start on page 8), climbs pages 11-13 above page 10 (`bg1_scroll_mode` 3), then goes right from page 13 to the boss on page 18 (`bg1_x` $0F00, or $0700 from the checkpoint); traced with the scripted player of `tools/c3emu/extra_stage.py` (tests/test_extra_stage.py). Pages 17-18 are stage 1's 26-27: like those, page 18 is drawn here with the stage's first characters, not those `load_list_059E79` loads for the boss. Page 19 is blank and not shown.
 
+Its palette is the CGRAM of the game at frame 600 of play `stage1` (`tests/test_previews.py`).
+
 With the 53 entries of `assets/stages/extra.spawns` (see [Assets](assets.md#spawn-lists-text)): a yellow box where an object appears, with its type and parameter; a cyan dotted line where the screen's edge is when a trigger fires.
 
 <div style="overflow-x: auto"><a href="gallery/levels/extra_bg1.png"><img src="gallery/levels/extra_bg1.png" alt="extra_bg1" width="1024" height="256" style="image-rendering: pixelated; max-width: none"></a></div>

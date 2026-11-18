@@ -77,12 +77,12 @@ def test_assets_and_previews():
     preview of assets/views.txt renders; changing a map cell changes it."""
     manifest = {a.path: a for a in assets.read_manifest()}
     levels = [a for a in manifest.values() if a.level]
-    assert len(levels) == 41
+    assert len(levels) == 42
     for a in levels:
         n = len(a.from_source()) - len(bytes.fromhex(a.options.get("tail", "")))
         assert n % levelmap.FORMATS[a.level][1] == 0
     views = dict(assets.read_levels())
-    assert len(views) == 13
+    assert len(views) == 14
     view = views["stage1_bg1"]
     W, H, pixels, _pal = assets.render_level(view, manifest)
     assert (W, H) == (28 * 256, 256)  # pages 0-27 in a row

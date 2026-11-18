@@ -4,6 +4,9 @@ stage 2 (book: Stage 2: Collapsed Tower) and renumbers the original stages
 2-6 as 3-7.  The other stages must play exactly as the original, one stage
 later (their plays compared with the original's goldens):
 
+- `stage3`: the top-down stage 3 from its start, as the original's
+  `stage2` (its enemies are placed with the tables this build moves to
+  bank $04);
 - `stage3_boss`, `stage6_boss`: the top-down bosses (stages 3 and 6 now)
   and the next stages, as the original's `stage2_boss` and `stage5_boss`;
 - `stage1_boss`: stage 1's boss, then the card of stage 2 and the new
@@ -62,6 +65,9 @@ CARD_DIGIT_VRAM = 0x5A6D + 6   # text_stage_n: "STAGE n" at BG3 $5A6D, the digit
 EXTRA = dict(topdown=plays.EXTRA_TOPDOWN_STAGES, last=plays.EXTRA_LAST_STAGE)
 # variant play -> (Play, golden of the original play it must reproduce)
 CASES = {
+    # the top-down stage 3 from its start: its enemies are placed through
+    # td_spawn_offsets_x/_y, which this build moves to bank $04
+    "stage3": (plays.Play("x_stage3", 3, 18000, 21, **EXTRA), "stage2"),
     "stage3_boss": (plays.Play("x_stage3_boss", 3, 9000, 22, checkpoint=True, **EXTRA), "stage2_boss"),
     "stage6_boss": (plays.Play("x_stage6_boss", 6, 24000, 52, checkpoint=True, **EXTRA), "stage5_boss"),
     "stage1_boss": (plays.Play("x_stage1_boss", 1, 16000, 18, checkpoint=True, **EXTRA), "stage1_boss"),
