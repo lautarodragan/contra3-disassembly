@@ -2414,7 +2414,7 @@ rideable_missile_state_01:
 	bne	@carry
 	lda	#SOUND_RIDEABLE_MISSILE
 	ldy	stage_number
-	cpy	#$0004
+	cpy	#STAGE_4
 	beq	@play_sound
 	lda	a:obj_slots+28*OBJ_SIZE+OBJ_STATE
 	cmp	#$0017
@@ -2452,7 +2452,7 @@ rideable_missile_state_01:
 	phy
 	lda	#$4404
 	ldy	stage_number
-	cpy	#$0004
+	cpy	#STAGE_4
 	beq	@have_vram_addr
 	lda	#$4804
 @have_vram_addr:
@@ -2471,7 +2471,7 @@ rideable_missile_state_01:
 	phy
 	lda	#$4480
 	ldy	stage_number
-	cpy	#$0004
+	cpy	#STAGE_4
 	beq	@have_vram_addr2
 	lda	#$4880
 @have_vram_addr2:

@@ -460,7 +460,7 @@ city skyline, the burning city and the tanks drawn on BG2.
 | 6 | `stage6_bg1_metatiles`, `stage6_bg1_metatiles_2` | `stage6_bg1_map` | `stage6_bg2_metatiles` | `stage6_bg2_map` |
 
 (The `load_wram` lists: `load_list_058AE6`, `load_list_058B5D`,
-`load_list_058BF8`, `load_list_058C6F` by stage through `ptrs_0588ED`;
+`load_list_058BF8`, `load_list_058C6F` by stage through `ptrs_stage_map_load_lists`;
 `load_list_0585D1` and `load_list_058687` load stage 1's and stage 4's for
 the attract demos; `load_list_05A84B` the opening's.) The collision map
 at `$7E:4000` is not a stream: `update_bg_collision_map` makes it from the

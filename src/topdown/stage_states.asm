@@ -13,7 +13,7 @@ run_topdown_stage:
 	.i16
 	rep	#$30
 	lda	stage_number
-	cmp	#$0005
+	cmp	#STAGE_5
 	beq	run_stage5_state
 	lda	a:topdown_state
 	phx
@@ -1227,7 +1227,7 @@ get_p1_start_point_index:
 	clc
 	adc	a:p1_start_x
 	ldy	stage_number
-	cpy	#$0002
+	cpy	#STAGE_2
 	beq	@to_offset
 	clc
 	adc	#$0010
@@ -1244,7 +1244,7 @@ get_p2_start_point_index:
 	clc
 	adc	a:p2_start_x
 	ldy	stage_number
-	cpy	#$0002
+	cpy	#STAGE_2
 	beq	@to_offset
 	clc
 	adc	#$0010

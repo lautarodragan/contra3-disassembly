@@ -265,8 +265,8 @@ matter for anyone who moves data. By kind:
 
 **Tables indexed from 1, whose entry 0 is the previous table's end.**
 `ptrs_stage_card_texts` (entry 0 is the end of the string before it);
-`ptrs_0588E1`, whose entry 0 is the "S" and the end byte of
-`text_stage_clear_bonus`, and whose entry 6 is entry 0 of `ptrs_0588ED`;
+`ptrs_stage_7f_load_lists`, whose entry 0 is the "S" and the end byte of
+`text_stage_clear_bonus`, and whose entry 6 is entry 0 of `ptrs_stage_map_load_lists`;
 `ptrs_td_tile_lists`, whose entry 0 is entry `$11` of
 `ptrs_td_metasprite_sets`.
 

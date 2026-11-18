@@ -39,6 +39,9 @@ import make_ips  # noqa: E402
 import symbols  # noqa: E402
 
 CHEATS_INC = os.path.join(ROOT, "src", "cheats.inc")
+# files whose `.ifndef CHEAT_X` blocks are options: the cheats, and the
+# extra-stage build variant (src/game/stages.inc, book: Adding a stage)
+OPTION_FILES = [os.path.join(ROOT, "src", "game", "stages.inc"), CHEATS_INC]
 BASE_ROM = os.path.join(ROOT, "build", "contra3.sfc")
 SHA1_FILE = os.path.join(ROOT, "contra3.sha1")
 
@@ -63,11 +66,12 @@ PRESETS = {
 
 
 def known_options():
-    """CHEAT_* options of src/cheats.inc: name -> (default, comment above)."""
+    """CHEAT_* options of src/cheats.inc (and src/game/stages.inc): name ->
+    (default, comment above)."""
     opts = {}
     comment = []
     doc = ""
-    for line in open(CHEATS_INC):
+    for line in (l for path in OPTION_FILES for l in open(path)):
         line = line.strip()
         if line.startswith(";"):
             comment.append(line[1:].strip())

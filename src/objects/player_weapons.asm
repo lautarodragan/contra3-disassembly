@@ -1234,7 +1234,7 @@ player_state_ground:
 	brl	start_player_jump
 @not_on_platform:
 	lda	stage_number
-	cmp	#$0006
+	cmp	#STAGE_6
 	beq	@stage6
 	brl	start_player_fall
 @stage6:

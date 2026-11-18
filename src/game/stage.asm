@@ -28,8 +28,8 @@ tbl_stage_states:
 	.addr	stage_exit
 	.addr	stage_cinematic
 
-; STAGE_STATE_INIT: stage_layout from stage_layouts[stage_number] (+$0A
-; past the checkpoint), per-layout scroll parameters, the players start
+; STAGE_STATE_INIT: stage_layout from stage_layouts[stage_number]
+; (+LAYOUT_CHECKPOINT, $0A, past the checkpoint), per-layout scroll parameters, the players start
 ; dead (state $0E, they drop in), colour math and window defaults.
 stage_init:
 	sep	#$20
@@ -51,7 +51,7 @@ stage_init:
 	ldy	a:stage_checkpoint
 	beq	@no_checkpoint
 	clc
-	adc	#$000A
+	adc	#LAYOUT_CHECKPOINT
 	sta	a:stage_layout
 @no_checkpoint:
 	ldy	#.loword(palette_task_058AC7)
@@ -131,7 +131,7 @@ stage_init:
 ; Stage 0 (the opening) goes on to STAGE_STATE_CINEMATIC instead of
 ; STAGE_STATE_PLAY.
 stage_setup_video:
-	lda	stage_number
+	lda	stage_number	; STAGE_OPENING
 	bne	@not_opening
 	inc	a:stage_state
 	inc	a:stage_state
@@ -173,7 +173,7 @@ stage_setup_video:
 	ldy	#$A000	; [num]
 	jsl	f:fill_bg_screen
 	lda	stage_number
-	cmp	#$0004
+	cmp	#STAGE_4
 	bne	@not_stage4
 	jsl	f:draw_bg3_block_map
 @not_stage4:
@@ -354,16 +354,10 @@ stage_layout_init:
 	sta	zp_00
 	jmp	(zp_00)
 tbl_stage_layout_inits:
-	.addr	layout_init_stage1
-	.addr	layout_init_stage3
-	.addr	layout_init_stage4
-	.addr	layout_init_stage6
-	.addr	layout_init_opening
-	.addr	layout_init_stage1_checkpoint
-	.addr	layout_init_stage3_checkpoint
-	.addr	layout_init_stage4_checkpoint
-	.addr	layout_init_stage6
-	.addr	layout_init_opening
+	; the layouts, then their checkpoint versions (stages 1, 3, 4, 6, the
+	; opening, the extra stage; game/stages.inc)
+	per_layout_addr	layout_init_stage1, layout_init_stage3, layout_init_stage4, layout_init_stage6, layout_init_opening, layout_init_stage1
+	per_layout_addr	layout_init_stage1_checkpoint, layout_init_stage3_checkpoint, layout_init_stage4_checkpoint, layout_init_stage6, layout_init_opening, layout_init_stage1_checkpoint
 
 layout_init_stage1_checkpoint:
 	lda	#$0000

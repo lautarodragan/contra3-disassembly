@@ -234,6 +234,86 @@ take a player object instead) also counts down the next-extend counter
 (`p1_next_extend`, `p2_next_extend`): the first extra life at 20000
 points, then one every 60000; lives are capped at 30.
 
+## Stage numbering
+
+`stage_number` (`$86`) is the stage being played, 1-6 (0 during the
+opening, which runs as side-view stage 0); `stage_index` (`$70`) is
+`stage_number - 1`, set by the stage card and by the demo, and only
+selects the stage's frame code (`tbl_stage_runners`). The side-view stages
+then work through `stage_layout`, which `stage_init` takes from
+`stage_layouts[stage_number]`. Every place that depends on a stage's
+number was searched for (every read of `stage_number` and `stage_index`,
+every table they index, every comparison of either; `$86` and `$70` are
+otherwise only object fields, `$86,x` and `$70,x`) and goes through the
+constants and macros of `src/game/stages.inc`: `STAGE_1` ... `STAGE_6` are
+the stage numbers of the original stages, `STAGE_COUNT` and `STAGE_LAST`
+the loop, `LAYOUT_*` the side-view layouts, and `per_stage_addr`,
+`per_stage_word`, `per_stage_byte`, `per_layout_addr`, `per_layout_word`
+write the tables. The default build assembles to the original bytes; the
+extra-stage build ([Adding a stage](adding-a-stage.md)) inserts a stage 2.
+
+**Comparisons with a stage number** (20 places; the constant each now uses):
+
+| routine | test | what for |
+|---|---|---|
+| `game_mode_game_start` | `CHEAT_START_STAGE` (`STAGE_1`) | a new game starts at stage 1 |
+| `game_mode_stage_select` | `STAGE_COUNT`, `STAGE_COUNT+1`, `STAGE_1` | Up from 1 wraps to the last stage, Down past it to 1 |
+| `game_mode_stage_play` | `STAGE_LAST`, `STAGE_1` | after the last stage: the loop (EASY, NORMAL) or FINAL SCORE (HARD), see below |
+| `stage_clear_load_next_stage`, `stage_clear_fade_out` | `STAGE_COUNT+1`, `STAGE_1` | the next stage's graphics and number (never wraps: no stage clear after the last stage) |
+| `game_mode_opening`, `stage_setup_video` | 0 (`STAGE_OPENING`) | the opening goes to `STAGE_STATE_CINEMATIC` |
+| `stage_setup_video` | `STAGE_4` | `draw_bg3_block_map` |
+| `fill_bg_screen` | `STAGE_4` | BG1 drawn 64 columns wide |
+| `weapon_item_move` (the items' fall) | `STAGE_4` | `weapon_item_stage4`: the item stops at Y `$B4` instead of landing on a floor tile |
+| `rideable_missile_state_01` (3 tests) | `STAGE_4` | the missile's sound, and the VRAM addresses of the helicopter's rotors (the stage 4 helicopter or the ending's) |
+| `player_weapons.asm`, the down-jump | `STAGE_6` | dropping through a platform only above Y `$74` |
+| `fade_out_step` | `STAGE_2`, `STAGE_5` | the top-down stages fade differently |
+| `run_topdown_stage` | `STAGE_5` | `tbl_stage5_states` instead of `tbl_stage2_states` |
+| `set_m7_patch_tile_attrs` | `STAGE_2` | `tile_attrs_stage2`, else stage 5's |
+| `get_target_marker_attr` | `STAGE_2` | the target markers' attribute |
+| `get_p1_start_point_index`, `get_p2_start_point_index` | `STAGE_2` | stage 5's start points are 16 entries further |
+
+The top-down code only asks "stage 2?" (or "stage 5?") and takes anything
+else for the other one.
+
+**Tables indexed by the stage number** (in bank `$05` unless noted; some
+share bytes with their neighbours, marked overlap):
+
+| table | entries | what |
+|---|---|---|
+| `tbl_stage_runners` (bank `$00`) | by `stage_index` | `enter_side_view_stage` or `enter_top_down_stage`: the side-view / top-down dispatch |
+| `stage_layouts` | bytes, 0-6 | the side-view layout (the top-down stages' entries are not used) |
+| `ptrs_stage_card_texts` | 1-6, entry 0 overlaps the end of `text_stage_select` | "STAGE n" (`text_stage_1` ...): by position, not by stage; also the stage select |
+| `ptrs_stage_clear_pictures` | 1-5, entry 0 is the `palette_copy_end` before it | the stage clear screen's picture (no entry for stage 6) |
+| `ptrs_stage_7f_load_lists` | 1-6, entry 0 overlaps `text_stage_clear_bonus`, entry 6 is entry 0 of the next | `load_stage_graphics`: packed data into `$7F` |
+| `ptrs_stage_map_load_lists` | 0-6 | `load_stage_graphics`: the stage's metatiles and maps into `$7E` |
+| `ptrs_stage_spawn_pages` | 0-6 | the stage's spawn lists (`init_stage_spawns`) |
+| `song_lists` + 2, `song_start_commands` + 2 | 0-6 | `load_stage_music`: the stage's song set and start command (the same tables number the songs of the sound check) |
+| `demo_stage_checkpoints` | 0-6, entry 0 is the last entry of `demo_stages` | the demo starts stage 1 at its midpoint; `demo_stages` holds stage numbers (1, 2, 4) |
+
+**Tables indexed by the side-view layout** (`stage_layout`: stages 1, 3,
+4, 6, the opening, then the same five past the checkpoint, `$0A` bytes
+in, which is `LAYOUT_CHECKPOINT`, twice the number of layouts:
+`stage_bg1_map_offsets`, `stage_bg2_map_offsets`, `ptrs_stage_load_lists`
+(the BG and sprite tiles into VRAM), `tbl_stage_layout_inits` (bank `$00`:
+the music, HDMA preset and scroll modes of each start). By
+`stage_layout_base` (no checkpoint versions): `stage_respawn_modes` (the
+opening's entry overlaps `ptrs_stage_dp_params`), `ptrs_stage_dp_params`
+(`load_stage_dp_params`: the per-stage direct page parameters, collision
+thresholds among them), `ptrs_stage_palette_tasks`.
+
+**What does not depend on the number.** The HUD, the score board and the
+two-player modes (A and B) never read it; a continue restarts the same
+`stage_number` from `stage_checkpoint`, which objects set at the midpoint
+and every new stage clears; the bosses and mid-bosses come from the spawn
+lists and end the stage with `stage_exit_request` (the ending object
+too), so they follow the stage's data, not its number; the HDMA and
+scroll setup of a stage is its layout's (`tbl_stage_layout_inits`,
+`hdma_preset`); the top-down maps follow `topdown_map`. The attract demos
+are numbered by `demo_index` (`ptrs_0585CB`, the input tables), only
+their stage numbers come from `demo_stages`. The sound check numbers the
+songs by `song_lists`, so the extra-stage build leaves that table alone
+(`stage_songs`).
+
 ## Values useful for cheats
 
 | address | name | effect |

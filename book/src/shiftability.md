@@ -237,7 +237,7 @@ These are still numbers, or depend on layout, on purpose:
   (`$06:B172`); its last entry is the first word of the next table. The
   stage card text table (`ptrs_stage_card_texts`) is indexed from 1, so its entry 0
   is the end of the string before it; likewise the stage graphics table
-  `ptrs_0588E1`, whose entry 0 is the "S" and the end byte of CLEAR BONUS
+  `ptrs_stage_7f_load_lists`, whose entry 0 is the "S" and the end byte of CLEAR BONUS
   (it was a pointer to `$05:FF4D` and broke that letter on the stage
   clear screen), and `ptrs_td_tile_lists`, whose entry 0 is entry `$11` of
   `ptrs_td_metasprite_sets`. The animation `anim_05CD0B` ends with a frame

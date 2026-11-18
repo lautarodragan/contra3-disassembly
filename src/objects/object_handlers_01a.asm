@@ -3141,7 +3141,7 @@ weapon_item_move:
 	sta	$00,x
 @check_stage:
 	lda	stage_number
-	cmp	#$0004
+	cmp	#STAGE_4
 	bne	@check_floor
 	brl	weapon_item_stage4
 @check_floor:

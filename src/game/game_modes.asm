@@ -528,7 +528,7 @@ init_continues:
 	rts
 
 ; GAME_MODE_STAGE_SELECT (never run): Up/Down/Select choose stage_number
-; 1-6 on the stage card screen, Start -> GAME_MODE_STAGE_CARD.
+; 1-STAGE_COUNT on the stage card screen, Start -> GAME_MODE_STAGE_CARD.
 game_mode_stage_select:
 	; (not executed in the CDL traces)
 	lda	game_submode
@@ -596,15 +596,15 @@ game_mode_stage_select:
 	beq	@next_stage
 	dec	stage_number
 	bne	@return
-	lda	#$0006
+	lda	#STAGE_COUNT
 	sta	stage_number
 	rtl
 @next_stage:
 	inc	stage_number
 	lda	stage_number
-	cmp	#$0007
+	cmp	#STAGE_COUNT+1
 	bcc	@return
-	lda	#$0001
+	lda	#STAGE_1
 	sta	stage_number
 @return:
 	rtl
@@ -732,8 +732,8 @@ game_mode_stage_card:
 	brl	next_game_mode
 
 ; GAME_MODE_STAGE_PLAY: run_stage_with_life_transfer until mode_result.
-; No lives left -> GAME_MODE_GAME_OVER; stage < 6 -> GAME_MODE_STAGE_CLEAR;
-; after stage 6: on HARD -> GAME_MODE_FINAL_SCORE, otherwise (traced by
+; No lives left -> GAME_MODE_GAME_OVER; stage < STAGE_LAST ->
+; GAME_MODE_STAGE_CLEAR; after STAGE_LAST (stage 6): on HARD -> GAME_MODE_FINAL_SCORE, otherwise (traced by
 ; play_stage6_ending_easy and play_stage6_boss) the game restarts at stage 1
 ; one level harder.
 game_mode_stage_play:
@@ -748,9 +748,9 @@ game_mode_stage_play:
 	brl	set_game_mode
 @lives_left:
 	lda	stage_number
-	cmp	#$0006
+	cmp	#STAGE_LAST
 	bcc	@to_stage_clear
-	lda	#$0001
+	lda	#STAGE_1
 	sta	stage_number
 	stz	a:stage_checkpoint
 	lda	a:option_level
@@ -1215,12 +1215,8 @@ run_stage:
 	sta	zp_00
 	jmp	(zp_00)
 tbl_stage_runners:
-	.addr	enter_side_view_stage
-	.addr	enter_top_down_stage
-	.addr	enter_side_view_stage
-	.addr	enter_side_view_stage
-	.addr	enter_top_down_stage
-	.addr	enter_side_view_stage
+	; by stage_index (stage_number - 1): stages 1-6, then the extra stage
+	per_stage_addr	enter_side_view_stage, enter_top_down_stage, enter_side_view_stage, enter_side_view_stage, enter_top_down_stage, enter_side_view_stage, enter_side_view_stage
 
 enter_side_view_stage:
 	lda	#$0002

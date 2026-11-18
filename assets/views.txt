@@ -224,7 +224,7 @@ note gfx/unused_warning_message message's screen; the font has the Konami logo t
 # The side-view stages: the stage's BG characters (ptrs_stage_load_lists,
 # first layout; BG12NBA $00: characters from $0000) and palette task
 # (ptrs_stage_palette_tasks); the maps and metatiles of its load_wram list
-# (ptrs_0588ED).  Stage 1: load_list_058B08, palette_task_058B4C.
+# (ptrs_stage_map_load_lists).  Stage 1: load_list_058B08, palette_task_058B4C.
 level stage1_bg1  map=wram/stage1_bg1_map defs=wram/stage1_bg1_metatiles,wram/stage1_bg1_metatiles_2 chars=gfx/gfx_098000@0000,gfx/gfx_09998E@1000,gfx/gfx_09B32D@2000,gfx/gfx_09CD49@3000 bpp=4 palette=palettes/palette_088150@32,palettes/palette_088F92@0 route=0-27
 level stage1_bg2  map=wram/stage1_bg2_map defs=wram/stage1_bg2_metatiles chars=gfx/gfx_098000@0000,gfx/gfx_09998E@1000,gfx/gfx_09B32D@2000,gfx/gfx_09CD49@3000 bpp=4 palette=palettes/palette_088150@32,palettes/palette_088F92@0 route=0-5,10-11
 cgram stage1_bg1  play=stage1 frame=600

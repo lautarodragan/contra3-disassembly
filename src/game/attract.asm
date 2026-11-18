@@ -354,9 +354,9 @@ demo_init_input:
 ; Carry set while fading; clear when done (display blanked).
 fade_out_step:
 	lda	stage_number
-	cmp	#$0002
+	cmp	#STAGE_2
 	beq	@top_down
-	cmp	#$0005
+	cmp	#STAGE_5
 	beq	@top_down
 	lda	a:inidisp_shadow
 	and	#$000F

@@ -1182,7 +1182,7 @@ get_target_marker_attr:
 	stx	zp_FA
 	lda	#$0000
 	ldx	stage_number
-	cpx	#$0002
+	cpx	#STAGE_2
 	beq	@combine
 	lda	#$0004
 @combine:

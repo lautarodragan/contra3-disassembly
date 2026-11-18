@@ -91,9 +91,10 @@ CHEAT_ENEMY_HP = 100
 CHEAT_START_LIVES = 0
 .endif
 
-; 1-6: the stage a new game starts at (game_mode_game_start).
+; 1-6 (1-7 with extra_stage): the stage a new game starts at
+; (game_mode_game_start; STAGE_* of game/stages.inc).
 .ifndef CHEAT_START_STAGE
-CHEAT_START_STAGE = 1
+CHEAT_START_STAGE = STAGE_1
 .endif
 
 ; 1: the stage select screen (game_mode_stage_select) after the title, as
@@ -146,7 +147,7 @@ CHEAT_BUTTON_CODES = 0
 .assert CHEAT_DAMAGE_MULT >= 1 && CHEAT_DAMAGE_MULT <= 16, error, "CHEAT_DAMAGE_MULT: 1-16"
 .assert CHEAT_ENEMY_HP >= 0 && CHEAT_ENEMY_HP <= 100, error, "CHEAT_ENEMY_HP: 0-100 (percent)"
 .assert CHEAT_START_LIVES >= 0 && CHEAT_START_LIVES <= 99, error, "CHEAT_START_LIVES: 0-99"
-.assert CHEAT_START_STAGE >= 1 && CHEAT_START_STAGE <= 6, error, "CHEAT_START_STAGE: 1-6"
+.assert CHEAT_START_STAGE >= 1 && CHEAT_START_STAGE <= STAGE_COUNT, error, "CHEAT_START_STAGE: 1-STAGE_COUNT (6, or 7 with extra_stage)"
 .assert CHEAT_CONTINUES >= 0 && CHEAT_CONTINUES <= 99, error, "CHEAT_CONTINUES: 0-99"
 
 ; Any routine of objects/cheat_code.asm needed.

@@ -520,7 +520,7 @@ set_m7_patch_tile_attrs:
 	rtl
 @set_attrs:
 	lda	stage_number
-	cmp	#$0002
+	cmp	#STAGE_2
 	beq	@stage2_attrs
 	brl	@stage5_attrs
 @stage2_attrs:

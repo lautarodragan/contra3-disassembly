@@ -12,6 +12,7 @@ COMMON_INC = 1
 .include "game/game.inc"
 .include "sound/sounds.inc"
 .include "data_macros.inc"
+.include "game/stages.inc"
 .include "cheats.inc"
 
 .endif

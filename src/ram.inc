@@ -79,11 +79,11 @@ pause_disabled               = $64	; non-zero: Start does not pause (run_stage);
 paused               = $66	; 1 while the game is paused (run_stage toggles it with Start)
 wait_timer               = $68	; frames to wait, decremented by tick_wait_timer ($50 in game_mode_game_start, where bit 2 blinks the chosen menu entry)
 sound_cmd_override  = $6A	; when non-zero, sent by send_queued_sound before the queue (set from a finished stream; never run in the traces)
-stage_index         = $70	; stage number - 1 (0-5), set from stage_number in normal play and in the demo; indexes per-stage tables such as tbl_stage_runners
+stage_index         = $70	; stage number - 1 (0-5, 0-6 in the extra-stage build), set from stage_number in normal play and in the demo; indexes per-stage tables such as tbl_stage_runners
 mode_timer               = $76	; frame countdown used by game modes (game over wait, stage clear screen)
 stage_frame_counter               = $78	; incremented every stage frame by update_stage_frame_counters; cleared at stage init
 difficulty          = $84	; difficulty x2: 0 easy, 2 normal, 4 hard (copied from $1E3E)
-stage_number        = $86	; stage number, 1-6
+stage_number        = $86	; stage number, 1-6 (STAGE_* of game/stages.inc; 1-7 in the extra-stage build), 0 in the opening
 button_fire               = $88	; joypad mask of the fire button, $4000 = Y (set by game_mode_stage_card / demo_init_players; read by the player code)
 button_jump               = $8A	; joypad mask of the jump button, $8000 = B
 button_bomb               = $8C	; joypad mask of the smart bomb button, $0080 = A
@@ -312,7 +312,7 @@ shake_timer         = $1662	; shake amplitude in pixels, decremented every 16 fr
 clamp_player_top    = $1666	; non-zero: move_player keeps the players' y at $31 or more (vertical autoscroll sections; set by the stage trigger type $42 and the spiked climber)
 update_objects_stop = $166A	; slot where update_objects stops ($0AC0; $0300 for update_objects_0280)
 bomber_raid_dither_step = $166C	; object type $06: step of the dither fade of state 8 ($3F down to 0, one every 2 frames; indexes bomber_raid_dither_offsets)
-stage_layout           = $1670	; side-view stage layout x2 (stage_layouts[stage_number], + $0A from the checkpoint); indexes the per-stage tables of stage_init and stage_layout_init
+stage_layout           = $1670	; side-view stage layout x2 (LAYOUT_*: stage_layouts[stage_number], + LAYOUT_CHECKPOINT, $0A, from the checkpoint); indexes the per-stage tables of stage_init and stage_layout_init
 respawn_mode        = $1672	; respawn mode (from stage_respawn_modes, changed by triggers such as type $42): how player state $0F places the player (tbl_respawn_placement) and the state, pose and y velocity after it
 scroll_split_y      = $1674	; vertical position the scroll-split HDMA table is built for (build_scroll_split_hdma)
 scroll_split_pattern = $1676	; scroll-split pattern, 1-based index into ptrs_scroll_split_patterns; 0 = off

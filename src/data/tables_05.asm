@@ -26,6 +26,13 @@ m7_matrix_sine_phases:
 ; sin(i * 180 / 256) * $FFFF for i = 0-255 (words, unsigned: callers apply the
 ; sign): unused_calc_mode7_matrix, build_wave_table (sign only), @sway in stage3_searchlight_craft_state_0D.
 ; The 24 bytes after the table are not read in the traces.
+; Read only with long addressing (lda f:half_turn_sine,x), so the
+; extra-stage build (game/stages.inc) moves it, with those 24 bytes, to the
+; end of bank $04, to leave room in bank $05 for the extra stage's tables.
+.if CHEAT_EXTRA_STAGE
+	.pushseg
+	.segment "BANK04"
+.endif
 half_turn_sine:
 	; CDL: read by build_wave_table, stage3_searchlight_craft_state_0D; partly not accessed
 	.byte	$00, $00, $24, $03, $48, $06, $6C, $09, $8F, $0C, $B2, $0F, $D4, $12, $F6, $15
@@ -62,6 +69,9 @@ half_turn_sine:
 	.byte	$1D, $19, $FC, $15, $DA, $12, $B8, $0F, $95, $0C, $72, $09, $4E, $06, $2A, $03
 	.byte	$00, $00, $01, $00, $02, $00, $03, $00, $04, $00, $05, $00, $06, $00, $08, $00
 	.byte	$10, $00, $50, $00, $00, $01, $00, $10
+.if CHEAT_EXTRA_STAGE
+	.popseg
+.endif
 ; Pad bit of each joypad (1, 2, 4...) tested against soft_reset_pad_mask by
 ; read_joypads (X = pad x 2).
 soft_reset_pad_bits:
@@ -252,26 +262,35 @@ palette_task_058412:
 text_stage_select:
 	.byte	$2B, $5A, $4D, $4E, $3C, $42, $40, $00, $4D, $40, $47, $40, $3E
 ; Stage card text by stage (game_mode_stage_card: index = stage * 2, so
-; entry 0 is the end of the string above).
+; entry 0 is the end of the string above). By position: text_stage_n is
+; "STAGE n", whichever stage plays n-th (game/stages.inc).
 ptrs_stage_card_texts:
 	; CDL: read by draw_text, game_mode_stage_card; partly not accessed
 	.byte	$4E, $FF
 	.addr	text_stage_1, text_stage_2, text_stage_3, text_stage_4, text_stage_5, text_stage_6
+.if CHEAT_EXTRA_STAGE
+	.addr	text_stage_7
+.endif
+; "STAGE n" at the centre of BG3 (VRAM $5A6D; digit tiles are n + 1).
+.macro stage_card_text n
+	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00, n + 1, $FF
+.endmacro
 text_stage_1:
-	.byte	$6D, $5A
-	.byte	$4D, $4E, $3C, $42, $40, $00, $02, $FF
+	stage_card_text	1
 text_stage_2:
-	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00
-	.byte	$03, $FF
+	stage_card_text	2
 text_stage_3:
-	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00, $04, $FF
+	stage_card_text	3
 text_stage_4:
-	.byte	$6D, $5A, $4D, $4E
-	.byte	$3C, $42, $40, $00, $05, $FF
+	stage_card_text	4
 text_stage_5:
-	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00, $06, $FF
+	stage_card_text	5
 text_stage_6:
-	.byte	$6D, $5A, $4D, $4E, $3C, $42, $40, $00, $07, $FF
+	stage_card_text	6
+.if CHEAT_EXTRA_STAGE
+text_stage_7:
+	stage_card_text	7
+.endif
 text_game_over:
 	.byte	$2C, $5A, $42, $3C, $48, $40
 	.byte	$00, $4A, $50, $40, $4C, $FF
@@ -290,13 +309,18 @@ text_058490:
 pause_sounds:
 	; CDL: read by run_stage
 	.word	SOUND_CMD_UNPAUSE, SOUND_CMD_PAUSE
+; The stage of each attract demo (by demo_index); the third entry is also
+; entry 0 of demo_stage_checkpoints.
 demo_stages:
 	; CDL: read by demo_init
-	.byte	$01, $00, $02, $00
+	.word	STAGE_1, STAGE_2
+; stage_checkpoint of the demo by stage_number (demo_init_players): stage 1's
+; demo starts at its midpoint.
 demo_stage_checkpoints:
 	; LAYOUT: read on from demo_stages (lda a:demo_stages,y)
 	; CDL: read by demo_init, demo_init_players; partly not accessed
-	.byte	$04, $00, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.word	STAGE_4
+	per_stage_word	1, 0, 0, 0, 0, 0, 0
 demo_p1_input_ptrs:
 	; CDL: read by demo_init_input
 	.faraddr	demo_input_p1_0, demo_input_p1_1, demo_input_p1_2
@@ -527,11 +551,8 @@ palette_task_0587EA:
 ptrs_stage_clear_pictures:
 	; CDL: read by load_data_list, run_pending_loads, decompress_chunk (+3 more); partly not accessed
 	palette_copy_end
-	.addr	load_list_058808
-	.addr	load_list_058820
-	.addr	load_list_058838
-	.addr	load_list_058850
-	.addr	load_list_058868
+	; stages 1-5 (none after the last stage), the extra stage: stage 1's
+	per_stage_addr	load_list_058808, load_list_058820, load_list_058838, load_list_058850, load_list_058868, , load_list_058808
 	; Never executed: code bytes left in the data (jsl reset_video_state,
 	; ldx #load_list_058808, jsl load_data_list).
 	.byte	$22
@@ -599,26 +620,23 @@ text_rest_03_2:
 text_stage_clear_bonus:
 	.byte	$0B, $5A, $4D, $4E, $3C, $42, $40, $00, $3E, $47, $40
 	.byte	$3C, $4C, $FE, $6B, $5A, $3E, $47, $40, $3C, $4C, $00, $3D, $4A, $49, $4F
-; Stage graphics load lists by stage_number (1-6, load_stage_graphics); entry 0
-; is the end of the string above ("S" and $FF), and entry 6 is also entry 0 of
-; ptrs_0588ED: the tables overlap.
-ptrs_0588E1:
+; The two load lists of each stage, by stage_number (load_stage_graphics):
+; ptrs_stage_7f_load_lists unpacks the packed_* blocks into $7F0000-$7FFFFF
+; (the same list for every side-view stage, another for the top-down ones),
+; ptrs_stage_map_load_lists the stage's metatiles and maps into $7E (the
+; stageN_bg1_map ... of assets/). Entry 0 of the first is the end of the
+; string above ("S" and $FF), and its entry for the last stage is also entry
+; 0 of the second: the tables overlap.
+ptrs_stage_7f_load_lists:
 	; LAYOUT: the end of text_stage_clear_bonus (see above)
 	.byte	$4D, $FF
-	.addr	load_list_058A93
-	.addr	load_list_05CF4A
-	.addr	load_list_058A93
-	.addr	load_list_058A93
-	.addr	load_list_05CF4A
-ptrs_0588ED:
-	; LAYOUT: read on from ptrs_0588E1 (lda a:ptrs_0588E1,y)
-	.addr	load_list_058A93
-	.addr	load_list_058AE6
-	.addr	load_list_05CF7E
-	.addr	load_list_058B5D
-	.addr	load_list_058BF8
-	.addr	load_list_05D028
-	.addr	load_list_058C6F
+	; stages 1-5 and the extra stage (stage 1's); the last stage's entry is
+	; the first of ptrs_stage_map_load_lists (load_list_058A93 too)
+	per_stage_addr	load_list_058A93, load_list_05CF4A, load_list_058A93, load_list_058A93, load_list_05CF4A, , load_list_058A93
+ptrs_stage_map_load_lists:
+	; LAYOUT: read on from ptrs_stage_7f_load_lists (lda a:ptrs_stage_7f_load_lists,y)
+	.addr	load_list_058A93	; stage 0, and STAGE_LAST of ptrs_stage_7f_load_lists
+	per_stage_addr	load_list_058AE6, load_list_05CF7E, load_list_058B5D, load_list_058BF8, load_list_05D028, load_list_058C6F, load_list_058AE6
 lives_options:
 	; CDL: read by options_store_lives; partly not accessed
 	.byte	$03, $00, $05, $00, $07, $00, $1E, $00
@@ -684,38 +702,48 @@ text_2p_score_2:
 text_rest_03_4:
 	.byte	$36, $59, $4C, $40, $4D
 	.byte	$4E, $00, $01, $04, $FF
+; stage_layout of each stage, by stage_number (stage_init; byte entries).
+; The top-down stages' entries are not used.
 stage_layouts:
 	; CDL: read by stage_init
-	.byte	$08, $00, $02, $02, $04, $04, $06
-; bg1_map_offset by stage_layout (stage_init; the checkpoint layouts start $0A
-; bytes in).
+	.byte	LAYOUT_OPENING
+	per_stage_byte	LAYOUT_STAGE1, $02, LAYOUT_STAGE3, LAYOUT_STAGE4, $04, LAYOUT_STAGE6, LAYOUT_EXTRA
+; The tables by stage_layout (and stage_layout_base) list the layouts of
+; stages 1, 3, 4, 6, the opening and the extra stage (game/stages.inc); those
+; by stage_layout then list their checkpoint versions (LAYOUT_CHECKPOINT
+; bytes in). The extra stage's entries are stage 1's for now.
+; bg1_map_offset by stage_layout (stage_init).
 stage_bg1_map_offsets:
 	; CDL: read by stage_init; partly not accessed
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $09, $00, $07, $80, $00
-	.byte	$00, $04, $00, $00
+	per_layout_word	$0000, $0000, $0000, $0000, $0000, $0000
+	per_layout_word	$0900, $0700, $0080, $0400, $0000, $0900
 ; bg2_map_offset by stage_layout (stage_init).
 stage_bg2_map_offsets:
 	; CDL: read by stage_init; partly not accessed
-	.byte	$00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $01, $00, $01, $00, $00
-	.byte	$00, $00, $00, $00
+	per_layout_word	$0000, $0000, $0000, $0000, $0000, $0000
+	per_layout_word	$0100, $0100, $0000, $0000, $0000, $0100
 ; Respawn mode (respawn_mode, read by the player's state $0F through
 ; tbl_respawn_placement) set at the start of each stage, by stage_layout_base
-; (stage_init).
+; (stage_init). The opening's entry is the first word of
+; ptrs_stage_dp_params (no players there), except in the extra-stage build.
 stage_respawn_modes:
 	; CDL: read by stage_init
-	.byte	$00, $00, $00, $00, $05, $00, $00, $00
+.if CHEAT_EXTRA_STAGE
+	per_layout_word	$0000, $0000, $0005, $0000, $0000, $0000
+.else
+	per_layout_word	$0000, $0000, $0005, $0000
+.endif
 ptrs_stage_dp_params:
 	; LAYOUT: read on from stage_respawn_modes (lda a:stage_respawn_modes,y)
 	; CDL: read by stage_init
-	.addr	stage_dp_params_058A2B, stage_dp_params_058A45, stage_dp_params_058A5F, stage_dp_params_058A79, stage_dp_params_058A5F
+	per_layout_addr	stage_dp_params_058A2B, stage_dp_params_058A45, stage_dp_params_058A5F, stage_dp_params_058A79, stage_dp_params_058A5F, stage_dp_params_058A2B
 ptrs_stage_load_lists:
 	; CDL: read by stage_setup_video; partly not accessed
-	.addr	load_list_058B08, load_list_058B85, load_list_058C14, load_list_058C97
-	.addr	load_list_058B08, load_list_058B2F, load_list_058BB6, load_list_058C3B
-	.addr	load_list_058C97, load_list_058B08
+	per_layout_addr	load_list_058B08, load_list_058B85, load_list_058C14, load_list_058C97, load_list_058B08, load_list_058B08
+	per_layout_addr	load_list_058B2F, load_list_058BB6, load_list_058C3B, load_list_058C97, load_list_058B08, load_list_058B2F
 ptrs_stage_palette_tasks:
 	; CDL: read by stage_init, load_stage_dp_params; partly not accessed
-	.addr	palette_task_058B4C, palette_task_058BE7, palette_task_058C62, palette_task_058CCD, palette_task_058B4C
+	per_layout_addr	palette_task_058B4C, palette_task_058BE7, palette_task_058C62, palette_task_058CCD, palette_task_058B4C, palette_task_058B4C
 stage_dp_params_058A2B:
 	.byte	$91, $03, $ED, $03, $F4, $03
 	.byte	$F8, $03, $FA, $03, $00, $00, $00, $00, $00, $00, $00, $00, $FC, $03, $FE, $03
@@ -1097,7 +1125,9 @@ vram_blocks_05946A:
 	.byte	$00, $50, $00, $50, $00, $50, $00, $50, $00, $50, $00, $50, $00, $50, $00, $50
 ptrs_stage_spawn_pages:
 	; CDL: read by init_stage_spawns, spawn_next_stage_object, find_free_object_slot_in_range; partly not accessed
-	.addr	spawn_pages_059488, spawn_pages_059488, spawn_pages_059488, spawn_pages_0597E6, spawn_pages_059488, spawn_pages_059488, spawn_pages_059C2E
+	; by stage_number: stage 0, stages 1-6, the extra stage (stage 1's)
+	.addr	spawn_pages_059488
+	per_stage_addr	spawn_pages_059488, spawn_pages_059488, spawn_pages_0597E6, spawn_pages_059488, spawn_pages_059488, spawn_pages_059C2E, spawn_pages_059488
 ; The spawn lists of stage 1: assets/stages/stage1.spawns, made into
 ; stages/stage1_spawns.inc by tools/spawns.py (book: Assets, Spawn lists).
 	.include	"stages/stage1_spawns.inc"

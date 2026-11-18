@@ -391,7 +391,7 @@ fill_bg_screen:
 	cmp	#$1380
 	bne	@full_width
 	lda	stage_number
-	cmp	#$0004
+	cmp	#STAGE_4
 	beq	@full_width
 	lda	#$0020
 	bra	@set_count

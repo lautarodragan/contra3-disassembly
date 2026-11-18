@@ -77,10 +77,10 @@ stage_clear_fade_in:
 stage_clear_load_next_stage:
 	lda	stage_number
 	inc	a
-	cmp	#$0007
+	cmp	#STAGE_COUNT+1
 	bcc	@load_next
 	; (not executed in the CDL traces)
-	lda	#$0001
+	lda	#STAGE_1
 @load_next:
 	jsl	f:load_stage_graphics
 	lda	#$0001
@@ -166,10 +166,10 @@ stage_clear_fade_out:
 	stz	a:stage_checkpoint
 	inc	stage_number
 	lda	stage_number
-	cmp	#$0007
+	cmp	#STAGE_COUNT+1
 	bcc	@to_stage_card
 	; (not executed in the CDL traces)
-	lda	#$0001
+	lda	#STAGE_1
 	sta	stage_number
 @to_stage_card:
 	lda	#$0001
@@ -431,7 +431,8 @@ update_high_score:
 @return:
 	rts
 
-; A = stage number: loads its graphics sets (ptrs_0588E1 / ptrs_0588ED).
+; A = stage number: loads its two load lists (ptrs_stage_7f_load_lists: packed
+; data into $7F; ptrs_stage_map_load_lists: metatiles and maps into $7E).
 load_stage_graphics:
 	pha
 	jsl	f:clear_bg_scroll_state
@@ -439,12 +440,12 @@ load_stage_graphics:
 	pla
 	asl	a
 	tay
-	lda	a:ptrs_0588E1,y
+	lda	a:ptrs_stage_7f_load_lists,y
 	tax
 	phy
 	jsl	f:load_data_list
 	ply
-	lda	a:ptrs_0588ED,y
+	lda	a:ptrs_stage_map_load_lists,y
 	tax
 	jsl	f:load_data_list
 	rtl
