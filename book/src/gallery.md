@@ -870,90 +870,142 @@ The stages' maps, drawn from the level texts (`.map`, `.metatiles`,
 the stage's load list puts in VRAM and the colours of its palette task
 (`level` lines of `assets/views.txt`), so editing a map, a metatile, a
 graphic or a palette changes the picture. A side-view map is drawn
-page by page in the order of its pages, each to the right of the one
-before, or above it on a vertical stretch the stage climbs (`up=`),
-cut into bands of 8 columns (2,048 pixels). A top-down
+as one continuous route, the way the stage travels it: from its first
+page, each page to the right of the one before, or directly above it
+where the stage climbs (`route=` and `up=` in the level line), never
+wrapped, black where no page is. The pages the stage never shows are
+left out of the route and drawn dimmed in a row below it. A page is
+256x256 pixels; the pictures are shown scaled down (scroll sideways;
+click one for the full size). A top-down
 map is the 128x128-tile Mode 7 map `build_m7_tilemap` makes.
 
 ### stage1_bg1
 
 32 pages: `assets/wram/stage1_bg1_map.map`, `assets/wram/stage1_bg1_metatiles.metatiles`, `assets/wram/stage1_bg1_metatiles_2.metatiles`. Drawn with `gfx_098000`, `gfx_09998E`, `gfx_09B32D`, `gfx_09CD49` and `palette_088150`, `palette_088F92`.
 
+The stage goes right all the way: the screen shows the page before `bg1_map_offset` (which names the page whose columns are drawn just past the right edge), pages 0-17 from the start (`bg1_x` up to $1100) and 18-27 from the checkpoint (it starts at offset 19, `bg1_x` up to $0900 at the boss); traced in the plays `stage1` and `stage1_boss`. Page 28 only has its first two tile columns drawn, off screen, at the boss; 28-31 are not shown.
+
 Its palette is the CGRAM of the game at frame 600 of play `stage1` (`tests/test_previews.py`).
 
-<img src="gallery/levels/stage1_bg1.png" alt="stage1_bg1" width="1024" style="image-rendering: pixelated">
+<div style="overflow-x: auto"><a href="gallery/levels/stage1_bg1.png"><img src="gallery/levels/stage1_bg1.png" alt="stage1_bg1" width="1792" height="64" style="image-rendering: pixelated; max-width: none"></a></div>
+
+Pages not shown by the stage (dimmed): 28-31.
+
+<div style="overflow-x: auto"><a href="gallery/levels/stage1_bg1_unreached.png"><img src="gallery/levels/stage1_bg1_unreached.png" alt="stage1_bg1_unreached" width="512" height="128" style="image-rendering: pixelated; max-width: none"></a></div>
 
 ### stage1_bg2
 
 16 pages: `assets/wram/stage1_bg2_map.map`, `assets/wram/stage1_bg2_metatiles.metatiles`. Drawn with `gfx_098000`, `gfx_09998E`, `gfx_09B32D`, `gfx_09CD49` and `palette_088150`, `palette_088F92`.
 
-The stage shows pages 0-5, 10 and 11 of this map only: BG2's page (`bg2_map_offset`) is set by the stage start (page 0, or 2 from the checkpoint, `stage_bg2_map_offsets`) and by the type `$03` triggers of the spawn lists (`update_bg2_scroll_mode_trigger`: pages 4, 2 and 10), and `bg2_draw_screen_step` draws two pages from there (traced in the plays `stage1` and `stage1_boss`: offsets $0000-$0280, $0500, $0580). Pages 6-9 (metatiles `$143`, `$160`-`$16B`, never defined) and 12-15 (zeros) are never drawn; in WRAM their metatiles would be read from `$7E:D860`-`$7E:DD7F`, past the `$1AA0` bytes of `stage1_bg2_metatiles`, which hold zeros in the plays.
+BG2 is a 512-pixel screen of two pages, so the route here is in page order. The stage shows pages 0-5, 10 and 11 of this map only: BG2's page (`bg2_map_offset`) is set by the stage start (page 0, or 2 from the checkpoint, `stage_bg2_map_offsets`) and by the type `$03` triggers of the spawn lists (`update_bg2_scroll_mode_trigger`: pages 4, 2 and 10), and `bg2_draw_screen_step` draws two pages from there (traced in the plays `stage1` and `stage1_boss`: offsets $0000-$0280, $0500, $0580). Pages 6-9 (metatiles `$143`, `$160`-`$16B`, never defined) and 12-15 (zeros) are never drawn; in WRAM their metatiles would be read from `$7E:D860`-`$7E:DD7F`, past the `$1AA0` bytes of `stage1_bg2_metatiles`, which hold zeros in the plays.
 
 Its palette is the CGRAM of the game at frame 600 of play `stage1` (`tests/test_previews.py`).
 
 Cells naming a metatile past those defined (drawn as zero words): page 6: `143`; page 7: `143`, `160`, `161`, `162`, `163`, `164`, `165`, `166`, `167`, `168`, `169`, `16A`, `16B`; page 8: `143`; page 9: `143`.
 
-<img src="gallery/levels/stage1_bg2.png" alt="stage1_bg2" width="1024" style="image-rendering: pixelated">
+<div style="overflow-x: auto"><a href="gallery/levels/stage1_bg2.png"><img src="gallery/levels/stage1_bg2.png" alt="stage1_bg2" width="1024" height="128" style="image-rendering: pixelated; max-width: none"></a></div>
+
+Pages not shown by the stage (dimmed): 6-9, 12-15.
+
+<div style="overflow-x: auto"><a href="gallery/levels/stage1_bg2_unreached.png"><img src="gallery/levels/stage1_bg2_unreached.png" alt="stage1_bg2_unreached" width="1024" height="128" style="image-rendering: pixelated; max-width: none"></a></div>
 
 ### stage3_bg1
 
 32 pages: `assets/wram/stage3_bg1_map.map`, `assets/wram/stage3_bg1_metatiles.metatiles`, `assets/wram/stage3_bg1_metatiles_2.metatiles`. Drawn with `gfx_0C8000`, `gfx_0C98A2`, `gfx_0CAFBF`, `gfx_0CC65E` and `palette_0882F8`, `palette_088F92`.
 
-Pages 10-14 and 21-23 are vertical stretches, drawn above the page before them (`up=` in the level line): the stage scrolls up through them (`bg1_scroll_mode` 3, `bg1_scroll_vertical`: the next page when the top of the screen enters a new 256-pixel row; `update_bg1_scroll_mode_trigger` switches the mode at pages 20 and 23), then right again from pages 15 and 24. Traced in the emulator from the stage's start through the boss (`bg1_scroll_mode`, `bg1_map_offset`). The boss is on page 26; pages 27-31 are not reached.
+Pages 9-13 and 20-22 are vertical stretches, drawn above the page before them (`up=` in the level line): the stage scrolls right to page 8 (`bg1_x` $0800), up through 9-13 (`bg1_scroll_mode` 3, `bg1_scroll_vertical`: the next page when the top of the screen enters a new 256-pixel row), right from 13 through 19, up through 20-22, then right from 22 to the boss on page 25. The screen shows the page before `bg1_map_offset`, which names the page being drawn past the right edge (going right) or above the top (going up); traced in the emulator from the stage's start (a play with seed 35) and in `stage3_boss`, and checked against screenshots of the climb. Page 26 only has its first two tile columns drawn, off screen, at the boss; 26-31 are not shown.
 
 Its palette is the CGRAM of the game at frame 600 of play `stage3` (`tests/test_previews.py`).
 
-<img src="gallery/levels/stage3_bg1.png" alt="stage3_bg1" width="1024" style="image-rendering: pixelated">
+<div style="overflow-x: auto"><a href="gallery/levels/stage3_bg1.png"><img src="gallery/levels/stage3_bg1.png" alt="stage3_bg1" width="1152" height="576" style="image-rendering: pixelated; max-width: none"></a></div>
+
+Pages not shown by the stage (dimmed): 26-31.
+
+<div style="overflow-x: auto"><a href="gallery/levels/stage3_bg1_unreached.png"><img src="gallery/levels/stage3_bg1_unreached.png" alt="stage3_bg1_unreached" width="768" height="128" style="image-rendering: pixelated; max-width: none"></a></div>
 
 ### stage3_bg2
 
 16 pages: `assets/wram/stage3_bg2_map.map`, `assets/wram/stage3_bg2_metatiles.metatiles`. Drawn with `gfx_0C8000`, `gfx_0C98A2`, `gfx_0CAFBF`, `gfx_0CC65E` and `palette_0882F8`, `palette_088F92`.
 
+BG2 is a 512-pixel screen of two pages, so the route is in page order: pages 0-1 from the start (parallax, `bg2_scroll_mode` 5), page 2 drawn row by row above them during the first climb (mode 7, `bg2_parallax_y_1_3`), pages 2-3 drawn as a screen after it and 4-5 at the boss (`bg2_start_draw_screen`); traced from the start (seed 35) and in `stage3_boss`. Pages 6-15 are not shown.
+
 Its palette is the CGRAM of the game at frame 600 of play `stage3` (`tests/test_previews.py`).
 
-<img src="gallery/levels/stage3_bg2.png" alt="stage3_bg2" width="1024" style="image-rendering: pixelated">
+<div style="overflow-x: auto"><a href="gallery/levels/stage3_bg2.png"><img src="gallery/levels/stage3_bg2.png" alt="stage3_bg2" width="768" height="128" style="image-rendering: pixelated; max-width: none"></a></div>
+
+Pages not shown by the stage (dimmed): 6-15.
+
+<div style="overflow-x: auto"><a href="gallery/levels/stage3_bg2_unreached.png"><img src="gallery/levels/stage3_bg2_unreached.png" alt="stage3_bg2_unreached" width="640" height="64" style="image-rendering: pixelated; max-width: none"></a></div>
 
 ### stage4_bg1
 
 32 pages: `assets/wram/stage4_bg1_map.map`, `assets/wram/stage4_bg1_metatiles.metatiles`. Drawn with `gfx_0F8000`, `gfx_0F9460`, `gfx_0FAC90`, `gfx_0FC8E5` and `palette_08843E`.
 
+BG1's page follows `bg1_x` here: page 0 (the tunnel) is drawn at the start and stays while the road scrolls (`bg1_scroll_mode` 4 draws nothing new); then mode 5 (`bg1_draw_column_at_8`) sets the page to ($40 + `bg1_x`) / 256 each frame, and `bg1_x` goes down from $0B7C to $0100: the airship and the helicopter pass from page 11 down to page 1. So the pages lie at their place in the map, left to right as drawn, and the stage travels them from right to left. Traced in the plays `stage4` and `stage4_boss`; pages 12-31 are not read.
+
 Its palette is the CGRAM of the game at frame 600 of play `stage4` (`tests/test_previews.py`).
 
-<img src="gallery/levels/stage4_bg1.png" alt="stage4_bg1" width="1024" style="image-rendering: pixelated">
+<div style="overflow-x: auto"><a href="gallery/levels/stage4_bg1.png"><img src="gallery/levels/stage4_bg1.png" alt="stage4_bg1" width="768" height="64" style="image-rendering: pixelated; max-width: none"></a></div>
+
+Pages not shown by the stage (dimmed): 12-31.
+
+<div style="overflow-x: auto"><a href="gallery/levels/stage4_bg1_unreached.png"><img src="gallery/levels/stage4_bg1_unreached.png" alt="stage4_bg1_unreached" width="1280" height="64" style="image-rendering: pixelated; max-width: none"></a></div>
 
 ### stage4_bg2
 
 16 pages: `assets/wram/stage4_bg2_map.map`, `assets/wram/stage4_bg2_metatiles.metatiles`. Drawn with `gfx_0F8000`, `gfx_0F9460`, `gfx_0FAC90`, `gfx_0FC8E5` and `palette_08843E`.
 
+BG2 is a 512-pixel screen of two pages, so the route is in page order: pages 0-1 from the start (autoscroll, `bg2_scroll_mode` 10), pages 2 and 3 drawn row by row above them as it also scrolls up (mode 11), pages 3-4 drawn as a screen at the boss; traced in `stage4` and `stage4_boss`. Pages 5-15 are not shown.
+
 Its palette is the CGRAM of the game at frame 600 of play `stage4` (`tests/test_previews.py`).
 
-<img src="gallery/levels/stage4_bg2.png" alt="stage4_bg2" width="1024" style="image-rendering: pixelated">
+<div style="overflow-x: auto"><a href="gallery/levels/stage4_bg2.png"><img src="gallery/levels/stage4_bg2.png" alt="stage4_bg2" width="640" height="128" style="image-rendering: pixelated; max-width: none"></a></div>
+
+Pages not shown by the stage (dimmed): 5-15.
+
+<div style="overflow-x: auto"><a href="gallery/levels/stage4_bg2_unreached.png"><img src="gallery/levels/stage4_bg2_unreached.png" alt="stage4_bg2_unreached" width="704" height="64" style="image-rendering: pixelated; max-width: none"></a></div>
 
 ### stage6_bg1
 
 32 pages: `assets/wram/stage6_bg1_map.map`, `assets/wram/stage6_bg1_metatiles.metatiles`, `assets/wram/stage6_bg1_metatiles_2.metatiles`. Drawn with `gfx_108000`, `gfx_109C17`, `gfx_10B927`, `gfx_10D5A2` and `palette_088540`, `palette_088F92`.
 
-Pages 14-15 are a vertical stretch (`update_bg1_scroll_mode_trigger`, then `winged_alien_state_07` resumes the climb), and pages 17-19 the climb with the helicopter after the last boss (`ending_start_vertical_autoscroll`, mode 6 `bg1_update_vertical`); both are drawn above the page before them (`up=`). Traced in the plays `stage6` and `stage6_boss`. Pages 20-31 are not reached.
+The stage goes right to page 12, up through 13-14 (`update_bg1_scroll_mode_trigger`, then `winged_alien_state_07` resumes the climb), right to page 15, and up through 16-19: the start of the climb after the last boss, then the climb with the helicopter (`ending_start_vertical_autoscroll`, mode 6 `bg1_update_vertical`); page 19 only on HARD, where the last form chases the helicopter. The screen shows the page before `bg1_map_offset`; traced in the plays `stage6`, `stage6_boss`, `stage6_ending_easy` and `stage6_ending_hard`, and checked against screenshots. Pages 20-31 are not shown.
 
 Its palette is the CGRAM of the game at frame 600 of play `stage6` (`tests/test_previews.py`).
 
-<img src="gallery/levels/stage6_bg1.png" alt="stage6_bg1" width="1024" style="image-rendering: pixelated">
+<div style="overflow-x: auto"><a href="gallery/levels/stage6_bg1.png"><img src="gallery/levels/stage6_bg1.png" alt="stage6_bg1" width="896" height="448" style="image-rendering: pixelated; max-width: none"></a></div>
+
+Pages not shown by the stage (dimmed): 20-31.
+
+<div style="overflow-x: auto"><a href="gallery/levels/stage6_bg1_unreached.png"><img src="gallery/levels/stage6_bg1_unreached.png" alt="stage6_bg1_unreached" width="768" height="64" style="image-rendering: pixelated; max-width: none"></a></div>
 
 ### stage6_bg2
 
 16 pages: `assets/wram/stage6_bg2_map.map`, `assets/wram/stage6_bg2_metatiles.metatiles`. Drawn with `gfx_108000`, `gfx_109C17`, `gfx_10B927`, `gfx_10D5A2` and `palette_088540`, `palette_088F92`.
 
+BG2 is a 512-pixel screen of two pages, so the route is in page order: the stage draws the screens 0-1 (the start and the checkpoint), 2-3, 4-5, 6-7 and 9-10 (after the last boss; `bg2_start_draw_screen`), traced in the plays `stage6`, `stage6_boss`, `stage6_ending_easy` and `stage6_ending_hard`. Pages 8 and 11-15 are not shown.
+
 Its palette is the CGRAM of the game at frame 600 of play `stage6` (`tests/test_previews.py`).
 
-<img src="gallery/levels/stage6_bg2.png" alt="stage6_bg2" width="1024" style="image-rendering: pixelated">
+<div style="overflow-x: auto"><a href="gallery/levels/stage6_bg2.png"><img src="gallery/levels/stage6_bg2.png" alt="stage6_bg2" width="640" height="64" style="image-rendering: pixelated; max-width: none"></a></div>
+
+Pages not shown by the stage (dimmed): 8, 11-15.
+
+<div style="overflow-x: auto"><a href="gallery/levels/stage6_bg2_unreached.png"><img src="gallery/levels/stage6_bg2_unreached.png" alt="stage6_bg2_unreached" width="768" height="128" style="image-rendering: pixelated; max-width: none"></a></div>
 
 ### opening_bg1
 
 32 pages: `assets/wram/opening_bg1_map.map`, `assets/wram/opening_bg1_metatiles.metatiles`. Drawn with `gfx_06D6A7`, `gfx_08C078`, `gfx_08D8AF`, `gfx_17CE4D` and `palette_0889F0`, `palette_0882B6`, `palette_088254`, `palette_088AF6`.
 
+BG1's page follows `bg1_x` (`bg1_scroll_mode` 5, `bg1_draw_column_at_8`: ($40 + `bg1_x`) / 256), which goes right from 0 to $0850: pages 0-8, left to right (traced from power-on, both times the opening runs). Pages 9-31 are not read.
+
 Its palette is the CGRAM of the game at frame 1000 of power-on (`tests/test_previews.py`).
 
-<img src="gallery/levels/opening_bg1.png" alt="opening_bg1" width="1024" style="image-rendering: pixelated">
+<div style="overflow-x: auto"><a href="gallery/levels/opening_bg1.png"><img src="gallery/levels/opening_bg1.png" alt="opening_bg1" width="576" height="64" style="image-rendering: pixelated; max-width: none"></a></div>
+
+Pages not shown by the stage (dimmed): 9-31.
+
+<div style="overflow-x: auto"><a href="gallery/levels/opening_bg1_unreached.png"><img src="gallery/levels/opening_bg1_unreached.png" alt="opening_bg1_unreached" width="1472" height="64" style="image-rendering: pixelated; max-width: none"></a></div>
 
 ### stage2
 
@@ -963,7 +1015,7 @@ Drawn through EXTBG (`extbg=1`), as the game shows it. Colours 69-79 pulse: ever
 
 Its palette is the CGRAM of the game at frame 190 of play `stage2` (`tests/test_previews.py`).
 
-<img src="gallery/levels/stage2.png" alt="stage2" width="1024" style="image-rendering: pixelated">
+<div style="overflow-x: auto"><a href="gallery/levels/stage2.png"><img src="gallery/levels/stage2.png" alt="stage2" width="512" height="512" style="image-rendering: pixelated; max-width: none"></a></div>
 
 ### stage2_boss
 
@@ -973,7 +1025,7 @@ Drawn through EXTBG (`extbg=1`), as the game shows it. Colours 69-79 pulse as on
 
 Its palette is the CGRAM of the game at frame 3550 of play `stage2_boss` (`tests/test_previews.py`).
 
-<img src="gallery/levels/stage2_boss.png" alt="stage2_boss" width="1024" style="image-rendering: pixelated">
+<div style="overflow-x: auto"><a href="gallery/levels/stage2_boss.png"><img src="gallery/levels/stage2_boss.png" alt="stage2_boss" width="512" height="512" style="image-rendering: pixelated; max-width: none"></a></div>
 
 ### stage5
 
@@ -983,7 +1035,7 @@ Drawn through EXTBG (`extbg=1`), as the game shows it. Colours 48-50 pulse (`pal
 
 Its palette is the CGRAM of the game at frame 190 of play `stage5` (`tests/test_previews.py`).
 
-<img src="gallery/levels/stage5.png" alt="stage5" width="1024" style="image-rendering: pixelated">
+<div style="overflow-x: auto"><a href="gallery/levels/stage5.png"><img src="gallery/levels/stage5.png" alt="stage5" width="512" height="512" style="image-rendering: pixelated; max-width: none"></a></div>
 
 ### stage5_boss
 
@@ -993,7 +1045,7 @@ Drawn through EXTBG (`extbg=1`), as the game shows it. `cycle_palette_colors` ro
 
 Its palette is the CGRAM of the game at frame 1009 of play `stage5_boss`, except colour 96 (`tests/test_previews.py`).
 
-<img src="gallery/levels/stage5_boss.png" alt="stage5_boss" width="1024" style="image-rendering: pixelated">
+<div style="overflow-x: auto"><a href="gallery/levels/stage5_boss.png"><img src="gallery/levels/stage5_boss.png" alt="stage5_boss" width="512" height="512" style="image-rendering: pixelated; max-width: none"></a></div>
 
 ## Palettes
 

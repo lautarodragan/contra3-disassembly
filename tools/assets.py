@@ -618,12 +618,16 @@ def vram_chars(spec, manifest, mode7, root=ROOT):
     return vram
 
 
-def level_cells(view, manifest, root=ROOT):
+def level_cells(view, manifest, root=ROOT, unreached=False):
     """(cells, width, mode7) of a level preview: the map (or the four block
-    map streams) expanded through its definitions (tools/levelmap.py)."""
+    map streams) expanded through its definitions (tools/levelmap.py); a
+    side-view map along its route (level_route), or with `unreached` the
+    pages left out of it, in a row (None if there are none)."""
     maps = [manifest[p] for p in view["map"].split(",")]
     defs = [manifest[p] for p in view["defs"].split(",")]
     if maps[0].level == "blockmap":
+        if unreached:
+            return None
         return (*levelmap.m7_tilemap([data_bytes(a, root) for a in maps],
                                      data_bytes(defs[0], root)), True)
     wram = bytearray(0x4000)
@@ -631,19 +635,31 @@ def level_cells(view, manifest, root=ROOT):
         start = int(a.options.get("first", "0"), 16) * 0x20
         d = data_bytes(a, root)[:max(0, 0x4000 - start)]
         wram[start:start + len(d)] = d
-    cells, width = levelmap.side_tilemap(data_bytes(maps[0], root), wram,
-                                         int(view.get("pages", 8)), pages_up(view))
-    return cells, width, False
+    data = data_bytes(maps[0], root)
+    route, left = level_route(view, len(data) // levelmap.PAGE)
+    if unreached:
+        if not left:
+            return None
+        return (*levelmap.side_tilemap(data, wram, left), False)
+    return (*levelmap.side_tilemap(data, wram, route, page_list(view.get("up", ""))), False)
 
 
-def pages_up(view):
-    """The pages of a level line's up=N-M,... (a vertical stretch: each
-    drawn above the page before it)."""
-    out = set()
-    for item in filter(None, view.get("up", "").split(",")):
+def page_list(spec):
+    """The pages of "N-M,P,...", in that order (a range may go down)."""
+    out = []
+    for item in filter(None, spec.split(",")):
         a, _, b = item.partition("-")
-        out |= set(range(int(a), int(b or a) + 1))
+        a, b = int(a), int(b or a)
+        out += range(a, b + 1) if a <= b else range(a, b - 1, -1)
     return out
+
+
+def level_route(view, pages):
+    """(route, unreached) of a side-view level line: route=N-M,... (the
+    pages the stage shows, in the order it travels them; default all) and
+    the other pages, in order."""
+    route = page_list(view["route"]) if "route" in view else list(range(pages))
+    return route, [p for p in range(pages) if p not in route]
 
 
 def level_undefined(view, manifest, root=ROOT):
@@ -666,16 +682,21 @@ def level_undefined(view, manifest, root=ROOT):
     return {k: sorted(v) for k, v in sorted(out.items())}
 
 
-def render_level(view, manifest, root=ROOT):
+def render_level(view, manifest, root=ROOT, unreached=False):
     """(W, H, pixels, palette) of a level preview line of assets/views.txt:
     map=MAP[,MAP...] (a side-view map, or the four block map streams)
     defs=DEFS[,...] (its metatiles, or the block definitions)
     chars=ASSET@VRAMWORD[:LENGTH],... [base=VRAMWORD] bpp=4|8
-    palette=PALETTE@CGRAMINDEX,... [pages=N] (pages per row)
+    palette=PALETTE@CGRAMINDEX,... [route=N-M,...] (side view: the pages
+    the stage shows, in the order it travels them; default all)
     [up=N-M,...] (side view: pages drawn above the one before, a vertical
-    stretch)
-    [extbg=1] (Mode 7 shown through EXTBG: see EXTBG)."""
-    cells, width, mode7 = level_cells(view, manifest, root)
+    stretch) [extbg=1] (Mode 7 shown through EXTBG: see EXTBG).
+    unreached: the side-view pages left out of the route instead, in a row
+    and in dimmed colours (None if there are none)."""
+    got = level_cells(view, manifest, root, unreached)
+    if got is None:
+        return None
+    cells, width, mode7 = got
     bpp = 8 if mode7 else int(view.get("bpp", 4))
     vram = vram_chars(view["chars"], manifest, mode7, root)
     size = 64 if mode7 else 8 * bpp
@@ -691,6 +712,8 @@ def render_level(view, manifest, root=ROOT):
                                         palette_rgb(view["palette"], manifest, root), mode7)
     if view.get("extbg") == "1":
         pixels = pixels.translate(EXTBG)
+    if unreached:
+        pal = [tuple(c // 3 for c in rgb) for rgb in pal]
     return W, H, pixels, pal
 
 
@@ -956,9 +979,13 @@ def gallery():
                 "the stage's load list puts in VRAM and the colours of its palette task",
                 "(`level` lines of `assets/views.txt`), so editing a map, a metatile, a",
                 "graphic or a palette changes the picture. A side-view map is drawn",
-                "page by page in the order of its pages, each to the right of the one",
-                "before, or above it on a vertical stretch the stage climbs (`up=`),",
-                "cut into bands of 8 columns (2,048 pixels). A top-down",
+                "as one continuous route, the way the stage travels it: from its first",
+                "page, each page to the right of the one before, or directly above it",
+                "where the stage climbs (`route=` and `up=` in the level line), never",
+                "wrapped, black where no page is. The pages the stage never shows are",
+                "left out of the route and drawn dimmed in a row below it. A page is",
+                "256x256 pixels; the pictures are shown scaled down (scroll sideways;",
+                "click one for the full size). A top-down",
                 "map is the 128x128-tile Mode 7 map `build_m7_tilemap` makes.", ""]
         for name, view in levels:
             maps = view["map"].split(",")
@@ -980,8 +1007,12 @@ def gallery():
                 where = "; ".join(f"page {pg}: " + ", ".join(f"`{n:03X}`" for n in ns)
                                   for pg, ns in missing.items())
                 out += [f"Cells naming a metatile past those defined (drawn as zero words): {where}.", ""]
-            out += [f'<img src="gallery/levels/{name}.png" alt="{name}" '
-                    f'width="{min(1024, 8 * width)}" style="image-rendering: pixelated">', ""]
+            out += level_img(name, 8 * width, 8 * len(cells) // width)
+            left = None if mode7 else level_route(
+                view, len(data_bytes(manifest[maps[0]])) // levelmap.PAGE)[1]
+            if left:
+                out += [f"Pages not shown by the stage (dimmed): {page_ranges(left)}.", ""]
+                out += level_img(name + "_unreached", 256 * len(left), 256)
     pals = [a for a in read_manifest() if a.gpl]
     if pals:
         out += ["## Palettes", "",
@@ -1000,6 +1031,29 @@ def gallery():
                     f'<img src="gallery/{a.path}.png" alt="{label}" '
                     f'width="{16 * min(n, 16)}" style="image-rendering: pixelated">', ""]
     return "\n".join(out)
+
+
+def level_img(name, W, H):
+    """Gallery lines showing gallery/levels/NAME.png, W x H pixels: at half
+    size (a quarter for a picture over 2,048 pixels wide), in a box that
+    scrolls sideways, linked to the full-size picture."""
+    scale = 2 if W <= 2048 else 4
+    return [f'<div style="overflow-x: auto"><a href="gallery/levels/{name}.png">'
+            f'<img src="gallery/levels/{name}.png" alt="{name}" width="{W // scale}" '
+            f'height="{H // scale}" style="image-rendering: pixelated; max-width: none">'
+            '</a></div>', ""]
+
+
+def page_ranges(pages):
+    """Text such as "0-5, 10-11, 14" of a sorted page list."""
+    out, start = [], None
+    for i, p in enumerate(pages):
+        if start is None:
+            start = p
+        if i + 1 == len(pages) or pages[i + 1] != p + 1:
+            out.append(str(start) if start == p else f"{start}-{p}")
+            start = None
+    return ", ".join(out)
 
 
 def gallery_copy(dest):
@@ -1029,6 +1083,9 @@ def gallery_copy(dest):
         out = os.path.join(dest, "gallery", "levels", name + ".png")
         os.makedirs(os.path.dirname(out), exist_ok=True)
         snesgfx.write_png(out, *render_level(view, manifest))
+        left = render_level(view, manifest, unreached=True)
+        if left:
+            snesgfx.write_png(out[:-4] + "_unreached.png", *left)
 
 
 def main(argv):

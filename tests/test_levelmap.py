@@ -85,20 +85,40 @@ def test_assets_and_previews():
     assert len(views) == 13
     view = views["stage1_bg1"]
     W, H, pixels, _pal = assets.render_level(view, manifest)
-    assert (W, H) == (2048, 1024)
+    assert (W, H) == (28 * 256, 256)  # pages 0-27 in a row
     cells, width, mode7 = assets.level_cells(view, manifest)
-    assert not mode7 and width == 256
+    assert not mode7 and width == 28 * 32
 
 
-def test_page_positions_stack_vertical_stretches():
-    # 0-2 right, 3-4 up, 5 right; bands of 4 columns
-    where = levelmap.page_positions(8, per_row=4, up={3, 4})
+def test_page_positions_one_continuous_route():
+    # 0-2 right, 3-4 up, 5-7 right: never wrapped, rows from the top
+    where = levelmap.page_positions(range(8), up={3, 4})
     assert where[0] == (0, 2) and where[2] == (2, 2)
     assert where[3] == (2, 1) and where[4] == (2, 0) and where[5] == (3, 0)
-    assert where[6] == (0, 3) and where[7] == (1, 3)
-    cells, width = levelmap.side_tilemap(bytes(8 * levelmap.PAGE), bytes(0x20), 4, {3, 4})
-    assert width == 4 * 32 and len(cells) == width * 4 * 32
+    assert where[7] == (5, 0)
+    # a route that skips pages: they get no place
+    where = levelmap.page_positions([0, 1, 5, 6], up={6})
+    assert where == {0: (0, 1), 1: (1, 1), 5: (2, 1), 6: (2, 0)}
+    cells, width = levelmap.side_tilemap(bytes(8 * levelmap.PAGE), bytes(0x20), range(8), {3, 4})
+    assert width == 6 * 32 and len(cells) == width * 3 * 32
     assert cells[0] is None and cells[2 * 32 * width] == 0
+    with pytest.raises(ValueError):
+        levelmap.side_tilemap(bytes(2 * levelmap.PAGE), bytes(0x20), [0, 2])
+
+
+def test_level_route_and_unreached():
+    assert assets.page_list("0-2,5,9-7") == [0, 1, 2, 5, 9, 8, 7]
+    assert assets.level_route({"route": "0-2,5"}, 7) == ([0, 1, 2, 5], [3, 4, 6])
+    assert assets.level_route({}, 3) == ([0, 1, 2], [])
+    assert assets.page_ranges([0, 1, 2, 5, 7, 8]) == "0-2, 5, 7-8"
+    manifest = {a.path: a for a in assets.read_manifest(ROOT)}
+    levels = dict(assets.read_levels(ROOT))
+    # stage 3 climbs twice: 26 pages on the route, 18 columns, 9 rows
+    W, H, _px, _pal = assets.render_level(levels["stage3_bg1"], manifest, ROOT)
+    assert (W, H) == (18 * 256, 9 * 256)
+    W, H, _px, _pal = assets.render_level(levels["stage3_bg1"], manifest, ROOT, unreached=True)
+    assert (W, H) == (6 * 256, 256)
+    assert assets.render_level(levels["stage2"], manifest, ROOT, unreached=True) is None
 
 
 def test_limit_note_counts_units():

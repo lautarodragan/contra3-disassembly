@@ -193,10 +193,13 @@ preview gfx/ending_message_hard  chars=gfx/gfx_089D7E@5000 base=5000 bpp=2 palet
 cgram gfx/ending_message_easy  play=stage6_ending_easy frame=43900
 cgram gfx/ending_message_normal  play=stage6_boss frame=48500
 cgram gfx/ending_message_hard  play=stage6_ending_hard frame=68500
-# level NAME map=MAP[,MAP...] defs=DEFS[,...] chars=ASSET@VRAMWORD[:LENGTH],... [base=VRAMWORD] bpp=N palette=PALETTE@INDEX,... [pages=N]
+# level NAME map=MAP[,MAP...] defs=DEFS[,...] chars=ASSET@VRAMWORD[:LENGTH],... [base=VRAMWORD] bpp=N palette=PALETTE@INDEX,... [route=N-M,...] [up=N-M,...]
 #   a level preview in the gallery (book: Assets, Editing a level): the
 #   side-view map MAP drawn through its metatiles DEFS (each placed by its
-#   first= number), N pages per row (default 8), or the top-down map from
+#   first= number) as one route: the pages of route= (default all) in the
+#   order the stage travels them, each to the right of the one before, or
+#   above it for a page of up= (a vertical stretch); the pages left out are
+#   drawn dimmed in a row of their own (NAME_unreached.png); or the top-down map from
 #   its four block map streams and block definitions; the characters and
 #   colours as for `preview` (LENGTH: only that many bytes of the asset,
 #   hex; asm:LABEL: a palette block left inline in src/; a later palette
@@ -212,11 +215,19 @@ cgram gfx/ending_message_hard  play=stage6_ending_hard frame=68500
 # first layout; BG12NBA $00: characters from $0000) and palette task
 # (ptrs_stage_palette_tasks); the maps and metatiles of its load_wram list
 # (ptrs_0588ED).  Stage 1: load_list_058B08, palette_task_058B4C.
-level stage1_bg1  map=wram/stage1_bg1_map defs=wram/stage1_bg1_metatiles,wram/stage1_bg1_metatiles_2 chars=gfx/gfx_098000@0000,gfx/gfx_09998E@1000,gfx/gfx_09B32D@2000,gfx/gfx_09CD49@3000 bpp=4 palette=palettes/palette_088150@32,palettes/palette_088F92@0
-level stage1_bg2  map=wram/stage1_bg2_map defs=wram/stage1_bg2_metatiles chars=gfx/gfx_098000@0000,gfx/gfx_09998E@1000,gfx/gfx_09B32D@2000,gfx/gfx_09CD49@3000 bpp=4 palette=palettes/palette_088150@32,palettes/palette_088F92@0
+level stage1_bg1  map=wram/stage1_bg1_map defs=wram/stage1_bg1_metatiles,wram/stage1_bg1_metatiles_2 chars=gfx/gfx_098000@0000,gfx/gfx_09998E@1000,gfx/gfx_09B32D@2000,gfx/gfx_09CD49@3000 bpp=4 palette=palettes/palette_088150@32,palettes/palette_088F92@0 route=0-27
+level stage1_bg2  map=wram/stage1_bg2_map defs=wram/stage1_bg2_metatiles chars=gfx/gfx_098000@0000,gfx/gfx_09998E@1000,gfx/gfx_09B32D@2000,gfx/gfx_09CD49@3000 bpp=4 palette=palettes/palette_088150@32,palettes/palette_088F92@0 route=0-5,10-11
 cgram stage1_bg1  play=stage1 frame=600
 cgram stage1_bg2  play=stage1 frame=600
-note stage1_bg2 The stage shows pages 0-5, 10 and 11 of this map only: BG2's page
+note stage1_bg1 The stage goes right all the way: the screen shows the page before
+note stage1_bg1 `bg1_map_offset` (which names the page whose columns are drawn just past
+note stage1_bg1 the right edge), pages 0-17 from the start (`bg1_x` up to $1100) and
+note stage1_bg1 18-27 from the checkpoint (it starts at offset 19, `bg1_x` up to $0900 at
+note stage1_bg1 the boss); traced in the plays `stage1` and `stage1_boss`. Page 28 only
+note stage1_bg1 has its first two tile columns drawn, off screen, at the boss; 28-31 are
+note stage1_bg1 not shown.
+note stage1_bg2 BG2 is a 512-pixel screen of two pages, so the route here is in page
+note stage1_bg2 order. The stage shows pages 0-5, 10 and 11 of this map only: BG2's page
 note stage1_bg2 (`bg2_map_offset`) is set by the stage start (page 0, or 2 from the
 note stage1_bg2 checkpoint, `stage_bg2_map_offsets`) and by the type `$03` triggers of the
 note stage1_bg2 spawn lists (`update_bg2_scroll_mode_trigger`: pages 4, 2 and 10), and
@@ -227,36 +238,72 @@ note stage1_bg2 drawn; in WRAM their metatiles would be read from `$7E:D860`-`$7
 note stage1_bg2 past the `$1AA0` bytes of `stage1_bg2_metatiles`, which hold zeros in the
 note stage1_bg2 plays.
 # Stage 3: load_list_058B85, palette_task_058BE7
-level stage3_bg1  map=wram/stage3_bg1_map defs=wram/stage3_bg1_metatiles,wram/stage3_bg1_metatiles_2 chars=gfx/gfx_0C8000@0000,gfx/gfx_0C98A2@1000,gfx/gfx_0CAFBF@2000,gfx/gfx_0CC65E@3000 bpp=4 palette=palettes/palette_0882F8@32,palettes/palette_088F92@0 up=10-14,21-23
-level stage3_bg2  map=wram/stage3_bg2_map defs=wram/stage3_bg2_metatiles chars=gfx/gfx_0C8000@0000,gfx/gfx_0C98A2@1000,gfx/gfx_0CAFBF@2000,gfx/gfx_0CC65E@3000 bpp=4 palette=palettes/palette_0882F8@32,palettes/palette_088F92@0
+level stage3_bg1  map=wram/stage3_bg1_map defs=wram/stage3_bg1_metatiles,wram/stage3_bg1_metatiles_2 chars=gfx/gfx_0C8000@0000,gfx/gfx_0C98A2@1000,gfx/gfx_0CAFBF@2000,gfx/gfx_0CC65E@3000 bpp=4 palette=palettes/palette_0882F8@32,palettes/palette_088F92@0 route=0-25 up=9-13,20-22
+level stage3_bg2  map=wram/stage3_bg2_map defs=wram/stage3_bg2_metatiles chars=gfx/gfx_0C8000@0000,gfx/gfx_0C98A2@1000,gfx/gfx_0CAFBF@2000,gfx/gfx_0CC65E@3000 bpp=4 palette=palettes/palette_0882F8@32,palettes/palette_088F92@0 route=0-5
 cgram stage3_bg1  play=stage3 frame=600
-note stage3_bg1 Pages 10-14 and 21-23 are vertical stretches, drawn above the page before
-note stage3_bg1 them (`up=` in the level line): the stage scrolls up through them
-note stage3_bg1 (`bg1_scroll_mode` 3, `bg1_scroll_vertical`: the next page when the top of
-note stage3_bg1 the screen enters a new 256-pixel row; `update_bg1_scroll_mode_trigger`
-note stage3_bg1 switches the mode at pages 20 and 23), then right again from pages 15 and 24. Traced in the
-note stage3_bg1 emulator from the stage's start through the boss (`bg1_scroll_mode`,
-note stage3_bg1 `bg1_map_offset`). The boss is on page 26; pages 27-31 are not reached.
+note stage3_bg1 Pages 9-13 and 20-22 are vertical stretches, drawn above the page before
+note stage3_bg1 them (`up=` in the level line): the stage scrolls right to page 8 (`bg1_x`
+note stage3_bg1 $0800), up through 9-13 (`bg1_scroll_mode` 3, `bg1_scroll_vertical`: the
+note stage3_bg1 next page when the top of the screen enters a new 256-pixel row), right
+note stage3_bg1 from 13 through 19, up through 20-22, then right from 22 to the boss on
+note stage3_bg1 page 25. The screen shows the page before `bg1_map_offset`, which names the
+note stage3_bg1 page being drawn past the right edge (going right) or above the top (going
+note stage3_bg1 up); traced in the emulator from the stage's start (a play with seed 35)
+note stage3_bg1 and in `stage3_boss`, and checked against screenshots of the climb. Page 26
+note stage3_bg1 only has its first two tile columns drawn, off screen, at the boss; 26-31
+note stage3_bg1 are not shown.
 cgram stage3_bg2  play=stage3 frame=600
+note stage3_bg2 BG2 is a 512-pixel screen of two pages, so the route is in page order:
+note stage3_bg2 pages 0-1 from the start (parallax, `bg2_scroll_mode` 5), page 2 drawn row
+note stage3_bg2 by row above them during the first climb (mode 7, `bg2_parallax_y_1_3`),
+note stage3_bg2 pages 2-3 drawn as a screen after it and 4-5 at the boss
+note stage3_bg2 (`bg2_start_draw_screen`); traced from the start (seed 35) and in
+note stage3_bg2 `stage3_boss`. Pages 6-15 are not shown.
 # Stage 4: load_list_058C14, palette_task_058C62
-level stage4_bg1  map=wram/stage4_bg1_map defs=wram/stage4_bg1_metatiles chars=gfx/gfx_0F8000@0000,gfx/gfx_0F9460@1000,gfx/gfx_0FAC90@2000,gfx/gfx_0FC8E5@3000 bpp=4 palette=palettes/palette_08843E@0
-level stage4_bg2  map=wram/stage4_bg2_map defs=wram/stage4_bg2_metatiles chars=gfx/gfx_0F8000@0000,gfx/gfx_0F9460@1000,gfx/gfx_0FAC90@2000,gfx/gfx_0FC8E5@3000 bpp=4 palette=palettes/palette_08843E@0
+level stage4_bg1  map=wram/stage4_bg1_map defs=wram/stage4_bg1_metatiles chars=gfx/gfx_0F8000@0000,gfx/gfx_0F9460@1000,gfx/gfx_0FAC90@2000,gfx/gfx_0FC8E5@3000 bpp=4 palette=palettes/palette_08843E@0 route=0-11
+level stage4_bg2  map=wram/stage4_bg2_map defs=wram/stage4_bg2_metatiles chars=gfx/gfx_0F8000@0000,gfx/gfx_0F9460@1000,gfx/gfx_0FAC90@2000,gfx/gfx_0FC8E5@3000 bpp=4 palette=palettes/palette_08843E@0 route=0-4
 cgram stage4_bg1  play=stage4 frame=600
 cgram stage4_bg2  play=stage4 frame=600
+note stage4_bg1 BG1's page follows `bg1_x` here: page 0 (the tunnel) is drawn at the start
+note stage4_bg1 and stays while the road scrolls (`bg1_scroll_mode` 4 draws nothing new);
+note stage4_bg1 then mode 5 (`bg1_draw_column_at_8`) sets the page to ($40 + `bg1_x`) / 256
+note stage4_bg1 each frame, and `bg1_x` goes down from $0B7C to $0100: the airship and the
+note stage4_bg1 helicopter pass from page 11 down to page 1. So the pages lie at their place
+note stage4_bg1 in the map, left to right as drawn, and the stage travels them from right to
+note stage4_bg1 left. Traced in the plays `stage4` and `stage4_boss`; pages 12-31 are not
+note stage4_bg1 read.
+note stage4_bg2 BG2 is a 512-pixel screen of two pages, so the route is in page order:
+note stage4_bg2 pages 0-1 from the start (autoscroll, `bg2_scroll_mode` 10), pages 2 and 3
+note stage4_bg2 drawn row by row above them as it also scrolls up (mode 11), pages 3-4 drawn
+note stage4_bg2 as a screen at the boss; traced in `stage4` and `stage4_boss`. Pages 5-15
+note stage4_bg2 are not shown.
 # Stage 6: load_list_058C97, palette_task_058CCD
-level stage6_bg1  map=wram/stage6_bg1_map defs=wram/stage6_bg1_metatiles,wram/stage6_bg1_metatiles_2 chars=gfx/gfx_108000@0000,gfx/gfx_109C17@1000,gfx/gfx_10B927@2000,gfx/gfx_10D5A2@3000 bpp=4 palette=palettes/palette_088540@32,palettes/palette_088F92@0 up=14-15,17-19
-level stage6_bg2  map=wram/stage6_bg2_map defs=wram/stage6_bg2_metatiles chars=gfx/gfx_108000@0000,gfx/gfx_109C17@1000,gfx/gfx_10B927@2000,gfx/gfx_10D5A2@3000 bpp=4 palette=palettes/palette_088540@32,palettes/palette_088F92@0
+level stage6_bg1  map=wram/stage6_bg1_map defs=wram/stage6_bg1_metatiles,wram/stage6_bg1_metatiles_2 chars=gfx/gfx_108000@0000,gfx/gfx_109C17@1000,gfx/gfx_10B927@2000,gfx/gfx_10D5A2@3000 bpp=4 palette=palettes/palette_088540@32,palettes/palette_088F92@0 route=0-19 up=13-14,16-19
+level stage6_bg2  map=wram/stage6_bg2_map defs=wram/stage6_bg2_metatiles chars=gfx/gfx_108000@0000,gfx/gfx_109C17@1000,gfx/gfx_10B927@2000,gfx/gfx_10D5A2@3000 bpp=4 palette=palettes/palette_088540@32,palettes/palette_088F92@0 route=0-7,9-10
 cgram stage6_bg1  play=stage6 frame=600
-note stage6_bg1 Pages 14-15 are a vertical stretch (`update_bg1_scroll_mode_trigger`, then
-note stage6_bg1 `winged_alien_state_07` resumes the climb), and pages 17-19 the climb with the
-note stage6_bg1 helicopter after the last boss (`ending_start_vertical_autoscroll`, mode 6
-note stage6_bg1 `bg1_update_vertical`); both are drawn above the page before them (`up=`).
-note stage6_bg1 Traced in the plays `stage6` and `stage6_boss`. Pages 20-31 are not reached.
+note stage6_bg1 The stage goes right to page 12, up through 13-14
+note stage6_bg1 (`update_bg1_scroll_mode_trigger`, then `winged_alien_state_07` resumes
+note stage6_bg1 the climb), right to page 15, and up through 16-19: the start of the climb
+note stage6_bg1 after the last boss, then the climb with the helicopter
+note stage6_bg1 (`ending_start_vertical_autoscroll`, mode 6 `bg1_update_vertical`); page 19
+note stage6_bg1 only on HARD, where the last form chases the helicopter. The screen shows
+note stage6_bg1 the page before `bg1_map_offset`; traced in the plays `stage6`, `stage6_boss`,
+note stage6_bg1 `stage6_ending_easy` and `stage6_ending_hard`, and checked against
+note stage6_bg1 screenshots. Pages 20-31 are not shown.
 cgram stage6_bg2  play=stage6 frame=600
+note stage6_bg2 BG2 is a 512-pixel screen of two pages, so the route is in page order: the
+note stage6_bg2 stage draws the screens 0-1 (the start and the checkpoint), 2-3, 4-5, 6-7
+note stage6_bg2 and 9-10 (after the last boss; `bg2_start_draw_screen`), traced in the plays
+note stage6_bg2 `stage6`, `stage6_boss`, `stage6_ending_easy` and `stage6_ending_hard`.
+note stage6_bg2 Pages 8 and 11-15 are not shown.
 # The opening (stage 0): load_list_05A84B's map and metatiles, the
 # characters of load_list_05A7DB, palette_task_05A815
-level opening_bg1 map=wram/opening_bg1_map defs=wram/opening_bg1_metatiles chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 bpp=4 palette=palettes/palette_0889F0@0,palettes/palette_0882B6@128,palettes/palette_088254@208,palettes/palette_088AF6@192
+level opening_bg1 map=wram/opening_bg1_map defs=wram/opening_bg1_metatiles chars=gfx/gfx_06D6A7@0000,gfx/gfx_08C078@1000,gfx/gfx_08D8AF@2000,gfx/gfx_17CE4D@3000 bpp=4 palette=palettes/palette_0889F0@0,palettes/palette_0882B6@128,palettes/palette_088254@208,palettes/palette_088AF6@192 route=0-8
 cgram opening_bg1  play=poweron frame=1000
+note opening_bg1 BG1's page follows `bg1_x` (`bg1_scroll_mode` 5, `bg1_draw_column_at_8`:
+note opening_bg1 ($40 + `bg1_x`) / 256), which goes right from 0 to $0850: pages 0-8, left
+note opening_bg1 to right (traced from power-on, both times the opening runs). Pages 9-31
+note opening_bg1 are not read.
 # The top-down maps (Mode 7): the characters of the type-3 list
 # (load_list_05CF2A, load_list_05CFCF, load_list_05D01F, load_list_05D073:
 # high bytes from VRAM $0000) and the map's palette task; on the boss maps

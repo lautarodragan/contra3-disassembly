@@ -571,7 +571,11 @@ of `BG_MAP_OFFSET`: the stage starts at the page that `stage_bg1_map_offsets`
 further on), and scrolling right, or up on a vertical stretch, moves to the
 next page (BG1: `bg1_scroll_horizontal`, `bg1_scroll_vertical`; the pages
 of stages 3 and 6 that are climbed are listed in the gallery, `up=` in
-their `level` line). BG2's page is set by the stage start and by the
+their `level` line). `BG_MAP_OFFSET` names the page being drawn just past
+the edge the screen moves to (past the right edge going right, above the
+top going up), so the screen shows the page before it. On stage 4 and in
+the opening, BG1's page follows `bg1_x` instead (`bg1_scroll_mode` 5,
+`bg1_draw_column_at_8`: ($40 + `bg1_x`) / 256). BG2's page is set by the stage start and by the
 spawn lists' type `$03` triggers (`update_bg2_scroll_mode_trigger`), so a
 BG2 map is a set of screens rather than a path. Pages 6-9 of
 `stage1_bg2_map` name metatiles `$143` and `$160`-`$16B`, past the `$D5`
@@ -609,11 +613,24 @@ type-3 character list and palette task, with the first frame of the
 boss's characters on the boss maps. Two of those palettes stay inline in
 `src/` (`palette_088C3E`, `palette_088ECA`; see [Palettes](#palettes-gimp-gpl)):
 a `level` line names them `asm:LABEL` and the tool reads their `.byte`
-lines. A side-view map is drawn page by page, each page to the right of
-the one before, or above it for the pages of a vertical stretch (`up=N-M`
-in the `level` line: stage 3's pages 10-14 and 21-23, stage 6's 14-15 and
-17-19, traced in the emulator, `bg1_scroll_mode` and `bg1_map_offset`),
-in bands of 8 columns.
+lines. A side-view map is drawn as one continuous route, the way the
+player travels it: the pages of `route=N-M,...` in the `level` line (the
+pages the stage shows, in order; default all), the first at the left,
+each next one to the right of the one before, or directly above it for a
+page of `up=N-M,...` (a vertical stretch: stage 3's pages 9-13 and 20-22,
+stage 6's 13-14 and 16-19). It is never cut into bands: the picture is as
+wide and as tall as the route, black (colour 0) where no page is. The
+pages left out of the route, which the stage never shows (stage 1: 28-31,
+stage 3: 26-31, stage 4: 12-31, stage 6: 20-31, the opening: 9-31), are
+drawn dimmed in a row of their own below it (`gallery/levels/<name>_unreached.png`). The
+routes were traced in the emulator (`bg1_scroll_mode`, `bg1_map_offset`,
+`bg1_x`, `bg1_y`, frame by frame in the plays, and screenshots of the
+climbs). A BG2 map is a set of two-page screens (BG2 is 512 pixels wide
+and loops), so its route is the pages it shows in page order (stage 1:
+0-5 and 10-11; stage 3: 0-5; stage 4: 0-4; stage 6: 0-7, 9 and 10), with
+the screens and their order in the gallery's note. The gallery shows a
+picture at half or a quarter of its size in a box that scrolls sideways;
+a click opens it at full size.
 
 The top-down maps are drawn through EXTBG (`extbg=1`), as the game shows
 them: `init_topdown_hdma`'s tables set SETINI `$40` and BG1 + BG2 on the
@@ -630,8 +647,9 @@ brightest: `animate_stage2_palettes` fades it out and in again every
 ## Editing a level
 
 1. Find the page: the [gallery](gallery.md#levels) shows the map as the
-   stage scrolls through it (8 pages a row where it only goes right: page
-   N at row N / 8, column N % 8; a vertical stretch climbs), and the
+   stage scrolls through it (one route from its first page: to the right
+   where it goes right, up where it climbs; the notes give the page
+   numbers of the climbs), and the
    `.map` file has a `# page N` comment before each page. A page is 256x256 pixels, 8x8
    metatiles of 32x32.
 2. Change cells: a cell names a metatile of the stage's `.metatiles`

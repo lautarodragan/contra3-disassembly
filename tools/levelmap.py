@@ -261,48 +261,45 @@ def read_text(path, fmt, first=0):
 
 # --------------------------------------------------------------- previews
 
-def page_positions(pages, per_row=8, up=()):
-    """{page: (column, row)} in pages, for a preview: the pages in order,
-    each to the right of the one before, or above it for a page of `up`
-    (entered while the stage scrolls up: a vertical stretch). The path is
-    cut into bands of `per_row` columns (a band starts when a page going
-    right would pass the last column); a band is as tall as its highest
-    climb, and the bands are stacked top to bottom."""
-    bands, band, col, row = [], {}, 0, 0
-    for p in range(pages):
-        if p and p not in up:
-            col += 1
-            if col == per_row:
-                bands.append(band)
-                band, col, row = {}, 0, 0
-        elif p:
-            row -= 1
-        band[p] = (col, row)
-    bands.append(band)
-    out, top = {}, 0
-    for band in bands:
-        low = min(r for _, r in band.values())
-        for p, (c, r) in band.items():
-            out[p] = (c, top + r - low)
-        top += 1 - low
-    return out
+def page_positions(route, up=()):
+    """{page: (column, row)} in pages, for a preview: the pages of `route`
+    in the order the stage travels them, the first at the left, each next
+    one to the right of the one before, or directly above it for a page of
+    `up` (entered while the stage scrolls up: a vertical stretch). One
+    continuous path, never wrapped: the picture is as wide and as tall as
+    the path needs (rows counted from the top)."""
+    out, col, row = {}, 0, 0
+    for i, p in enumerate(route):
+        if i:
+            if p in up:
+                row -= 1
+            else:
+                col += 1
+        out[p] = (col, row)
+    top = min((r for _, r in out.values()), default=0)
+    return {p: (c, r - top) for p, (c, r) in out.items()}
 
 
-def side_tilemap(map_data, defs, per_row=8, up=()):
+def side_tilemap(map_data, defs, route=None, up=()):
     """A side-view map as a BG tilemap: (cells, width in cells). defs: the
     metatile definitions as WRAM holds them from the metatile base ($1000
     above the map base: BG1 $7E:5000, BG2 $7E:B000), up to $4000 bytes
-    (missing bytes are 0). Pages are placed by page_positions(), 32x32
-    tiles each; a cell no page covers is None (drawn in colour 0)."""
+    (missing bytes are 0). The pages of `route` (default: all, in order)
+    are placed by page_positions(), 32x32 tiles each; a cell no page covers
+    is None (drawn in colour 0)."""
     words = _words(map_data)
     pages = len(words) // 64
-    where = page_positions(pages, per_row, set(up))
+    route = list(range(pages)) if route is None else list(route)
+    for p in route:
+        if not 0 <= p < pages:
+            raise ValueError(f"page {p}: the map has {pages} pages")
+    where = page_positions(route, set(up))
     cols = max(c for c, _ in where.values()) + 1
     rows = max(r for _, r in where.values()) + 1
     width = cols * 32
     out = [None] * (width * rows * 32)
     defs = bytes(defs) + bytes(max(0, 0x4000 + 0x20 - len(defs)))
-    for p in range(pages):
+    for p in route:
         px, py = where[p][0] * 32, where[p][1] * 32
         for i in range(64):
             w = words[p * 64 + i]
