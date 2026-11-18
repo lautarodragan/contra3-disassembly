@@ -6,14 +6,26 @@
     python3 tools/sound_render.py SOUND --rom EDITED.sfc --against ORIGINAL.sfc
 
 SOUND is the command (hex, e.g. 3E). From power-on the game runs to the
-title screen; then the command $84 (stop everything) and SOUND go into the
-game's sound queue (sound_queue, as queue_sound puts them), which sends them
-to the driver, and the audio is recorded for S seconds (default 3). It
-prints how long the sound lasts, its median zero-crossing rate (which
-follows the pitch: n semitones up multiply it by 2 ** (n / 12)) and its
-level every 0.1 s; --wav writes the audio (stereo, 16 bits, the core's
-32,040 Hz); --against renders the same sound on a second ROM and prints
-both and their ratios. Needs `make cores`.
+title screen; then the command $84 (stop everything) goes into the game's
+sound queue (sound_queue, as queue_sound puts them), and half a second
+later, once the title music's notes have died away, SOUND; the audio is
+recorded from then for S seconds (default 3) and starts at the sound's
+first sample (the silence before it, which depends on when the driver
+takes the command, is cut). It prints how long the sound lasts, its median
+zero-crossing rate (which follows the pitch: n semitones up multiply it
+by 2 ** (n / 12)) and its level every 0.1 s; --wav writes the audio
+(stereo, 16 bits, the core's 32,040 Hz: snes9x hands over the DSP's
+samples as they are); --against renders the same sound on a second ROM, prints both and
+their ratios, and whether the two are the same sample for sample.
+
+Two renders of one sound are rarely the same sample for sample, even on
+the same ROM: the DSP steps its envelopes on a counter that runs from
+power-on and takes key-ons every other sample, so a sound that starts at
+another moment (another frame, or the same frame of a ROM whose CPU
+timing differs, as an edited driver uploads for longer at boot) has its
+envelope steps and its pitch changes some samples apart (book: Sound
+driver, editing a sound effect). The lengths, levels and zero-crossing
+rates are what to compare. Needs `make cores`.
 """
 import argparse
 import os
@@ -24,30 +36,39 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from c3emu import game, retro  # noqa: E402
 
-RATE = 32040                # snes9x's audio rate
+RATE = 32040                # snes9x's audio rate: the DSP's samples per second, not resampled
 SOUND_QUEUE = 0x0100        # src/ram.inc: sound_queue, sound_queue_write, sound_last_queued
 SOUND_QUEUE_WRITE = 0x56
 SOUND_LAST_QUEUED = 0x5C
 SOUND_CMD_STOP = 0x84
 START_FRAME = game.TITLE_READY
+QUIET_FRAMES = 30           # after the stop command: the released notes die away
+
+
+def queue(c, command):
+    """Put a command into the game's sound queue, as queue_sound does."""
+    w = c.peek(SOUND_QUEUE_WRITE)
+    c.write_ram(SOUND_QUEUE + w, bytes([command]))
+    c.write_ram(SOUND_QUEUE_WRITE, bytes([(w + 1) & 0xFF]))
+    c.write_ram(SOUND_LAST_QUEUED, bytes([command]))
 
 
 def render(rom, sound, seconds=3.0, core=None):
-    """The stereo samples [(l, r), ...] of `sound` played on `rom`."""
+    """The stereo samples [(l, r), ...] of `sound` played on `rom`, from
+    its first sample that is not silent."""
     c = retro.Console(rom, core=core, audio=True)
     c.run(START_FRAME)
-    w = c.peek(SOUND_QUEUE_WRITE)
-    c.write_ram(SOUND_QUEUE + w, bytes([SOUND_CMD_STOP]))
-    c.write_ram(SOUND_QUEUE + ((w + 1) & 0xFF), bytes([sound]))
-    c.write_ram(SOUND_QUEUE_WRITE, bytes([(w + 2) & 0xFF]))
-    c.write_ram(SOUND_LAST_QUEUED, bytes([sound]))
-    c.run(4)                    # the stop command, then the sound reaches the driver
+    queue(c, SOUND_CMD_STOP)
+    c.run(QUIET_FRAMES)
     c.audio = bytearray()
-    c.run(int(seconds * 60))
+    queue(c, sound)
+    c.run(int(seconds * 60) + 2)    # +2: the frame that sends it, the driver's tick
     pcm = bytes(c.audio)
     c.close()
     n = len(pcm) // 4
-    return list(struct.iter_unpack("<hh", pcm[:n * 4]))
+    samples = list(struct.iter_unpack("<hh", pcm[:n * 4]))
+    start = next((k for k, (l, r) in enumerate(samples) if l or r), len(samples))
+    return samples[start:start + int(seconds * RATE)]
 
 
 def wav(samples, path):
@@ -109,6 +130,10 @@ def main(argv=None):
         if length_b and zc_b:
             print(f"length x{length_a / length_b:.2f}, zero crossings x{zc_a / zc_b:.2f} "
                   "(the first ROM against the second)")
+        n = min(len(a), len(b))
+        differ = sum(1 for i in range(n) if a[i] != b[i])
+        print("the same sample for sample" if not differ and len(a) == len(b) else
+              f"{differ} of {n} samples differ (see the note on timing: --help)")
         if args.wav:
             stem, ext = os.path.splitext(args.wav)
             wav(b, stem + "-against" + ext)
