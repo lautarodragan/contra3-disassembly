@@ -296,3 +296,19 @@ def test_limit_set_by_hand(tmp_path, manifest):
     _add_pages(os.path.join(root, a.source), 3)
     errs = errors(root)
     assert len(errs) == 1 and "set by hand: tested" in errs[0]
+
+
+def test_stage_samples_end_at_the_echo_buffer(tmp_path):
+    """The stage sample blocks ($B08E) end where the driver puts the echo
+    buffer for the largest echo delay of the sequences: $D800 for delay 5;
+    a song with delay 6 would bring it down to $D000."""
+    start, why = asset_limits.echo_buffer(ROOT)
+    assert start == 0xD800 and "echo delay, 5" in why
+    src = asset_limits.Source(SRC)
+    lim = asset_limits.derive(src, "spc_samples_stage1", 0x2772, {})
+    assert lim.size == 0xD800 - 0xB08E and "echo buffer" in lim.reason
+    sound = tmp_path / "assets" / "sound"
+    sound.mkdir(parents=True)
+    shutil.copy(os.path.join(ROOT, "assets", "sound", "spc_driver.s"), sound)
+    (sound / "spc_song_x.seq").write_text("at $3000\n\tsong A\nA:\n\techo_setup $06 $46 $02\n\tend\n")
+    assert asset_limits.echo_buffer(str(tmp_path))[0] == 0xD000

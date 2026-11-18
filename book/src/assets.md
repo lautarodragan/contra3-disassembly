@@ -827,6 +827,13 @@ distance to the nearest of:
   tilemap is at `$5800` (`BG3SC` = `$5A`, `init.asm`);
 - for WRAM, a label of `src/ram.inc` (`debug_window_hdma_a` at `$7E:F800`
   bounds the streams loaded at `$7E:F000`);
+- for the sound CPU's RAM, the echo buffer: the driver's source
+  (`assets/sound/spc_driver.s`) sets ESA to `$10000` - delay x `$800` for
+  the delay of a sequence's `echo_setup`, and the largest delay of all the
+  songs and sound effects (5) puts it at `$D800`, which bounds the 7 sample
+  blocks of the stages at `$B08E` (`max=$2772`; a song with delay 6 would
+  lower it to `$D000`, and `limits --verify` would then ask for the new
+  limit);
 - for a palette, the end of the 16-colour palette (32 bytes of CGRAM) it
   ends in;
 - the end of the space: VRAM's `$8000` words (the address wraps to 0), the
@@ -841,10 +848,8 @@ characters, and `stage2_m7_blocks`, whose second half the same list covers
 with five blocks loaded after it), the limit is the original size: the
 asset cannot grow. Where nothing but the end of WRAM bank `$7E` or of the
 sound CPU's RAM is found, the limit is the original size, "original size,
-capacity unknown": the 7 sample blocks of the stages at ARAM `$B08E` (above
-them is the echo buffer, which the driver places from its own data, not
-`src/`; see [Sound](sound.md)). The source cannot tell such a limit from a
-larger number, so its manifest line says so in a comment:
+capacity unknown" (no asset at present). The source cannot tell such a
+limit from a larger number, so its manifest line says so in a comment:
 
 ```
 gfx/gfx_188000                   lz-v2  png=4bpp tiles=256 tail=1F max=$2001  # limit: original size, 1 byte past gfx_1899A4 (book: Assets, Size limits)

@@ -130,13 +130,13 @@ sound/spc_sample_dir_stage1      raw    dir=sound/spc_samples_common,sound/spc_s
 sound/spc_sample_dir_stage4      raw    dir=sound/spc_samples_common,sound/spc_samples_stage4 max=$0100
 sound/spc_sample_dir_stage5      raw    dir=sound/spc_samples_common,sound/spc_samples_stage5 max=$0100
 sound/spc_sample_dir_stage6      raw    dir=sound/spc_samples_common,sound/spc_samples_stage6 max=$0100
-sound/spc_samples_stage6         raw    brr=list max=$2772  # limit: $B08E up to the echo buffer at $D800 (echo delay 5, book: Sound driver)
-sound/spc_samples_opening        raw    brr=list max=$2772  # limit: $B08E up to the echo buffer at $D800 (echo delay 5, book: Sound driver)
-sound/spc_samples_stage3         raw    brr=list max=$2772  # limit: $B08E up to the echo buffer at $D800 (echo delay 5, book: Sound driver)
-sound/spc_samples_stage2         raw    brr=list max=$2772  # limit: $B08E up to the echo buffer at $D800 (echo delay 5, book: Sound driver)
-sound/spc_samples_stage1         raw    brr=list max=$2772  # limit: $B08E up to the echo buffer at $D800 (echo delay 5, book: Sound driver)
-sound/spc_samples_stage4         raw    brr=list max=$2772  # limit: $B08E up to the echo buffer at $D800 (echo delay 5, book: Sound driver)
-sound/spc_samples_stage5         raw    brr=list max=$2772  # limit: $B08E up to the echo buffer at $D800 (echo delay 5, book: Sound driver)
+sound/spc_samples_stage6         raw    brr=list max=$2772
+sound/spc_samples_opening        raw    brr=list max=$2772
+sound/spc_samples_stage3         raw    brr=list max=$2772
+sound/spc_samples_stage2         raw    brr=list max=$2772
+sound/spc_samples_stage1         raw    brr=list max=$2772
+sound/spc_samples_stage4         raw    brr=list max=$2772
+sound/spc_samples_stage5         raw    brr=list max=$2772
 sound/spc_driver                 lz-v1  max=$2E00 asm=spc700
 sound/spc_song_konami_logo       lz-v1  max=$2000 seq=text
 sound/spc_song_stage_clear       lz-v2  max=$2000 seq=text

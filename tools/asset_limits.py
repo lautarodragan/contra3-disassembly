@@ -36,6 +36,8 @@ What follows it (derive): the nearest of
     immediate value stored to BGnSC, BG12NBA, BG34NBA or OBSEL);
   - for WRAM, a label of src/ram.inc (a buffer the code uses) at or after
     that end;
+  - for the sound CPU's RAM, the echo buffer (echo_buffer: the address the
+    driver's code gives ESA for the largest echo delay of the sequences);
   - for a palette, the end of the 16-colour palette (32 bytes of CGRAM) it
     ends in;
   - the end of the space: VRAM's $8000 words (the address wraps to 0), the
@@ -43,7 +45,7 @@ What follows it (derive): the nearest of
     $4000 words of Mode 7's 128x128 tilemap (low bytes) and 256 characters
     (high bytes; tile numbers are 8 bits).
 
-If nothing but the end of WRAM bank $7E or of the sound CPU's RAM is found,
+If nothing but the end of WRAM bank $7E (or of the sound CPU's RAM) is found,
 the capacity is not known: the limit is the original size.  These limits
 are upper bounds: what the code writes elsewhere (VRAM by DMA from code,
 WRAM buffers not in ram.inc) is only known where a register value or a
@@ -289,10 +291,50 @@ def vram_bases(srcdir):
     return sorted(out.items())
 
 
+# The driver's code that sets the echo buffer's address (spc_driver.s, L11A1,
+# called by echo_setup with the delay in A): ESA = base - delay x 8 pages.
+ESA_CODE = re.compile(r"\tasl a\n\tasl a\n\tasl a\n\teor a, #\$FF\n\tinc a\n\tclrc\n"
+                      r"\tadc a, #\$([0-9A-Fa-f]{2})\n\w*:?\n?\tmov y, #\$6D\n")
+ECHO_SETUP = re.compile(r"^\s*echo_setup\s+\$([0-9A-Fa-f]{2})", re.M)
+
+
+def echo_buffer(root):
+    """(ARAM address, why) of the lowest start of the sound CPU's echo
+    buffer, or None.  The DSP writes the echo there (ESA; EDL x 2 KiB,
+    up to the end of ARAM), so nothing a list uploads may reach it.  The
+    driver sets ESA from the delay of a sequence's echo_setup: ESA = base
+    - delay x $800 (the code matched by ESA_CODE in spc_driver.s, base
+    $00: the top of ARAM); the largest delay of any song or sound effect
+    (any song can play over any stage's samples) gives the lowest start."""
+    sound = os.path.join(root, "assets", "sound")
+    try:
+        code = open(os.path.join(sound, "spc_driver.s")).read()
+    except OSError:
+        return None
+    m = ESA_CODE.search(code)
+    if not m:
+        return None
+    base = int(m.group(1), 16)
+    delays = {}
+    for name in sorted(os.listdir(sound)):
+        if name.endswith(".seq"):
+            for d in ECHO_SETUP.findall(open(os.path.join(sound, name)).read()):
+                delays.setdefault(int(d, 16), []).append(name)
+    if not delays:
+        return None
+    delay = max(delays)
+    files = sorted(set(delays[delay]))
+    start = (((base - delay * 8) & 0xFF) << 8) if delay else 0x10000
+    return start, (f"the echo buffer at ${start:04X} (the largest echo delay, {delay}: echo_setup "
+                   f"in {files[0]}{' and %d more' % (len(files) - 1) if len(files) > 1 else ''}; "
+                   f"the driver sets ESA to ${0x100 + base:03X}00 - delay x $800, spc_driver.s)")
+
+
 class Source:
     """What the limits are derived from, read once."""
 
     def __init__(self, srcdir):
+        self.echo = echo_buffer(os.path.dirname(os.path.abspath(srcdir)))
         self.lists = [lst for lst in parse_lists(srcdir)
                       if not (lst.label or "").startswith("unused_")]
         self.ram = ram_labels(srcdir)
@@ -405,6 +447,8 @@ def derive_entry(src, entry, size, sizes):
         if row < end:
             offer(row - start, f"the end of the 16-colour palette at ${row - 0x20 + PALETTE_BUFFER:04X} "
                   "(the next 32 bytes of CGRAM are another palette)")
+    if space == "spc" and src.echo and src.echo[0] >= lim_end:
+        offer(src.echo[0] - start, src.echo[1])
     if space.startswith("wram"):
         bank = int(space[4:], 16)
         for addr, name in src.ram:

@@ -222,5 +222,7 @@ use it. A sample that grows moves the samples after it, and their
 directory entries follow. The limits of the manifest (`max=`, see
 [Assets: size limits](assets.md#size-limits)) keep the common samples
 below `$B08E`, where the stage samples start, and the stage samples below
-`$D800`, where the echo buffer starts (`max=$2772`; see
+`$D800`, where the echo buffer starts (`max=$2772`), both derived from the
+source: the second from the driver's code that sets the echo buffer's
+address and the largest echo delay of the sequences (see
 [Sound driver: echo](sound-driver.md#echo)).
