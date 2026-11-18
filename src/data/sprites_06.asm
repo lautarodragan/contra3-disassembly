@@ -8,6 +8,13 @@
 sprites_06:
 
 	; CDL: not accessed
+; 324 four-byte entries, each a long address and a zero byte: $7F:0000 to
+; $7F:AC80 in steps of $C0, then $7F:AD80 to $7F:FF00 in steps of $100, then
+; $08:8000 to $08:8900 in steps of $100. No label or pointer refers to
+; $06:8000-$06:850F (draw_metasprite only takes the bank of sprites_06) and
+; the CDL never read it: probably an unused table (of tile sources in WRAM?
+; nothing shows what for; book: What the traces never touched).
+unused_long_pointers_068000:
 	.byte	$00, $00, $7F, $00, $C0, $00, $7F, $00, $80, $01, $7F, $00, $40, $02, $7F, $00
 	.byte	$00, $03, $7F, $00, $C0, $03, $7F, $00, $80, $04, $7F, $00, $40, $05, $7F, $00
 	.byte	$00, $06, $7F, $00, $C0, $06, $7F, $00, $80, $07, $7F, $00, $40, $08, $7F, $00

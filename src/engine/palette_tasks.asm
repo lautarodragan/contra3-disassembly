@@ -319,6 +319,8 @@ unused_start_vram_task_linked:
 @done:
 	rtl
 	; CDL: not accessed
+	; Unreachable (after an rtl, no label): the bytes of `ldx #$1280`, a
+	; leftover instruction (book: What the traces never touched).
 	.byte	$A2, $80, $12
 
 start_vram_task:
