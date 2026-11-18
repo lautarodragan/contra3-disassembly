@@ -1,12 +1,15 @@
 name: release
 
 # Push a tag like `v1.0` (or run this manually) to build the cheat presets'
-# IPS patches (make ips) and publish a GitHub Release with them attached.
+# IPS patches (make ips) and publish a GitHub Release with them attached,
+# with the default build's symbol files for debugging emulators (make
+# symbols: build/contra3.mlb for Mesen 2, build/contra3.cpu.sym for
+# bsnes-plus; names and addresses, no game data).
 #
 # The original ROM is never needed: the default build is byte-identical to it
 # (make compare checks the SHA-1 in contra3.sha1), so the patches are diffs
-# between two builds. Only the .ips patches are uploaded -- never a ROM -- so
-# no copyrighted game data is distributed.
+# between two builds. Only the .ips patches and the symbol files are uploaded
+# -- never a ROM -- so no copyrighted game data is distributed.
 on:
   push:
     tags: [ 'v*' ]
@@ -35,6 +38,9 @@ jobs:
         # make ips depends on make compare: the base ROM must be the original.
         run: make ips
 
+      - name: Build symbol files
+        run: make symbols
+
       - name: Resolve release tag
         id: tag
         run: |
@@ -58,8 +64,12 @@ jobs:
             echo '```'
             cat build/patches/README.txt
             echo '```'
+            echo
+            echo 'Symbol files of the original ROM (the default build) for debugging emulators: `contra3.mlb` (Mesen 2)'
+            echo 'and `contra3.cpu.sym` (bsnes-plus). Rename them after your ROM file and put them next to it.'
           } > notes.md
           gh release create "${{ steps.tag.outputs.name }}" \
             build/patches/*.ips \
+            build/contra3.mlb build/contra3.cpu.sym \
             --title "${{ steps.tag.outputs.name }}" \
             --notes-file notes.md

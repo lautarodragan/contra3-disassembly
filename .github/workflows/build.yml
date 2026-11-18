@@ -35,6 +35,24 @@ jobs:
         # patch against the default build reproduces it.
         run: make ips
 
+      - name: Symbol files
+        # Labels, RAM and registers for Mesen 2 (.mlb) and bsnes-plus
+        # (.cpu.sym), from ld65's debug info, parsed back and checked
+        # against the link (tools/symbols.py); make ips above wrote the
+        # cheat presets' files.
+        run: make symbols
+
+      - name: Upload the symbol files
+        uses: actions/upload-artifact@v4
+        with:
+          name: symbols
+          path: |
+            build/contra3.mlb
+            build/contra3.cpu.sym
+            build/contra3-*.mlb
+            build/contra3-*.cpu.sym
+          if-no-files-found: error
+
       - name: Shift check
         # Milestone 3: no hardcoded ROM reference of the forms tools/shift.py
         # scan knows, and a build with code and data moved (filler at the

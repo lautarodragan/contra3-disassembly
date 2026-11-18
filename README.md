@@ -63,6 +63,22 @@ have been moved (filler bytes at the start of every bank): it passes only
 where every reference between code and data is a label. See the book's
 Shiftability page.
 
+### Debugging in an emulator
+
+```
+make symbols    # build/contra3.mlb (Mesen 2), build/contra3.cpu.sym (bsnes-plus)
+```
+
+Symbol files with every ROM label (routines with their header comment,
+tables with their lengths), the RAM of `src/ram.inc` and the hardware
+registers, made by `tools/symbols.py` from ld65's debug info and checked
+against the link. Both emulators load them from the ROM's folder when the
+names match the ROM's (`contra3.sfc` → `contra3.mlb`, `contra3.cpu.sym`);
+in Mesen 2 also with Debugger → File → Workspace → Import labels.
+`make cheats` writes them for the cheat ROM too (its addresses differ). CI
+keeps them as the `symbols` artifact and releases attach them. See the
+book's Building page, "Debugging in an emulator".
+
 ## Cheats (milestone 4)
 
 Optional changes to the game, chosen at build time; the default build never
@@ -162,6 +178,7 @@ to a new release. Only patches are uploaded, never a ROM.
 | `tools/rename.py` | renames symbols across `src/` and the book, refusing collisions (see below) |
 | `tools/check_book_names.py` | checks that every label, constant and path the book names exists |
 | `tools/cheats.py`, `tools/make_ips.py` | cheat builds (`make cheats`) and IPS patches (`make ips`) |
+| `tools/symbols.py` | symbol files for Mesen 2 and bsnes-plus from ld65's debug info (`make symbols`) |
 
 Every file starts with its title, address range and what is known about
 it; the full list is in the book's "Source layout" page. A bank's files must

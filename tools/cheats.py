@@ -12,7 +12,8 @@ case: a bare word sets it to 1 (`infinite_lives` -> -D CHEAT_INFINITE_LIVES=1),
 build/cheats/<name>/, recomputes the header checksum (the normal build keeps
 the original's as data) and copies the ROM to build/contra3-<name>.sfc, where
 <name> is the options joined by '-' (`infinite_lives-damage_mult2`) or the
-preset's name.
+preset's name, with its emulator symbol files build/contra3-<name>.mlb and
+.cpu.sym (tools/symbols.py: the addresses of that ROM, not the default's).
 
 `ips` builds each preset (all by default) and writes
 build/patches/contra3-<preset>.ips against build/contra3.sfc, the default
@@ -35,6 +36,7 @@ sys.path.insert(0, HERE)
 
 import assets  # noqa: E402
 import make_ips  # noqa: E402
+import symbols  # noqa: E402
 
 CHEATS_INC = os.path.join(ROOT, "src", "cheats.inc")
 BASE_ROM = os.path.join(ROOT, "build", "contra3.sfc")
@@ -143,6 +145,13 @@ def build(words, name=None, quiet=False):
         open(sfc, "wb").write(rom)
     dst = os.path.join(ROOT, "build", "contra3-%s.sfc" % name)
     shutil.copyfile(sfc, dst)
+    # the emulator symbol files of this ROM, from its own link (book:
+    # Building, "Debugging in an emulator")
+    base = dst[:-len(".sfc")]
+    symbols.write(os.path.join(out, "contra3.dbg"), base, quiet=True)
+    errors, _ = symbols.check(base, out)
+    if errors:
+        sys.exit("%s: %s" % (os.path.relpath(base, ROOT), "; ".join(errors[:5])))
     if not quiet:
         print("%s: %s (%s)" % (os.path.relpath(dst, ROOT), sha1(rom),
                                " ".join("%s=%d" % d for d in defs) or "no cheats"))

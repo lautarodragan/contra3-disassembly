@@ -37,8 +37,9 @@ The build is three steps:
    [Source layout](layout.md)).
 
 Besides the ROM, ld65 writes a map file (`build/contra3.map`, segment sizes)
-and a label file (`build/contra3.lbl`, every label with its address), which
-emulator debuggers can load.
+and a label file (`build/contra3.lbl`). The default build assembles without
+debug info (`ca65 -g`), so that label file is empty; `make symbols` (below)
+links with it and writes symbol files that emulators load.
 
 ## The hash check
 
@@ -77,12 +78,90 @@ it also checks a refactor that moves code. It needs no original ROM file:
 the default build is the reference. See [Emulator tests](emulator.md) for
 the suite, the cores, the goldens and the CDL tracer.
 
+## Debugging in an emulator
+
+```sh
+make symbols    # build/contra3.mlb (Mesen 2) and build/contra3.cpu.sym (bsnes-plus)
+```
+
+`tools/symbols.py` assembles `src/` again with debug info into
+`build/symbols/` (`ca65 -g`, `ld65 --dbgfile`; the ROM it links must be
+`build/contra3.sfc`), reads ld65's debug file and writes, next to the ROM:
+
+- every ROM label: routines, tables, data. A cheap local is named after
+  the label it belongs to, `nmi@run_frame` for `@run_frame` in `nmi` (Mesen
+  does not allow a dot in a name). The first sentence of the comment block
+  directly above a label is its comment, so the debugger shows each
+  routine's header. In the `.mlb` a data label covers its bytes (up to the
+  next label or the first line of code), so an operand inside a table shows
+  as `table+3`;
+- the RAM symbols of `src/ram.inc` (not its structure offsets and
+  constants), with their comments; where the comment gives the symbol's own
+  extent, "($0300-$047F" or "($40 bytes", and no other symbol starts inside
+  it, the `.mlb` gives it that length. Several names for one address (the
+  work area at `mode_work` is shared by the game modes) are one label, the
+  first in `src/ram.inc`, with the others in its comment;
+- the hardware registers of `src/snes_registers.inc`.
+
+The game has no save RAM, so there are no SRAM labels.
+
+Each file is then parsed back the way the emulator parses it, and every ROM
+label is checked against the label file and the segments of the map of the
+same link. `make cheats` writes the same two files for the cheat ROM
+(`build/contra3-god-mode.mlb` ...), from its own link: the cheats move code,
+so the default build's files do not fit a cheat ROM. CI uploads the files of
+the default build and of every preset as the `symbols` artifact of the build
+workflow, and the release workflow attaches the default build's two files to
+the release.
+
+Both emulators load the files by the ROM's file name, from the ROM's
+folder: for another file name or folder, copy the files next to the ROM
+and rename them after it (`Contra III.sfc` needs `Contra III.mlb`).
+
+**Mesen 2.** The `.mlb` is Mesen's own label file: one
+`type:address[-end]:name:comment` per line, `SnesPrgRom` addresses being
+offsets in the ROM file (LoROM: bank × `$8000` + address − `$8000`;
+`$00:8000` is `0000`), `SnesWorkRam` offsets in the 128 KiB of WRAM
+(`$7E:2200` is `2200`, `$7F:0000` is `10000`) and `SnesRegister` the
+register's address. When the debugger opens, Mesen loads `<rom>.mlb` from
+the ROM's folder by itself (debugger settings, Integration tab, ".MLB files",
+on by default). It skips the `.mlb`, though, when it found a ca65 `.dbg`
+or a `.sym` of the same name first: do not put a `contra3.dbg` or
+`contra3.sym` next to the ROM (the `.cpu.sym` has another name for this
+reason). To load it by hand: in the debugger window, File →
+Workspace → Import labels..., and pick the `.mlb`. The disassembly then
+shows `nmi`, `lda nmi_busy`, `sta a:INIDISP` and the routines' comments; the
+memory viewer names WRAM bytes (`obj_slots`, `td_enemy_shots+5`) and the
+label list has all of them.
+
+**bsnes-plus.** The `.cpu.sym` is in WLA DX's format, `[labels]` then
+`[comments]`, one `BB:AAAA name` per line. When it loads a ROM, bsnes-plus
+reads `<rom>.cpu.sym` (else `<rom>.sym`) from its folder, and the debugger's
+disassembly shows operands as `<name>`. It looks a symbol up by the exact
+24-bit address an operand resolves to: direct page operands in bank $00 and
+absolute ones in the data bank, which the game keeps at $05 (set by `nmi`).
+So the RAM below $2000 is listed in banks $00, $05 and $7E, and the
+registers in banks $00 and $05. Other tools that read WLA DX symbol
+files (Mesen reads them too, without lengths or comments) can use it
+renamed to `contra3.sym`.
+
+How the files were checked: both formats against the emulators' source
+(Mesen 2's `CodeLabel.FromString` and `LabelManager.SetLabel`, which drops
+a label another one overlaps; bsnes-plus's `WlaSymbolFile::read`), and by
+running that code itself, compiled outside the emulators, on the files:
+Mesen's import takes all 11 804 labels with no error and none dropped, and
+bsnes-plus picks its WLA reader and reads the same labels and comments as
+`tools/symbols.py check`. They have not been loaded in a running emulator
+here (neither runs without a display).
+
 ## CI
 
 `.github/workflows/build.yml` runs on every push to `main`, on pull requests
 and by hand. Its `build` job installs Ubuntu's `cc65` package, runs `make
 compare` (with the system's Python 3 for the assets), `make
-assets-check`, builds the cheat presets and their IPS patches, runs the shift
+assets-check`, builds the cheat presets and their IPS patches, makes the
+symbol files (`make symbols`, uploaded as the `symbols` artifact with the
+presets' ones), runs the shift
 scan and a shifted build, and then fails if the build changed any tracked
 file (`git status --porcelain` must be empty).
 

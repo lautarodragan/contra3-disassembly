@@ -30,7 +30,7 @@ build/assets.mk: assets/manifest.txt tools/assets.py $(wildcard assets/sound/*.t
 
 assets: $(asset_targets)
 
-.PHONY: all assets assets-check compare clean disasm cores bsnes emu-test goldens trace shift-build shift-test book book-check cheats ips cheat-test compress-test
+.PHONY: all assets assets-check compare clean disasm cores bsnes emu-test goldens trace shift-build shift-test book book-check cheats ips cheat-test compress-test symbols
 
 all: compare
 
@@ -67,6 +67,19 @@ clean:
 	rm -rf build/assets build/assets.mk build/assets.limits build/ld65.log
 	rm -rf build/shift build/dbg build/cheats build/patches
 	rm -f build/contra3-*.sfc
+	rm -rf build/symbols
+	rm -f build/contra3.mlb build/contra3.cpu.sym build/contra3-*.mlb build/contra3-*.cpu.sym
+
+# Symbol files for debugging emulators (tools/symbols.py): ROM labels, the
+# RAM of src/ram.inc and the hardware registers, from ld65's debug info of a
+# link with -g in build/symbols/ (checked to be build/contra3.sfc), as
+# build/contra3.mlb (Mesen 2) and build/contra3.cpu.sym (bsnes-plus, WLA DX
+# format), next to the ROM so the emulators load them with it.  Each file is
+# parsed back and checked against the link.  `make cheats` writes the same
+# for the cheat ROM.  See the book's Building page, "Debugging in an emulator".
+#   make symbols
+symbols: compare
+	$(PYTHON) tools/symbols.py build
 
 # Run the generator (tools/disasm.py, a reference/research tool since src/ is
 # the source of truth) into build/disasm/: src/ is never overwritten.  Compare

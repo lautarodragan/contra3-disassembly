@@ -19,8 +19,10 @@ make ips                              # IPS patches of all presets, in build/pat
 (`infinite_lives` is `-D CHEAT_INFINITE_LIVES=1`), `word=n` sets it to n.
 The ROM goes to `build/contra3-<options>.sfc`
 (`build/contra3-infinite_lives-invincible-damage_mult2.sfc`) or
-`build/contra3-<preset>.sfc`; the objects, map and debug file to
-`build/cheats/<name>/`. `tools/cheats.py` does the work: it checks the
+`build/contra3-<preset>.sfc`, with its symbol files for emulators next
+to it (`.mlb` and `.cpu.sym`, from this ROM's own link: see
+[Debugging in an emulator](building.md#debugging-in-an-emulator)); the
+objects, map and debug file to `build/cheats/<name>/`. `tools/cheats.py` does the work: it checks the
 option names against `src/cheats.inc`, runs `ca65 -D ...` and `ld65`, and
 fixes the checksum at `$00:FFDC` (and its complement) the way
 `tools/shift.py` does for the shifted build.
