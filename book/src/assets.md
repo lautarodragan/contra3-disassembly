@@ -709,8 +709,12 @@ the build makes into `build/assets/stages/stage1_spawns.inc` ... (ca65 source:
 the labels, the page table as `.addr` of the labels, the entries) with
 `tools/spawns.py`; `src/data/tables_05.asm` includes it where the data was,
 so the labels stay labels and the ROM is the original byte for byte. The
-top-down stages do not use this: their enemies come from generators and
-target sets in code and tables (see [Top-down stages](topdown.md)), and
+top-down stages do not use this: their targets are sets of five chosen by
+difficulty and at random (`spawn_stage2_targets`, positions in
+`stage2_target_x` / `stage2_target_y`, stage 5's `stage5_target_*`) and
+their enemies come from a generator around the players
+(`spawn_stage2_enemies`, types from `stage2_spawn_types`; see
+[Top-down stages](topdown.md#enemies-and-targets)), not from a scroll; and
 stage 4's airship has a list of its own (`airship_spawn_x`).
 
 ```
