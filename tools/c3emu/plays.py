@@ -51,8 +51,18 @@ ENDING_PUSH_START = 0x29  # ending_sequence_state_29: PUSH START KEY (EASY, NORM
 START_AFTER = 300       # game frames a Start-only screen stays before the play presses Start
 
 
+# The stage numbers the plays depend on (src/game/stages.inc): the original
+# game's, and those of the extra-stage build (`make cheats CHEATS=extra_stage`,
+# a side-view stage inserted as stage 2; tests/test_extra_stage.py).
+TOPDOWN_STAGES = (2, 5)
+LAST_STAGE = 6
+EXTRA_TOPDOWN_STAGES = (3, 6)
+EXTRA_LAST_STAGE = 7
+
+
 class Play:
-    def __init__(self, name, stage, frames, seed, checkpoint=False, menu=0, level=None):
+    def __init__(self, name, stage, frames, seed, checkpoint=False, menu=0, level=None,
+                 topdown=TOPDOWN_STAGES, last=LAST_STAGE):
         self.name = name
         self.stage = stage
         self.frames = frames
@@ -60,6 +70,8 @@ class Play:
         self.checkpoint = checkpoint
         self.menu = menu            # title menu entry: 0 1P, 1 2P-A, 2 2P-B
         self.level = level          # None NORMAL, 1 HARD, 2 EASY (Right presses on OPTION/LEVEL)
+        self.topdown = topdown      # stage_number of the top-down stages
+        self.last = last            # stage_number of the last stage (the ending)
 
     def __repr__(self):
         return "Play(%s)" % self.name
@@ -86,16 +98,16 @@ PLAYS = {p.name: p for p in [
 ]}
 
 
-def waits_for_start(c):
+def waits_for_start(c, last=LAST_STAGE):
     """True on the two screens that only Start leaves: the closing
-    message's PUSH START KEY after stage 6 on EASY and NORMAL
+    message's PUSH START KEY after stage 6 (`last`) on EASY and NORMAL
     (ending_sequence_state_29, once its timer has run out) and FINAL SCORE
     (run_final_score, step 2).  The random moves never press Start (it
     pauses), so the plays press it there (after START_AFTER game frames)."""
     mode = c.peek(GAME_MODE)
     if mode == GAME_MODE_FINAL_SCORE:
         return c.peek(MODE_STEP) == 2
-    if mode != GAME_MODE_STAGE_PLAY or c.peek(game.STAGE) != 6:
+    if mode != GAME_MODE_STAGE_PLAY or c.peek(game.STAGE) != last:
         return False
     objs = c.ram(OBJ_SLOTS, OBJ_SLOT_COUNT * OBJ_SIZE)
     word = lambda a: objs[a] | objs[a + 1] << 8
@@ -140,7 +152,7 @@ def run(c, play, every=300):
             left, chunk, waiting = 8, 0, 0
         elif left == 0:
             stage = c.peek(game.STAGE)
-            if stage in (2, 5):
+            if stage in play.topdown:
                 pool = TOP_MOVES + [("a",)] * (2 if still > 5 else 0)
             else:
                 pool = BOSS_MOVES if still > 5 and still % 10 < 7 else SIDE_MOVES
@@ -164,7 +176,7 @@ def run(c, play, every=300):
             played += 1
             chunk += 1
             left -= 1
-            waiting = waiting + 1 if waits_for_start(c) else 0
+            waiting = waiting + 1 if waits_for_start(c, play.last) else 0
             if played % 1000 == 0:
                 # once per 1000 game frames: is the stage still progressing?
                 prog = (c.peek(game.STAGE), c.peek(game.PROGRESS))

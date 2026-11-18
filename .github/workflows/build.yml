@@ -35,6 +35,13 @@ jobs:
         # patch against the default build reproduces it.
         run: make ips
 
+      - name: Extra-stage build
+        # The variant with a stage inserted as stage 2 (src/game/stages.inc;
+        # book: Adding a stage), alone and with every cheat that adds data.
+        run: |
+          make cheats CHEATS=extra_stage
+          make cheats CHEATS="extra_stage enemy_hp=50 invincible no_pit_death infinite_lives infinite_bombs keep_weapons damage_mult=2 debug_keys button_codes stage_select"
+
       - name: Symbol files
         # Labels, RAM and registers for Mesen 2 (.mlb) and bsnes-plus
         # (.cpu.sym), from ld65's debug info, parsed back and checked

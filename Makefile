@@ -30,7 +30,7 @@ build/assets.mk: assets/manifest.txt tools/assets.py $(wildcard assets/sound/*.t
 
 assets: $(asset_targets)
 
-.PHONY: all assets assets-check compare clean coverage disasm cores bsnes emu-test goldens trace shift-build shift-test book book-check cheats ips cheat-test compress-test symbols
+.PHONY: all assets assets-check compare clean coverage disasm cores bsnes emu-test goldens trace shift-build shift-test book book-check cheats ips cheat-test stage-test compress-test symbols
 
 all: compare
 
@@ -214,6 +214,13 @@ ips: compare
 #   make cheat-test
 cheat-test: compare cores
 	$(PYTHON) -m pytest tests/test_cheats.py
+
+# The extra-stage build (src/game/stages.inc, `make cheats CHEATS=extra_stage`:
+# a stage inserted as stage 2) in the emulator: tests/test_extra_stage.py
+# builds it and plays it against the original's goldens.  Book: Adding a stage.
+#   make stage-test
+stage-test: compare cores
+	$(PYTHON) -m pytest tests/test_extra_stage.py
 
 # Matching compressor (tools/c3lz.py): decompress every compressed block of
 # the built ROM, compress it again with each strategy and compare.  Fails if a
