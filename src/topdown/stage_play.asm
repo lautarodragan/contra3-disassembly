@@ -1712,6 +1712,22 @@ td_place_enemy_near_player:
 	and	#$00FF
 	asl	a
 	tay
+.if CHEAT_EXTRA_STAGE
+	; the tables are in bank $04 in the extra-stage build (data/tables_05.asm):
+	; index in X, the enemy in Y
+	phx
+	tyx
+	ply
+	lda	f:td_spawn_offsets_x,x
+	clc
+	adc	zp_FC
+	sta	a:$000A,y
+	lda	f:td_spawn_offsets_y,x
+	clc
+	adc	zp_FE
+	sta	a:$000E,y
+	tyx
+.else
 	lda	a:td_spawn_offsets_x,y
 	clc
 	adc	zp_FC
@@ -1720,6 +1736,7 @@ td_place_enemy_near_player:
 	clc
 	adc	zp_FE
 	sta	$0E,x
+.endif
 	lda	#$2000
 	sta	$02,x
 	jsl	f:td_enemy_tile_collision

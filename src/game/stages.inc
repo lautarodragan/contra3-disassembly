@@ -17,17 +17,18 @@
 ; original bytes.  With CHEAT_EXTRA_STAGE = 1 (`make cheats
 ; CHEATS=extra_stage`) a new side-view stage, STAGE_EXTRA, is inserted as
 ; stage 2 and the original stages 2-6 become 3-7; it has its own layout
-; (LAYOUT_EXTRA), and every per-stage table has an entry for it.  Until the
-; stage is designed those entries are stage 1's data (the "sx" / "lx"
-; arguments of the macros), so the game plays through 7 stages.
+; (LAYOUT_EXTRA), and every per-stage table has an entry for it (the "sx" /
+; "lx" arguments of the macros): "Collapsed Tower" (book: Stage 2: Collapsed
+; Tower), its own BG1 map and spawn lists on stage 1's graphics, mid-boss
+; and boss (game/extra_stage.asm, data/tables_05.asm).
 
 .ifndef STAGES_INC
 STAGES_INC = 1
 
 ; 1: the extra-stage build (a build variant, not a cheat; it goes through
 ; tools/cheats.py so that it can be combined with the cheats): a new
-; side-view stage inserted as stage 2, the original stages 2-6 become 3-7.
-; The new stage is stage 1's data until it is designed.
+; side-view stage inserted as stage 2 ("Collapsed Tower"), the original
+; stages 2-6 become 3-7.
 .ifndef CHEAT_EXTRA_STAGE
 CHEAT_EXTRA_STAGE = 0
 .endif

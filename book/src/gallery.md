@@ -933,6 +933,20 @@ Pages not shown by the stage (dimmed): 6-9, 12-15.
 
 <div style="overflow-x: auto"><a href="gallery/levels/stage1_bg2_unreached.png"><img src="gallery/levels/stage1_bg2_unreached.png" alt="stage1_bg2_unreached" width="1024" height="128" style="image-rendering: pixelated; max-width: none"></a></div>
 
+### extra_bg1
+
+20 pages: `assets/wram/extra_bg1_map.map`, `assets/wram/stage1_bg1_metatiles.metatiles`, `assets/wram/stage1_bg1_metatiles_2.metatiles`. Drawn with `gfx_098000`, `gfx_09998E`, `gfx_09B32D`, `gfx_09CD49` and `palette_088150`, `palette_088F92`.
+
+The extra stage goes right through pages 0-10 (the mid-boss's arena on page 7, the checkpoint's start on page 8), climbs pages 11-13 above page 10 (`bg1_scroll_mode` 3), then goes right from page 13 to the boss on page 18 (`bg1_x` $0F00, or $0700 from the checkpoint); traced with the scripted player of `tools/c3emu/extra_stage.py` (tests/test_extra_stage.py). Pages 17-18 are stage 1's 26-27: like those, page 18 is drawn here with the stage's first characters, not those `load_list_059E79` loads for the boss. Page 19 is blank and not shown.
+
+With the 53 entries of `assets/stages/extra.spawns` (see [Assets](assets.md#spawn-lists-text)): a yellow box where an object appears, with its type and parameter; a cyan dotted line where the screen's edge is when a trigger fires.
+
+<div style="overflow-x: auto"><a href="gallery/levels/extra_bg1.png"><img src="gallery/levels/extra_bg1.png" alt="extra_bg1" width="1024" height="256" style="image-rendering: pixelated; max-width: none"></a></div>
+
+Pages not shown by the stage (dimmed): 19.
+
+<div style="overflow-x: auto"><a href="gallery/levels/extra_bg1_unreached.png"><img src="gallery/levels/extra_bg1_unreached.png" alt="extra_bg1_unreached" width="128" height="128" style="image-rendering: pixelated; max-width: none"></a></div>
+
 ### stage3_bg1
 
 32 pages: `assets/wram/stage3_bg1_map.map`, `assets/wram/stage3_bg1_metatiles.metatiles`, `assets/wram/stage3_bg1_metatiles_2.metatiles`. Drawn with `gfx_0C8000`, `gfx_0C98A2`, `gfx_0CAFBF`, `gfx_0CC65E` and `palette_0882F8`, `palette_088F92`.

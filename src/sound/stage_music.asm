@@ -32,8 +32,8 @@ load_stage_music:
 .if CHEAT_EXTRA_STAGE
 ; The song of each stage, by stage_number: an entry of song_lists + 2 (the
 ; original stage n's song set is entry n; the opening's is entry 0). The
-; extra stage plays stage 1's.
+; extra stage plays stage 5's (game/extra_stage.asm queues its song).
 stage_songs:
 	.word	0
-	per_stage_word	1, 2, 3, 4, 5, 6, 1
+	per_stage_word	1, 2, 3, 4, 5, 6, 5
 .endif

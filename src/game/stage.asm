@@ -356,8 +356,15 @@ stage_layout_init:
 tbl_stage_layout_inits:
 	; the layouts, then their checkpoint versions (stages 1, 3, 4, 6, the
 	; opening, the extra stage; game/stages.inc)
-	per_layout_addr	layout_init_stage1, layout_init_stage3, layout_init_stage4, layout_init_stage6, layout_init_opening, layout_init_stage1
-	per_layout_addr	layout_init_stage1_checkpoint, layout_init_stage3_checkpoint, layout_init_stage4_checkpoint, layout_init_stage6, layout_init_opening, layout_init_stage1_checkpoint
+	per_layout_addr	layout_init_stage1, layout_init_stage3, layout_init_stage4, layout_init_stage6, layout_init_opening, layout_init_extra
+	per_layout_addr	layout_init_stage1_checkpoint, layout_init_stage3_checkpoint, layout_init_stage4_checkpoint, layout_init_stage6, layout_init_opening, layout_init_extra
+
+.if CHEAT_EXTRA_STAGE
+; The extra stage's start, both layouts (bank $00 has 8 bytes free in the
+; extra-stage build: the routine is in bank $04, game/extra_stage.asm).
+layout_init_extra:
+	jml	f:layout_init_extra_far
+.endif
 
 layout_init_stage1_checkpoint:
 	lda	#$0000

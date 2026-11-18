@@ -636,7 +636,7 @@ ptrs_stage_7f_load_lists:
 ptrs_stage_map_load_lists:
 	; LAYOUT: read on from ptrs_stage_7f_load_lists (lda a:ptrs_stage_7f_load_lists,y)
 	.addr	load_list_058A93	; stage 0, and STAGE_LAST of ptrs_stage_7f_load_lists
-	per_stage_addr	load_list_058AE6, load_list_05CF7E, load_list_058B5D, load_list_058BF8, load_list_05D028, load_list_058C6F, load_list_058AE6
+	per_stage_addr	load_list_058AE6, load_list_05CF7E, load_list_058B5D, load_list_058BF8, load_list_05D028, load_list_058C6F, load_list_extra_maps
 lives_options:
 	; CDL: read by options_store_lives; partly not accessed
 	.byte	$03, $00, $05, $00, $07, $00, $1E, $00
@@ -711,17 +711,19 @@ stage_layouts:
 ; The tables by stage_layout (and stage_layout_base) list the layouts of
 ; stages 1, 3, 4, 6, the opening and the extra stage (game/stages.inc); those
 ; by stage_layout then list their checkpoint versions (LAYOUT_CHECKPOINT
-; bytes in). The extra stage's entries are stage 1's for now.
+; bytes in). The extra stage (book: Stage 2: Collapsed Tower) starts at page
+; 0 of its BG1 map and, past its mid-boss, at page 8, with BG2 on page 0 of
+; stage 1's BG2 map; its other entries are stage 1's.
 ; bg1_map_offset by stage_layout (stage_init).
 stage_bg1_map_offsets:
 	; CDL: read by stage_init; partly not accessed
 	per_layout_word	$0000, $0000, $0000, $0000, $0000, $0000
-	per_layout_word	$0900, $0700, $0080, $0400, $0000, $0900
+	per_layout_word	$0900, $0700, $0080, $0400, $0000, $0400
 ; bg2_map_offset by stage_layout (stage_init).
 stage_bg2_map_offsets:
 	; CDL: read by stage_init; partly not accessed
 	per_layout_word	$0000, $0000, $0000, $0000, $0000, $0000
-	per_layout_word	$0100, $0100, $0000, $0000, $0000, $0100
+	per_layout_word	$0100, $0100, $0000, $0000, $0000, $0000
 ; Respawn mode (respawn_mode, read by the player's state $0F through
 ; tbl_respawn_placement) set at the start of each stage, by stage_layout_base
 ; (stage_init). The opening's entry is the first word of
@@ -739,8 +741,8 @@ ptrs_stage_dp_params:
 	per_layout_addr	stage_dp_params_058A2B, stage_dp_params_058A45, stage_dp_params_058A5F, stage_dp_params_058A79, stage_dp_params_058A5F, stage_dp_params_058A2B
 ptrs_stage_load_lists:
 	; CDL: read by stage_setup_video; partly not accessed
-	per_layout_addr	load_list_058B08, load_list_058B85, load_list_058C14, load_list_058C97, load_list_058B08, load_list_058B08
-	per_layout_addr	load_list_058B2F, load_list_058BB6, load_list_058C3B, load_list_058C97, load_list_058B08, load_list_058B2F
+	per_layout_addr	load_list_058B08, load_list_058B85, load_list_058C14, load_list_058C97, load_list_058B08, load_list_extra_vram
+	per_layout_addr	load_list_058B2F, load_list_058BB6, load_list_058C3B, load_list_058C97, load_list_058B08, load_list_extra_vram
 ptrs_stage_palette_tasks:
 	; CDL: read by stage_init, load_stage_dp_params; partly not accessed
 	per_layout_addr	palette_task_058B4C, palette_task_058BE7, palette_task_058C62, palette_task_058CCD, palette_task_058B4C, palette_task_058B4C
@@ -1127,7 +1129,7 @@ ptrs_stage_spawn_pages:
 	; CDL: read by init_stage_spawns, spawn_next_stage_object, find_free_object_slot_in_range; partly not accessed
 	; by stage_number: stage 0, stages 1-6, the extra stage (stage 1's)
 	.addr	spawn_pages_059488
-	per_stage_addr	spawn_pages_059488, spawn_pages_059488, spawn_pages_0597E6, spawn_pages_059488, spawn_pages_059488, spawn_pages_059C2E, spawn_pages_059488
+	per_stage_addr	spawn_pages_059488, spawn_pages_059488, spawn_pages_0597E6, spawn_pages_059488, spawn_pages_059488, spawn_pages_059C2E, spawn_pages_extra
 ; The spawn lists of stage 1: assets/stages/stage1.spawns, made into
 ; stages/stage1_spawns.inc by tools/spawns.py (book: Assets, Spawn lists).
 	.include	"stages/stage1_spawns.inc"
@@ -1163,6 +1165,35 @@ airship_spawn_params:
 ; The spawn lists of stage 6: assets/stages/stage6.spawns, made into
 ; stages/stage6_spawns.inc by tools/spawns.py (book: Assets, Spawn lists).
 	.include	"stages/stage6_spawns.inc"
+.if CHEAT_EXTRA_STAGE
+; The extra stage (stage 2 of the extra-stage build; book: Stage 2:
+; Collapsed Tower): its spawn lists, assets/stages/extra.spawns, made into
+; stages/extra_spawns.inc by tools/spawns.py; the metatiles and maps it
+; decompresses to $7E (stage 1's, with its own BG1 map: game/extra_stage.asm);
+; the BG and sprite tiles of its start and of its checkpoint: stage 1's BG
+; tiles and the sprites stage 1 has from its page 1 on (load_list_058B08,
+; then load_list_059E62).
+	.include	"stages/extra_spawns.inc"
+load_list_extra_maps:
+	load_list	$01, $00
+	load_wram	$7E5000, stage1_bg1_metatiles
+	load_wram	$7E9000, extra_bg1_map
+	load_wram	$7EB000, stage1_bg2_metatiles
+	load_wram	$7E7000, stage1_bg1_metatiles_2
+	load_wram	$7EF000, stage1_bg2_map
+	load_end
+load_list_extra_vram:
+	load_list	$00, $00
+	load_vram	$0000, gfx_098000
+	load_vram	$1000, gfx_09998E
+	load_vram	$2000, gfx_09B32D
+	load_vram	$3000, gfx_09CD49
+	load_vram	$7000, gfx_0DBCEB
+	load_vram	$7400, gfx_0DC2FE
+	load_vram	$7800, gfx_0DD6D3
+	load_vram	$7C00, gfx_0DDC20
+	load_end
+.endif
 ; update_stage6_bg_tile_animator: bg_dma_src of the 4 frames of animated BG tiles ($400
 ; bytes to VRAM $3A90), by stage_frame_counter / 8.
 stage6_bg_tile_animator_tile_frames:
@@ -3879,6 +3910,14 @@ stage2_spawn_types:
 stage5_spawn_types:
 	; CDL: read by spawn_stage5_enemies
 	.byte	$12, $00, $05, $00
+; td_spawn_offsets_y and td_spawn_offsets_x (640 bytes) are read only by
+; td_place_enemy_near_player; the extra-stage build (game/stages.inc) moves
+; them to the end of bank $04 and reads them with long addressing there, to
+; leave room in bank $05 for the extra stage's spawn lists.
+.if CHEAT_EXTRA_STAGE
+	.pushseg
+	.segment "BANK04"
+.endif
 td_spawn_offsets_y:
 	; CDL: read by td_place_enemy_near_player
 	.byte	$40, $FF, $41, $FF, $41, $FF, $41, $FF, $41, $FF, $42, $FF, $43, $FF, $43, $FF
@@ -3924,6 +3963,9 @@ td_spawn_offsets_x:
 	.byte	$96, $FF, $9A, $FF, $9E, $FF, $A2, $FF, $A6, $FF, $AA, $FF, $AE, $FF, $B3, $FF
 	.byte	$B7, $FF, $BB, $FF, $C0, $FF, $C4, $FF, $C9, $FF, $CD, $FF, $D2, $FF, $D6, $FF
 	.byte	$DB, $FF, $E0, $FF, $E4, $FF, $E9, $FF, $EE, $FF, $F2, $FF, $F7, $FF, $FC, $FF
+.if CHEAT_EXTRA_STAGE
+	.popseg
+.endif
 	; CDL: read by td_animate_enemy
 td_anim_05D45A:
 	anim_frame	$0002, $0000, $0E00

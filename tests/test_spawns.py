@@ -19,7 +19,7 @@ def _read(f):
 
 
 def test_files():
-    assert [os.path.basename(f) for f in FILES] == ["stage1.spawns", "stage3.spawns", "stage6.spawns"]
+    assert [os.path.basename(f) for f in FILES] == ["extra.spawns", "stage1.spawns", "stage3.spawns", "stage6.spawns"]
 
 
 @pytest.mark.parametrize("f", FILES)

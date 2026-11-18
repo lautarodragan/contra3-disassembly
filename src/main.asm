@@ -71,6 +71,7 @@
 .include "objects/object_handlers_04a.asm"
 .include "game/sound_check.asm"
 .include "sound/stage_music.asm"
+.include "game/extra_stage.asm"
 .include "topdown/support_04.asm"
 .include "objects/object_handlers_04b.asm"
 
