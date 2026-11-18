@@ -158,6 +158,15 @@ run them from the brain's death ([Emulator tests](emulator.md)):
 | `$19-$1D` | five pictures (`ptrs_05FDBC`, `boss_work_4` 0-8) over the message | HARD |
 | `$1E-$24` | the staff credits over the helicopter (`ending_init_text_screen`, `ending_run_text_script`), the crowd and the fireworks; then the stage ends and the game goes to FINAL SCORE | HARD |
 
+![The last form of the HARD ending under the helicopter, its left claw
+reaching up](img/ending-hard-claw.png)
+
+The last form on HARD (`stage6_ending_hard` play, game frame 60312 after
+the stage was picked): its four claws are trail chains of type `$96`
+segments (`ending_creature_spawn_claws`: two arms of 5 segments, two
+lower claws of 3; 16 segments at once in the emulator), here the left arm
+reaching up at the missile.
+
 So the last form, the credits and the crowd are only seen on HARD.
 `spawn_ending_crowd` creates 6, 7 or 8 crowd members on easy, normal and
 hard (`ending_crowd_counts`), but only the HARD ending reaches it.
