@@ -14,17 +14,17 @@
 stage2_sprite_tiles_1:
 	; Compressed data for WRAM $7E:A000, $17:8000-$17:98AC (from its length word), loaded by load_list_058623, load_list_05CF7E.
 	; Stage 2: 4bpp sprite tiles, DMAd to VRAM $4000 by stream_topdown_sprite_gfx (td_tiles records in $7E).
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to 4bpp tiles, which the game only copies to VRAM.
 	.incbin	"wram/stage2_sprite_tiles_1.lz"
 stage2_sprite_tiles_2:
 	; Compressed data for WRAM $7E:C000, $17:98AD-$17:AFD9 (from its length word), loaded by load_list_058623, load_list_05CF7E.
 	; Stage 2: 4bpp sprite tiles, DMAd to VRAM $4000 by stream_topdown_sprite_gfx (td_tiles records in $7E).
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to 4bpp tiles, which the game only copies to VRAM.
 	.incbin	"wram/stage2_sprite_tiles_2.lz"
 stage2_sprite_tiles_3:
 	; Compressed data for WRAM $7E:E000, $17:AFDA-$17:B952 (from its length word), loaded by load_list_058623, load_list_05CF7E.
 	; Stage 2: 4bpp sprite tiles, DMAd to VRAM $4000 by stream_topdown_sprite_gfx (td_tiles records in $7E).
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to 4bpp tiles, which the game only copies to VRAM.
 	.incbin	"wram/stage2_sprite_tiles_3.lz"
 gfx_17B953:
 	; ASSET: compressed graphics (VRAM), $17:B953-$17:CE4C (from its length word), loaded by load_list_05A7DB

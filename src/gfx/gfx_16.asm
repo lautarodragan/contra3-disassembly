@@ -16,38 +16,38 @@ gfx_168000:
 	.incbin	"gfx/gfx_168000.lz"
 stage5_boss_m7_blocks:
 	; Compressed data for WRAM $7E:8000, $16:A8FE-$16:AE8A (from its length word), loaded by load_list_05D07C.
-	; Stage 5 boss map: Mode 7 block definitions, $20 bytes per 4x4-tile block (tile numbers in the even bytes; expand_m7_block, queue_m7_block_patch).
-	; What it decompresses to is not checked for pointers (none known).
+	; Stage 5 boss map: Mode 7 block definitions, $20 bytes per 4x4-tile block (tile numbers in the even bytes; expand_m7_block, queue_m7_block_patch; the odd bytes are unused).
+	; No pointers: it decompresses to Mode 7 tile numbers in the even bytes (expand_m7_block) and BG-tilemap-like high bytes the game does not use (book: Assets, Level maps).
 	.incbin	"wram/stage5_boss_m7_blocks.lz"
 stage5_boss_block_map_0:
 	; Compressed data for WRAM $7E:9000, $16:AE8B-$16:AEF5 (from its length word), loaded by load_list_05D07C.
 	; Stage 5 boss map: block map, rows 0-7 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to block numbers (build_m7_tilemap).
 	.incbin	"wram/stage5_boss_block_map_0.lz"
 stage5_boss_block_map_1:
 	; Compressed data for WRAM $7E:9400, $16:AEF6-$16:B003 (from its length word), loaded by load_list_05D07C.
 	; Stage 5 boss map: block map, rows 8-15 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to block numbers (build_m7_tilemap).
 	.incbin	"wram/stage5_boss_block_map_1.lz"
 stage5_boss_block_map_2:
 	; Compressed data for WRAM $7E:9800, $16:B004-$16:B114 (from its length word), loaded by load_list_05D07C.
 	; Stage 5 boss map: block map, rows 16-23 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to block numbers (build_m7_tilemap).
 	.incbin	"wram/stage5_boss_block_map_2.lz"
 stage5_boss_block_map_3:
 	; Compressed data for WRAM $7E:9C00, $16:B115-$16:B173 (from its length word), loaded by load_list_05D07C.
 	; Stage 5 boss map: block map, rows 24-31 (32 blocks a row in 4 runs of 8 words $80 apart, block number in the low byte; build_m7_tilemap).
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to block numbers (build_m7_tilemap).
 	.incbin	"wram/stage5_boss_block_map_3.lz"
 stage5_boss_m7_chars:
 	; Compressed data for WRAM $7E:C000, $16:B174-$16:B622 (from its length word), loaded by load_list_05D07C.
 	; Stage 5 boss map: Mode 7 characters of the boss, 4 frames of $280 bytes (stage5_boss_chr_sources), DMAd to VRAM $3200 (high bytes) by stream_topdown_sprite_gfx.
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to Mode 7 characters, which the game only copies to VRAM.
 	.incbin	"wram/stage5_boss_m7_chars.lz"
 stage5_boss_sprite_tiles:
 	; Compressed data for WRAM $7E:A000, $16:B623-$16:BE10 (from its length word), loaded by load_list_05D07C.
 	; Stage 5 boss map: 4bpp sprite tiles, DMAd to VRAM $4000 by stream_topdown_sprite_gfx (td_tiles records in $7E).
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to 4bpp tiles, which the game only copies to VRAM.
 	.incbin	"wram/stage5_boss_sprite_tiles.lz"
 	; CDL: not accessed
 	.byte	$03, $00, $0C, $03, $13, $0F, $2D, $1D, $5B, $33, $74, $11, $A9, $7B, $D9, $32
@@ -73,7 +73,7 @@ td_sprite_tiles_16:
 stage6_bg2_metatiles:
 	; Compressed data for WRAM $7E:B000, $16:DF52-$16:F4C4 (from its length word), loaded by load_list_058C6F.
 	; Stage 6: BG2 metatiles (as BG1, map base $A000).
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to BG tilemap words, which draw_bg_column / draw_bg_row copy to VRAM.
 	.incbin	"wram/stage6_bg2_metatiles.lz"
 	; CDL: read by demo_read_p1_event
 demo_input_p1_0:

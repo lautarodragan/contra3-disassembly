@@ -20,18 +20,18 @@ gfx_119D0E:
 stage6_bg_anim_tiles:
 	; Compressed data for WRAM $7E:A000, $11:B7AF-$11:C385 (from its length word), loaded by load_list_058C6F.
 	; Stage 6: 3 frames of $400 bytes of 4bpp BG tiles, DMAd to VRAM $3A90 by update_stage6_bg_tile_animator.
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to 4bpp tiles, which the game only copies to VRAM.
 	.incbin	"wram/stage6_bg_anim_tiles.lz"
 gfx_11C386:
 	; ASSET: compressed graphics (VRAM), $11:C386-$11:CDE9 (from its length word), loaded by load_list_059E95
 	.incbin	"gfx/gfx_11C386.lz"
 packed_11CDEA:
 	; Compressed data for WRAM $7F:C000, $11:CDEA-$11:DF74 (from its length word), loaded by load_list_0585D1, load_list_058687, load_list_058A93.
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to 4bpp tiles, which the game only copies to VRAM.
 	.incbin	"wram/packed_11CDEA.lz"
 packed_11DF75:
 	; Compressed data for WRAM $7F:E000, $11:DF75-$11:EB27 (from its length word), loaded by load_list_0585D1, load_list_058687, load_list_058A93.
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to 4bpp tiles, which the game only copies to VRAM.
 	.incbin	"wram/packed_11DF75.lz"
 gfx_11EB28:
 	; ASSET: compressed graphics (VRAM), $11:EB28-$11:F1F2 (from its length word), loaded by load_list_058530

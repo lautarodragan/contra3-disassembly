@@ -29,16 +29,16 @@ gfx_0FD147:
 stage4_bg1_metatiles:
 	; Compressed data for WRAM $7E:5000, $0F:EDEA-$0F:F83A (from its length word), loaded by load_list_058687, load_list_058BF8.
 	; Stage 4: BG1 metatiles from number 0 (4x4 tilemap words each, $20 bytes; draw_bg_column / draw_bg_row, map base $4000).
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to BG tilemap words, which draw_bg_column / draw_bg_row copy to VRAM.
 	.incbin	"wram/stage4_bg1_metatiles.lz"
 stage4_bg2_metatiles:
 	; Compressed data for WRAM $7E:B000, $0F:F83B-$0F:FDB6 (from its length word), loaded by load_list_058687, load_list_058BF8.
 	; Stage 4: BG2 metatiles (as BG1, map base $A000).
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to BG tilemap words, which draw_bg_column / draw_bg_row copy to VRAM.
 	.incbin	"wram/stage4_bg2_metatiles.lz"
 stage4_bg2_map:
 	; Compressed data for WRAM $7E:F000, $0F:FDB7-$0F:FF11 (from its length word), loaded by load_list_058687, load_list_058BF8.
 	; Stage 4: BG2 map (as BG1).
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to metatile offsets from the metatile base in WRAM (draw_bg_column / draw_bg_row).
 	.incbin	"wram/stage4_bg2_map.lz"
 	; The rest of the bank is free: filled with $FF by the linker (contra3.cfg).

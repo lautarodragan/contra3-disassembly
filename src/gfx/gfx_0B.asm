@@ -13,27 +13,27 @@
 	; CDL: read by decompress_chunk
 packed_0B8000:
 	; Compressed data for WRAM $7F:0000, $0B:8000-$0B:935B (from its length word), loaded by load_list_0585D1, load_list_058687, load_list_058A93.
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to 4bpp tiles, which the game only copies to VRAM.
 	.incbin	"wram/packed_0B8000.lz"
 packed_0B935C:
 	; Compressed data for WRAM $7F:2000, $0B:935C-$0B:AA9B (from its length word), loaded by load_list_0585D1, load_list_058687, load_list_058A93.
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to 4bpp tiles, which the game only copies to VRAM.
 	.incbin	"wram/packed_0B935C.lz"
 packed_0BAA9C:
 	; Compressed data for WRAM $7F:4000, $0B:AA9C-$0B:BCFC (from its length word), loaded by load_list_0585D1, load_list_058687, load_list_058A93.
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to 4bpp tiles, which the game only copies to VRAM.
 	.incbin	"wram/packed_0BAA9C.lz"
 packed_0BBCFD:
 	; Compressed data for WRAM $7F:6000, $0B:BCFD-$0B:C6A0 (from its length word), loaded by load_list_0585D1, load_list_058687, load_list_058A93.
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to 4bpp tiles, which the game only copies to VRAM.
 	.incbin	"wram/packed_0BBCFD.lz"
 packed_0BC6A1:
 	; Compressed data for WRAM $7F:8000, $0B:C6A1-$0B:D88B (from its length word), loaded by load_list_0585D1, load_list_058687, load_list_058A93.
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to 4bpp tiles, which the game only copies to VRAM.
 	.incbin	"wram/packed_0BC6A1.lz"
 packed_0BD88C:
 	; Compressed data for WRAM $7F:A000, $0B:D88C-$0B:E86D (from its length word), loaded by load_list_0585D1, load_list_058687, load_list_058A93.
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to 4bpp tiles, which the game only copies to VRAM.
 	.incbin	"wram/packed_0BD88C.lz"
 gfx_0BE86E:
 	; ASSET: compressed graphics (VRAM), $0B:E86E-$0B:FE1D (from its length word), loaded by load_list_05FEDF

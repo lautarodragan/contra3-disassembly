@@ -7265,6 +7265,12 @@ td_tile_no_effect:
 	clc
 	rts
 
+; Reads the tile attributes ($7E:4000) of the 2x2 tiles around the object
+; (X): its tile and the right, lower and lower-right neighbours, or the
+; upper / left ones, by which quarter of the tile it is in. On tile row 127
+; the lower neighbours are past the map: $7E:8000-$7E:8080, the first block
+; definitions (both their bytes), read as attributes (emulator: changing
+; those bytes changes how enemies at the map's bottom edge are pushed).
 td_read_enemy_corner_tiles:
 	lda	$02,x
 	bit	#$2000
@@ -7865,6 +7871,8 @@ td_tile_hole:
 	clc
 	rts
 
+; As td_read_enemy_corner_tiles, for a player (the same reads past the map
+; on tile row 127).
 td_read_player_corner_tiles:
 	lda	$02,x
 	bit	#$2000

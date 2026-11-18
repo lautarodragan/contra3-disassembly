@@ -401,6 +401,14 @@ values (`src/ram.inc`):
 | `$FE` | `TDA_BLOCK_ANIM` | stage 2: shake and a block animation (`td_block_anim_frames`, `td_block_anim_blocks_0` ...) |
 | `$FF` | `TDA_HOLE` | the player falls (state 9), an enemy dies |
 
+The corner checks (`td_read_player_corner_tiles`, `td_read_enemy_corner_tiles`)
+read the 2x2 tiles around an object, its own and a neighbour on each side
+by the quarter of the tile it is in. On the map's last tile row the row
+below is past the attribute map: `$7E:8000`-`$7E:8080`, the start of the
+block definitions, both bytes of blocks 0-3, read as attributes (in the
+emulator, changing those bytes changes how enemies on the bottom row are
+pushed; nothing else reads the definitions' odd bytes).
+
 Special values (from `$ED` up) are handled by entry `$FF` - value of
 `tbl_td_player_special_tiles` (players) and `tbl_td_enemy_special_tiles`
 (enemies: most kill them).

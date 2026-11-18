@@ -3,8 +3,12 @@
 # Top-down blocks: 4x4 Mode 7 tiles each, as expand_m7_block reads them.
 # One line per block: its number (hex), then its 4 rows of 4 words, top row
 # first, rows separated by "|". The low byte of a word is the Mode 7
-# character (00-FF); the high byte is not read by any code found (it holds
-# small values such as 08, 0C, 2C: kept as it is). The block map names a
+# character (00-FF). The high byte is not used: it looks like the high byte
+# of a BG tilemap word (vhopppcc: palette in bits 2-4, priority in bit 5,
+# 08 0C 2C 34 ...), which Mode 7 does not have, probably left by the tool that made
+# the maps; kept as it is. (Only blocks 0-3 are ever read whole: as the tile
+# attributes of a row below the map, by the corner checks of objects on its
+# last row; book: Top-down stages.) The block map names a
 # block by its number; the tile attributes (walls, holes) come from the
 # characters (tile_attrs_stage2 ..., book: Top-down stages).
 000: 085C 087C 087C 087C | 087E 085E 087D 087D | 087E 0872 0873 0873 | 087E 0872 0873 0873

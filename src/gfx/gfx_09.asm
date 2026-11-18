@@ -26,7 +26,7 @@ gfx_09CD49:
 stage1_bomber_m7_chars:
 	; Compressed data for WRAM $7E:A000, $09:E638-$09:EBB9 (from its length word), loaded by load_list_059EFC.
 	; Stage 1 bomber raid: Mode 7 characters (the bomber), the high bytes of VRAM $0000-$0FFF written by bomber_raid_state_02 (bomber_raid_pixel_ptr).
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to Mode 7 characters, which the game only copies to VRAM.
 	.incbin	"wram/stage1_bomber_m7_chars.lz"
 gfx_09EBBA:
 	; ASSET: compressed graphics (VRAM), $09:EBBA-$09:F823 (from its length word), loaded by load_list_059E79
@@ -69,6 +69,6 @@ gfx_09EBBA:
 stage6_bg1_metatiles_2:
 	; Compressed data for WRAM $7E:7000, $09:FA34-$09:FBF3 (from its length word), loaded by load_list_058C6F.
 	; Stage 6: BG1 metatiles $100 and up (they continue stage6_bg1_metatiles at $7E:7000).
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to BG tilemap words, which draw_bg_column / draw_bg_row copy to VRAM.
 	.incbin	"wram/stage6_bg1_metatiles_2.lz"
 	; The rest of the bank is free: filled with $FF by the linker (contra3.cfg).

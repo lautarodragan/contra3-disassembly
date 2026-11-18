@@ -6829,7 +6829,7 @@ gfx_07E9FE:
 opening_bg1_map:
 	; Compressed data for WRAM $7E:9000, $07:F552-$07:F78D (from its length word), loaded by load_list_05A84B.
 	; Opening cinematic (stage 0): BG1 map, one word per metatile (byte offset of the metatile, bits 14-15 flip), 8x8 metatiles per $80-byte page.
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to metatile offsets from the metatile base in WRAM (draw_bg_column / draw_bg_row).
 	.incbin	"wram/opening_bg1_map.lz"
 ending_message_hard:
 	; ASSET: compressed graphics (VRAM), $07:F78E-$07:F902 (from its length word), loaded by load_list_05FDB3

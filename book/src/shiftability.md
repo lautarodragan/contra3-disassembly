@@ -60,8 +60,10 @@ sound blocks, have a comment
     ; ASSET: compressed graphics (VRAM), $0A:8000-$0A:8F11 (from its length word), loaded by load_list_05AA1F
 
 meaning: bounds proven, no pointers inside. Streams decompressed to WRAM
-are labelled but not marked (what they decompress to is not checked for
-pointers yet): `; Compressed data for WRAM ...`. Both are binary files in
+have a comment `; Compressed data for WRAM ...` and a line `; No pointers:
+it decompresses to ...` naming what they hold (tiles, Mode 7 characters,
+metatiles, map offsets, blocks, block numbers: see
+[Assets](assets.md#wram-streams-of-bank-7e)). Both are binary files in
 `assets/` now, included with `.incbin` right after their label (see
 [Assets](assets.md)); the label stays in the source, so they move with
 their bank. The compressed streams are stored decompressed and compressed

@@ -26,11 +26,11 @@ gfx_10D5A2:
 stage6_bg1_map:
 	; Compressed data for WRAM $7E:9000, $10:F1FE-$10:F730 (from its length word), loaded by load_list_058C6F.
 	; Stage 6: BG1 map, one word per metatile (byte offset of the metatile, bits 14-15 flip), 8x8 metatiles per $80-byte page.
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to metatile offsets from the metatile base in WRAM (draw_bg_column / draw_bg_row).
 	.incbin	"wram/stage6_bg1_map.lz"
 stage6_bg2_map:
 	; Compressed data for WRAM $7E:F000, $10:F731-$10:F8C0 (from its length word), loaded by load_list_058C6F.
 	; Stage 6: BG2 map (as BG1).
-	; What it decompresses to is not checked for pointers (none known).
+	; No pointers: it decompresses to metatile offsets from the metatile base in WRAM (draw_bg_column / draw_bg_row).
 	.incbin	"wram/stage6_bg2_map.lz"
 	; The rest of the bank is free: filled with $FF by the linker (contra3.cfg).
