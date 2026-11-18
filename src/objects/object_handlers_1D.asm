@@ -1970,7 +1970,9 @@ ending_blink_push_start_key:
 ; Object type $6F, $8A. Stage 6 final boss: the giant brain (type $8A, slot
 ; $0900); its attacks are the brain_boss_* types. Type $6F uses the same
 ; handler but was not seen in the emulator. Initial HP by difficulty:
-; $0401/$4256/$7532 (brain_boss_hp), halved in state 6 when at least $100.
+; $0401/$4256/$7532 (brain_boss_hp), halved in state 6 (after each attack)
+; when at least $100; only vulnerable during an attack (state 5, OBJ_FLAGS
+; $11).
 update_brain_boss:
 	lda	a:boss_work_7
 	bmi	@check_hit

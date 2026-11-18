@@ -338,9 +338,11 @@ largest positive word), so in practice the pylons, the stage 1 boss's
 shell and the fireballs leaping out of stage 1's fire cannot be shot
 down on HARD. The fireballs have 16 HP on EASY and 64 on NORMAL; on
 HARD it would take some 16,000 hits of the default gun (damage 2), and
-they can only be hit while out of the fire. The brain boss's HP is
-1025 on EASY but 16982 on NORMAL and 29986 on HARD, a jump nobody has
-explained yet ([Enemies and bosses](enemies-late.md#hp-and-difficulty)).
+they can only be hit while out of the fire. The brain boss's HP, 1025 on
+EASY but 16982 on NORMAL and 30002 on HARD, looks like the same kind of
+oddity but is not: it is halved after every attack while at least 256, so
+it really sets how many attacks the fight lasts (at least 4 on EASY, 8 on
+NORMAL and HARD; [Enemies and bosses](enemies-late.md#hp-and-difficulty)).
 
 **Dead loads.** A few instructions load a register that the next
 instruction overwrites; they change nothing:

@@ -7077,7 +7077,10 @@ brain_boss_attack_4_angle_limits:
 brain_boss_attack_4_angle_steps:
 	; CDL: read by brain_boss_attack_4_step_02
 	.byte	$FF, $FF, $01, $00, $01, $00, $FF, $FF
-; OBJ_HP of brain_boss by difficulty (easy, normal, hard)
+; OBJ_HP of brain_boss by difficulty (easy, normal, hard): 1025, 16982, 30002.
+; brain_boss_state_06 halves it after every attack while it is at least $100,
+; so these set the number of attacks before the HP can run out (3 halvings on
+; easy, 7 on normal and hard; checked in the emulator).
 brain_boss_hp:
 	; CDL: read by brain_boss_state_00; partly not accessed
 	.word	ENEMY_HP($0401), ENEMY_HP($4256), ENEMY_HP($7532)

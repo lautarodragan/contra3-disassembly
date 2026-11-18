@@ -226,10 +226,21 @@ Oddities:
 
 - `lightning_pylon_hp` has two entries ($40, $60); on HARD the code reads the
   following word, `$7FFF`, so the pylons can't really be destroyed.
-- `brain_boss_hp` is `$0401`, `$4256`, `$7532` (1025, 16982, 29986): the
-  brain is beaten in phases, `brain_boss_state_06` halves `OBJ_HP` when it is
-  at least `$100`, and the attacks change with the HP left. Why easy starts
-  so much lower than normal is not understood yet.
+- `brain_boss_hp` is `$0401`, `$4256`, `$7532` (1025, 16982, 30002). The
+  brain can only be hurt during an attack (`OBJ_FLAGS` `$11`; between
+  attacks `$31`, invulnerable), and after every attack
+  `brain_boss_state_06` halves `OBJ_HP` while it is at least `$100`. So the
+  starting HP is in effect a count of attacks: whatever the players do,
+  1025 drops below 256 after 3 attacks (1025, 512, 256, 128), 16982 and
+  30002 after 7 (down to about 132 and 234), and damage done before that
+  is mostly halved away. EASY is meant to be a shorter fight, not a weaker
+  brain. The attack itself does not depend on the HP: it is the orb
+  cluster where the roulette of state 4 stops (`boss_work_0`), and only
+  attack 7 checks `difficulty`. Checked in the emulator (the
+  `stage6_ending_easy`, `stage6_boss` and `stage6_ending_hard` plays, the
+  brain's `OBJ_HP` logged at each state): HP 1025, 994 after the first
+  attack, 497 after the halving, 468, 234, 83, dead during the 4th attack on
+  EASY; dead during the 10th attack on NORMAL and the 11th on HARD.
 - Bodies that must not die from shots use 4095 (`$0FFF`).
 
 ## Open questions
