@@ -149,7 +149,7 @@ How the files were checked: both formats against the emulators' source
 (Mesen 2's `CodeLabel.FromString` and `LabelManager.SetLabel`, which drops
 a label another one overlaps; bsnes-plus's `WlaSymbolFile::read`), and by
 running that code itself, compiled outside the emulators, on the files:
-Mesen's import takes all 11 804 labels with no error and none dropped, and
+Mesen's import takes every label with no error and drops none, and
 bsnes-plus picks its WLA reader and reads the same labels and comments as
 `tools/symbols.py check`. They have not been loaded in a running emulator
 here (neither runs without a display).
