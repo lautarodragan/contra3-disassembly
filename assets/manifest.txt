@@ -161,6 +161,7 @@ wram/stage1_bg1_metatiles_2      lz-v2  level=metatiles first=100 max=$2000
 wram/stage1_bg1_map              lz-v1  level=bgmap max=$1000
 wram/stage1_bg2_map              lz-v1  level=bgmap max=$0800
 wram/extra_bg1_map               lz-v1  level=bgmap max=$1000  # the extra-stage build's stage 2 (book: Stage 2: Collapsed Tower)
+wram/extra_bg1_metatiles         lz-v2  level=metatiles first=1A8 max=$0B00  # its metatiles after stage 1's, from $1A8 ($7E:8500 up to the map at $7E:9000)
 wram/packed_0B8000               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_0B935C               lz-v2  png=4bpp tiles=256 max=$2000
 wram/packed_0BAA9C               lz-v2  png=4bpp tiles=256 max=$2000

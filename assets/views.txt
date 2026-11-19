@@ -251,7 +251,7 @@ note stage1_bg2 plays.
 # CHEATS=extra_stage`; book: Stage 2: Collapsed Tower): its own BG1 map on
 # stage 1's metatiles, characters and palette (load_list_extra_vram,
 # palette_task_058B4C); its BG2 is stage 1's.
-level extra_bg1  map=wram/extra_bg1_map defs=wram/stage1_bg1_metatiles,wram/stage1_bg1_metatiles_2 chars=gfx/gfx_098000@0000,gfx/gfx_09998E@1000,gfx/gfx_09B32D@2000,gfx/gfx_09CD49@3000 bpp=4 palette=palettes/palette_088150@32,palettes/palette_088F92@0 route=0-18 up=11-13
+level extra_bg1  map=wram/extra_bg1_map defs=wram/stage1_bg1_metatiles,wram/stage1_bg1_metatiles_2,wram/extra_bg1_metatiles chars=gfx/gfx_098000@0000,gfx/gfx_09998E@1000,gfx/gfx_09B32D@2000,gfx/gfx_09CD49@3000 bpp=4 palette=palettes/palette_088150@32,palettes/palette_088F92@0 route=0-18 up=11-13
 note extra_bg1 The extra stage goes right through pages 0-10 (the mid-boss's arena on page
 note extra_bg1 7, the checkpoint's start on page 8), climbs pages 11-13 above page 10
 note extra_bg1 (`bg1_scroll_mode` 3), then goes right from page 13 to the boss on page 18

@@ -36,10 +36,20 @@ layout_init_extra_far:
 	jml	f:queue_sound
 
 ; The extra stage's BG1 map (assets/wram/extra_bg1_map.map), decompressed
-; to $7E:9000 by load_list_extra_maps; its metatiles are stage 1's.
+; to $7E:9000 by load_list_extra_maps; its metatiles are stage 1's
+; (stage1_bg1_metatiles at $7E:5000, stage1_bg1_metatiles_2 from metatile
+; $100 at $7E:7000) and its own from $1A8 (extra_bg1_metatiles, below).
 extra_bg1_map:
 	; Extra stage: BG1 map, one word per metatile (byte offset of the metatile, bits 14-15 flip), 8x8 metatiles per $80-byte page.
 	; (Not in the default ROM, so not one of the blocks tools/test_compressor.py checks.)
 	.incbin	"wram/extra_bg1_map.lz"
+
+; The extra stage's own metatiles (assets/wram/extra_bg1_metatiles.metatiles),
+; decompressed to $7E:8500 by load_list_extra_maps, right after the 168 of
+; stage1_bg1_metatiles_2 ($100-$1A7): metatiles $1A8 on, up to the map at
+; $7E:9000 (88). They are built from stage 1's characters, for the climb
+; (book: Stage 2: Collapsed Tower).
+extra_bg1_metatiles:
+	.incbin	"wram/extra_bg1_metatiles.lz"
 
 .endif

@@ -1169,7 +1169,8 @@ airship_spawn_params:
 ; The extra stage (stage 2 of the extra-stage build; book: Stage 2:
 ; Collapsed Tower): its spawn lists, assets/stages/extra.spawns, made into
 ; stages/extra_spawns.inc by tools/spawns.py; the metatiles and maps it
-; decompresses to $7E (stage 1's, with its own BG1 map: game/extra_stage.asm);
+; decompresses to $7E (stage 1's, with its own BG1 map and the metatiles it
+; adds after stage 1's: game/extra_stage.asm);
 ; the BG and sprite tiles of its start and of its checkpoint: stage 1's BG
 ; tiles and the sprites stage 1 has from its page 1 on (load_list_058B08,
 ; then load_list_059E62).
@@ -1180,6 +1181,7 @@ load_list_extra_maps:
 	load_wram	$7E9000, extra_bg1_map
 	load_wram	$7EB000, stage1_bg2_metatiles
 	load_wram	$7E7000, stage1_bg1_metatiles_2
+	load_wram	$7E8500, extra_bg1_metatiles
 	load_wram	$7EF000, stage1_bg2_map
 	load_end
 load_list_extra_vram:

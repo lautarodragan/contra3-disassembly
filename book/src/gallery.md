@@ -935,7 +935,7 @@ Pages not shown by the stage (dimmed): 6-9, 12-15.
 
 ### extra_bg1
 
-20 pages: `assets/wram/extra_bg1_map.map`, `assets/wram/stage1_bg1_metatiles.metatiles`, `assets/wram/stage1_bg1_metatiles_2.metatiles`. Drawn with `gfx_098000`, `gfx_09998E`, `gfx_09B32D`, `gfx_09CD49` and `palette_088150`, `palette_088F92`.
+20 pages: `assets/wram/extra_bg1_map.map`, `assets/wram/stage1_bg1_metatiles.metatiles`, `assets/wram/stage1_bg1_metatiles_2.metatiles`, `assets/wram/extra_bg1_metatiles.metatiles`. Drawn with `gfx_098000`, `gfx_09998E`, `gfx_09B32D`, `gfx_09CD49` and `palette_088150`, `palette_088F92`.
 
 The extra stage goes right through pages 0-10 (the mid-boss's arena on page 7, the checkpoint's start on page 8), climbs pages 11-13 above page 10 (`bg1_scroll_mode` 3), then goes right from page 13 to the boss on page 18 (`bg1_x` $0F00, or $0700 from the checkpoint); traced with the scripted player of `tools/c3emu/extra_stage.py` (tests/test_extra_stage.py). Pages 17-18 are stage 1's 26-27: like those, page 18 is drawn here with the stage's first characters, not those `load_list_059E79` loads for the boss. Page 19 is blank and not shown.
 

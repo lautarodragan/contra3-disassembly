@@ -77,7 +77,7 @@ def test_assets_and_previews():
     preview of assets/views.txt renders; changing a map cell changes it."""
     manifest = {a.path: a for a in assets.read_manifest()}
     levels = [a for a in manifest.values() if a.level]
-    assert len(levels) == 42
+    assert len(levels) == 43     # the original's 41, the extra stage's map and metatiles
     for a in levels:
         n = len(a.from_source()) - len(bytes.fromhex(a.options.get("tail", "")))
         assert n % levelmap.FORMATS[a.level][1] == 0
