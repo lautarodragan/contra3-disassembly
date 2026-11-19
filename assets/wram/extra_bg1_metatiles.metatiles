@@ -5,7 +5,7 @@
 # them (their blank $0260 tiles replaced by the wall's). Only stage 1's
 # characters below $391 (no collision class) are added; the collision
 # tiles are those of the metatiles they come from.
-# 31 metatiles, $1A8-$1C6 (tools/levelmap.py metatiles)
+# 34 metatiles, $1A8-$1C9 (tools/levelmap.py metatiles)
 # Side-view metatiles: 4x4 tiles each, as draw_bg_column / draw_bg_row read
 # them. One line per metatile: its number (hex), then its 4 rows of 4 BG
 # tilemap words, top row first, rows separated by "|". A word is
@@ -45,3 +45,6 @@
 1C4: 0260 0260 0260 0260 | 0A99 0A9A 0A99 0A98 | 09F7 09F9 09F9 09F7 | 09F9 09F7 09F8 09F9
 1C5: 4A97 4A96 1164 5164 | 4A9C 4A9B 4A9A 0A99 | 4A9F 4A9E 4A9D 09F7 | 09D4 09D5 09F7 09F9
 1C6: 0DBB 0DBB 0DBB 0DBB | 0DBB 0DBB 0DBB 0DBB | 8A99 8A9A 8A99 8A98 | 0260 0260 0260 0260
+1C7: 0800 0D7D 0921 116D | 0800 0D7D 0921 116D | 0800 0D7D 0921 116D | 1000 117D 0921 116D
+1C8: 0D10 0DE9 0DE9 0DEB | 0A80 0A81 0A82 0A82 | 0BF1 0BF1 0BF3 0BF3 | 0A77 0A78 0A79 0A79
+1C9: 0DEB 0DEB 0DE9 0DE9 | 0A82 0A82 0A82 4A81 | 0BF3 0BF3 0BF3 4BF1 | 0A79 0A79 0A79 4A78
