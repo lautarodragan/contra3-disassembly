@@ -38,18 +38,18 @@ list spawn_list_extra_p1 page 1
 
 list spawn_list_extra_p2 page 2
   30  OBJT_ALIEN_DOG                       256   190  0000  280-300  # alien dog (stage 1)
-  50  OBJT_WINDOW_SNIPER                   256    72  0000  300-740  # sniper in a window (stages 1, 3)
+  3C  OBJT_WINDOW_SNIPER                   256    80  0000  300-740  # sniper in a window (stages 1, 3)
   E0  OBJT_POPUP_TURRET                    256   200  0002  780-840  # gun turret rising from the rubble (stage 1)
   end
 
 list spawn_list_extra_p3 page 3
-  20  OBJT_GRENADE_SOLDIER                 256   104  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
+  20  OBJT_GRENADE_SOLDIER                 256   200  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
   80  OBJT_WEAPON_CAPSULE                  -16    96  0005  300-780  # flying weapon capsule
   C8  OBJT_ALIEN_DOG                       256   190  0000  280-300  # alien dog (stage 1)
   end
 
 list spawn_list_extra_p4 page 4
-  30  OBJT_WINDOW_SNIPER                   256    92  0000  300-740  # sniper in a window (stages 1, 3)
+  68  OBJT_WINDOW_SNIPER                   256   106  0000  300-740  # sniper in a window (stages 1, 3)
   80  OBJT_DELETE_OBJECT_TRIGGER             0     0  000B  9C0-AC0  # stage trigger: deletes the first object (from $0280) of the type in field $3A (delete_self_and_linked)
   A0  OBJT_GRENADE_SOLDIER                 256   200  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
   end
@@ -85,21 +85,21 @@ list spawn_list_extra_p9 page 9
 
 list spawn_list_extra_p10 page 10
   01  OBJT_RESPAWN_CLAMP_TRIGGER             0     0  0400  9C0-AC0  # stage trigger: clamp_player_top, respawn_mode from fields $3A/$3B
-  40  OBJT_WINDOW_SNIPER                    16    -1  0000  300-780  # sniper in a window (stages 1, 3)
+  4F  OBJT_WINDOW_SNIPER                    40    -1  0000  300-780  # sniper in a window (stages 1, 3)
   90  OBJT_WEAPON_CAPSULE                  272    48  0007  300-780  # flying weapon capsule
-  C0  OBJT_GRENADE_SOLDIER                 144   -16  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
+  CF  OBJT_WINDOW_SNIPER                   168    -1  0000  300-780  # sniper in a window (stages 1, 3)
   end
 
 list spawn_list_extra_p11 page 11
-  30  OBJT_WINDOW_SNIPER                   232    -1  0000  300-780  # sniper in a window (stages 1, 3)
-  80  OBJT_GRENADE_SOLDIER                  64   -16  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
-  C0  OBJT_WINDOW_SNIPER                    16    -1  0000  300-780  # sniper in a window (stages 1, 3)
+  20  OBJT_GRENADE_SOLDIER                 152   -16  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
+  60  OBJT_GRENADE_SOLDIER                  80   -16  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
+  8F  OBJT_WINDOW_SNIPER                   168    -1  0000  300-780  # sniper in a window (stages 1, 3)
   end
 
 list spawn_list_extra_p12 page 12
   20  OBJT_WEAPON_CAPSULE                  -16    64  0005  300-780  # flying weapon capsule
-  60  OBJT_GRENADE_SOLDIER                  96   -16  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
-  B0  OBJT_WINDOW_SNIPER                   232    -1  0000  300-780  # sniper in a window (stages 1, 3)
+  60  OBJT_GRENADE_SOLDIER                 152   -16  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
+  AF  OBJT_WINDOW_SNIPER                   176    -1  0000  300-780  # sniper in a window (stages 1, 3)
   end
 
 list spawn_list_extra_p13 page 13
@@ -116,8 +116,8 @@ list spawn_list_extra_p14 page 14
   end
 
 list spawn_list_extra_p15 page 15
-  40  OBJT_WINDOW_SNIPER                   256    72  0000  300-740  # sniper in a window (stages 1, 3)
-  80  OBJT_GRENADE_SOLDIER                 256   104  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
+  60  OBJT_GRENADE_SOLDIER                 256   200  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
+  90  OBJT_WINDOW_SNIPER                   256   112  0000  300-740  # sniper in a window (stages 1, 3)
   C0  OBJT_GRENADE_SOLDIER                 256   200  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
   end
 

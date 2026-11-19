@@ -107,3 +107,38 @@ def test_placements_and_draw():
     assert pal[spawns.OBJECT] == spawns.COLOURS[spawns.OBJECT]
     assert px[(256 + 190) * W + 0x20 + 256 + 4] == spawns.OBJECT    # the box around the dog
     assert spawns.TRIGGER in px
+
+
+# The extra stage's snipers and grenade soldiers do not fall (their
+# handlers have no gravity: OBJ_Y, their feet, stays where they spawn), so
+# each must spawn standing on something (book: Stage 2: Collapsed Tower,
+# Visual review): a tile with a floor collision class under its feet (as
+# the players stand), or one of these places that look like a floor but
+# have no collision, (x, y) of the gallery's picture as tools/spawns.py
+# places them: the cafe's roof, a window of the green block, three windows
+# of the tower facade on the climb.
+EXTRA_SILLS = {(828, 848), (1384, 874), (2600, 688), (2728, 560), (2728, 368)}
+STANDING = ("OBJT_WINDOW_SNIPER", "OBJT_GRENADE_SOLDIER")
+
+
+def test_extra_stage_standing_spawns():
+    import assets
+    manifest = {a.path: a for a in assets.read_manifest(ROOT)}
+    view = dict(assets.read_levels(ROOT))["extra_bg1"]
+    cells, width, _ = assets.level_cells(view, manifest, ROOT)
+    sp = spawns.read(os.path.join(ROOT, "assets", "stages", "extra.spawns"), TYPES)
+    route = assets.page_list(view["route"])
+
+    def floor(x, y):
+        # stage 1's thresholds (book: Side-view collision map): classes 1-4
+        # ($391-$3F9) are floors; the bars ($3FA-$3FF) are not
+        w = cells[(y // 8) * width + x // 8] if y >= 0 else None
+        return w is not None and 0x391 <= (w & 0x3FF) <= 0x3F9
+
+    bad = []
+    for e, page, x, y, _sx, _sy, _v in spawns.placements(sp, route, assets.page_list(view["up"])):
+        if e.type_name not in STANDING or (x, y) in EXTRA_SILLS:
+            continue
+        if y % 8 or not (floor(x, y) or floor(x + 8, y)) or floor(x, y - 8) or floor(x + 8, y - 8):
+            bad.append((page, f"{e.pos:02X}", e.type_name, x, y))
+    assert not bad, bad
