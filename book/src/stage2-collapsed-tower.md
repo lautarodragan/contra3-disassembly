@@ -131,7 +131,7 @@ on stage 1.
 ## Visual review
 
 After the stage was built, every page was reviewed for things that look
-wrong (`out/qa/` of the review, not tracked): each spawn placed in map
+wrong (the review's working files are not tracked): each spawn placed in map
 coordinates and checked against the collision under it and against how
 stage 1 places the same type, then seen in the emulator when it appears
 and 45 and 120 frames later (the scripted player of
