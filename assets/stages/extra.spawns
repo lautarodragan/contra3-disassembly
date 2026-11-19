@@ -124,7 +124,7 @@ list spawn_list_extra_p15 page 15
 list spawn_list_extra_p16 page 16
   30  OBJT_WEAPON_CAPSULE                  -16    96  0006  300-780  # flying weapon capsule
   60  OBJT_GRENADE_SOLDIER                 256   200  0000  300-780  # stage 1: soldier throwing grenades (type $13), HP 6
-  A0  OBJT_ALIEN_DOG                       256   190  0000  280-300  # alien dog (stage 1)
+  A0  OBJT_POPUP_TURRET                    256   200  0000  780-840  # gun turret rising from the rubble (stage 1)
   end
 
 page 17 spawn_list_05979C

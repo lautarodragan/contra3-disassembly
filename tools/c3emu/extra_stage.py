@@ -17,7 +17,8 @@ build plays the same way):
   stage scrolls right again): the waypoints of CLIMB, in screen x, one
   per platform: walk to x, jump (straight up through the slab above, or
   towards `dir`), and move on once landed higher; 'pillar': walk right
-  into the concrete pillar and hold Up to its top.
+  into the concrete pillar and hold Up to its top.  Standing as high as
+  a later waypoint's start (CLIMB_FROM) skips to it.
 
 With `keep_alive` the player's lives, bombs and barrier are written back
 every 30 frames, as plays.py does, so a run does not depend on dying.
@@ -39,6 +40,11 @@ CLIMB = [("up", 70, None), ("up", 80, None), ("up", 110, None), ("up", 120, None
          ("up", 145, None), ("pillar", None, "right"), ("dir", 212, "left"),
          ("dir", 135, "left"), ("up", 80, None), ("dir", 90, "right"),
          ("up", 130, None), ("up", 145, None), ("up", 175, None)]
+# The height of the feet in the map (screen y + bg1_y) where each waypoint
+# of CLIMB starts: the slab or the ground it is played from.  A player
+# already standing as high as a later waypoint's start (a jump of the run
+# that landed on a slab before the climb began) goes on from there.
+CLIMB_FROM = [200, 144, 80, 16, -48, -112, -240, -304, -368, -432, -496, -560, -624]
 
 
 def _s16(v):
@@ -108,6 +114,15 @@ class Player:
         else:
             self._hold("right", "up", "y")
 
+    def _skip_ahead(self, wy):
+        """Moves on to the last waypoint whose start the feet are as high
+        as (standing at wy); true if it moved."""
+        k = self.wp
+        while k + 1 < len(CLIMB) and wy <= CLIMB_FROM[k + 1] + 8:
+            k += 1
+        moved, self.wp = k != self.wp, k
+        return moved
+
     def _climb(self):
         c = self.c
         if self.wp >= len(CLIMB):
@@ -134,6 +149,8 @@ class Player:
                 self._hold(*(("down", "b") if self.frame % 8 < 4 else ("down",)))
             elif state != 0:
                 self._hold("y")
+            elif self._skip_ahead(wy):
+                self._hold()
             elif abs(px - x) > 2:
                 self._hold("right" if px < x else "left")
             else:
